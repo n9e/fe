@@ -9,16 +9,23 @@ const en_US = {
   database_table_required: 'Please select database and table',
   query: {
     mode: {
+      query: 'Query mode',
+      sql: 'SQL mode',
+    },
+    submode: {
       raw: 'Raw',
-      metric: 'Metric',
+      timeSeries: 'TimeSeries',
     },
     query_tip:
       'SQL example: To query the number of log entries in the last 5 minutes, use SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',
+    database_msg: 'Please select database',
     table: 'Table',
-    date_field: 'Date Field',
+    table_msg: 'Please select table',
+    time_field: 'Date Field',
+    time_field_msg: 'Please select date field',
     query: 'Query',
     query_required: 'Query is required',
     advancedSettings: {

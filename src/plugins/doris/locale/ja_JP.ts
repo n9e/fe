@@ -9,15 +9,22 @@ const ja_JP = {
   database_table_required: 'データベースとテーブルを選択してください',
   query: {
     mode: {
-      raw: '生データ',
-      metric: '統計グラフ',
+      query: 'Query モード',
+      sql: 'SQL モード',
+    },
+    submode: {
+      raw: 'ログ原文',
+      timeSeries: '時系列',
     },
     query_tip: 'SQL例：最近5分間のログ行数をクエリするには、SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)を使用します',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'クエリ',
     database: 'データベース',
+    database_msg: 'データベースを選択してください',
     table: 'テーブル',
-    date_field: '日付フィールド',
+    table_msg: 'テーブルを選択してください',
+    time_field: '日付フィールド',
+    time_field_msg: '日付フィールドを選択してください',
     query: 'クエリ',
     query_required: 'クエリは必須です',
     advancedSettings: {

@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Space, Button, Row, Col } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Resizable } from 're-resizable';
 
+import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import HistoricalRecords from '@/components/HistoricalRecords';
 import TimeRangePicker from '@/components/TimeRangePicker';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { QUERY_CACHE_KEY, NAME_SPACE, QUERY_SIDEBAR_CACHE_KEY } from '../../constants';
 import { getDorisIndex, Field } from '../../services';
@@ -26,7 +29,8 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
+  const { darkMode } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const { disabled, datasourceValue, executeQuery } = props;
   const queryValues = Form.useWatch(['query']);
@@ -53,34 +57,55 @@ export default function index(props: Props) {
           <Row gutter={10} wrap className='min-w-[300px]'>
             <Col span={12}>
               <InputGroupWithFormItem label={t('query.database')}>
-                <Form.Item name={['query', 'database']} rules={[{ required: true }]}>
-                  <DatabaseSelect datasourceValue={datasourceValue} />
+                <Form.Item name={['query', 'database']} rules={[{ required: true, message: t('query.database_msg') }]}>
+                  <DatabaseSelect
+                    datasourceValue={datasourceValue}
+                    onChange={() => {
+                      form.setFieldsValue({
+                        query: {
+                          table: undefined,
+                          time_field: undefined,
+                        },
+                      });
+                    }}
+                  />
                 </Form.Item>
               </InputGroupWithFormItem>
             </Col>
             <Col span={12}>
               <InputGroupWithFormItem label={t('query.table')}>
-                <Form.Item name={['query', 'table']} rules={[{ required: true }]}>
-                  <TableSelect datasourceValue={datasourceValue} database={queryValues?.database} />
+                <Form.Item name={['query', 'table']} rules={[{ required: true, message: t('query.table_msg') }]}>
+                  <TableSelect
+                    datasourceValue={datasourceValue}
+                    database={queryValues?.database}
+                    onChange={() => {
+                      form.setFieldsValue({
+                        query: {
+                          time_field: undefined,
+                        },
+                      });
+                    }}
+                  />
                 </Form.Item>
               </InputGroupWithFormItem>
             </Col>
           </Row>
         </Col>
         <Col flex='none'>
-          <InputGroupWithFormItem label={t('query.date_field')}>
-            <Form.Item name={['query', 'date_field']} rules={[{ required: true }]}>
+          <InputGroupWithFormItem label={t('query.time_field')}>
+            <Form.Item name={['query', 'time_field']} rules={[{ required: true, message: t('query.time_field_msg') }]}>
               <DateFieldSelect
                 dateFields={_.filter(fields, (item) => {
                   return _.includes(['timestamp', 'date', 'datetime'], item.type.toLowerCase());
                 })}
+                onChange={executeQuery}
               />
             </Form.Item>
           </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
           <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-            <TimeRangePicker />
+            <TimeRangePicker onChange={executeQuery} />
           </Form.Item>
         </Col>
         <Col flex='none'>
@@ -90,7 +115,23 @@ export default function index(props: Props) {
         </Col>
       </Row>
       <div className='flex gap-[10px]'>
-        <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
+        <InputGroupWithFormItem
+          label={
+            <Space>
+              {t('query.query')}
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('common:document_link'),
+                    documentPath: '/docs/doris/query-string',
+                  });
+                }}
+              />
+            </Space>
+          }
+        >
           <Form.Item name={['query', 'query']}>
             <QueryInput
               onChange={() => {
@@ -112,7 +153,7 @@ export default function index(props: Props) {
           }}
         />
       </div>
-      {!_.isEmpty(fields) && queryValues?.date_field && (
+      {!_.isEmpty(fields) && queryValues?.time_field && (
         <div className='h-full min-h-0 flex gap-[10px]'>
           <div className='flex-shrink-0'>
             <Resizable

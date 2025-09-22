@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,9 @@ import { useLocation } from 'react-router-dom';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import Share from '@/pages/explorer/components/Share';
+import { parseRange } from '@/components/TimeRangePicker';
 
+import { useGlobalState } from '../globalState';
 import { NAME_SPACE } from '../constants';
 import Query from './Query';
 import SQL from './SQL';
@@ -72,11 +74,15 @@ const HeaderExtra = ({ disabled, datasourceValue }) => {
 };
 
 export default function Prometheus(props: IProps) {
+  const [, setExplorerParsedRange] = useGlobalState('explorerParsedRange');
+  const [, setExplorerSnapRange] = useGlobalState('explorerSnapRange');
   const params = new URLSearchParams(useLocation().search);
   const { datasourceCate, datasourceValue, headerExtra, disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const mode = Form.useWatch(['query', 'mode']); // query | sql
   const submode = Form.useWatch(['query', 'submode']); // raw | timeSeries
+  const range = Form.useWatch(['query', 'range']);
+
   const executeQuery = () => {
     form.validateFields().then((values) => {
       if (defaultFormValuesControl?.setDefaultFormValues) {
@@ -86,11 +92,24 @@ export default function Prometheus(props: IProps) {
           query: values.query,
         });
       }
+      // 如果是相对时间范围，则更新 explorerParsedRange
+      const range = values.query?.range;
+      if (_.isString(range?.start) && _.isString(range?.end)) {
+        setExplorerParsedRange(parseRange(range));
+      }
+      // 每次执行查询，重置 explorerSnapRange
+      setExplorerSnapRange({});
       form.setFieldsValue({
         refreshFlag: _.uniqueId('refreshFlag_'),
       });
     });
   };
+
+  useEffect(() => {
+    // 外部修改了 range，则更新 explorerParsedRange
+    const parsedRange = range ? parseRange(range) : { start: undefined, end: undefined };
+    setExplorerParsedRange(parsedRange);
+  }, [JSON.stringify(range)]);
 
   useEffect(() => {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {

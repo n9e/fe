@@ -7,14 +7,14 @@ import { getColumnsFromFields, toString, filteredFields } from '../utils';
 import { FieldValueWithFilter } from './RawList';
 
 interface IProps {
-  dateField?: string;
+  time_field?: string;
   data: any[];
   options?: any;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
 }
 
 export default function RawTable(props: IProps) {
-  const { dateField, data, options, onValueFilter } = props;
+  const { time_field, data, options, onValueFilter } = props;
   let fields = filteredFields(_.keys(data[0]), options?.organizeFields);
   fields = !_.isEmpty(options?.organizeFields) ? _.intersection(fields, options?.organizeFields) : fields;
 
@@ -28,7 +28,7 @@ export default function RawTable(props: IProps) {
           '-',
         );
       }}
-      columns={getColumnsFromFields(fields, dateField, options, onValueFilter)}
+      columns={getColumnsFromFields(fields, time_field, options, onValueFilter)}
       dataSource={data}
       expandable={{
         expandedRowRender: (record) => {
