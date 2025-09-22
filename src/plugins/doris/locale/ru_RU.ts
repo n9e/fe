@@ -9,8 +9,12 @@ const ru_RU = {
   database_table_required: 'Пожалуйста, выберите базу данных и таблицу',
   query: {
     mode: {
-      raw: 'Сырые данные',
-      metric: 'Статистический график',
+      query: 'Режим запроса',
+      sql: 'Режим SQL',
+    },
+    submode: {
+      raw: 'Исходный текст журнала',
+      timeSeries: 'Временная диаграмма',
     },
     query_tip:
       'Пример SQL: Чтобы запросить количество записей журнала за последние 5 минут, используйте SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',

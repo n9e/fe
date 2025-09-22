@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Space, Button, Row, Col } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Resizable } from 're-resizable';
 
+import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import HistoricalRecords from '@/components/HistoricalRecords';
 import TimeRangePicker from '@/components/TimeRangePicker';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { QUERY_CACHE_KEY, NAME_SPACE, QUERY_SIDEBAR_CACHE_KEY } from '../../constants';
 import { getDorisIndex, Field } from '../../services';
@@ -26,7 +29,8 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
+  const { darkMode } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const { disabled, datasourceValue, executeQuery } = props;
   const queryValues = Form.useWatch(['query']);
@@ -111,7 +115,23 @@ export default function index(props: Props) {
         </Col>
       </Row>
       <div className='flex gap-[10px]'>
-        <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
+        <InputGroupWithFormItem
+          label={
+            <Space>
+              {t('query.query')}
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('common:document_link'),
+                    documentPath: '/docs/doris/query-string',
+                  });
+                }}
+              />
+            </Space>
+          }
+        >
           <Form.Item name={['query', 'query']}>
             <QueryInput
               onChange={() => {
