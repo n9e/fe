@@ -10,6 +10,7 @@ export default function normalizeLogStructures(log: Log): Log {
     if (_.isString(value)) {
       const valToObj = _.attempt(JSON.parse.bind(null, value));
       if (_.isError(valToObj)) {
+        console.warn('parse log value to object error: ', valToObj);
         normalizedLog[key] = value;
       } else {
         normalizedLog[key] = valToObj;

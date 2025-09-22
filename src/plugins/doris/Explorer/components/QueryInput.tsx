@@ -29,7 +29,7 @@ export default function QueryInput(props: Props) {
       value={currentValue}
       onChange={(e) => setCurrentValue(e.target.value)}
       onBlur={() => {
-        if (props.onChange) {
+        if (props.onChange && currentValue !== props.value) {
           props.onChange(currentValue);
         }
       }}
