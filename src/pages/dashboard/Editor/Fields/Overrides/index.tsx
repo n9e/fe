@@ -135,7 +135,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
               </Row>
               {_.includes(overrideOptions, 'custom.cellOptions') && (
                 <Panel header={t('panel.custom.title')} isActive={_.includes(activeOptions, 'custom.cellOptions')}>
-                  <CellOptions prefixNamePath={namePrefix} namePath={[name, 'properties', 'cellOptions']} />
+                  <CellOptions prefixNamePath={namePrefix} namePath={[name, 'properties', 'cellOptions']} hideWrapText />
                 </Panel>
               )}
               {_.includes(overrideOptions, 'thresholds') && (
