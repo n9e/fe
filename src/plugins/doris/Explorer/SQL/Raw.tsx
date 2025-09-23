@@ -9,7 +9,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import flatten from '@/pages/explorer/Elasticsearch/flatten';
 import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
 
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
 import { logQuery } from '../../services';
 import { getLocalstorageOptions, getFieldsFromSQLData, setLocalstorageOptions } from '../utils';
 import OriginSettings from '../components/OriginSettings';
@@ -31,7 +31,7 @@ function Raw(props: IProps) {
   const [logs, setLogs] = useState<{ [index: string]: string }[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState(getLocalstorageOptions());
+  const [options, setOptions] = useState(getLocalstorageOptions(SQL_LOGS_OPTIONS_CACHE_KEY));
   const [logRequestParams, setLogRequestParams] = useState<any>({});
   const [fields, setFields] = useState<string[]>([]);
   const updateOptions = (newOptions) => {
@@ -40,7 +40,7 @@ function Raw(props: IProps) {
       ...newOptions,
     };
     setOptions(mergedOptions);
-    setLocalstorageOptions(mergedOptions);
+    setLocalstorageOptions(SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
   };
 
   useEffect(() => {
@@ -83,14 +83,15 @@ function Raw(props: IProps) {
 
   useEffect(() => {
     if (refreshFlag) {
-      const values = form.getFieldsValue();
-      const query = values.query;
-      const range = parseRange(query.range);
-      setLogRequestParams({
-        from: moment(range.start).unix(),
-        to: moment(range.end).unix(),
-        sql: _.trim(_.split(query.query, '|')?.[0]),
-        refreshFlag,
+      form.validateFields().then((values) => {
+        const query = values.query;
+        const range = parseRange(query.range);
+        setLogRequestParams({
+          from: moment(range.start).unix(),
+          to: moment(range.end).unix(),
+          sql: _.trim(_.split(query.query, '|')?.[0]),
+          refreshFlag,
+        });
       });
     }
   }, [refreshFlag]);

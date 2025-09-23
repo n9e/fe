@@ -6,7 +6,7 @@ import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Form } fr
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, PRIMARY_COLOR } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
@@ -103,11 +103,11 @@ export default function FieldsItem(props: Props) {
                             {_.isEmpty(name) && !_.isNumber(name) ? '(empty)' : name}
                           </div>
                         </Tooltip>
-                        <div className='text-primary'>{item.pv}</div>
+                        <div className='text-primary'>{item.count}</div>
                       </div>
                       <div className='flex justify-between'>
                         <div style={{ width: 'calc(100% - 50px)' }} className='nowrap overflow-hidden text-ellipsis flex items-center'>
-                          <Progress percent={percent} size='small' showInfo={false} strokeColor='#6c53b1' />
+                          <Progress percent={percent} size='small' showInfo={false} strokeColor={PRIMARY_COLOR} />
                         </div>
                         <div className='text-primary'>{percent}%</div>
                       </div>
@@ -194,9 +194,6 @@ export default function FieldsItem(props: Props) {
                       [statName]: '-',
                     };
                   }
-                  return {
-                    [statName]: statValue,
-                  };
                 },
               );
               setTopNData(top5Result || []);

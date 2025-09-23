@@ -23,47 +23,48 @@ export default function TimeseriesCpt(props: Props) {
 
   useEffect(() => {
     if (refreshFlag) {
-      const values = form.getFieldsValue();
-      const query = values.query;
-      if (query.keys.valueKey) {
-        query.keys.valueKey = _.join(query.keys.valueKey, ' ');
-      }
-      if (query.keys.labelKey) {
-        query.keys.labelKey = _.join(query.keys.labelKey, ' ');
-      }
-      const requestParams = {
-        cate: values.datasourceCate,
-        datasource_id: values.datasourceValue,
-        query: [
-          {
-            from: moment(parseRange(query.range).start).unix(),
-            to: moment(parseRange(query.range).end).unix(),
-            sql: query.query,
-            keys: query.keys,
-          },
-        ],
-      };
-      setLoading(true);
-      setExecuteLoading(true);
-      getDsQuery(requestParams)
-        .then((res) => {
-          setSeries(
-            _.map(res, (item) => {
-              return {
-                name: getSerieName(item.metric),
-                metric: item.metric,
-                data: item.values,
-              };
-            }),
-          );
-        })
-        .catch(() => {
-          setSeries([]);
-        })
-        .finally(() => {
-          setLoading(false);
-          setExecuteLoading(false);
-        });
+      form.validateFields().then((values) => {
+        const query = values.query;
+        if (query.keys.valueKey) {
+          query.keys.valueKey = _.join(query.keys.valueKey, ' ');
+        }
+        if (query.keys.labelKey) {
+          query.keys.labelKey = _.join(query.keys.labelKey, ' ');
+        }
+        const requestParams = {
+          cate: values.datasourceCate,
+          datasource_id: values.datasourceValue,
+          query: [
+            {
+              from: moment(parseRange(query.range).start).unix(),
+              to: moment(parseRange(query.range).end).unix(),
+              sql: query.query,
+              keys: query.keys,
+            },
+          ],
+        };
+        setLoading(true);
+        setExecuteLoading(true);
+        getDsQuery(requestParams)
+          .then((res) => {
+            setSeries(
+              _.map(res, (item) => {
+                return {
+                  name: getSerieName(item.metric),
+                  metric: item.metric,
+                  data: item.values,
+                };
+              }),
+            );
+          })
+          .catch(() => {
+            setSeries([]);
+          })
+          .finally(() => {
+            setLoading(false);
+            setExecuteLoading(false);
+          });
+      });
     }
   }, [refreshFlag]);
 
