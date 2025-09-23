@@ -29,7 +29,7 @@ import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
-import TimeRangePicker, { parseRange, getDefaultValue } from '@/components/TimeRangePicker';
+import TimeRangePicker, { parseRange, getDefaultValue, isMathString, IRawTimeRange } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { allCates } from '@/components/AdvancedWrap/utils';
@@ -45,11 +45,25 @@ import './locale';
 
 const CACHE_KEY = 'alert_events_range';
 const getFilter = (query) => {
+  let defaultRange: IRawTimeRange | undefined = undefined;
+  if (query.start && query.end) {
+    if (isMathString(query.start) && isMathString(query.end)) {
+      defaultRange = { start: query.start, end: query.end };
+    } else if (!_.isNaN(_.toNumber(query.start)) && !_.isNaN(_.toNumber(query.end))) {
+      const startMoment = moment.unix(query.start);
+      const endMoment = moment.unix(query.end);
+      if (startMoment.isValid() && endMoment.isValid()) {
+        defaultRange = { start: startMoment, end: endMoment };
+      }
+    }
+  }
   return {
-    range: getDefaultValue(CACHE_KEY, {
-      start: 'now-6h',
-      end: 'now',
-    }),
+    range:
+      defaultRange ??
+      getDefaultValue(CACHE_KEY, {
+        start: 'now-6h',
+        end: 'now',
+      }),
     datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : [],
     bgid: query.bgid ? Number(query.bgid) : undefined,
     severity: query.severity ? Number(query.severity) : undefined,
