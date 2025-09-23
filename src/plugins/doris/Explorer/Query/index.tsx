@@ -51,7 +51,6 @@ export default function index(props: Props) {
             })?.field;
             if (firstDateField) {
               form.setFieldsValue({
-                // refreshFlag: _.uniqueId('refreshFlag_'),
                 query: {
                   time_field: firstDateField,
                 },
@@ -81,6 +80,7 @@ export default function index(props: Props) {
                         query: {
                           table: undefined,
                           time_field: undefined,
+                          query: undefined,
                         },
                       });
                     }}
@@ -98,6 +98,7 @@ export default function index(props: Props) {
                       form.setFieldsValue({
                         query: {
                           time_field: undefined,
+                          query: undefined,
                         },
                       });
                     }}
@@ -159,7 +160,7 @@ export default function index(props: Props) {
         <ConditionHistoricalRecords
           localKey={QUERY_CACHE_KEY}
           datasourceValue={datasourceValue!}
-          renderItem={(item) => {
+          renderItem={(item, setVisible) => {
             return (
               <div
                 className='flex flex-wrap items-center gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
@@ -167,6 +168,7 @@ export default function index(props: Props) {
                 onClick={() => {
                   form.setFieldsValue({ query: item });
                   executeQuery();
+                  setVisible(false);
                 }}
               >
                 {_.map(_.pick(item, QUERY_CACHE_PICK_KEYS), (value, key) => {
