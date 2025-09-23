@@ -64,7 +64,7 @@ const ja_JP = {
   escalations: {
     title: 'エスカレーション設定',
     title_tip:
-      'アラートが設定した期間を超え、まだ回復していない場合、システムは以下の条件に従って通知を指定チャネルにエスカレーションし、長期間誰もフォローしない状況を避けます。詳細な設定については <a>説明文書</a> を参照してください',
+      'アラートが設定した期間を超え、まだ回復していない場合、システムは以下の条件に従って通知を指定チャネルにエスカレーションし、長期間誰もフォローしない状況を避けます。詳細な設定については <a>使用文書</a> を参照してください',
     item_title: '通知エスカレーション',
     item_add_btn: '通知エスカレーションを追加',
     interval: '検出周期',
@@ -73,6 +73,13 @@ const ja_JP = {
     duration_1: '異常イベントが既に',
     duration_2: 'を超過し、まだ',
     duration_3: '状態にある時、この設定を使用して通知を送信します。',
+    repeating_notification: '繰り返し通知設定',
+    repeating_notification_tip: 'このスイッチがオフの場合、同じイベントのエスカレーション通知は1回のみ通知されます',
+    repeating_notification_1: '毎',
+    repeating_notification_2: '分ごとに1回通知し、最大で',
+    repeating_notification_3: '回繰り返し通知します',
+    notification_interval_required: '通知間隔は空にできません',
+    notification_max_times_required: '繰り返し通知の最大回数は空にできません',
     event_status_options: {
       0: '未回復',
       1: '未回復かつ未対応',
@@ -109,12 +116,12 @@ const ja_JP = {
     default_duration_tip: '注意：集約時間間隔が大きすぎるとアラートの送信遅延を引き起こします',
     default_duration_tip2: '集約最大間隔は3600秒を超えることはできません',
     attribute_keys_map: {
-      datasource_id: 'データソース',
-      group_id: 'ビジネスグループ',
+      cluster: 'データソース',
+      group_name: 'ビジネスグループ',
       rule_id: 'アラートルール',
       severity: 'アラートレベル',
     },
-    enable_tip: '有効化後、ルールに合致するアラートは次元別に一つの通知に統合されます',
+    enable_tip: '有効化後、ルールに合致するアラートは次元別に一つの通知に統合されます <a>使用文書</a>',
     labels_filter: {
       label_tip:
         'これらのラベル条件を満たすアラートイベントのみ集約通知を実行します。影響範囲を狭めるために使用します。設定なしは制限なしを意味します。既存のラベルキーのドロップダウン選択（推奨）または手動入力をサポートします',

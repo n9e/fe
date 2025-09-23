@@ -191,7 +191,7 @@ export default function NotifyConfig(props: Props) {
           />
         </div>
         <div className='p2 rounded n9e-fill-color-2-5'>
-          <Attributes disabled={disabled} field={field} fullName={['notify_configs']} />
+          <Attributes disabled={disabled} field={field} fullName={['notify_configs']} keyOptions={['group_name', 'cluster', 'is_recovered', 'rule_id']} />
         </div>
       </div>
       {!disabled && <TestButton field={field} />}
