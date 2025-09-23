@@ -8,11 +8,11 @@ import { Resizable } from 're-resizable';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import HistoricalRecords from '@/components/HistoricalRecords';
+import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { QUERY_CACHE_KEY, NAME_SPACE, QUERY_SIDEBAR_CACHE_KEY } from '../../constants';
+import { QUERY_CACHE_KEY, NAME_SPACE, QUERY_SIDEBAR_CACHE_KEY, DATE_TYPE_LIST, QUERY_CACHE_PICK_KEYS } from '../../constants';
 import { getDorisIndex, Field } from '../../services';
 import QueryInput from '../components/QueryInput';
 import DatabaseSelect from './DatabaseSelect';
@@ -35,7 +35,6 @@ export default function index(props: Props) {
   const { disabled, datasourceValue, executeQuery } = props;
   const queryValues = Form.useWatch(['query']);
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem(QUERY_SIDEBAR_CACHE_KEY) || 200));
-  const [executeLoading, setExecuteLoading] = useState(false);
   const [fields, setFields] = useState<Field[]>([]);
 
   useEffect(() => {
@@ -43,6 +42,23 @@ export default function index(props: Props) {
       getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database: queryValues.database, table: queryValues.table })
         .then((res) => {
           setFields(res);
+          // 如果 time_field 值不存在或者不在字段列表中，则用第一个时间字段作为默认值
+          const timeField = form.getFieldValue('query')?.time_field;
+          const fieldExists = _.some(res, (item) => item.field === timeField);
+          if (!timeField || !fieldExists) {
+            const firstDateField = _.find(res, (item) => {
+              return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
+            })?.field;
+            if (firstDateField) {
+              form.setFieldsValue({
+                // refreshFlag: _.uniqueId('refreshFlag_'),
+                query: {
+                  time_field: firstDateField,
+                },
+              });
+              executeQuery();
+            }
+          }
         })
         .catch(() => {
           setFields([]);
@@ -96,7 +112,7 @@ export default function index(props: Props) {
             <Form.Item name={['query', 'time_field']} rules={[{ required: true, message: t('query.time_field_msg') }]}>
               <DateFieldSelect
                 dateFields={_.filter(fields, (item) => {
-                  return _.includes(['timestamp', 'date', 'datetime'], item.type.toLowerCase());
+                  return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
                 })}
                 onChange={executeQuery}
               />
@@ -109,7 +125,7 @@ export default function index(props: Props) {
           </Form.Item>
         </Col>
         <Col flex='none'>
-          <Button type='primary' onClick={executeQuery} disabled={disabled} loading={executeLoading}>
+          <Button type='primary' onClick={executeQuery} disabled={disabled}>
             {t('query.execute')}
           </Button>
         </Col>
@@ -140,16 +156,30 @@ export default function index(props: Props) {
             />
           </Form.Item>
         </InputGroupWithFormItem>
-        <HistoricalRecords
+        <ConditionHistoricalRecords
           localKey={QUERY_CACHE_KEY}
-          datasourceValue={datasourceValue}
-          onSelect={(query) => {
-            form.setFieldsValue({
-              query: {
-                query,
-              },
-            });
-            executeQuery();
+          datasourceValue={datasourceValue!}
+          renderItem={(item) => {
+            return (
+              <div
+                className='flex flex-wrap items-center gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
+                key={JSON.stringify(item)}
+                onClick={() => {
+                  form.setFieldsValue({ query: item });
+                  executeQuery();
+                }}
+              >
+                {_.map(_.pick(item, QUERY_CACHE_PICK_KEYS), (value, key) => {
+                  if (!value) return <span key={key} />;
+                  return (
+                    <span key={key} className='whitespace-nowrap'>
+                      <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`query.${key}`)}:</span>
+                      <span className='pr-1'>{value}</span>
+                    </span>
+                  );
+                })}
+              </div>
+            );
           }}
         />
       </div>
@@ -179,12 +209,11 @@ export default function index(props: Props) {
                   }
                   queryStr += `${queryStr === '' ? '' : ` ${params.operator}`} ${params.key}:"${params.value}"`;
                   form.setFieldsValue({
-                    refreshFlag: _.uniqueId('refreshFlag_'),
                     query: {
-                      ...queryValues,
                       query: queryStr,
                     },
                   });
+                  executeQuery();
                 }}
               />
             </Resizable>
@@ -192,7 +221,7 @@ export default function index(props: Props) {
           <div className='w-full min-w-0 n9e-border-antd rounded-sm flex flex-col'>
             <div className='h-full min-h-0 p-2 flex-shrink-0 flex flex-col'>
               <Histogram />
-              <Content fields={fields} />
+              <Content fields={fields} executeQuery={executeQuery} />
             </div>
           </div>
         </div>

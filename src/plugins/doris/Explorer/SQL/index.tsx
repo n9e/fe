@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 import Meta from '@/components/Meta';
-import DocumentDrawer from '@/plugins/clickHouse/components/DocumentDrawer';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NAME_SPACE, SQL_SIDEBAR_CACHE_KEY } from '../../constants';
 import QueryBuilder from './QueryBuilder';
@@ -22,7 +22,7 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const { submode, disabled, datasourceValue, executeQuery } = props;
@@ -78,7 +78,10 @@ export default function index(props: Props) {
             <InfoCircleOutlined
               onClick={() => {
                 DocumentDrawer({
+                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                   darkMode,
+                  title: t('common:document_link'),
+                  documentPath: '/docs/doris/query-string',
                 });
               }}
             />

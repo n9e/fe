@@ -88,9 +88,7 @@ export function getColumnsFromFields(selectedFields: string[], time_field?: stri
   return columns;
 }
 
-const prefixKey = 'doris-explorer';
-
-export function getLocalstorageOptions() {
+export function getLocalstorageOptions(logsOptionsCacheKey: string) {
   const defaultOptions = {
     logMode: 'origin',
     lineBreak: 'false',
@@ -101,7 +99,7 @@ export function getLocalstorageOptions() {
     lines: 'true',
     time: 'true',
   };
-  const options = localStorage.getItem(`${prefixKey}@options`);
+  const options = localStorage.getItem(`${logsOptionsCacheKey}@options`);
 
   if (options) {
     try {
@@ -113,6 +111,6 @@ export function getLocalstorageOptions() {
   return defaultOptions;
 }
 
-export function setLocalstorageOptions(options) {
-  localStorage.setItem(`${prefixKey}@options`, JSON.stringify(options));
+export function setLocalstorageOptions(logsOptionsCacheKey, options) {
+  localStorage.setItem(`${logsOptionsCacheKey}@options`, JSON.stringify(options));
 }

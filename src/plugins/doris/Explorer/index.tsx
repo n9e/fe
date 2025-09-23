@@ -8,9 +8,11 @@ import { useLocation } from 'react-router-dom';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import Share from '@/pages/explorer/components/Share';
 import { parseRange } from '@/components/TimeRangePicker';
+import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
+import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
 
 import { useGlobalState } from '../globalState';
-import { NAME_SPACE } from '../constants';
+import { NAME_SPACE, QUERY_CACHE_KEY, QUERY_CACHE_PICK_KEYS, SQL_CACHE_KEY } from '../constants';
 import Query from './Query';
 import SQL from './SQL';
 
@@ -85,6 +87,7 @@ export default function Prometheus(props: IProps) {
 
   const executeQuery = () => {
     form.validateFields().then((values) => {
+      // 设置 tabs 缓存值
       if (defaultFormValuesControl?.setDefaultFormValues) {
         defaultFormValuesControl.setDefaultFormValues({
           datasourceCate,
@@ -92,6 +95,18 @@ export default function Prometheus(props: IProps) {
           query: values.query,
         });
       }
+      // 设置历史记录方法
+      const queryValues = values.query;
+      if (queryValues.mode === 'query') {
+        if (queryValues.database && queryValues.table && queryValues.time_field) {
+          setLocalQueryHistory(`${QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
+        }
+      } else if (queryValues.mode === 'sql') {
+        if (queryValues.query) {
+          setLocalQueryHistoryUtil(`${SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
+        }
+      }
+
       // 如果是相对时间范围，则更新 explorerParsedRange
       const range = values.query?.range;
       if (_.isString(range?.start) && _.isString(range?.end)) {

@@ -13,7 +13,7 @@ import normalizeLogStructures from '@/pages/explorer/utils/normalizeLogStructure
 
 import { getGlobalState } from '../../globalState';
 import { getDorisLogsQuery, Field } from '../../services';
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
 import { getLocalstorageOptions, setLocalstorageOptions } from '../utils';
 import OriginSettings from '../components/OriginSettings';
 import RawList from '../components/RawList';
@@ -21,17 +21,18 @@ import RawTable from '../components/RawTable';
 
 interface Props {
   fields: Field[];
+  executeQuery: () => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { fields } = props;
+  const { fields, executeQuery } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch(['query']);
   const [queryRefreshFlag, setQueryRefreshFlag] = useState<string>();
-  const [options, setOptions] = useState(getLocalstorageOptions());
+  const [options, setOptions] = useState(getLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
     pageSize: 10,
@@ -43,7 +44,7 @@ export default function index(props: Props) {
       ...newOptions,
     };
     setOptions(mergedOptions);
-    setLocalstorageOptions(mergedOptions);
+    setLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
   };
   const handleValueFilter = (params) => {
     const values = form.getFieldsValue();
@@ -59,12 +60,11 @@ export default function index(props: Props) {
       queryStr += `${queryStr === '' ? '' : ' '}NOT ${params.key}:"${params.value}"`;
     }
     form.setFieldsValue({
-      refreshFlag: _.uniqueId('refreshFlag_'),
       query: {
-        ...query,
         query: queryStr,
       },
     });
+    executeQuery();
   };
 
   const service = () => {
