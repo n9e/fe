@@ -117,7 +117,7 @@ export default function Content() {
      */
     if (
       profile?.roles?.length > 0 &&
-      !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token'], location.pathname) &&
+      !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token', '/alert-aggr-events'], location.pathname) &&
       !location.pathname.includes('/docs/') &&
       !location.pathname.includes('/settings/datasource/edit/') &&
       !location.pathname.includes('/settings/source/')

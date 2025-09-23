@@ -343,6 +343,17 @@ export default function AlertTable(props: IProps) {
           setRefreshFlag(_.uniqueId('refresh_'));
           setSelectedRowKeys([]);
         }}
+        onRefresh={() => {
+          setRefreshFlag(_.uniqueId('refresh_'));
+          if (eventDetailDrawerData.data.id) {
+            getEventById(eventDetailDrawerData.data.id).then((res) => {
+              setEventDetailDrawerData({
+                visible: true,
+                data: res.dat,
+              });
+            });
+          }
+        }}
       />
     </div>
   );
