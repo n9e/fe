@@ -11,11 +11,12 @@ const gaugeValueDisplayModes = ['color', 'text', 'hidden'];
 interface CellOptionsProps {
   namePath?: (string | number)[];
   prefixNamePath?: (string | number)[];
+  hideWrapText?: boolean;
 }
 
 export default function CellOptions(props: CellOptionsProps) {
   const { t } = useTranslation('dashboard');
-  const { namePath = [], prefixNamePath = [] } = props;
+  const { namePath = [], prefixNamePath = [], hideWrapText } = props;
   const form = Form.useFormInstance();
   const type = form.getFieldValue([...prefixNamePath, ...namePath, 'type']);
 
@@ -47,7 +48,7 @@ export default function CellOptions(props: CellOptionsProps) {
           </Form.Item>
         </Col>
       )} */}
-      {(type === 'none' || type === 'color-text') && (
+      {!hideWrapText && (type === 'none' || type === 'color-text') && (
         <Form.Item
           label={t('panel.custom.tableNG.cellOptions.wrapText')}
           tooltip={t('panel.custom.tableNG.cellOptions.wrapText_tip')}
