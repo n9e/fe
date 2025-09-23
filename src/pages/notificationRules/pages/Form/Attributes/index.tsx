@@ -18,6 +18,7 @@ interface Props {
   keyLabelTootip?: React.ReactNode;
   keyLabelTootipPlacement?: 'top' | 'left' | 'right' | 'bottom';
   keyOptions?: string[];
+  rules?: any[];
 }
 
 export default function index(props: Props) {
@@ -31,6 +32,7 @@ export default function index(props: Props) {
     keyLabelTootip = t(`${NS}:notification_configuration.attributes_tip`),
     keyLabelTootipPlacement,
     keyOptions,
+    rules = [],
   } = props;
   const restField = _.omit(field, ['key', 'name']);
   const form = Form.useFormInstance();
@@ -66,7 +68,7 @@ export default function index(props: Props) {
   }, [currentValues, currentFullName]);
 
   return (
-    <Form.List {...restField} name={name} rules={[validateUniqueKeys]}>
+    <Form.List {...restField} name={name} rules={_.concat([validateUniqueKeys], rules)}>
       {(fields, { add, remove }, { errors }) => (
         <>
           <Row gutter={10}>

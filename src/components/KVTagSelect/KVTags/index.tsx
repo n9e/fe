@@ -24,6 +24,7 @@ interface Props {
   name: string | (string | number)[];
   addWapper?: (add: (defaultValue?: any, insertIndex?: number) => void) => void;
   initialValue?: any;
+  rules?: any[];
 }
 
 export default function index(props: Props) {
@@ -44,6 +45,7 @@ export default function index(props: Props) {
     name,
     addWapper,
     initialValue,
+    rules = [],
   } = props;
   const restField = _.omit(field, ['key', 'name']);
   const [keyOptions, setKeyOptions] = React.useState<
@@ -94,7 +96,7 @@ export default function index(props: Props) {
   }, []);
 
   return (
-    <Form.List {...restField} name={name} rules={[validateUniqueKeys]} initialValue={initialValue}>
+    <Form.List {...restField} name={name} rules={_.concat([validateUniqueKeys], rules)} initialValue={initialValue}>
       {(fields, { add, remove }, { errors }) => (
         <>
           <Row gutter={10}>
