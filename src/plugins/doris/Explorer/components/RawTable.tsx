@@ -5,16 +5,17 @@ import _ from 'lodash';
 
 import { getColumnsFromFields, toString, filteredFields } from '../utils';
 import { FieldValueWithFilter } from './RawList';
-
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
 interface IProps {
   time_field?: string;
   data: any[];
   options?: any;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  fieldConfig?: FieldConfigVersion2;
 }
 
 export default function RawTable(props: IProps) {
-  const { time_field, data, options, onValueFilter } = props;
+  const { time_field, data, options, onValueFilter, fieldConfig } = props;
   let fields = filteredFields(_.keys(data[0]), options?.organizeFields);
   fields = !_.isEmpty(options?.organizeFields) ? _.intersection(fields, options?.organizeFields) : fields;
 
@@ -28,7 +29,7 @@ export default function RawTable(props: IProps) {
           '-',
         );
       }}
-      columns={getColumnsFromFields(fields, time_field, options, onValueFilter)}
+      columns={getColumnsFromFields(fields, time_field, options, onValueFilter, fieldConfig)}
       dataSource={data}
       expandable={{
         expandedRowRender: (record) => {

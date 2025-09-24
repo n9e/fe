@@ -16,6 +16,7 @@ export interface IFieldSearch {
 export interface Resource {
   es_resource?: EsResource;
   sls_resource?: SlsResource;
+  doris_resource?: DorisResource;
 }
 
 export interface EsResource {
@@ -25,4 +26,9 @@ export interface EsResource {
 export interface SlsResource {
   logstore: string;
   project: string;
+}
+
+export interface DorisResource {
+  database: string;
+  table: string;
 }

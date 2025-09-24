@@ -20,6 +20,8 @@ import './style.less';
 
 // @ts-ignore
 import ExportModal from 'plus:/components/LogDownload/ExportModal';
+// @ts-ignore
+import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
 interface IProps {
   datasourceCate: DatasourceCateEnum;
@@ -68,6 +70,7 @@ const HeaderExtra = ({ disabled, datasourceValue }) => {
         )}
       </Space>
       <Space>
+        {IS_PLUS && <DrilldownBtn />}
         {IS_PLUS && <ExportModal datasourceValue={datasourceValue} />}
         <Share tooltip={t('explorer:share_tip_2')} />
       </Space>

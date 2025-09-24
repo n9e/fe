@@ -3,13 +3,15 @@ import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Popover } from 'antd';
+import { Space, Table, Popover, Form } from 'antd';
 import { CaretDownOutlined, CaretRightOutlined, LeftOutlined, RightOutlined, DownOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 import { NAME_SPACE } from '../../constants';
 import { filteredFields } from '../utils';
 import LogView from './LogView';
-
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
+import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { Link, handleNav } from '@/pages/explorer/components/Links';
 interface Props {
   time_field?: string;
   data: {
@@ -18,17 +20,27 @@ interface Props {
   options: any;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
   onReverseChange: (reverse: boolean) => void;
+  fieldConfig?: FieldConfigVersion2;
 }
 
 interface RenderValueProps {
   name: string;
   value: string;
   onValueFilter?: Props['onValueFilter'];
+  fieldConfig?: FieldConfigVersion2;
+  rawValue?: object;
+  parentKey?: string;
 }
 
-export function FieldValueWithFilter({ name, value, onValueFilter }: RenderValueProps) {
+export function FieldValueWithFilter({ name, value, onValueFilter, fieldConfig, rawValue }: RenderValueProps) {
   const { t } = useTranslation(NAME_SPACE);
+  const form = Form.useFormInstance();
   const [popoverVisible, setPopoverVisible] = useState(false);
+  const relatedLinks = fieldConfig?.linkArr?.filter((item) => item.field === name);
+  const range = form.getFieldValue(['query', 'range']);
+  const parsedRange = range ? parseRange(range) : null;
+  let start = parsedRange ? moment(parsedRange.start).unix() : 0;
+  let end = parsedRange ? moment(parsedRange.end).unix() : 0;
   return (
     <Popover
       visible={popoverVisible}
@@ -73,15 +85,43 @@ export function FieldValueWithFilter({ name, value, onValueFilter }: RenderValue
               {t('logs.filterNot')}
             </Space>
           </li>
+
+          {relatedLinks && relatedLinks.length > 0 && <li className='ant-dropdown-menu-item-divider'></li>}
+          {relatedLinks?.map((i) => {
+            return (
+              <li
+                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                style={{ textDecoration: 'underline' }}
+                onClick={() => {
+                  const valueObjected = Object.entries(rawValue || {}).reduce((acc, [key, value]) => {
+                    if (typeof value === 'string') {
+                      try {
+                        acc[key] = JSON.parse(value);
+                      } catch (e) {
+                        acc[key] = value;
+                      }
+                    } else {
+                      acc[key] = value;
+                    }
+                    return acc;
+                  }, {});
+
+                  handleNav(i.urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
+                }}
+              >
+                {i.name}
+              </li>
+            );
+          })}
         </ul>
       }
     >
-      <div className='explorer-origin-field-val'>{value}</div>
+      {relatedLinks && relatedLinks.length > 0 ? <Link text={value} /> : <div className='explorer-origin-field-val'>{value}</div>}
     </Popover>
   );
 }
 
-function RenderValue({ name, value, onValueFilter }: RenderValueProps) {
+function RenderValue({ name, value, onValueFilter, fieldConfig, rawValue }: RenderValueProps) {
   const { t } = useTranslation(NAME_SPACE);
   const [expand, setExpand] = useState(false);
 
@@ -115,7 +155,7 @@ function RenderValue({ name, value, onValueFilter }: RenderValueProps) {
     );
   }
 
-  return <FieldValueWithFilter name={name} value={value} onValueFilter={onValueFilter} />;
+  return <FieldValueWithFilter name={name} value={value} onValueFilter={onValueFilter} fieldConfig={fieldConfig} rawValue={rawValue} />;
 }
 
 function RenderSubJSON({
@@ -124,12 +164,16 @@ function RenderSubJSON({
   options,
   currentExpandLevel,
   onValueFilter,
+  fieldConfig,
+  rawValue,
 }: {
   label: string;
   subJSON: any;
   options: any;
   currentExpandLevel: number;
   onValueFilter?: Props['onValueFilter'];
+  fieldConfig?: FieldConfigVersion2;
+  rawValue: object;
 }) {
   const [expand, setExpand] = useState(currentExpandLevel <= options.jsonExpandLevel);
 
@@ -171,7 +215,18 @@ function RenderSubJSON({
                       </>
                     ) : (
                       _.map(_.isArray(v) ? v : [v], (item, idx) => {
-                        return <RenderSubJSON key={idx} label={k} subJSON={item} options={options} currentExpandLevel={currentExpandLevel + 1} onValueFilter={onValueFilter} />;
+                        return (
+                          <RenderSubJSON
+                            rawValue={rawValue}
+                            key={idx}
+                            fieldConfig={fieldConfig}
+                            label={k}
+                            subJSON={item}
+                            options={options}
+                            currentExpandLevel={currentExpandLevel + 1}
+                            onValueFilter={onValueFilter}
+                          />
+                        );
                       })
                     )}
                   </ul>
@@ -179,7 +234,8 @@ function RenderSubJSON({
               }
               return (
                 <li key={k}>
-                  <div className='explorer-origin-field-key'>{k}</div>:<RenderValue name={k} value={v} onValueFilter={onValueFilter} />
+                  <div className='explorer-origin-field-key'>{k}</div>:
+                  <RenderValue name={k} value={v} onValueFilter={onValueFilter} fieldConfig={fieldConfig} rawValue={rawValue} />
                 </li>
               );
             })}
@@ -200,7 +256,7 @@ function RenderSubJSON({
 
 export default function RawList(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { time_field, data, options, onValueFilter, onReverseChange } = props;
+  const { time_field, data, options, onValueFilter, onReverseChange, fieldConfig } = props;
   const columns: any[] = [
     {
       title: t('logs.title'),
@@ -235,13 +291,25 @@ export default function RawList(props: Props) {
                         </>
                       ) : (
                         _.map(_.isArray(valToObj) ? valToObj : [valToObj], (item, idx) => {
-                          return <RenderSubJSON key={idx} label={key} subJSON={item} options={options} currentExpandLevel={1} onValueFilter={onValueFilter} />;
+                          return (
+                            <RenderSubJSON
+                              rawValue={item}
+                              key={idx}
+                              label={key}
+                              subJSON={item}
+                              options={options}
+                              currentExpandLevel={1}
+                              onValueFilter={onValueFilter}
+                              fieldConfig={fieldConfig}
+                            />
+                          );
                         })
                       )}
                     </ul>
                   ) : (
                     <>
-                      <div className='explorer-origin-field-key'>{key}</div>: <RenderValue name={key} value={val} onValueFilter={onValueFilter} />
+                      <div className='explorer-origin-field-key'>{key}</div>:{' '}
+                      <RenderValue name={key} value={val} onValueFilter={onValueFilter} fieldConfig={fieldConfig} rawValue={item} />
                     </>
                   )}
                 </div>
@@ -284,7 +352,7 @@ export default function RawList(props: Props) {
       pagination={false}
       expandable={{
         expandedRowRender: (record) => {
-          return <LogView value={record} onValueFilter={onValueFilter} />;
+          return <LogView value={record} onValueFilter={onValueFilter} fieldConfig={fieldConfig} rawValue={record} />;
         },
         expandIcon: ({ expanded, onExpand, record }) => (expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />),
       }}
