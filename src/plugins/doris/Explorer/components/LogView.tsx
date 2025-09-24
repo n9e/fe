@@ -1,26 +1,31 @@
 import React, { useState, useMemo } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Tabs } from 'antd';
+import { Space, Table, Tabs, Form } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import CodeMirror from '@/components/CodeMirror';
-import { EditorView } from '@codemirror/view';
-import { json } from '@codemirror/lang-json';
-import { defaultHighlightStyle } from '@codemirror/highlight';
-
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
+import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { copyToClipBoard } from '@/utils';
-
+import HighLightJSON from '@/pages/explorer/Elasticsearch/HighLightJSON';
 import { FieldValueWithFilter } from './RawList';
+import moment from 'moment';
 
 interface Props {
   value: Record<string, any>;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  fieldConfig?: FieldConfigVersion2;
+  rawValue?: object;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
-  const { value, onValueFilter } = props;
+  const { value, onValueFilter, fieldConfig, rawValue } = props;
   const [type, setType] = useState<string>('table');
+  const form = Form.useFormInstance();
+  const range = form.getFieldValue(['query', 'range']);
+  const parsedRange = range ? parseRange(range) : null;
+  let start = parsedRange ? moment(parsedRange.start).unix() : 0;
+  let end = parsedRange ? moment(parsedRange.end).unix() : 0;
   const data = useMemo(
     () =>
       _.map(_.omit(value, ['___id___', '___raw___']), (val, key) => {
@@ -75,7 +80,7 @@ export default function LogView(props: Props) {
               dataIndex: 'value',
               key: 'value',
               render: (val, record) => {
-                return <FieldValueWithFilter name={record.field} value={val} onValueFilter={onValueFilter} />;
+                return <FieldValueWithFilter name={record.field} value={val} onValueFilter={onValueFilter} fieldConfig={fieldConfig} rawValue={rawValue} />;
               },
             },
           ]}
@@ -84,25 +89,7 @@ export default function LogView(props: Props) {
         />
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <CodeMirror
-          value={jsonValue}
-          height='auto'
-          basicSetup={false}
-          editable={false}
-          extensions={[
-            defaultHighlightStyle.fallback,
-            json(),
-            EditorView.lineWrapping,
-            EditorView.theme({
-              '&': {
-                backgroundColor: '#FFF !important',
-              },
-              '&.cm-editor.cm-focused': {
-                outline: 'unset',
-              },
-            }),
-          ]}
-        />
+        <HighLightJSON value={value.___raw___} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
       </Tabs.TabPane>
     </Tabs>
   );

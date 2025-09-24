@@ -6,7 +6,7 @@ import { measureTextWidth } from '@ant-design/plots';
 
 import { NAME_SPACE } from '../constants';
 import { FieldValueWithFilter } from './components/RawList';
-
+import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
 export const getSerieName = (metric: any) => {
   const metricName = metric?.__name__ || '';
   const labels = _.keys(metric)
@@ -49,7 +49,7 @@ export const filteredFields = (fields: string[], organizeFields: string[]) => {
   });
 };
 
-export function getColumnsFromFields(selectedFields: string[], time_field?: string, options?: any, onValueFilter?: any) {
+export function getColumnsFromFields(selectedFields: string[], time_field?: string, options?: any, onValueFilter?: any, fieldConfig?: FieldConfigVersion2) {
   const columns: any[] = _.map(selectedFields, (item) => {
     return {
       title: item,
@@ -60,7 +60,11 @@ export function getColumnsFromFields(selectedFields: string[], time_field?: stri
               minWidth: measureTextWidth(item) + 40, // sorter width
             }}
           >
-            {onValueFilter ? <FieldValueWithFilter name={item} value={toString(record[item])} onValueFilter={onValueFilter} /> : toString(record[item])}
+            {onValueFilter ? (
+              <FieldValueWithFilter name={item} value={toString(record[item])} onValueFilter={onValueFilter} rawValue={item} fieldConfig={fieldConfig} />
+            ) : (
+              toString(record[item])
+            )}
           </div>
         );
       },
