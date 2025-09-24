@@ -36,9 +36,9 @@ export default function RawTable(props: IProps) {
             <div>
               {_.map(_.omit(record, ['___raw___', '___id___']), (val: any, key) => {
                 return (
-                  <dl key={key} className='event-logs-row'>
-                    <dt>{key}: </dt>
-                    <dd>{onValueFilter ? <FieldValueWithFilter name={key} value={toString(val)} onValueFilter={onValueFilter} /> : toString(val)}</dd>
+                  <dl key={key} className='mb-[4px]'>
+                    <dt className='inline-block n9e-fill-color-4 px-[4px] py-[2px] mr-[4px] whitespace-nowrap'>{key}: </dt>
+                    <dd className='inline'>{onValueFilter ? <FieldValueWithFilter name={key} value={toString(val)} onValueFilter={onValueFilter} /> : toString(val)}</dd>
                   </dl>
                 );
               })}
