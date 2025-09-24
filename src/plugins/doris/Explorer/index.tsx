@@ -70,7 +70,7 @@ const HeaderExtra = ({ disabled, datasourceValue }) => {
         )}
       </Space>
       <Space>
-        {IS_PLUS && <DrilldownBtn />}
+        {IS_PLUS && <DrilldownBtn dataSourceId={datasourceValue} />}
         {IS_PLUS && <ExportModal datasourceValue={datasourceValue} />}
         <Share tooltip={t('explorer:share_tip_2')} />
       </Space>

@@ -218,7 +218,7 @@ export default function index(props: IProps) {
               </Form.Item>
             </Space>
             <Space>
-              {isPlus && <DrilldownBtn />}
+              {isPlus && <DrilldownBtn dataSourceId={datasourceValue} />}
               <Share />
             </Space>
           </div>,
