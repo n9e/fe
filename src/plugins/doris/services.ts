@@ -1,7 +1,8 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { DorisDBParams, DorisDBTableParams, DorisDBTableDescParams, IStatCalcMethod } from './types';
-import moment from 'moment';
+import { DorisDBParams, DorisDBTableParams, Field } from './types';
+
+export type { Field };
 
 export const getDorisDatabases = (data: DorisDBParams): Promise<string[]> => {
   return request('/api/n9e/db-databases', {
@@ -15,73 +16,6 @@ export const getDorisTables = (data: DorisDBTableParams): Promise<string[]> => {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat);
-};
-
-export const getDorisTableDesc = (data: DorisDBTableDescParams): Promise<{ field: string; type: string; type2: string }[]> => {
-  return request('/api/n9e/db-desc-table', {
-    method: RequestMethod.Post,
-    data,
-  }).then((res) => res.dat);
-};
-
-export const generateSQL = ({
-  table,
-  time_field,
-  from,
-  to,
-  condition,
-  limit,
-  offset,
-}: {
-  table: string;
-  time_field: string;
-  from: string;
-  to: string;
-  condition?: string;
-  offset: number;
-  limit: number;
-}) => {
-  return `SELECT * from ${table} WHERE ${time_field} BETWEEN '${from}' AND '${to}' ${
-    condition ? `AND ${condition}` : ''
-  } ORDER by ${time_field} DESC LIMIT ${limit} OFFSET ${offset};`;
-};
-
-export const generateCount = ({ table, time_field, from, to, condition }: { table: string; time_field: string; from: number; to: number; condition?: string }) => {
-  const base = `SELECT count() as cnt from ${table}
-	WHERE ${time_field} BETWEEN FROM_UNIXTIME(${from}) AND FROM_UNIXTIME(${to})
-       `;
-  return condition ? base + `AND ${condition};` : base + ';';
-};
-
-export const generateHistogram = ({ table, time_field, from, to, condition }: { table: string; time_field: string; from: number; to: number; condition?: string }) => {
-  let max = 60; // 最多60个柱子
-  let interval = (to - from) / max;
-  interval = interval - (interval % 10);
-  if (interval <= 0) {
-    interval = 60;
-  }
-  return `SELECT count() as cnt,
-	FLOOR(UNIX_TIMESTAMP(${time_field}) / ${interval}) * ${interval} AS __ts__
-		FROM ${table}
-	WHERE ${time_field} BETWEEN FROM_UNIXTIME(${from}) AND FROM_UNIXTIME(${to})
-    ${condition ? `AND ${condition}` : ''}
-	GROUP BY __ts__;`;
-};
-
-export const statisticsGraphSQl = ({ table, calcMethod, field, time_field }: { table: string; calcMethod: IStatCalcMethod; field: string; time_field: string }) => {
-  const from = moment().subtract(1, 'hour').format('YYYY-MM-DD HH:mm:ss');
-  const to = moment().format('YYYY-MM-DD HH:mm:ss');
-  switch (calcMethod) {
-    case IStatCalcMethod.count:
-      return `SELECT COUNT() AS value, DATE_FORMAT(date, '%Y-%m-%d %H:%i:00') AS __ts__ FROM nginx_access_log WHERE ${time_field} BETWEEN '${from}' AND '${to}' GROUP BY __ts__`;
-    case IStatCalcMethod.max:
-    case IStatCalcMethod.min:
-    case IStatCalcMethod.avg:
-    case IStatCalcMethod.sum:
-      return `SELECT ${calcMethod}(${field}) AS value, DATE_FORMAT(date, '%Y-%m-%d %H:%i:00') AS __ts__ FROM ${table} WHERE ${time_field} BETWEEN '${from}' AND '${to}' GROUP BY __ts__`;
-    case IStatCalcMethod.p75:
-      return `SELECT percentile(${field}, 0.75) AS value, DATE_FORMAT(date, '%Y-%m-%d %H:%i:00') AS __ts__ FROM ${table} WHERE ${time_field} BETWEEN '${from}' AND '${to}' GROUP BY __ts__`;
-  }
 };
 
 export const logQuery = function (data: any) {
@@ -151,4 +85,57 @@ export function getLogsQuery(data: {
   }).then((res) => {
     return res?.dat?.list || [];
   });
+}
+
+export function getDorisIndex(data: BaseParams & { database: string; table: string }): Promise<Field[]> {
+  return request('/api/n9e-plus/doris-index', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat || []);
+}
+
+export function getDorisHistogram(data: {
+  cate: string;
+  datasource_id: number;
+  query: [
+    {
+      database: string;
+      table: string;
+      time_field: string;
+      from: number;
+      to: number;
+      query: string;
+    },
+  ];
+}): Promise<any[]> {
+  return request('/api/n9e-plus/doris-histogram', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat || []);
+}
+
+export function getDorisLogsQuery(data: {
+  cate: string;
+  datasource_id: number;
+  query: [
+    {
+      database: string;
+      table: string;
+      time_field: string;
+      query: string;
+      from: number;
+      to: number;
+      lines: number;
+      offset: number;
+      reverse: boolean;
+    },
+  ];
+}): Promise<{
+  list: { [index: string]: string }[];
+  total: number;
+}> {
+  return request('/api/n9e-plus/doris-logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat || { list: [], total: 0 });
 }
