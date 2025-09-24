@@ -7,12 +7,14 @@ import CodeMirror from '@/components/CodeMirror';
 import { EditorView } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
+
 import { copyToClipBoard } from '@/utils';
+
 import { FieldValueWithFilter } from './RawList';
 
 interface Props {
   value: Record<string, any>;
-  onValueFilter: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
 }
 
 export default function LogView(props: Props) {
@@ -21,7 +23,7 @@ export default function LogView(props: Props) {
   const [type, setType] = useState<string>('table');
   const data = useMemo(
     () =>
-      _.map(_.omit(value, ['___id___']), (val, key) => {
+      _.map(_.omit(value, ['___id___', '___raw___']), (val, key) => {
         return {
           field: key,
           value: val,
@@ -31,7 +33,7 @@ export default function LogView(props: Props) {
   );
   let jsonValue = '';
   try {
-    jsonValue = JSON.stringify(value, null, 4);
+    jsonValue = JSON.stringify(value.___raw___, null, 4);
   } catch (e) {
     console.error(e);
     jsonValue = '无法解析';
@@ -60,6 +62,7 @@ export default function LogView(props: Props) {
       <Tabs.TabPane tab='Table' key='table'>
         <Table
           showHeader={false}
+          rowKey='field'
           dataSource={data}
           columns={[
             {

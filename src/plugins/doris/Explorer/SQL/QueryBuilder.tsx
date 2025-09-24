@@ -1,31 +1,28 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Form, Space } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import LogQL from '@/components/LogQL';
 import { DatasourceCateEnum } from '@/utils/constant';
 import HistoricalRecords from '@/components/HistoricalRecords';
-import DocumentDrawer from '../../clickHouse/components/DocumentDrawer';
-import { CACHE_KEY, NAME_SPACE } from '../constants';
-import { useGlobalState } from '../globalState';
-import { CommonStateContext } from '@/App';
+
+import { SQL_CACHE_KEY, NAME_SPACE } from '../../constants';
 
 interface Props {
   extra?: React.ReactNode;
   executeQuery: () => void;
   datasourceValue: number;
-  getMode: () => string;
+  labelInfo?: React.ReactNode;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const [mySQLTableFields, setMySQLTableFields] = useGlobalState('mySQLTableFields');
   const form = Form.useFormInstance();
-  const { extra, executeQuery, datasourceValue, getMode } = props;
-  const { darkMode } = useContext(CommonStateContext);
+  const { extra, executeQuery, datasourceValue, labelInfo } = props;
+
   return (
     <div style={{ width: '100%' }}>
       <div className='explorer-query'>
@@ -33,13 +30,7 @@ export default function QueryBuilder(props: Props) {
           label={
             <Space>
               {t('query.query')}
-              <InfoCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    darkMode,
-                  });
-                }}
-              />
+              {labelInfo}
             </Space>
           }
         >
@@ -58,18 +49,12 @@ export default function QueryBuilder(props: Props) {
               query={{}}
               historicalRecords={[]}
               onPressEnter={executeQuery}
-              onChange={() => {
-                // 在 graph 视图里 sql 修改后清空缓存的 fields
-                if (getMode() === 'graph') {
-                  setMySQLTableFields([]);
-                }
-              }}
               placeholder={t('query.query_placeholder')}
             />
           </Form.Item>
         </InputGroupWithFormItem>
         <HistoricalRecords
-          localKey={CACHE_KEY}
+          localKey={SQL_CACHE_KEY}
           datasourceValue={datasourceValue}
           onSelect={(query) => {
             form.setFieldsValue({
