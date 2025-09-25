@@ -3,23 +3,25 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Tabs, Form } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import moment from 'moment';
+
+import { parseRange } from '@/components/TimeRangePicker';
 import { copyToClipBoard } from '@/utils';
 import HighLightJSON from '@/pages/explorer/Elasticsearch/HighLightJSON';
-import { FieldValueWithFilter } from './RawList';
-import moment from 'moment';
+
+import { getGlobalState } from '../../globalState';
+import FieldValueWithFilter from './FieldValueWithFilter';
 
 interface Props {
   value: Record<string, any>;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
-  fieldConfig?: FieldConfigVersion2;
   rawValue?: object;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
-  const { value, onValueFilter, fieldConfig, rawValue } = props;
+  const fieldConfig = getGlobalState('fieldConfig');
+  const { value, onValueFilter, rawValue } = props;
   const [type, setType] = useState<string>('table');
   const form = Form.useFormInstance();
   const range = form.getFieldValue(['query', 'range']);
@@ -80,7 +82,7 @@ export default function LogView(props: Props) {
               dataIndex: 'value',
               key: 'value',
               render: (val, record) => {
-                return <FieldValueWithFilter name={record.field} value={val} onValueFilter={onValueFilter} fieldConfig={fieldConfig} rawValue={rawValue} />;
+                return <FieldValueWithFilter name={record.field} value={val} onValueFilter={onValueFilter} rawValue={rawValue} />;
               },
             },
           ]}

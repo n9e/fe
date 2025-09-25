@@ -10,15 +10,15 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import flatten from '@/pages/explorer/Elasticsearch/flatten';
 import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
 import normalizeLogStructures from '@/pages/explorer/utils/normalizeLogStructures';
+import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConfig';
 
-import { getGlobalState } from '../../globalState';
+import { useGlobalState, getGlobalState } from '../../globalState';
 import { getDorisLogsQuery, Field } from '../../services';
 import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
 import { getLocalstorageOptions, setLocalstorageOptions } from '../utils';
 import OriginSettings from '../components/OriginSettings';
 import RawList from '../components/RawList';
 import RawTable from '../components/RawTable';
-import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConfig';
 
 interface Props {
   fields: Field[];
@@ -28,9 +28,8 @@ interface Props {
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { fields, executeQuery } = props;
+  const [, setFieldConfig] = useGlobalState('fieldConfig');
   const form = Form.useFormInstance();
-  const database = Form.useWatch(['query', 'database'], form);
-  const table = Form.useWatch(['query', 'table'], form);
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch(['query']);
@@ -145,14 +144,18 @@ export default function index(props: Props) {
     }
   }, [refreshFlag]);
 
-  const fieldConfig = useFieldConfig(
+  const currentFieldConfig = useFieldConfig(
     {
       cate: DatasourceCateEnum.doris,
       datasource_id: form.getFieldValue('datasourceValue'),
-      resource: { doris_resource: { database, table } },
+      resource: { doris_resource: { database: queryValues?.database, table: queryValues?.table } },
     },
     refreshFlag,
   );
+
+  useEffect(() => {
+    setFieldConfig(currentFieldConfig);
+  }, [JSON.stringify(currentFieldConfig)]);
 
   return (
     <>
@@ -212,7 +215,6 @@ export default function index(props: Props) {
                     time_field={queryValues.time_field}
                     data={data?.list ?? []}
                     options={options}
-                    fieldConfig={fieldConfig}
                     onValueFilter={handleValueFilter}
                     onReverseChange={(newReverse) => {
                       setServiceParams((prev) => ({
@@ -223,7 +225,7 @@ export default function index(props: Props) {
                   />
                 )}
                 {queryValues?.time_field && options.logMode === 'table' && (
-                  <RawTable time_field={queryValues.time_field} data={data?.list ?? []} options={options} onValueFilter={handleValueFilter} fieldConfig={fieldConfig} />
+                  <RawTable time_field={queryValues.time_field} data={data?.list ?? []} options={options} onValueFilter={handleValueFilter} />
                 )}
               </div>
             </FullscreenButton.Provider>
