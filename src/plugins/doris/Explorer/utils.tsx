@@ -1,10 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import i18next from 'i18next';
 import { measureTextWidth } from '@ant-design/plots';
 
 import { NAME_SPACE } from '../constants';
-import { FieldValueWithFilter } from './Raw/RawList';
+import { FieldValueWithFilter } from './components/RawList';
 
 export const getSerieName = (metric: any) => {
   const metricName = metric?.__name__ || '';
@@ -48,7 +49,7 @@ export const filteredFields = (fields: string[], organizeFields: string[]) => {
   });
 };
 
-export function getColumnsFromFields(selectedFields: string[], options?: any, onValueFilter?: any) {
+export function getColumnsFromFields(selectedFields: string[], time_field?: string, options?: any, onValueFilter?: any) {
   const columns: any[] = _.map(selectedFields, (item) => {
     return {
       title: item,
@@ -65,6 +66,16 @@ export function getColumnsFromFields(selectedFields: string[], options?: any, on
       },
     };
   });
+  if (time_field && options?.time === 'true') {
+    columns.unshift({
+      title: i18next.t(`${NAME_SPACE}:logs.settings.time`),
+      dataIndex: time_field,
+      width: 200,
+      render: (text) => {
+        return moment(text).format('MM-DD HH:mm:ss.SSS');
+      },
+    });
+  }
   if (options?.lines === 'true') {
     columns.unshift({
       title: i18next.t(`${NAME_SPACE}:logs.settings.lines`),
@@ -77,9 +88,7 @@ export function getColumnsFromFields(selectedFields: string[], options?: any, on
   return columns;
 }
 
-const prefixKey = 'doris-explorer';
-
-export function getLocalstorageOptions() {
+export function getLocalstorageOptions(logsOptionsCacheKey: string) {
   const defaultOptions = {
     logMode: 'origin',
     lineBreak: 'false',
@@ -90,7 +99,7 @@ export function getLocalstorageOptions() {
     lines: 'true',
     time: 'true',
   };
-  const options = localStorage.getItem(`${prefixKey}@options`);
+  const options = localStorage.getItem(`${logsOptionsCacheKey}@options`);
 
   if (options) {
     try {
@@ -102,6 +111,6 @@ export function getLocalstorageOptions() {
   return defaultOptions;
 }
 
-export function setLocalstorageOptions(options) {
-  localStorage.setItem(`${prefixKey}@options`, JSON.stringify(options));
+export function setLocalstorageOptions(logsOptionsCacheKey, options) {
+  localStorage.setItem(`${logsOptionsCacheKey}@options`, JSON.stringify(options));
 }

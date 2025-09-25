@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { LineChartOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { Tabs, Button, Tooltip } from 'antd';
+import { Tabs, Tooltip } from 'antd';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
