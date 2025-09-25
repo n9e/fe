@@ -36,6 +36,7 @@ export default function index(props: Props) {
   const queryValues = Form.useWatch(['query']);
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem(QUERY_SIDEBAR_CACHE_KEY) || 200));
   const [fields, setFields] = useState<Field[]>([]);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     if (datasourceValue && queryValues?.database && queryValues?.table) {
@@ -222,8 +223,8 @@ export default function index(props: Props) {
           </div>
           <div className='w-full min-w-0 n9e-border-antd rounded-sm flex flex-col'>
             <div className='h-full min-h-0 p-2 flex-shrink-0 flex flex-col'>
-              <Histogram />
-              <Content fields={fields} executeQuery={executeQuery} />
+              <Histogram total={total} />
+              <Content fields={fields} executeQuery={executeQuery} setTotal={setTotal} />
             </div>
           </div>
         </div>

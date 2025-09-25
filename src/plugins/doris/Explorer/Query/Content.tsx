@@ -23,11 +23,12 @@ import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConf
 interface Props {
   fields: Field[];
   executeQuery: () => void;
+  setTotal?: (total: number) => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { fields, executeQuery } = props;
+  const { fields, executeQuery, setTotal } = props;
   const form = Form.useFormInstance();
   const database = Form.useWatch(['query', 'database'], form);
   const table = Form.useWatch(['query', 'table'], form);
@@ -130,6 +131,12 @@ export default function index(props: Props) {
   >(service, {
     refreshDeps: [queryRefreshFlag, JSON.stringify(serviceParams)],
   });
+
+  useEffect(() => {
+    if (data?.total) {
+      setTotal?.(data?.total);
+    }
+  }, [data?.total]);
 
   useEffect(() => {
     if (refreshFlag) {
