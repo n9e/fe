@@ -61,7 +61,7 @@ export function getColumnsFromFields(selectedFields: string[], time_field?: stri
             }}
           >
             {onValueFilter ? (
-              <FieldValueWithFilter name={item} value={toString(record[item])} onValueFilter={onValueFilter} rawValue={item} fieldConfig={fieldConfig} />
+              <FieldValueWithFilter name={item} value={toString(record[item])} onValueFilter={onValueFilter} rawValue={record} fieldConfig={fieldConfig} />
             ) : (
               toString(record[item])
             )}
