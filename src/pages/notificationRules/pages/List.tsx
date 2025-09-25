@@ -6,6 +6,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 
+import { IS_PLUS } from '@/utils/constant';
 import PageLayout from '@/components/pageLayout';
 import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
@@ -109,7 +110,7 @@ export default function List() {
                 return (
                   <Link
                     to={{
-                      pathname: `/${NS}/edit/${record.id}`,
+                      pathname: IS_PLUS ? `/${NS}/detail/${record.id}` : `/${NS}/edit/${record.id}`,
                     }}
                   >
                     {val}
@@ -185,10 +186,18 @@ export default function List() {
             },
             {
               title: t('common:table.operations'),
-              width: 100,
+              width: 160,
               render: (record) => {
                 return (
                   <Space>
+                    <Link
+                      className='table-operator-area-normal'
+                      to={{
+                        pathname: `/${NS}/edit/${record.id}`,
+                      }}
+                    >
+                      {t('common:btn.edit')}
+                    </Link>
                     <Link
                       className='table-operator-area-normal'
                       to={{

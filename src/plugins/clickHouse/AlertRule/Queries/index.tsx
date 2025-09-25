@@ -1,17 +1,18 @@
 import React, { useContext } from 'react';
 import { Form, Space, Row, Col, Card } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import AdvancedSettings from '../../components/AdvancedSettings';
-import QueryName, { generateQueryName } from '@/components/QueryName';
+
 import { CommonStateContext } from '@/App';
-import GraphPreview from './GraphPreview';
-import DocumentDrawer from '../../components/DocumentDrawer';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import QueryName, { generateQueryName } from '@/components/QueryName';
 import LogQL from '@/components/LogQL';
-import { DatasourceCateEnum } from '@/utils/constant';
+
+import AdvancedSettings from '../../components/AdvancedSettings';
 import { NAME_SPACE } from '../../constants';
+import GraphPreview from './GraphPreview';
 
 interface IProps {
   form: any;
@@ -82,7 +83,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit={IS_PLUS} />
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const cate = getFieldValue('cate');

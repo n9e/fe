@@ -18,7 +18,7 @@ import { defineConfig, loadEnv } from 'vite';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
 import prefixPlugin from './plugins/vite-plugin-prefix';
-import { getFontFamilyByEnv } from './src/utils/getFontFamily';
+import getFontFamilyByEnv from './src/utils/getFontFamilyByEnv';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import path from 'path';

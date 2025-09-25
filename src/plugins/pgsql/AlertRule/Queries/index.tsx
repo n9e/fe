@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
+import { IS_PLUS } from '@/utils/constant';
 import LogQL from '@/components/LogQL';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
@@ -76,7 +77,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit={IS_PLUS} />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: -4, top: -4 }}

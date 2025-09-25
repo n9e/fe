@@ -22,6 +22,8 @@ const ja_JP = {
   export: 'エクスポート',
   export_failed: 'エクスポートに失敗しました',
   prod: '監視タイプ',
+  claimant: '認領人',
+  shield: 'シールド',
   rule_prod: {
     firemap: '消火図',
     northstar: '北極星',
@@ -30,6 +32,18 @@ const ja_JP = {
     logging: 'ログ',
     anomaly: '異常',
     loki: 'Loki',
+  },
+  delete_events: {
+    title: 'イベントクリーンアップ',
+    alert_message: '一旦削除すると元に戻せません。慎重に操作してください！',
+    severities: '重大度フィルター',
+    timestamp: '時間フィルター',
+    timestamp_options: {
+      '1': '1ヶ月前',
+      '3': '3ヶ月前',
+      '6': '6ヶ月前',
+      '12': '1年前',
+    },
   },
 };
 

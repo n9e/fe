@@ -113,6 +113,50 @@ const ja_JP = {
     content_placeholder: 'スクリプトの内容を入力してください',
     script_content: 'スクリプトの内容',
   },
+  inhibit: {
+    help: 'イベント抑制プロセッサー。あるアラートが送信された際、他のアラート通知を抑制し、通知数を減らします。よくあるシナリオとしては、同じアラートルールでP1レベルのアクティブ障害が存在する場合、P2やP3レベルのアラート通知を無視します。詳細は<a>使用文書</a>を参照してください',
+    tip1: '<b>新しいアラート</b>が以下の条件を満たす場合',
+    tip2: 'かつ',
+    tip3: '秒以内に以下の条件を満たす<b>アクティブアラート</b>が存在する',
+    tip4: 'かつ<b>新しいアラート</b>と<b>アクティブアラート</b>に以下の共通項目がある',
+    tip5: '上記すべての条件を満たす場合、現在のアラートは抑制され、通知されません',
+    duration_required: '抑制時間は必須です',
+    duration_max: '抑制時間は600秒を超えてはいけません',
+    match_label_keys: 'ラベル',
+    match_label_keys_required: 'ラベルは必須です',
+    match_attribute_keys: '属性',
+    match_attribute_keys_required: '属性は必須です',
+    keys_at_least_one_required: '少なくとも1つのラベルまたは属性が必要です',
+    preview:
+      'ルールプレビュー：「<b>新しいアラート：{{newAlertLabelsAttrs}}</b>」かつ過去「<b>{{duration}}秒</b>」以内に「<b>アクティブアラート：{{activeAlertLabelsAttrs}}</b>」が存在し、両者が「<b>{{matchLabelsAttrs}}</b>」で一致する場合、新しいアラートの通知を抑制します。',
+    labels_filter: {
+      label: 'ラベル',
+      label_tip:
+        'これらのラベル条件を満たすアラートイベントのみ抑制します。影響範囲を狭めるために使用します。未設定は制限なしを意味します。既存のラベルキーのドロップダウン選択（推奨）または手動入力が可能です',
+      label_placeholder: 'app / cluster / alertname など、マッチングに使うラベルキーを入力または選択してください',
+    },
+    labels_filter_value_placeholder: 'マッチングに使うラベル値を手動入力または選択してください',
+    attributes_filter: {
+      label: '属性',
+      label_tip: 'イベント属性で抑制範囲を限定します。同時にこれらの属性に一致するアラートのみ抑制されます。空欄の場合はすべてのアラートが対象です',
+    },
+    active_event_labels_filter: {
+      label: 'ラベル',
+      label_tip: `**アクティブアラートの範囲を限定するために使用**
+- 未設定：ラベルによるフィルタリングを行いません
+- 設定あり：ドロップダウンから既存のラベルキーを選択（推奨）または手動入力が可能。アクティブアラートがこれらのラベル条件をすべて満たす場合のみ、フィルタ対象となります。
+
+例：service=mon と入力すると、イベントにラベル service=mon が含まれる場合のみ、後続の抑制ロジックに参加します。`,
+    },
+    active_event_attributes_filter: {
+      label: '属性',
+      label_tip: `**アクティブアラートの範囲を限定するために使用**
+- 未設定：属性によるフィルタリングを行いません
+- 設定あり：アクティブアラートがこれらの属性条件をすべて満たす場合のみ、フィルタ対象となります。
+
+例：ビジネスグループ==DefaultBusiGroup と入力すると、アクティブイベントの「ビジネスグループ」属性が DefaultBusiGroup の場合のみ、後続のイベント抑制処理の対象となります`,
+    },
+  },
 };
 
 export default ja_JP;

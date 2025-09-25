@@ -17,3 +17,9 @@ export const DEFAULT_VALUES_TIME_RANGE = {
   end: moment('00:00', 'HH:mm'),
 };
 export const TABLE_PAGINATION_CACHE_KEY = `${NS}-table-pagination`;
+export const ESCALATION_VALUES = {
+  ...DEFAULT_VALUES.notify_configs[0],
+  duration: 30,
+  duration_unit: 'm',
+  interval: 10,
+};

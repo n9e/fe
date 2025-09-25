@@ -64,6 +64,22 @@ export default function index(props: Props) {
       title: t('detail.event_notify_records.target'),
       dataIndex: 'target',
       key: 'target',
+      render: (val, record) => {
+        if (_.includes(record.detail, 'event is aggregated')) {
+          // 从 record.detail 里解析出 aggr_key，他的格式是这样的 'event is aggregated, aggr_key: ${aggr_key}'
+          const matched = record.detail.match(/aggr_key:\s*([^\s]*)/);
+          if (matched && matched.length >= 2) {
+            const aggr_key = matched[1];
+            return (
+              <Link target='_blank' to={`/alert-aggr-events?aggr_key=${aggr_key}`}>
+                {aggr_key}
+              </Link>
+            );
+          }
+          return val;
+        }
+        return val;
+      },
     },
     {
       title: t('detail.event_notify_records.status'),

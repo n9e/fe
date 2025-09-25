@@ -17,6 +17,7 @@ const zh_CN = {
   required: '必填项',
   unit: '单位',
   page_help: '使用说明',
+  document_title: '使用文档',
   and: '且',
   yes: '是',
   no: '否',
@@ -132,10 +133,15 @@ const zh_CN = {
   },
   time: {
     millisecond: '毫秒',
+    ms: '毫秒',
     second: '秒',
+    s: '秒',
     minute: '分钟',
+    m: '分钟',
     hour: '小时',
+    h: '小时',
     day: '天',
+    d: '天',
     weekdays: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
   },
   severity: {
@@ -158,7 +164,10 @@ const zh_CN = {
   public: '公开',
   private: '私有',
   advanced_settings: '高级设置',
+  enabled: '启用',
+  enabling: '启用中',
   disabled: '禁用',
+  disabling: '禁用中',
   select_event: '选择告警事件',
 
   // 临时把 task 的翻译放在这里
@@ -228,7 +237,9 @@ const zh_CN = {
   'task.tip.content': '如果你的角色是管理员，则可以在任意机器执行脚本；否则，只能对有管理权限的业务组下的机器执行脚本',
   'task.allOptionLabel': '全部任务',
 
+  'last.1.days': '最近 1 天',
   'last.7.days': '最近 7 天',
+  'last.14.days': '最近 14 天',
   'last.15.days': '最近 15 天',
   'last.30.days': '最近 30 天',
   'last.60.days': '最近 60 天',

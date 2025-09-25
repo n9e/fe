@@ -44,7 +44,7 @@ const ru_RU = {
   exit_full_screen: 'Выйти из полноэкранного режима',
   copyPanelTip: 'Диаграмма скопирована. Нажмите "Добавить диаграмму", чтобы вставить.',
   batch: {
-    import: 'Импорт панели JSON',
+    import: 'Импорт JSON панели Nightingale',
     label: 'Панель JSON',
     import_grafana: 'Импорт панели Grafana',
     import_grafana_tip: 'Поддерживается импорт панелей только из Prometheus типа источников данных, а также диаграммы и функции, поддерживаемые Nightingale <a>Отзывы</a>',

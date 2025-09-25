@@ -22,6 +22,8 @@ const ru_RU = {
   export: 'Экспорт',
   export_failed: 'Ошибка экспорта',
   prod: 'Тип мониторинга',
+  claimant: 'Класификатор',
+  shield: 'Щит',
   rule_prod: {
     firemap: 'Firemap',
     northstar: 'Northstar',
@@ -30,6 +32,18 @@ const ru_RU = {
     logging: 'Log',
     anomaly: 'Anomaly',
     loki: 'Loki',
+  },
+  delete_events: {
+    title: 'Очистка событий',
+    alert_message: 'Однажды удаленные события не могут быть восстановлены. Пожалуйста, будьте осторожны!',
+    severities: 'Фильтр по уровню',
+    timestamp: 'Фильтр по времени',
+    timestamp_options: {
+      '1': 'Более 1 месяца',
+      '3': 'Более 3 месяцев',
+      '6': 'Более 6 месяцев',
+      '12': 'Более 1 года',
+    },
   },
 };
 

@@ -43,7 +43,7 @@ const zh_HK = {
   exit_full_screen: '退出全屏',
   copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
   batch: {
-    import: '匯入儀表盤 JSON',
+    import: '導入夜鶯儀表盤 JSON',
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤',
     import_grafana_tip: '只支援導入 Prometheus 類型資料來源的儀表板，以及夜鶯支援的圖表類型和功能 <a>問題反饋</a>',

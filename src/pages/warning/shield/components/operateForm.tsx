@@ -239,7 +239,6 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               <Markdown content={t('tag.key.tip')} darkMode />
             </div>
           }
-          keyLabelTootipPlacement='right'
         />
       </Card>
       <Card title={t('mute_configs')}>
