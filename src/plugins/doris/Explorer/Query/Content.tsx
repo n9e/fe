@@ -22,11 +22,12 @@ import RawTable from '../components/RawTable';
 interface Props {
   fields: Field[];
   executeQuery: () => void;
+  setTotal?: (total: number) => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { fields, executeQuery } = props;
+  const { fields, executeQuery, setTotal } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
@@ -127,6 +128,12 @@ export default function index(props: Props) {
   >(service, {
     refreshDeps: [queryRefreshFlag, JSON.stringify(serviceParams)],
   });
+
+  useEffect(() => {
+    if (data?.total) {
+      setTotal?.(data?.total);
+    }
+  }, [data?.total]);
 
   useEffect(() => {
     if (refreshFlag) {

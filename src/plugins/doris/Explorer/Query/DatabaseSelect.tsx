@@ -10,10 +10,11 @@ interface Props {
   datasourceValue: number;
   value?: string;
   onChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
 export default function DatabaseSelect(props: Props) {
-  const { datasourceValue, value, onChange } = props;
+  const { datasourceValue, value, onChange, disabled } = props;
   const [databases, setDatabases] = useState<string[]>([]);
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function DatabaseSelect(props: Props) {
       })}
       value={value}
       onChange={onChange}
+      disabled={disabled}
     />
   );
 }

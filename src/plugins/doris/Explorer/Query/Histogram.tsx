@@ -158,7 +158,9 @@ function RenderRange({ snapRange }: { snapRange: { start?: number; end?: number 
   );
 }
 
-export default function Histogram() {
+export default function Histogram(props: { total: number }) {
+  const { total } = props;
+
   const [explorerSnapRange, setExplorerSnapRange] = useGlobalState('explorerSnapRange');
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
@@ -222,7 +224,7 @@ export default function Histogram() {
         {data && (
           <Space>
             <RenderRange snapRange={explorerSnapRange} />
-            {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue() }} />}
+            {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total }} />}
           </Space>
         )}
       </div>
