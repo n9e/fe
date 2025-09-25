@@ -11,10 +11,11 @@ interface Props {
   database?: string;
   value?: string;
   onChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
 export default function TableSelect(props: Props) {
-  const { datasourceValue, database, value, onChange } = props;
+  const { datasourceValue, database, value, onChange, disabled } = props;
   const [tables, setTables] = useState<string[]>([]);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function TableSelect(props: Props) {
       })}
       value={value}
       onChange={onChange}
+      disabled={disabled}
     />
   );
 }

@@ -8,10 +8,11 @@ interface Props {
   dateFields: Field[];
   value?: string;
   onChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
 export default function DateFieldSelect(props: Props) {
-  const { dateFields, value, onChange } = props;
+  const { dateFields, value, onChange, disabled } = props;
 
   return (
     <Select
@@ -23,6 +24,7 @@ export default function DateFieldSelect(props: Props) {
       })}
       value={value}
       onChange={onChange}
+      disabled={disabled}
     />
   );
 }
