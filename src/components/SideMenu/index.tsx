@@ -17,6 +17,8 @@ import { V8_BETA_14_TS } from '@/utils/constant';
 import { cn, getCurrentMenuList } from './utils';
 import SideMenuHeader from './Header';
 import MenuList from './MenuList';
+// @ts-ignore
+import QuickStart from './quickStart';
 import QuickMenu from './QuickMenu';
 import { MenuItem, DefaultLogos } from './types';
 import './menu.less';
@@ -64,7 +66,6 @@ const SideMenu = (props: SideMenuProps) => {
   const isCustomBg = sideMenuBgMode !== 'light';
   const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
   const [menus, setMenus] = useState<MenuItem[]>([]);
-
   const hideSideMenu = useMemo(() => {
     if (
       sessionStorage.getItem('menuHide') === '1' ||
@@ -261,7 +262,8 @@ const SideMenu = (props: SideMenuProps) => {
           </div>
         </div>
       </div>
-      <QuickMenu ref={quickMenuRef} menuList={menus} />
+
+      {IS_ENT ? <QuickStart ref={quickMenuRef} items={menus} /> : <QuickMenu ref={quickMenuRef} menuList={menus} />}
     </div>
   );
 };
