@@ -120,6 +120,7 @@ export default function Content() {
       !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token', '/alert-aggr-events'], location.pathname) &&
       !location.pathname.includes('/docs/') &&
       !location.pathname.includes('/settings/datasource/edit/') &&
+      !location.pathname.includes('/settings/infrastructure/add') &&
       !location.pathname.includes('/settings/source/')
     ) {
       if (profile?.roles.indexOf('Admin') === -1) {

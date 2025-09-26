@@ -18,7 +18,7 @@ import { cn, getCurrentMenuList } from './utils';
 import SideMenuHeader from './Header';
 import MenuList from './MenuList';
 // @ts-ignore
-import QuickStart from './quickStart';
+import QuickStart from 'plus:/components/quickStart';
 import QuickMenu from './QuickMenu';
 import { MenuItem, DefaultLogos } from './types';
 import './menu.less';
