@@ -40,7 +40,7 @@ interface IProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
   initialValues: IPanel;
-  variableConfig?: IVariable[];
+  // variableConfig?: IVariable[];
   id: string; // panel id
   dashboardId: string;
   time: IRawTimeRange;
@@ -49,13 +49,27 @@ interface IProps {
   onOK: (formData: any, mode: string) => void;
   onCancel?: () => void;
   dashboard: Dashboard;
+  editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
+  onEditModalVariablecontainerReady: () => void;
 }
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const formRef = useRef<any>();
-  const { panelWidth, mode, visible, setVisible, variableConfig, id, dashboardId, time, dashboard, timezone, setTimezone } = props;
+  const {
+    panelWidth,
+    mode,
+    visible,
+    setVisible,
+    // variableConfig,
+    id,
+    dashboardId,
+    time,
+    dashboard,
+    timezone,
+    setTimezone,
+  } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [range, setRange] = useState<IRawTimeRange>(time);
   const handleAddChart = async () => {
@@ -193,7 +207,7 @@ function index(props: IProps) {
         <FormCpt
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}
-          variableConfig={variableConfig}
+          // variableConfig={variableConfig}
           range={range}
           timezone={timezone}
           id={id}
@@ -201,6 +215,8 @@ function index(props: IProps) {
           key={initialValues.type} // 每次切换图表类型，都重新渲染
           dashboard={dashboard}
           panelWidth={panelWidth}
+          editModalVariablecontainerRef={props.editModalVariablecontainerRef}
+          onEditModalVariablecontainerReady={props.onEditModalVariablecontainerReady}
         />
       )}
     </Modal>
