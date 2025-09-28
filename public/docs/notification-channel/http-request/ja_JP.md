@@ -105,16 +105,17 @@ https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
 
 **説明**
 
-- JSON 形式（DingTalk、WeCom ボットでよく見られる）またはフォーム形式（application/x-www-form-urlencoded）で送信します。
-- リクエストボディ内で $event、$tpl、$params、$sendto などの変数を直接埋め込んで動的に置換できます。
-- $tpl は通常アラートテンプレートがレンダリングされた後のテキスト内容を表し、$sendto は通知対象者（電話番号、WeCom アカウントなど）を表すことができます。
+- JSON 形式（DingTalk、WeCom ボットでよく見られる）で送信します。
+- リクエストボディ内で `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}`、`{{$sendtos}}` などの変数を直接埋め込んで動的に置換できます。
+- `{{$tpl}}` はテンプレートレンダリング後のテキスト内容を表し、`{{$sendto}}` は単一の連絡方法（電話番号、WeCom アカウントなど）を表します。
+- 複数の連絡先に一度に @ する場合は、`{{$sendtos}}` を優先して使用し、補助関数と組み合わせます：`{{batchContactsAts $sendtos}}`（@ 付きテキストを生成）と `{{batchContactsJsonMarshal $sendtos}}`（JSON 配列を生成）。
 
 ## 3. 例：DingTalk ボットへの送信
 
-以下の例は、アラートメッセージを DingTalk グループボットに送信する設定方法を示しています。DingTalk ボットの access_token と特定の電話番号への @ 情報は、ルール設定を通じて $params 変数に渡され、その後 $params.access_token と $sendto 変数をリクエストボディで参照します。
+以下の例は、アラートメッセージを DingTalk グループボットに送信する方法を示しています。DingTalk ボットの `access_token` と @ する電話番号は、通知ルールで設定された後変数に注入されます：`{{$params.access_token}}` は認証用で、複数人に @ する場合は `{{$sendtos}}` を補助関数と組み合わせてリクエストボディで参照します。
 
-1. 変数設定   
-変数設定でパラメータ識別子 `access_token` と `ats` を追加します
+1. 変数設定  
+「変数設定」でパラメータ識別子 `access_token` と `bot_name` を追加し、「連絡方法」で通知を受け取る電話番号を選択します（複数選択可能）。送信時に `{{$sendtos}}` として注入されます。
 
 2. URL
 
@@ -154,4 +155,4 @@ https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
 - {{$params.access_token}} は実際の DingTalk グループボットの access_token に置き換えられます。
 - {{$params.ats}} は実際の DingTalk グループ内で @ する電話番号に置き換えられます。
 - {{$tpl.title}} はレンダリング後に送信される最終的なアラートメッセージのタイトルになります（例：「CPU 使用率がしきい値を超過」）。
-- {{$tpl.text}} はレンダリング後に送信される最終的なアラートメッセージのテキストになります（例：「CPU 使用率がしきい値を超過、発生時間：2024-01-01 12:00:00」）。
+- {{$tpl.content}} はレンダリング後に送信される最終的なアラートメッセージのテキストになります（例：「CPU 使用率がしきい値を超過、発生時間：2024-01-01 12:00:00」）。
