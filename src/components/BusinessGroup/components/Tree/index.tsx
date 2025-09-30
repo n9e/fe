@@ -135,7 +135,7 @@ const RenderTree = (props: {
                   );
                 })}
                 <div className='n9e-tree-node-title-content'>
-                  <span className='pr1 n9e-flex'>{item.title}</span>
+                  <span className='break-all'>{item.title}</span>
                   {hasChildren && (
                     <span
                       className='n9e-tree-node-icon'
