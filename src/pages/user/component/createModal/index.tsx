@@ -148,7 +148,7 @@ const CreateModal: React.FC<ModalProps> = (props: ModalProps) => {
         createBusinessTeam(params).then((res) => {
           message.success(t('common:success.add'));
           onClose('create');
-          onSearch(res);
+          onSearch?.(res);
         });
       }
 

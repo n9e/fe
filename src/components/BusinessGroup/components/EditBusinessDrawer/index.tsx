@@ -151,36 +151,36 @@ export default function index(props: Props) {
               display: 'inline',
             }}
           >
-            {teamInfo && teamInfo.name}
-            <EditOutlined
-              style={{
-                marginLeft: '8px',
-                fontSize: '14px',
-              }}
-              onClick={() => {
-                setAction(ActionType.EditBusiness);
-                setBusinessModalVisible(true);
-              }}
-            ></EditOutlined>
-            <DeleteOutlined
-              style={{
-                marginLeft: '8px',
-                fontSize: '14px',
-              }}
-              onClick={() => {
-                confirm({
-                  title: t('common:btn.delete'),
-                  onOk: () => {
-                    deleteBusinessTeam(teamId).then((_) => {
-                      message.success(t('common:success.delete'));
-                      handleClose('delete');
-                      onCloseDrawer();
-                    });
-                  },
-                  onCancel: () => {},
-                });
-              }}
-            />
+            <Space size={2}>
+              {teamInfo && teamInfo.name}
+              <Button
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setAction(ActionType.EditBusiness);
+                  setBusinessModalVisible(true);
+                }}
+                size='small'
+                type='text'
+              />
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  confirm({
+                    title: t('common:confirm.delete'),
+                    onOk: () => {
+                      deleteBusinessTeam(teamId).then((_) => {
+                        message.success(t('common:success.delete'));
+                        handleClose('delete');
+                        onCloseDrawer();
+                      });
+                    },
+                  });
+                }}
+                size='small'
+                type='text'
+                danger
+              />
+            </Space>
           </Col>
           <Col
             style={{
