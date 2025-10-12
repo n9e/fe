@@ -158,6 +158,7 @@ const ja_JP = {
   advanced_settings: '詳細設定',
   disabled: '無効',
   select_event: 'アラートイベントを選択',
+  click_to_view_doc: 'クリックしてドキュメントを表示します',
 
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',

@@ -29,9 +29,9 @@ export interface ITarget {
   __mode__: '__expr__' | '__query__';
   expr: string; // promQL
   legendFormat: string;
-  time?: IRawTimeRange; // 固定时间范围
+  time?: IRawTimeRange; // 固定时间范围，2025-10-20 废弃
   step?: number; // 2024-01-24 从固定 step 改成 min step (v7)
-  maxDataPoints?: number; // 2024-01-24 新增 maxDataPoints 用于计算默认的 step (v7)
+  maxDataPoints?: number; // 2024-01-24 新增 maxDataPoints 用于计算默认的 step (v7)，2025-10-20 废弃
   query?: {
     index: string;
     index_type: 'index' | 'index_pattern';
@@ -264,6 +264,8 @@ export interface IPanel {
   maxPerRow?: number;
   repeatPanelId?: string;
   scopedVars?: any;
+  maxDataPoints?: number; // 2025-10-20 新增
+  queryOptionsTime?: IRawTimeRange; // 2025-10-20 新增， queryOptionsTime 会覆盖 time
 }
 
 export interface IVariable {

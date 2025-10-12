@@ -7,7 +7,6 @@ import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { FONT_FAMILY } from '@/utils/constant';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
@@ -33,7 +32,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface Props {
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
   values: IPanel;
   series: any[];
@@ -41,12 +39,11 @@ interface Props {
 
 function index(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
-  const { themeMode, time, isPreview, values, series } = props;
+  const { themeMode, isPreview, values, series } = props;
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions, filterable, sortColumn, sortOrder } = custom || {};
   const linksRef = React.useRef<any>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [, setSeries] = useGlobalState('series');
   const [, setTableFields] = useGlobalState('tableFields');
   const { data, rowData, formattedData } = useMemo(() => {
@@ -165,7 +162,7 @@ function index(props: Props) {
           }
         }}
         onCellClicked={(cellEvent) => {
-          onCellClicked(cellEvent, { links: options.links, linksRef, dashboardMeta, time });
+          onCellClicked(cellEvent, { links: options.links, linksRef });
         }}
       />
       {_.isArray(_.compact(_.map(data, 'id'))) && _.compact(_.map(data, 'id')).length > 1 && (
@@ -184,7 +181,7 @@ function index(props: Props) {
           }}
         />
       )}
-      <Links ref={linksRef} links={options.links} time={time} />
+      <Links ref={linksRef} links={options.links} />
     </div>
   );
 }

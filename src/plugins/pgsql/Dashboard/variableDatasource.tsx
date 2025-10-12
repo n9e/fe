@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 
-import { Props } from '@/pages/dashboard/VariableConfig/datasource';
+import { Props } from '@/pages/dashboard/Variables/datasource';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
 import { getLogsQuery } from '../services';

@@ -1,8 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
-
 import { IOptions, IBarGaugeStyles } from '../../../../types';
 
 import LCDBar from './LCDBar';
@@ -14,7 +12,6 @@ interface Props {
   themeMode?: 'dark';
   minValue: number;
   maxValue: number;
-  time: IRawTimeRange;
   maxNameWidth: number;
   maxBarWidth: number;
 }

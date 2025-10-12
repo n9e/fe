@@ -157,6 +157,7 @@ const zh_HK = {
   advanced_settings: '高級設定',
   disabled: '禁用',
   select_event: '選擇告警事件',
+  click_to_view_doc: '點擊查看文檔',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

@@ -5,28 +5,23 @@ import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
-import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
+import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import TransformationsEditorNG from '../TransformationsEditorNG';
 import DatasourceSelect from './components/DatasourceSelect';
 import QueryBuilder from './QueryBuilder';
+import QueryOptions from './QueryOptions';
 
-export default function index({ panelWidth, chartForm, type, variableConfig, dashboardId, time }) {
+export default function index({ panelWidth, type, variablesWithOptions }) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
   const { datasourceList } = useContext(CommonStateContext);
   const cate = Form.useWatch('datasourceCate') || DatasourceCateEnum.prometheus;
   let datasourceValue = Form.useWatch('datasourceValue');
-  datasourceValue = variableConfig
-    ? replaceExpressionVars({
-        text: datasourceValue,
-        variables: variableConfig,
-        limit: variableConfig.length,
-        dashboardId,
-        datasourceList,
-      })
-    : datasourceValue;
+  datasourceValue = replaceDatasourceVariables(datasourceValue, {
+    datasourceList,
+  });
 
   return (
     <div>
@@ -44,14 +39,15 @@ export default function index({ panelWidth, chartForm, type, variableConfig, das
             {type === 'tableNG' && <Radio.Button value='transformNG'>{t('query.transform')} (beta)</Radio.Button>}
           </Radio.Group>
         )}
-        <DatasourceSelect dashboardId={dashboardId} chartForm={chartForm} variableConfig={variableConfig} />
+        <DatasourceSelect datasourceValue={datasourceValue} variablesWithOptions={variablesWithOptions} />
+        <QueryOptions panelWidth={panelWidth} />
       </Space>
       <div
         style={{
           display: mode === 'query' ? 'block' : 'none',
         }}
       >
-        <QueryBuilder panelWidth={panelWidth} cate={cate} datasourceValue={datasourceValue} variables={variableConfig} dashboardId={dashboardId} time={time} />
+        <QueryBuilder panelWidth={panelWidth} cate={cate} datasourceValue={datasourceValue} />
       </div>
       {mode === 'transform' && <OrganizeFields />}
       <div

@@ -157,6 +157,7 @@ const zh_CN = {
   advanced_settings: '高级设置',
   disabled: '禁用',
   select_event: '选择告警事件',
+  click_to_view_doc: '点击查看文档',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

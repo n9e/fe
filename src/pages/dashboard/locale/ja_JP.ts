@@ -98,8 +98,8 @@ const ja_JP = {
     definition_msg1: '変数定義を入力してください',
     definition_msg2: '変数定義は有効なJSONでなければなりません',
     reg: '正規表現',
-    reg_tip:
-      'オプション、オプションをフィルタリングするか値を抽出するために正規表現を使用できます。ここに記入するのは<a>正規表現リテラル</a>で、それはスラッシュで囲まれたパターンで構成されます',
+    reg_tip: 'オプションとして、正規表現でオプションをフィルタリングできます。以下は、スラッシュで囲まれたパターンで構成される、入力済みの<a>正規表現リテラル</a>です',
+    reg_tip2: 'オプションの一部を抽出したい場合は、<a>名前付きキャプチャグループを使用して表示テキストと値を分離できます</a>',
     multi: '複数選択',
     allOption: '全選択を含む',
     allValue: 'カスタム全選択値',
@@ -556,26 +556,40 @@ const ja_JP = {
   },
   query: {
     title: 'クエリ条件',
+    add_query_btn: 'クエリ条件を追加',
+    add_expression_btn: '式を追加',
     transform: 'データ変換',
     datasource_placeholder: 'データソースを選択してください',
     datasource_msg: 'データソースを選択してください',
     time: '時間選択',
     time_tip: '時間範囲を指定できます。デフォルトはダッシュボード全体の時間範囲です',
     prometheus: {
+      expression: 'PromQL 式',
       maxDataPoints: {
         tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
         tip_2: '最大データポイント数、計算式: step = (end - start) / maxDataPoints',
       },
       minStep: {
+        label: '最小ステップ',
         tip: '最小ステップ、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: '計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
       },
+      instant: {
+        label: 'インスタントクエリ',
+        tip: 'インスタントクエリは、現在の時間点でのデータを取得します。時間範囲全体のデータを取得するには、このオプションをオフにしてください',
+      },
     },
     expression_placeholder: '1つ以上のクエリに対して数学演算を行います。クエリを${refId}で参照し、例えば$A、$B、$Cなどです。2つのスカラ値の合計:$A + $B > 10',
+    legend: '凡例 (Legend)',
     legendTip: '凡例名のオーバーライドまたはテンプレート、例えば{{hostname}}はhostnameラベルの値に置き換えられます',
     legendTip2: '凡例名のオーバーライドまたはテンプレート、例えば{{hostname}}はhostnameラベルの値に置き換えられます、現在は時系列データのみで有効です',
+    options: 'クエリオプション',
+    options_max_data_points: '最大データポイント数',
+    options_max_data_points_tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
+    options_time: '時間',
+    options_time_tip: 'クエリのカスタム時間範囲を指定できます。空白のままにすると、ダッシュボードの時間範囲が使用されます',
   },
   detail: {
     datasource_empty: 'データソース情報がありません。まずデータソースを設定してください',

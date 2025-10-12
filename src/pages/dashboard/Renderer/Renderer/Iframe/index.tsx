@@ -1,22 +1,20 @@
 import React from 'react';
+
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { IPanel, IIframeStyles } from '../../../types';
-import { replaceFieldWithVariable, getOptionsList } from '../../../VariableConfig/constant';
-import { useGlobalState } from '../../../globalState';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
 
 interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
-  time: IRawTimeRange;
 }
 
 export default function index(props: IProps) {
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const { values, time } = props;
+  const { values } = props;
   const { custom } = values;
   const { src } = custom as IIframeStyles;
-  const content = replaceFieldWithVariable(src, dashboardMeta.dashboardId, getOptionsList({ ...dashboardMeta, time }));
+  const content = replaceTemplateVariables(src);
 
   return (
     <iframe
