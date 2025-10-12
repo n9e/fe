@@ -15,12 +15,13 @@
  *
  */
 import React from 'react';
+
 import GraphStyles from './GraphStyles';
 
-export default function Text({ variableConfigWithOptions }) {
+export default function Text() {
   return (
     <>
-      <GraphStyles variableConfigWithOptions={variableConfigWithOptions} />
+      <GraphStyles />
     </>
   );
 }

@@ -6,12 +6,12 @@ import moment from 'moment';
 import _ from 'lodash';
 
 import { postAnnotations } from '@/services/dashboardV2';
+import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import FormModal, { Values } from './FormModal';
 
 interface Props {
   uplotRef: React.MutableRefObject<uPlot>;
-  dashboardID: number;
   panelID: string;
   timeZone?: string;
   closeOverlay: () => void;
@@ -21,7 +21,8 @@ interface Props {
 
 export default function AddButton(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { uplotRef, dashboardID, timeZone, closeOverlay, setAnnotationSettingUp, onOk } = props;
+  const [dashboardMeta] = useGlobalState('dashboardMeta');
+  const { uplotRef, timeZone, closeOverlay, setAnnotationSettingUp, onOk } = props;
   const panelID = _.replace(props.panelID, /(__view)+$/, ''); // __view 结尾是用于区分预览视图，这里需要去掉，以便于与后端交互时使用正确的 panelID
   const [visible, setVisible] = React.useState(false);
   const [initialValues, setInitialValues] = React.useState({} as Values);
@@ -32,7 +33,7 @@ export default function AddButton(props: Props) {
       if (cursorLeft) {
         const time = moment.unix(u.posToVal(cursorLeft, 'x')).unix();
         setInitialValues({
-          dashboard_id: dashboardID,
+          dashboard_id: _.toNumber(dashboardMeta.dashboardId),
           panel_id: panelID,
           time_start: time,
           time_end: time,
@@ -63,7 +64,7 @@ export default function AddButton(props: Props) {
               const timeStart = moment.unix(u.posToVal(oldCursorLeft, 'x')).unix();
               const timeEnd = moment.unix(u.posToVal(curCursorLeft, 'x')).unix();
               setInitialValues({
-                dashboard_id: dashboardID,
+                dashboard_id: _.toNumber(dashboardMeta.dashboardId),
                 panel_id: panelID,
                 time_start: timeStart,
                 time_end: timeEnd,

@@ -24,24 +24,24 @@ import { useSize } from 'ahooks';
 import { useAntdResizableHeader } from '@fc-components/use-antd-resizable-header';
 import '@fc-components/use-antd-resizable-header/dist/style.css';
 import { useTranslation } from 'react-i18next';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import moment from 'moment';
+
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 import localeCompare from '../../utils/localeCompare';
 import formatToTable from '../../utils/formatToTable';
 import { useGlobalState } from '../../../globalState';
-import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { transformColumns, downloadCsv, useDeepCompareWithRef, isRawData, ajustFiledValue } from './utils';
 import Cell from './Cell';
 import './style.less';
-import moment from 'moment';
 
 interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
 }
 
@@ -89,10 +89,9 @@ const getColor = (color, colorMode, themeMode) => {
 
 function TableCpt(props: IProps, ref: any) {
   const { t } = useTranslation('dashboard');
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
-  const { values, themeMode, time, isPreview, series } = props;
+  const { values, themeMode, isPreview, series } = props;
   const { custom, options, overrides } = values;
   const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value', tableLayout = 'fixed', pageLimit = 500 } = custom;
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
@@ -205,7 +204,7 @@ function TableCpt(props: IProps, ref: any) {
         sortOrder: getSortOrder('name', sortObj),
         render: (text, record) => {
           const textObj = getMappedTextObj(text, options?.valueMappings);
-          return <Cell {...textObj} panel={values} time={time} record={record} />;
+          return <Cell {...textObj} panel={values} record={record} />;
         },
         ...getColumnSearchProps(['name']),
       },
@@ -228,7 +227,7 @@ function TableCpt(props: IProps, ref: any) {
             textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
           }
           const colorObj = getColor(textObj.color, colorMode, themeMode);
-          return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
+          return <Cell {...textObj} style={colorObj} panel={values} record={record} />;
         },
         ...getColumnSearchProps(['text']),
       },
@@ -245,7 +244,7 @@ function TableCpt(props: IProps, ref: any) {
           sortOrder: getSortOrder('__time__', sortObj),
           render: (text, record) => {
             const textObj = getMappedTextObj(moment.unix(text).format('YYYY-MM-DD HH:mm:ss'), options?.valueMappings);
-            return <Cell {...textObj} panel={values} time={time} record={record} />;
+            return <Cell {...textObj} panel={values} record={record} />;
           },
           ...getColumnSearchProps(['__time__']),
         },
@@ -281,7 +280,7 @@ function TableCpt(props: IProps, ref: any) {
                 textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
               }
               const colorObj = getColor(textObj.color, colorMode, themeMode);
-              return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
+              return <Cell {...textObj} style={colorObj} panel={values} record={record} />;
             }
             let text = record.metric?.[key] || record.fields?.[key]; // TODO metric or fields
             if (key === '__time__') {
@@ -292,7 +291,7 @@ function TableCpt(props: IProps, ref: any) {
             if (!_.isEmpty(overrideProps)) {
               textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings, undefined, undefined, false);
             }
-            return <Cell {...textObj} panel={values} time={time} record={record} />;
+            return <Cell {...textObj} panel={values} record={record} />;
           },
           ...getColumnSearchProps(['metric', key]),
         };
@@ -324,7 +323,7 @@ function TableCpt(props: IProps, ref: any) {
               text = moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
             }
             const textObj = getMappedTextObj(text, options?.valueMappings);
-            return <Cell {...textObj} panel={values} time={time} record={record} />;
+            return <Cell {...textObj} panel={values} record={record} />;
           },
           ...getColumnSearchProps([aggrDimension]),
         };
@@ -354,7 +353,7 @@ function TableCpt(props: IProps, ref: any) {
               textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
             }
             const colorObj = getColor(textObj.color, colorMode, themeMode);
-            return <Cell {...textObj} style={colorObj} panel={values} time={time} record={record} />;
+            return <Cell {...textObj} style={colorObj} panel={values} record={record} />;
           },
           ...getColumnSearchProps([name, 'text']),
         });
@@ -380,7 +379,13 @@ function TableCpt(props: IProps, ref: any) {
                   });
                 }
                 return (
-                  <a key={idx} href={getDetailUrl(link.url, data, dashboardMeta, time)} target='_blank'>
+                  <a
+                    key={idx}
+                    href={replaceTemplateVariables(link.url, {
+                      scopedVars: data,
+                    })}
+                    target='_blank'
+                  >
                     {link.title}
                   </a>
                 );

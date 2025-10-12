@@ -26,6 +26,7 @@ import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
 import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
 
+import { useParamsAiAction } from '@/utils/useHook';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
@@ -36,9 +37,10 @@ import { CommonStateContext, basePrefix } from '@/App';
 import MigrationModal from '@/pages/help/migrate/MigrationModal';
 import RouterPrompt from '@/components/RouterPrompt';
 import { adjustURL } from '@/pages/embeddedDashboards/utils';
+import initializeVariablesValue from '@/pages/dashboard/Variables/utils/initializeVariablesValue';
+import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import VariableConfig, { IVariable } from '../VariableConfig';
-import { replaceExpressionVars, getOptionsList } from '../VariableConfig/constant';
+import Variables, { IVariable } from '../Variables';
 import { ILink, IDashboardConfig } from '../types';
 import Panels from '../Panels';
 import Title from './Title';
@@ -48,9 +50,8 @@ import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPane
 import { useGlobalState } from '../globalState';
 import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
-import ajustInitialValues from '../Renderer/utils/ajustInitialValues';
+import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
 import './style.less';
-import { useParamsAiAction } from '@/utils/useHook';
 
 interface URLParam {
   id: string;
@@ -87,20 +88,18 @@ export default function DetailV2(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
-  const { datasourceList, dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
+  const { dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode, datasourceList } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
-  const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
-  const [paramsAiAction, setParamsAiAction] = useParamsAiAction();
+  const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
+  const [panelClipboard] = useGlobalState('panelClipboard');
+  const [, setParamsAiAction] = useParamsAiAction();
   let { id } = useParams<URLParam>();
   const query = queryString.parse(location.search);
   if (isBuiltin) {
     id = builtinParamsToID(query);
   }
-  const refreshRef = useRef<{ closeRefresh: Function }>();
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
-  const [variableConfig, setVariableConfig] = useState<IVariable[]>();
-  const [variableConfigWithOptions, setVariableConfigWithOptions] = useState<IVariable[]>();
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<any[]>([]);
   const [annotations, setAnnotations] = useState<any[]>([]);
@@ -117,10 +116,10 @@ export default function DetailV2(props: IProps) {
   });
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
-  const [variableConfigRefreshFlag, setVariableConfigRefreshFlag] = useState<string>(_.uniqueId('variableConfigRefreshFlag_'));
   const [allowedLeave, setAllowedLeave] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const editModalVariablecontainerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
   const routerPromptRef = useRef<any>();
   const refresh = async (cbk?: () => void) => {
@@ -133,6 +132,7 @@ export default function DetailV2(props: IProps) {
       builtinParams,
     })
       .then((res) => {
+        const dashboardId = res.id;
         updateAtRef.current = res.update_at;
         let configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
         // 仪表盘迁移
@@ -145,6 +145,11 @@ export default function DetailV2(props: IProps) {
         }
         setDashboardMeta({
           ...(dashboardMeta || {}),
+          dashboardId: _.toString(dashboardId), // TODO 为什么要转字符串？
+          id: dashboardId,
+          group_id: res.group_id,
+          public: res.public,
+          public_cate: res.public_cate,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
@@ -163,11 +168,13 @@ export default function DetailV2(props: IProps) {
                 ...configs,
                 var: [],
               };
-          setVariableConfig(
-            _.map(variableConfig.var, (item) => {
-              return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
-            }) as IVariable[],
-          );
+          const currentVariables = _.map(variableConfig.var, (item) => {
+            return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
+          }) as IVariable[];
+          const normalizedVariables = initializeVariablesValue(currentVariables, query, {
+            dashboardId,
+          });
+          setVariablesWithOptions(normalizedVariables);
           setDashboardLinks(configs.links);
           if (cbk) {
             cbk();
@@ -190,11 +197,13 @@ export default function DetailV2(props: IProps) {
       if (isAuthorized) {
         setAllowedLeave(false);
       }
-      setDashboardMeta({
-        ...(dashboardMeta || {}),
-        graphTooltip: configs.graphTooltip,
-        graphZoom: configs.graphZoom,
-      });
+      if (configs.graphTooltip || configs.graphZoom) {
+        setDashboardMeta({
+          ...(dashboardMeta || {}),
+          graphTooltip: configs.graphTooltip,
+          graphZoom: configs.graphZoom,
+        });
+      }
       setDashboard({
         ...dashboard,
         name: updateData.name,
@@ -209,32 +218,20 @@ export default function DetailV2(props: IProps) {
       });
     }
   };
-  const handleVariableChange = (value, b, valueWithOptions) => {
+  const handleVariableChange = (newValue) => {
     const dashboardConfigs: any = dashboard.configs;
-    dashboardConfigs.var = value;
+    dashboardConfigs.var = newValue;
     // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
     if (dashboardSaveMode === 'manual') {
-      setVariableConfig(value);
+      // setVariablesWithOptions(newValue);
     }
-    // 更新变量配置
-    b &&
-      handleUpdateDashboardConfigs(dashboard.id, {
-        ...dashboard,
-        configs: JSON.stringify(dashboardConfigs),
-      });
-    // 更新变量配置状态
-    if (valueWithOptions) {
-      setVariableConfigWithOptions(valueWithOptions);
-      setPanels(processRepeats(panels, valueWithOptions));
-      setDashboardMeta({
-        ...(dashboardMeta || {}),
-        dashboardId: _.toString(id),
-        variableConfigWithOptions: valueWithOptions,
-      });
-    }
-  };
-  const stopAutoRefresh = () => {
-    refreshRef.current?.closeRefresh();
+    // 触发 dashboard configs 的更新
+    handleUpdateDashboardConfigs(dashboard.id, {
+      ...dashboard,
+      configs: JSON.stringify(dashboardConfigs),
+    });
+    // 变量变更后，重新执行面板的 repeats 逻辑
+    setPanels(processRepeats(panels, newValue));
   };
 
   useEffect(() => {
@@ -274,11 +271,10 @@ export default function DetailV2(props: IProps) {
   useEffect(() => {
     // 更新全局状态
     const obj = {};
-    _.forEach(variableConfigWithOptions, (item) => {
+    _.forEach(variablesWithOptions, (item) => {
       obj[item.name] = _.isArray(item.value) ? item.value : [item.value];
     });
     const parsedRange = parseRange(range);
-    // console.log('obj', obj);
     setParamsAiAction({
       page: 'dashboards',
       dashboard: {
@@ -288,7 +284,7 @@ export default function DetailV2(props: IProps) {
         var: obj,
       },
     });
-  }, [JSON.stringify(_.map(variableConfigWithOptions, _.pick(['name', 'value']))), JSON.stringify(range)]);
+  }, [JSON.stringify(_.map(variablesWithOptions, _.pick(['name', 'value']))), JSON.stringify(range)]);
 
   return (
     <PageLayout customArea={<div />}>
@@ -361,7 +357,7 @@ export default function DetailV2(props: IProps) {
                       message.error(t('detail.noPanelToPaste'));
                     }
                   } else {
-                    setEditorData(ajustInitialValues(type, groupedDatasourceList, panels, variableConfig));
+                    setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
                   }
                 }}
                 routerPromptRef={routerPromptRef}
@@ -372,21 +368,7 @@ export default function DetailV2(props: IProps) {
                 </div>
               )}
               {dashboard.configs?.mode !== 'iframe' && (
-                <div className='dashboard-detail-content-header'>
-                  <div className='variable-area'>
-                    {variableConfig && (
-                      <VariableConfig
-                        isPreview={!isAuthorized}
-                        onChange={handleVariableChange}
-                        value={variableConfig}
-                        range={range}
-                        id={id}
-                        dashboard={dashboard}
-                        onOpenFire={stopAutoRefresh}
-                      />
-                    )}
-                  </div>
-                </div>
+                <Variables editable={editable && isAuthorized} queryParams={query} onChange={handleVariableChange} editModalVariablecontainerRef={editModalVariablecontainerRef} />
               )}
             </div>
           </Affix>
@@ -409,15 +391,8 @@ export default function DetailV2(props: IProps) {
                   setTimezone(newTimezone);
                   window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
                 }}
-                variableConfig={variableConfig}
-                variableConfigWithOptions={variableConfigWithOptions}
                 onShareClick={(panel) => {
-                  if (!variableConfigWithOptions) return;
-                  const curDatasourceValue = replaceExpressionVars({
-                    text: panel.datasourceValue,
-                    variables: variableConfigWithOptions,
-                    limit: variableConfigWithOptions.length,
-                    dashboardId: id,
+                  const curDatasourceValue = replaceDatasourceVariables(panel.datasourceValue, {
                     datasourceList,
                   });
                   const serielData = {
@@ -427,18 +402,7 @@ export default function DetailV2(props: IProps) {
                       // @ts-ignore
                       datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
                       targets: _.map(panel.targets, (target) => {
-                        const fullVars = getOptionsList({
-                          variableConfigWithOptions: variableConfigWithOptions,
-                          time: range,
-                        });
-                        const realExpr = variableConfigWithOptions
-                          ? replaceExpressionVars({
-                              text: target.expr,
-                              variables: fullVars,
-                              limit: fullVars.length,
-                              dashboardId: id,
-                            })
-                          : target.expr;
+                        const realExpr = replaceTemplateVariables(target.expr);
                         return {
                           ...target,
                           expr: realExpr,
@@ -460,8 +424,8 @@ export default function DetailV2(props: IProps) {
                   updateAtRef.current = res.update_at;
                   refresh();
                 }}
-                setVariableConfigRefreshFlag={setVariableConfigRefreshFlag}
                 setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}
+                editModalVariablecontainerRef={editModalVariablecontainerRef}
               />
             </>
           ) : (
@@ -478,9 +442,7 @@ export default function DetailV2(props: IProps) {
             visible,
           });
         }}
-        variableConfig={variableConfig}
         id={editorData.id}
-        dashboardId={id}
         time={range}
         timezone={timezone}
         setTimezone={(newTimezone) => {
@@ -499,7 +461,7 @@ export default function DetailV2(props: IProps) {
             configs: panelsMergeToConfigs(dashboard.configs, newPanels),
           });
         }}
-        dashboard={dashboard}
+        editModalVariablecontainerRef={editModalVariablecontainerRef}
       />
       {/*迁移*/}
       <Modal

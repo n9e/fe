@@ -4,16 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Space } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
 import useOnClickOutside from '@/components/useOnClickOutside';
-import { useGlobalState } from '@/pages/dashboard/globalState';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions } from '../../../types';
-import interpolateTemplate from '../../utils/interpolateTemplate';
 
 interface Props {
   links: IOptions['links'];
-  time: IRawTimeRange;
 }
 
 export function onCellClicked(
@@ -21,18 +18,9 @@ export function onCellClicked(
   {
     links,
     linksRef,
-    dashboardMeta,
-    time,
   }: {
     links: IOptions['links'];
     linksRef: React.RefObject<any>;
-    dashboardMeta: {
-      dashboardId: string;
-      variableConfigWithOptions: any;
-      graphTooltip: string;
-      graphZoom: string;
-    };
-    time: IRawTimeRange;
   },
 ) {
   if (_.isEmpty(links)) return;
@@ -46,7 +34,9 @@ export function onCellClicked(
 
   if (links?.length === 1) {
     const link = links[0];
-    const interpolatedUrl = interpolateTemplate(link.url, data, { dashboardMeta, time });
+    const interpolatedUrl = replaceTemplateVariables(link.url, {
+      scopedVars: data,
+    });
     window.open(interpolatedUrl, link.targetBlank ? '_blank' : '_self');
   } else {
     const event = cellEvent.event as any;
@@ -59,8 +49,7 @@ export function onCellClicked(
 
 function Links(props: Props, ref) {
   const { t } = useTranslation('dashboard');
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const { links, time } = props;
+  const { links } = props;
   const [visible, setVisible] = useState(false);
   const [rowDataItem, setRowDataItem] = useState<{
     [key: string]: string | number | null;
@@ -103,7 +92,9 @@ function Links(props: Props, ref) {
       <div className='p-2'>{t('panel.options.links.label')}</div>
       <div>
         {_.map(links, (link, index) => {
-          const interpolatedUrl = interpolateTemplate(link.url, rowDataItem, { dashboardMeta, time });
+          const interpolatedUrl = replaceTemplateVariables(link.url, {
+            scopedVars: rowDataItem,
+          });
           return (
             <div key={index} className='py-1.5 px-2 n9e-dashboard-panel-table-ng-links-item'>
               <a href={interpolatedUrl} target={link.targetBlank ? '_blank' : '_self'} rel='noopener noreferrer'>

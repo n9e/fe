@@ -18,7 +18,7 @@ import React, { useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
 import { corelib, extend, Runtime } from '@antv/g2';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../utils/valueFormatter';
@@ -31,7 +31,6 @@ interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
 }
 

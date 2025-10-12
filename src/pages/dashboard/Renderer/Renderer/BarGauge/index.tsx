@@ -19,7 +19,6 @@ import _ from 'lodash';
 import { useSize } from 'ahooks';
 
 import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
@@ -35,14 +34,13 @@ interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
 }
 
 const NAME_VALUE_SPACE = 10;
 
 export default function BarGauge(props: IProps) {
-  const { values, series, themeMode, time, isPreview } = props;
+  const { values, series, themeMode, isPreview } = props;
   const { custom, options } = values;
   const { displayMode = 'basic', calc, sortOrder = 'desc', valueField = 'Value', topn, combine_other, otherPosition = 'none' } = custom;
   const containerRef = useRef(null);
@@ -164,7 +162,6 @@ export default function BarGauge(props: IProps) {
             themeMode={themeMode}
             minValue={_.floor(minValue)}
             maxValue={_.ceil(maxValue)}
-            time={time}
             maxNameWidth={maxNameWidth}
             maxBarWidth={containerSize.width - maxNameWidth - NAME_VALUE_SPACE}
           />
@@ -180,7 +177,6 @@ export default function BarGauge(props: IProps) {
                   themeMode={themeMode}
                   minValue={minValue}
                   maxValue={maxValue}
-                  time={time}
                   maxNameWidth={maxNameWidth}
                 />
               );

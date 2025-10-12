@@ -8,21 +8,18 @@ import { fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
 import { flattenHits } from '@/pages/explorer/Elasticsearch/utils';
 import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+import replaceTemplateVariables, { IVariable } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { ITarget } from '../../../types';
-import { IVariable } from '../../../VariableConfig/definition';
-import { replaceExpressionVars } from '../../../VariableConfig/constant';
 import { getSeriesQuery, getLogsQuery } from './queryBuilder';
 import { processResponseToSeries } from './processResponse';
 import { normalizeInterval } from './utils';
 
 interface IOptions {
-  dashboardId: string;
   datasourceValue: number;
   id?: string;
   time: IRawTimeRange;
   targets: ITarget[];
-  variableConfig?: IVariable[];
   inspect?: boolean;
 }
 
@@ -43,7 +40,7 @@ interface Result {
 }
 
 export default async function elasticSearchQuery(options: IOptions): Promise<Result> {
-  const { id, dashboardId, time, targets, variableConfig, datasourceValue } = options;
+  const { id, time, targets, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).valueOf();
@@ -75,14 +72,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
         end = moment(parsedRange.end).valueOf();
       }
       const query: any = target.query || {};
-      const filter = variableConfig
-        ? replaceExpressionVars({
-            text: query.filter,
-            variables: variableConfig,
-            limit: variableConfig.length,
-            dashboardId,
-          })
-        : query.filter;
+      const filter = replaceTemplateVariables(query.filter);
       if (target.__mode__ === '__expr__') {
         exps.push({
           ref: target.refId,

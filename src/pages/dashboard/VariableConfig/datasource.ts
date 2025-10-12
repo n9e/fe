@@ -21,8 +21,8 @@ export interface Props<QueryType = any> {
 export default async function datasource(props: Props) {
   const { datasourceCate } = props;
   if (datasourceCate === DatasourceCateEnum.ck) {
-    return clickHouse(props);
+    return clickHouse(props as any);
   }
 
-  return await variableDatasourcePro(props);
+  return await variableDatasourcePro(props as any);
 }

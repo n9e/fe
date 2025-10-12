@@ -158,6 +158,7 @@ const en_US = {
   advanced_settings: 'Advanced settings',
   disabled: 'Disabled',
   select_event: 'Select an alert event',
+  click_to_view_doc: 'Click to view documentation',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

@@ -86,4 +86,4 @@ export const AddPanelSvg = () => (
   </svg>
 );
 export const AddPanelIcon = (props) => <Icon component={AddPanelSvg} {...props} className='anticon-addpanel' />;
-export const DASHBOARD_VERSION = '3.1.0';
+export const DASHBOARD_VERSION = '3.2.0';

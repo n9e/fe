@@ -27,14 +27,16 @@ import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
 import '@fc-plot/ts-graph/dist/index.css';
+
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { IPanel } from '../../../types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
 import getSerieName from '../../utils/getSerieName';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
-import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
 import './style.less';
 
@@ -150,8 +152,10 @@ export default function index(props: IProps) {
   let _tableHeight = hasLegend ? `${heightInPercentage}%` : '0px';
 
   const detailFormatter = (data: any) => {
-    if (detailUrl && time) {
-      return getDetailUrl(detailUrl, data, dashboardMeta, time);
+    if (detailUrl) {
+      return replaceTemplateVariables(detailUrl, {
+        scopedVars: data,
+      });
     }
     return;
   };

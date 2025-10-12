@@ -5,23 +5,19 @@ import i18next from 'i18next';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { fetchHistoryRangeBatch, fetchHistoryInstantBatch, fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
 import { alphabet, N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { ITarget } from '../../types';
 import { getDefaultStepByTime } from '../../utils';
-import { IVariable } from '../../VariableConfig/definition';
-import { getOptionsList } from '../../VariableConfig/constant';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
-import replaceFieldWithVariable from '../utils/replaceFieldWithVariable';
 import { completeBreakpoints, getSerieName } from './utils';
 
 interface IOptions {
   panelWidth?: number; // 面板宽度
   id?: string; // panelId
-  dashboardId: string;
   datasourceValue: number;
   time: IRawTimeRange;
   targets: ITarget[];
-  variableConfig?: IVariable[];
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
@@ -61,7 +57,7 @@ interface Result {
 }
 
 export default async function prometheusQuery(options: IOptions): Promise<Result> {
-  const { panelWidth, dashboardId, id, time, targets, variableConfig, spanNulls, scopedVars, type, datasourceValue } = options;
+  const { panelWidth, id, time, targets, spanNulls, scopedVars, type, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   const series: any[] = [];
@@ -87,29 +83,17 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       }
       const _step = getRealStep(time, target, panelWidth);
 
-      // TODO: 消除毛刺？
-      // start = start - (start % _step!);
-      // end = end - (end % _step!);
-
       if (target.__mode__ === '__expr__') {
         exps.push({
           ref: target.refId,
           exp: target.expr,
         });
       } else {
-        const realExpr = variableConfig
-          ? replaceFieldWithVariable(
-              dashboardId,
-              target.expr,
-              getOptionsList({
-                variableConfigWithOptions: variableConfig,
-                time: target.time ? target.time : time,
-                step: _step,
-                panelWidth,
-              }),
-              scopedVars,
-            )
-          : target.expr;
+        const realExpr = replaceTemplateVariables(target.expr, {
+          range: target.time,
+          step: _step,
+          scopedVars,
+        });
         if (realExpr) {
           if (target.instant) {
             batchInstantParams.push({
