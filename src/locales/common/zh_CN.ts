@@ -169,6 +169,7 @@ const zh_CN = {
   disabled: '禁用',
   disabling: '禁用中',
   select_event: '选择告警事件',
+  click_to_view_doc: '点击查看文档',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

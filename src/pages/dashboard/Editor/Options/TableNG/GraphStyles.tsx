@@ -7,7 +7,7 @@ import { useGlobalState } from '../../../globalState';
 import { Panel } from '../../Components/Collapse';
 import CellOptions from './CellOptions';
 
-export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
+export default function GraphStyles() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [tableFields] = useGlobalState('tableFields');

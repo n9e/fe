@@ -1,18 +1,17 @@
 import _ from 'lodash';
 import moment from 'moment';
+
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
-import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
-import replaceFieldWithVariable from '@/pages/dashboard/Renderer/utils/replaceFieldWithVariable';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { getDsQuery2, getLogsQuery } from '../services';
 
 interface IOptions {
   id?: string; // panelId
-  dashboardId: string;
   datasourceValue: number;
   time: IRawTimeRange;
   targets: any[];
-  variableConfig?: IVariable[];
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
@@ -24,7 +23,7 @@ interface Result {
 }
 
 export default async function mysqlQuery(options: IOptions): Promise<Result> {
-  const { dashboardId, time, targets, variableConfig, datasourceValue } = options;
+  const { time, targets, datasourceValue } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -42,7 +41,7 @@ export default async function mysqlQuery(options: IOptions): Promise<Result> {
       }
       const query: any = target.query || {};
       if (!query.query) return;
-      const queryStr = variableConfig ? replaceFieldWithVariable(dashboardId, query.query, variableConfig) : query.query;
+      const queryStr = replaceTemplateVariables(query.query);
       const mode = query.mode;
       if (target.__mode__ === '__expr__') {
         exps.push({

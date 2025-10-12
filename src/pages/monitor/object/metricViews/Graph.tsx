@@ -404,7 +404,7 @@ export default function Graph(props: IProps) {
         {chartType === 'line' && <Timeseries inDashboard={false} values={lineGraphProps as any} series={series} time={range} themeMode={darkMode ? 'dark' : undefined} />}
         {chartType === 'hexbin' && (
           <div style={{ padding: '20px 0 0 0', height: highLevelConfig.chartheight }}>
-            <Hexbin values={hexbinGraphProps as any} series={series} time={range} />
+            <Hexbin values={hexbinGraphProps as any} series={series} />
           </div>
         )}
       </div>

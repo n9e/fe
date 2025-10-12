@@ -4,8 +4,6 @@ import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
-
 import { IPanel } from '../../../../../types';
 import { DataItem } from '../../utils/getLegendData';
 import NameWithTooltip from '../NameWithTooltip';
@@ -14,7 +12,6 @@ import Link from './Link';
 
 interface Props {
   panel: IPanel;
-  range?: IRawTimeRange;
   data: DataItem[];
   legendColumns?: string[];
   onRowClick: (record: DataItem) => void;
@@ -22,7 +19,7 @@ interface Props {
 
 export default function LegendTable(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { panel, range, data, legendColumns, onRowClick } = props;
+  const { panel, data, legendColumns, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
@@ -43,7 +40,7 @@ export default function LegendTable(props: Props) {
                 <span>{text}</span>
               </div>
             </NameWithTooltip>
-            <Link data={record} range={range} name={detailName} url={detailUrl} />
+            <Link data={record} name={detailName} url={detailUrl} />
           </div>
         );
       },

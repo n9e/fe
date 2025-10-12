@@ -170,6 +170,7 @@ const en_US = {
   disabled: 'Disabled',
   disabling: 'Disabling',
   select_event: 'Select an alert event',
+  click_to_view_doc: 'Click to view documentation',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

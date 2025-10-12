@@ -29,7 +29,6 @@ import './style.less';
 export { getDataFrameAndBaseSeries };
 
 interface Props {
-  dashboardID: number;
   id: string;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
@@ -56,7 +55,6 @@ export default function index(props: Props) {
   const history = useHistory();
   const location = useLocation();
   const {
-    dashboardID,
     frames,
     baseSeries,
     darkMode,
@@ -108,7 +106,6 @@ export default function index(props: Props) {
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
             ReactDOM.render(
               <AddAnnotationButton
-                dashboardID={dashboardID}
                 panelID={id}
                 timeZone={timezone}
                 closeOverlay={closeOverlay}

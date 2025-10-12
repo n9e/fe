@@ -7,7 +7,7 @@ import { VariableQuerybuilderProps } from '@/pages/dashboard/types';
 
 import { NAME_SPACE } from '../constants';
 
-export default function VariableQuerybuilder(props: VariableQuerybuilderProps) {
+export default function VariableQuerybuilder() {
   const { t } = useTranslation(NAME_SPACE);
 
   return (

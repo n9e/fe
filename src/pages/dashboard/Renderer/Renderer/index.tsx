@@ -24,9 +24,9 @@ import { CloseOutlined } from '@ant-design/icons';
 
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
+import { useGlobalState } from '@/pages/dashboard/globalState';
+import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { IVariable } from '../../VariableConfig/definition';
 import useQuery from '../datasource/useQuery';
 import { IPanel } from '../../types';
 import Main from './Main';
@@ -37,15 +37,12 @@ export interface IProps {
   panelWidth?: number; // 面板宽度
   datasourceValue?: number; // 全局数据源，如 values.datasourceValue 未设置则用全局数据源
   themeMode?: 'dark';
-  dashboardId: string; // 仪表盘 ID 或者 ident
-  dashboardID: number; // 仪表盘 ID
   id: string;
   time: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
   timezone?: string; // 时区
   setTimezone?: (timezone: string) => void; // 设置时区
   values: IPanel;
-  variableConfig?: IVariable[];
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
   isAuthorized?: boolean; // 是否有权限
   annotations: any[];
@@ -59,7 +56,7 @@ export interface IProps {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { panelWidth, datasourceValue, dashboardId, id, time, setRange, timezone, setTimezone, variableConfig, isPreview } = props;
+  const { panelWidth, datasourceValue, id, time, setRange, timezone, setTimezone, isPreview } = props;
   const { datasourceList } = useContext(CommonStateContext);
   const values = _.cloneDeep(props.values);
   const containerEleRef = useRef<HTMLDivElement>(null);
@@ -69,25 +66,17 @@ function index(props: IProps) {
   const viewModalContainerRef = useRef<HTMLDivElement>(null);
 
   let currentDatasourceValue = values.datasourceValue || datasourceValue;
-  currentDatasourceValue = variableConfig
-    ? _.toNumber(
-        replaceExpressionVars({
-          text: currentDatasourceValue as any,
-          variables: variableConfig,
-          limit: variableConfig.length,
-          dashboardId,
-          datasourceList,
-        }),
-      )
+  currentDatasourceValue = currentDatasourceValue
+    ? replaceDatasourceVariables(currentDatasourceValue, {
+        datasourceList,
+      })
     : currentDatasourceValue;
 
   const queryResult = useQuery({
     panelWidth,
     id,
-    dashboardId,
     time,
     targets: values.targets,
-    variableConfig,
     inViewPort: isPreview || inViewPort,
     datasourceCate: values.datasourceCate || 'prometheus',
     datasourceValue: currentDatasourceValue,
