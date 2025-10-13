@@ -208,8 +208,8 @@ export const scrollToFirstError = () => {
 
 export const RSAEncrypt = (str: string): string => {
   if (!str) return '';
+
   var encrypt = new JSEncrypt();
-  let result: string | boolean = '';
   encrypt.setPublicKey(`-----BEGIN PUBLIC KEY-----
   MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoEyQB7GhjPdmHZ7gpvG7
   QMuI224WL3L+CGEtl6E0ypxp1czaLV2TN8POSmRZmjsmaHthkIHiZg2uRvijYX+F
@@ -219,12 +219,18 @@ export const RSAEncrypt = (str: string): string => {
   wAQBLBZ/TQPFtUDBF/b3i+nWrR77onffeDplXrzXgfmOE5TclMFfhELBRCoiTvSY
   YQIDAQAB
   -----END PUBLIC KEY-----`);
-  result = encrypt.encrypt(str);
-  if (result === false) {
-    message.error('密码过长，加密失败, 最长64位');
-    throw new Error('密码过长，加密失败');
+
+  const strArr: string[] = [];
+  for (let i = 0; i < str.length; i += 245) {
+    strArr.push(str.slice(i, i + 245));
   }
-  return encrypt.encrypt(str);
+  const result: string[] = [];
+
+  for (let i = 0; i < strArr.length; i++) {
+    const encryptResult = encrypt.encrypt(strArr[i]);
+    result.push(encryptResult);
+  }
+  return result.join('');
 };
 
 interface IData {
