@@ -84,7 +84,7 @@ export default function TableCpt(props: IProps) {
                     <Tag
                       // color='purple'
                       style={{ maxWidth: '100%' }}
-                      onClick={() => {
+                      onDoubleClick={() => {
                         if (!filter.queryContent.includes(item)) {
                           setFilter({
                             ...filter,
