@@ -74,7 +74,7 @@ export default function HostIdent(props: Props) {
               const curVal = _.last(v);
               if (curVal === 'all') {
                 val = ['all'];
-              } else if (v.includes('all')) {
+              } else if (_.includes(v, 'all')) {
                 val = _.without(v, 'all');
               }
             }
