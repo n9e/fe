@@ -147,7 +147,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                     <div className='mb2'>
                       <Severity field={field} />
                     </div>
-                    <AdvancedSettings field={field} />
+                    {IS_PLUS && <AdvancedSettings field={field} />}
                     <div className='mt2'>
                       <GraphPreview form={form} fieldName={field.name} />
                     </div>
