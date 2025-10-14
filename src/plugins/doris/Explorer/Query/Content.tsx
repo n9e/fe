@@ -10,8 +10,9 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import flatten from '@/pages/explorer/Elasticsearch/flatten';
 import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
 import normalizeLogStructures from '@/pages/explorer/utils/normalizeLogStructures';
+import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConfig';
 
-import { getGlobalState } from '../../globalState';
+import { useGlobalState, getGlobalState } from '../../globalState';
 import { getDorisLogsQuery, Field } from '../../services';
 import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
 import { getLocalstorageOptions, setLocalstorageOptions } from '../utils';
@@ -28,6 +29,7 @@ interface Props {
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { fields, executeQuery, setTotal } = props;
+  const [, setFieldConfig] = useGlobalState('fieldConfig');
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
@@ -148,6 +150,19 @@ export default function index(props: Props) {
       }
     }
   }, [refreshFlag]);
+
+  const currentFieldConfig = useFieldConfig(
+    {
+      cate: DatasourceCateEnum.doris,
+      datasource_id: form.getFieldValue('datasourceValue'),
+      resource: { doris_resource: { database: queryValues?.database, table: queryValues?.table } },
+    },
+    refreshFlag,
+  );
+
+  useEffect(() => {
+    setFieldConfig(currentFieldConfig);
+  }, [JSON.stringify(currentFieldConfig)]);
 
   return (
     <>

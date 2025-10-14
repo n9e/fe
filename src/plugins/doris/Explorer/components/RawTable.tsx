@@ -4,7 +4,7 @@ import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { getColumnsFromFields, toString, filteredFields } from '../utils';
-import { FieldValueWithFilter } from './RawList';
+import FieldValueWithFilter from './FieldValueWithFilter';
 
 interface IProps {
   time_field?: string;
