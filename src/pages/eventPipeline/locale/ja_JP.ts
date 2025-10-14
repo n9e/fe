@@ -1,5 +1,5 @@
 const ja_JP = {
-  title: 'イベントパイプライン',
+  title: 'ワークフロー',
   title_add: 'イベントパイプラインの追加',
   title_edit: 'イベントパイプラインの編集',
   teams: '権限のあるチーム',
@@ -156,6 +156,9 @@ const ja_JP = {
 
 例：ビジネスグループ==DefaultBusiGroup と入力すると、アクティブイベントの「ビジネスグループ」属性が DefaultBusiGroup の場合のみ、後続のイベント抑制処理の対象となります`,
     },
+  },
+  inhibit_qd: {
+    t_1: 'かつ 以下の<b>データ</b>をクエリ',
   },
 };
 
