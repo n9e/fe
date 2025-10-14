@@ -36,7 +36,7 @@ const ja_JP = {
     notification_rules: '通知ルール',
     notification_channels: '通知チャネル',
     notification_templates: '通知テンプレート',
-    event_pipeline: 'イベントパイプライン',
+    event_pipeline: 'ワークフロー',
     notification_settings: '通知設定',
     notification_tpls: '通知テンプレート',
     integrations: '統合センター',

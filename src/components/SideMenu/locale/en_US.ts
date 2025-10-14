@@ -36,7 +36,7 @@ const en_US = {
     notification_rules: 'Rules',
     notification_channels: 'Media types',
     notification_templates: 'Templates',
-    event_pipeline: 'Event pipelines',
+    event_pipeline: 'Workflow',
     notification_settings: 'Notification',
     notification_tpls: 'Template',
     integrations: 'Integrations',

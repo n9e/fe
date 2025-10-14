@@ -1,7 +1,7 @@
 const en_US = {
-  title: 'Event pieplines',
-  title_add: 'Add event pipeline',
-  title_edit: 'Edit event pipeline',
+  title: 'Workflow',
+  title_add: 'Add workflow',
+  title_edit: 'Edit workflow',
   teams: 'Authorized teams',
   teams_tip:
     'Limit which team members can view and modify this configuration. Multiple teams can be associated<br />For example: If the configuration is authorized to the infra-team, only members of the infra-team can access or adjust this configuration.',
@@ -155,6 +155,9 @@ Example: Fill in service=mon, which means only when an event contains the label 
 
 Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Business Group" attribute of the active event is DefaultBusiGroup will it be filtered out for subsequent event inhibition processes`,
     },
+  },
+  inhibit_qd: {
+    t_1: 'and query the following <b>data</b>',
   },
 };
 export default en_US;
