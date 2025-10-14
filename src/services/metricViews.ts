@@ -15,12 +15,13 @@
  *
  */
 import _ from 'lodash';
+
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import { N9E_PATHNAME } from '@/utils/constant';
-import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
+import { interpolateString, getRealStep } from '@/components/PromQLInputNG';
 
 export const getLabelValues = function (datasourceValue: number, label: string, range: IRawTimeRange, match?: string) {
   const params = {
@@ -64,10 +65,10 @@ export const getMetricValues = function (datasourceValue: number, match: string,
   });
 };
 
-function getQuery(params: { isAggr: boolean; aggrFunc: string; calcArr: string[]; metric: string; match: string; offset: string; aggrGroups: string[] }) {
-  const { isAggr, aggrFunc, calcArr, metric, match, offset, aggrGroups } = params;
-  return `${isAggr ? aggrFunc + '(' : ''}${calcArr[0] ? calcArr[0] + '(' : ''}${metric}${match}${calcArr[1] ? `[${calcArr[1]}]` : ''}${offset ? ` offset ${offset}` : ''}${
-    calcArr[0] ? ')' : ''
+function getQuery(params: { isAggr: boolean; aggrFunc: string; calcFunc: string; metric: string; match: string; offset: string; aggrGroups: string[] }) {
+  const { isAggr, aggrFunc, calcFunc, metric, match, offset, aggrGroups } = params;
+  return `${isAggr ? aggrFunc + '(' : ''}${calcFunc ? calcFunc + '(' : ''}${metric}${match}${calcFunc ? '[$__rate_interval]' : ''}${offset ? ` offset ${offset}` : ''}${
+    calcFunc ? ')' : ''
   }${isAggr ? `) by (${_.join(aggrGroups, ', ')})` : ''}`;
 }
 
@@ -81,13 +82,12 @@ const getSerieName = (metric: Object) => {
 
 export const getExprs = (params) => {
   const { metric, match, calcFunc, comparison, aggrFunc, aggrGroups } = params;
-  const calcArr = _.split(calcFunc, '_');
   const isAggr = aggrGroups.length > 0;
   const exprs = [
     getQuery({
       isAggr,
       aggrFunc,
-      calcArr,
+      calcFunc,
       metric,
       match,
       offset: '',
@@ -97,7 +97,7 @@ export const getExprs = (params) => {
       return getQuery({
         isAggr,
         aggrFunc,
-        calcArr,
+        calcFunc,
         metric,
         match,
         offset: item,
@@ -114,17 +114,25 @@ export const getQueryRange = function (
     metric: string;
     match: string;
     range: IRawTimeRange;
-    step?: number;
     calcFunc: string;
     comparison: string[];
     aggrFunc: string;
     aggrGroups: string[];
   },
+  stepParams: {
+    maxDataPoints: number;
+    minStep?: number;
+  },
 ) {
-  const { metric, match, range, step, calcFunc, comparison, aggrFunc, aggrGroups } = params;
-  let { start, end } = timeRangeUnix(range);
-  let _step = step;
-  if (!step) _step = Math.max(Math.floor((end - start) / 240), 1);
+  const { metric, match, range, calcFunc, comparison, aggrFunc, aggrGroups } = params;
+  const { maxDataPoints, minStep } = stepParams;
+  const { start, end } = timeRangeUnix(range);
+  const step = getRealStep({
+    minStep,
+    maxDataPoints: maxDataPoints,
+    fromUnix: start,
+    toUnix: end,
+  });
   const exprs = getExprs({
     metric,
     match,
@@ -134,13 +142,19 @@ export const getQueryRange = function (
     aggrGroups,
   });
   const requests = _.map(exprs, (expr) => {
+    const currentExpr = interpolateString({
+      query: expr,
+      range,
+      minStep,
+      maxDataPoints,
+    });
     return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/api/v1/query_range`, {
       method: RequestMethod.Get,
       params: {
-        start: start - (start % _step!),
-        end: end - (end % _step!),
-        step: _step,
-        query: expr,
+        start,
+        end,
+        step,
+        query: currentExpr,
       },
     });
   });
@@ -156,7 +170,7 @@ export const getQueryRange = function (
           offset: item,
           name: `${getSerieName(subItem.metric)}${item !== 'current' ? ` offset ${item}` : ''}`,
           id: _.uniqueId('series_'),
-          data: completeBreakpoints(_step, subItem.values),
+          data: completeBreakpoints(step, subItem.values),
         });
       });
     });

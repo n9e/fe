@@ -1,4 +1,5 @@
 @margin-base: 16px;
+
 .metric-page-title {
   font-size: 14px;
   font-weight: 700;
@@ -8,19 +9,23 @@
 
 .n9e-metric-views {
   display: flex;
+
   // gap: 10px;
   .mt16 {
     margin-top: @margin-base;
   }
+
   .mb16 {
     margin-bottom: @margin-base;
   }
+
   .page-title {
     font-weight: 700;
     font-size: 14px;
     height: unset;
   }
 }
+
 .n9e-metric-views-list {
   height: 100%;
   flex: 0 0 240px;
@@ -29,6 +34,7 @@
   flex-direction: column;
   border: 1px solid var(--fc-border-color);
 }
+
 .n9e-metric-views-list-header {
   display: flex;
   justify-content: space-between;
@@ -36,10 +42,12 @@
   margin-bottom: @margin-base;
   margin-top: 6px; // 为了对齐
 }
+
 .n9e-metric-views-list-content {
   margin-top: @margin-base;
   overflow-y: auto;
 }
+
 .n9e-metric-views-list-content-item {
   display: flex;
   justify-content: space-between;
@@ -48,28 +56,35 @@
   word-break: break-all;
   line-height: 1.4;
   cursor: pointer;
+
   .anticon {
     margin-left: 8px;
     display: none !important;
   }
+
   .n9e-metric-views-list-content-item-cate {
     color: var(--fc-text-5);
   }
+
   &:hover {
     .anticon {
       display: inline !important;
     }
+
     .n9e-metric-views-list-content-item-cate {
       display: none;
     }
   }
+
   &.active {
     background-color: fade(@primary-color, 10%);
   }
+
   .name {
     display: inline-block;
   }
 }
+
 .n9e-metric-views-labels-values {
   height: 100%;
   flex: 0 0 240px;
@@ -77,101 +92,124 @@
   overflow-y: auto;
   border: 1px solid var(--fc-border-color);
 }
+
 .n9e-metric-views-labels-values-item {
   .page-title {
     margin-top: 20px;
   }
+
   &:first-child {
     .page-title {
       margin-top: 6px;
     }
   }
 }
+
 .n9e-metric-views-filters {
   margin: @margin-base 0;
   word-break: break-all;
 }
+
 .n9e-metric-views-dynamicLabels {
   margin-top: @margin-base;
 }
+
 .n9e-metric-views-dynamicLabels-item {
   margin-bottom: @margin-base;
 }
+
 .n9e-metric-views-dynamicLabels-item-label {
   margin-bottom: 8px;
 }
+
 .n9e-metric-views-dimensionLabel {
   margin-top: @margin-base;
 }
+
 .n9e-metric-views-dimensionLabel-content {
   margin-top: @margin-base;
 }
+
 .n9e-metric-views-dimensionLabel-content-item {
   padding: 6px;
   margin-bottom: 2px;
   cursor: pointer;
   word-break: break-all;
   line-height: 1.4;
+
   &.active {
     background-color: fade(@primary-color, 10%);
   }
 }
+
 .n9e-metric-views-metrics {
   flex: 1;
   overflow-y: auto;
   padding: @margin-base;
   border: 1px solid var(--fc-border-color);
-  .ant-tabs-large > .ant-tabs-nav .ant-tabs-tab {
+
+  .ant-tabs-large>.ant-tabs-nav .ant-tabs-tab {
     font-size: 12px;
     padding: 10px 0;
   }
-  .ant-tabs-tab + .ant-tabs-tab {
+
+  .ant-tabs-tab+.ant-tabs-tab {
     margin-left: 20px;
   }
 }
+
 .n9e-metric-views-metrics-header {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
+
   .ant-input-group-wrapper {
     width: 50% !important;
   }
 }
+
 .n9e-metric-views-metrics-content {
   list-style: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
+
   .item {
     height: 24px;
     line-height: 24px;
     cursor: pointer;
     display: flex;
   }
+
   .desc {
     padding-left: 20px;
     color: #999;
     white-space: nowrap;
   }
 }
+
 .n9e-metric-views-modal {
   .ant-modal-header {
     padding-bottom: 0px !important;
   }
+
   .custom-import-title {
     .ant-tabs-nav {
       margin: 0 !important;
     }
   }
 }
+
 .n9e-metric-views-metrics-graph {
   .button-link-icon {
     color: #999;
     cursor: pointer;
+
     &:hover {
       color: @primary-color;
     }
   }
+
   .button-link-icon.active {
     color: @primary-color;
     cursor: unset;

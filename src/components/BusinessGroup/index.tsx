@@ -4,15 +4,17 @@ import classNames from 'classnames';
 import { Resizable } from 're-resizable';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Button, Input } from 'antd';
+import { Button, Input, Popover, Space, Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined, SearchOutlined, PlusSquareOutlined, EditOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, SearchOutlined, PlusSquareOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
 import Tree from '@/components/BusinessGroup/components/Tree';
 import EditBusinessDrawer from '@/components/BusinessGroup/components/EditBusinessDrawer';
 import CreateBusinessModal from '@/pages/user/component/createModal';
+import { deleteBusinessTeam } from '@/services/manage';
+import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
 import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
@@ -85,7 +87,7 @@ const BUSINESS_GROUP_SEARCH_KEY = 'businessGroupSearchValue';
 
 export default function index(props: IProps) {
   const { t } = useTranslation('BusinessGroup');
-  const { businessGroup, businessGroupOnChange, darkMode } = useContext(CommonStateContext);
+  const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
   const location = useLocation();
   const query = queryString.parse(location.search);
   const history = useHistory();
@@ -99,6 +101,8 @@ export default function index(props: IProps) {
   const [editBusiId, setEditBusiId] = useState<string>();
   const [searchValue, setSearchValue] = useState<string>('');
   const savedSearchValue = sessionStorage.getItem(BUSINESS_GROUP_SEARCH_KEY);
+  const isBusiPutAuthorized = useIsAuthorized(['/busi-groups/put']);
+  const isBusiDelAuthorized = useIsAuthorized(['/busi-groups/del']);
 
   const reloadData = () => {
     getBusiGroups().then((res = []) => {
@@ -145,7 +149,7 @@ export default function index(props: IProps) {
         >
           {!collapse ? <LeftOutlined /> : <RightOutlined />}
         </div>
-        <div className='n9e-biz-group-container-group group-shrink'>
+        <div className='flex flex-col h-full'>
           {renderHeadExtra && renderHeadExtra()}
           <div className='n9e-biz-group-container-group-title'>
             {title}
@@ -175,44 +179,80 @@ export default function index(props: IProps) {
             placeholder={t('common:search_placeholder')}
           />
           {siteInfo?.businessGroupDisplayMode == 'list' ? (
-            <div className='radio-list'>
+            <div className='scroll-container overflow-x-hidden overflow-y-auto min-h-0 h-full'>
               {_.map(filterData(searchValue, busiGroups), (item) => {
                 const itemKey = _.toString(item.id);
                 return (
-                  <div
-                    className={classNames('n9e-list-item relative px-[8px] py-[6px] cursor-pointer break-all group', {
-                      active: showSelected ? itemKey === businessGroup.key : false,
-                    })}
+                  <Popover
                     key={itemKey}
-                    onClick={() => {
-                      businessGroupOnChange(itemKey);
-                      onSelect && onSelect(itemKey, item);
-                      history.push({
-                        pathname: location.pathname,
-                        search: queryString.stringify({
-                          ..._.omit(query, ['preset-filter']),
-                          ids: itemKey,
-                          isLeaf: true,
-                        }),
-                      });
-                    }}
+                    trigger='hover'
+                    placement='right'
+                    overlayClassName='n9e-buis-group-item-popover'
+                    content={
+                      isBusiPutAuthorized || isBusiDelAuthorized ? (
+                        <Space size={2}>
+                          <AuthorizationWrapper allowedPerms={['/busi-groups/put']}>
+                            <Button
+                              size='small'
+                              icon={
+                                <EditOutlined
+                                  onClick={() => {
+                                    setEditBusiId(itemKey);
+                                    setEditBusiDrawerVisible(true);
+                                  }}
+                                />
+                              }
+                              type='text'
+                            />
+                          </AuthorizationWrapper>
+                          <AuthorizationWrapper allowedPerms={['/busi-groups/del']}>
+                            <Button
+                              size='small'
+                              icon={<DeleteOutlined />}
+                              type='text'
+                              danger
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: t('common:confirm.delete'),
+                                  onOk: () => {
+                                    deleteBusinessTeam(itemKey).then(() => {
+                                      message.success(t('common:success.delete'));
+                                      reloadData();
+                                    });
+                                  },
+                                });
+                              }}
+                            />
+                          </AuthorizationWrapper>
+                        </Space>
+                      ) : undefined
+                    }
                   >
-                    <span className='name'>{item.name}</span>
-                    <EditOutlined
-                      className={classNames('opacity-0 absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer z-10 hover:opacity-100 group-hover:opacity-100 p-2 rounded')}
-                      style={{ backgroundColor: itemKey === businessGroup.key ? (darkMode ? '#27292e' : '#f0eef7') : darkMode ? '#2f3137' : '#F7F7F7' }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditBusiId(itemKey);
-                        setEditBusiDrawerVisible(true);
+                    <div
+                      className={classNames('n9e-list-item px-[8px] py-[6px] cursor-pointer break-all', {
+                        active: showSelected ? itemKey === businessGroup.key : false,
+                      })}
+                      onClick={() => {
+                        businessGroupOnChange(itemKey);
+                        onSelect && onSelect(itemKey, item);
+                        history.push({
+                          pathname: location.pathname,
+                          search: queryString.stringify({
+                            ..._.omit(query, ['preset-filter']),
+                            ids: itemKey,
+                            isLeaf: true,
+                          }),
+                        });
                       }}
-                    />
-                  </div>
+                    >
+                      <span>{item.name}</span>
+                    </div>
+                  </Popover>
                 );
               })}
             </div>
           ) : (
-            <div className='radio-list'>
+            <div className='scroll-container overflow-x-hidden overflow-y-auto min-h-0 h-full'>
               {!_.isEmpty(businessGroupTreeData) && (
                 <Tree
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), businessGroup.key)}
@@ -239,6 +279,7 @@ export default function index(props: IProps) {
                     setEditBusiDrawerVisible(true);
                   }}
                   treeData={businessGroupTreeData as Node[]}
+                  reloadData={reloadData}
                 />
               )}
             </div>

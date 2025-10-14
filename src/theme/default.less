@@ -265,6 +265,29 @@
   }
 }
 
+
+/* 显示滚动条并设置宽度和颜色 */
+.scroll-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgb(223, 223, 223);
+  border-radius: 6px;
+}
+
+/* 悬停时更改滚动条的颜色 */
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: #7d7d7d;
+}
+
+/* 滚动条轨道的背景颜色 */
+.scroll-container::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 6px;
+}
+
 .theme-dark {
   .mt1 {
     margin-top: 8px;
