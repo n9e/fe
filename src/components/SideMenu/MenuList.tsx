@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
@@ -208,20 +209,23 @@ export default function MenuList(
 ) {
   const { t } = useTranslation('sideMenu');
   const { list, topExtra, ...otherProps } = props;
-
+  const isMac = /Mac/i.test(navigator.userAgent) || navigator.platform.includes('Mac');
   return (
     <>
       <div className={cn('h-full pl-2 pr-4', props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
-        <div
-          onClick={() => props.quickMenuRef.current.open()}
-          className={cn(
-            'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
-            props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
-          )}
-        >
-          <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', props.isCustomBg ? '' : 'text-primary-80')}>{<IconFont type='icon-Menu_Search' />}</div>
-          <div className={`overflow-hidden truncate text-l1 tracking-wide`}>{t('quickJump')} </div>
-        </div>
+        <Tooltip title={isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right'>
+          <div
+            onClick={() => props.quickMenuRef.current.open()}
+            className={cn(
+              'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
+              props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
+            )}
+          >
+            <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', props.isCustomBg ? '' : 'text-primary-80')}>{<IconFont type='icon-Menu_Search' />}</div>
+
+            <div className={`overflow-hidden truncate text-l1 tracking-wide`}>{t('quickJump')} </div>
+          </div>
+        </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props }) : null}
         <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>
         <div className='space-y-1'>
