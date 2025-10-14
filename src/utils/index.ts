@@ -227,6 +227,34 @@ export const RSAEncrypt = (str: string): string => {
   return encrypt.encrypt(str);
 };
 
+export function RSAEncrypt4096(str: string): string {
+  if (!str) return '';
+
+  var encrypt = new JSEncrypt();
+  let result: string | boolean = '';
+  encrypt.setPublicKey(`-----BEGIN PUBLIC KEY-----
+  MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwqcWdYR8fpj7IKh5tJ+r
+  sogx7ZIZiOgkAfyvtcnc5cscDpPDd7Xah0lXAwuSUypJU3eqYxgJdp6a2XfUGO/x
+  GLDw5FMUq97WhHEJlPAQlZWND+5RPJVF0x1AK5DRihQSG125XOTUpsELUpoTDVlm
+  qKNNzQc1tgvbuxkG8bLcZFFszEWnqGFJAPjF77VIKF9Nc8wmGLutUBvb5ixF40d9
+  SIQShGfYWAnTy3dnet2NxHH+QX3z6dALnDfTkxgmvqwLtT6Y+38s82zyXjVR/CCc
+  UzxzFKt73kRJXXR4mV/q6KL2BTnjhtbT8T8hTa6rJlTKmVtk4QyeesfL6xZsuPsf
+  9FNYVo2JATIG72y72F5H2PZ5b7Xz7Gm0mHVY9d5yr0Kzn26popOEouVYzqH1oidb
+  GpHSJJweo1HAJ2k8GLwkV1aOwgnH9zVJV0PBWMdqBqc6nz4yt6FBuqAMi+3G9NkN
+  mB5WDLOpi2Q5V6nBLApkQhz64UsxZHEGgptbWRqIn2r4LJ0NO4MD/dB9KENuU+/F
+  tK5y6xluznMHgcPbjfc+1hfccFqVbJ2CsppfmHgIjSeXVJLFWFhd3mwSbLkHGkW+
+  LPYshLXw66i4vXANkWuPo9RPxiU3HEG4ZJFEIJoS5PxV8tBO5I5moBJrcCjJ80st
+  Z+XqKNc1OuFuv7gwGqDmvo8CAwEAAQ==
+  -----END PUBLIC KEY-----`);
+
+  result = encrypt.encrypt(str);
+  if (result === false) {
+    message.error('密码过长，加密失败, 最长490位');
+    throw new Error('密码过长，加密失败');
+  }
+  return result as string;
+}
+
 interface IData {
   sheetName: string;
   columns: { header: string; key: string; width?: number }[];
