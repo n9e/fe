@@ -1,27 +1,36 @@
 import React, { useState, useMemo } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Tabs } from 'antd';
+import { Space, Table, Tabs, Form } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import CodeMirror from '@/components/CodeMirror';
-import { EditorView } from '@codemirror/view';
-import { json } from '@codemirror/lang-json';
-import { defaultHighlightStyle } from '@codemirror/highlight';
+import moment from 'moment';
+
+import { parseRange } from '@/components/TimeRangePicker';
 import { copyToClipBoard } from '@/utils';
-import { FieldValueWithFilter } from './RawList';
+import HighLightJSON from '@/pages/explorer/Elasticsearch/HighLightJSON';
+
+import { getGlobalState } from '../../globalState';
+import FieldValueWithFilter from './FieldValueWithFilter';
 
 interface Props {
   value: Record<string, any>;
-  onValueFilter: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  rawValue?: object;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
-  const { value, onValueFilter } = props;
+  const fieldConfig = getGlobalState('fieldConfig');
+  const { value, onValueFilter, rawValue } = props;
   const [type, setType] = useState<string>('table');
+  const form = Form.useFormInstance();
+  const range = form.getFieldValue(['query', 'range']);
+  const parsedRange = range ? parseRange(range) : null;
+  let start = parsedRange ? moment(parsedRange.start).unix() : 0;
+  let end = parsedRange ? moment(parsedRange.end).unix() : 0;
   const data = useMemo(
     () =>
-      _.map(_.omit(value, ['___id___']), (val, key) => {
+      _.map(_.omit(value, ['___id___', '___raw___']), (val, key) => {
         return {
           field: key,
           value: val,
@@ -31,7 +40,7 @@ export default function LogView(props: Props) {
   );
   let jsonValue = '';
   try {
-    jsonValue = JSON.stringify(value, null, 4);
+    jsonValue = JSON.stringify(value.___raw___, null, 4);
   } catch (e) {
     console.error(e);
     jsonValue = '无法解析';
@@ -60,6 +69,7 @@ export default function LogView(props: Props) {
       <Tabs.TabPane tab='Table' key='table'>
         <Table
           showHeader={false}
+          rowKey='field'
           dataSource={data}
           columns={[
             {
@@ -72,7 +82,7 @@ export default function LogView(props: Props) {
               dataIndex: 'value',
               key: 'value',
               render: (val, record) => {
-                return <FieldValueWithFilter name={record.field} value={val} onValueFilter={onValueFilter} />;
+                return <FieldValueWithFilter name={record.field} value={val} onValueFilter={onValueFilter} rawValue={rawValue} />;
               },
             },
           ]}
@@ -81,25 +91,7 @@ export default function LogView(props: Props) {
         />
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <CodeMirror
-          value={jsonValue}
-          height='auto'
-          basicSetup={false}
-          editable={false}
-          extensions={[
-            defaultHighlightStyle.fallback,
-            json(),
-            EditorView.lineWrapping,
-            EditorView.theme({
-              '&': {
-                backgroundColor: '#FFF !important',
-              },
-              '&.cm-editor.cm-focused': {
-                outline: 'unset',
-              },
-            }),
-          ]}
-        />
+        <HighLightJSON value={value.___raw___} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
       </Tabs.TabPane>
     </Tabs>
   );

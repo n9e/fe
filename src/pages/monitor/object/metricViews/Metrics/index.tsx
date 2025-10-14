@@ -14,17 +14,19 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Input, Card, Row, Col, Space, Button, Tooltip } from 'antd';
+import { Input, Card, Tooltip } from 'antd';
 import { DownOutlined, RightOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
-import Resolution from '@/components/Resolution';
+import { useSize } from 'ahooks';
+
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getMetricValues, getMetricsDesc } from '@/services/metricViews';
-import Graph from './Graph';
-import { IMatch } from '../types';
-import { getMatchStr } from './utils';
+
+import { IMatch } from '../../types';
+import { getMatchStr } from '../utils';
+import Main from './Main';
 
 interface IProps {
   datasourceValue: number;
@@ -45,9 +47,10 @@ export default function Metrics(props: IProps) {
   const [activeKey, setActiveKey] = useState('all');
   const [metricPrefixes, setMetricPrefixes] = useState<any[]>([]);
   const [selectedMetrics, setSelectedMetrics] = useState<any[]>([]);
-  const [step, setStep] = useState<number>();
   const [metricFold, setMetricFold] = useState<boolean>(false);
   const [chartFold, setChartFold] = useState<boolean>(false);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+  const mainContainerSize = useSize(mainContainerRef);
 
   const matchStr = getMatchStr(match);
   const renderMetricList = (metrics: any[] = [], metricTabKey: string) => {
@@ -191,63 +194,19 @@ export default function Metrics(props: IProps) {
                 </div>
               )}
               {!chartFold && (
-                <>
-                  <Row style={{ padding: '10px 0' }}>
-                    <Col span={8}>
-                      <Space>
-                        <TimeRangePicker
-                          value={range}
-                          onChange={(e: IRawTimeRange) => {
-                            setRange(e);
-                          }}
-                        />
-                        <Resolution
-                          onChange={(v) => {
-                            setStep(v === null ? undefined : v);
-                          }}
-                          value={step}
-                        />
-                        <Button
-                          style={{ padding: '4px 8px' }}
-                          onClick={() => {
-                            setRange({
-                              ...range,
-                              refreshFlag: _.uniqueId('refreshFlag_'),
-                            });
-                          }}
-                          icon={<SyncOutlined />}
-                        ></Button>
-                      </Space>
-                    </Col>
-                    <Col span={16} style={{ textAlign: 'right' }}>
-                      <Button
-                        onClick={() => {
-                          setSelectedMetrics([]);
-                        }}
-                        disabled={!selectedMetrics.length}
-                      >
-                        {t('metrics.clear')}
-                      </Button>
-                    </Col>
-                  </Row>
-                  {_.map(selectedMetrics, (metric, i) => {
-                    return (
-                      <Graph
-                        key={metric}
-                        datasourceValue={datasourceValue}
-                        metric={metric}
-                        match={match}
-                        range={range}
-                        step={step}
-                        onClose={() => {
-                          const newselectedMetrics = [...selectedMetrics];
-                          newselectedMetrics.splice(i, 1);
-                          setSelectedMetrics(newselectedMetrics);
-                        }}
-                      />
-                    );
-                  })}
-                </>
+                <div ref={mainContainerRef}>
+                  {mainContainerSize?.width && (
+                    <Main
+                      range={range}
+                      setRange={setRange}
+                      selectedMetrics={selectedMetrics}
+                      setSelectedMetrics={setSelectedMetrics}
+                      datasourceValue={datasourceValue}
+                      match={match}
+                      panelWidth={mainContainerSize.width}
+                    />
+                  )}
+                </div>
               )}
             </>
           ) : (

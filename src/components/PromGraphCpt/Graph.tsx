@@ -162,6 +162,7 @@ export default function Graph(props: IProps) {
           query: promql,
           range,
           minStep,
+          maxDataPoints: maxDataPoints || panelWidth,
         }),
         start: moment(parsedRange.start).unix(),
         end: moment(parsedRange.end).unix(),

@@ -8,18 +8,22 @@ const zh_CN = {
   database_table_required: '请先选择数据库和数据表',
   query: {
     mode: {
-      raw: '日志原文',
-      metric: '统计图表',
+      query: 'Query 模式',
+      sql: 'SQL 模式',
     },
-
-    time_field: '时间字段',
-    time_field_msg: '请输入时间字段',
-    time_field_msg_csv: 'csv格式必须输入时间字段',
+    submode: {
+      raw: '日志原文',
+      timeSeries: '时序图',
+    },
     query_tip: 'SQL样例：查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查询',
     database: '数据库',
-    database_placeholder: '默认可以留空',
+    database_msg: '请选择数据库',
+    table: '数据表',
+    table_msg: '请选择数据表',
+    time_field: '日期字段',
+    time_field_msg: '请选择日期字段',
     query: '查询条件',
     query_required: '查询条件不能为空',
     advancedSettings: {
@@ -69,6 +73,7 @@ const zh_CN = {
     fieldValues_topnNoData: '无数据',
     stats: {
       numberOfUniqueValues: '唯一值个数',
+      unique_count: '唯一值个数',
       min: '最小值',
       max: '最大值',
       sum: '求和',

@@ -112,7 +112,7 @@ export default function AlertTable(props: IProps) {
                   <Tag
                     key={item}
                     style={{ maxWidth: '100%' }}
-                    onClick={() => {
+                    onDoubleClick={() => {
                       if (!_.includes(filter.query, item)) {
                         setFilter({
                           ...filter,

@@ -121,18 +121,19 @@ https://oapi.dingtalk.com/robot/send?access_token={{$params.access_token}}
 
 **说明**
 
-- Body 以 JSON 形式（通常常见于钉钉、企业微信机器人）发送。
-- 在请求体中，可以直接嵌入 $event、$tpl、$params、$sendto、$sendtos 等变量进行动态替换。
-- $tpl 通常代表告警模板渲染后的文本内容；$sendto 可以代表要通知的目标人（如手机号、企业微信账号等）。
+- Body 以 JSON 形式（常见于钉钉、企业微信机器人）发送。
+- 在请求体中，可以直接嵌入 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}`、`{{$sendtos}}` 等变量进行动态替换。
+- `{{$tpl}}` 表示模板渲染后的文本内容；`{{$sendto}}` 表示单个联系方式（如手机号、企业微信账号等）。
+- 如果需要一次 @ 多个联系人，优先使用 `{{$sendtos}}`，并配合辅助函数：`{{batchContactsAts $sendtos}}`（生成带 @ 的文本）与 `{{batchContactsJsonMarshal $sendtos}}`（生成 JSON 数组）。
 
 ## 三、示例：发送到钉钉机器人
 
-以下示例展示了一个将告警消息发送到钉钉群机器人的配置思路。钉钉机器人的 access_token 和 @ 某个手机号的信息，已经通过配置通过规则，传入到 $params 变量中，然后通过 $params.access_token 和 $sendto 变量，在请求体中引用。
+以下示例演示如何将告警消息发送到钉钉群机器人。钉钉机器人的 `access_token` 和要 @ 的手机号，会在通知规则中配置后注入到变量中：`{{$params.access_token}}` 用于鉴权；需要 @ 多人时使用 `{{$sendtos}}` 配合辅助函数在请求体中引用。
 
-1.变量配置   
-在变量配置中添加参数标识 `access_token` 和 `bot_name`
+1. 变量配置  
+在“变量配置”中添加参数标识 `access_token` 和 `bot_name`；在“联系方式”中选择需要接收通知的手机号（支持多选），发送时会注入为 `{{$sendtos}}`。
 
-2.URL
+2. URL
 
 ```
 https://oapi.dingtalk.com/robot/send
@@ -144,12 +145,12 @@ https://oapi.dingtalk.com/robot/send
 |---------------|--------------------|
 | `Content-Type` | `application/json` |
 
-4.请求参数
+4. 请求参数
 | 参数名 | 参数值 |
 |--------------|---------------------|
 | `access_token` | `{{$params.access_token}}` |
 
-5.请求体
+5. 请求体
 
 ```json
 {
@@ -168,6 +169,6 @@ https://oapi.dingtalk.com/robot/send
 
 - {{$params.access_token}} 将被替换为实际的钉钉群机器人 access_token。
 - {{$tpl.title}} 渲染后为最终要发送的告警信息标题，比如 “CPU 使用率超出阈值”。
-- {{$tpl.text}} 渲染后为最终要发送的告警信息文本，比如 “CPU 使用率超出阈值,触发时间：2024-01-01 12:00:00”。
-- {{batchContactsAts $sendtos}} 渲染后将在手机号前面加@，比如 “@12312312311 @12312312312”。
-- {{batchContactsJsonMarshal $sendtos}} 渲染后为字符串数组的形式 ["12312312311","12312312312"]。
+- {{$tpl.content}} 渲染后为最终要发送的告警信息文本，比如 “CPU 使用率超出阈值，触发时间：2024-01-01 12:00:00”。
+- {{batchContactsAts $sendtos}} 渲染后会在手机号前添加 @，比如 “@12312312311 @12312312312”。
+- {{batchContactsJsonMarshal $sendtos}} 渲染后为字符串数组形式 ["12312312311","12312312312"]。

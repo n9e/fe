@@ -14,8 +14,8 @@ interface PaginationProps {
 
 type TablePaginationPosition = 'topLeft' | 'topCenter' | 'topRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
 
-const DEFAULT_PAGESIZE_OPTIONS = IS_ENT ? [10, 15, 20, 50, 100] : [10, 20, 50, 100];
-const DEFAULT_PAGESIZE = IS_ENT ? 15 : 10;
+export const DEFAULT_PAGESIZE_OPTIONS = IS_ENT ? [10, 15, 20, 50, 100] : [10, 20, 50, 100];
+export const DEFAULT_PAGESIZE = IS_ENT ? 15 : 10;
 
 export default function usePagination(props: PaginationProps) {
   const { tablePaginationPosition } = useContext(CommonStateContext);

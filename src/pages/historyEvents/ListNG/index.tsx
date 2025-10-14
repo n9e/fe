@@ -120,7 +120,7 @@ const Event = (props: Props) => {
                   <Tag
                     key={item}
                     style={{ maxWidth: '100%' }}
-                    onClick={() => {
+                    onDoubleClick={() => {
                       if (!_.includes(filter.query, item)) {
                         setFilter({
                           ...filter,

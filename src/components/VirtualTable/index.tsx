@@ -7,9 +7,9 @@ import classNames from 'classnames';
 interface IProps {
   dataSource: any[];
   columns: Column<any>[];
-  height?: number | string;
   headerRowHeight?: number;
   customClassName?: string;
+  customStyle?: React.CSSProperties;
 }
 
 /**
@@ -20,13 +20,13 @@ interface IProps {
  */
 export default function VirtualTable(props: IProps) {
   const { t } = useTranslation();
-  const { height, columns, dataSource, headerRowHeight = 46, customClassName } = props;
+  const { columns, dataSource, headerRowHeight = 46, customClassName, customStyle } = props;
   const gridRef = useRef<DataGridHandle>(null);
 
   return (
     <DataGrid
       ref={gridRef}
-      style={{ height: height, maxHeight: height }}
+      style={{ maxHeight: '100%', ...customStyle }}
       columns={columns}
       rows={dataSource}
       className={classNames('fill-grid', customClassName)}

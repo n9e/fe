@@ -104,13 +104,15 @@ Configuration Example
 
 **Notes**
 - Body is sent in JSON format (commonly seen in DingTalk, WeChat Work robots).
-- Variables like $event, $tpl, $params, $sendto, $sendtos can be directly embedded in the request body for dynamic replacement.
-- $tpl typically represents the rendered alert template text content; $sendto can represent the notification target (such as phone numbers, WeChat Work accounts, etc.).
+- Variables like `{{$event}}`, `{{$tpl}}`, `{{$params}}`, `{{$sendto}}`, `{{$sendtos}}` can be directly embedded in the request body for dynamic replacement.
+- `{{$tpl}}` represents the rendered template text content; `{{$sendto}}` represents a single contact method (such as phone numbers, WeChat Work accounts, etc.).
+- For mentioning multiple contacts at once, prioritize using `{{$sendtos}}` with helper functions: `{{batchContactsAts $sendtos}}` (generates @ prefixed text) and `{{batchContactsJsonMarshal $sendtos}}` (generates JSON array).
 
 ## III. Example: Sending to DingTalk Robot
-The following example demonstrates how to configure sending alert messages to a DingTalk group robot. The DingTalk robot's access_token and @ phone number information are passed to the $params variable through rule configuration, and then referenced in the request body using $params.access_token and $sendto variables.
+The following example demonstrates how to send alert messages to a DingTalk group robot. The DingTalk robot's `access_token` and phone numbers to mention are configured in notification rules and injected into variables: `{{$params.access_token}}` for authentication; when mentioning multiple people, use `{{$sendtos}}` with helper functions in the request body.
 
-1. Variable Configuration Add parameter identifiers access_token and bot_name in variable configuration
+1. Variable Configuration  
+Add parameter identifiers `access_token` and `bot_name` in "Variable Configuration"; select phone numbers to receive notifications in "Contact Methods" (multiple selection supported), which will be injected as `{{$sendtos}}` when sending.
 
 ```
 https://oapi.dingtalk.com/robot/send
@@ -146,6 +148,6 @@ https://oapi.dingtalk.com/robot/send
 In this example:
 - {{$params.access_token}} will be replaced with the actual DingTalk group robot access_token.
 - {{$tpl.title}} renders to the final alert message title, e.g., "CPU Usage Exceeds Threshold".
-- {{$tpl.text}} renders to the final alert message text, e.g., "CPU Usage Exceeds Threshold, Trigger Time: 2024-01-01 12:00:00".
+- {{$tpl.content}} renders to the final alert message text, e.g., "CPU Usage Exceeds Threshold, Trigger Time: 2024-01-01 12:00:00".
 - {{batchContactsAts $sendtos}} renders to add @ before phone numbers, e.g., "@12312312311 @12312312312".
 - {{batchContactsJsonMarshal $sendtos}} renders to string array format ["12312312311","12312312312"].
