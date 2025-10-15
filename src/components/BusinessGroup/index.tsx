@@ -149,7 +149,7 @@ export default function index(props: IProps) {
         >
           {!collapse ? <LeftOutlined /> : <RightOutlined />}
         </div>
-        <div className='flex flex-col h-full'>
+        <div className='flex flex-col h-full overflow-hidden'>
           {renderHeadExtra && renderHeadExtra()}
           <div className='n9e-biz-group-container-group-title'>
             {title}

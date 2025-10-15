@@ -52,7 +52,9 @@ const getNetworkDevicesList = () => {};
 const getNetworkDevicesTags = () => {};
 const searchDrilldown = () => {};
 const proDocumentPathMap = {};
-const AckBtnDefault = () => {};
+const AckBtnDefault = () => {
+  return null;
+};
 export {
   AlertRule,
   QueryBuilder,
