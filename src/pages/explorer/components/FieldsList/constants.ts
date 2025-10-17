@@ -1,0 +1,16 @@
+export const TYPE_MAP: Record<string, string> = {
+  float: 'number',
+  float64: 'number',
+  double: 'number',
+  integer: 'number',
+  int64: 'number',
+  long: 'number',
+  date: 'date',
+  date_nanos: 'date',
+  string: 'string',
+  text: 'string',
+  scaled_float: 'number',
+  nested: 'nested',
+  histogram: 'number',
+  boolean: 'boolean',
+};
