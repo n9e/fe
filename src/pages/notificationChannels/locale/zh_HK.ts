@@ -83,6 +83,8 @@ const zh_HK = {
     integration_url_tip: '此處填寫的是 Flashduty 整合中心所建立的整合位址，可以到 https://console.flashcat.cloud/settings/source/alert/add/n9e 去建立',
     proxy: '代理',
     proxy_tip: 'HTTP PROXY 地址，用於需要代理的場景',
+    timeout: '超時時間 (單位: 毫秒)',
+    retry_times: '重試次數',
   },
 };
 

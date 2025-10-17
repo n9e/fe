@@ -88,6 +88,8 @@ const ru_RU = {
       'Здесь указывается адрес интеграции, созданный в центре интеграции Flashduty. Вы можете создать его на https://console.flashcat.cloud/settings/source/alert/add/n9e',
     proxy: 'Прокси',
     proxy_tip: 'Адрес HTTP-прокси для сценариев, требующих прокси',
+    timeout: 'Тайм-аут (мс)',
+    retry_times: 'Количество повторных попыток',
   },
 };
 

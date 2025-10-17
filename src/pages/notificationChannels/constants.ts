@@ -29,5 +29,9 @@ export const DEFAULT_VALUES = {
       timeout: 10000,
       script_type: 'script',
     },
+    flashduty_request_config: {
+      timeout: 5000,
+      retry_times: 3,
+    },
   },
 };

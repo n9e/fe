@@ -86,6 +86,8 @@ const ja_JP = {
       'ここに入力されるのは、Flashduty 統合センターによって作成された統合アドレスです。これは https://console.flashcat.cloud/settings/source/alert/add/n9e で作成できます',
     proxy: 'プロキシ',
     proxy_tip: 'プロキシが必要な場合は、ここに HTTP PROXY アドレスを入力してください',
+    timeout: 'タイムアウト (単位: ミリ秒)',
+    retry_times: 'リトライ回数',
   },
 };
 

@@ -32,14 +32,19 @@ export default function ChannelSelect(props: Props) {
     getNotificationChannels()
       .then((res) => {
         setOptions(
-          _.map(res, (item) => {
-            return {
-              label: item.name,
-              value: item.id,
-              enable: item.enable,
-              item,
-            };
-          }),
+          _.map(
+            _.sortBy(res, (item) => {
+              return item.enable ? 0 : 1;
+            }),
+            (item) => {
+              return {
+                label: item.name,
+                value: item.id,
+                enable: item.enable,
+                item,
+              };
+            },
+          ),
         );
       })
       .catch(() => {
