@@ -80,5 +80,18 @@ const zh_CN = {
   help: '使用说明',
   clear_tabs: '清空',
   clear_tabs_tip: '只保留当前标签页',
+  stats: {
+    unique_count: '唯一值个数',
+    min: '最小值',
+    max: '最大值',
+    sum: '求和',
+    avg: '平均值',
+    topn_no_data: '无数据',
+    unindexable: '字段未开启统计，无法进行统计分析',
+  },
+  field_list: {
+    show_fields: '显示字段',
+    available_fields: '可用字段',
+  },
 };
 export default zh_CN;
