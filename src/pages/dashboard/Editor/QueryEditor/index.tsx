@@ -11,6 +11,7 @@ import OrganizeFields from '../TransformationsEditor/OrganizeFields';
 import TransformationsEditorNG from '../TransformationsEditorNG';
 import DatasourceSelect from './components/DatasourceSelect';
 import QueryBuilder from './QueryBuilder';
+import QueryOptions from './QueryOptions';
 
 export default function index({ panelWidth, type, variablesWithOptions }) {
   const { t } = useTranslation('dashboard');
@@ -39,6 +40,7 @@ export default function index({ panelWidth, type, variablesWithOptions }) {
           </Radio.Group>
         )}
         <DatasourceSelect datasourceValue={datasourceValue} variablesWithOptions={variablesWithOptions} />
+        <QueryOptions panelWidth={panelWidth} />
       </Space>
       <div
         style={{

@@ -45,6 +45,8 @@ interface IProps {
   inspect?: boolean;
   type?: string;
   custom: any;
+  maxDataPoints?: number;
+  queryOptionsTime?: IRawTimeRange;
 }
 
 export default function useQuery(props: IProps) {
