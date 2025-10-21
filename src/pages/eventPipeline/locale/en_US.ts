@@ -157,6 +157,7 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     },
   },
   inhibit_qd: {
+    help: 'Suppress events based on query results: When an alert is triggered, the data query below will be executed; if at least one piece of data is returned, this alert will be suppressed (no notification); if no data is returned, normal notification will occur. For more information, see <a>documentation</a>',
     t_1: 'and query the following <b>data</b>',
   },
 };
