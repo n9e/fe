@@ -19,7 +19,7 @@
  * data_source_name: string
  * data_source_id: string
  */
-import React, { useRef, useContext } from 'react';
+import React, { useRef, useContext, useEffect } from 'react';
 import { Form, Row, Col } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
 
+import { useGlobalState } from './globalState';
 import Prometheus from './Prometheus';
 import Elasticsearch from './Elasticsearch';
 import Loki from './Loki';
@@ -46,6 +47,7 @@ import PlusExplorer from 'plus:/parcels/Explorer';
 type Type = 'logging' | 'metric';
 
 interface IProps {
+  tabKey: string;
   type: Type;
   defaultCate: string;
   panelIdx?: number;
@@ -74,9 +76,11 @@ function getDefaultDatasourceCate(datasourceList, defaultCate) {
   return defaultCate;
 }
 
-const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps) => {
+const Panel = (props: IProps) => {
   const { t } = useTranslation('explorer');
+  const { type, defaultCate, panelIdx = 0, defaultFormValuesControl } = props;
   const { datasourceCateOptions, datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
+  const [tabKey, setTabKey] = useGlobalState('tabKey');
   const [form] = Form.useForm();
   const history = useHistory();
   const headerExtraRef = useRef<HTMLDivElement>(null);
@@ -86,8 +90,12 @@ const Panel = ({ type, defaultCate, panelIdx, defaultFormValuesControl }: IProps
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    setTabKey(props.tabKey);
+  }, [props.tabKey]);
+
   return (
-    <div className='explorer-container' ref={explorerContainerRef}>
+    <div className={`explorer-container explorer-container-${tabKey}`} ref={explorerContainerRef}>
       <Form
         form={form}
         initialValues={{
