@@ -114,7 +114,7 @@ export function getNotifySubAlertRules(id: number) {
 }
 
 export function getEventTags() {
-  return request('/api/n9e-plus/event-tagkeys', {
+  return request('/api/n9e/event-tagkeys', {
     method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;
