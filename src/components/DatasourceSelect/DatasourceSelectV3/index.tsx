@@ -37,8 +37,8 @@ export default function index(props: SelectProps & Props) {
       optionLabelProp='optionLabel'
       filterOption={(inputValue, option) => {
         // 根据空格分词进行过滤，取交集
-        const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw);
-        return _.every(keywords, (kw) => _.includes(option?.filter, kw));
+        const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw) as string[];
+        return _.every(keywords, (kw) => _.includes(_.toLower(option?.filter), _.toLower(kw)));
       }}
       options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type'], ['desc', 'asc']), (item) => {
         const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
