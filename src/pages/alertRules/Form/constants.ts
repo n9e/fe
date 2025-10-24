@@ -1,4 +1,8 @@
 import moment from 'moment';
+import _ from 'lodash';
+
+import { DatasourceCateEnum } from '@/utils/constant';
+import { allCates } from '@/components/AdvancedWrap/utils';
 
 export const defaultRuleConfig = {
   queries: [{}],
@@ -14,6 +18,9 @@ export const defaultRuleConfig = {
         },
       ],
       severity: 2,
+      recover_config: {
+        judge_type: 0,
+      },
     },
   ],
   exp_trigger_disable: false,
@@ -23,6 +30,21 @@ export const defaultRuleConfig = {
     resolve_after_enable: false,
     resolve_after: undefined,
   },
+};
+
+export const getDefaultRuleConfig = (cate: DatasourceCateEnum) => {
+  const isLogging = _.includes(_.find(allCates, { value: cate })?.type, 'logging');
+  return {
+    ...defaultRuleConfig,
+    triggers: _.map(defaultRuleConfig.triggers, (triggerItem) => {
+      return {
+        ...triggerItem,
+        recover_config: {
+          judge_type: isLogging ? 1 : 0, // 日志类数据源默认值改为 1，其他类型数据源默认值为 0
+        },
+      };
+    }),
+  };
 };
 
 export const datasourceDefaultValue = {
