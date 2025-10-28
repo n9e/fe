@@ -665,7 +665,7 @@ export default function List(props: IProps) {
         </Space>
       </div>
       <Table
-        className='mt8 n9e-hosts-table'
+        className='mt-2 n9e-hosts-table'
         rowKey='id'
         columns={columns}
         size='small'

@@ -52,7 +52,7 @@ export default function List() {
   return (
     <PageLayout title={<Space>{t('title')}</Space>} icon={<NotificationOutlined />}>
       <div className='n9e'>
-        <div className='pb2 n9e-flex n9e-justify-between'>
+        <div className='pb-4 flex justify-between'>
           <Space>
             <Input
               placeholder={t('common:search_placeholder')}
@@ -133,7 +133,7 @@ export default function List() {
               dataIndex: 'request_type',
               render: (val) => {
                 return (
-                  <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                  <div className='flex items-center gap-2'>
                     <img height={16} src={`/image/notification/${val}.png`} alt={val} />
                     {t(`${val}_request_config.title`)}
                   </div>

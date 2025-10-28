@@ -41,7 +41,7 @@ function ContentKeyFormModal(props: Props & ModalWrapProps) {
           <Input />
         </Form.Item>
         <Alert
-          className='mb2'
+          className='mb-4'
           type='info'
           message={t('content.tip', {
             contentKey: contentKeyVal ?? 'contentKey',

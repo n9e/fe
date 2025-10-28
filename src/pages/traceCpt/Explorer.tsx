@@ -13,7 +13,7 @@ export default function index() {
   return (
     <PageLayout title={t('title')}>
       <div>
-        <div className='n9e-border-base p2'>
+        <div className='border p-4'>
           <Trace />
         </div>
       </div>

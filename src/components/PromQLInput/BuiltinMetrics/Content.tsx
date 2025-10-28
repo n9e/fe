@@ -46,7 +46,7 @@ export default function Content(props: Props) {
     <div className='promql-dropdown-built-in-metrics-container'>
       <div className='promql-dropdown-built-in-metrics-content'>
         <div className='promql-dropdown-built-in-metrics-list'>
-          <Row gutter={[12, 12]} className='p2'>
+          <Row gutter={[12, 12]} className='p-4'>
             <Col span={24}>
               <Input
                 prefix={<SearchOutlined />}
@@ -101,7 +101,7 @@ export default function Content(props: Props) {
               />
             </Col>
           </Row>
-          <div className='promql-dropdown-built-in-metrics-default-types pl2 pr2'>
+          <div className='promql-dropdown-built-in-metrics-default-types pl-4 pr-4'>
             {_.map(defaultTypesList, (item) => {
               return (
                 <Tag

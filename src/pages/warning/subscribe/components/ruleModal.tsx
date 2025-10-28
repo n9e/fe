@@ -289,7 +289,7 @@ const ruleModal: React.FC<props> = (props) => {
           setSelectedRules([]);
         }}
       >
-        <div className='mb16 p-2 n9e-border-antd rounded-sm n9e-fill-color-1'>
+        <div className='mb-4 p-2 rounded-sm border bg-fc-50'>
           <Space wrap>
             <span>{t('sub_rule_selected')}: </span>
             {_.map(selectedRules, (item) => (
@@ -327,7 +327,7 @@ const ruleModal: React.FC<props> = (props) => {
           </Select>
           <Input style={{ marginLeft: 10, width: '280px' }} onPressEnter={onSearchQuery} prefix={<SearchOutlined />} placeholder={t('alertRules:search_placeholder')} />
         </div>
-        <div className='rule_modal_table mt16'>
+        <div className='rule_modal_table mt-4'>
           <Table size='small' rowKey='id' pagination={pagination} dataSource={currentStrategyData} columns={columns} />
         </div>
       </Modal>

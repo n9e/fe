@@ -64,7 +64,7 @@ const Detail = (props: any) => {
         </>
       }
     >
-      <div className='p2'>
+      <div className='p-4'>
         <Card title={data.title}>
           <Spin spinning={loading}>
             <div className='job-task-table'>

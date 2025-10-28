@@ -254,7 +254,7 @@ export default function index() {
                     <Button
                       danger
                       type='link'
-                      className='p0 height-auto'
+                      className='p-0 h-auto'
                       onClick={() => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
@@ -328,13 +328,13 @@ export default function index() {
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
       <div className='built-in-metrics-container'>
         <Collapse collapseLocalStorageKey='built-in-metrics-filters-collapse' widthLocalStorageKey='built-in-metrics-filters-width' defaultWidth={240} tooltip={t('filter.title')}>
-          <div className='n9e-border-base p2 built-in-metrics-filter'>
+          <div className='border p-4 built-in-metrics-filter'>
             <Filters ref={filtersRef} />
           </div>
         </Collapse>
-        <div className='n9e-border-base p2 built-in-metrics-main'>
+        <div className='border p-4 built-in-metrics-main'>
           <div
-            className='mb8'
+            className='mb-2'
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -529,7 +529,7 @@ export default function index() {
             </Space>
           </div>
           <Table
-            className='mt8'
+            className='mt-2'
             size='small'
             rowKey='id'
             {...tableProps}

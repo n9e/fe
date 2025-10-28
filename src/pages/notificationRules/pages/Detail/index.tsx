@@ -124,7 +124,7 @@ export default function Detail() {
             <div className='flex-shrink-0'>
               <Row gutter={16}>
                 <Col span={8}>
-                  <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
+                  <div className='w-full h-[88px] rounded border bg-fc-100 px-4 py-2'>
                     <div className='flex items-center gap-2'>
                       {t('statistics.total_notify_events', { days })}
                       <Tooltip overlayClassName='ant-tooltip-max-width-400' title={<Trans ns={NS} i18nKey='statistics.total_notify_events_tip' components={{ b: <strong /> }} />}>
@@ -148,7 +148,7 @@ export default function Detail() {
                   </div>
                 </Col>
                 <Col span={8}>
-                  <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
+                  <div className='w-full h-[88px] rounded border bg-fc-100 px-4 py-2'>
                     <div className='flex items-center gap-2'>
                       {t('statistics.noise_reduction_ratio', { days })}
                       <Tooltip overlayClassName='ant-tooltip-max-width-400' title={<Trans ns={NS} i18nKey='statistics.noise_reduction_ratio_tip' components={{ b: <strong /> }} />}>
@@ -172,7 +172,7 @@ export default function Detail() {
                   </div>
                 </Col>
                 <Col span={8}>
-                  <div className='w-full h-[88px] rounded n9e-border-base n9e-fill-color-2 px-4 py-2'>
+                  <div className='w-full h-[88px] rounded border bg-fc-100 px-4 py-2'>
                     <div className='flex items-center gap-2'>
                       {t('statistics.escalation_events', { days })}
                       <Tooltip overlayClassName='ant-tooltip-max-width-400' title={<Trans ns={NS} i18nKey='statistics.escalation_events_tip' components={{ b: <strong /> }} />}>
@@ -200,7 +200,7 @@ export default function Detail() {
           )}
           <Card
             size='small'
-            className='n9e-border-color n9e-notification-rule-detail-list w-full min-h-0'
+            className='border-fc-300 n9e-notification-rule-detail-list w-full min-h-0'
             bodyStyle={{
               height: 'calc(100% - 36px)',
             }}

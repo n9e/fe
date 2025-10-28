@@ -74,7 +74,7 @@ export default function Index(props: Props) {
           <Col span={8} className='second-color'>
             {data.settings?.min_interval || '-'}
           </Col>
-          <Col span={24} className='mt8'>
+          <Col span={24} className='mt-2'>
             {t('form.es.write_config')}:
           </Col>
           <Col span={24} className='second-color'>

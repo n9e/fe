@@ -14,7 +14,7 @@ export default function HelpLink(props: Props) {
 
   return (
     <a
-      className='text-12'
+      className='text-[12px]'
       onClick={() => {
         DocumentDrawer({
           language: i18n.language,

@@ -24,7 +24,7 @@ export default function ElasticsearchDetail(
           <Space direction='vertical'>
             {_.map(queries, (item) => {
               return (
-                <div key={item.ref} className='n9e-fill-color-3 p1 n9e-border-radius-base'>
+                <div key={item.ref} className='bg-fc-200 p-2 rounded-[2px]'>
                   <Space wrap size={0}>
                     <Tag>
                       {i18next.t('datasource:es.ref')}: {item.ref}
@@ -87,7 +87,7 @@ export default function ElasticsearchDetail(
 
         if (trigger_type === 'nodata') {
           return (
-            <div className='n9e-fill-color-3 p1 n9e-border-radius-base'>
+            <div className='bg-fc-200 p-2 rounded-[2px]'>
               <span style={{ paddingRight: 4 }}>{i18next.t('alertRules:nodata_trigger.title')}</span>
               <span>
                 {i18next.t('AlertCurEvents:detail.trigger')} {`${i18next.t(`common:severity.${nodata_trigger?.severity}`)}`}
@@ -98,7 +98,7 @@ export default function ElasticsearchDetail(
 
         return _.map(triggers, (item, idx) => {
           return (
-            <div key={idx} className='n9e-fill-color-3 p1 n9e-border-radius-base'>
+            <div key={idx} className='bg-fc-200 p-2 rounded-[2px]'>
               <span style={{ paddingRight: 4 }}>{item.exp}</span>
               <span>
                 {i18next.t('AlertCurEvents:detail.trigger')} {`${i18next.t(`common:severity.${item?.severity}`)}`}

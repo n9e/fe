@@ -40,7 +40,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
     >
       {_.isEmpty(datasources) && (
         <Alert
-          className='mb2'
+          className='mb-4'
           message={
             <Trans
               ns='datasourceManage'

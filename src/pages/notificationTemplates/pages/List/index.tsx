@@ -80,7 +80,7 @@ export default function ListCpt() {
                 {t('common:btn.add')}
               </a>
             </div>
-            <div className='mt1 mb1'>
+            <div className='mt-2 mb-2'>
               <Input
                 prefix={<SearchOutlined />}
                 value={search}
@@ -116,7 +116,7 @@ export default function ListCpt() {
                     }
                   }}
                 >
-                  <div className='n9e-flex n9e-justify-between n9e-w-full gap-1'>
+                  <div className='flex justify-between w-full gap-1'>
                     <span
                       style={{
                         wordBreak: 'break-all',

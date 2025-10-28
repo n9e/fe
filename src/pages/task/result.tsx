@@ -177,7 +177,7 @@ const index = (props: any) => {
         </>
       }
     >
-      <div className={`${taskResultCls} p2`}>
+      <div className={`${taskResultCls} p-4`}>
         <Card
           title={data.title}
           extra={
@@ -218,10 +218,10 @@ const index = (props: any) => {
                       Start
                     </Button>
                   )}
-                  <Button className='ml10 warning-btn' onClick={() => handleTaskAction('cancel')}>
+                  <Button className='ml-2 warning-btn' onClick={() => handleTaskAction('cancel')}>
                     Cancel
                   </Button>
-                  <Button className='ml10 danger-btn' onClick={() => handleTaskAction('kill')}>
+                  <Button className='ml-2 danger-btn' onClick={() => handleTaskAction('kill')}>
                     Kill
                   </Button>
                 </span>

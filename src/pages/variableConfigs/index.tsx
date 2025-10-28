@@ -68,13 +68,13 @@ export default function index() {
     >
       <div>
         <div
-          className='n9e-border-base'
+          className='border'
           style={{
             padding: 16,
           }}
         >
           <div
-            className='mb8'
+            className='mb-2'
             style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -107,7 +107,7 @@ export default function index() {
             </Button>
           </div>
           <Table
-            className='mt8'
+            className='mt-2'
             rowKey='id'
             size='small'
             columns={[

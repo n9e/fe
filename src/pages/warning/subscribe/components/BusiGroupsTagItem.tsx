@@ -55,7 +55,7 @@ const TagItem = ({ field, remove, form, fields, index }: Itag) => {
 
   return (
     <div className='filter-settings-row-content' style={{ marginTop: 0 }}>
-      <Row gutter={10} className='mb2'>
+      <Row gutter={10} className='mb-4'>
         <Col flex='auto'>
           <Row gutter={10}>
             <Form.Item style={{ marginBottom: 0 }} name={[field.name, 'key']} hidden>
@@ -63,9 +63,7 @@ const TagItem = ({ field, remove, form, fields, index }: Itag) => {
             </Form.Item>
             <Col span={8}>
               <div className='flex gap-[10px]'>
-                {field.name !== 0 && (
-                  <div className='w-[32px] h-[32px] leading-[32px] text-center n9e-fill-color-2 n9e-border-antd rounded-sm flex-shrink-0'>{t('common:and')}</div>
-                )}
+                {field.name !== 0 && <div className='w-[32px] h-[32px] leading-[32px] text-center bg-fc-100 border border-antd rounded-sm flex-shrink-0'>{t('common:and')}</div>}
                 <div className='w-full min-w-0'>
                   <Input disabled value={t('group.key.placeholder') as string} />
                 </div>
