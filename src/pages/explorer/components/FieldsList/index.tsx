@@ -16,7 +16,7 @@ interface Props {
   onOperClick: (field: string, type: 'show' | 'available') => void;
   fields: Field[];
   enableStats?: boolean;
-  onValueFilter?: (parmas: { key: string; value: string; operator: string }) => void;
+  onValueFilter?: (parmas: { key: string; value: any; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
   loading?: boolean;
 }

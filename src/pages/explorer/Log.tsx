@@ -102,6 +102,7 @@ const MetricExplorerPage = () => {
                 return (
                   <Tabs.TabPane closable={items.length !== 1} tab={`${t('query_tab')} ${idx + 1}`} key={item.key}>
                     <Explorer
+                      tabKey={item.key}
                       type='logging'
                       defaultCate='elasticsearch'
                       defaultFormValuesControl={{
