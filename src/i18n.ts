@@ -16,37 +16,70 @@
  */
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import ICU from 'i18next-icu';
 import _ from 'lodash';
-import resources from './locales/resources';
+import { withTolgee, Tolgee, I18nextPlugin } from '@tolgee/i18next';
+import { InContextTools } from '@tolgee/web/tools';
 
-const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
+// const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
+const languages = ['zh_CN', 'en_US', 'zh_HK'];
 const localStorageLanguage = localStorage.getItem('language');
-const systemLanguage = (() => {
-  // navigator.language return format 'en-US' or 'ru'
-  const lang = navigator.language.replace('-', '_');
-  if (_.includes(languages, lang)) {
-    return lang;
-  }
-
-  const langPrefix = lang.split('_')[0] + '_';
-  const matchedLang = languages.find(l => l.startsWith(langPrefix));
-  return matchedLang || 'zh_CN';
-})();
-
 let language = 'zh_CN';
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
   language = localStorageLanguage;
 }
-else if (_.includes(languages, systemLanguage)) {
-  language = systemLanguage;
+
+function getTranslations() {
+  const translations: any = import.meta.glob('../**/{locale,locales}/index.(ts|js)', { eager: true });
+  const result = {};
+
+  for (const path in translations) {
+    const module = translations[path]?.default;
+    for (const key in module?.languages) {
+      result[`${key}:${module?.namespace}`] = module?.languages[key];
+    }
+  }
+  // console.log('result', result);
+  return result;
 }
 
-i18n.use(initReactI18next).init({
-  resources,
+const API_URL = import.meta.env.VITE_TOLGEE_API_URL;
+const API_KEY = import.meta.env.VITE_TOLGEE_API_KEY;
+const staticData = getTranslations();
+
+console.log('API_URL', API_URL);
+console.log('API_KEY', API_KEY);
+
+let tolgee;
+if (!!API_URL && !!API_KEY) {
+  tolgee = Tolgee()
+    .use(InContextTools()) // 开发模式下可以在页面直接改翻译
+    .use(I18nextPlugin()) // 兼容 react-i18next
+    .init({
+      // for development
+      apiUrl: API_URL,
+      apiKey: API_KEY,
+      // defaultLanguage: 'zh_CN',
+      language,
+      staticData,
+      defaultNs: 'translation',
+    });
+} else {
+  tolgee = Tolgee().use(I18nextPlugin()).init({
+    staticData,
+    defaultNs: 'translation',
+  });
+}
+
+const i18nInit = withTolgee(i18n, tolgee).use(ICU).use(initReactI18next);
+i18nInit.init({
   lng: language,
   interpolation: {
     escapeValue: false,
   },
-});
 
-export { i18n as i18nInit };
+  react: {
+    useSuspense: false,
+  },
+});
+export { i18nInit, tolgee };
