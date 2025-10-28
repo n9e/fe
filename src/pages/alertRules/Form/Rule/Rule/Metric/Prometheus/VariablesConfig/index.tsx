@@ -45,8 +45,8 @@ export default function index(props: Props) {
 
   return (
     <>
-      <div className='mb2'>
-        <div className='mb1'>
+      <div className='mb-4'>
+        <div className='mb-2'>
           <Space>
             <span>{t('var_config.enable')}</span>
             <Form.Item {...field} name={[field.name, 'var_enabled']} valuePropName='checked' noStyle>
@@ -55,13 +55,13 @@ export default function index(props: Props) {
           </Space>
         </div>
         <div
-          className='mb1 p1'
+          className='mb-2 p-2'
           style={{
             display: var_enabled ? 'block' : 'none',
             backgroundColor: 'var(--fc-fill-4)',
           }}
         >
-          <div className='mb1'>
+          <div className='mb-2'>
             <Space>
               <span>{t('var_config.config')}</span>
               <PlusCircleOutlined

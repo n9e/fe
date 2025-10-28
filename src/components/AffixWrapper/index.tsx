@@ -12,7 +12,7 @@ export default function index(props: AffixProps) {
         setAffixed(affixed);
       }}
     >
-      <div className={!affixed ? 'mt2' : ''}>{children}</div>
+      <div className={!affixed ? 'mt-4' : ''}>{children}</div>
     </Affix>
   );
 }

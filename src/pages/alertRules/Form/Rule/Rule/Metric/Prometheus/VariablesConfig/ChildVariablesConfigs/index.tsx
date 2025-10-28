@@ -52,9 +52,9 @@ export default function index(props: Props) {
   if (!topVarEnabled || topParam === undefined || _.isEmpty(topParam)) return null;
   return (
     <>
-      <div className='mb1'>
+      <div className='mb-2'>
         {level === 1 ? (
-          <div className='mb1'>
+          <div className='mb-2'>
             <Space>
               <span>{t('var_config.filter')}</span>
               <PlusCircleOutlined
@@ -74,7 +74,7 @@ export default function index(props: Props) {
             </Space>
           </div>
         ) : (
-          <div className='mt1'>
+          <div className='mt-2'>
             <Space>
               <span>{t('var_config.add_subFilter')}</span>
               <PlusCircleOutlined
@@ -93,7 +93,7 @@ export default function index(props: Props) {
         )}
         {childVarConfigs !== undefined && childVarConfigs?.param_val !== undefined && !_.isEmpty(childVarConfigs?.param_val) && (
           <div
-            className='mb1 p1'
+            className='mb-2 p-2'
             style={{
               backgroundColor: `var(--fc-fill-${level + 3})`, // 从 4 开始
             }}

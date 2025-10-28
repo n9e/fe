@@ -66,7 +66,7 @@ const Detail = (props: any) => {
         </>
       }
     >
-      <div className='p2'>
+      <div className='p-4'>
         <Card title={t('common:btn.detail')}>
           <Spin spinning={loading}>
             <div className='job-task-table'>

@@ -135,7 +135,7 @@ export default function Index() {
   return (
     <PageLayout title={t('title')}>
       <div>
-        <div className='n9e-border-base flex-1 p-[16px]'>
+        <div className='fc-border flex-1 p-[16px]'>
           <div className='flex justify-end items-center'>
             <Button
               type='primary'
@@ -148,7 +148,7 @@ export default function Index() {
             </Button>
           </div>
 
-          <Table className='mt8' size='small' rowKey='id' showSorterTooltip={false} pagination={pagination} dataSource={data} columns={columns} />
+          <Table className='mt-2' size='small' rowKey='id' showSorterTooltip={false} pagination={pagination} dataSource={data} columns={columns} />
         </div>
       </div>
       <EmbeddedProductModal

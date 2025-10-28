@@ -21,7 +21,7 @@ export default function index(props: Props) {
     <Form.List {...field} name={name}>
       {(fields, { add, remove }) => (
         <>
-          <Row gutter={10} className='mb1'>
+          <Row gutter={10} className='mb-2'>
             <Col span={8}>
               <Space align='baseline' size={4}>
                 {t(`${NS}:attribute_filters`)}

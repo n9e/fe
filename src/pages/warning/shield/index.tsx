@@ -365,7 +365,7 @@ const Shield: React.FC = () => {
     <PageLayout title={t('title')} icon={<CloseCircleOutlined />}>
       <div className='shield-content'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
-        <div className='shield-index n9e-border-base' style={{ height: '100%', overflowY: 'auto' }}>
+        <div className='shield-index fc-border' style={{ height: '100%', overflowY: 'auto' }}>
           <div className='header'>
             <Space>
               <RefreshIcon

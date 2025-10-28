@@ -44,13 +44,13 @@ export default function index() {
     <PageLayout title={t('title')}>
       <div>
         <div
-          className='n9e-border-base'
+          className='border'
           style={{
             padding: 16,
           }}
         >
           <div
-            className='mb2'
+            className='mb-4'
             style={{
               display: 'flex',
               justifyContent: 'space-between',

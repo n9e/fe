@@ -76,7 +76,7 @@ export default function List() {
   return (
     <PageLayout title={<Space>{t('title')}</Space>} icon={<NotificationOutlined />}>
       <div className={`n9e ${CN}`}>
-        <div className='pb2 n9e-flex n9e-justify-between'>
+        <div className='pb-4 flex justify-between'>
           <Space>
             <Input
               placeholder={t('common:search_placeholder')}

@@ -221,7 +221,7 @@ export default function index(props: Props) {
               />
             </Resizable>
           </div>
-          <div className='w-full min-w-0 n9e-border-antd rounded-sm flex flex-col'>
+          <div className='w-full min-w-0 border border-antd rounded-sm flex flex-col'>
             <div className='h-full min-h-0 p-2 flex-shrink-0 flex flex-col'>
               <Histogram total={total} />
               <Content fields={fields} executeQuery={executeQuery} setTotal={setTotal} />

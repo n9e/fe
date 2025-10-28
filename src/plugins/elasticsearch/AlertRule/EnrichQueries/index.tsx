@@ -77,7 +77,7 @@ export default function index(props: IProps) {
           </div>
         )}
       </Form.List>
-      <div className='mt1'>
+      <div className='mt-2'>
         <EnrichQueryValuesMaxLen hidden={namesValue.length === 0} />
       </div>
     </>

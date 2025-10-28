@@ -90,7 +90,7 @@ export default function index(props: ITimeRangePickerProps) {
     };
     const val = moment(range ? range[key] : undefined, true);
     return (
-      <div className='mb10'>
+      <div className='mb-2'>
         <span>{labelMap[key]}</span>
         <Input.Group compact style={{ marginTop: 4 }}>
           <Input

@@ -61,7 +61,7 @@ const TagItem: React.FC<Itag> = ({ field, remove, form, fields, index }) => {
         </div>
       )}
       <div className='filter-settings-row-content' style={{ marginTop: 0 }}>
-        <Row gutter={10} className='mb2'>
+        <Row gutter={10} className='mb-4'>
           <Col flex='auto'>
             <Row gutter={10}>
               <Col span={5}>

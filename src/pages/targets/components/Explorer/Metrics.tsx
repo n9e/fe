@@ -143,7 +143,7 @@ export default function Metrics(props: Props) {
   }, []);
   return (
     <>
-      <div className='mb1'>
+      <div className='mb-2'>
         <Row gutter={[8, 8]}>
           <Col span={12}>
             <Select

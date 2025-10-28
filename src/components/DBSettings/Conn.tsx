@@ -19,7 +19,7 @@ export default function PermissionConn(props: IProps) {
   const namePrefix = ['settings'];
 
   return (
-    <div className='mb2'>
+    <div className='mb-4'>
       <Form.List name={[...namePrefix, `${type}.shards`]} initialValue={[{}]}>
         {(fields, { add, remove }) => (
           <>

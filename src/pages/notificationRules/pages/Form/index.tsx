@@ -54,7 +54,7 @@ export default function FormCpt(props: Props) {
       <Form.Item name='id' hidden>
         <Input />
       </Form.Item>
-      <Card className='mb2' title={<Space>{t('basic_configuration')}</Space>}>
+      <Card className='mb-4' title={<Space>{t('basic_configuration')}</Space>}>
         <Row gutter={SIZE}>
           <Col flex='auto'>
             <Row gutter={SIZE}>
@@ -86,7 +86,7 @@ export default function FormCpt(props: Props) {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='description' className='mb0'>
+        <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='description' className='mb-0'>
           <Input.TextArea />
         </Form.Item>
       </Card>

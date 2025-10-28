@@ -223,7 +223,7 @@ export default function index(props: Props) {
         </Row>
 
         <Table
-          className='mt8'
+          className='mt-2'
           size='small'
           rowKey='id'
           columns={teamMemberColumns}

@@ -159,7 +159,7 @@ function index(props: Props & ModalWrapProps) {
         )}
       </Space>
       <Table
-        className='mt2'
+        className='mt-4'
         size='small'
         rowKey='ident'
         loading={loading}

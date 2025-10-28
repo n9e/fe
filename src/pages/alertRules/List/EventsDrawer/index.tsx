@@ -401,7 +401,7 @@ export default function index(props: Props) {
         </Col>
       </Row>
       <Table
-        className='mt8 alert-rules-events-table'
+        className='mt-2 alert-rules-events-table'
         size='small'
         tableLayout='auto'
         scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题

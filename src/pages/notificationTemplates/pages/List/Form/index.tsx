@@ -42,7 +42,7 @@ export default function FormCpt(props: Props) {
                 })}
                 {!isEmailType && (
                   <Button
-                    className='mb2'
+                    className='mb-4'
                     type='dashed'
                     onClick={() => {
                       ContentKeyFormModal({

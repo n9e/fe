@@ -56,7 +56,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
 
   return (
     <>
-      <div className='mb1'>
+      <div className='mb-2'>
         <Form.List name={['rule_config', 'queries']}>
           {(fields, { add, remove }) => (
             <Card

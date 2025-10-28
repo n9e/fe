@@ -101,7 +101,7 @@ export default function Shard(props: IProps) {
         <div>
           <div>
             <Space
-              className='n9e-cursor-pointer'
+              className='cursor-pointer'
               onClick={() => {
                 setAdvancedVisible(!advancedVisible);
               }}

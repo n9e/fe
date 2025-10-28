@@ -340,5 +340,10 @@ const en_US = {
   enrich: {
     select_tip: 'Clone query conditions (leave blank to create directly without cloning)',
   },
+  pipeline_configuration: {
+    title: 'Event processing',
+    name_placeholder: 'Please select event processing workflow',
+    add_btn: 'Add event processing workflow',
+  },
 };
 export default en_US;

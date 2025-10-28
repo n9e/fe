@@ -50,7 +50,7 @@ export default function version() {
     >
       <div>
         {!IS_ENT && (
-          <ul className='n9e-border-base' style={{ padding: '20px 30px' }}>
+          <ul className='border' style={{ padding: '20px 30px' }}>
             <li>
               {t('frontend')}：{pkgJson.version}
             </li>

@@ -335,6 +335,11 @@ const ja_JP = {
   enrich: {
     select_tip: 'クエリ条件をコピー（空の場合は直接作成、コピーしません）',
   },
+  pipeline_configuration: {
+    title: 'イベント処理',
+    name_placeholder: 'イベント処理ワークフローを選択してください',
+    add_btn: 'イベント処理ワークフローを追加',
+  },
 };
 
 export default ja_JP;

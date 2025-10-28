@@ -123,7 +123,7 @@ function Card(props: Props, ref) {
       render(title, { id, tags }) {
         return (
           <>
-            <div className='mb1'>
+            <div className='mb-2'>
               <Link to={`/alert-cur-events/${id}`}>{title}</Link>
             </div>
             <div>
@@ -267,7 +267,7 @@ function Card(props: Props, ref) {
   return (
     <div className='event-content cur-events' style={{ display: 'flex', height: '100%' }} ref={Ref}>
       <CardLeft onRefreshRule={setRule} />
-      <div className='n9e-border-base' style={{ flex: 1, padding: 16, overflowY: 'auto' }}>
+      <div className='border' style={{ flex: 1, padding: 16, overflowY: 'auto' }}>
         {header}
         <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
           {cardList?.map((card, i) => (
