@@ -289,7 +289,7 @@ const ruleModal: React.FC<props> = (props) => {
           setSelectedRules([]);
         }}
       >
-        <div className='mb-4 p-2 rounded-sm border bg-fc-50'>
+        <div className='mb-4 p-2 rounded-sm fc-border bg-fc-50'>
           <Space wrap>
             <span>{t('sub_rule_selected')}: </span>
             {_.map(selectedRules, (item) => (

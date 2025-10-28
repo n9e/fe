@@ -36,7 +36,7 @@ export default function NotifyConfig(props: Props) {
   const ruleConfig = Form.useWatch(['notify_configs', field.name]);
 
   return (
-    <div key={field.key} className='p-4 mb-2 rounded bg-fc-200 border relative'>
+    <div key={field.key} className='p-4 mb-2 rounded bg-fc-200 fc-border relative'>
       {!disabled && (
         <div className='absolute right-[0px] top-[0px] z-1'>
           <Space>
@@ -71,7 +71,7 @@ export default function NotifyConfig(props: Props) {
           </Space>
         </div>
       )}
-      <div className='p-4 pb-0 mb-4 rounded bg-fc-100 border'>
+      <div className='p-4 pb-0 mb-4 rounded bg-fc-100 fc-border'>
         <Row gutter={SIZE}>
           <Col span={channelItem?.request_type !== 'flashduty' ? 12 : 24}>
             <ChannelSelect
@@ -90,7 +90,7 @@ export default function NotifyConfig(props: Props) {
         </Row>
         <ChannelParams prefixNamePath={['notify_configs']} field={field} channelItem={channelItem} />
       </div>
-      <div className='p-4 mb-4 rounded bg-fc-100 border'>
+      <div className='p-4 mb-4 rounded bg-fc-100 fc-border'>
         <div className='p-4 pb-0 mb-2 rounded bg-fc-150 flex'>
           <Form.Item {...field} label={t('notification_configuration.severities')} tooltip={t('notification_configuration.severities_tip')} name={[field.name, 'severities']}>
             <Checkbox.Group disabled={disabled}>

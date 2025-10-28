@@ -159,7 +159,7 @@ function index(props: Props & ModalWrapProps) {
           >
             <CodeMirror
               theme={darkMode ? 'dark' : 'light'}
-              className='border rounded-[2px]'
+              className='fc-border rounded-[2px]'
               height='300px'
               basicSetup
               editable
@@ -189,7 +189,7 @@ function index(props: Props & ModalWrapProps) {
           >
             <CodeMirror
               theme={darkMode ? 'dark' : 'light'}
-              className='border rounded-[2px]'
+              className='fc-border rounded-[2px]'
               height='300px'
               basicSetup
               editable

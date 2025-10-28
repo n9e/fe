@@ -107,7 +107,7 @@ function FormCpt(props: IProps, ref) {
                   />
                 </div>
               )}
-              <div className='border n9e-dashboard-editor-modal-left-chart-wrapper'>
+              <div className='fc-border n9e-dashboard-editor-modal-left-chart-wrapper'>
                 {values && (
                   <Renderer
                     id={id}
