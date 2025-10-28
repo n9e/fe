@@ -19,7 +19,7 @@ export const defaultRuleConfig = {
       ],
       severity: 2,
       recover_config: {
-        judge_type: 0,
+        judge_type: 1,
       },
     },
   ],
@@ -40,7 +40,7 @@ export const getDefaultRuleConfig = (cate: DatasourceCateEnum) => {
       return {
         ...triggerItem,
         recover_config: {
-          judge_type: isLogging ? 1 : 0, // 日志类数据源默认值改为 1，其他类型数据源默认值为 0
+          judge_type: isLogging ? 0 : 1, // 日志类数据源默认值改为 0，其他类型数据源默认值为 1
         },
       };
     }),
