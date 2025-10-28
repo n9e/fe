@@ -40,7 +40,7 @@ export default function Trigger(props: IProps) {
   const [expanded, setExpanded] = React.useState(false);
 
   return (
-    <div className='n9e-fill-color-3 p2'>
+    <div className='bg-fc-200 p-4'>
       <Form.Item {...prefixField} name={[...prefixName, 'mode']}>
         <Radio.Group buttonStyle='solid' size='small' disabled={disabled}>
           <Radio.Button value={0}>{t('datasource:es.alert.trigger.builder')}</Radio.Button>

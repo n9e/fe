@@ -38,9 +38,9 @@ export default function index(props: SelectProps & Props) {
         setOpen(visible);
       }}
       dropdownRender={(menu) => (
-        <div className='p2'>
+        <div className='p-4'>
           <div
-            className='n9e-flex n9e-justify-between n9e-gap-1 mb2'
+            className='flex justify-between gap-2 mb-4'
             onMouseDown={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -54,8 +54,8 @@ export default function index(props: SelectProps & Props) {
               options={_.map(_.sortBy(datasourceCateList, 'value'), (item) => {
                 return {
                   label: (
-                    <div className='n9e-flex n9e-justify-between'>
-                      <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                    <div className='flex justify-between'>
+                      <div className='flex items-center gap-2'>
                         <img src={item.logo} alt={item.label} height={16} />
                         {item.label}
                       </div>
@@ -63,7 +63,7 @@ export default function index(props: SelectProps & Props) {
                     </div>
                   ),
                   label2: (
-                    <div className='n9e-flex n9e-items-center n9e-gap-1'>
+                    <div className='flex items-center gap-2'>
                       <img src={item.logo} alt={item.label} height={16} />
                       {item.label}
                     </div>
@@ -95,7 +95,7 @@ export default function index(props: SelectProps & Props) {
           const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
           return {
             label: (
-              <div className='n9e-flex n9e-items-center n9e-gap-1'>
+              <div className='flex items-center gap-2'>
                 <img src={datasourceCate?.logo} alt={datasourceCate?.label} height={16} />
                 {item.name}
               </div>

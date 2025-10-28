@@ -20,7 +20,7 @@ export default function TestModal() {
       <Button
         ghost
         type='primary'
-        className='mt2'
+        className='mt-4'
         disabled={_.isEmpty(eventRelabelConfig)}
         onClick={() => {
           const validateNamePaths = _.map(eventRelabelConfig, (item, index) => {

@@ -49,7 +49,7 @@ export default function List() {
       <div className='shield-content'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div
-          className='n9e-border-base p2'
+          className='border p-4'
           style={{
             width: '100%',
             overflow: 'hidden auto',

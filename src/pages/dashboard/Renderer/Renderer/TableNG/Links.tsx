@@ -96,7 +96,7 @@ function Links(props: Props, ref) {
 
   return (
     <div
-      className='n9e-dashboard-panel-table-ng-links-popover n9e-fill-color-3 pb-2 min-w-[120px] max-w-[400px] rounded n9e-base-shadow'
+      className='n9e-dashboard-panel-table-ng-links-popover bg-fc-200 pb-2 min-w-[120px] max-w-[400px] rounded n9e-base-shadow'
       ref={linksPopverRef}
       style={{ display: visible ? 'block' : 'none' }}
     >

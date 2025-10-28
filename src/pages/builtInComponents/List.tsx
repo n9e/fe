@@ -58,7 +58,7 @@ export default function index() {
     <PageLayout title={t('title')} icon={<SafetyCertificateOutlined />}>
       <div>
         <div style={{ background: 'unset' }}>
-          <div className='mb2' style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div className='mb-4' style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Input
               prefix={<SearchOutlined />}
               style={{ width: 300 }}
@@ -116,7 +116,7 @@ export default function index() {
                           <Button
                             size='small'
                             type='link'
-                            className='p0'
+                            className='p-0'
                             onClick={(e) => {
                               e.stopPropagation();
                               ComponentFormModal({
@@ -136,7 +136,7 @@ export default function index() {
                             size='small'
                             type='link'
                             danger
-                            className='p0'
+                            className='p-0'
                             icon={<DeleteOutlined />}
                             onClick={(e) => {
                               e.stopPropagation();

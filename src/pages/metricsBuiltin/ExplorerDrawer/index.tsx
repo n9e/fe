@@ -72,7 +72,7 @@ export default function ExplorerDrawer(props: Props) {
                 danger
                 ghost
                 type='dashed'
-                className='mb2'
+                className='mb-4'
                 style={{ width: '100%' }}
                 onClick={() => {
                   setPanels([panels[0]]);

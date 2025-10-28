@@ -68,7 +68,7 @@ export default function FieldsItem(props: Props) {
       content={
         <div>
           <Spin spinning={topNLoading}>
-            <div className='n9e-fill-color-3 p-4'>
+            <div className='bg-fc-200 p-4'>
               <Row>
                 {_.map(stats, (statValue, statName) => {
                   if (statName === 'unique_count') {
@@ -170,9 +170,7 @@ export default function FieldsItem(props: Props) {
     >
       <Tooltip placement='left' title={field.indexable === false && t('stats.unindexable')}>
         <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'>
-          <span className='w-[16px] h-[16px] flex-shrink-0 n9e-fill-color-3 rounded flex justify-center items-center'>
-            {typeIconMap[typeMap[field.type]] || <QuestionOutlined />}
-          </span>
+          <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
           <span
             style={{
               width: 'calc(100% - 26px)',

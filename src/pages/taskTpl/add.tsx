@@ -55,7 +55,7 @@ const Add = (props: any) => {
         </>
       }
     >
-      <div className='p2'>
+      <div className='p-4'>
         <Card title={t('common:btn.create')}>
           <TplForm
             bgid={_.toNumber(curBusiId)}

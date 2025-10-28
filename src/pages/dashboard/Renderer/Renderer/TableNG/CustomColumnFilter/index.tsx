@@ -25,7 +25,7 @@ const CustomColumnFilter = ({ state, onStateChange, onAction, api }: CustomFilte
   });
 
   return (
-    <div className='w-[200px] p-2 n9e-base-shadow n9e-fill-color-2 rounded'>
+    <div className='w-[200px] p-2 n9e-base-shadow bg-fc-100 rounded'>
       <div className='mb-2'>
         <Input
           ref={refInput}

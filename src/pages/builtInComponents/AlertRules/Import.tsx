@@ -70,7 +70,7 @@ function Import(props: IProps & ModalWrapProps) {
       }}
       footer={null}
     >
-      {!allowSubmit && <Alert className='mb1' message={t('import_to_buisGroup_invaild')} type='error' showIcon />}
+      {!allowSubmit && <Alert className='mb-2' message={t('import_to_buisGroup_invaild')} type='error' showIcon />}
       <Form
         layout='vertical'
         form={form}

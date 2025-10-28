@@ -107,7 +107,7 @@ const Resource: React.FC = () => {
       render: (text: string, record) => (
         <Button
           type='link'
-          className='p0'
+          className='p-0'
           danger
           onClick={() => {
             let params = {
@@ -380,7 +380,7 @@ const Resource: React.FC = () => {
                 </Button>
               </Row>
 
-              <Table className='mt8' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} pagination={pagination} />
+              <Table className='mt-2' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} pagination={pagination} />
             </div>
           ) : (
             <div className='blank-busi-holder'>

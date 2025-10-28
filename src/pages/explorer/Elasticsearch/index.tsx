@@ -502,7 +502,7 @@ export default function index(props: IProps) {
                     <strong>{total}</strong>
                     hits
                     <div style={{ width: 40, height: 32, lineHeight: '32px' }}>
-                      <Spin spinning={timeseriesLoading} size='small' className='ml1' />
+                      <Spin spinning={timeseriesLoading} size='small' className='ml-2' />
                     </div>
                   </Space>
                   {!_.isEmpty(series) && (
@@ -618,7 +618,7 @@ export default function index(props: IProps) {
                 )}
               </div>
               <FullscreenButton.Provider>
-                <div className='p1 n9e-flex n9e-justify-between n9e-items-center'>
+                <div className='p-2 flex justify-between items-center'>
                   <div>
                     <Space>
                       <FullscreenButton />

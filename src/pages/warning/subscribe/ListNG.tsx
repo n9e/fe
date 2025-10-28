@@ -273,7 +273,7 @@ const Subscribe = (props: Props) => {
                         <Button
                           danger
                           type='link'
-                          className='p0 height-auto'
+                          className='p-0 h-auto'
                           onClick={async () => {
                             confirm({
                               title: t('common:confirm.delete'),

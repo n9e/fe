@@ -1,105 +1,51 @@
+/* 禁止随意在此文件中添加样式
+ * 此文件用于重置全局默认样式
+ */
+
 @import './variable.css';
 @import './antd.light-gold.less';
 @import './antd.dark.less';
-@import './dark.less';
-@import './light.less';
 @import './default.less';
+@import './default.light.less';
+@import './default.dark.less';
+@import './default.light-gold.less';
+@import './deprecated.less';
 
-// 全局样式，快速兼容一些之前 style 的写法
-.n9e-fill-color-1 {
-  background-color: var(--fc-fill-1);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.n9e-fill-color-2 {
-  background-color: var(--fc-fill-2);
-}
+@layer base {
 
-.n9e-fill-color-2-5 {
-  background-color: var(--fc-fill-2-5);
-}
+  /* 重置默认样式 */
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--fc-border-color);
+  }
 
-.n9e-fill-color-3 {
-  background-color: var(--fc-fill-3);
-}
+  /* 2024-12-26 v8 版本解决图表 Tooltip 容器会撑开页面导致滚动条出现的问题 */
+  body {
+    overflow: hidden;
+  }
 
-.n9e-fill-color-4 {
-  background-color: var(--fc-fill-4);
-}
+  html {
+    /* 不知道这个样式是用于什么，这里先暂时移过来 */
+    --slider-rail: linear-gradient(to right, #45d678 0, #45d678 100%);
+    /* 1rem = 16px */
+    font-size: 16px;
+  }
 
-.n9e-fill-color-5 {
-  background-color: var(--fc-fill-5);
-}
+  @font-face {
+    font-family: Monda-Regular;
+    src: url('../font/Monda-Regular.ttf');
+  }
 
-.n9e-border-color {
-  border-color: var(--fc-border-color);
-}
-
-.n9e-border-base {
-  border: 1px solid var(--fc-border-color);
-}
-
-.n9e-border-antd {
-  border: 1px solid var(--fc-antd-border-color);
-}
-
-.n9e-border-radius-base {
-  border-radius: 2px;
-}
-
-/* 解决跟 tailwindcss 与 css variable 冲突的问题 */
-.border-fc-200 {
-  border-color: var(--fc-fill-3) !important;
-}
-
-.border-fc-300 {
-  border-color: var(--fc-fill-4) !important;
-}
-
-.border-fc-400 {
-  border-color: var(--fc-fill-5) !important;
-}
-
-.bg-fc-200 {
-  background-color: var(--fc-fill-3) !important;
-}
-
-.bg-fc-200 {
-  background-color: var(--fc-fill-3) !important;
-}
-
-.hover\:bg-fc-200:hover {
-  background-color: var(--fc-fill-3) !important;
-}
-
-.text-primary {
-  color: var(--fc-primary-color) !important;
-}
-
-.text-primary-80 {
-  color: rgba(var(--fc-text-link-rgb), 0.8)
-}
-
-/* 解决跟 tailwindcss 与 css variable 冲突的问题 */
-/* antd */
-.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
-  background-color: fade(@primary-color, 10%);
-}
-
-mark {
-  background-color: mark !important;
-  color: marktext !important;
-}
-
-.theme-dark .ant-table-tbody>tr.ant-table-row:hover>td,
-.theme-dark .ant-table-tbody>tr>td.ant-table-cell-row-hover {
-  // 原本 rgba(204, 204, 220, 0.08) 带透明度的颜色会导致启用 fixed column 时被遮挡的内容透出问题
-  background: #262626 !important;
-}
-
-/* antd */
-
-.theme-light-gold {
-  .is-active {
-    background: #fff2cb;
+  @font-face {
+    font-family: codicon;
+    src: url('../font/codicon.ttf');
   }
 }

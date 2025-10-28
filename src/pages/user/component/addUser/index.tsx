@@ -135,7 +135,7 @@ const AddUser: React.FC<TeamProps> = (props: TeamProps) => {
         }}
       />
       <Table
-        className='mt8'
+        className='mt-2'
         size='small'
         rowKey='id'
         columns={userColumn}

@@ -151,7 +151,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
 
   return (
     <main
-      className='p2 subscription-rules-form'
+      className='p-4 subscription-rules-form'
       style={{
         overflow: 'hidden auto',
       }}
@@ -180,12 +180,12 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           new_channels: detail?.new_channels ? detail?.new_channels?.split(' ') : [],
         }}
       >
-        <Card {...panelBaseProps} title={t('basic_configs')} className='mb2'>
+        <Card {...panelBaseProps} title={t('basic_configs')} className='mb-4'>
           <Form.Item label={t('note')} name='note'>
             <Input />
           </Form.Item>
         </Card>
-        <Card {...panelBaseProps} title={t('filter_configs')} className='mb2'>
+        <Card {...panelBaseProps} title={t('filter_configs')} className='mb-4'>
           <Row gutter={10}>
             <Col span={!cate || cate === 'host' ? 24 : 12}>
               <Form.Item label={t('common:datasource.type')} name='cate'>
@@ -302,7 +302,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                   <>
                     <Row gutter={10}>
                       <Col flex='auto'>
-                        <Row gutter={10} className='mb1'>
+                        <Row gutter={10} className='mb-2'>
                           <Col span={8}>
                             <Space>
                               <span>{t('group.key.label')}</span>
@@ -387,7 +387,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 </Form.Item>
               </div>
             </div>
-            <div className='mt16 mb16'>
+            <div className='mt-4 mb-4'>
               <Space>
                 {t('redefine_channels')}
                 <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
@@ -411,12 +411,12 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                     })}
                   </Checkbox.Group>
                 </Form.Item>
-                <div className='mt16'>
+                <div className='mt-4'>
                   <NotifyChannelsTpl contactList={contactList} notify_channels={new_channels} name={['extra_config', 'custom_notify_tpl']} />
                 </div>
               </div>
             </div>
-            <div className='mb16'>
+            <div className='mb-4'>
               <Space>
                 {t('redefine_webhooks')}
                 <Form.Item name='redefine_webhooks' valuePropName='checked' noStyle>

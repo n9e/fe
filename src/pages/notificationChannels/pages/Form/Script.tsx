@@ -33,7 +33,7 @@ export default function Script() {
         <Form.Item label={t('script_request_config.script.label')} name={[...names, 'script']} rules={[{ required: isRequired }]}>
           <CodeMirror
             height='400px'
-            className='n9e-border-base'
+            className='border'
             basicSetup
             editable
             extensions={[

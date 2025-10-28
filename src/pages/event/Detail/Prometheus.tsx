@@ -30,7 +30,7 @@ export default function PrometheusDetail(props: IProps) {
                   <div key={idx}>
                     <Space align='baseline' size={2}>
                       <Button
-                        className='p0'
+                        className='p-0'
                         style={{
                           position: 'relative',
                           top: 1,
@@ -91,7 +91,7 @@ export default function PrometheusDetail(props: IProps) {
           <div style={{ width: '100%' }}>
             <Space align='baseline' size={2}>
               <Button
-                className='p0'
+                className='p-0'
                 style={{
                   position: 'relative',
                   top: 1,

@@ -184,7 +184,7 @@ export default function index(props: Props) {
                     <Button
                       danger
                       type='link'
-                      className='p0 height-auto'
+                      className='p-0 h-auto'
                       onClick={() => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
@@ -243,7 +243,7 @@ export default function index(props: Props) {
   return (
     <>
       <div
-        className='mb8'
+        className='mb-2'
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -411,7 +411,7 @@ export default function index(props: Props) {
         </Space>
       </div>
       <Table
-        className='mt8'
+        className='mt-2'
         size='small'
         rowKey='id'
         {...tableProps}

@@ -99,7 +99,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, reload
           enabled: false,
         }}
       >
-        {!allowSubmit && <Alert className='mb1' message={t('builtInComponents:import_to_buisGroup_invaild')} type='error' showIcon />}
+        {!allowSubmit && <Alert className='mb-2' message={t('builtInComponents:import_to_buisGroup_invaild')} type='error' showIcon />}
         <Form.Item
           label={`${t('batch.import.name')} JSON`}
           name='import'

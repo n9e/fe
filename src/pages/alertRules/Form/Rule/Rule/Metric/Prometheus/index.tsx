@@ -144,11 +144,11 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                       prefixName={['rule_config', 'queries', field.name, 'var_config', 'child_var_configs']}
                       level={1}
                     />
-                    <div className='mb2'>
+                    <div className='mb-4'>
                       <Severity field={field} />
                     </div>
                     {IS_PLUS && <AdvancedSettings field={field} />}
-                    <div className='mt2'>
+                    <div className='mt-4'>
                       <GraphPreview form={form} fieldName={field.name} />
                     </div>
                     <MinusCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
