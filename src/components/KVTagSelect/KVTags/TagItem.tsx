@@ -71,7 +71,13 @@ const TagItem = (props: Props) => {
               {field.name !== 0 && <div className='w-[32px] h-[32px] leading-[32px] text-center n9e-fill-color-2 n9e-border-antd rounded-sm flex-shrink-0'>{t('common:and')}</div>}
               <div className='w-full min-w-0'>
                 <Form.Item name={[field.name, keyName]} rules={[{ required: true, message: t('tag.key.msg') }]}>
-                  <AutoComplete showSearch options={keyOptions} placeholder={t('tag.key.placeholder')} onChange={onKeyChange} />
+                  <AutoComplete
+                    showSearch
+                    options={keyOptions}
+                    placeholder={t('tag.key.placeholder')}
+                    onChange={onKeyChange}
+                    filterOption={(inputValue, option) => _.includes(option?.label, inputValue)}
+                  />
                 </Form.Item>
               </div>
             </div>
@@ -120,7 +126,12 @@ const TagItem = (props: Props) => {
               </Form.Item>
             ) : (
               <Form.Item name={[field.name, valueName]} rules={[{ required: true, message: t('tag.value.msg') }]}>
-                <AutoComplete options={data} placeholder={t('tag.value.placeholder')} notFoundContent={loading ? <Spin size='small' /> : null} />
+                <AutoComplete
+                  options={data}
+                  placeholder={t('tag.value.placeholder')}
+                  notFoundContent={loading ? <Spin size='small' /> : null}
+                  filterOption={(inputValue, option) => _.includes(option?.label, inputValue)}
+                />
               </Form.Item>
             )}
           </Col>

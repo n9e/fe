@@ -82,6 +82,10 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
             { key: '/alert-his-events', role: ['Admin'], label: 'menu.his_events' },
           ],
         },
+        {
+          key: '/event-pipelines',
+          label: 'menu.event_pipeline',
+        },
       ],
     },
     {

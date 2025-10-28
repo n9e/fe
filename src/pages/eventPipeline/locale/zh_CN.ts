@@ -1,7 +1,7 @@
 const zh_CN = {
-  title: '事件管道',
-  title_add: '新增事件管道',
-  title_edit: '编辑事件管道',
+  title: '工作流',
+  title_add: '新增事件工作流',
+  title_edit: '编辑事件工作流',
   teams: '授权团队',
   teams_tip: '限定哪些团队成员可以查看和修改此配置，可以关联多个团队<br />例如：将配置授权给 infra-team，则只有 infra-team 团队下的成员可以访问或调整本配置。',
   basic_configuration: '基本配置',
@@ -174,6 +174,10 @@ const zh_CN = {
 
 示例：填写 业务组==DefaultBusiGroup，表示仅当活跃事件的"业务组"属性为 DefaultBusiGroup 时，才会被筛选出来，用作后续的事件抑制流程`,
     },
+  },
+  inhibit_qd: {
+    help: '按查询结果抑制事件：当告警触发时，会执行下方数据查询；若返回至少一条数据，则抑制本次告警（不再通知）；无数据则正常通知。更多说明见 <a>使用文档</a>',
+    t_1: '且 查询到以下 <b>数据</b>',
   },
 };
 export default zh_CN;
