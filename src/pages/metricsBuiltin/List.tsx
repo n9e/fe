@@ -328,11 +328,11 @@ export default function index() {
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
       <div className='built-in-metrics-container'>
         <Collapse collapseLocalStorageKey='built-in-metrics-filters-collapse' widthLocalStorageKey='built-in-metrics-filters-width' defaultWidth={240} tooltip={t('filter.title')}>
-          <div className='border p-4 built-in-metrics-filter'>
+          <div className='fc-border p-4 built-in-metrics-filter'>
             <Filters ref={filtersRef} />
           </div>
         </Collapse>
-        <div className='border p-4 built-in-metrics-main'>
+        <div className='fc-border p-4 built-in-metrics-main'>
           <div
             className='mb-2'
             style={{

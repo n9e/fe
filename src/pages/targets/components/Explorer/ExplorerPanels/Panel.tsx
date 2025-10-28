@@ -30,7 +30,7 @@ export default function Panel(props: Props) {
   const headerExtraRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className='bg-fc-100 border' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
+    <div className='bg-fc-100 fc-border' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
       <div className='explorer-container'>
         <Form
           form={form}

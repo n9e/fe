@@ -32,7 +32,7 @@ export default function index(props: Props) {
         style={{
           height: 'calc(100% - 32px)',
         }}
-        className='overflow-y-auto mt-[-1px] border border-antd border-t-0 rounded-bl-sm rounded-br-sm py-2'
+        className='overflow-y-auto mt-[-1px] fc-border border-antd border-t-0 rounded-bl-sm rounded-br-sm py-2'
       >
         {_.map(
           _.filter(fields, (item) => {

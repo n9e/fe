@@ -37,7 +37,7 @@ export default function SideMenuColorSetting() {
             return (
               <div key={value}>
                 <Radio value={value}>{desc}</Radio>
-                <div className='mt-1 flex h-12 w-20 cursor-default overflow-hidden rounded border border-solid border-fc-400'>
+                <div className='mt-1 flex h-12 w-20 cursor-default overflow-hidden rounded fc-border'>
                   <div
                     className={cn('h-full w-6 shrink-0 border-0 border-r border-solid border-fc-300')}
                     style={{

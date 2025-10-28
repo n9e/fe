@@ -135,7 +135,7 @@ export default function Index() {
   return (
     <PageLayout title={t('title')}>
       <div>
-        <div className='border flex-1 p-[16px]'>
+        <div className='fc-border flex-1 p-[16px]'>
           <div className='flex justify-end items-center'>
             <Button
               type='primary'

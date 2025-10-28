@@ -102,7 +102,7 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean
           {item.label}
           {item.beta && (
             <span
-              className='absolute border text-[9px] px-[3px] py-[1px] right-[25px] top-[4px] h-[18px] scale-75 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 text-yellow-700'
+              className='absolute fc-border text-[9px] px-[3px] py-[1px] right-[25px] top-[4px] h-[18px] scale-75 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 text-yellow-700'
               style={{ lineHeight: '15px' }}
             >
               Beta

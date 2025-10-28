@@ -108,7 +108,7 @@ export default class VerticalResizer extends React.PureComponent<VerticalResizer
       // position, e.g. highlight the change. Draw the highlight via `left` and
       // `right` css styles (simpler than using `width`).
       const draggerLeft = `${Math.min(position, dragPosition) * 100}%`;
-      // subtract 1px for draggerRight to deal with the right border being off
+      // subtract 1px for draggerRight to deal with the right fc-border being off
       // by 1px when dragging left
       const draggerRight = `calc(${(1 - Math.max(position, dragPosition)) * 100}% - 1px)`;
       draggerStyle = { left: draggerLeft, right: draggerRight, height };

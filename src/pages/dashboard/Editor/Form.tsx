@@ -94,7 +94,7 @@ function FormCpt(props: IProps, ref) {
                 <span>{t('var.vars')}</span>
                 <div ref={props.editModalVariablecontainerRef} />
               </div>
-              <div className='border n9e-dashboard-editor-modal-left-chart-wrapper'>
+              <div className='fc-border n9e-dashboard-editor-modal-left-chart-wrapper'>
                 {values && <Renderer id={id} time={range} timezone={timezone} values={values} isPreview themeMode={darkMode ? 'dark' : undefined} annotations={[]} />}
               </div>
               {!_.includes(['text', 'iframe'], type) && (

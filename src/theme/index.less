@@ -18,14 +18,6 @@
 @layer base {
 
   /* 重置默认样式 */
-  *,
-  ::before,
-  ::after {
-    box-sizing: border-box;
-    border-width: 0;
-    border-style: solid;
-    border-color: var(--fc-border-color);
-  }
 
   /* 2024-12-26 v8 版本解决图表 Tooltip 容器会撑开页面导致滚动条出现的问题 */
   body {
@@ -47,5 +39,19 @@
   @font-face {
     font-family: codicon;
     src: url('../font/codicon.ttf');
+  }
+}
+
+@layer utilities {
+
+  /* 给默认的 border 追加样式 */
+  .border {
+    border-style: solid !important;
+  }
+
+  .fc-border {
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: var(--fc-border-color) !important;
   }
 }

@@ -35,7 +35,7 @@ limitations under the License.
   opacity: 0.2;
 }
 
-/* border-color inherit must come AFTER other border declarations for accent */
+/* border-color inherit must come AFTER other fc-border declarations for accent */
 .detail-row-expanded-accent::before,
 .detail-row-expanded-accent::after {
   border-color: inherit;

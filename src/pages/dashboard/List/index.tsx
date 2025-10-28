@@ -119,7 +119,7 @@ export default function index() {
           allOptionLabel={t('default_filter.all')}
           allOptionTooltip={t('default_filter.all_tip')}
         />
-        <div className='border dashboards-v2'>
+        <div className='fc-border dashboards-v2'>
           <Header
             gids={gids}
             selectRowKeys={selectRowKeys}
