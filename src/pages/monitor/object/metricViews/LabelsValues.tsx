@@ -49,7 +49,9 @@ export default function LabelsValues(props: IProps) {
 
   useEffect(() => {
     const dynamicLabelsRequests = _.map(dynamicLabels, (item) => {
-      return getLabelValues(datasourceValue, item.label, range, filtersStr ? `{${filtersStr}}` : '');
+      const dynamicLabelsStr = getDynamicLabelsStr(dynamicLabels, item.label);
+      const matchStr = _.join(_.compact(_.concat(filtersStr, dynamicLabelsStr)), ',');
+      return getLabelValues(datasourceValue, item.label, range, matchStr ? `{${matchStr}}` : '');
     });
     Promise.all(dynamicLabelsRequests).then((res) => {
       const _labelValues = {};
@@ -58,7 +60,7 @@ export default function LabelsValues(props: IProps) {
       });
       setLabelValues(_labelValues);
     });
-  }, [filtersStr, datasourceValue, _.join(_.map(dynamicLabels, 'label'))]);
+  }, [filtersStr, datasourceValue, JSON.stringify(dynamicLabels)]);
 
   useEffect(() => {
     const matchStr = _.join(_.compact(_.concat(filtersStr, dynamicLabelsStr)), ',');

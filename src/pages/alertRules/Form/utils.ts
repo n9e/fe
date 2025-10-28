@@ -4,7 +4,7 @@ import moment from 'moment';
 import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 
-import { defaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
+import { getDefaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
 // @ts-ignore
 import * as alertUtils from 'plus:/parcels/AlertRule/utils';
@@ -242,6 +242,7 @@ export function processInitialValues(values) {
 }
 
 export function getDefaultValuesByCate(prod, cate) {
+  const defaultRuleConfig = getDefaultRuleConfig(cate);
   if (cate === 'host') {
     return {
       prod,

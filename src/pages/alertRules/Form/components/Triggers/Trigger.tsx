@@ -58,13 +58,14 @@ export default function Trigger(props: IProps) {
           }
         }}
       </Form.Item>
-      <div className='mb1'>
+      <div className='mb-4'>
         <Severity field={prefixField} disabled={disabled} />
       </div>
+      <RecoverConfig {...props} />
       <div>
-        <div className='mb1'>
+        <div className='mb-2'>
           <Space
-            className='n9e-cursor-pointer'
+            className='cursor-pointer'
             onClick={() => {
               setExpanded(!expanded);
             }}
@@ -78,7 +79,6 @@ export default function Trigger(props: IProps) {
             display: expanded ? 'block' : 'none',
           }}
         >
-          <RecoverConfig {...props} />
           <Joins {...props} />
         </div>
       </div>
