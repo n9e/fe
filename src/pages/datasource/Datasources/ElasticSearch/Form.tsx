@@ -62,7 +62,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                 <>
                   <span>{t('form.es.min_interval')}</span>
                   <Tooltip title={t('form.es.min_interval_tip')}>
-                    <InfoCircleOutlined className='ml8' />
+                    <InfoCircleOutlined className='ml-2' />
                   </Tooltip>
                 </>
               }
@@ -74,7 +74,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             </Form.Item>
           </Col>
         </Row>
-        <Space className='mb8'>
+        <Space className='mb-2'>
           <span>{t('form.es.enable_write')}</span>
           <Form.Item name={['settings', `enable_write`]} valuePropName='checked' noStyle>
             <Switch />

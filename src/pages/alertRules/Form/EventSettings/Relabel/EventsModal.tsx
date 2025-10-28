@@ -178,7 +178,7 @@ export default function EventsModal(props: Props) {
         </div>
         <Table
           rowKey={(record) => record.id}
-          className='mt8'
+          className='mt-2'
           size='small'
           columns={[
             {

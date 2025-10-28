@@ -101,7 +101,7 @@ export default function index() {
   return (
     <PageLayout title={t('dependencies')}>
       <div>
-        <div className='n9e-border-base p2'>
+        <div className='border p-4'>
           <Space>
             <InputGroupWithFormItem label={t('common:datasource.type')}>
               <Select dropdownMatchSelectWidth={false} style={{ width: 90 }} value='jaeger'>

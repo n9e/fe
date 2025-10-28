@@ -70,7 +70,7 @@ export default function index() {
   return (
     <>
       <Card
-        className='mb2'
+        className='mb-4'
         title={
           <Space>
             {t('pipeline_configuration.title')}

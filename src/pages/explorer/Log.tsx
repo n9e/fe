@@ -48,7 +48,7 @@ const MetricExplorerPage = () => {
                 right: (
                   <Tooltip title={t('clear_tabs_tip')}>
                     <a
-                      className='pl2'
+                      className='pl-4'
                       onClick={() => {
                         // 只保留当前 tab
                         const newItems = [items.find((item) => item.key === activeKey)!];

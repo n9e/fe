@@ -3,13 +3,52 @@
 @cardBackgroundColor: var(--fc-fill-2);
 
 .theme-dark {
+  .affix-bottom-shadow {
+    box-shadow: 0px -4px 30px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .n9e-ant-from-item-tooltip {
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  /* antd */
+  .n9e-antd-table-with-border-collapse {
+    table {
+      border-collapse: collapse !important;
+
+      thead {
+        border-left: 10px solid #23252b !important;
+      }
+    }
+  }
+
+  .ant-table-tbody>tr.ant-table-row:hover>td,
+  .ant-table-tbody>tr>td.ant-table-cell-row-hover {
+    // 原本 rgba(204, 204, 220, 0.08) 带透明度的颜色会导致启用 fixed column 时被遮挡的内容透出问题
+    background: #262626 !important;
+  }
+
+  .ant-tag-purple {
+    color: var(--fc-text-link) !important;
+    background: rgba(var(--fc-text-link-rgb), 0.2) !important;
+    border-color: rgba(var(--fc-text-link-rgb), 0.3) !important;
+  }
+
+  .ant-btn-dangerous.ant-btn-link {
+    color: var(--fc-fill-error);
+  }
+
+  .ant-segmented-item-selected {
+    background-color: var(--fc-fill-5);
+  }
+
+  /* antd */
 
   a,
   .ant-btn-link {
     color: rgb(148, 112, 255);
   }
 
-  color-scheme: dark;
   background-color: @backgroupColor;
   color: @baseColor;
 
@@ -83,20 +122,5 @@
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     background: unset;
-  }
-
-  /** 覆盖 antd 样式 */
-  .ant-tag-purple {
-    color: var(--fc-text-link) !important;
-    background: rgba(var(--fc-text-link-rgb), 0.2) !important;
-    border-color: rgba(var(--fc-text-link-rgb), 0.3) !important;
-  }
-
-  .ant-btn-dangerous.ant-btn-link {
-    color: var(--fc-fill-error);
-  }
-
-  .ant-segmented-item-selected {
-    background-color: var(--fc-fill-5);
   }
 }

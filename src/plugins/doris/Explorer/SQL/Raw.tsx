@@ -100,7 +100,7 @@ function Raw(props: IProps) {
     <>
       {!_.isEmpty(logs) ? (
         <div className='h-full min-h-0'>
-          <div className='h-full min-h-0 n9e-border-antd rounded flex flex-col'>
+          <div className='h-full min-h-0 border border-antd rounded flex flex-col'>
             <FullscreenButton.Provider>
               <div className='flex-shrink-0 flex justify-between p-2'>
                 <Space>

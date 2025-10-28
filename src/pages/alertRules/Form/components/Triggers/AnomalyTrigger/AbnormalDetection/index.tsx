@@ -11,7 +11,7 @@ export default function index({ disabled }: { disabled?: boolean }) {
 
   return (
     <>
-      <Space className='mb1'>
+      <Space className='mb-2'>
         {t('detect.advanced')}
         <a onClick={() => setSettingsVisible(!settingsVisible)}>{settingsVisible ? t('detect.collapse') : t('detect.expand')}</a>
       </Space>

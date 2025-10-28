@@ -119,7 +119,7 @@ export default function index() {
           allOptionLabel={t('default_filter.all')}
           allOptionTooltip={t('default_filter.all_tip')}
         />
-        <div className='n9e-border-base dashboards-v2'>
+        <div className='border dashboards-v2'>
           <Header
             gids={gids}
             selectRowKeys={selectRowKeys}
@@ -140,7 +140,7 @@ export default function index() {
             }}
           />
           <Table
-            className='mt8'
+            className='mt-2'
             dataSource={data}
             columns={ajustColumns(
               _.concat(
@@ -312,7 +312,7 @@ export default function index() {
                                 <Menu.Item>
                                   <Button
                                     type='link'
-                                    className='p0 height-auto'
+                                    className='p-0 h-auto'
                                     onClick={() => {
                                       FormModal({
                                         action: 'edit',
@@ -332,7 +332,7 @@ export default function index() {
                                 <Menu.Item>
                                   <Button
                                     type='link'
-                                    className='p0 height-auto'
+                                    className='p-0 h-auto'
                                     onClick={async () => {
                                       Modal.confirm({
                                         title: t('common:confirm.clone'),
@@ -353,7 +353,7 @@ export default function index() {
                               <Menu.Item>
                                 <Button
                                   type='link'
-                                  className='p0 height-auto'
+                                  className='p-0 h-auto'
                                   onClick={async () => {
                                     const exportData = await getDashboard(record.id);
                                     Export({
@@ -369,7 +369,7 @@ export default function index() {
                                   <Button
                                     danger
                                     type='link'
-                                    className='p0 height-auto'
+                                    className='p-0 h-auto'
                                     onClick={async () => {
                                       Modal.confirm({
                                         title: t('common:confirm.delete'),

@@ -99,7 +99,7 @@ export default function index(props: Props) {
         {(fields, { add, remove }) => (
           <>
             <Button
-              className='mb2'
+              className='mb-4'
               style={{ width: '100%' }}
               onClick={() => {
                 add(

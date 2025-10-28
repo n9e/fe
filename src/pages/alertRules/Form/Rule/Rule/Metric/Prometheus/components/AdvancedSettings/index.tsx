@@ -19,7 +19,7 @@ export default function index(prosp: Props) {
 
   return (
     <div>
-      <div className='mb1'>
+      <div className='mb-2'>
         <Space
           className='cursor-pointer'
           onClick={() => {

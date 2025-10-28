@@ -84,7 +84,7 @@ function Marker({ annotation, content, timeZone, onEdit, onDelete }) {
       content={
         <div>
           <div>{description}</div>
-          <div className='mt1'>
+          <div className='mt-2'>
             {_.map(tags, (item, idx) => {
               return (
                 <Tag color='green' key={item + idx}>

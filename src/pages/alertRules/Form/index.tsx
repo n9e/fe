@@ -127,7 +127,7 @@ export default function index(props: IProps) {
     >
       <div style={{ overflow: 'hidden auto', padding: 0 }} ref={containerRef}>
         <Form form={form} layout='vertical' disabled={disabled} style={{ background: 'unset' }}>
-          <div className='p2'>
+          <div className='p-4'>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {editable === false && (
                 <Affix

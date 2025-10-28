@@ -31,7 +31,7 @@ export default function EventDetail() {
         const triggers = _.get(val, 'triggers', []);
         return _.map(triggers, (item, idx) => {
           return (
-            <div key={idx} className='n9e-fill-color-3' style={{ padding: 8 }}>
+            <div key={idx} className='bg-fc-200' style={{ padding: 8 }}>
               <span style={{ paddingRight: 4 }}>{item.exp}</span>
               <span>
                 {i18next.t('AlertCurEvents:detail.trigger')} {`${i18next.t(`common:severity.${item?.severity}`)}`}

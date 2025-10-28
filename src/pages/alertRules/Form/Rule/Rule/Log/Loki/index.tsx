@@ -67,7 +67,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                     </Form.Item>
                   </Col>
                 </Row>
-                <div className='mb2'>
+                <div className='mb-4'>
                   <Severity field={field} />
                 </div>
                 {IS_PLUS && <AdvancedSettings field={field} />}

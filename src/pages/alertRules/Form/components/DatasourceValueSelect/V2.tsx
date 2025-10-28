@@ -161,7 +161,7 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
       )}
       <Col flex='none'>
         <MinusCircleOutlined
-          className='mt1'
+          className='mt-2'
           onClick={() => {
             remove(field.name);
           }}
@@ -261,7 +261,7 @@ export default function index(props: IProps) {
                 />
               );
             })}
-            <div className='mb2'>
+            <div className='mb-4'>
               <Space>
                 <Button
                   type='primary'
@@ -312,9 +312,9 @@ export default function index(props: IProps) {
                       </span>
                     </Tooltip>
 
-                    <span className='pl1'>{t('invalid_datasource_tip_2')}</span>
+                    <span className='pl-2'>{t('invalid_datasource_tip_2')}</span>
                     <a
-                      className='pl1'
+                      className='pl-2'
                       onClick={(e) => {
                         e.preventDefault();
                         fetchDatasourceList();

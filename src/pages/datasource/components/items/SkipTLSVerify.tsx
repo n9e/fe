@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 export default function SkipTLSVerify() {
   const { t } = useTranslation('datasourceManage');
   return (
-    <Space className='mb8'>
+    <Space className='mb-2'>
       <span>{t('form.skip_ssl_verify')}</span>
       <Form.Item name={['http', `tls`, 'skip_tls_verify']} valuePropName='checked' noStyle>
         <Switch />

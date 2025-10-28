@@ -75,7 +75,7 @@ const Modify = (props: any) => {
         </>
       }
     >
-      <div className='p2'>
+      <div className='p-4'>
         <Card title={t('common:btn.edit')}>
           <Spin spinning={loading}>
             {data.title ? (

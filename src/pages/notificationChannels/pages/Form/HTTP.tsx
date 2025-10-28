@@ -58,7 +58,7 @@ export default function HTTP() {
       <Form.List name={[...names, 'headers']}>
         {(fields, { add, remove }) => (
           <>
-            <div className='mb1'>
+            <div className='mb-2'>
               <Space size={4}>
                 {t('http_request_config.header')}
                 <Tooltip className='n9e-ant-from-item-tooltip' title={t('http_request_config.header_tip')}>
@@ -68,7 +68,7 @@ export default function HTTP() {
               </Space>
             </div>
             {fields.length > 0 && (
-              <Row gutter={SIZE} className='mb1'>
+              <Row gutter={SIZE} className='mb-2'>
                 <Col flex='auto'>
                   <Row gutter={SIZE}>
                     <Col span={12}>{t('http_request_config.header_key')}</Col>
@@ -97,7 +97,7 @@ export default function HTTP() {
                   </Row>
                 </Col>
                 <Col flex='none'>
-                  <MinusCircleOutlined className='mt1' onClick={() => remove(name)} />
+                  <MinusCircleOutlined className='mt-2' onClick={() => remove(name)} />
                 </Col>
               </Row>
             ))}
@@ -127,14 +127,14 @@ export default function HTTP() {
       <Form.List name={[...names, 'request', 'parameters']}>
         {(fields, { add, remove }) => (
           <>
-            <div className='mb1'>
+            <div className='mb-2'>
               <Space size={4}>
                 {t('http_request_config.params')}
                 <PlusCircleOutlined onClick={() => add()} />
               </Space>
             </div>
             {fields.length > 0 && (
-              <Row gutter={SIZE} className='mb1'>
+              <Row gutter={SIZE} className='mb-2'>
                 <Col flex='auto'>
                   <Row gutter={SIZE}>
                     <Col span={12}>{t('http_request_config.params_key')}</Col>
@@ -163,7 +163,7 @@ export default function HTTP() {
                   </Row>
                 </Col>
                 <Col flex='none'>
-                  <MinusCircleOutlined className='mt1' onClick={() => remove(name)} />
+                  <MinusCircleOutlined className='mt-2' onClick={() => remove(name)} />
                 </Col>
               </Row>
             ))}

@@ -67,7 +67,7 @@ export default function List() {
       }
     >
       <div className='event-content'>
-        <div className='table-area n9e-border-base'>
+        <div className='table-area border'>
           <ListNG
             filter={filter}
             setFilter={setFilter}

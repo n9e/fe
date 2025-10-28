@@ -255,7 +255,7 @@ export default function index(props: IProps) {
               <div className='loki-discover-main'>
                 {series.length > 0 ? (
                   <>
-                    <div className='n9e-flex n9e-justify-between n9e-items-center'>
+                    <div className='flex justify-between items-center'>
                       <div />
                       <Button
                         size='small'

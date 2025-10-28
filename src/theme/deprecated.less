@@ -1,0 +1,382 @@
+/* Deprecated styles
+ * 该文件里的样式即将废弃，请使用 tailwindcss 替代
+*/
+
+// 全局样式，快速兼容一些之前 style 的写法
+.n9e-fill-color-1 {
+  background-color: var(--fc-fill-1);
+}
+
+.n9e-fill-color-2 {
+  background-color: var(--fc-fill-2);
+}
+
+.n9e-fill-color-2-5 {
+  background-color: var(--fc-fill-2-5);
+}
+
+.n9e-fill-color-3 {
+  background-color: var(--fc-fill-3);
+}
+
+.n9e-fill-color-4 {
+  background-color: var(--fc-fill-4);
+}
+
+.n9e-fill-color-5 {
+  background-color: var(--fc-fill-5);
+}
+
+.n9e-border-color {
+  border-color: var(--fc-border-color);
+}
+
+.n9e-border-base {
+  border: 1px solid var(--fc-border-color);
+}
+
+.n9e-border-antd {
+  border: 1px solid var(--fc-antd-border-color);
+}
+
+.n9e-border-radius-base {
+  border-radius: 2px;
+}
+
+/* 解决跟 tailwindcss 与 css variable 冲突的问题 */
+.border-fc-200 {
+  border-color: var(--fc-fill-3) !important;
+}
+
+.border-fc-300 {
+  border-color: var(--fc-fill-4) !important;
+}
+
+.border-fc-400 {
+  border-color: var(--fc-fill-5) !important;
+}
+
+.bg-fc-200 {
+  background-color: var(--fc-fill-3) !important;
+}
+
+.bg-fc-200 {
+  background-color: var(--fc-fill-3) !important;
+}
+
+.hover\:bg-fc-200:hover {
+  background-color: var(--fc-fill-3) !important;
+}
+
+.text-primary {
+  color: var(--fc-primary-color) !important;
+}
+
+.text-primary-80 {
+  color: rgba(var(--fc-text-link-rgb), 0.8)
+}
+
+/* 解决跟 tailwindcss 与 css variable 冲突的问题 */
+
+.m0 {
+  margin: 0px;
+}
+
+.mt1 {
+  margin-top: 8px;
+}
+
+.mt2 {
+  margin-top: 16px;
+}
+
+.mr1 {
+  margin-right: 8px;
+}
+
+.mr2 {
+  margin-right: 16px;
+}
+
+.mb0 {
+  margin-bottom: 0px;
+}
+
+.mb1 {
+  margin-bottom: 8px;
+}
+
+.mb2 {
+  margin-bottom: 16px;
+}
+
+.ml1 {
+  margin-left: 8px;
+}
+
+.ml2 {
+  margin-left: 16px;
+}
+
+.mtb1 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.mtb2 {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.mlr1 {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.mlr2 {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.m1 {
+  margin: 8px;
+}
+
+.m2 {
+  margin: 16px;
+}
+
+.p0 {
+  padding: 0px !important;
+}
+
+.pt1 {
+  padding-top: 8px;
+}
+
+.pt2 {
+  padding-top: 16px;
+}
+
+.pr1 {
+  padding-right: 8px;
+}
+
+.pr2 {
+  padding-right: 16px;
+}
+
+.pb1 {
+  padding-bottom: 8px;
+}
+
+.pb2 {
+  padding-bottom: 16px;
+}
+
+.pl1 {
+  padding-left: 8px;
+}
+
+.pl2 {
+  padding-left: 16px;
+}
+
+.ptb1 {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.ptb2 {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.plr1 {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.plr2 {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.p1 {
+  padding: 8px;
+}
+
+.p2 {
+  padding: 16px;
+}
+
+.width-auto {
+  width: auto !important;
+}
+
+.height-auto {
+  height: auto !important;
+}
+
+.n9e-cursor-pointer {
+  cursor: pointer;
+}
+
+.text-12 {
+  font-size: 12px;
+}
+
+.n9e-flex {
+  display: flex;
+}
+
+.n9e-justify-between {
+  justify-content: space-between;
+}
+
+.n9e-justify-center {
+  justify-content: center;
+}
+
+.n9e-items-center {
+  align-items: center;
+}
+
+.n9e-gap-1 {
+  gap: 8px;
+}
+
+.n9e-gap-2 {
+  gap: 16px;
+}
+
+.n9e-w-full {
+  width: 100%;
+}
+
+.n9e-h-full {
+  height: 100%;
+}
+
+.theme-dark {
+  .mt1 {
+    margin-top: 8px;
+  }
+
+  .mt2 {
+    margin-top: 16px;
+  }
+
+  .mr1 {
+    margin-right: 8px;
+  }
+
+  .mr2 {
+    margin-right: 16px;
+  }
+
+  .mb1 {
+    margin-bottom: 8px;
+  }
+
+  .mb2 {
+    margin-bottom: 16px;
+  }
+
+  .ml1 {
+    margin-left: 8px;
+  }
+
+  .ml2 {
+    margin-left: 16px;
+  }
+
+  .mtb1 {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  .mtb2 {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  .mlr1 {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .mlr2 {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  .m1 {
+    margin: 8px;
+  }
+
+  .m2 {
+    margin: 16px;
+  }
+
+
+  .pt1 {
+    padding-top: 8px;
+  }
+
+  .pt2 {
+    padding-top: 16px;
+  }
+
+  .pr1 {
+    padding-right: 8px;
+  }
+
+  .pr2 {
+    padding-right: 16px;
+  }
+
+  .pb1 {
+    padding-bottom: 8px;
+  }
+
+  .pb2 {
+    padding-bottom: 16px;
+  }
+
+  .pl1 {
+    padding-left: 8px;
+  }
+
+  .pl2 {
+    padding-left: 16px;
+  }
+
+  .ptb1 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .ptb2 {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .plr1 {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .plr2 {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .p1 {
+    padding: 8px;
+  }
+
+  .p2 {
+    padding: 16px;
+  }
+}

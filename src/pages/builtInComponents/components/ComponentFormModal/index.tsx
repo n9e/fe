@@ -105,7 +105,7 @@ function index(props: Props & ModalWrapProps) {
         >
           <Input placeholder={t('logo_picker_title_placeholder')} />
         </Form.Item>
-        {logo && <img src={logo} className='mb2' style={{ height: 42, maxWidth: '60%' }} />}
+        {logo && <img src={logo} className='mb-4' style={{ height: 42, maxWidth: '60%' }} />}
       </Form>
     </Modal>
   );

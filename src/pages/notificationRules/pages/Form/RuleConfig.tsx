@@ -36,7 +36,7 @@ export default function NotifyConfig(props: Props) {
   const ruleConfig = Form.useWatch(['notify_configs', field.name]);
 
   return (
-    <div key={field.key} className='p-4 mb-2 rounded n9e-fill-color-3 n9e-border-base relative'>
+    <div key={field.key} className='p-4 mb-2 rounded bg-fc-200 border relative'>
       {!disabled && (
         <div className='absolute right-[0px] top-[0px] z-1'>
           <Space>
@@ -71,7 +71,7 @@ export default function NotifyConfig(props: Props) {
           </Space>
         </div>
       )}
-      <div className='p2 pb-0 mb-4 rounded n9e-fill-color-2 n9e-border-base'>
+      <div className='p-4 pb-0 mb-4 rounded bg-fc-100 border'>
         <Row gutter={SIZE}>
           <Col span={channelItem?.request_type !== 'flashduty' ? 12 : 24}>
             <ChannelSelect
@@ -90,8 +90,8 @@ export default function NotifyConfig(props: Props) {
         </Row>
         <ChannelParams prefixNamePath={['notify_configs']} field={field} channelItem={channelItem} />
       </div>
-      <div className='p2 mb-4 rounded n9e-fill-color-2 n9e-border-base'>
-        <div className='p2 pb-0 mb-2 rounded n9e-fill-color-2-5 flex'>
+      <div className='p-4 mb-4 rounded bg-fc-100 border'>
+        <div className='p-4 pb-0 mb-2 rounded bg-fc-150 flex'>
           <Form.Item {...field} label={t('notification_configuration.severities')} tooltip={t('notification_configuration.severities_tip')} name={[field.name, 'severities']}>
             <Checkbox.Group disabled={disabled}>
               <Checkbox value={1}>{t('common:severity.1')}</Checkbox>
@@ -100,7 +100,7 @@ export default function NotifyConfig(props: Props) {
             </Checkbox.Group>
           </Form.Item>
         </div>
-        <div className='p2 mb-2 rounded n9e-fill-color-2-5'>
+        <div className='p-4 mb-2 rounded bg-fc-150'>
           <Form.List {..._.omit(field, 'key')} name={[field.name, 'time_ranges']}>
             {(fields, { add, remove }) => (
               <>
@@ -179,7 +179,7 @@ export default function NotifyConfig(props: Props) {
             )}
           </Form.List>
         </div>
-        <div className='p2 mb-2 rounded n9e-fill-color-2-5'>
+        <div className='p-4 mb-2 rounded bg-fc-150'>
           <KVTags
             disabled={disabled}
             field={field}
@@ -190,7 +190,7 @@ export default function NotifyConfig(props: Props) {
             funcName='op'
           />
         </div>
-        <div className='p2 rounded n9e-fill-color-2-5'>
+        <div className='p-4 rounded bg-fc-150'>
           <Attributes disabled={disabled} field={field} fullName={['notify_configs']} keyOptions={['group_name', 'cluster', 'is_recovered', 'rule_id']} />
         </div>
       </div>

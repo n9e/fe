@@ -78,7 +78,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                 <>
                   <span>{t('form.es.min_interval')}</span>
                   <Tooltip title={t('form.es.min_interval_tip')}>
-                    <InfoCircleOutlined className='ml8' />
+                    <InfoCircleOutlined className='ml-2' />
                   </Tooltip>
                 </>
               }

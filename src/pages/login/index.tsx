@@ -186,7 +186,7 @@ export default function Login() {
 
               <img
                 ref={verifyimgRef}
-                className='mb2'
+                className='mb-4'
                 style={{
                   display: showcaptcha ? 'inline-block' : 'none',
                 }}
@@ -203,7 +203,7 @@ export default function Login() {
             {_.some(displayName, (value) => {
               return !!value;
             }) && (
-              <div className='mb1 text-[14px]'>
+              <div className='mb-2 text-[14px]'>
                 <Space align='baseline'>
                   <div>{t('other_types')}:</div>
                   {displayName.oidc && (

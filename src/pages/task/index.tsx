@@ -143,9 +143,9 @@ const index = (_props: any) => {
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:task.allOptionLabel')} />
         {gids ? (
-          <div className='n9e-border-base p2' style={{ flex: 1 }}>
+          <div className='border p-4' style={{ flex: 1 }}>
             <Row>
-              <Col span={16} className='mb10'>
+              <Col span={16} className='mb-2'>
                 <Space>
                   <RefreshIcon
                     onClick={() => {
@@ -197,7 +197,7 @@ const index = (_props: any) => {
               )}
             </Row>
             <Table
-              className='mt8'
+              className='mt-2'
               size='small'
               rowKey='id'
               columns={columns as any}

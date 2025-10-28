@@ -66,7 +66,7 @@ export default function FieldsItem(props: Props) {
       content={
         <div>
           <Spin spinning={topNLoading}>
-            <div className='n9e-fill-color-3 p-4'>
+            <div className='bg-fc-200 p-4'>
               <Row>
                 {_.map(stats, (item) => {
                   const statName = _.keys(item)?.[0];
@@ -212,9 +212,7 @@ export default function FieldsItem(props: Props) {
     >
       <Tooltip placement='left' title={record.indexable === false && t(`${NAME_SPACE}:logs.fieldLabelTip`)}>
         <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-4'>
-          <span className='w-[16px] h-[16px] flex-shrink-0 n9e-fill-color-3 rounded flex justify-center items-center'>
-            {typeIconMap[TYPE_MAP[record.type]] || <QuestionOutlined />}
-          </span>
+          <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[TYPE_MAP[record.type]] || <QuestionOutlined />}</span>
           <span
             style={{
               width: 'calc(100% - 26px)',
