@@ -39,7 +39,7 @@ function getTranslations() {
       result[`${key}:${module?.namespace}`] = module?.languages[key];
     }
   }
-  // console.log('result', result);
+  console.log('result', result);
   return result;
 }
 
@@ -53,7 +53,7 @@ console.log('API_KEY', API_KEY);
 let tolgee;
 if (!!API_URL && !!API_KEY) {
   tolgee = Tolgee()
-    .use(InContextTools()) // 开发模式下可以在页面直接改翻译
+    .use(InContextTools()) // 可以在页面直接改翻译
     .use(I18nextPlugin()) // 兼容 react-i18next
     .init({
       // for development
@@ -63,12 +63,18 @@ if (!!API_URL && !!API_KEY) {
       language,
       staticData,
       defaultNs: 'translation',
+      ns: ['translation', 'common', 'datasource'],
+      fallbackNs: ['translation', 'common', 'datasource'],
     });
 } else {
-  tolgee = Tolgee().use(I18nextPlugin()).init({
-    staticData,
-    defaultNs: 'translation',
-  });
+  tolgee = Tolgee()
+    .use(I18nextPlugin())
+    .init({
+      staticData,
+      defaultNs: 'translation',
+      ns: ['translation', 'common', 'datasource'],
+      fallbackNs: ['translation', 'common', 'datasource'],
+    });
 }
 
 const i18nInit = withTolgee(i18n, tolgee).use(ICU).use(initReactI18next);

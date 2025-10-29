@@ -14,24 +14,24 @@
  * limitations under the License.
  *
  */
-import * as datasource from './datasource';
-import * as common from './common';
+import * as datasource from './datasource/locale';
+import * as common from './common/locale';
 
-const resources = {
-  en_US: {
-    common: common.en_US,
-    datasource: datasource.en_US,
-  },
-  zh_CN: {
-    common: common.zh_CN,
-    datasource: datasource.zh_CN,
-  },
-  zh_HK: {
-    common: common.zh_HK,
-    datasource: datasource.zh_HK,
-  },
-  ja_JP: { common: common.ja_JP, datasource: datasource.ja_JP },
-  ru_RU: { common: common.ru_RU, datasource: datasource.ru_RU },
-};
+// const resources = {
+//   en_US: {
+//     common: common.en_US,
+//     datasource: datasource.en_US,
+//   },
+//   zh_CN: {
+//     common: common.zh_CN,
+//     datasource: datasource.zh_CN,
+//   },
+//   zh_HK: {
+//     common: common.zh_HK,
+//     datasource: datasource.zh_HK,
+//   },
+//   ja_JP: { common: common.ja_JP, datasource: datasource.ja_JP },
+//   ru_RU: { common: common.ru_RU, datasource: datasource.ru_RU },
+// };
 
-export default resources;
+// export default resources;
