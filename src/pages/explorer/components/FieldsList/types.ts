@@ -6,7 +6,7 @@ export interface Field {
 
 export interface StatsResult {
   topN: {
-    value: string;
+    value: any;
     percent: number;
     count: number;
   }[];
