@@ -94,30 +94,32 @@ export default function Detail() {
               >
                 <Button type='primary'>{t('common:btn.edit')}</Button>
               </Link>
-              <Select
-                value={days}
-                options={[
-                  {
-                    label: t('common:last.1.days'),
-                    value: 1,
-                  },
-                  {
-                    label: t('common:last.7.days'),
-                    value: 7,
-                  },
-                  {
-                    label: t('common:last.14.days'),
-                    value: 14,
-                  },
-                  {
-                    label: t('common:last.30.days'),
-                    value: 30,
-                  },
-                ]}
-                onChange={setDays}
-                dropdownMatchSelectWidth={false}
-                className='w-32'
-              />
+              {eventAggr && (
+                <Select
+                  value={days}
+                  options={[
+                    {
+                      label: t('common:last.1.days'),
+                      value: 1,
+                    },
+                    {
+                      label: t('common:last.7.days'),
+                      value: 7,
+                    },
+                    {
+                      label: t('common:last.14.days'),
+                      value: 14,
+                    },
+                    {
+                      label: t('common:last.30.days'),
+                      value: 30,
+                    },
+                  ]}
+                  onChange={setDays}
+                  dropdownMatchSelectWidth={false}
+                  className='w-32'
+                />
+              )}
             </Space>
           </div>
           {eventAggr && (
