@@ -71,6 +71,9 @@ export default function HistogramChart(props: Props) {
         tooltip: {
           ...chartRef.current.options.tooltip,
           shared: true,
+          pointValueformatter: (val) => {
+            return Number(val).toFixed(0);
+          },
         },
         xAxis: {
           ...chartRef.current.options.xAxis,
