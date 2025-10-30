@@ -4,12 +4,11 @@ import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { PRIMARY_COLOR } from '@/utils/constant';
 import { IRawTimeRange } from '@/components/TimeRangePicker/types';
-import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { Field } from '@/pages/explorer/components/FieldsList/types';
 import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
 
+import HistogramChart from './components/HistogramChart';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
@@ -114,47 +113,32 @@ export default function LogsViewer(props: Props) {
             {histogramChartTimeRender}
           </div>
           <div className='h-[102px] py-[10px]'>
-            <Timeseries
-              series={histogram}
-              values={
-                {
-                  custom: {
-                    drawStyle: 'bar',
-                    lineInterpolation: 'smooth',
-                  },
-                  options: {
-                    legend: {
-                      displayMode: 'hidden',
-                    },
-                    tooltip: {
-                      mode: 'all',
-                    },
-                  },
-                } as any
-              }
-              onClick={(event, datetime, value, points) => {
-                const start = _.get(points, '[0][0]');
-                const allPoints = _.get(histogram, '[0].data');
-                if (start && allPoints) {
-                  const step = _.get(allPoints, '[2][0]') - _.get(allPoints, '[1][0]');
-                  const end = start + step;
+            {props.range && (
+              <HistogramChart
+                time={props.range}
+                series={histogram}
+                onClick={(event, datetime, value, points) => {
+                  const start = _.get(points, '[0][0]');
+                  const allPoints = _.get(histogram, '[0].data');
+                  if (start && allPoints) {
+                    const step = _.get(allPoints, '[2][0]') - _.get(allPoints, '[1][0]');
+                    const end = start + step;
 
-                  onLogRequestParamsChange?.({
-                    from: start,
-                    to: end,
-                    context: undefined,
+                    onLogRequestParamsChange?.({
+                      from: start,
+                      to: end,
+                      context: undefined,
+                    });
+                  }
+                }}
+                onZoomWithoutDefult={(times) => {
+                  onRangeChange?.({
+                    start: moment(times[0]),
+                    end: moment(times[1]),
                   });
-                }
-              }}
-              hideResetBtn
-              onZoomWithoutDefult={(times) => {
-                onRangeChange?.({
-                  start: moment(times[0]),
-                  end: moment(times[1]),
-                });
-              }}
-              colors={[PRIMARY_COLOR]}
-            />
+                }}
+              />
+            )}
           </div>
         </div>
         <FullscreenButton.Provider>

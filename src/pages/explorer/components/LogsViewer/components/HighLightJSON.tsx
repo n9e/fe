@@ -76,7 +76,7 @@ function renderValue(value, keyPath: string[], param: IParam) {
 function renderObject(value, keyPath: string[] = [], param: IParam) {
   const keys = Object.keys(value);
   return keys.map((k, i) => (
-    <div style={{ marginLeft: Indent }}>
+    <div key={k} style={{ marginLeft: Indent }}>
       {`"${k}"`}
       <span style={{ marginRight: colonSpace }}>:</span>
       {renderValue(value[k], [...keyPath, k], param)}
@@ -88,7 +88,7 @@ function renderObject(value, keyPath: string[] = [], param: IParam) {
 function renderArray(value, keyPath: string[] = [], param: IParam) {
   const keys = Object.keys(value);
   return keys.map((k, i) => (
-    <div style={{ marginLeft: Indent }}>
+    <div key={k} style={{ marginLeft: Indent }}>
       {renderValue(value[k], [...keyPath, k], param)}
       {i < keys.length - 1 && !_.isPlainObject(value[k]) && ','}
     </div>
