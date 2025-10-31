@@ -11,11 +11,29 @@ const argv = (key) => {
 
 const envUrl = '.env.advanced';
 const feats = _.split(argv('feats'), ',');
+
+let existingEnv = {};
+if (fs.existsSync(envUrl)) {
+  const content = fs.readFileSync(envUrl, 'utf-8');
+  const lines = content.split('\n').filter((line) => line.trim() && !line.startsWith('#'));
+
+  lines.forEach((line) => {
+    const [key, ...valueParts] = line.split('=');
+    if (key) {
+      existingEnv[key.trim()] = valueParts.join('=').trim();
+    }
+  });
+}
+_.forEach(feats, (feat) => {
+  const key = `VITE_IS_${feat}`;
+  existingEnv[key] = true;
+});
+
 fs.writeFileSync(
   envUrl,
   _.join(
-    _.map(feats, (feat) => {
-      return `VITE_IS_${feat}=true`;
+    _.map(existingEnv, (value, key) => {
+      return `${key}=${value}`;
     }),
     '\n',
   ),

@@ -21,7 +21,7 @@ export default function index(props: Props) {
   const [visible1, setVisible1] = useState(false);
   const [visible, setVisible] = useState(false);
   const [curVal, setCurVal] = useState(value);
-  const [tooltipTitle, setTooltipTitle] = useState();
+  const [tooltipTitle, setTooltipTitle] = useState<string>();
 
   useEffect(() => {
     if (value !== curVal) {

@@ -137,7 +137,7 @@ const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWit
 export const CommonStateContext = createContext({} as ICommonState);
 
 function App() {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['common', 'datasource']);
   const isPlus = useIsPlus();
   const initialized = useRef(false);
   const [commonState, setCommonState] = useState<ICommonState>({
