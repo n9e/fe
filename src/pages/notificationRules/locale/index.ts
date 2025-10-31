@@ -6,8 +6,7 @@ import ja_JP from './ja_JP';
 import ru_RU from './ru_RU';
 
 const resources = {
-  namespace: NS,
-  languages: {
+  [NS]: {
     en_US,
     zh_CN,
     zh_HK,

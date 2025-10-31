@@ -3,8 +3,7 @@ import zh_HK from './zh_HK';
 import zh_CN from './zh_CN';
 
 const resources = {
-  namespace: 'inputEnlarge',
-  languages: {
+  inputEnlarge: {
     en_US,
     zh_HK,
     zh_CN,

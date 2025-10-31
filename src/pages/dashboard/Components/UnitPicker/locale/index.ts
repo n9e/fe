@@ -3,8 +3,7 @@ import zh_CN from './zh_CN';
 import zh_HK from './zh_HK';
 
 const resources = {
-  namespace: 'unitPicker',
-  languages: {
+  unitPicker: {
     en_US,
     zh_CN,
     zh_HK,

@@ -4,8 +4,7 @@ import zh_HK from './zh_HK';
 import ja_JP from './ja_JP';
 
 const resources = {
-  namespace: 'es-index-patterns',
-  languages: {
+  'es-index-patterns': {
     en_US,
     zh_CN,
     zh_HK,
