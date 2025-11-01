@@ -6,5 +6,8 @@ const zh_CN = {
     post: '添加角色',
     put: '编辑角色',
   },
+  unselect_role: '请先选择角色',
+  expand_all: '全部展开',
+  collapse_all: '全部折叠',
 };
 export default zh_CN;

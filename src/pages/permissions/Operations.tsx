@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Tree, Button, Modal, message } from 'antd';
+import { Tree, Button, Modal, message, Space } from 'antd';
+
 import { getOperationsByRole, putOperationsByRole } from './services';
 import { OperationType } from './types';
 
@@ -33,6 +34,7 @@ export default function Operations(props: IProps) {
   const { t } = useTranslation('permissions');
   const { data, roleId, disabled } = props;
   const [operations, setOperations] = useState<string[]>([]);
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
 
   useEffect(() => {
     if (roleId) {
@@ -42,15 +44,47 @@ export default function Operations(props: IProps) {
     }
   }, [roleId]);
 
-  if (!roleId) return <div>请先选择角色</div>;
+  if (!roleId) return <div>{t('unselect_role')}</div>;
 
   return (
-    <div>
+    <div
+      className='p-2 min-h-0 h-full overflow-y-auto'
+      style={{
+        background: 'var(--fc-fill-2)',
+        border: '1px solid var(--fc-border-color)',
+      }}
+    >
+      <div className='mb-2'>
+        <Space size={0}>
+          <Button
+            size='small'
+            type='text'
+            onClick={() => {
+              setExpandedKeys(_.map(data, 'name'));
+            }}
+          >
+            {t('expand_all')}
+          </Button>
+          <Button
+            size='small'
+            type='text'
+            onClick={() => {
+              setExpandedKeys([]);
+            }}
+          >
+            {t('collapse_all')}
+          </Button>
+        </Space>
+      </div>
       <Tree
         checkable
         disabled={disabled}
+        expandedKeys={expandedKeys}
         checkedKeys={operations}
         treeData={transformOperations(data)}
+        onExpand={(expandedKeys: string[]) => {
+          setExpandedKeys(expandedKeys);
+        }}
         onCheck={(selectedKeys: string[]) => {
           setOperations(selectedKeys);
         }}
