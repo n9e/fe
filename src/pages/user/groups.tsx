@@ -20,7 +20,7 @@ import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal, Space } from 'antd';
+import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tag } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
@@ -96,6 +96,16 @@ const Resource: React.FC = () => {
       title: t('account:profile.phone'),
       dataIndex: 'phone',
       render: (text: string, record) => record.phone || '-',
+    },
+    {
+      title: t('user.busi_groups'),
+      dataIndex: 'busi_groups',
+      render: (text: string, record) => {
+        if (_.isEmpty(record.busi_groups)) return '-';
+        return _.map(record.busi_groups, (item) => {
+          return <Tag key={item.id}>{item.name}</Tag>;
+        });
+      },
     },
   ];
 

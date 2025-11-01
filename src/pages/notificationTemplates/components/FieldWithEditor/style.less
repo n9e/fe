@@ -1,18 +1,28 @@
 .n9e-notification-template-content {
-  height: 280px;
+  resize: vertical;
+  overflow: auto;
+  height: 280px; // 添加明确的高度，使子元素的 height: 100% 生效
+  min-height: 200px;
+  max-height: 800px;
+
   .n9e-notification-template-content-editor {
     height: 100%;
     border: 1px solid var(--fc-border-color);
-    .cm-theme-light,.cm-theme-dark {
+
+    .cm-theme-light,
+    .cm-theme-dark {
       height: calc(100% - 36px);
     }
+
     .ͼ1.cm-editor.cm-focused {
       outline: unset !important;
     }
+
     .ͼ2 .cm-gutters {
       border-right: 0 none;
     }
   }
+
   .n9e-notification-template-content-editor-header {
     display: flex;
     justify-content: space-between;
