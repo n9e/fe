@@ -17,7 +17,9 @@ interface Props {
   /** 时间字段 */
   timeField: string;
   /** 直方图数据 */
-  histogram: {
+  hideHistogram?: boolean;
+  histogramLoading?: boolean;
+  histogram?: {
     metric: string;
     data: [number, number][];
   }[];
@@ -43,7 +45,8 @@ interface Props {
   rowPrefixRender?: (record: { [index: string]: any }) => React.ReactNode;
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   filterFields?: (fieldKeys: string[]) => string[];
-  histogramChartTimeRender?: React.ReactNode;
+  histogramExtraRender?: React.ReactNode;
+  optionsExtraRender?: React.ReactNode;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -74,6 +77,8 @@ export default function LogsViewer(props: Props) {
   const { t } = useTranslation('explorer');
   const {
     timeField,
+    hideHistogram = false,
+    histogramLoading = false,
     histogram,
     loading,
     logs,
@@ -85,9 +90,17 @@ export default function LogsViewer(props: Props) {
     onScrollCapture,
     rowPrefixRender,
     filterFields,
-    histogramChartTimeRender,
+    histogramExtraRender,
+    optionsExtraRender,
   } = props;
   const [options, setOptions] = useState(props.options);
+  const [snapRange, setSnapRange] = useState<{
+    from?: number;
+    to?: number;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
 
   const updateOptions = (newOptions) => {
     onOptionsChange?.(newOptions);
@@ -107,40 +120,44 @@ export default function LogsViewer(props: Props) {
       }}
     >
       <>
-        <div className='h-[120px]'>
-          <div className='mt-[5px] px-[10px] flex justify-between'>
-            <div />
-            {histogramChartTimeRender}
-          </div>
-          <div className='h-[102px] py-[10px]'>
-            {props.range && (
-              <HistogramChart
-                time={props.range}
-                series={histogram}
-                onClick={(event, datetime, value, points) => {
-                  const start = _.get(points, '[0][0]');
-                  const allPoints = _.get(histogram, '[0].data');
-                  if (start && allPoints) {
-                    const step = _.get(allPoints, '[2][0]') - _.get(allPoints, '[1][0]');
-                    const end = start + step;
+        {!hideHistogram && (
+          <div className='h-[120px]'>
+            <div className='mt-[5px] px-[10px] flex justify-between'>
+              <Space>
+                <Spin spinning={histogramLoading} size='small' />
+              </Space>
+              {histogramExtraRender}
+            </div>
+            <div className='h-[102px] py-[10px]'>
+              {props.range && histogram && (
+                <HistogramChart
+                  time={props.range}
+                  series={histogram}
+                  onClick={(event, datetime, value, points) => {
+                    const start = _.get(points, '[0][0]');
+                    const allPoints = _.get(histogram, '[0].data');
+                    if (start && allPoints) {
+                      const step = _.get(allPoints, '[2][0]') - _.get(allPoints, '[1][0]');
+                      const end = start + step;
 
-                    onLogRequestParamsChange?.({
-                      from: start,
-                      to: end,
-                      context: undefined,
+                      onLogRequestParamsChange?.({
+                        from: start,
+                        to: end,
+                        context: undefined,
+                      });
+                    }
+                  }}
+                  onZoomWithoutDefult={(times) => {
+                    onRangeChange?.({
+                      start: moment(times[0]),
+                      end: moment(times[1]),
                     });
-                  }
-                }}
-                onZoomWithoutDefult={(times) => {
-                  onRangeChange?.({
-                    start: moment(times[0]),
-                    end: moment(times[1]),
-                  });
-                }}
-              />
-            )}
+                  }}
+                />
+              )}
+            </div>
           </div>
-        </div>
+        )}
         <FullscreenButton.Provider>
           <div className='flex justify-between p-[10px] pt-0'>
             <Space>
@@ -169,6 +186,7 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
+            {optionsExtraRender}
           </div>
           <div className='min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>
