@@ -1,20 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Spin, Empty, Space, Radio, Form } from 'antd';
+import React, { useState } from 'react';
+import { Empty, Form } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
-import { useTranslation } from 'react-i18next';
+import { DatasourceCateEnum } from '@/utils/constant';
+import { useRequest } from 'ahooks';
 
 import { IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
-import flatten from '@/pages/explorer/Elasticsearch/flatten';
-import FullscreenButton from '@/pages/explorer/components/FullscreenButton';
+import flatten from '@/pages/explorer/components/LogsViewer/utils/flatten';
+import getFieldsFromTableData from '@/pages/explorer/components/LogsViewer/utils/getFieldsFromTableData';
+import LogsViewer from '@/pages/explorer/components/LogsViewer';
 
-import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
+import { SQL_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
 import { logQuery } from '../../services';
-import { getLocalstorageOptions, getFieldsFromSQLData, setLocalstorageOptions } from '../utils';
-import OriginSettings from '../components/OriginSettings';
-import RawList from '../components/RawList';
-import RawTable from '../components/RawTable';
+import { getLocalstorageOptions, setLocalstorageOptions, filteredFields } from '../utils';
 
 // @ts-ignore
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
@@ -24,16 +23,14 @@ interface IProps {
 }
 
 function Raw(props: IProps) {
-  const { t } = useTranslation(NAME_SPACE);
   const { setExecuteLoading } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
-  const [logs, setLogs] = useState<{ [index: string]: string }[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const datasourceValue = Form.useWatch(['datasourceValue']);
+  const queryValues = Form.useWatch(['query']);
   const [options, setOptions] = useState(getLocalstorageOptions(SQL_LOGS_OPTIONS_CACHE_KEY));
-  const [logRequestParams, setLogRequestParams] = useState<any>({});
   const [fields, setFields] = useState<string[]>([]);
+
   const updateOptions = (newOptions) => {
     const mergedOptions = {
       ...options,
@@ -43,17 +40,21 @@ function Raw(props: IProps) {
     setLocalstorageOptions(SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
   };
 
-  useEffect(() => {
-    if (!_.isEmpty(logRequestParams) && logRequestParams.sql) {
-      setLoading(true);
-      setExecuteLoading(true);
-      const values = form.getFieldsValue();
-      const requestParams = {
-        cate: values.datasourceCate,
-        datasource_id: values.datasourceValue,
-        query: [_.omit(logRequestParams, ['refreshFlag']) as any],
-      };
-      logQuery(requestParams)
+  const service = () => {
+    const queryValues = form.getFieldValue('query');
+    if (datasourceValue && queryValues.query) {
+      const range = parseRange(queryValues.range);
+      return logQuery({
+        cate: DatasourceCateEnum.doris,
+        datasource_id: datasourceValue,
+        query: [
+          {
+            from: moment(range.start).unix(),
+            to: moment(range.end).unix(),
+            sql: _.trim(_.split(queryValues.query, '|')?.[0]),
+          },
+        ],
+      })
         .then((res) => {
           const newLogs = _.map(res.list, (item) => {
             return {
@@ -62,91 +63,54 @@ function Raw(props: IProps) {
               ___id___: _.uniqueId('log_id_'),
             };
           });
-          setLogs(newLogs);
-          setTotal(res.total);
-          const columnsKeys = getFieldsFromSQLData(res.list || []);
+
+          const columnsKeys = getFieldsFromTableData(res.list || []);
           setFields(columnsKeys);
+
+          return {
+            list: newLogs,
+            total: res.total,
+          };
         })
         .catch(() => {
-          setLogs([]);
-        })
-        .finally(() => {
-          setLoading(false);
-          setExecuteLoading(false);
+          return {
+            list: [],
+            total: 0,
+          };
         });
-    } else {
-      setLogs([]);
-      setLoading(false);
-      setExecuteLoading(false);
     }
-  }, [JSON.stringify(logRequestParams)]);
+    return Promise.resolve(undefined);
+  };
 
-  useEffect(() => {
-    if (refreshFlag) {
-      form.validateFields().then((values) => {
-        const query = values.query;
-        const range = parseRange(query.range);
-        setLogRequestParams({
-          from: moment(range.start).unix(),
-          to: moment(range.end).unix(),
-          sql: _.trim(_.split(query.query, '|')?.[0]),
-          refreshFlag,
-        });
-      });
-    }
-  }, [refreshFlag]);
+  const { data, loading } = useRequest<
+    | {
+        list: { [index: string]: string }[];
+        total: number;
+      }
+    | undefined,
+    any
+  >(service, {
+    refreshDeps: [refreshFlag],
+  });
 
   return (
     <>
-      {!_.isEmpty(logs) ? (
+      {!_.isEmpty(data?.list) ? (
         <div className='h-full min-h-0'>
           <div className='h-full min-h-0 border border-antd rounded flex flex-col'>
-            <FullscreenButton.Provider>
-              <div className='flex-shrink-0 flex justify-between p-2'>
-                <Space>
-                  <Radio.Group
-                    size='small'
-                    optionType='button'
-                    buttonStyle='solid'
-                    options={[
-                      {
-                        label: t('logs.settings.mode.origin'),
-                        value: 'origin',
-                      },
-                      {
-                        label: t('logs.settings.mode.table'),
-                        value: 'table',
-                      },
-                    ]}
-                    value={options.logMode}
-                    onChange={(e) => {
-                      updateOptions({
-                        logMode: e.target.value,
-                      });
-                    }}
-                  />
-                  <OriginSettings options={options} setOptions={updateOptions} fields={fields} />
-                  <FullscreenButton />
-                  <Spin spinning={loading} size='small' />
-                </Space>
-                <Space>{IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total, logs }} />}</Space>
-              </div>
-              <div className='n9e-antd-table-height-full'>
-                {options.logMode === 'origin' && (
-                  <RawList
-                    data={logs}
-                    options={options}
-                    onReverseChange={(val) => {
-                      setLogRequestParams({
-                        ...logRequestParams,
-                        is_desc: val,
-                      });
-                    }}
-                  />
-                )}
-                {options.logMode === 'table' && <RawTable data={logs} options={options} />}
-              </div>
-            </FullscreenButton.Provider>
+            <LogsViewer
+              timeField={queryValues?.time_field}
+              hideHistogram
+              loading={loading}
+              logs={data?.list || []}
+              fields={fields}
+              options={options}
+              filterFields={(fieldKeys) => {
+                return filteredFields(fieldKeys, options.organizeFields);
+              }}
+              optionsExtraRender={IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+              onOptionsChange={updateOptions}
+            />
           </div>
         </div>
       ) : (
