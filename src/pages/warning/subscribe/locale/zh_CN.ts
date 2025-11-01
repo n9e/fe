@@ -6,6 +6,7 @@ const zh_CN = {
   sub_rule_selected: '已选规则',
   tags: '订阅标签',
   user_groups: '告警接收组',
+  notify_rule_ids: '通知规则',
   tag: {
     key: {
       label: '订阅事件标签键',
