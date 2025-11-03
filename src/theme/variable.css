@@ -20,6 +20,7 @@
   --fc-fill-alert: rgb(250 125 0);
   --fc-fill-error: rgb(200 0 0);
   --fc-fill-gold: #ffbc0d;
+  --fc-primary-bg: #6C53B114;
 
   /* 文本 */
   --fc-text-1: #1a1a1a;
@@ -205,4 +206,13 @@
   --fc-primary-color: #ffbc0d;
   --fc-gold-text: #222;
   --fc-text-link: #4880ff;
+  --fc-primary-bg: #fff2cb;
+}
+
+
+.theme-light-blue{
+  --fc-fill-primary: #427AF4;
+  --fc-primary-color: #427AF4;
+  --fc-text-link: #2D5BCF;
+  --fc-primary-bg: #EEF6FE;
 }
