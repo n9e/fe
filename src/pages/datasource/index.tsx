@@ -44,7 +44,7 @@ export default function index() {
     <PageLayout title={t('title')}>
       <div>
         <div
-          className='border'
+          className='fc-border'
           style={{
             padding: 16,
           }}
