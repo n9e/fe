@@ -4,9 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import prettier from 'prettier';
 
-// 查找所有 src 目录下的 locale/index.ts 文件
-// const files = glob.sync('src/**/locale/index.ts');
-const files = glob.sync('src/components/AuthorizationWrapper/locale/index.ts');
+/**
+ * 查找所有 src 目录下的 locale/index.ts 文件
+ * 批量把 "i18next.addResourceBundle" 替换成新的格式
+ */
+const files = glob.sync('src/**/locale/index.ts');
 
 const getPrettierConfig = () => {
   const __filename = fileURLToPath(import.meta.url);
