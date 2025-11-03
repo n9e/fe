@@ -24,10 +24,10 @@ interface RenderValueProps {
 }
 
 export default function FieldValueWithFilter({ name, value, onValueFilter, rawValue }: RenderValueProps) {
-  const { indexData } = useContext(LogsViewerStateContext);
+  const { indexData, getAddToQueryInfo } = useContext(LogsViewerStateContext);
 
-  if (!indexData || _.isEmpty(indexData)) return null;
-  return <FieldValueWithFilterContext name={name} value={value} onValueFilter={onValueFilter} rawValue={rawValue} indexData={indexData} />;
+  if (getAddToQueryInfo && (!indexData || _.isEmpty(indexData))) return null;
+  return <FieldValueWithFilterContext name={name} value={value} onValueFilter={onValueFilter} rawValue={rawValue} indexData={indexData || []} />;
 }
 
 function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, indexData }: RenderValueProps & { indexData: Field[] }) {

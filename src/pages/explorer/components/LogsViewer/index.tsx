@@ -122,13 +122,13 @@ export default function LogsViewer(props: Props) {
       <>
         {!hideHistogram && (
           <div className='h-[120px]'>
-            <div className='mt-[5px] px-[10px] flex justify-between'>
+            <div className='mt-1 px-2 flex justify-between'>
               <Space>
                 <Spin spinning={histogramLoading} size='small' />
               </Space>
               {histogramExtraRender}
             </div>
-            <div className='h-[102px] py-[10px]'>
+            <div className='h-[102px] py-2'>
               {props.range && histogram && (
                 <HistogramChart
                   time={props.range}
@@ -159,7 +159,7 @@ export default function LogsViewer(props: Props) {
           </div>
         )}
         <FullscreenButton.Provider>
-          <div className='flex justify-between p-[10px] pt-0'>
+          <div className='flex justify-between p-2 pt-0'>
             <Space>
               <Radio.Group
                 size='small'

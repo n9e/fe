@@ -213,7 +213,7 @@ export default function index(props: Props) {
       >
         <FieldsSidebar organizeFields={options.organizeFields} data={indexData} loading={indexDataLoading} onValueFilter={handleValueFilter} setOptions={updateOptions} />
       </div>
-      <div className='min-h-0 min-w-0 w-full n9e-border-antd flex flex-col relative'>
+      <div className='min-h-0 min-w-0 w-full border border-antd rounded-sm flex flex-col relative'>
         <LogsViewer
           timeField={queryValues?.time_field}
           histogramLoading={histogramLoading}

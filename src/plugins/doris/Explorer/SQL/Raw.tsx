@@ -97,7 +97,7 @@ function Raw(props: IProps) {
     <>
       {!_.isEmpty(data?.list) ? (
         <div className='h-full min-h-0'>
-          <div className='h-full min-h-0 border border-antd rounded flex flex-col'>
+          <div className='h-full min-h-0 border border-antd rounded-sm flex flex-col pt-2'>
             <LogsViewer
               timeField={queryValues?.time_field}
               hideHistogram
