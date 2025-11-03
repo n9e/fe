@@ -9,9 +9,9 @@ import { CaretDownOutlined, CaretRightOutlined, LeftOutlined, RightOutlined, Dow
 import LogViewer from './components/LogViewer';
 import FieldValueWithFilter from './components/FieldValueWithFilter';
 
-const explorerOriginInlineCellClassName = 'inline-block mr-[5px]';
-const explorerOriginBreakCellClassName = 'break-all block mr-[5px]';
-const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-[2px] text-title inline-flex text-[12px] my-[2px] py-[1px] px-[3px]';
+const explorerOriginInlineCellClassName = 'inline-block mr-1';
+const explorerOriginBreakCellClassName = 'break-all block mr-1';
+const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-title inline-flex text-[12px] my-[2px] py-[1px] px-[3px]';
 const explorerOrigiFieldValClassName = 'inline text-main m-0 p-0 cursor-pointer';
 const explorerOriginUlClassName = 'border-0 list-none bg-transparent p-0 m-0';
 const explorerOriginLiClassName = 'relative ml-0 pl-0 ';

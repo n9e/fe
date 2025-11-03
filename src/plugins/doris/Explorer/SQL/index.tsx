@@ -31,7 +31,7 @@ export default function index(props: Props) {
 
   return (
     <div className='explorer-query-container'>
-      <div className='explorer-meta-container'>
+      <div className='explorer-meta-container rounded-sm'>
         <Resizable
           size={{ width, height: '100%' }}
           enable={{
