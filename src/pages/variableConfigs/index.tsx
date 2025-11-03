@@ -68,7 +68,7 @@ export default function index() {
     >
       <div>
         <div
-          className='border'
+          className='fc-border'
           style={{
             padding: 16,
           }}

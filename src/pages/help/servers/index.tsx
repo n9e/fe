@@ -143,7 +143,7 @@ export default function Servers() {
       }
     >
       <div>
-        <div className='border' style={{ padding: 20 }}>
+        <div className='fc-border' style={{ padding: 20 }}>
           {profile.admin ? (
             <div>
               <Table bordered size='small' rowKey='id' tableLayout='fixed' loading={loading} dataSource={data} pagination={false} columns={columns} />
