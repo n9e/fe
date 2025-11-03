@@ -17,36 +17,107 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import _ from 'lodash';
-import resources from './locales/resources';
+import { withTolgee, Tolgee, I18nextPlugin, DevTools } from '@tolgee/i18next';
+import { InContextTools } from '@tolgee/web/tools';
 
 const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
 const localStorageLanguage = localStorage.getItem('language');
-const systemLanguage = (() => {
-  // navigator.language return format 'en-US' or 'ru'
-  const lang = navigator.language.replace('-', '_');
-  if (_.includes(languages, lang)) {
-    return lang;
-  }
-
-  const langPrefix = lang.split('_')[0] + '_';
-  const matchedLang = languages.find(l => l.startsWith(langPrefix));
-  return matchedLang || 'zh_CN';
-})();
-
 let language = 'zh_CN';
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
   language = localStorageLanguage;
 }
-else if (_.includes(languages, systemLanguage)) {
-  language = systemLanguage;
+
+function getTranslations() {
+  const translations: any = import.meta.glob('../**/{locale,locales}/index.(ts|js)', { eager: true });
+  const result = {};
+
+  for (const path in translations) {
+    const module = translations[path]?.default;
+    for (const namespace in module) {
+      for (const lang in module[namespace]) {
+        result[`${lang}:${namespace}`] = module[namespace][lang];
+      }
+    }
+  }
+  return result;
 }
 
-i18n.use(initReactI18next).init({
-  resources,
-  lng: language,
-  interpolation: {
-    escapeValue: false,
-  },
-});
+function getI18nextTranslations() {
+  const translations: any = import.meta.glob('../**/{locale,locales}/index.(ts|js)', { eager: true });
+  const result = {};
 
-export { i18n as i18nInit };
+  languages.forEach((lang) => {
+    result[lang] = {};
+  });
+
+  for (const path in translations) {
+    const module = translations[path]?.default;
+
+    for (const namespace in module) {
+      languages.forEach((lang) => {
+        result[lang][namespace] = module[namespace][lang];
+      });
+    }
+  }
+  return result;
+}
+
+const API_URL = import.meta.env.VITE_TOLGEE_API_URL;
+const API_KEY = import.meta.env.VITE_TOLGEE_API_KEY;
+const staticData = getTranslations();
+
+let tolgee, i18nInit;
+if (!!API_URL && !!API_KEY) {
+  if (!!import.meta.env.DEV) {
+    tolgee = Tolgee()
+      .use(DevTools())
+      .use(I18nextPlugin())
+      .init({
+        apiUrl: API_URL,
+        apiKey: API_KEY,
+        language,
+        staticData,
+        defaultNs: 'translation',
+        ns: ['translation', 'common', 'datasource'],
+      });
+  } else {
+    tolgee = Tolgee()
+      .use(InContextTools())
+      .use(I18nextPlugin())
+      .init({
+        apiUrl: API_URL,
+        apiKey: API_KEY,
+        language,
+        staticData,
+        defaultNs: 'translation',
+        ns: ['translation', 'common', 'datasource'],
+      });
+  }
+
+  i18nInit = withTolgee(i18n, tolgee).use(initReactI18next);
+  i18nInit.init({
+    lng: language,
+    interpolation: {
+      escapeValue: false,
+    },
+
+    react: {
+      useSuspense: false,
+    },
+  });
+} else {
+  i18nInit = i18n.use(initReactI18next);
+  i18nInit.init({
+    lng: language,
+    resources: getI18nextTranslations(),
+    interpolation: {
+      escapeValue: false,
+    },
+
+    react: {
+      useSuspense: false,
+    },
+  });
+}
+
+export { i18nInit, tolgee };
