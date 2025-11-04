@@ -102,19 +102,31 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
 export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean } & IMenuProps) {
   const { t } = useTranslation('sideMenu');
+  const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack, onClick, isGoldTheme } = props;
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
   const savedPath = item.children ? getSavedPath(path) : item.key;
-
+  const activeBg = isActive ? (isBlueTheme ? 'bg-[#EEF6FE]' : isCustomBg ? '' : 'bg-fc-200') : '';
+  const textColor = isActive
+    ? isBlueTheme
+      ? 'text-[#427AF4]'
+      : props.isCustomBg
+      ? isGoldTheme
+        ? 'text-[#333]'
+        : isBgBlack
+        ? 'text-[#ccccdc]'
+        : 'text-[#fff]'
+      : 'text-title'
+    : '';
   return (
     <Link
       to={savedPath || path}
       className={cn(
         'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
-        isActive ? (isCustomBg ? '' : 'bg-fc-200') : '',
+        activeBg,
         isCustomBg ? 'text-[#ccccdc]' : 'text-main',
-        isActive && isGoldTheme ? '' : isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
+        isActive && (isBlueTheme || isGoldTheme) ? '' : isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
       )}
       style={{ background: isActive && isGoldTheme ? '#FFBC0D' : isActive && isCustomBg ? 'rgba(204, 204, 220, 0.08)' : undefined }}
       onClick={() => onClick?.(item.key)}
@@ -133,11 +145,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div
-          className={`overflow-hidden truncate text-l1 tracking-wide ${
-            isActive ? (props.isCustomBg ? (isGoldTheme ? 'text-[#333]' : isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-title') : ''
-          }`}
-        >
+        <div className={`overflow-hidden truncate text-l1 tracking-wide ${textColor}`}>
           {t(item.label)}
           {item.beta && (
             <span
