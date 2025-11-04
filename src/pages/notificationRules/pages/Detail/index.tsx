@@ -7,7 +7,9 @@ import { InfoCircleOutlined, TeamOutlined } from '@ant-design/icons';
 
 import PageLayout from '@/components/pageLayout';
 import { getTeamInfoList } from '@/services/manage';
-import { getBrainLicense } from '@/plus/components/License/services';
+
+// @ts-ignore
+import { getBrainLicense } from 'plus:/components/License/services';
 
 import { NS, CN } from '../../constants';
 import { getNotifyStatistics, NotifyStatistics, getItem, RuleItem } from '../../services';
@@ -44,11 +46,13 @@ export default function Detail() {
     getTeamInfoList().then((res) => {
       setUserGroups(res.dat ?? []);
     });
-    getBrainLicense().then((res) => {
-      if (res?.['event-aggr'] === true) {
-        setEventAggr(true);
-      }
-    });
+    if (getBrainLicense) {
+      getBrainLicense().then((res) => {
+        if (res?.['event-aggr'] === true) {
+          setEventAggr(true);
+        }
+      });
+    }
   }, []);
 
   const contentList: Record<string, React.ReactNode> = {
