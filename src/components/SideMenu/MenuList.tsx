@@ -48,7 +48,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   let textColor;
   if (isActive) {
     if (isBlueTheme) {
-      textColor = 'bg-[#EEF6FE]';
+      textColor = 'text-[#427AF4]';
     } else if (props.isCustomBg) {
       if (isBgBlack) {
         textColor = 'text-[#ccccdc]';
@@ -60,7 +60,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
     }
   } else {
     if (isBlueTheme) {
-      textColor = 'bg-[#EEF6FE]';
+      textColor = 'text-[#427AF4]';
     } else {
       if (props.isCustomBg) {
         textColor = '';
@@ -242,6 +242,7 @@ export default function MenuList(
 ) {
   const { t } = useTranslation('sideMenu');
   const { list, topExtra, ...otherProps } = props;
+  const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const isMac = /Mac/i.test(navigator.userAgent) || navigator.platform.includes('Mac');
   return (
     <>
@@ -254,7 +255,9 @@ export default function MenuList(
               props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
-            <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', props.isCustomBg ? '' : 'text-primary/80')}>{<IconFont type='icon-Menu_Search' />}</div>
+            <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', isBlueTheme ? 'text-[#427AF4]' : props.isCustomBg ? '' : 'text-primary/80')}>
+              {<IconFont type='icon-Menu_Search' />}
+            </div>
 
             <div className={`overflow-hidden truncate text-l1 tracking-wide`}>{t('quickJump')} </div>
           </div>
