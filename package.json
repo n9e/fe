@@ -76,6 +76,7 @@
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.46",
     "numeral": "^2.0.6",
+    "pinyin-pro": "^3.20.4",
     "query-string": "^7.0.1",
     "re-resizable": "^6.9.9",
     "react": "^17.0.0",
