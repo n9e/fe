@@ -45,6 +45,31 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const visibleChildren = item.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
 
+  let textColor;
+  if (isActive) {
+    if (isBlueTheme) {
+      textColor = 'bg-[#EEF6FE]';
+    } else if (props.isCustomBg) {
+      if (isBgBlack) {
+        textColor = 'text-[#ccccdc]';
+      } else {
+        textColor = 'text-[#fff]';
+      }
+    } else {
+      textColor = 'text-primary';
+    }
+  } else {
+    if (isBlueTheme) {
+      textColor = 'bg-[#EEF6FE]';
+    } else {
+      if (props.isCustomBg) {
+        textColor = '';
+      } else {
+        textColor = 'text-primary/80';
+      }
+    }
+  }
+
   return (
     <div className='w-full'>
       <div
@@ -56,25 +81,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         )}
       >
         <div className='flex items-center'>
-          <div
-            className={cn(
-              'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-              isActive
-                ? props.isCustomBg
-                  ? isBgBlack
-                    ? 'text-[#ccccdc]'
-                    : 'text-[#fff]'
-                  : 'text-primary'
-                : isBlueTheme
-                ? 'bg-[#EEF6FE]'
-                : props.isCustomBg
-                ? ''
-                : 'text-primary/80',
-              !collapsed ? 'mr-4' : '',
-            )}
-          >
-            {item.icon}
-          </div>
+          <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', textColor, !collapsed ? 'mr-4' : '')}>{item.icon}</div>
           {!collapsed && (
             <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#fff]' : 'text-[#ccccdc]') : 'text-title') : ''}`}>
               {t(item.label)}
@@ -119,17 +126,24 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
   const savedPath = item.children ? getSavedPath(path) : item.key;
   const activeBg = isActive ? (isBlueTheme ? 'bg-[#EEF6FE]' : isCustomBg ? '' : 'bg-fc-200') : '';
-  const textColor = isActive
-    ? isBlueTheme
-      ? 'text-[#427AF4]'
-      : props.isCustomBg
-      ? isGoldTheme
-        ? 'text-[#333]'
-        : isBgBlack
-        ? 'text-[#ccccdc]'
-        : 'text-[#fff]'
-      : 'text-title'
-    : '';
+
+  let textColor = '';
+  if (isActive) {
+    if (isBlueTheme) {
+      textColor = 'text-[#427AF4]';
+    } else if (props.isCustomBg) {
+      if (isGoldTheme) {
+        textColor = 'text-[#333]';
+      } else if (isBgBlack) {
+        textColor = 'text-[#ccccdc]';
+      } else {
+        textColor = 'text-[#fff]';
+      }
+    } else {
+      textColor = 'text-title';
+    }
+  }
+
   return (
     <Link
       to={savedPath || path}
