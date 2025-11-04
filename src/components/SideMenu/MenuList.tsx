@@ -24,6 +24,7 @@ interface IMenuProps {
 export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   const { t } = useTranslation('sideMenu');
   const { item, collapsed, selectedKeys, sideMenuBgColor, ...otherProps } = props;
+  const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const keyOfChildrens =
     item.children
       ?.map((c) => {
@@ -58,7 +59,17 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
           <div
             className={cn(
               'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-              isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
+              isActive
+                ? props.isCustomBg
+                  ? isBgBlack
+                    ? 'text-[#ccccdc]'
+                    : 'text-[#fff]'
+                  : 'text-primary'
+                : isBlueTheme
+                ? 'bg-[#EEF6FE]'
+                : props.isCustomBg
+                ? ''
+                : 'text-primary-80',
               !collapsed ? 'mr-4' : '',
             )}
           >
