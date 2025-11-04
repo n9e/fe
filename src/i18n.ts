@@ -55,7 +55,14 @@ function getI18nextTranslations() {
 
     for (const namespace in module) {
       languages.forEach((lang) => {
-        result[lang][namespace] = module[namespace][lang];
+        if (!!result[lang][namespace]) {
+          result[lang][namespace] = {
+            ...result[lang][namespace],
+            ...module[namespace][lang],
+          };
+        } else {
+          result[lang][namespace] = module[namespace][lang];
+        }
       });
     }
   }
