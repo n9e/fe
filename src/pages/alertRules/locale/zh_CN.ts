@@ -20,7 +20,7 @@ const zh_CN = {
   inhibit_tip: '只有 metricName 和 labels 完全相同的曲线产生的告警事件，才会进行级别抑制，1级>2级>3级',
   interval: '执行频率',
   duration: '持续时长',
-  severity_label: '触发告警',
+  severity_label: '告警分级',
   prom_eval_interval: '执行频率 (s)',
   prom_for_duration: '持续时长 (s)',
   effective_configs: '生效配置',
