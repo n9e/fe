@@ -55,6 +55,7 @@ const proDocumentPathMap = {};
 const AckBtnDefault = () => {
   return null;
 };
+const getBrainLicense = null;
 export {
   AlertRule,
   QueryBuilder,
@@ -79,4 +80,5 @@ export {
   proDocumentPathMap,
   searchDrilldown,
   AckBtnDefault,
+  getBrainLicense,
 };
