@@ -50,6 +50,9 @@ const en_US = {
     flashduty: {
       ids: 'Channels',
     },
+    pagerduty: {
+      services: 'Services',
+    },
   },
   user_group_id_invalid_tip: 'Authorized team does not exist',
   channel_invalid_tip: 'Notification medium does not exist',

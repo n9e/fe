@@ -55,6 +55,14 @@ export function getFlashdutyChannelList(id: number) {
   });
 }
 
+export function getPagerdutyServiceList(id: number) {
+  return request(`/api/n9e/pagerduty-service-list/${id}`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
 export function notifyRuleTest(data: { event_ids: number[]; notify_config: any }) {
   return request('/api/n9e/notify-rule/test', {
     method: RequestMethod.Post,

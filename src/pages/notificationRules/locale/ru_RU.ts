@@ -50,6 +50,9 @@ const ru_RU = {
     flashduty: {
       ids: 'Пространство flashduty',
     },
+    pagerduty: {
+      services: 'Сервисы',
+    },
   },
   user_group_id_invalid_tip: 'Команда не существует',
   channel_invalid_tip: 'Канал уведомления не существует',

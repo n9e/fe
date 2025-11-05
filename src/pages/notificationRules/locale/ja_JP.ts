@@ -50,6 +50,9 @@ const ja_JP = {
     flashduty: {
       ids: '協力スペース',
     },
+    pagerduty: {
+      services: 'サービス',
+    },
   },
   user_group_id_invalid_tip: '権限のあるチームが存在しません',
   channel_invalid_tip: '通知メディアが存在しません',

@@ -46,6 +46,9 @@ const zh_HK = {
     flashduty: {
       ids: '協作空間',
     },
+    pagerduty: {
+      services: '服務',
+    },
   },
   user_group_id_invalid_tip: '授權團隊不存在',
   channel_invalid_tip: '通知媒介不存在',
