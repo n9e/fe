@@ -47,7 +47,7 @@ import Title from './Title';
 import { JSONParse } from '../utils';
 import Editor from '../Editor';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
-import { useGlobalState } from '../globalState';
+import { useGlobalState, DashboardMeta } from '../globalState';
 import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
@@ -235,7 +235,16 @@ export default function DetailV2(props: IProps) {
   };
 
   useEffect(() => {
+    // 切换仪表盘时，立即清空 variablesWithOptions，避免使用上一个仪表盘的变量
+    setDashboardMeta({} as DashboardMeta);
+    setVariablesWithOptions([]);
     refresh();
+
+    // 组件卸载时清空全局状态
+    return () => {
+      setDashboardMeta({} as DashboardMeta);
+      setVariablesWithOptions([]);
+    };
   }, [id]);
 
   useInterval(() => {

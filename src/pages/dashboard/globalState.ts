@@ -5,7 +5,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IPanel } from './types';
 import { IVariable } from './Variables/types';
 
-interface DashboardMeta {
+export interface DashboardMeta {
   id: number;
   group_id: number;
   dashboardId: string;
