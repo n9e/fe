@@ -11,6 +11,8 @@ const zh_CN = {
   menu_small_logo_url_tip: '输入图片资源地址，建议尺寸 38x38',
   document_url: '文档地址',
   document_url_tip: '覆盖默认的夜莺文档链接地址',
+  site_url: '站点地址',
+  site_url_tip: '用于外部访问夜莺的地址，后端可用此生成可访问到夜莺实例的链接',
   page_title: '站点标题',
   page_title_tip: '覆盖默认的标题 (Nightingale)',
   home_page_url: '首页地址',
