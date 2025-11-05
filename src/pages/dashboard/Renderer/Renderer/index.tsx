@@ -24,7 +24,6 @@ import { CloseOutlined } from '@ant-design/icons';
 
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import { useGlobalState } from '@/pages/dashboard/globalState';
 import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import useQuery from '../datasource/useQuery';
@@ -85,6 +84,8 @@ function index(props: IProps) {
     inspect,
     type: values.type,
     custom: values.custom,
+    maxDataPoints: values.maxDataPoints,
+    queryOptionsTime: values.queryOptionsTime,
   });
 
   if (_.isEmpty(values)) return null;

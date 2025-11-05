@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { Spin } from 'antd';
 import queryString from 'query-string';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { useGlobalState } from '../globalState';
 import Variable from './Variable';
@@ -15,6 +15,7 @@ interface Props {
 
 export default function Main(props: Props) {
   const history = useHistory();
+  const localtion = useLocation();
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
   const { variableValueFixed, loading, renderBtns } = props;
@@ -28,8 +29,7 @@ export default function Main(props: Props) {
   useEffect(() => {
     if (!shouldUpdateUrl.current) return;
 
-    const currentLocation = history.location;
-    let newQueryParams = currentLocation.search ? queryString.parse(currentLocation.search) : {};
+    let newQueryParams = localtion.search ? queryString.parse(localtion.search) : {};
     newQueryParams = _.omit(newQueryParams, _.map(variableNameValues, 'name')); // 先移除之前的变量参数
 
     const dataToQueryParams = _.reduce(
@@ -42,12 +42,12 @@ export default function Main(props: Props) {
     );
 
     history.replace({
-      pathname: currentLocation.pathname,
+      pathname: localtion.pathname,
       search: queryString.stringify(_.assign(newQueryParams, dataToQueryParams)),
     });
 
     shouldUpdateUrl.current = false;
-  }, [variableNameValues, history]);
+  }, [variableNameValues, localtion.search]);
 
   return (
     <div className='flex flex-wrap items-center gap-2 px-2'>
