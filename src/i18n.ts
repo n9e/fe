@@ -28,7 +28,7 @@ if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
 }
 
 function getTranslations() {
-  const translations: any = import.meta.glob('../**/{locale,locales}/index.(ts|js)', { eager: true });
+  const translations: any = import.meta.glob('../src/**/{locale,locales}/index.(ts|js)', { eager: true });
   const result = {};
 
   for (const path in translations) {
@@ -43,7 +43,7 @@ function getTranslations() {
 }
 
 function getI18nextTranslations() {
-  const translations: any = import.meta.glob('../**/{locale,locales}/index.(ts|js)', { eager: true });
+  const translations: any = import.meta.glob('../src/**/{locale,locales}/index.(ts|js)', { eager: true });
   const result = {};
 
   languages.forEach((lang) => {
