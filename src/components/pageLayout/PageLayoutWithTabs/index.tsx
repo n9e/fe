@@ -176,7 +176,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                 <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   {introIcon}
                   {docFn && (
-                    <a onClick={() => docFn()} style={{ marginRight: 16 }}>
+                    <a onClick={() => docFn()} className='page-layout-doc-container'>
                       {t('docs')}
                     </a>
                   )}
