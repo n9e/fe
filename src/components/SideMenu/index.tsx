@@ -41,6 +41,7 @@ const SideMenu = (props: SideMenuProps) => {
   const { i18n } = useTranslation('sideMenu');
   const { darkMode, perms, installTs } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
+  console.log('sideMenuBgMode', sideMenuBgMode, 'darkMode', darkMode, 'sideMenuBgMode', sideMenuBgMode);
   if (darkMode) {
     sideMenuBgMode = 'dark';
   }
@@ -57,6 +58,7 @@ const SideMenu = (props: SideMenuProps) => {
     isGoldTheme,
   } = props;
   const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
+  console.log('isGoldTheme', isGoldTheme, 'sideMenuBgColor', sideMenuBgColor);
   const location = useLocation();
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
