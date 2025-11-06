@@ -73,7 +73,7 @@ export default function Main(props: Props) {
                 const val = update.value;
 
                 // localStorage 本地保存
-                if (dashboardMeta.dashboardId) {
+                if (dashboardMeta.dashboardId && val !== undefined) {
                   localStorage.setItem(`dashboard_v6_${dashboardMeta.dashboardId}_${item.name}`, typeof val === 'string' ? val : JSON.stringify(val));
                 }
 
