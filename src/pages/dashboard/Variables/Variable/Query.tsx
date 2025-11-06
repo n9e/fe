@@ -21,6 +21,7 @@ export default function Query(props: Props) {
   const { item, onChange, data, formatedReg, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options } = item;
   const latestItemRef = React.useRef<IVariable>(item);
+  const initializedRef = React.useRef<boolean>(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const formatedDefinition = formatString(item.definition, data);
@@ -60,6 +61,7 @@ export default function Query(props: Props) {
         const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
 
         setErrorMsg('');
+        const isFirstLoad = !initializedRef.current;
         onChange({
           options: itemOptions,
           value: getValueByOptions({
@@ -67,14 +69,19 @@ export default function Query(props: Props) {
             variable: itemClone,
             itemOptions,
           }),
+          initialized: isFirstLoad ? true : undefined,
         });
+        initializedRef.current = true;
       })
       .catch((error) => {
         setErrorMsg(error.message || 'Error fetching variable options');
+        const isFirstLoad = !initializedRef.current;
         onChange({
           options: [],
           // value: variableValueFixed ? value : undefined, // TODO 如果查询失败暂时不清除变量值
+          initialized: isFirstLoad ? true : undefined,
         });
+        initializedRef.current = true;
       });
   };
 
