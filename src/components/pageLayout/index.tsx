@@ -140,7 +140,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                 </div>
 
                 <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
-                  {introIcon}
+                  <span className='page-layout-intro-container'>{introIcon}</span>
                   {docFn && (
                     <a onClick={() => docFn()} className='page-layout-doc-container'>
                       {t('docs')}
