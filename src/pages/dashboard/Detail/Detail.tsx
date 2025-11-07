@@ -163,6 +163,7 @@ export default function DetailV2(props: IProps) {
         setDashboard(newDashboard);
 
         if (configs) {
+          setPanels(sortPanelsByGridLayout(ajustPanels(configs.panels)));
           // TODO: configs 中可能没有 var 属性会导致 VariableConfig 报错
           const variableConfig = configs.var
             ? configs
@@ -244,7 +245,7 @@ export default function DetailV2(props: IProps) {
     if (!variablesInitialized || !dashboard.configs?.panels) return;
 
     // 重新处理 panels（使用原始配置，而不是已处理的 panels）
-    const processedPanels = processRepeats(sortPanelsByGridLayout(ajustPanels(dashboard.configs.panels)), variablesWithOptions);
+    const processedPanels = processRepeats(panels, variablesWithOptions);
     setPanels(processedPanels);
   }, [
     variablesInitialized,
