@@ -100,6 +100,7 @@ export default function index(props: MonacoEditorPromQLProps) {
             placeholder={placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
             apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
+            enableRequests={datasourceValue !== undefined}
             request={(resource, options) => {
               const params = options?.body?.toString();
               const search = params ? `?${params}` : '';
