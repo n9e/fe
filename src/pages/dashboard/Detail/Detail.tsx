@@ -402,7 +402,6 @@ export default function DetailV2(props: IProps) {
                   editable={editable && isAuthorized}
                   queryParams={query}
                   onChange={handleVariableChange}
-                  editModalVariablecontainerRef={editModalVariablecontainerRef}
                   onInitialized={() => {
                     setVariablesInitialized(true);
                   }}
@@ -490,7 +489,9 @@ export default function DetailV2(props: IProps) {
         initialValues={editorData.initialValues}
         onOK={(values, mode) => {
           const newPanels = updatePanelsInsertNewPanelToGlobal(panels, values, 'chart');
-          setPanels(newPanels);
+          // 新增图表后也立即处理 repeat，避免等待变量变化才生效
+          const processedPanels = processRepeats(newPanels, variablesWithOptions);
+          setPanels(processedPanels);
           if (mode === 'add') {
             scrollToLastPanel(newPanels);
           }
