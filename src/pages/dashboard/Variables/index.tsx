@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { EditOutlined } from '@ant-design/icons';
@@ -16,14 +15,13 @@ export type { IVariable } from './types';
 interface Props {
   queryParams: Record<string, any>;
   editable: boolean;
-  editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
   onChange: (newVariables: IVariable[]) => void;
   onInitialized?: () => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { queryParams, editable, editModalVariablecontainerRef, onChange, onInitialized } = props;
+  const { queryParams, editable, onChange, onInitialized } = props;
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const [editing, setEditing] = useState<boolean>(false);
   const hasCalledInitializedRef = React.useRef<boolean>(false);
@@ -91,9 +89,6 @@ export default function index(props: Props) {
   return (
     <div className='n9e-dashboard-variables-container'>
       <Main variableValueFixed={queryParams.__variable_value_fixed} loading={false} renderBtns={renderBtns} />
-      {/** 用 createPortal 复制渲染变量 */}
-      {editModalVariablecontainerRef.current &&
-        createPortal(<Main variableValueFixed={queryParams.__variable_value_fixed} loading={false} />, editModalVariablecontainerRef.current)}
       <EditModal visible={editing} setVisible={setEditing} onChange={onChange} />
     </div>
   );
