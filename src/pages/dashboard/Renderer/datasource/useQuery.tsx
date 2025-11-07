@@ -50,7 +50,7 @@ interface IProps {
 }
 
 export default function useQuery(props: IProps) {
-  const { datasourceCate, time, targets, inViewPort, spanNulls, datasourceValue } = props;
+  const { datasourceCate, time, targets, inViewPort, spanNulls, datasourceValue, maxDataPoints, queryOptionsTime } = props;
   const form = Form.useFormInstance();
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   // beta.5 新增 range 状态，用于 uplot 图表更新时 time 和 data 同时更新
@@ -126,7 +126,7 @@ export default function useQuery(props: IProps) {
       flag.current = false;
     }
     // TODO 这里 JSON.stringify(variablesWithOptions) 可能会有性能问题
-  }, [JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variablesWithOptions), spanNulls, datasourceValue]);
+  }, [JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variablesWithOptions), spanNulls, datasourceValue, maxDataPoints, JSON.stringify(queryOptionsTime)]);
 
   useEffect(() => {
     // 如果图表在可视区域内并且没有请求过数据，则请求数据
