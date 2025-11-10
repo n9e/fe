@@ -51,7 +51,7 @@ const ja_JP = {
       ids: '協力スペース',
     },
     pagerduty: {
-      services: 'サービス',
+      services: 'サービス/統合',
     },
   },
   user_group_id_invalid_tip: '権限のあるチームが存在しません',

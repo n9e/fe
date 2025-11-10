@@ -47,7 +47,7 @@ const zh_CN = {
       ids: '协作空间',
     },
     pagerduty: {
-      services: '服务',
+      services: '服务/集成',
     },
   },
   user_group_id_invalid_tip: '授权团队不存在',

@@ -47,7 +47,7 @@ const zh_HK = {
       ids: '協作空間',
     },
     pagerduty: {
-      services: '服務',
+      services: '服務/集成',
     },
   },
   user_group_id_invalid_tip: '授權團隊不存在',

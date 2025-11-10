@@ -51,7 +51,7 @@ const en_US = {
       ids: 'Channels',
     },
     pagerduty: {
-      services: 'Services',
+      services: 'Service/Integration',
     },
   },
   user_group_id_invalid_tip: 'Authorized team does not exist',
