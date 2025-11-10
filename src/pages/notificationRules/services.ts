@@ -63,6 +63,14 @@ export function getPagerdutyServiceList(id: number) {
   });
 }
 
+export function getPagedutyIntegrationKey(id: number, service_id: string, integration_id: string) {
+  return request(`/api/n9e/pagerduty-integration-key/${id}/${service_id}/${integration_id}`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
 export function notifyRuleTest(data: { event_ids: number[]; notify_config: any }) {
   return request('/api/n9e/notify-rule/test', {
     method: RequestMethod.Post,

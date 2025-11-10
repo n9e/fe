@@ -27,7 +27,7 @@ export default function PagerDuty(props: Props) {
             _.map(res, (item) => {
               return {
                 label: `${item.service_name}/${item.integration_summary}`,
-                value: item.integration_url,
+                value: item.integration_url,  //  实际值
               };
             }),
           );
@@ -42,7 +42,7 @@ export default function PagerDuty(props: Props) {
 
   return (
     <div>
-      <Form.Item {...field} label={t('notification_configuration.pagerduty.services')} name={[field.name, 'params', 'pagerduty_integration_urls']}>
+      <Form.Item {...field} label={t('notification_configuration.pagerduty.services')} name={[field.name, 'params', 'pagerduty_integration_keys']}>
         <Select options={channelOptions} showSearch optionFilterProp='label' mode='multiple' />
       </Form.Item>
     </div>
