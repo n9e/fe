@@ -75,7 +75,10 @@ export default function PagerDuty(props: Props) {
 
       // 提示用户有哪些项被移除
       const failedList = Array.from(failedSet).join(', ');
-      message.error(t('notification_configuration.fetch_integration_key_failed_remove')?.replace('{list}', failedList) || `获取以下 PagerDuty key 失败并已移除：${failedList}`);
+      const failedListLabels = Array.from(failedSet)
+        .map((id) => (channelOptions || []).find((o) => o.value === id)?.label ?? id)
+        .join(', ');
+      message.error(t('notification_configuration.fetch_integration_key_failed_remove')?.replace('{list}', failedListLabels));
     }
 
     // 按当前选中顺序构造最终 keys（即使某项为空也保留位置）

@@ -64,7 +64,7 @@ export function getPagerdutyServiceList(id: number) {
 }
 
 export function getPagedutyIntegrationKey(id: number, svc_id: string, integ_id: string) {
-  throw new Error('Deprecated function: getPagedutyIntegrationKey');
+  // throw new Error('Deprecated function: getPagedutyIntegrationKey'); --- IGNORE ---
   return request(`/api/n9e/pagerduty-integration-key/${id}/${svc_id}/${integ_id}`, {
     method: RequestMethod.Get,
   }).then((res) => {
