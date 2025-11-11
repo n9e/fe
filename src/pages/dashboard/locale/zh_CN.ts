@@ -139,7 +139,7 @@ const zh_CN = {
       <1 />
       \${__field.labels.__name__}: 指标名
       <1 />
-      \${__interval}: 时间间隔（秒）, 例如 15s
+      \${__interval}: 时间间隔（秒）, 例如 15s, 默认为 step
       <1 />
       \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
       <1 />
@@ -164,7 +164,7 @@ const zh_CN = {
       <br />
       \${__row.column_name}: 行数据的某一列值
       <br />
-      \${__interval}: 时间间隔（秒）, 例如 15s
+      \${__interval}: 时间间隔（秒）, 例如 15s, 默认为 step
       <br />
       \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
       <br />
