@@ -26,6 +26,7 @@ const ja_JP = {
     smtp: 'SMTP 設定',
     script: 'Script 設定',
     flashduty: 'FlashDuty 設定',
+    pagerduty: 'PagerDuty 設定',
   },
   request_type: '送信タイプ',
   http_request_config: {
@@ -89,6 +90,15 @@ const ja_JP = {
     timeout: 'タイムアウト (単位: ミリ秒)',
     retry_times: 'リトライ回数',
   },
+  pagerduty_request_config: {
+    title: 'PagerDuty',
+    api_key: 'API キー',
+    api_key_tip: 'PagerDuty の統合 API キーは、PagerDuty コンソールで確認できます。',
+    proxy: 'プロキシ',
+    proxy_tip: 'プロキシが必要な場合は、ここに HTTP PROXY アドレスを入力してください',
+    timeout: 'タイムアウト (単位: ミリ秒)',
+    retry_times: 'リトライ回数',
+  }
 };
 
 export default ja_JP;

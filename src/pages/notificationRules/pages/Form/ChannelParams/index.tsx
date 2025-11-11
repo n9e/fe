@@ -7,6 +7,7 @@ import { ChannelItem } from '@/pages/notificationChannels/types';
 import UserInfo from './UserInfo';
 import Flashduty from './Flashduty';
 import Custom from './Custom';
+import PagerDuty from './Pagerduty';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -22,6 +23,8 @@ export default function index(props: Props) {
 
   if (request_type === 'flashduty') {
     return <Flashduty field={field} channelItem={channelItem} />;
+  } else if (request_type === 'pagerduty') {
+    return <PagerDuty field={field} channelItem={channelItem} />;
   }
 
   return (

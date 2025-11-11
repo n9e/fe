@@ -10,6 +10,8 @@ const zh_HK = {
   menu_small_logo_url_tip: '輸入圖片資源地址，建議尺寸 38x38',
   document_url: '文檔鏈接 URL',
   document_url_tip: '覆蓋默認的夜鶯文檔鏈接地址',
+  site_url: '站點鏈接',
+  site_url_tip: '用於外部訪問夜鶯的地址，後端可用此生成可訪問到夜鶯實例的鏈接',
   page_title: '站點標題',
   page_title_tip: '覆蓋默認的標題 (Nightingale)',
   home_page_url: '主站鏈接',

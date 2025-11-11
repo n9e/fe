@@ -23,6 +23,7 @@ const zh_HK = {
     effective_time_week_msg: '請選擇生效星期',
     effective_time_start_msg: '請選擇開始時間',
     effective_time_end_msg: '請選擇結束時間',
+    fetch_integration_key_failed_remove: '獲取以下 PagerDuty key 失敗：{list}，請嘗試重新點擊選取',
     label_keys: '適用標籤',
     label_keys_tip: '通知規則可以限制僅對符合條件（通過事件標籤做篩選）的部分告警事件生效，不配置表示不做限制',
     attributes: '適用屬性',
@@ -45,6 +46,9 @@ const zh_HK = {
     },
     flashduty: {
       ids: '協作空間',
+    },
+    pagerduty: {
+      services: '服務/集成',
     },
   },
   user_group_id_invalid_tip: '授權團隊不存在',
