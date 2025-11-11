@@ -63,8 +63,8 @@ export function getPagerdutyServiceList(id: number) {
   });
 }
 
-export function getPagedutyIntegrationKey(id: number, service_id: string, integration_id: string) {
-  return request(`/api/n9e/pagerduty-integration-key/${id}/${service_id}/${integration_id}`, {
+export function getPagedutyIntegrationKey(id: number, svc_id: string, integ_id: string) {
+  return request(`/api/n9e/pagerduty-integration-key/${id}/${svc_id}/${integ_id}`, {
     method: RequestMethod.Get,
   }).then((res) => {
     return res.dat;
