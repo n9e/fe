@@ -25,6 +25,7 @@ const ja_JP = {
     effective_time_week_msg: '有効な週を選択してください',
     effective_time_start_msg: '開始時間を選択してください',
     effective_time_end_msg: '終了時間を選択してください',
+    fetch_integration_key_failed_remove: '以下の PagerDuty キーの取得に失敗しました：{list}',
     label_keys: '適用タグ',
     label_keys_tip:
       'タグ次元でアラームイベントをフィルタリングし、この通知設定を通過するイベントに含まれるタグを設定します。記載されていない場合、タグによるフィルタリングは行われません',
