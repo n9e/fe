@@ -25,7 +25,7 @@ const en_US = {
     effective_time_week_msg: 'Please select the effective week',
     effective_time_start_msg: 'Please select the start time',
     effective_time_end_msg: 'Please select the end time',
-    fetch_integration_key_failed_remove: 'Failed to get the following PagerDuty keys: {list}',
+    fetch_integration_key_failed_remove: 'Failed to get the following PagerDuty keys: {list}, please try clicking to re-select',
     label_keys: 'Applicable tags',
     label_keys_tip:
       'The notification rule can limit only part of the alarm events that meet the conditions (filtered by event tags) to take effect, not configured means no restriction',
