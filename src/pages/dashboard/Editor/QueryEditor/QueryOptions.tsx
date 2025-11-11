@@ -26,7 +26,17 @@ export default function QueryOptions({ panelWidth }: Props) {
           </Space>
         }
       >
-        <Form.Item name={['maxDataPoints']} trigger='onBlur' validateTrigger='onBlur'>
+        <Form.Item
+          name={['maxDataPoints']}
+          trigger='onBlur'
+          validateTrigger='onBlur'
+          getValueFromEvent={(e) => {
+            const raw = e.target.value;
+            if (raw === '' || raw === undefined || raw === null) return undefined;
+            const num = Number(raw);
+            return Number.isFinite(num) ? num : undefined;
+          }}
+        >
           <InputNumber className='w-full' placeholder={_.toString(panelWidth ?? 240)} min={1} />
         </Form.Item>
       </InputGroupWithFormItem>
