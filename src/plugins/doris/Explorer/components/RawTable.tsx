@@ -38,7 +38,9 @@ export default function RawTable(props: IProps) {
                 return (
                   <dl key={key} className='mb-[4px]'>
                     <dt className='inline-block n9e-fill-color-4 px-[4px] py-[2px] mr-[4px] whitespace-nowrap'>{key}: </dt>
-                    <dd className='inline'>{onValueFilter ? <FieldValueWithFilter name={key} value={toString(val)} onValueFilter={onValueFilter} /> : toString(val)}</dd>
+                    <dd className='inline'>
+                      {onValueFilter ? <FieldValueWithFilter name={key} value={toString(val)} onValueFilter={onValueFilter} rawValue={record} /> : toString(val)}
+                    </dd>
                   </dl>
                 );
               })}
