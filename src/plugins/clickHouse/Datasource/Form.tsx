@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Form, Row, Col, Input, Card, InputNumber, Radio, Switch } from 'antd';
+import { Form, Row, Col, Input, Card, InputNumber, Radio, Switch, Collapse } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -90,7 +90,6 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                     marginTop: '8px',
                   }}
                 >
-                  HTTP
                   <PlusCircleOutlined
                     style={{
                       marginLeft: '16px',
@@ -147,41 +146,11 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
               </>
             )}
           </Form.List>
-          <Form.Item
-            label={t('form.timeout')}
-            name={[...names, 'ck.timeout']}
-            rules={[
-              {
-                type: 'number',
-                min: 0,
-              },
-            ]}
-          >
-            <InputNumber
-              style={{
-                width: '100%',
-              }}
-              controls={false}
-            />
-          </Form.Item>
-          <Form.Item
-            label={t(`${NAME_SPACE}:datasource.max_query_rows`)}
-            name={[...names, 'ck.max_query_rows']}
-            rules={[
-              { required: true },
-              {
-                type: 'number',
-                min: 0,
-              },
-            ]}
-          >
-            <InputNumber
-              style={{
-                width: '100%',
-              }}
-              controls={false}
-            />
-          </Form.Item>
+
+
+
+          {/* Native 模式下显示横向的连接配置：最大空闲连接数 / 最大打开连接数 / 连接生命周期（秒） */}
+
           <Row gutter={16}>
             <Col flex={'1'}>
               <Form.Item label={t('form.username')} name={[...names, 'ck.user']}>
@@ -196,7 +165,67 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
           </Row>
         </div>
         <Cluster form={form} clusterRef={clusterRef} />
-        <Description />
+
+        {/* 高级设置（折叠面板，默认折叠） */}
+        <Collapse style={{ marginTop: 16 }} bordered={false} defaultActiveKey={[]}>
+          <Collapse.Panel header={t('form.advanced_settings')} key="advanced">
+            <Row gutter={16}>
+              <Col flex={1}>
+                <Form.Item
+                  label={t('form.timeout')}
+                  name={[...names, 'ck.timeout']}
+                  rules={[{ type: 'number', min: 0 }]}
+                >
+                  <InputNumber style={{ width: '100%' }} controls={false} />
+                </Form.Item>
+              </Col>
+              <Col flex={1}>
+                <Form.Item
+                  label={t(`${NAME_SPACE}:datasource.max_query_rows`)}
+                  name={[...names, 'ck.max_query_rows']}
+                  rules={[{ required: true, type: 'number', min: 0 }]}
+                >
+                  <InputNumber style={{ width: '100%' }} controls={false} />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {/* Native 模式下显示横向的连接配置 */}
+            {protocol === 'native' ? (
+              <Row gutter={16} style={{ marginTop: 8 }}>
+                <Col flex={1}>
+                  <Form.Item
+                    label={t(`${NAME_SPACE}:datasource.max_idle_conns`)}
+                    name={[...names, 'ck.max_idle_conns']}
+                    rules={[{ type: 'number', min: 0 }]}
+                  >
+                    <InputNumber style={{ width: '100%' }} controls={false} />
+                  </Form.Item>
+                </Col>
+
+                <Col flex={1}>
+                  <Form.Item
+                    label={t(`${NAME_SPACE}:datasource.max_open_conns`)}
+                    name={[...names, 'ck.max_open_conns']}
+                    rules={[{ type: 'number', min: 0 }]}
+                  >
+                    <InputNumber style={{ width: '100%' }} controls={false} />
+                  </Form.Item>
+                </Col>
+
+                <Col flex={1}>
+                  <Form.Item
+                    label={t(`${NAME_SPACE}:datasource.conn_max_lifetime`)}
+                    name={[...names, 'ck.conn_max_lifetime']}
+                    rules={[{ type: 'number', min: 0 }]}
+                  >
+                    <InputNumber style={{ width: '100%' }} controls={false} />
+                  </Form.Item>
+                </Col>
+              </Row>
+            ) : null}
+          </Collapse.Panel>
+        </Collapse>
       </Card>
       <Footer id={data?.id} submitLoading={submitLoading} />
     </Form>

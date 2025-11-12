@@ -33,6 +33,7 @@ const ja_JP = {
     disabled: '無効',
   },
   form: {
+    advanced_settings: '詳細設定',
     other: 'その他',
     name: '名前',
     name_msg: 'アルファベット/数字/アンダースコアを入力してください。アルファベットで始まる必要があります',

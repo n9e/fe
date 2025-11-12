@@ -33,6 +33,7 @@ const en_US = {
     disabled: 'Disabled',
   },
   form: {
+    advanced_settings: 'Advanced Settings',
     other: 'Other',
     name: 'Name',
     name_msg: 'Please enter letters,numbers,underscores, must start with a letter',

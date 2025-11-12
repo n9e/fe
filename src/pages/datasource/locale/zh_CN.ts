@@ -33,6 +33,7 @@ const zh_CN = {
     disabled: '停用中',
   },
   form: {
+    advanced_settings: '高级设置',
     other: '其他',
     name: '名称',
     name_msg: '请输入字母/数字/下划线，必须以字母开头',

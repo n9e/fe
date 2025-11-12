@@ -33,6 +33,7 @@ const zh_HK = {
     disabled: '停用中',
   },
   form: {
+    advanced_settings: '高級設置',
     other: '其他',
     name: '名稱',
     name_msg: '請輸入字母/數字/下劃線，必須以字母開頭',
