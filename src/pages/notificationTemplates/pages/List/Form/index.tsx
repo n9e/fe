@@ -20,11 +20,12 @@ interface Props {
       }[]
     | undefined
   >;
+  onSave: () => void;
 }
 
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
-  const { form, item, contentRef } = props;
+  const { form, item, contentRef, onSave } = props;
   const [previewModalVisible, setPreviewModalVisible] = React.useState(false);
   const content = Form.useWatch(['content'], form);
   // TODO: 如果 channel ident 是 email 则 content 的 key 只能是 subject 和 content，并且 content 以 HTML 编辑器展示
@@ -76,6 +77,7 @@ export default function FormCpt(props: Props) {
                   }).then(() => {
                     contentRef.current = values.content;
                     message.success(t('common:success.save'));
+                    onSave();
                   });
                 }
               });
