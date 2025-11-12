@@ -56,6 +56,12 @@ const zh_HK = {
   import_to_buisGroup: '導入業務組',
   import_to_buisGroup_invaild: '無法導入不同數據源類型的告警規則',
   payload_by_system: '系統內置',
+  firemap: {
+    drill_path: '下鑽路徑',
+    urlConfig: '跳轉地址',
+    dashboardConfig: '儀表板',
+    logExplore: '日誌檢索',
+  },
 };
 
 export default zh_HK;

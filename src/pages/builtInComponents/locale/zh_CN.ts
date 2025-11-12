@@ -56,5 +56,11 @@ const zh_CN = {
   import_to_buisGroup: '导入业务组',
   import_to_buisGroup_invaild: '无法导入不同数据源类型的告警规则',
   payload_by_system: '系统内置',
+  firemap: {
+    drill_path: '下钻路径',
+    urlConfig: '跳转地址',
+    dashboardConfig: '仪表盘',
+    logExplore: '日志检索',
+  },
 };
 export default zh_CN;

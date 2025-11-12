@@ -327,3 +327,25 @@ export const deleteAnnotations = function (id: number) {
     method: RequestMethod.Delete,
   });
 };
+
+// 大盘/业务组 名称
+export const getDashboardName = (id: number[], silence?: boolean) => {
+  return request(`/api/n9e/boards?bids=${id}`, {
+    method: RequestMethod.Get,
+    silence,
+  }).then((res) => {
+    return res.dat;
+  });
+};
+
+export const getDataSourceList = (data) => {
+  return request(`/api/v1/datasource/list`, {
+    method: RequestMethod.Post,
+    data: {
+      p: 1,
+      limit: 200,
+      category: 'tracing',
+      ...data,
+    },
+  }).then((res) => res.data);
+};

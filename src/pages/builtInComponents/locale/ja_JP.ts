@@ -56,6 +56,12 @@ const ja_JP = {
   import_to_buisGroup: 'ビジネスグループにインポート',
   import_to_buisGroup_invaild: '異なるデータソースタイプのアラートルールをインポートできません',
   payload_by_system: 'システム内蔵',
+  firemap: {
+    drill_path: 'ドリルダウンパス',
+    urlConfig: 'リンクアドレス',
+    dashboardConfig: 'ダッシュボード',
+    logExplore: 'ログ検索',
+  },
 };
 
 export default ja_JP;
