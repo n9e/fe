@@ -23,7 +23,7 @@ export default function Callback(props: Props) {
       <Form.Item {...resetField} label={t('event_drop.content')} tooltip={t('event_drop.content_placeholder')} name={[...namePath, 'content']} rules={[{ required: true }]}>
         <CodeMirror
           height='200px'
-          className='border'
+          className='fc-border'
           basicSetup
           editable
           placeholder={t('event_drop.content_placeholder')}
