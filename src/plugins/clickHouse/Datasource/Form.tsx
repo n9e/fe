@@ -56,11 +56,11 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
           <Form.Item
             label={t('form.protocol')}
             name={[...names, 'ck.protocol']}
-            initialValue={'http'}
+            initialValue={'native'}
           >
-            <Radio.Group optionType="button">
-              <Radio.Button value="http">HTTP</Radio.Button>
-              <Radio.Button value="native">Native</Radio.Button>
+            <Radio.Group value={protocol} options={
+              [{ label: 'Native', value: 'native' }, { label: 'HTTP', value: 'http' }]
+            }>
             </Radio.Group>
           </Form.Item>
 
