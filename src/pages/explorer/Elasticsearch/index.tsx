@@ -5,7 +5,7 @@ import moment from 'moment';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { useGetState } from 'ahooks';
-import { Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert, Pagination } from 'antd';
+import { Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert, Pagination, Button } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
@@ -77,8 +77,10 @@ export const SYNTAX_OPTIONS = [
   },
 ];
 
-const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
+const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue, form }) => {
   const { t } = useTranslation('explorer');
+  const indexPatternId = form.getFieldValue(['query', 'indexPattern']);
+  const queryString = indexPatternId ? `?indexPatternId=${indexPatternId}` : '';
   const { esIndexMode, isPlus } = useContext(CommonStateContext);
   // 如果固定了 indexPatterns 模式，不显示切换按钮
   if (esIndexMode === 'index-patterns' || esIndexMode === 'indices') {
@@ -118,6 +120,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
+        {isPlus && mode === IMode.indexPatterns && <Button onClick={() => window.open(`/log/index-patterns${queryString}`, '_blank')}>{t('下钻设置')}</Button>}
         {isPlus && mode === IMode.indices && <DrilldownBtn dataSourceId={datasourceValue} />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />
@@ -338,6 +341,7 @@ export default function index(props: IProps) {
           {headerExtra &&
             createPortal(
               <HeaderExtra
+                form={form}
                 mode={mode}
                 setMode={(val) => {
                   const queryValues = form.getFieldValue('query');
