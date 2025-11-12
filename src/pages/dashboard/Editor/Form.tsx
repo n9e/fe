@@ -1,24 +1,10 @@
-/*
- * Copyright 2022 Nightingale Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-import React, { useImperativeHandle, forwardRef, useContext, useEffect } from 'react';
+import React, { useImperativeHandle, forwardRef, useContext } from 'react';
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
+import queryString from 'query-string';
+import { useLocation } from 'react-router-dom';
 
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
@@ -29,6 +15,7 @@ import Collapse, { Panel } from './Components/Collapse';
 import Renderer from '../Renderer/Renderer';
 import { useGlobalState } from '../globalState';
 import QueryEditor from './QueryEditor';
+import VariablesMain from '../Variables/Main';
 
 interface IProps {
   panelWidth?: number; // 面板宽度
@@ -47,6 +34,8 @@ function FormCpt(props: IProps, ref) {
   const { panelWidth, initialValues, range, timezone, id } = props;
   const type = Form.useWatch('type', chartForm);
   const values = Form.useWatch([], chartForm);
+  const location = useLocation();
+  const queryParams = location.search ? queryString.parse(location.search) : {};
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
 
@@ -92,10 +81,13 @@ function FormCpt(props: IProps, ref) {
             <div className='n9e-dashboard-editor-modal-left-wrapper gap-4'>
               <div className='n9e-dashboard-editor-modal-left-vars-wrapper gap-4'>
                 <span>{t('var.vars')}</span>
-                <div ref={props.editModalVariablecontainerRef} />
+                {/* 直接渲染变量选择器，避免依赖 portal 对 ref 变化不触发重渲染的问题 */}
+                <VariablesMain variableValueFixed={queryParams.__variable_value_fixed as any} loading={false} />
               </div>
               <div className='fc-border n9e-dashboard-editor-modal-left-chart-wrapper'>
-                {values && <Renderer id={id} time={range} timezone={timezone} values={values} isPreview themeMode={darkMode ? 'dark' : undefined} annotations={[]} />}
+                {values && (
+                  <Renderer id={`${id}__editor__`} time={range} timezone={timezone} values={values} isPreview themeMode={darkMode ? 'dark' : undefined} annotations={[]} />
+                )}
               </div>
               {!_.includes(['text', 'iframe'], type) && (
                 <div className='n9e-dashboard-editor-modal-left-query-wrapper'>

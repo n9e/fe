@@ -95,8 +95,6 @@ export default function Query(props: Props) {
 
   const { run, loading } = useRequest(service, {
     manual: true,
-    // refreshDeps: [JSON.stringify(item), JSON.stringify(range), formatedReg],
-    // debounceWait: 1000,
   });
 
   return (

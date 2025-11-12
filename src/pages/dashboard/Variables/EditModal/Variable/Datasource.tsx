@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Form, Input, Select } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
@@ -20,7 +20,7 @@ export default function Datasource(props: Props) {
   const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const { editMode, formatedReg } = props;
   const definition = Form.useWatch('definition');
-  const regex = stringToRegex(formatedReg);
+  const regex = useMemo(() => stringToRegex(formatedReg), [formatedReg]);
   const [options, setOptions] = useState<
     {
       label: string;

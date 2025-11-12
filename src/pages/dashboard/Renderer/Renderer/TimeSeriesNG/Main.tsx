@@ -75,7 +75,7 @@ export default function index(props: Props) {
     onZoomWithoutDefult,
   } = props;
   const id = isPreview ? `${props.id}__view` : props.id;
-  const { custom, options = {}, targets, overrides } = panel;
+  const { custom, options = {}, targets, overrides, queryOptionsTime } = panel;
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const uplotRef = useRef<any>();
   // 保存 x 和 y 轴初始缩放范围
@@ -84,8 +84,8 @@ export default function index(props: Props) {
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const [annotationSettingUp, setAnnotationSettingUp] = useState(false);
   const xMinMax = useMemo(() => {
-    return getScalesXMinMax({ range, panel });
-  }, [range, JSON.stringify(_.map(panel.targets, 'time'))]);
+    return getScalesXMinMax({ range, queryOptionsTime });
+  }, [range, JSON.stringify(queryOptionsTime)]);
 
   const uOptions: Options = useMemo(() => {
     const yRange = getScalesYRange({ panel });

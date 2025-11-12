@@ -559,26 +559,40 @@ const zh_HK = {
   },
   query: {
     title: '查詢條件',
+    add_query_btn: '添加查詢條件',
+    add_expression_btn: '添加查詢表達式',
     transform: '資料轉換',
     datasource_placeholder: '請選擇數據源',
     datasource_msg: '請選擇數據源',
     time: '時間選擇',
     time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
     prometheus: {
+      query: '查詢語句 (PromQL)',
       maxDataPoints: {
         tip: '每條曲線最多的點數，默認為面板寬度（新增時默認為 240），計算 step = (end - start) / maxDataPoints',
         tip_2: '每條曲線最多的點數，默認為面板寬度，計算 step = (end - start) / maxDataPoints',
       },
       minStep: {
-        tip: '最小的 step，默認為 15，計算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+        label: '最小步长 (Min step)',
+        tip: '最小步长，默認為 15，計算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: '計算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
       },
+      instant: {
+        label: '即時查詢 (Instant)',
+        tip: '查詢 "結束" 時間點的數據，只有一個時間點值',
+      },
     },
     expression_placeholder: '對一個或多個查詢進行數學運算。您透過 ${refId} 引用查詢，即 $A、$B、$C 等。兩個標量值的總和：$A + $B > 10',
+    legend: '圖例 (Legend)',
     legendTip: '圖例名稱的覆寫或模板，例如 {{hostname}} 將替換為 hostname 標籤的值',
     legendTip2: '圖例名稱的覆寫或模板，例如 {{hostname}} 將替換為 hostname 標籤的值，目前只在時序資料下生效',
+    options: '查詢選項',
+    options_max_data_points: '最大數據點',
+    options_max_data_points_tip: '每條曲線最多的點數，默認為面板寬度（新增時默認為 240），計算 step = (end - start) / maxDataPoints',
+    options_time: '查詢時間範圍',
+    options_time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
   },
   detail: {
     datasource_empty: '沒有數據源資訊，請先配置數據源',

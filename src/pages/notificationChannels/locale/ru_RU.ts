@@ -91,6 +91,15 @@ const ru_RU = {
     timeout: 'Тайм-аут (мс)',
     retry_times: 'Количество повторных попыток',
   },
+  pagerduty_request_config: {
+    title: 'PagerDuty',
+    api_key: 'API Key',
+    api_key_tip: 'Интеграционный API Key для PagerDuty можно найти в консоли PagerDuty.',
+    proxy: 'Прокси',
+    proxy_tip: 'Адрес HTTP-прокси для сценариев, требующих прокси',
+    timeout: 'Тайм-аут (мс)',
+    retry_times: 'Количество повторных попыток',
+  }
 };
 
 export default ru_RU;

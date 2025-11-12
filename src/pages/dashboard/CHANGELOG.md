@@ -14,6 +14,7 @@
 
 ### 仪表盘变量组件重构
 
+- refactor: 单个查询条件里的选项（最大数据点数 maxDataPoints、自定义时间 time）改到面板全局的查询选项里（最大数据点数 maxDataPoints、查询时间范围 queryOptionsTime）
 - refactor: 新增 Variables 组件，废弃 VariableConfig 组件
 - feat: 新增变量预览功能
 - perf: 优化变量数据查询和渲染

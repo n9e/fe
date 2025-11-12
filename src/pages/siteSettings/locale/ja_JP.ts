@@ -11,6 +11,8 @@ const ja_JP = {
   menu_small_logo_url_tip: '画像リソースのアドレスを入力してください。推奨サイズは 38x38 です',
   document_url: 'ドキュメントのURL',
   document_url_tip: 'デフォルトの夜莺ドキュメントリンクのURLをオーバーライドします',
+  site_url: 'サイトのURL',
+  site_url_tip: '夜莺に外部からアクセスするためのアドレスです。バックエンドはこれを使用して、夜莺インスタンスにアクセスできるリンクを生成できます',
   page_title: 'サイトのタイトル',
   page_title_tip: 'デフォルトのタイトル (Nightingale) をオーバーライドします',
   home_page_url: 'ホームページのURL',

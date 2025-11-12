@@ -552,26 +552,40 @@ const en_US = {
   },
   query: {
     title: 'Query',
+    add_query_btn: 'Add query',
+    add_expression_btn: 'Add expression',
     transform: 'Transform',
     datasource_placeholder: 'Select datasource',
     datasource_msg: 'Please select datasource',
     time: 'Time',
     time_tip: 'Default is the global time range of the dashboard',
     prometheus: {
+      expression: 'Expression (PromQL)',
       maxDataPoints: {
         tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
         tip_2: 'The maximum number of points per series, default is panel width, calculate step = (end - start) / maxDataPoints',
       },
       minStep: {
+        label: 'Min step',
         tip: 'Minimum step, default is 15, calculate step = max(step, minStep, safeStep), safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: 'Calculate step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
       },
+      instant: {
+        label: 'Instant query',
+        tip: 'Instant query for the current time',
+      },
     },
     expression_placeholder: 'Math operations on one or more queries. You reference the query by ${refId} ie. $A, $B, $C etc. The sum of two scalar values: $A + $B > 10',
+    legend: 'Legend',
     legendTip: 'Series name override or template, {{hostname}} will be replaced with label value for hostname',
     legendTip2: 'Series name override or template, {{hostname}} will be replaced with label value for hostname, currently only effective under time series data',
+    options: 'Query Options',
+    options_max_data_points: 'Max data points',
+    options_max_data_points_tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
+    options_time: 'Time',
+    options_time_tip: 'Specify a custom time range for the query, leave blank to use the dashboard time range',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',

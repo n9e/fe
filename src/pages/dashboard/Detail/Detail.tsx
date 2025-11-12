@@ -47,7 +47,7 @@ import Title from './Title';
 import { JSONParse } from '../utils';
 import Editor from '../Editor';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
-import { useGlobalState } from '../globalState';
+import { useGlobalState, DashboardMeta } from '../globalState';
 import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
@@ -119,6 +119,7 @@ export default function DetailV2(props: IProps) {
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [allowedLeave, setAllowedLeave] = useState(true);
+  const [variablesInitialized, setVariablesInitialized] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const editModalVariablecontainerRef = useRef<HTMLDivElement>(null);
@@ -177,6 +178,8 @@ export default function DetailV2(props: IProps) {
             dashboardId,
           });
           setVariablesWithOptions(normalizedVariables);
+          // 暂时不处理 panels，等待变量初始化完成
+          setVariablesInitialized(false);
           setDashboardLinks(configs.links);
           if (cbk) {
             cbk();
@@ -224,20 +227,44 @@ export default function DetailV2(props: IProps) {
     const dashboardConfigs: any = dashboard.configs;
     dashboardConfigs.var = newValue;
     // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
-    if (dashboardSaveMode === 'manual') {
-      // setVariablesWithOptions(newValue);
-    }
+    // if (dashboardSaveMode === 'manual') {
+    //   setVariablesWithOptions(newValue);
+    // }
     // 触发 dashboard configs 的更新
     handleUpdateDashboardConfigs(dashboard.id, {
       ...dashboard,
       configs: JSON.stringify(dashboardConfigs),
     });
-    // 变量变更后，重新执行面板的 repeats 逻辑
-    setPanels(processRepeats(panels, newValue));
+    // 变量配置变更后，不需要手动调用 processRepeats
+    // 因为 variablesWithOptions 的变化会自动触发 useEffect 重新处理 panels
   };
 
+  // 监听变量初始化完成和变量值变化，重新处理 repeat panels
   useEffect(() => {
+    // 只有在变量初始化完成后才处理 panels
+    if (!variablesInitialized || !dashboard.configs?.panels) return;
+
+    // 重新处理 panels（使用原始配置，而不是已处理的 panels）
+    const processedPanels = processRepeats(panels, variablesWithOptions);
+    setPanels(processedPanels);
+  }, [
+    variablesInitialized,
+    // 监听变量的 name 和 value，不监听 options（避免 options 更新时重复处理）
+    JSON.stringify(_.map(variablesWithOptions, (v) => ({ name: v.name, value: v.value }))),
+  ]);
+
+  useEffect(() => {
+    // 切换仪表盘时，立即清空 variablesWithOptions，避免使用上一个仪表盘的变量
+    setDashboardMeta({} as DashboardMeta);
+    setVariablesWithOptions([]);
+    setVariablesInitialized(false);
     refresh();
+
+    // 组件卸载时清空全局状态
+    return () => {
+      setDashboardMeta({} as DashboardMeta);
+      setVariablesWithOptions([]);
+    };
   }, [id]);
 
   useInterval(() => {
@@ -372,7 +399,14 @@ export default function DetailV2(props: IProps) {
                 </div>
               )}
               {dashboard.configs?.mode !== 'iframe' && (
-                <Variables editable={editable && isAuthorized} queryParams={query} onChange={handleVariableChange} editModalVariablecontainerRef={editModalVariablecontainerRef} />
+                <Variables
+                  editable={editable && isAuthorized}
+                  queryParams={query}
+                  onChange={handleVariableChange}
+                  onInitialized={() => {
+                    setVariablesInitialized(true);
+                  }}
+                />
               )}
             </div>
           </Affix>
@@ -456,7 +490,9 @@ export default function DetailV2(props: IProps) {
         initialValues={editorData.initialValues}
         onOK={(values, mode) => {
           const newPanels = updatePanelsInsertNewPanelToGlobal(panels, values, 'chart');
-          setPanels(newPanels);
+          // 新增图表后也立即处理 repeat，避免等待变量变化才生效
+          const processedPanels = processRepeats(newPanels, variablesWithOptions);
+          setPanels(processedPanels);
           if (mode === 'add') {
             scrollToLastPanel(newPanels);
           }

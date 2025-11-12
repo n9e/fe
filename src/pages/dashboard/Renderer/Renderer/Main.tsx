@@ -150,6 +150,7 @@ function index(
               placement='leftTop'
               overlayInnerStyle={{
                 maxWidth: 300,
+                wordBreak: 'break-all',
               }}
               getPopupContainer={() => containerEleRef.current!}
             >
@@ -172,6 +173,7 @@ function index(
                 placement='top'
                 overlayInnerStyle={{
                   maxWidth: 300,
+                  wordBreak: 'break-all',
                 }}
                 getPopupContainer={() => containerEleRef.current!}
                 title={

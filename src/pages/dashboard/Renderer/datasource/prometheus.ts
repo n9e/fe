@@ -22,6 +22,8 @@ interface IOptions {
   scopedVars?: any;
   inspect?: boolean;
   type?: string;
+  maxDataPoints?: number; // 2025-10-20 新增
+  queryOptionsTime?: IRawTimeRange; // 2025-10-20 新增， queryOptionsTime 会覆盖 time
 }
 
 const adjustStep = (step: number, minStep: number, range: number) => {
@@ -33,21 +35,12 @@ const adjustStep = (step: number, minStep: number, range: number) => {
   return Math.max(step, minStep, safeStep);
 };
 
-export const getRealStep = (time: IRawTimeRange, target: ITarget, panelWidth?: number) => {
-  const parsedRange = parseRange(time);
-  let start = moment(parsedRange.start).unix();
-  let end = moment(parsedRange.end).unix();
-  let step: any = getDefaultStepByTime(time, {
-    maxDataPoints: target?.maxDataPoints,
-    panelWidth,
-  });
-  if (target.time) {
-    step = getDefaultStepByTime(time, {
-      maxDataPoints: target?.maxDataPoints,
-      panelWidth,
-    });
-  }
-  step = adjustStep(step, target.step ?? 15, end - start); // target.step 默认值为 15
+export const getRealStep = (options: { time: IRawTimeRange; maxDataPoints?: number; panelWidth?: number; minStep?: number }) => {
+  const parsedRange = parseRange(options.time);
+  const start = moment(parsedRange.start).unix();
+  const end = moment(parsedRange.end).unix();
+  let step: any = getDefaultStepByTime(options.time, options);
+  step = adjustStep(step, options.minStep ?? 15, end - start);
   return step;
 };
 
@@ -57,7 +50,7 @@ interface Result {
 }
 
 export default async function prometheusQuery(options: IOptions): Promise<Result> {
-  const { panelWidth, id, time, targets, spanNulls, scopedVars, type, datasourceValue } = options;
+  const { panelWidth, id, time, targets, spanNulls, scopedVars, type, datasourceValue, maxDataPoints, queryOptionsTime } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   const series: any[] = [];
@@ -76,12 +69,18 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       }
       let start = moment(parsedRange.start).unix();
       let end = moment(parsedRange.end).unix();
-      if (target.time) {
-        const parsedRange = parseRange(target.time);
+
+      if (queryOptionsTime) {
+        const parsedRange = parseRange(queryOptionsTime);
         start = moment(parsedRange.start).unix();
         end = moment(parsedRange.end).unix();
       }
-      const _step = getRealStep(time, target, panelWidth);
+      const step = getRealStep({
+        time: queryOptionsTime || time,
+        maxDataPoints,
+        panelWidth,
+        minStep: target.step, // target.step 即为 minStep
+      });
 
       if (target.__mode__ === '__expr__') {
         exps.push({
@@ -91,7 +90,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       } else {
         const realExpr = replaceTemplateVariables(target.expr, {
           range: target.time,
-          step: _step,
+          step,
           scopedVars,
         });
         if (realExpr) {
@@ -107,7 +106,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 end,
                 start,
                 query: realExpr,
-                step: _step,
+                step,
                 refId: target.refId,
               });
             } else {
@@ -119,7 +118,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                   end,
                   start,
                   ql: realExpr,
-                  step: _step,
+                  step,
                 },
               });
             }
@@ -144,10 +143,15 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
             };
             const target = _.find(targets, (t) => t.refId === item.refId);
             _.forEach(item.result, (serie) => {
-              let _step = 15;
+              let step = 15;
               if (!spanNulls) {
                 if (target) {
-                  _step = getRealStep(time, target, panelWidth);
+                  step = getRealStep({
+                    time: queryOptionsTime || time,
+                    maxDataPoints,
+                    panelWidth,
+                    minStep: target.step,
+                  });
                 }
               }
               series.push({
@@ -156,7 +160,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
                 metric: serie.metric,
                 expr: item.expr,
-                data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
+                data: !spanNulls ? completeBreakpoints(step, serie.values) : serie.values,
               });
             });
           }
@@ -168,10 +172,15 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
             const expr = _.find(batchQueryParams, { ref: dat[i]?.ref })?.ql;
             const target = _.find(targets, (t) => t.refId === refId);
             _.forEach(dat[i]?.data, (serie) => {
-              let _step = 15;
+              let step = 15;
               if (!spanNulls) {
                 if (target) {
-                  _step = getRealStep(time, target, panelWidth);
+                  step = getRealStep({
+                    time: queryOptionsTime || time,
+                    maxDataPoints,
+                    panelWidth,
+                    minStep: target.step,
+                  });
                 }
               }
               const isExp = _.find(exps, (exp) => exp.ref === serie.ref);
@@ -184,7 +193,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                   isExp,
                   metric: serie.metric,
                   expr,
-                  data: !spanNulls ? completeBreakpoints(_step, serie.values) : serie.values,
+                  data: !spanNulls ? completeBreakpoints(step, serie.values) : serie.values,
                 });
               }
             });
