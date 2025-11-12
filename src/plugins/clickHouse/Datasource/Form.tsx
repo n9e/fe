@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Form, Row, Col, Input, Card, InputNumber } from 'antd';
+import { Form, Row, Col, Input, Card, InputNumber, Radio, Switch } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +35,36 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
           <Form.Item name={[...names, 'ck.is_encrypt']} initialValue={false} hidden>
             <div />
           </Form.Item>
+
+          {/* 全局协议选择：HTTP / Native */}
+          <Form.Item
+            label={t('form.protocol')}
+            name={[...names, 'ck.protocol']}
+            initialValue={'http'}
+          >
+            <Radio.Group optionType="button">
+              <Radio.Button value="http">HTTP</Radio.Button>
+              <Radio.Button value="native">Native</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+
+          {/* 仅当选择 HTTP 时显示跳过 SSL 开关 */}
+          <Form.Item dependencies={[...names, 'ck.protocol']} noStyle>
+            {({ getFieldValue }) => {
+              const protocol = getFieldValue([...names, 'ck.protocol']);
+              return protocol === 'http' ? (
+                <Form.Item
+                  label={t('form.skip_ssl_verify')}
+                  name={[...names, 'ck.skip_ssl']}
+                  valuePropName="checked"
+                  initialValue={false}
+                >
+                  <Switch />
+                </Form.Item>
+              ) : null;
+            }}
+          </Form.Item>
+
           <Form.List name={[...names, 'ck.nodes']} initialValue={['']}>
             {(fields, { add, remove }, { errors }) => (
               <>
