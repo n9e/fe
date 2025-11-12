@@ -29,6 +29,7 @@ import { IndexPattern } from './types';
 import './locale';
 import { SearchOutlined } from '@ant-design/icons';
 import EditField from './EditField';
+import { useQuery } from '@/utils';
 
 export default function Servers() {
   const { t } = useTranslation('es-index-patterns');
@@ -36,10 +37,35 @@ export default function Servers() {
   const [search, setSearch] = useState('');
   const [data, setData] = useState<IndexPattern[]>([]);
   const [loading, setLoading] = useState(false);
-  const fetchData = () => {
+  const query = useQuery();
+  const indexPatternId = query.get('indexPatternId');
+  const fetchData = (init?: boolean) => {
     getESIndexPatterns()
       .then((res) => {
         setData(res);
+        if (init && indexPatternId) {
+          const indexPattern = _.find(res, { id: Number(indexPatternId) });
+          if (indexPattern) {
+            EditField({
+              id: indexPattern.id,
+              datasourceList,
+              onOk(values, name) {
+                const newFieldConfig = {
+                  ...values,
+                  version: 2,
+                };
+                putESIndexPattern(indexPattern.id, {
+                  ..._.omit(indexPattern, ['fieldConfig', 'id']),
+                  fields_format: JSON.stringify(newFieldConfig),
+                  name,
+                }).then(() => {
+                  fetchData();
+                  message.success(t('common:success.save'));
+                });
+              },
+            });
+          }
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -47,7 +73,7 @@ export default function Servers() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   return (
