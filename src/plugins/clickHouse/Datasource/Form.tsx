@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Form, Row, Col, Input, Card, InputNumber, Radio, Switch } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -15,6 +15,22 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
   const [form] = Form.useForm();
   const clusterRef = useRef<any>();
   const names = ['settings'];
+
+  // 监听 protocol 变化：非 http 时清空 skip_ssl，切回 http 时确保有默认值
+  const protocol = Form.useWatch([...names, 'ck.protocol'], form);
+  useEffect(() => {
+    if (protocol === 'http') {
+      // 保证存在默认值（用户可切回后看到）
+      if (form.getFieldValue([...names, 'ck.skip_ssl']) === undefined) {
+        form.setFields([{ name: [...names, 'ck.skip_ssl'], value: false }]);
+      }
+    } else {
+      // 非 http 时清理该字段，避免残留为 true 导致逻辑/显示异常
+      if (form.getFieldValue([...names, 'ck.skip_ssl'])) {
+        form.setFields([{ name: [...names, 'ck.skip_ssl'], value: false }]);
+      }
+    }
+  }, [protocol, form]);
 
   return (
     <Form
