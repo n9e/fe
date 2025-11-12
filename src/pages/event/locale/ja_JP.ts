@@ -43,6 +43,7 @@ const ja_JP = {
     card_title: 'アラートイベント詳細',
     buisness_not_exist: 'このビジネスグループは削除されたか、またはビューの権限がありません',
     rule_name: 'ルールタイトル',
+    hash: 'Hash',
     group_name: 'ビジネスグループ',
     rule_note: 'ルール備考',
     cate: 'データソースタイプ',
