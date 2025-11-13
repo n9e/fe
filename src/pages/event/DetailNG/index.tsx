@@ -77,6 +77,17 @@ export default function DetailNG(props: Props) {
         return content;
       },
     },
+    {
+      label: t('detail.hash'),
+      key: 'hash',
+      render(content) {
+        return (
+          <Paragraph copyable style={{ margin: 0, display: 'inline' }}>
+            {content}
+          </Paragraph>
+        );
+      },
+    },
     ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
       ? [
           {

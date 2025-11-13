@@ -15,6 +15,7 @@ interface Props {
   title: string;
   documentPath: string;
   type?: 'md' | 'iframe';
+  zIndex?: number;
   onClose?: (destroy: () => void) => void;
 }
 
@@ -25,7 +26,7 @@ const filenameMap = {
 };
 
 function index(props: Props & ModalWrapProps) {
-  const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md' } = props;
+  const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md', zIndex } = props;
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
   // 去除 documentPath 结尾的 /
@@ -68,6 +69,7 @@ function index(props: Props & ModalWrapProps) {
           )}
         </Space>
       }
+      zIndex={zIndex}
       placement='right'
       onClose={() => {
         if (onClose) {
