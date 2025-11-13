@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
-import { Form, Row, Col, Input, Card, InputNumber, Radio, Switch, Collapse } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import React, { useRef, useEffect, useState } from 'react';
+import { Form, Row, Col, Input, Card, InputNumber, Radio, Switch, Space } from 'antd';
+import { PlusCircleOutlined, MinusCircleOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { scrollToFirstError } from '@/utils';
@@ -15,6 +15,9 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
   const [form] = Form.useForm();
   const clusterRef = useRef<any>();
   const names = ['settings'];
+
+  // 控制高级设置折叠显示（与 mysql 片段风格一致）
+  const [advancedVisible, setAdvancedVisible] = useState(false);
 
   // 监听 protocol 变化：非 http 时清空 skip_ssl，切回 http 时确保有默认值
   const protocol = Form.useWatch([...names, 'ck.protocol'], form);
@@ -147,8 +150,6 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             )}
           </Form.List>
 
-
-
           {/* Native 模式下显示横向的连接配置：最大空闲连接数 / 最大打开连接数 / 连接生命周期（秒） */}
 
           <Row gutter={16}>
@@ -166,9 +167,14 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
         </div>
         <Cluster form={form} clusterRef={clusterRef} />
 
-        {/* 高级设置（折叠面板，默认折叠） */}
-        <Collapse style={{ marginTop: 16 }} bordered={false} defaultActiveKey={[]}>
-          <Collapse.Panel header={t('form.advanced_settings')} key="advanced">
+        {/* 高级设置：与项目其它表单风格一致，点击展开/收起 */}
+        <div style={{ marginTop: 16 }}>
+          <Space className='cursor-pointer' onClick={() => setAdvancedVisible(!advancedVisible)}>
+            {t('common:advanced_settings')}
+            {advancedVisible ? <DownOutlined /> : <RightOutlined />}
+          </Space>
+
+          <div className='mt-2' style={{ display: advancedVisible ? 'block' : 'none' }}>
             <Row gutter={16}>
               <Col flex={1}>
                 <Form.Item
@@ -224,8 +230,8 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                 </Col>
               </Row>
             ) : null}
-          </Collapse.Panel>
-        </Collapse>
+          </div>
+        </div>
       </Card>
       <Footer id={data?.id} submitLoading={submitLoading} />
     </Form>
