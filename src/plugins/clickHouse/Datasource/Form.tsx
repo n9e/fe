@@ -104,6 +104,15 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                                   required: true,
                                 },
                                 { pattern: /(^\S)((.)*\S)?(\S*$)/, message: t('form.url_no_spaces_msg') },
+                                () => ({
+                                  validator(_, value) {
+                                    if (!value) return Promise.resolve();
+                                    if (/^https?:\/\//i.test(value)) {
+                                      return Promise.reject(new Error(t('form.url_no_http_msg') || ''));
+                                    }
+                                    return Promise.resolve();
+                                  },
+                                }),
                               ]}
                               noStyle
                             >

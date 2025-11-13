@@ -60,6 +60,7 @@ const ja_JP = {
       '関連付けられたアラートエンジンが無効になっており、現在のデータソースのアラートはもはや有効ではありません。アラートエンジンの設定を確認するか、データソースの関連付けを再度修正してください。',
     secure_connection: '安全な接続（SSL/TLS）',
     url_no_spaces_msg: 'URLには空白を含めることはできません',
+    url_no_http_msg: 'URLは http:// または https:// で始めることはできません',
     url_required_msg: 'URLは空にできません',
     protocol: 'プロトコル',
     prom: {

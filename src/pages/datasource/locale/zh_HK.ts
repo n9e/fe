@@ -58,6 +58,7 @@ const zh_HK = {
     protocol: '協議',
     secure_connection: '安全連接（SSL/TLS）',
     url_no_spaces_msg: '請勿輸入空格',
+    url_no_http_msg: 'URL 不能以 http:// 或 https:// 開頭',
     url_required_msg: 'URL 不能為空',
     prom: {
       write_addr_tip: '記錄規則產生的資料的回寫地址，常見時序資料庫配置示例',

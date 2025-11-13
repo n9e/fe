@@ -58,6 +58,7 @@ const zh_CN = {
     protocol: '协议',
     secure_connection: '安全连接（SSL/TLS）',
     url_no_spaces_msg: 'URL不能包含空格',
+    url_no_http_msg: 'URL不能以 http:// 或 https:// 开头',
     url_required_msg: 'URL不能为空',
     prom: {
       write_addr_tip: '记录规则产生的数据的回写地址，常见时序数据库配置示例',
