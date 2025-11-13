@@ -1,4 +1,26 @@
 const zh_CN = {
   title: '单点登录管理',
+  LDAP: 'LDAP',
+  CAS: 'CAS',
+  OIDC: 'OIDC',
+  OAuth2: 'OAuth2',
+  dingtalk: '钉钉',
+  dingtalk_setting: {
+    enable: '启用',
+    display_name: '显示名称',
+    client_id: 'Client ID',
+    client_secret: 'Client secret',
+    use_dingtalk_name: '使用钉钉名称为用户名',
+    use_dingtalk_name_tip: '使用钉钉员工名称为用户的 username，如果设置 false 用unionId 作为 username，例：DhKsjTbQGhIjFwotSDiSX5wiEiE',
+    cover_attributes: '更新用户信息',
+    cover_attributes_tip: '每次登陆后，如果用户信息有变化，会使用钉钉中用户的信息覆盖夜莺中用户的信息(手机号、邮箱)',
+    default_roles: '默认角色',
+    auth_url: '登陆认证地址',
+    proxy: '代理地址',
+    scope: '选择组织',
+    scope_tip: '登录过程中用户可选择的组织',
+    corpId: '所属组织 ID',
+    corpId_tip: '所属组织 ID，如果指定了组织 ID，在钉钉登录页面，会直接用指定组织登录，不会出现选择组织页面',
+  },
 };
 export default zh_CN;
