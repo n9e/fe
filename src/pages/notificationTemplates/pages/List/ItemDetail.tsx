@@ -115,7 +115,14 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
           </Space>
         </div>
       </div>
-      <FormCpt form={form} item={data} contentRef={contentRef} />
+      <FormCpt
+        form={form}
+        item={data}
+        contentRef={contentRef}
+        onSave={() => {
+          fetchData();
+        }}
+      />
       <FormModal
         visible={formModalState.visible}
         mode={formModalState.mode}
