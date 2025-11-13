@@ -47,13 +47,17 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             initialValue={'native'}
           >
             <Radio.Group value={protocol} options={
-              [{ label: 'Native', value: 'native' }, { label: 'HTTP', value: 'http' }]
+              [
+                { label: 'Native', value: 'native' },
+                { label: 'HTTP', value: 'http' },
+                { label: "HTTPS", value: 'https' }
+              ]
             }>
             </Radio.Group>
           </Form.Item>
 
           {/* 仅当选择 HTTP 时显示跳过 SSL 开关 */}
-          {protocol === 'http' && (
+          {protocol === 'https' && (
             <Form.Item
               label={t('form.skip_ssl_verify')}
               name={[...names, 'ck.skip_ssl']}
