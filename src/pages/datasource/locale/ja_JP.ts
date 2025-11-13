@@ -58,6 +58,7 @@ const ja_JP = {
     cluster_confirm_cancel: '関連付けを行う',
     cluster_not_found:
       '関連付けられたアラートエンジンが無効になっており、現在のデータソースのアラートはもはや有効ではありません。アラートエンジンの設定を確認するか、データソースの関連付けを再度修正してください。',
+    secure_connection: '安全な接続（SSL/TLS）',
     url_no_spaces_msg: 'URLには空白を含めることはできません',
     url_required_msg: 'URLは空にできません',
     protocol: 'プロトコル',

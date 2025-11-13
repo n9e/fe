@@ -18,7 +18,8 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
   const [advancedVisible, setAdvancedVisible] = useState(false);
 
   // 监听 protocol 变化：非 http 时清空 skip_ssl，切回 http 时确保有默认值
-  const protocol = Form.useWatch([...names, 'ck.protocol'], form);
+  const protocol: string = Form.useWatch([...names, 'ck.protocol'], form);
+  const secureConnection: boolean = Form.useWatch([...names, 'ck.secure_connection'], form);
 
   return (
     <Form
@@ -50,17 +51,25 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
               [
                 { label: 'Native', value: 'native' },
                 { label: 'HTTP', value: 'http' },
-                { label: "HTTPS", value: 'https' }
               ]
             }>
             </Radio.Group>
           </Form.Item>
 
           {/* 仅当选择 HTTP 时显示跳过 SSL 开关 */}
-          {protocol === 'https' && (
+          <Form.Item
+            label={t('form.secure_connection')}
+            name={[...names, 'ck.secure_connection']}
+            valuePropName="checked"
+            initialValue={false}
+          >
+            <Switch />
+          </Form.Item>
+
+          {protocol === 'http' && secureConnection && (
             <Form.Item
               label={t('form.skip_ssl_verify')}
-              name={[...names, 'ck.skip_ssl']}
+              name={[...names, 'ck.skip_ssl_verify']}
               valuePropName="checked"
               initialValue={false}
             >

@@ -59,6 +59,7 @@ const en_US = {
     cluster_not_found:
       'The associated alerting engine has been disabled, and the alerts of the current data source are no longer effective. Please check the alerting engine configuration or re-modify the data source associated with the alerting engine',
     protocol: 'Protocol',
+    secure_connection: 'Secure Connection (SSL/TLS)',
     url_no_spaces_msg: 'Spaces are not allowed in the URL',
     url_required_msg: 'URL cannot be empty',
     prom: {
