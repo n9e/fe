@@ -210,6 +210,11 @@ export default function index() {
                     ),
                   },
                   {
+                    title: t('common:table.note'),
+                    dataIndex: 'note',
+                    className: 'note-column',
+                  },
+                  {
                     title: t('common:table.update_at'),
                     width: 150,
                     dataIndex: 'update_at',

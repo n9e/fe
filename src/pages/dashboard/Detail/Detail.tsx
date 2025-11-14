@@ -202,6 +202,7 @@ export default function DetailV2(props: IProps) {
         name: updateData.name,
         ident: updateData.ident,
         tags: updateData.tags,
+        note: updateData.note,
         configs,
       });
     } else {
@@ -595,6 +596,7 @@ export default function DetailV2(props: IProps) {
                 name: dashboard.name,
                 ident: dashboard.ident,
                 tags: dashboard.tags,
+                note: dashboard.note,
               });
               updateDashboardConfigs(dashboard.id, {
                 configs: JSON.stringify(dashboard.configs),

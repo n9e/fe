@@ -28,6 +28,10 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'note',
+    visible: true,
+  },
+  {
     name: 'update_at',
     i18nKey: 'common:table.update_at',
     visible: true,
