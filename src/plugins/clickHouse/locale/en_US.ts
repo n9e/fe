@@ -37,6 +37,9 @@ const en_US = {
   },
   datasource: {
     max_query_rows: 'Maximum number of rows allowed to be retrieved in a single request',
+    max_idle_conns: 'Maximum Idle Connections',
+    max_open_conns: 'Maximum Open Connections',
+    conn_max_lifetime: 'Connection Lifetime (seconds)',
   },
 };
 export default en_US;
