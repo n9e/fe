@@ -172,6 +172,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                   label={t('form.timeout')}
                   name={[...names, 'ck.timeout']}
                   rules={[{ type: 'number', min: 0 }]}
+                  initialValue={60}
                 >
                   <InputNumber className='w-full' controls={false} />
                 </Form.Item>
@@ -181,6 +182,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                   label={t(`${NAME_SPACE}:datasource.max_query_rows`)}
                   name={[...names, 'ck.max_query_rows']}
                   rules={[{ required: true, type: 'number', min: 0 }]}
+                  initialValue={200}
                 >
                   <InputNumber className='w-full' controls={false} />
                 </Form.Item>
@@ -196,7 +198,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                     name={[...names, 'ck.max_idle_conns']}
                     rules={[{ type: 'number', min: 0 }]}
                   >
-                    <InputNumber className='w-full' controls={false} />
+                    <InputNumber className='w-full' controls={false} placeholder='10' />
                   </Form.Item>
                 </Col>
 
@@ -206,7 +208,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                     name={[...names, 'ck.max_open_conns']}
                     rules={[{ type: 'number', min: 0 }]}
                   >
-                    <InputNumber className='w-full' controls={false} />
+                    <InputNumber className='w-full' controls={false} placeholder='100' />
                   </Form.Item>
                 </Col>
 
@@ -216,7 +218,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                     name={[...names, 'ck.conn_max_lifetime']}
                     rules={[{ type: 'number', min: 0 }]}
                   >
-                    <InputNumber className='w-full' controls={false} />
+                    <InputNumber className='w-full' controls={false} placeholder='14400' />
                   </Form.Item>
                 </Col>
               </Row>
