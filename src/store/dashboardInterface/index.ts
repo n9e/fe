@@ -23,6 +23,7 @@ export interface Dashboard {
   name: string;
   ident?: string;
   tags: string;
+  note?: string;
   update_at: number;
   update_by: string;
   configs: IDashboardConfig;

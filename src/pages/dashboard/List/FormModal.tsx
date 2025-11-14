@@ -50,6 +50,7 @@ function index(props: Props & ModalWrapProps) {
           name: initialValues?.name,
           ident: initialValues?.ident,
           tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
+          note: initialValues?.note,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
@@ -77,6 +78,7 @@ function index(props: Props & ModalWrapProps) {
                 name: values.name,
                 ident: values.ident,
                 tags: _.join(values.tags, ' '),
+                note: values.note,
               });
               message.success(t('common:success.edit'));
             } else if (action === 'create' && busiId) {
@@ -84,6 +86,7 @@ function index(props: Props & ModalWrapProps) {
                 name: values.name,
                 ident: values.ident,
                 tags: _.join(values.tags, ' '),
+                note: values.note,
                 configs: JSON.stringify({
                   var: [],
                   panels: [],
@@ -136,6 +139,9 @@ function index(props: Props & ModalWrapProps) {
         </Form.Item>
         <Form.Item label={t('tags')} name='tags'>
           <Select mode='tags' tokenSeparators={[' ']} open={false} />
+        </Form.Item>
+        <Form.Item label={t('common:table.note')} name='note'>
+          <Input.TextArea autoSize={{ minRows: 1 }} />
         </Form.Item>
         <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' tooltip={t('settings.graphTooltip.tip')}>
           <Radio.Group

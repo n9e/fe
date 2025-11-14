@@ -224,6 +224,7 @@ export default function Import(props: IProps) {
               name: vals.name,
               ident: vals.ident,
               tags: _.join(vals.tags, ' '),
+              note: vals.note,
               configs: JSON.stringify({
                 mode: 'iframe',
                 iframe_url: vals.iframe_url,
@@ -260,6 +261,9 @@ export default function Import(props: IProps) {
           </Form.Item>
           <Form.Item label={t('tags')} name='tags'>
             <Select mode='tags' tokenSeparators={[' ']} open={false} />
+          </Form.Item>
+          <Form.Item label={t('common:table.note')} name='note'>
+            <Input.TextArea autoSize={{ minRows: 1 }} />
           </Form.Item>
           <Form.Item
             label={
