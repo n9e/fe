@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { GetTmpChartData } from '@/services/metric';
 import { TimeRangePickerWithRefresh, IRawTimeRange, isMathString } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
+import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 import Renderer from '../dashboard/Renderer/Renderer';
 import './locale';
 import './index.less';
@@ -112,8 +112,6 @@ export default function Chart() {
                 <div style={{ height: 740 }}>
                   <Renderer
                     id={item.dataProps.id}
-                    dashboardId={item.id}
-                    dashboardID={item.id}
                     key={index}
                     time={range}
                     values={_.merge({}, item.dataProps, {
@@ -126,7 +124,6 @@ export default function Chart() {
                     isPreview
                     themeMode={darkMode ? 'dark' : undefined}
                     annotations={[]}
-                    variableConfig={[]} // TODO 变量必须有值才会进行表达式模板替换
                   />
                 </div>
               );

@@ -9,3 +9,12 @@
 - feat: 新增 "显示模式" 设置项，原默认为基础模式同时新增 Retro LCD 模式
 - refactor: 去除 "最大值" 设置项，由 "高级设置" 中的 "最大值" 设置项代替
 - refactor: 去除 "基础颜色" 设置项，新增 "阈值" 设置项，基础颜色由 "阈值" 设置项的基础颜色代替
+
+## 3.2.0
+
+### 仪表盘变量组件重构
+
+- refactor: 单个查询条件里的选项（最大数据点数 maxDataPoints、自定义时间 time）改到面板全局的查询选项里（最大数据点数 maxDataPoints、查询时间范围 queryOptionsTime）
+- refactor: 新增 Variables 组件，废弃 VariableConfig 组件
+- feat: 新增变量预览功能
+- perf: 优化变量数据查询和渲染

@@ -4,12 +4,9 @@ import _ from 'lodash';
 import Color from 'color';
 import { useSize } from 'ahooks';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, IBarGaugeStyles } from '../../../types';
-import { useGlobalState } from '../../../globalState';
-import { getDetailUrl } from '../../utils/replaceExpressionDetail';
-
 import { calculatePercentage } from './utils';
 
 interface Props {
@@ -19,12 +16,11 @@ interface Props {
   themeMode?: 'dark';
   minValue: number;
   maxValue: number;
-  time: IRawTimeRange;
   maxNameWidth: number;
 }
 
 export default function BasicDisplayMode(props: Props) {
-  const { item, custom, options, themeMode, minValue, maxValue, time, maxNameWidth } = props;
+  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth } = props;
   const metric = item.metric;
   const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;
   const { thresholds } = options;
@@ -35,7 +31,6 @@ export default function BasicDisplayMode(props: Props) {
   const bgSize = useSize(bgRef);
   const textRef = useRef(null);
   const textSize = useSize(textRef);
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const getTextRight = () => {
     if (bgSize?.width !== undefined && textSize?.width !== undefined) {
       if (bgSize?.width < textSize?.width + 8) {
@@ -64,7 +59,12 @@ export default function BasicDisplayMode(props: Props) {
           }}
         >
           {detailUrl ? (
-            <a target='_blank' href={getDetailUrl(detailUrl, item, dashboardMeta, time)}>
+            <a
+              target='_blank'
+              href={replaceTemplateVariables(detailUrl, {
+                scopedVars: item,
+              })}
+            >
               {name}
             </a>
           ) : (

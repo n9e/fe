@@ -18,13 +18,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { Form } from 'antd';
 import { useDebounceFn } from 'ahooks';
+
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { datasource as tdengineQuery } from '@/plugins/TDengine';
 import { datasource as ckQuery } from '@/plugins/clickHouse';
 import flatten from '@/utils/flatten';
+import { useGlobalState } from '@/pages/dashboard/globalState';
+
 import { ITarget } from '../../types';
-import { getVaraiableSelected } from '../../VariableConfig/constant';
-import { IVariable } from '../../VariableConfig/definition';
 import prometheusQuery from './prometheus';
 import elasticsearchQuery from './elasticsearch';
 
@@ -34,23 +35,24 @@ import plusDatasource from 'plus:/parcels/Dashboard/datasource';
 interface IProps {
   panelWidth?: number;
   id?: string;
-  dashboardId: string;
   datasourceCate: string;
   datasourceValue?: number;
   time: IRawTimeRange;
   targets: ITarget[];
-  variableConfig?: IVariable[];
   inViewPort?: boolean;
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
   type?: string;
   custom: any;
+  maxDataPoints?: number;
+  queryOptionsTime?: IRawTimeRange;
 }
 
 export default function useQuery(props: IProps) {
-  const { dashboardId, datasourceCate, time, targets, variableConfig, inViewPort, spanNulls, datasourceValue } = props;
+  const { datasourceCate, time, targets, inViewPort, spanNulls, datasourceValue, maxDataPoints, queryOptionsTime } = props;
   const form = Form.useFormInstance();
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   // beta.5 新增 range 状态，用于 uplot 图表更新时 time 和 data 同时更新
   // 解决之前 time 先更新后面 data 再更新导致 x 轴时间范围会变成 data 的时间范围
   const [range, setRange] = useState<IRawTimeRange>(time);
@@ -59,10 +61,13 @@ export default function useQuery(props: IProps) {
   const [error, setError] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
-  const cachedVariableValues = _.map(variableConfig, (item) => {
-    return getVaraiableSelected(item, dashboardId);
-  });
+
   const flag = useRef(false);
+
+  const fetchQueryProps = {
+    ...props,
+    variablesWithOptions,
+  };
   const fetchQueryMap = {
     prometheus: prometheusQuery,
     elasticsearch: elasticsearchQuery,
@@ -83,7 +88,7 @@ export default function useQuery(props: IProps) {
         }
       }
       setLoading(true);
-      fetchQueryMap[datasourceCate](props)
+      fetchQueryMap[datasourceCate](fetchQueryProps)
         .then(({ series, query }: { series: any[]; query: any[] }) => {
           setSeries(
             _.map(series, (item) => {
@@ -120,7 +125,8 @@ export default function useQuery(props: IProps) {
     } else {
       flag.current = false;
     }
-  }, [JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variableConfig), JSON.stringify(cachedVariableValues), spanNulls, datasourceValue]);
+    // TODO 这里 JSON.stringify(variablesWithOptions) 可能会有性能问题
+  }, [JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variablesWithOptions), spanNulls, datasourceValue, maxDataPoints, JSON.stringify(queryOptionsTime)]);
 
   useEffect(() => {
     // 如果图表在可视区域内并且没有请求过数据，则请求数据

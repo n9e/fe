@@ -16,7 +16,8 @@
  */
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { IPanel, IDashboardConfig, IVariable } from '../types';
+import { IPanel, IDashboardConfig } from '../types';
+import { IVariable } from '../Variables/types';
 
 export function buildLayout(panels: IPanel[]) {
   return _.map(panels, (item: IPanel) => {

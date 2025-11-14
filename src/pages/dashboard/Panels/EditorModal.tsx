@@ -3,11 +3,10 @@ import _ from 'lodash';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import Editor from '../Editor';
-import { updatePanelsWithNewPanel, panelsMergeToConfigs, updatePanelsInsertNewPanelToRow } from './utils';
+import { updatePanelsWithNewPanel, panelsMergeToConfigs, updatePanelsInsertNewPanelToRow, sortPanelsByGridLayout, ajustPanels, processRepeats } from './utils';
+import { useGlobalState } from '@/pages/dashboard/globalState';
 
 interface Props {
-  dashboardId: string;
-  variableConfig: any;
   range: IRawTimeRange;
   timezone: string;
   setTimezone: (timezone: string) => void;
@@ -16,11 +15,12 @@ interface Props {
   setPanels: (panels: any[]) => void;
   updateDashboardConfigs: (dashboardId: number, configs: any) => Promise<any>;
   onUpdated: (res: any) => void;
-  setVariableConfigRefreshFlag: (flag: string) => void;
+  editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
 function EditorModal(props: Props, ref) {
-  const { dashboardId, variableConfig, range, timezone, setTimezone, dashboard, panels, setPanels, updateDashboardConfigs, onUpdated } = props;
+  const { range, timezone, setTimezone, dashboard, panels, setPanels, updateDashboardConfigs, onUpdated } = props;
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const [editorData, setEditorData] = useState<{
     mode: string;
     visible: boolean;
@@ -53,28 +53,24 @@ function EditorModal(props: Props, ref) {
           visible,
         });
       }}
-      variableConfig={variableConfig}
       id={editorData.id}
-      dashboardId={_.toString(dashboardId)}
       time={range}
       timezone={timezone}
       setTimezone={setTimezone}
       initialValues={editorData.initialValues}
       panelWidth={editorData.panelWidth}
       onOK={(values, mode) => {
-        props.setVariableConfigRefreshFlag(_.uniqueId('refreshFlag_')); // TODO 2024-01-30 临时解决编辑状态下变量值修改后没有同步预览视图的问题，后续需要重构变量值方案，抛弃不能状态驱动的 localStorage 方案
         const newPanels = mode === 'edit' ? updatePanelsWithNewPanel(panels, values) : updatePanelsInsertNewPanelToRow(panels, editorData.id, values);
-        setPanels(newPanels);
+        // 立即根据当前变量值重新计算 repeat，保证保存后 UI 立刻生效
+        const processedPanels = processRepeats(newPanels, variablesWithOptions);
+        setPanels(processedPanels);
         updateDashboardConfigs(dashboard.id, {
           configs: panelsMergeToConfigs(dashboard.configs, newPanels),
         }).then((res) => {
           onUpdated(res);
         });
       }}
-      onCancel={() => {
-        props.setVariableConfigRefreshFlag(_.uniqueId('refreshFlag_')); // TODO 2024-01-30 临时解决编辑状态下变量值修改后没有同步预览视图的问题，后续需要重构变量值方案，抛弃不能状态驱动的 localStorage 方案
-      }}
-      dashboard={dashboard}
+      editModalVariablecontainerRef={props.editModalVariablecontainerRef}
     />
   );
 }

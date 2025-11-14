@@ -3,24 +3,21 @@ import { LinkOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import _ from 'lodash';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
-
-import { getDetailUrl } from '../../../../utils/replaceExpressionDetail';
-import { useGlobalState } from '../../../../../globalState';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 interface Props {
   data: any;
-  range?: IRawTimeRange;
   name?: string;
   url?: string;
   style?: React.CSSProperties;
 }
 
 export default function Link(props: Props) {
-  const { data, range, name, url, style } = props;
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
-  if (!url || !range) return null;
-  const linkHref = getDetailUrl(url, data, dashboardMeta, range);
+  const { data, name, url, style } = props;
+  if (!url) return null;
+  const linkHref = replaceTemplateVariables(url, {
+    scopedVars: data,
+  });
 
   return (
     <Tooltip

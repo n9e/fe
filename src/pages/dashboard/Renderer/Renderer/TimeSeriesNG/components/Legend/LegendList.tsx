@@ -3,8 +3,6 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
-
 import { IPanel } from '../../../../../types';
 import { DataItem } from '../../utils/getLegendData';
 
@@ -12,7 +10,6 @@ import Link from './Link';
 
 interface Props {
   panel: IPanel;
-  range?: IRawTimeRange;
   data: DataItem[];
   legendColumns?: string[];
   placement?: 'bottom' | 'right';
@@ -21,7 +18,7 @@ interface Props {
 
 export default function LegendList(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { panel, range, data, legendColumns, placement, onRowClick } = props;
+  const { panel, data, legendColumns, placement, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
@@ -56,7 +53,7 @@ export default function LegendList(props: Props) {
                   {item.offset && item.offset !== 'current' ? <span style={{ paddingRight: 5 }}>offfset {item.offset}</span> : ''}
                   <span>{item.name}</span>
                 </div>
-                <Link data={item} range={range} name={detailName} url={detailUrl} />
+                <Link data={item} name={detailName} url={detailUrl} />
                 <div className='renderer-timeseries-ng-legend-list-stat'>
                   {_.map(legendColumns, (column) => {
                     return (
