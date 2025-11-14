@@ -56,27 +56,6 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             </Radio.Group>
           </Form.Item>
 
-          {/* 仅当选择 HTTP 时显示跳过 SSL 开关 */}
-          <Form.Item
-            label={t('form.secure_connection')}
-            name={[...names, 'ck.secure_connection']}
-            valuePropName="checked"
-            initialValue={false}
-          >
-            <Switch />
-          </Form.Item>
-
-          {protocol === 'http' && secureConnection && (
-            <Form.Item
-              label={t('form.skip_ssl_verify')}
-              name={[...names, 'ck.skip_ssl_verify']}
-              valuePropName="checked"
-              initialValue={false}
-            >
-              <Switch />
-            </Form.Item>
-          )}
-
           <Form.List name={[...names, 'ck.nodes']} initialValue={['']}>
             {(fields, { add, remove }, { errors }) => (
               <>
@@ -136,6 +115,32 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             )}
           </Form.List>
 
+          <Row gutter={16} align="middle" justify="start" className="mb-4">
+            <Col>
+              <Form.Item
+                label={t('form.secure_connection')}
+                name={[...names, 'ck.secure_connection']}
+                valuePropName="checked"
+                initialValue={false}
+              >
+                <Switch />
+              </Form.Item>
+            </Col>
+
+            <Col>
+              {secureConnection && (
+                <Form.Item
+                  label={t('form.skip_ssl_verify')}
+                  name={[...names, 'ck.skip_ssl_verify']}
+                  valuePropName="checked"
+                  initialValue={false}
+                >
+                  <Switch />
+                </Form.Item>
+              )}
+            </Col>
+          </Row>
+
           <Row gutter={16} className='mb-4'>
             <Col flex={1}>
               <Form.Item label={t('form.username')} name={[...names, 'ck.user']}>
@@ -150,10 +155,8 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
           </Row>
         </div>
 
-        <Cluster form={form} clusterRef={clusterRef} />
-
         {/* 高级设置 */}
-        <div className='mt-4'>
+        <div className='mb-4'>
           <div
             className='inline-flex items-center gap-2 cursor-pointer text-sm text-gray-700 select-none'
             onClick={() => setAdvancedVisible(!advancedVisible)}
@@ -220,6 +223,10 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             ) : null}
           </div>
         </div>
+
+        <Cluster form={form} clusterRef={clusterRef} />
+
+
       </Card>
       <Footer id={data?.id} submitLoading={submitLoading} />
     </Form >
