@@ -1,11 +1,14 @@
+/**
+ * 日志展示相关选项的组件
+ * 包括：是否显示时间字段、是否折行显示、字段展示和顺序等
+ */
+
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Space, Switch, Dropdown, Menu, Modal, Row, Col, Form, Radio, InputNumber, Tooltip } from 'antd';
 import _ from 'lodash';
 import { SettingOutlined, EyeInvisibleOutlined, PlusSquareOutlined, CloseSquareOutlined } from '@ant-design/icons';
-
-import { NAME_SPACE } from '../../constants';
 
 export default function OriginSettings({
   options,
@@ -18,7 +21,7 @@ export default function OriginSettings({
   fields: string[];
   showDateField?: boolean;
 }) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t } = useTranslation('explorer');
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
   const [jsonSettingsModalVisible, setJsonSettingsModalVisible] = useState(false);
   const [jsonSettings, setJsonSettings] = useState({
@@ -146,11 +149,11 @@ export default function OriginSettings({
                   borderBottom: '0 none',
                   padding: '8px 16px',
                 }}
-                className='border-fc-300'
+                className='n9e-border-color'
               >
                 <h3 style={{ margin: 0 }}>{t('logs.settings.organizeFields.allFields')}</h3>
               </div>
-              <div style={{ borderStyle: 'solid', borderWidth: '1px', padding: 16, overflowY: 'auto', height: 450 }} className='border-fc-300'>
+              <div style={{ borderStyle: 'solid', borderWidth: '1px', padding: 16, overflowY: 'auto', height: 450 }} className='n9e-border-color'>
                 {_.map(_.xor(fields, organizeFields), (field: string) => {
                   return (
                     <div
@@ -179,11 +182,11 @@ export default function OriginSettings({
                   borderBottom: '0 none',
                   padding: '8px 16px',
                 }}
-                className='border-fc-300'
+                className='n9e-border-color'
               >
                 <h3 style={{ margin: 0 }}>{t('logs.settings.organizeFields.showFields')}</h3>
               </div>
-              <div style={{ borderStyle: 'solid', borderWidth: '1px', padding: 16, overflowY: 'auto', height: 450 }} className='border-fc-300'>
+              <div style={{ borderStyle: 'solid', borderWidth: '1px', padding: 16, overflowY: 'auto', height: 450 }} className='n9e-border-color'>
                 {_.isEmpty(organizeFields) && <div style={{ color: '#999' }}>{t('logs.settings.organizeFields.showFields_empty')}</div>}
                 {_.map(organizeFields, (field) => {
                   return (

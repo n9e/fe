@@ -87,6 +87,13 @@ export function getLogsQuery(data: {
   });
 }
 
+export function getDorisFields(data: BaseParams & { database: string; table: string }): Promise<string[]> {
+  return request('/api/n9e-plus/doris-fields', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat || []);
+}
+
 export function getDorisIndex(data: BaseParams & { database: string; table: string }): Promise<Field[]> {
   return request('/api/n9e-plus/doris-index', {
     method: RequestMethod.Post,

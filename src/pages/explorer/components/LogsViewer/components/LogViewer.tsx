@@ -1,16 +1,21 @@
-import React, { useState, useMemo } from 'react';
+/**
+ * 单行日志的展示组件
+ * 用于 Raw 组件中展开单行日志的展示
+ */
+
+import React, { useState, useMemo, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Tabs, Form } from 'antd';
+import { Space, Table, Tabs } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
-import { parseRange } from '@/components/TimeRangePicker';
 import { copyToClipBoard } from '@/utils';
-import HighLightJSON from '@/pages/explorer/Elasticsearch/HighLightJSON';
+import { parseRange } from '@/components/TimeRangePicker';
 
-import { getGlobalState } from '../../globalState';
 import FieldValueWithFilter from './FieldValueWithFilter';
+import { LogsViewerStateContext } from '../index';
+import HighLightJSON from './HighLightJSON';
 
 interface Props {
   value: Record<string, any>;
@@ -20,11 +25,9 @@ interface Props {
 
 export default function LogView(props: Props) {
   const { t } = useTranslation('explorer');
-  const fieldConfig = getGlobalState('fieldConfig');
+  const { fieldConfig, range } = useContext(LogsViewerStateContext);
   const { value, onValueFilter, rawValue } = props;
   const [type, setType] = useState<string>('table');
-  const form = Form.useFormInstance();
-  const range = form.getFieldValue(['query', 'range']);
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
   let end = parsedRange ? moment(parsedRange.end).unix() : 0;
@@ -42,7 +45,7 @@ export default function LogView(props: Props) {
   try {
     jsonValue = JSON.stringify(value.___raw___, null, 4);
   } catch (e) {
-    console.error(e);
+    console.warn(e);
     jsonValue = '无法解析';
   }
 
@@ -53,7 +56,6 @@ export default function LogView(props: Props) {
         setType(val);
       }}
       size='small'
-      // className='log-view-tabs'
       tabBarExtraContent={
         <Space
           onClick={() => {

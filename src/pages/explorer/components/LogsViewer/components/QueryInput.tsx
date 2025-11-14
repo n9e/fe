@@ -2,6 +2,7 @@ import React from 'react';
 import { Input } from 'antd';
 
 interface Props {
+  disabled?: boolean;
   value?: string;
   onChange?: (value?: string) => void;
 }
@@ -25,6 +26,7 @@ export default function QueryInput(props: Props) {
 
   return (
     <Input.TextArea
+      disabled={props.disabled}
       autoSize={{ minRows: 1, maxRows: 4 }}
       value={currentValue}
       onChange={(e) => setCurrentValue(e.target.value)}

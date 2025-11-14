@@ -4,20 +4,34 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Table } from 'antd';
-import { CaretDownOutlined, CaretRightOutlined, LeftOutlined, RightOutlined, DownOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretRightOutlined, LeftOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
 
-import { NAME_SPACE } from '../../constants';
-import { filteredFields } from '../utils';
-import LogView from './LogView';
-import FieldValueWithFilter from './FieldValueWithFilter';
+import LogViewer from './components/LogViewer';
+import FieldValueWithFilter from './components/FieldValueWithFilter';
+
+const explorerOriginInlineCellClassName = 'inline-block mr-1';
+const explorerOriginBreakCellClassName = 'break-all block mr-1';
+const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-title inline-flex text-[12px] my-[2px] py-[1px] px-[3px]';
+const explorerOrigiFieldValClassName = 'inline text-main m-0 p-0 cursor-pointer';
+const explorerOriginUlClassName = 'border-0 list-none bg-transparent p-0 m-0';
+const explorerOriginLiClassName = 'relative ml-0 pl-0 ';
 
 interface Props {
-  time_field?: string;
+  /** 时间字段 */
+  timeField?: string;
+  /** 日志数据 */
   data: {
-    [index: string]: string;
+    [index: string]: any;
   }[];
+  /** 日志格式配置项 */
   options: any;
+  /** 过滤每行日志的字段，返回需要显示的字段数组 */
+  filterFields?: (fieldKeys: string[]) => string[];
+  /** 每行日志前面的额外内容 */
+  rowPrefixRender?: (record: { [index: string]: any }) => React.ReactNode;
+  /** 过滤每行日志的字段，返回需要显示的字段数组 */
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  /** 排序反转回调 */
   onReverseChange: (reverse: boolean) => void;
 }
 
@@ -28,14 +42,14 @@ interface RenderValueProps {
 }
 
 function RenderValue({ name, value, onValueFilter }: RenderValueProps) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t } = useTranslation('explorer');
   const [expand, setExpand] = useState(false);
   const { rawValue } = useContext(DataContext);
 
   if (typeof value === 'string' && value.indexOf('\n') > -1) {
     const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
     return (
-      <div className='explorer-origin-field-val'>
+      <div className={explorerOrigiFieldValClassName}>
         {_.map(lines, (v, idx) => {
           return (
             <div key={idx}>
@@ -86,17 +100,17 @@ function RenderSubJSON({
 
   if (options.jsonDisplaType === 'tree') {
     return (
-      <li className='explorer-origin-li'>
-        <div className='explorer-origin-field-subjson'>
+      <li className={explorerOriginLiClassName}>
+        <div className='flex items-center gap-2'>
           <div
             onClick={() => {
               setExpand(!expand);
             }}
-            className='explorer-origin-field-subjson-key'
+            className='cursor-pointer'
           >
-            {expand ? <CaretDownOutlined /> : <CaretRightOutlined />}
+            {expand ? <CaretDownOutlined className='text-link' /> : <CaretRightOutlined className='text-link' />}
             <span
-              className='explorer-origin-field-key'
+              className={explorerOriginFieldKeyClassName}
               style={{
                 marginLeft: '2px',
               }}
@@ -104,17 +118,17 @@ function RenderSubJSON({
               {label}
             </span>
           </div>
-          <div className='explorer-origin-field-json-symbol'>{`{}`}</div>
+          <div className='text-link'>{`{}`}</div>
         </div>
         {expand && (
-          <ul>
+          <ul className='list-none pl-[30px]'>
             {_.map(subJSON, (v, k) => {
               if (_.isPlainObject(v) || _.isArray(v)) {
                 return (
-                  <ul className='explorer-origin-ul'>
+                  <ul className={explorerOriginUlClassName}>
                     {_.isEmpty(v) ? (
                       <>
-                        <div className='explorer-origin-field-key'>{k}</div>:<div className='explorer-origin-field-val'>{`[]`}</div>
+                        <div className={explorerOriginFieldKeyClassName}>{k}</div>:<div className={explorerOrigiFieldValClassName}>{`[]`}</div>
                       </>
                     ) : (
                       _.map(_.isArray(v) ? v : [v], (item, idx) => {
@@ -126,7 +140,7 @@ function RenderSubJSON({
               }
               return (
                 <li key={k}>
-                  <div className='explorer-origin-field-key'>{k}</div>:
+                  <div className={explorerOriginFieldKeyClassName}>{k}</div>:
                   <RenderValue name={k} value={v} onValueFilter={onValueFilter} />
                 </li>
               );
@@ -138,8 +152,8 @@ function RenderSubJSON({
   }
   if (options.jsonDisplaType === 'string') {
     return (
-      <li className='explorer-origin-li'>
-        <div className='explorer-origin-field-key'>{label}</div>:<div className='explorer-origin-field-val'>{JSON.stringify(subJSON)}</div>
+      <li className={explorerOriginLiClassName}>
+        <div className={explorerOriginFieldKeyClassName}>{label}</div>:<div className={explorerOrigiFieldValClassName}>{JSON.stringify(subJSON)}</div>
       </li>
     );
   }
@@ -150,23 +164,18 @@ export const DataContext = React.createContext({
   rawValue: {},
 });
 
-export default function RawList(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
-  const { time_field, data, options, onValueFilter, onReverseChange } = props;
+export default function Raw(props: Props) {
+  const { t } = useTranslation('explorer');
+  const { timeField, data, options, onValueFilter, onReverseChange, rowPrefixRender, filterFields } = props;
   const columns: any[] = [
     {
       title: t('logs.title'),
       render: (item) => {
-        let fields = filteredFields(_.keys(item), options.organizeFields);
-        fields = !_.isEmpty(options.organizeFields) ? _.intersection(fields, options.organizeFields) : fields;
+        const fields = filterFields ? filterFields(_.keys(item)) : _.keys(item);
 
         return (
-          <div
-            style={{
-              flex: 1,
-              width: '100%',
-            }}
-          >
+          <div className='w-full'>
+            {rowPrefixRender && <>{rowPrefixRender(item)}</>}
             {_.map(fields, (key) => {
               const val = item[key];
               const valToObj = val;
@@ -175,15 +184,15 @@ export default function RawList(props: Props) {
                 <DataContext.Provider value={{ rawValue: item }} key={key}>
                   <div
                     className={classNames({
-                      'explorer-origin-inline-cell': options.lineBreak !== 'true',
-                      'explorer-origin-break-cell': options.lineBreak === 'true',
+                      [explorerOriginInlineCellClassName]: options.lineBreak !== 'true',
+                      [explorerOriginBreakCellClassName]: options.lineBreak === 'true',
                     })}
                   >
                     {_.isPlainObject(valToObj) || _.isArray(valToObj) ? (
-                      <ul className='explorer-origin-ul'>
+                      <ul className={explorerOriginUlClassName}>
                         {_.isEmpty(subJSON) ? (
                           <>
-                            <div className='explorer-origin-field-key'>{key}</div>: <div className='explorer-origin-field-val'>{`[]`}</div>
+                            <div className={explorerOriginFieldKeyClassName}>{key}</div>: <div className={explorerOrigiFieldValClassName}>{`[]`}</div>
                           </>
                         ) : (
                           _.map(_.isArray(valToObj) ? valToObj : [valToObj], (item, idx) => {
@@ -193,7 +202,7 @@ export default function RawList(props: Props) {
                       </ul>
                     ) : (
                       <>
-                        <div className='explorer-origin-field-key'>{key}</div>: <RenderValue name={key} value={val} onValueFilter={onValueFilter} />
+                        <div className={explorerOriginFieldKeyClassName}>{key}</div>: <RenderValue name={key} value={val} onValueFilter={onValueFilter} />
                       </>
                     )}
                   </div>
@@ -206,11 +215,11 @@ export default function RawList(props: Props) {
     },
   ];
 
-  if (time_field && options.time === 'true') {
+  if (timeField && options.time === 'true') {
     columns.unshift({
       title: t('logs.settings.time'),
       width: 140,
-      dataIndex: time_field,
+      dataIndex: timeField,
       key: 'time',
       render: (val) => {
         return moment(val).format('MM-DD HH:mm:ss.SSS');
@@ -232,12 +241,13 @@ export default function RawList(props: Props) {
 
   return (
     <Table
+      className='n9e-event-logs-table'
       rowKey='___id___'
       size='small'
       pagination={false}
       expandable={{
         expandedRowRender: (record) => {
-          return <LogView value={record} onValueFilter={onValueFilter} rawValue={record} />;
+          return <LogViewer value={record} onValueFilter={onValueFilter} rawValue={record} />;
         },
         expandIcon: ({ expanded, onExpand, record }) => (expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />),
       }}
