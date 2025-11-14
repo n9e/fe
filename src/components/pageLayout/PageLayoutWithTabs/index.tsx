@@ -247,6 +247,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </span>
                   </Dropdown>
                 </div>
+                {sessionStorage.getItem('menuHide') === '1' && <Space className='mr-2'>{rightArea}</Space>}
               </div>
             </div>
           )}
