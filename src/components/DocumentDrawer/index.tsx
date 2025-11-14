@@ -63,7 +63,7 @@ function index(props: Props & ModalWrapProps) {
         <Space>
           {title}
           {type === 'iframe' && (
-            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}`}>
+            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/`}>
               <ExportOutlined />
             </a>
           )}
