@@ -63,6 +63,7 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item name='bgids' label={t('batch.clone_to_bgids.select_bgids')} rules={[{ required: true }]}>
           <Select
             mode='multiple'
+            optionFilterProp='label'
             options={_.map(busiGroups, (bg) => ({
               label: bg.name,
               value: bg.id,

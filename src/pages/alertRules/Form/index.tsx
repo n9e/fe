@@ -30,6 +30,7 @@ import Notify from './Notify';
 import EventSettings from './EventSettings';
 import { processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
+import PipelineConfigs from './PipelineConfigs';
 
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
@@ -127,7 +128,7 @@ export default function index(props: IProps) {
     >
       <div style={{ overflow: 'hidden auto', padding: 0 }} ref={containerRef}>
         <Form form={form} layout='vertical' disabled={disabled} style={{ background: 'unset' }}>
-          <div className='p2'>
+          <div className='p-4'>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {editable === false && (
                 <Affix
@@ -145,6 +146,7 @@ export default function index(props: IProps) {
               <Rule form={form} />
               <EventSettings initialValues={initialValues} />
               <Effective />
+              <PipelineConfigs />
               <Notify disabled={disabled} />
             </div>
             <AffixWrapper>

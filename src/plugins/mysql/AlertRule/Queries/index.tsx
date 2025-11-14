@@ -8,7 +8,7 @@ import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import LogQL from '@/components/LogQL';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 import AdvancedSettings from '../../components/AdvancedSettings';
@@ -61,7 +61,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
           >
             {fields.map((field) => {
               return (
-                <div key={field.key} className='n9e-fill-color-3' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
+                <div key={field.key} className='bg-fc-200' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
                   <Row gutter={8}>
                     <Col flex='32px'>
                       <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
@@ -101,7 +101,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit={IS_PLUS} />
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const cate = getFieldValue('cate');

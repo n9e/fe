@@ -78,13 +78,13 @@ function FormCpt(props: IProps, ref) {
           }}
         >
           <Col flex={1} style={{ minWidth: 100 }}>
-            <div className='n9e-dashboard-editor-modal-left-wrapper n9e-gap-2'>
-              <div className='n9e-dashboard-editor-modal-left-vars-wrapper n9e-gap-2'>
+            <div className='n9e-dashboard-editor-modal-left-wrapper gap-4'>
+              <div className='n9e-dashboard-editor-modal-left-vars-wrapper gap-4'>
                 <span>{t('var.vars')}</span>
                 {/* 直接渲染变量选择器，避免依赖 portal 对 ref 变化不触发重渲染的问题 */}
                 <VariablesMain variableValueFixed={queryParams.__variable_value_fixed as any} loading={false} />
               </div>
-              <div className='n9e-border-base n9e-dashboard-editor-modal-left-chart-wrapper'>
+              <div className='fc-border n9e-dashboard-editor-modal-left-chart-wrapper'>
                 {values && (
                   <Renderer id={`${id}__editor__`} time={range} timezone={timezone} values={values} isPreview themeMode={darkMode ? 'dark' : undefined} annotations={[]} />
                 )}
@@ -134,7 +134,7 @@ function FormCpt(props: IProps, ref) {
                       {(fields, { add, remove }) => (
                         <>
                           <Button
-                            className='mb1'
+                            className='mb-2'
                             style={{ width: '100%' }}
                             onClick={() => {
                               add({});

@@ -45,6 +45,7 @@ const en_US = {
     card_title: 'Event detail',
     buisness_not_exist: 'This business group has been deleted or has no permission to view',
     rule_name: 'Rule title',
+    hash: 'Hash',
     group_name: 'Business group',
     rule_note: 'Rule note',
     cate: 'Datasource type',
@@ -89,6 +90,7 @@ const en_US = {
       detail: 'Detail',
       sub_id: 'Rule ID',
       notify_rule_id: 'Notification rule ID',
+      alert_aggr_events_link: 'Aggregated events',
     },
     task_tpls: {
       label: 'Self-healing template',

@@ -30,9 +30,9 @@ export function getFiltersStr(filters: IMatch['filters']) {
   return _.join(_.compact(arr), ',');
 }
 
-export function getDynamicLabelsStr(dynamicLabels: IMatch['dynamicLabels']) {
+export function getDynamicLabelsStr(dynamicLabels: IMatch['dynamicLabels'], excludeLabel?: string) {
   const arr = _.map(dynamicLabels, (item) => {
-    if (item.value) {
+    if (item.value && item.label !== excludeLabel) {
       return `${item.label}="${item.value}"`;
     }
     return '';

@@ -69,7 +69,7 @@ export default function index() {
   return (
     <div>
       <div
-        className='mb2'
+        className='mb-4'
         style={{
           textAlign: 'right',
         }}

@@ -45,6 +45,7 @@ const zh_CN = {
     card_title: '告警事件详情',
     buisness_not_exist: '该业务组已删除或无查看权限',
     rule_name: '规则标题',
+    hash: 'Hash',
     group_name: '业务组',
     rule_note: '规则备注',
     cate: '数据源类型',
@@ -89,6 +90,7 @@ const zh_CN = {
       detail: '结果详情',
       sub_id: '规则 ID',
       notify_rule_id: '通知规则 ID',
+      alert_aggr_events_link: '聚合事件',
     },
     task_tpls: {
       label: '自愈模板',

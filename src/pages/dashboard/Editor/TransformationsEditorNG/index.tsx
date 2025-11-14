@@ -19,7 +19,7 @@ export default function index() {
 
   return (
     <div
-      className='p2'
+      className='p-4'
       style={{
         border: '1px solid var(--fc-border-color)',
         backgroundColor: 'var(--fc-fill-2)',

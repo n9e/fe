@@ -44,7 +44,7 @@ const zh_CN = {
   exit_full_screen: '退出全屏',
   copyPanelTip: '图表已复制。单击 "添加图表" 进行粘贴。',
   batch: {
-    import: '导入仪表盘 JSON',
+    import: '导入夜莺仪表盘 JSON',
     label: '仪表盘 JSON',
     import_grafana: '导入 Grafana 仪表盘',
     import_grafana_tip: '只支持导入 Prometheus 类型数据源的仪表盘，以及夜莺支持的图表类型和功能 <a>问题反馈</a>',

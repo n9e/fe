@@ -21,6 +21,8 @@ interface Props {
 export default function QueryBuilder(props: Props) {
   const { panelWidth, cate, datasourceValue } = props;
 
+  if (!datasourceValue || typeof datasourceValue !== 'number') return null;
+
   if (cate === DatasourceCateEnum.prometheus) {
     return <Prometheus panelWidth={panelWidth} datasourceValue={datasourceValue} />;
   }

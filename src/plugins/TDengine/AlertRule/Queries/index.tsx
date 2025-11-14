@@ -3,12 +3,16 @@ import { Form, Space, Input, Row, Col, Card, InputNumber, Select, Tooltip } from
 import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+
+import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
-import GraphPreview from './GraphPreview';
+
 import SqlTemplates from '../../components/SqlTemplates';
 import { MetaModal } from '../../components/Meta';
+import GraphPreview from './GraphPreview';
+
 import './style.less';
 
 interface IProps {
@@ -56,7 +60,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
           >
             {fields.map((field, index) => {
               return (
-                <div key={field.key} className='n9e-fill-color-3' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
+                <div key={field.key} className='bg-fc-200' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
                   <Row gutter={8}>
                     <Col flex='32px'>
                       <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
@@ -73,7 +77,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                                 title={
                                   <span>
                                     {t('query.query_tip1')}
-                                    <a className='pl1' target='_blank' href='https://docs.taosdata.com/basic/query/'>
+                                    <a className='pl-2' target='_blank' href='https://docs.taosdata.com/basic/query/'>
                                       {t('query.query_tip2')}
                                     </a>
                                   </span>
@@ -137,7 +141,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit expanded />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} expanded />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: -4, top: -4 }}

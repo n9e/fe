@@ -22,6 +22,8 @@ const zh_CN = {
   export: '导出',
   export_failed: '导出失败',
   prod: '监控类型',
+  claimant: '认领人',
+  shield: '屏蔽',
   rule_prod: {
     firemap: '灭火图',
     northstar: '北极星',
@@ -30,6 +32,18 @@ const zh_CN = {
     logging: 'Log',
     anomaly: 'Anomaly',
     loki: 'Loki',
+  },
+  delete_events: {
+    title: '事件清理',
+    alert_message: '一旦删除将无法找回，请谨慎操作！',
+    severities: '等级筛选',
+    timestamp: '时间筛选',
+    timestamp_options: {
+      1: '1 个月之前',
+      3: '3 个月之前',
+      6: '6 个月之前',
+      12: '1 年之前',
+    },
   },
 };
 export default zh_CN;

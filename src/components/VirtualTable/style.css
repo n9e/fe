@@ -1,11 +1,14 @@
 .fill-grid.rdg {
+  border-radius: 2px;
+
   /* 覆盖内置变量 */
-  /* --rdg-color: var(--fc-text-2); */
+  --rdg-color: var(--fc-text-2);
   --rdg-border-color: var(--fc-border-base);
   --rdg-summary-border-color: #aaa;
   --rdg-background-color: var(--fc-fill-2);
-  --rdg-header-background-color: var(--fc-fill-1);
+  --rdg-header-background-color: var(--fc-fill-3);
   --rdg-row-hover-background-color: var(--fc-fill-3);
+  --rdg-font-size: 12px;
   /*
   --rdg-row-selected-background-color: #dbecfa;
   --row-selected-hover-background-color: #c9e3f8;

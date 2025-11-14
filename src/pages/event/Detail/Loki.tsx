@@ -27,7 +27,7 @@ export default function LokiDetail(props: IProps) {
               return (
                 <Space align='baseline' size={2}>
                   <Button
-                    className='p0'
+                    className='p-0'
                     style={{
                       position: 'relative',
                       top: 1,

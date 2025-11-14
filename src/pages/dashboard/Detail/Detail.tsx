@@ -63,6 +63,8 @@ interface IProps {
   gobackPath?: string;
   builtinParams?: any;
   onLoaded?: (dashboard: Dashboard['configs']) => boolean;
+  hideGoBack?: boolean;
+  hideGoList?: boolean;
 }
 
 const fetchDashboard = ({ id, builtinParams }) => {
@@ -84,7 +86,7 @@ const builtinParamsToID = (builtinParams) => {
 };
 
 export default function DetailV2(props: IProps) {
-  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams } = props;
+  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, hideGoBack, hideGoList } = props;
   const { t, i18n } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
@@ -388,6 +390,8 @@ export default function DetailV2(props: IProps) {
                   }
                 }}
                 routerPromptRef={routerPromptRef}
+                hideGoBack={hideGoBack}
+                hideGoList={hideGoList}
               />
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>

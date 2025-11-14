@@ -43,7 +43,7 @@ const en_US = {
   exit_full_screen: 'Exit full screen',
   copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
   batch: {
-    import: 'Import dashboard JSON',
+    import: 'Import Nightingale dashboard JSON',
     label: 'Dashboard JSON',
     import_grafana: 'Import Grafana dashboard',
     import_grafana_tip: 'Only supports importing dashboards of Prometheus type data sources, as well as chart types and functions supported by Nightingale <a>feedback</a>',

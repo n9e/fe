@@ -1,7 +1,10 @@
-export default function getFontFamily(isEnt: boolean) {
-  let fontFamily = '"Microsoft Yahei",Verdana,Helvetica Neue,sans-serif,PingFangSC-Regular,simsun,"sans-serif"';
-  if (isEnt) {
-    fontFamily = 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"';
+import { NORMAL_FONT_FAMILY, ENT_FONT_FAMILY } from './fontFamilyConstant';
+
+export default function getFontFamily(customFont?: string) {
+  const IS_ENT = import.meta.env.VITE_IS_ENT === 'true';
+  let fontFamily = NORMAL_FONT_FAMILY;
+  if (IS_ENT) {
+    fontFamily = ENT_FONT_FAMILY;
   }
-  return fontFamily;
+  return customFont || fontFamily;
 }

@@ -70,7 +70,7 @@ export default function LegendTable(props: Props) {
       }}
     >
       <Table
-        className='mt1 renderer-timeseries-ng-legend-table'
+        className='mt-2 renderer-timeseries-ng-legend-table'
         size='small'
         pagination={false}
         rowKey='id'

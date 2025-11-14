@@ -6,18 +6,45 @@
 /* 浅色模式 */
 :root {
   /* 填充色 */
-  --fc-fill-1: rgb(248 250 252);
-  --fc-fill-2: rgb(255 255 255);
-  --fc-fill-3: rgb(243 244 246);
-  --fc-fill-4: rgb(229 231 235);
-  --fc-fill-5: rgb(209 213 219);
-  --fc-fill-6: rgb(189 194 202);
-  --fc-fill-7: rgb(151 156 163);
-  --fc-fill-primary: rgb(108 83 177);
-  --fc-fill-success: rgb(0 167 0);
-  --fc-fill-warning: rgb(250 200 0);
-  --fc-fill-alert: rgb(250 125 0);
-  --fc-fill-error: rgb(200 0 0);
+  --fc-fill-1-rgb: 248 250 252;
+  --fc-fill-1: rgb(var(--fc-fill-1-rgb)); 
+
+  --fc-fill-2-rgb: 255 255 255;
+  --fc-fill-2: rgb(var(--fc-fill-2-rgb));
+
+  --fc-fill-2-5-rgb: 250 250 250;
+  --fc-fill-2-5: rgb(var(--fc-fill-2-5-rgb));
+
+  --fc-fill-3-rgb: 243 244 246;
+  --fc-fill-3: rgb(var(--fc-fill-3-rgb));
+
+  --fc-fill-4-rgb: 229 231 235;
+  --fc-fill-4: rgb(var(--fc-fill-4-rgb));
+
+  --fc-fill-5-rgb: 209 213 219;
+  --fc-fill-5: rgb(var(--fc-fill-5-rgb));
+
+  --fc-fill-6-rgb: 189 194 202;
+  --fc-fill-6: rgb(var(--fc-fill-6-rgb));
+
+  --fc-fill-7-rgb: 151 156 163;
+  --fc-fill-7: rgb(var(--fc-fill-7-rgb));
+
+  --fc-fill-primary-rgb: 108 83 177;
+  --fc-fill-primary: rgb(var(--fc-fill-primary-rgb));
+
+  --fc-fill-success-rgb: 0 167 0;
+  --fc-fill-success: rgb(var(--fc-fill-success-rgb));
+
+  --fc-fill-warning-rgb: 250 200 0;
+  --fc-fill-warning: rgb(var(--fc-fill-warning-rgb));
+
+  --fc-fill-alert-rgb: 250 125 0;
+  --fc-fill-alert: rgb(var(--fc-fill-alert-rgb));
+
+  --fc-fill-error-rgb: 200 0 0;
+  --fc-fill-error: rgb(var(--fc-fill-error-rgb));
+
   --fc-fill-gold: #ffbc0d;
 
   /* 文本 */
@@ -38,6 +65,8 @@
   --fc-border-base: var(--fc-fill-5);
   --fc-antd-border-color: #d9d9d9; /* 用于 跟antd button 连结的边框 */
   --fc-background-color-light: rgba(250, 250, 250, 1);
+  
+  
 
   /* 需特殊处理额外加的变量 
      灭火图一级卡片的header背景色:  --fc-variable-fill-1
@@ -105,18 +134,45 @@
 /* 深色模式 */
 .theme-dark {
   color-scheme: dark;
-  --fc-fill-1: rgb(17 18 23);
-  --fc-fill-2: rgb(24 27 31);
-  --fc-fill-3: rgb(34 37 43);
-  --fc-fill-4: rgb(39 40 47);
-  --fc-fill-5: rgb(47 48 55);
-  --fc-fill-6: rgb(54 55 62);
-  --fc-fill-7: rgb(62 63 70);
-  --fc-fill-primary: rgb(148, 112, 255);
-  --fc-fill-success: rgb(63 196 83);
-  --fc-fill-warning: rgb(230 198 39);
-  --fc-fill-alert: rgb(250 125 0);
-  --fc-fill-error: rgb(255 101 107);
+  --fc-fill-1-rgb: 17 18 23;
+  --fc-fill-1: rgb(var(--fc-fill-1-rgb));
+
+  --fc-fill-2-rgb: 24 27 31;
+  --fc-fill-2: rgb(var(--fc-fill-2-rgb));
+
+  --fc-fill-2-5-rgb: 28 30 34;
+  --fc-fill-2-5: rgb(var(--fc-fill-2-5-rgb));
+
+  --fc-fill-3-rgb: 34 37 43;
+  --fc-fill-3: rgb(var(--fc-fill-3-rgb));
+
+  --fc-fill-4-rgb: 39 40 47;
+  --fc-fill-4: rgb(var(--fc-fill-4-rgb));
+
+  --fc-fill-5-rgb: 47 48 55;
+  --fc-fill-5: rgb(var(--fc-fill-5-rgb));
+
+  --fc-fill-6-rgb: 54 55 62;
+  --fc-fill-6: rgb(var(--fc-fill-6-rgb));
+
+  --fc-fill-7-rgb: 62 63 70;
+  --fc-fill-7: rgb(var(--fc-fill-7-rgb));
+
+  --fc-fill-primary-rgb: 148 112 255;
+  --fc-fill-primary: rgb(var(--fc-fill-primary-rgb));
+
+  --fc-fill-success-rgb: 63 196 83;
+  --fc-fill-success: rgb(var(--fc-fill-success-rgb));
+
+  --fc-fill-warning-rgb: 230 198 39;
+  --fc-fill-warning: rgb(var(--fc-fill-warning-rgb));
+
+  --fc-fill-alert-rgb: 250 125 0;
+  --fc-fill-alert: rgb(var(--fc-fill-alert-rgb));
+
+  --fc-fill-error-rgb: 255 101 107;
+  --fc-fill-error: rgb(var(--fc-fill-error-rgb));
+
   --fc-fill-gold: #ffbc0d;
 
   /* 文本 */

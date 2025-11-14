@@ -6,14 +6,20 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { getTeamInfoList } from '@/services/manage';
+import { getBusiGroupsAlertRules } from '@/services/warning';
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
+
+// @ts-ignore
+import ExtraConfig from 'plus:/parcels/notificationRules/ExtraConfig';
 
 import { NS, DEFAULT_VALUES } from '../../constants';
 import { RuleItem } from '../../types';
 import { normalizeFormValues } from '../../utils/normalizeValues';
+import { getEventTags } from '../../services';
 import RuleConfig from './RuleConfig';
 import EventPipelineConfigs from './EventPipelineConfigs';
+import { useGlobalState } from './Attributes/globalState';
 
 interface Props {
   disabled?: boolean;
@@ -28,10 +34,18 @@ export default function FormCpt(props: Props) {
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>();
+  const [eventKeys, setEventKeys] = useState<string[]>([]);
+  const [, setAlertRules] = useGlobalState('alertRules');
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
       setUserGroups(res.dat ?? []);
+    });
+    getEventTags().then((res) => {
+      setEventKeys(res ?? []);
+    });
+    getBusiGroupsAlertRules().then((res) => {
+      setAlertRules(_.map(res.dat, (item) => ({ id: item.id, name: item.name })));
     });
   }, []);
 
@@ -40,7 +54,7 @@ export default function FormCpt(props: Props) {
       <Form.Item name='id' hidden>
         <Input />
       </Form.Item>
-      <Card className='mb2' title={<Space>{t('basic_configuration')}</Space>}>
+      <Card className='mb-4' title={<Space>{t('basic_configuration')}</Space>}>
         <Row gutter={SIZE}>
           <Col flex='auto'>
             <Row gutter={SIZE}>
@@ -72,25 +86,38 @@ export default function FormCpt(props: Props) {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='description' className='mb0'>
+        <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='description' className='mb-0'>
           <Input.TextArea />
         </Form.Item>
       </Card>
       <EventPipelineConfigs />
-      <Form.List name='notify_configs'>
-        {(fields, { add, remove, move }) => (
-          <>
-            {fields.map((field) => (
-              <RuleConfig disabled={disabled} fields={fields} field={field} activeIndex={activeIndex} setActiveIndex={setActiveIndex} add={add} remove={remove} move={move} />
-            ))}
-            {!disabled && (
-              <Button className='n9e-w-full mb2' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
-                {t('notification_configuration.add_btn')}
-              </Button>
-            )}
-          </>
-        )}
-      </Form.List>
+      <Card className='mb-4' title={<Space>{t('notification_configuration.title')}</Space>}>
+        <Form.List name='notify_configs'>
+          {(fields, { add, remove, move }) => (
+            <>
+              {fields.map((field) => (
+                <RuleConfig
+                  disabled={disabled}
+                  fields={fields}
+                  field={field}
+                  activeIndex={activeIndex}
+                  setActiveIndex={setActiveIndex}
+                  add={add}
+                  remove={remove}
+                  move={move}
+                  eventKeys={eventKeys}
+                />
+              ))}
+              {!disabled && (
+                <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
+                  {t('notification_configuration.add_btn')}
+                </Button>
+              )}
+            </>
+          )}
+        </Form.List>
+      </Card>
+      <ExtraConfig eventKeys={eventKeys} />
       {!disabled && (
         <Affix offsetBottom={0}>
           <Card size='small' className='affix-bottom-shadow'>

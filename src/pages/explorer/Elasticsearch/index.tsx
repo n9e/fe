@@ -5,7 +5,7 @@ import moment from 'moment';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { useGetState } from 'ahooks';
-import { Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert, Pagination } from 'antd';
+import { Empty, Spin, InputNumber, Select, Radio, Space, Checkbox, Tag, Form, Alert, Pagination, Button } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
@@ -26,15 +26,17 @@ import QueryBuilder from './QueryBuilder';
 import QueryBuilderWithIndexPatterns from './QueryBuilderWithIndexPatterns';
 import Table from './Table';
 import Share from '../components/Share';
+import { useGlobalState, N9E_ES_FIELD_VALUES_TOPN_CACHE_KEY } from './globalState';
+import Settings from './components/Settings';
 
 import './style.less';
 
 // @ts-ignore
 import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 // @ts-ignore
-import DownloadModal from 'plus:/datasource/elasticsearch/components/LogDownload/DownloadModal';
+import DownloadModal from 'plus:/components/LogDownload/DownloadModal/index';
 // @ts-ignore
-import ExportModal from 'plus:/datasource/elasticsearch/components/LogDownload/ExportModal';
+import ExportModal from 'plus:/components/LogDownload/ExportModal/index';
 
 interface IProps {
   headerExtra: HTMLDivElement | null;
@@ -75,8 +77,10 @@ export const SYNTAX_OPTIONS = [
   },
 ];
 
-const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue }) => {
+const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystemIndices, datasourceValue, form }) => {
   const { t } = useTranslation('explorer');
+  const indexPatternId = form.getFieldValue(['query', 'indexPattern']);
+  const queryString = indexPatternId ? `?indexPatternId=${indexPatternId}` : '';
   const { esIndexMode, isPlus } = useContext(CommonStateContext);
   // 如果固定了 indexPatterns 模式，不显示切换按钮
   if (esIndexMode === 'index-patterns' || esIndexMode === 'indices') {
@@ -116,7 +120,8 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
-        {isPlus && mode === IMode.indices && <DrilldownBtn />}
+        {isPlus && mode === IMode.indexPatterns && <Button onClick={() => window.open(`/log/index-patterns${queryString}`, '_blank')}>{t('下钻设置')}</Button>}
+        {isPlus && mode === IMode.indices && <DrilldownBtn dataSourceId={datasourceValue} />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />
       </Space>
@@ -171,6 +176,7 @@ export default function index(props: IProps) {
   const [mode, setMode] = useState<IMode>(getDefaultMode(query, isOpenSearch, esIndexMode));
   const [allowHideSystemIndices, setAllowHideSystemIndices] = useState<boolean>(false);
   const requestId = useMemo(() => _.uniqueId('requestId_'), []);
+  const [topn, setTopn] = useGlobalState('topn');
 
   const fetchSeries = (
     values,
@@ -301,7 +307,8 @@ export default function index(props: IProps) {
   // 设置历史记录方法
   const setHistory = () => {
     const queryValues = form.getFieldValue(['query']);
-    if (queryValues.index && queryValues.date_field) {
+    queryValues.mode = queryValues.mode || mode; // TODO 解决只启用 index 或是 index pattern 模式下 mode 值为空的问题
+    if ((queryValues.index && queryValues.date_field) || queryValues.indexPattern) {
       setLocalQueryHistory(`${CACHE_KEY_MAP[queryValues.mode]}-${datasourceValue}`, _.omit(queryValues, 'range'));
     }
   };
@@ -334,6 +341,7 @@ export default function index(props: IProps) {
           {headerExtra &&
             createPortal(
               <HeaderExtra
+                form={form}
                 mode={mode}
                 setMode={(val) => {
                   const queryValues = form.getFieldValue('query');
@@ -498,7 +506,7 @@ export default function index(props: IProps) {
                     <strong>{total}</strong>
                     hits
                     <div style={{ width: 40, height: 32, lineHeight: '32px' }}>
-                      <Spin spinning={timeseriesLoading} size='small' className='ml1' />
+                      <Spin spinning={timeseriesLoading} size='small' className='ml-2' />
                     </div>
                   </Space>
                   {!_.isEmpty(series) && (
@@ -614,10 +622,17 @@ export default function index(props: IProps) {
                 )}
               </div>
               <FullscreenButton.Provider>
-                <div className='p1 n9e-flex n9e-justify-between n9e-items-center'>
+                <div className='p-2 flex justify-between items-center'>
                   <div>
                     <Space>
                       <FullscreenButton />
+                      <Settings
+                        topn={topn}
+                        setTopn={(val) => {
+                          window.localStorage.setItem(N9E_ES_FIELD_VALUES_TOPN_CACHE_KEY, String(val));
+                          setTopn(val);
+                        }}
+                      />
                       <Spin spinning={loading} size='small' />
                     </Space>
                   </div>
@@ -658,7 +673,7 @@ export default function index(props: IProps) {
                         setFilters([...(currentFilters || []), { key, operator, value: '' }]);
                       }
                     } else {
-                      if (value) {
+                      if (value !== undefined && value !== null) {
                         // key + value 作为唯一标识，存在则更新，不存在则新增
                         if (!_.find(currentFilters, { key, value })) {
                           setFilters([...(currentFilters || []), { key, value, operator }]);

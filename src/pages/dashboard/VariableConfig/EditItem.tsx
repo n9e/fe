@@ -343,7 +343,7 @@ function EditItem(props: IProps) {
       )}
       {varType === 'hostIdent' && (
         <>
-          {anonymousAccess && <Alert className='mb2' type='warning' message={t('var.hostIdent.invalid')} />}
+          {anonymousAccess && <Alert className='mb-4' type='warning' message={t('var.hostIdent.invalid')} />}
           <Form.Item
             label={t('var.reg')}
             name='reg'

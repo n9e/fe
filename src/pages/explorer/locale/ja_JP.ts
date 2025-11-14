@@ -64,6 +64,12 @@ const ja_JP = {
       not: 'この検索から除外',
       exists: 'フィールドが存在するドキュメントをフィルタリング',
     },
+    field_values_topn: {
+      label: 'トップ {{n}} の値',
+      settings: {
+        title: 'トップ N の値設定',
+      },
+    },
   },
   historicalRecords: {
     button: '歴史レコード',
@@ -74,6 +80,19 @@ const ja_JP = {
   help: 'データソースヘルプを表示',
   clear_tabs: 'クリア',
   clear_tabs_tip: '現在のタブのみを保持',
+  stats: {
+    unique_count: 'ユニーク値の数',
+    min: '最小値',
+    max: '最大値',
+    sum: '合計',
+    avg: '平均値',
+    topn_no_data: 'データがありません',
+    unindexable: 'フィールドはインデックス化できません。統計分析を実行できません',
+  },
+  field_list: {
+    show_fields: 'フィールドを表示',
+    available_fields: '利用可能なフィールド',
+  },
 };
 
 export default ja_JP;

@@ -15,12 +15,13 @@
  *
  */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { Form, Card, Select, Col, Button, Row, message, Checkbox, Tooltip, Radio, Modal, Space, InputNumber, Input, Switch, Tag, Affix } from 'antd';
-import { QuestionCircleOutlined, PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Form, Card, Select, Col, Button, Row, message, Checkbox, Radio, Modal, Space, InputNumber, Input, Switch, Tag } from 'antd';
+import { PlusCircleOutlined, EditOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
+
 import { addSubscribe, editSubscribe, deleteSubscribes, alertSubscribesTryrun } from '@/services/subscribe';
 import { getNotifiesList, getTeamInfoList } from '@/services/manage';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
@@ -33,8 +34,9 @@ import { panelBaseProps } from '@/pages/alertRules/constants';
 import { scrollToFirstError } from '@/utils';
 import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
 import AffixWrapper from '@/components/AffixWrapper';
+import { KVTags } from '@/components/KVTagSelect';
+
 import RuleModal from './ruleModal';
-import TagItem from './tagItem';
 import BusiGroupsTagItem from './BusiGroupsTagItem';
 import '../index.less';
 
@@ -149,7 +151,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
 
   return (
     <main
-      className='p2 subscription-rules-form'
+      className='p-4 subscription-rules-form'
       style={{
         overflow: 'hidden auto',
       }}
@@ -178,12 +180,12 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           new_channels: detail?.new_channels ? detail?.new_channels?.split(' ') : [],
         }}
       >
-        <Card {...panelBaseProps} title={t('basic_configs')} className='mb2'>
+        <Card {...panelBaseProps} title={t('basic_configs')} className='mb-4'>
           <Form.Item label={t('note')} name='note'>
             <Input />
           </Form.Item>
         </Card>
-        <Card {...panelBaseProps} title={t('filter_configs')} className='mb2'>
+        <Card {...panelBaseProps} title={t('filter_configs')} className='mb-4'>
           <Row gutter={10}>
             <Col span={!cate || cate === 'host' ? 24 : 12}>
               <Form.Item label={t('common:datasource.type')} name='cate'>
@@ -299,10 +301,9 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 {(fields, { add, remove }, { errors }) => (
                   <>
                     <Row gutter={10}>
-                      {fields.length > 1 && <Col flex='48px' />}
                       <Col flex='auto'>
-                        <Row gutter={10} className='mb1'>
-                          <Col span={5}>
+                        <Row gutter={10} className='mb-2'>
+                          <Col span={8}>
                             <Space>
                               <span>{t('group.key.label')}</span>
                               <PlusCircleOutlined
@@ -315,7 +316,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                             </Space>
                           </Col>
                           <Col span={4}>{t('group.func.label')}</Col>
-                          <Col span={15}>{t('group.value.label')}</Col>
+                          <Col span={12}>{t('group.value.label')}</Col>
                         </Row>
                       </Col>
                       <Col flex='32px' />
@@ -337,39 +338,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </div>
             </div>
             <div className='filter-settings-row-content'>
-              <Form.List name='tags' initialValue={[{}]}>
-                {(fields, { add, remove }, { errors }) => (
-                  <>
-                    <Row gutter={10}>
-                      {fields.length > 1 && <Col flex='48px' />}
-                      <Col flex='auto'>
-                        <Row gutter={10} className='mb1'>
-                          <Col span={5}>
-                            <Space>
-                              <span>{t('tag.key.label')}</span>
-                              <Tooltip title={t(`tag.key.tip`)}>
-                                <QuestionCircleOutlined
-                                  style={{
-                                    cursor: 'help',
-                                  }}
-                                />
-                              </Tooltip>
-                              <PlusCircleOutlined onClick={() => add()} />
-                            </Space>
-                          </Col>
-                          <Col span={4}>{t('tag.func.label')}</Col>
-                          <Col span={15}>{t('tag.value.label')}</Col>
-                        </Row>
-                      </Col>
-                      <Col flex='32px' />
-                    </Row>
-                    {fields.map((field, index) => (
-                      <TagItem key={index} field={field} fields={fields} index={index} remove={remove} add={add} form={form} />
-                    ))}
-                    <Form.ErrorList errors={errors} />
-                  </>
-                )}
-              </Form.List>
+              <KVTags name={['tags']} keyLabel={t('tag.key.label')} keyLabelTootip={t('tag.key.tip')} funcName='func' initialValue={[{ func: '==' }]} />
             </div>
           </div>
           <div className='filter-settings-row'>
@@ -418,7 +387,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                 </Form.Item>
               </div>
             </div>
-            <div className='mt16 mb16'>
+            <div className='mt-4 mb-4'>
               <Space>
                 {t('redefine_channels')}
                 <Form.Item name='redefine_channels' valuePropName='checked' noStyle>
@@ -442,12 +411,12 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                     })}
                   </Checkbox.Group>
                 </Form.Item>
-                <div className='mt16'>
+                <div className='mt-4'>
                   <NotifyChannelsTpl contactList={contactList} notify_channels={new_channels} name={['extra_config', 'custom_notify_tpl']} />
                 </div>
               </div>
             </div>
-            <div className='mb16'>
+            <div className='mb-4'>
               <Space>
                 {t('redefine_webhooks')}
                 <Form.Item name='redefine_webhooks' valuePropName='checked' noStyle>

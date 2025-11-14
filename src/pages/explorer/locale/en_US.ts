@@ -64,6 +64,12 @@ const en_US = {
       not: 'Filter out value',
       exists: 'Filter for field persent',
     },
+    field_values_topn: {
+      label: 'Top {{n}} values',
+      settings: {
+        title: 'Top N values settings',
+      },
+    },
   },
   historicalRecords: {
     button: 'Historical records',
@@ -74,5 +80,18 @@ const en_US = {
   help: 'Show data source Help',
   clear_tabs: 'Clear',
   clear_tabs_tip: 'Only keep the current tab',
+  stats: {
+    unique_count: 'Unique count',
+    min: 'Min',
+    max: 'Max',
+    sum: 'Sum',
+    avg: 'Avg',
+    topn_no_data: 'No data',
+    unindexable: 'Field is not indexable, unable to perform statistical analysis',
+  },
+  field_list: {
+    show_fields: 'Show fields',
+    available_fields: 'Available fields',
+  },
 };
 export default en_US;

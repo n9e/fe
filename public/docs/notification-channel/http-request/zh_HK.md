@@ -103,15 +103,17 @@ your-access-token
 
 說明
 
-- Body 以 JSON 形式（通常常見於釘釘、企業微信機器人）發送。
-- 在請求體中，可以直接嵌入 $event、$tpl、$params、$sendto、$sendtos 等變量進行動態替換。
-- $tpl 通常代表告警模板渲染後的文本內容；$sendto 可以代表要通知的目標人（如手機號、企業微信賬號等）。
+- Body 以 JSON 形式（常見於釘釘、企業微信機器人）發送。
+- 在請求體中，可以直接嵌入 `{{$event}}`、`{{$tpl}}`、`{{$params}}`、`{{$sendto}}`、`{{$sendtos}}` 等變量進行動態替換。
+- `{{$tpl}}` 表示模板渲染後的文本內容；`{{$sendto}}` 表示單個聯繫方式（如手機號、企業微信賬號等）。
+- 如果需要一次 @ 多個聯繫人，優先使用 `{{$sendtos}}`，並配合輔助函數：`{{batchContactsAts $sendtos}}`（生成帶 @ 的文本）與 `{{batchContactsJsonMarshal $sendtos}}`（生成 JSON 陣列）。
 ## 三、示例：發送到釘釘機器人
-以下示例展示了一個將告警消息發送到釘釘群機器人的配置思路。釘釘機器人的 access_token 和 @ 某個手機號的信息，已經通過配置通過規則，傳入到 $params 變量中，然後通過 $params.access_token 和 $sendto 變量，在請求體中引用。
+以下示例演示如何將告警消息發送到釘釘群機器人。釘釘機器人的 `access_token` 和要 @ 的手機號，會在通知規則中配置後注入到變量中：`{{$params.access_token}}` 用於鑑權；需要 @ 多人時使用 `{{$sendtos}}` 配合輔助函數在請求體中引用。
 
-1.變量配置 在變量配置中添加參數標識 access_token 和 bot_name
+1. 變量配置  
+在「變量配置」中添加參數標識 `access_token` 和 `bot_name`；在「聯繫方式」中選擇需要接收通知的手機號（支持多選），發送時會注入為 `{{$sendtos}}`。
 
-2.URL
+2. URL
 
 ```plaintext
 https://oapi.dingtalk.com/robot/send
@@ -120,11 +122,11 @@ https://oapi.dingtalk.com/robot/send
 3. 請求頭（Request Header） 參數名 參數值 Content-Type
 
 application/json
-4.請求參數
+4. 請求參數
  參數名 參數值 access_token
 
 {{$params.access_token}}
-5.請求體
+5. 請求體
 
 ```json
 {
@@ -143,6 +145,6 @@ application/json
 
 - {{$params.access_token}} 將被替換為實際的釘釘群機器人 access_token。
 - {{$tpl.title}} 渲染後為最終要發送的告警信息標題，比如 "CPU 使用率超出閾值"。
-- {{$tpl.text}} 渲染後為最終要發送的告警信息文本，比如 "CPU 使用率超出閾值,觸發時間：2024-01-01 12:00:00"。
-- {{batchContactsAts $sendtos}} 渲染後將在手機號前面加@，比如 "@12312312311 @12312312312"。
-- {{batchContactsJsonMarshal $sendtos}} 渲染後為字符串數組的形式 ["12312312311","12312312312"]。
+- {{$tpl.content}} 渲染後為最終要發送的告警信息文本，比如 "CPU 使用率超出閾值，觸發時間：2024-01-01 12:00:00"。
+- {{batchContactsAts $sendtos}} 渲染後會在手機號前添加 @，比如 "@12312312311 @12312312312"。
+- {{batchContactsJsonMarshal $sendtos}} 渲染後為字符串陣列形式 ["12312312311","12312312312"]。

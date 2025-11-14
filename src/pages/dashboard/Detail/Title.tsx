@@ -59,6 +59,8 @@ interface IProps {
   allowedLeave: boolean;
   setAllowedLeave: (allowed: boolean) => void;
   routerPromptRef: any;
+  hideGoBack?: boolean;
+  hideGoList?: boolean;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
@@ -85,6 +87,8 @@ export default function Title(props: IProps) {
     allowedLeave,
     setAllowedLeave,
     routerPromptRef,
+    hideGoBack,
+    hideGoList,
   } = props;
   const history = useHistory();
   const location = useLocation();
@@ -150,26 +154,30 @@ export default function Title(props: IProps) {
       <div className='dashboard-detail-header-left'>
         {isPreview && !isBuiltin ? null : (
           <Space>
-            <Tooltip title={isBuiltin ? t('back_icon_tip_is_built_in') : t('back_icon_tip')}>
-              <RollbackOutlined
-                className='back_icon'
-                onClick={() => {
-                  if (allowedLeave) {
-                    goBack(history).catch(() => {
-                      history.push(props.gobackPath || '/dashboards');
-                    });
-                  } else {
-                    routerPromptRef.current.showPrompt();
-                  }
-                }}
-              />
-            </Tooltip>
-            <Space className='pr1'>
-              <Link to={props.gobackPath || '/dashboards'} style={{ fontSize: 14 }}>
-                {isBuiltin ? t('builtInComponents:title') : t('list')}
-              </Link>
-              {'/'}
-            </Space>
+            {!hideGoBack && (
+              <Tooltip title={isBuiltin ? t('back_icon_tip_is_built_in') : t('back_icon_tip')}>
+                <RollbackOutlined
+                  className='back_icon'
+                  onClick={() => {
+                    if (allowedLeave) {
+                      goBack(history).catch(() => {
+                        history.push(props.gobackPath || '/dashboards');
+                      });
+                    } else {
+                      routerPromptRef.current.showPrompt();
+                    }
+                  }}
+                />
+              </Tooltip>
+            )}
+            {!hideGoList && (
+              <Space className='pr-2'>
+                <Link to={props.gobackPath || '/dashboards'} style={{ fontSize: 14 }}>
+                  {isBuiltin ? t('builtInComponents:title') : t('list')}
+                </Link>
+                {'/'}
+              </Space>
+            )}
           </Space>
         )}
         {isPreview === true || __public__ === 'true' ? (
@@ -183,9 +191,9 @@ export default function Title(props: IProps) {
               setDashboardListDropdownVisible(visible);
             }}
             overlay={
-              <div className='collects-payloads-dropdown-overlay p2 n9e-fill-color-2 n9e-border-base n9e-border-radius-base n9e-base-shadow'>
+              <div className='collects-payloads-dropdown-overlay p-4 bg-fc-100 fc-border rounded-[2px] n9e-base-shadow'>
                 <Input
-                  className='mb1'
+                  className='mb-2'
                   placeholder={t('common:search_placeholder')}
                   value={dashboardListDropdownSearch}
                   onChange={(e) => {
@@ -313,7 +321,7 @@ export default function Title(props: IProps) {
                 onTimezoneChange={setTimezone}
               />
 
-              {(isAuthorized || dashboardSaveMode === 'manual') && (
+              {isAuthorized && (
                 <Button
                   icon={<SettingOutlined />}
                   onClick={() => {

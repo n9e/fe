@@ -8,6 +8,7 @@ import { StreamLanguage } from '@codemirror/stream-parser';
 import { toml } from '@codemirror/legacy-modes/mode/toml';
 import { json } from '@codemirror/legacy-modes/mode/javascript';
 import { EditorView } from '@codemirror/view';
+import moment from 'moment';
 
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 
@@ -61,10 +62,12 @@ function index(props: Props & ModalWrapProps) {
                 onOk();
               });
             } else if (action === 'create') {
+              values.uuid = moment().valueOf() * 1000;
               postPayloads([values]).then((res) => {
                 if (_.isEmpty(res)) {
                   message.success(t('common:success.create'));
                   destroy();
+                  onOk();
                 } else {
                   ResultModal({
                     data: res,
@@ -156,7 +159,7 @@ function index(props: Props & ModalWrapProps) {
           >
             <CodeMirror
               theme={darkMode ? 'dark' : 'light'}
-              className='n9e-border-base n9e-border-radius-base'
+              className='fc-border rounded-[2px]'
               height='300px'
               basicSetup
               editable
@@ -186,7 +189,7 @@ function index(props: Props & ModalWrapProps) {
           >
             <CodeMirror
               theme={darkMode ? 'dark' : 'light'}
-              className='n9e-border-base n9e-border-radius-base'
+              className='fc-border rounded-[2px]'
               height='300px'
               basicSetup
               editable

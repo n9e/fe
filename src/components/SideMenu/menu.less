@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 .quick-menu-modal {
   .border-b {
     box-sizing: border-box;
@@ -47,5 +43,81 @@
 
   .ant-tooltip-arrow {
     display: none !important;
+  }
+}
+
+
+
+
+.quick-start-modal {
+  .ant-modal-content {
+    border-radius: 20px;
+  }
+
+  .ant-modal-body {
+    padding: 8px;
+
+    .quick-menu-title {
+      font-size: 14px;
+      color: var(--fc-text-2);
+      background: var(--fc-fill-3);
+      border-radius: 4px;
+      padding: 0 16px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+    }
+
+    .quick-menu-item {
+      cursor: pointer;
+      padding: 0 16px;
+      border-radius: 4px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &.active {
+        background: var(--fc-fill-primary);
+        color: #fff;
+
+        .quick-menu-icon {
+          color: #fff;
+        }
+      }
+
+      .primary-menu {
+        display: inline-block;
+        width: 120px;
+      }
+
+      .anticon {
+        font-size: 18px;
+        cursor: pointer;
+
+        &.unstar {
+          color: #ffde5c;
+        }
+
+        &.stared {
+          color: #e3e4e6;
+        }
+      }
+    }
+
+    .quick-menu-icon {
+      &>svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      color: rgba(108, 83, 177, 0.48);
+      margin-right: 8px;
+    }
+  }
+
+  .ant-input-affix-wrapper {
+    border-color: #e3e4e6;
+    border-radius: 16px;
   }
 }

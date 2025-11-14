@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { LineChartOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { Tabs, Button, Tooltip } from 'antd';
+import { Tabs, Tooltip } from 'antd';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +48,7 @@ const MetricExplorerPage = () => {
                 right: (
                   <Tooltip title={t('clear_tabs_tip')}>
                     <a
-                      className='pl2'
+                      className='pl-4'
                       onClick={() => {
                         // 只保留当前 tab
                         const newItems = [items.find((item) => item.key === activeKey)!];
@@ -102,6 +102,7 @@ const MetricExplorerPage = () => {
                 return (
                   <Tabs.TabPane closable={items.length !== 1} tab={`${t('query_tab')} ${idx + 1}`} key={item.key}>
                     <Explorer
+                      tabKey={item.key}
                       type='logging'
                       defaultCate='elasticsearch'
                       defaultFormValuesControl={{

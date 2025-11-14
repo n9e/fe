@@ -1,26 +1,17 @@
-body {
-  overflow: hidden; // 2024-12-26 v8 版本解决图表 Tooltip 容器会撑开页面导致滚动条出现的问题
-}
+@import './theme/index.less';
+
 
 #root,
 .App {
   height: 100%;
 }
 
-html {
-  --slider-rail: linear-gradient(to right, #45d678 0, #45d678 100%);
-  font-size: 16px; // 1rem = 16px
-}
-
-@font-face {
-  font-family: Monda-Regular;
-  src: url('../font/Monda-Regular.ttf');
-}
-
-@font-face {
-  font-family: codicon;
-  src: url('../font/codicon.ttf');
-}
+/* 请勿在此文件中添加样式，需要逐步迁移到 theme 目录下
+ * 迁移时应该遵循以下原则：
+ * 1. 如果是覆盖全局默认样式，应该放到 index.less 中的 base 层
+ * 2. 如果是定义新的全局样式或是覆盖、组合 antd 组件的样式，应该放到对应 default.*.less 文件中
+ * 3. 尽量避免定义不必要的全局样式，优先使用 tailwindcss 提供的工具类
+ */
 
 .App {
   display: flex;
@@ -226,7 +217,7 @@ input::placeholder {
 .title-color {
   color: @text-color;
 
-  & > * {
+  &>* {
     color: @text-color;
   }
 }
@@ -238,7 +229,7 @@ input::placeholder {
 .second-color {
   color: @secondColor;
 
-  & > * {
+  &>* {
     color: @secondColor;
   }
 }
@@ -292,6 +283,7 @@ input::placeholder {
 // 当 tooltip 内容为 markdown 时，h1~h6 的颜色覆盖默认的颜色为白色
 .ant-tooltip-inner {
   .markdown-wrapper {
+
     h1,
     h2,
     h3,
@@ -308,10 +300,6 @@ input::placeholder {
   margin-bottom: 16px;
   padding: 16px;
   border: 1px dashed #e5e5e5;
-}
-
-.p0 {
-  padding: 0px;
 }
 
 .mt16 {
@@ -344,10 +332,6 @@ input::placeholder {
 
 .ml8 {
   margin-left: 8px;
-}
-
-.p0 {
-  padding: 0px !important;
 }
 
 .red-text {
@@ -401,6 +385,7 @@ input::placeholder {
 
 // antd表格排序icon特殊处理
 .ant-table-column-has-sorters .ant-table-column-sorter-inner {
+
   .ant-table-column-sorter-up,
   .ant-table-column-sorter-down {
     transition: all 0.2s;
@@ -480,7 +465,7 @@ input::placeholder {
     color: var(--fc-gold-text);
   }
 
-  .ant-table-tbody > tr:last-child > td {
+  .ant-table-tbody>tr:last-child>td {
     border-bottom: 1px solid var(--fc-primary-color);
   }
 
@@ -494,7 +479,7 @@ input::placeholder {
   }
 
   //金色背景下 黑色文字
-  .ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-icon .ant-steps-icon,
+  .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-icon .ant-steps-icon,
   .selected-num,
   .ant-switch-inner,
   .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,

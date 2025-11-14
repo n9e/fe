@@ -69,7 +69,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { profile, siteInfo } = useContext(CommonStateContext);
+  const { profile, siteInfo, i18nList } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [themeVisible, setThemeVisible] = useState(false);
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
@@ -174,9 +174,9 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                 </div>
 
                 <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
-                  {introIcon}
+                  <span className='page-layout-intro-container'>{introIcon}</span>
                   {docFn && (
-                    <a onClick={() => docFn()} style={{ marginRight: 16 }}>
+                    <a onClick={() => docFn()} className='page-layout-doc-container'>
                       {t('docs')}
                     </a>
                   )}
@@ -221,9 +221,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         }}
                         selectable
                       >
-                        {Object.keys(i18nMap).map((el) => {
-                          return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
-                        })}
+                        {Object.keys(i18nMap)
+                          .filter((el) => {
+                            return i18nList ? i18nList.includes(el) : true;
+                          })
+                          .map((el) => {
+                            return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
+                          })}
                       </Menu>
                     }
                   >

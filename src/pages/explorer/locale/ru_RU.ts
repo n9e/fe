@@ -64,6 +64,12 @@ const ru_RU = {
       not: 'Исключить из этого поиска',
       exists: 'Фильтровать документы, содержащие это поле',
     },
+    field_values_topn: {
+      label: 'Топ {{n}} значений',
+      settings: {
+        title: 'Настройки Топ N значений',
+      },
+    },
   },
   historicalRecords: {
     button: 'История запросов',
@@ -74,6 +80,19 @@ const ru_RU = {
   help: 'Использование',
   clear_tabs: 'Очистить',
   clear_tabs_tip: 'Оставить только текущую вкладку',
+  stats: {
+    unique_count: 'Количество уникальных значений',
+    min: 'мин',
+    max: 'макс',
+    sum: 'сумма',
+    avg: 'среднее',
+    topn_no_data: 'Нет данных',
+    unindexable: 'Поле не индексируемое, невозможно выполнить статистический анализ',
+  },
+  field_list: {
+    show_fields: 'Показать поля',
+    available_fields: 'Доступные поля',
+  },
 };
 
 export default ru_RU;

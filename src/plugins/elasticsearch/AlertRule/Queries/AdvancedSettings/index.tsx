@@ -4,7 +4,7 @@ import { FormListFieldData } from 'antd/lib/form/FormList';
 import { DownOutlined, QuestionCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-import { SIZE } from '@/utils/constant';
+import { SIZE, IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 
@@ -19,7 +19,7 @@ export default function index(prosp: Props) {
 
   return (
     <div>
-      <div className='mb1'>
+      <div className='mb-2'>
         <Space
           className='cursor-pointer'
           onClick={() => {
@@ -31,19 +31,21 @@ export default function index(prosp: Props) {
         </Space>
       </div>
       <div
-        className='mb1'
+        className='mb-2'
         style={{
           display: expanded ? 'block' : 'none',
         }}
       >
         <Row gutter={SIZE * 2}>
-          <Col span={6}>
-            <InputGroupWithFormItem label={t('common:unit')}>
-              <Form.Item {...field} name={[field.name, 'unit']} initialValue='none' noStyle>
-                <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
-              </Form.Item>
-            </InputGroupWithFormItem>
-          </Col>
+          {IS_PLUS && (
+            <Col span={6}>
+              <InputGroupWithFormItem label={t('common:unit')}>
+                <Form.Item {...field} name={[field.name, 'unit']} initialValue='none' noStyle>
+                  <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
+                </Form.Item>
+              </InputGroupWithFormItem>
+            </Col>
+          )}
           <Col span={6}>
             <InputGroupWithFormItem
               label={

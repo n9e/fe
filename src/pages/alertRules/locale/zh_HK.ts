@@ -20,7 +20,7 @@ const zh_HK = {
   inhibit_tip: '只有 metricName 和 labels 完全相同的曲線產生的告警事件，才會進行級別抑制，1級>2級>3級',
   interval: '執行頻率',
   duration: '持續時長',
-  severity_label: '觸發告警',
+  severity_label: '告警分級',
   prom_eval_interval: '執行頻率 (s)',
   prom_for_duration: '持續時長 (s)',
   effective_configs: '生效配置',
@@ -335,6 +335,11 @@ const zh_HK = {
   },
   enrich: {
     select_tip: '克隆查詢條件（留空表示直接創建，不克隆）',
+  },
+  pipeline_configuration: {
+    title: '事件處理',
+    name_placeholder: '請選擇事件處理流水線',
+    add_btn: '添加事件處理流水線',
   },
 };
 

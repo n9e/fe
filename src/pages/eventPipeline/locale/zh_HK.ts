@@ -1,7 +1,7 @@
 const zh_HK = {
-  title: '事件管道',
-  title_add: '新增事件管道',
-  title_edit: '編輯事件管道',
+  title: '工作流',
+  title_add: '新增事件工作流',
+  title_edit: '編輯事件工作流',
   teams: '授權團隊',
   teams_tip: '限定哪些團隊成員可以查看和修改此配置，可以關聯多個團隊<br />例如：將配置授權給 infra-team，則只有 infra-team 團隊下的成員可以訪問或調整本配置。',
   basic_configuration: '基本配置',
@@ -110,6 +110,53 @@ const zh_HK = {
     content: '腳本內容',
     content_tooltip: '編寫用於處理事件的腳本代碼，告警事件會以 stdin 方式傳入腳本，腳本需要將 event 作為 json 對象輸出到 stdout',
     content_placeholder: '請輸入腳本內容',
+  },
+  inhibit: {
+    help: '事件抑制處理器，當一個告警發送時，避免通知另一個告警事件，減少通知。常見場景如：同一條告警規則存在 P1 級別的活躍故障時，忽略 P2 和 P3 級別的告警通知。更多介紹參考 <a>使用文檔</a>',
+    tip1: '當 <b>新的告警</b> 滿足以下條件',
+    tip2: '且',
+    tip3: '秒內有滿足以下條件的 <b>活躍告警</b>',
+    tip4: '且 <b>新的告警</b> 與 <b>活躍告警</b> 存在以下相同項',
+    tip5: '滿足以上全部條件時，當前告警將被抑制，且不再進行通知',
+    duration_required: '抑制時長不能為空',
+    duration_max: '抑制時長不能超過 600 秒',
+    match_label_keys: '標籤',
+    match_label_keys_required: '標籤不能為空',
+    match_attribute_keys: '屬性',
+    match_attribute_keys_required: '屬性不能為空',
+    keys_at_least_one_required: '至少需要一個標籤或屬性',
+    preview:
+      '規則預覽：當「<b>新告警：{{newAlertLabelsAttrs}}</b>」且在過去「<b>{{duration}} 秒</b>」內存在「<b>活躍告警：{{activeAlertLabelsAttrs}}</b>」，並且兩者在「<b>{{matchLabelsAttrs}}</b>」相同時，抑制新告警的通知。',
+    labels_filter: {
+      label: '標籤',
+      label_tip: '僅對滿足這些標籤匹配條件的告警事件進行抑制，用於縮小影響範圍，不配置表示不做限制。支持下拉選擇已有標籤鍵（推薦），也可手動輸入',
+      label_placeholder: '輸入或者選擇用於匹配的標籤鍵，如 app / cluster / alertname',
+    },
+    labels_filter_value_placeholder: '手動輸入或者選擇用於匹配的標籤值',
+    attributes_filter: {
+      label: '屬性',
+      label_tip: '按事件屬性限定抑制範圍：只有同時匹配這些屬性的告警會被抑制；留空則對所有告警生效',
+    },
+    active_event_labels_filter: {
+      label: '標籤',
+      label_tip: `**用於限定活躍告警的範圍**
+- 不配置：表示不使用標籤進行過濾
+- 配置：可以從下拉列表選擇已有標籤鍵（推薦），也可以手動輸入標籤鍵，只有當活躍告警同時滿足這些標籤條件時，才會進入篩選範圍。
+
+示例：填寫 service=mon，表示僅當事件包含標籤 service=mon 時，才會參與後續的抑制邏輯。`,
+    },
+    active_event_attributes_filter: {
+      label: '屬性',
+      label_tip: `**用於限定活躍告警的範圍**
+- 不配置：表示不使用屬性進行過濾
+- 配置：只有當活躍告警同時滿足這些屬性條件時，才會被篩選出來。
+
+示例：填寫 業務組==DefaultBusiGroup，表示僅當活躍事件的"業務組"屬性為 DefaultBusiGroup 時，才會被篩選出來，用作後續的事件抑制流程`,
+    },
+  },
+  inhibit_qd: {
+    help: '按查詢結果抑制事件：當告警觸發時，會執行下方數據查詢；若返回至少一條數據，則抑制本次告警（不再通知）；無數據則正常通知。更多說明見 <a>使用文檔</a>',
+    t_1: '且 查詢到以下 <b>數據</b>',
   },
 };
 

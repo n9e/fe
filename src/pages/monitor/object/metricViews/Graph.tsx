@@ -20,16 +20,19 @@ import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Card, Space, Dropdown, Menu, Tag, Popover, Divider, Tooltip } from 'antd';
 import { ShareAltOutlined, SyncOutlined, CloseCircleOutlined, DownOutlined, PlusCircleOutlined, SettingOutlined, LineChartOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+
+import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import { getLabels, getQueryRange, getExprs, setTmpChartData } from '@/services/metricViews';
 import { CommonStateContext, basePrefix } from '@/App';
+import LineGraphStandardOptions from '@/components/PromGraphCpt/components/GraphStandardOptions';
+import { interpolateString, getRealStep } from '@/components/PromQLInputNG';
+
 import { getMatchStr } from './utils';
 import { IMatch } from '../types';
 import Timeseries from '../../../dashboard/Renderer/Renderer/Timeseries';
 import Hexbin from '../../../dashboard/Renderer/Renderer/Hexbin';
 import { calcsOptions } from '../../../dashboard/Editor/config';
 import { colors } from '../../../dashboard/Components/ColorRangeMenu/config';
-import LineGraphStandardOptions from '@/components/PromGraphCpt/components/GraphStandardOptions';
 import HexbinGraphStandardOptions from './graphStandardOptions/Hexbin';
 import { HexbinIcon } from './config';
 
@@ -38,14 +41,17 @@ interface IProps {
   metric: string;
   match: IMatch;
   range: IRawTimeRange;
-  step?: number;
   onClose: () => void;
+  stepParams: {
+    maxDataPoints: number;
+    minStep?: number;
+  };
 }
 
 export default function Graph(props: IProps) {
-  const { t, i18n } = useTranslation('objectExplorer');
+  const { t } = useTranslation('objectExplorer');
   const { datasourceList, darkMode } = useContext(CommonStateContext);
-  const { datasourceValue, metric, match, range, step, onClose } = props;
+  const { datasourceValue, metric, match, range, onClose, stepParams } = props;
   const newGroups = _.map(
     _.filter(match.dimensionLabels, (item) => !_.isEmpty(item.value)),
     'label',
@@ -121,19 +127,22 @@ export default function Graph(props: IProps) {
   }, [refreshFlag, JSON.stringify(match), JSON.stringify(range)]);
 
   useEffect(() => {
-    getQueryRange(datasourceValue, {
-      metric,
-      match: getMatchStr(match),
-      range,
-      step,
-      aggrFunc,
-      aggrGroups,
-      calcFunc,
-      comparison,
-    }).then((res) => {
+    getQueryRange(
+      datasourceValue,
+      {
+        metric,
+        match: getMatchStr(match),
+        range,
+        aggrFunc,
+        aggrGroups,
+        calcFunc,
+        comparison,
+      },
+      stepParams,
+    ).then((res) => {
       setSeries(res);
     });
-  }, [refreshFlag, metric, JSON.stringify(match), JSON.stringify(range), step, calcFunc, comparison, aggrFunc, aggrGroups]);
+  }, [refreshFlag, metric, JSON.stringify(match), JSON.stringify(range), calcFunc, comparison, aggrFunc, aggrGroups, JSON.stringify(stepParams)]);
 
   return (
     <Card
@@ -199,6 +208,13 @@ export default function Graph(props: IProps) {
           <a className='a-icon'>
             <ShareAltOutlined
               onClick={() => {
+                const { start, end } = timeRangeUnix(range);
+                const step = getRealStep({
+                  minStep: stepParams.minStep,
+                  maxDataPoints: stepParams.maxDataPoints,
+                  fromUnix: start,
+                  toUnix: end,
+                });
                 const dataProps = {
                   type: 'timeseries',
                   version: '3.0.0',
@@ -216,8 +232,14 @@ export default function Graph(props: IProps) {
                       comparison,
                     }),
                     (expr) => {
+                      const currentExpr = interpolateString({
+                        query: expr,
+                        range,
+                        minStep: stepParams.minStep,
+                        maxDataPoints: stepParams.maxDataPoints,
+                      });
                       return {
-                        expr,
+                        expr: currentExpr,
                       };
                     },
                   ),
@@ -251,10 +273,8 @@ export default function Graph(props: IProps) {
             <Dropdown
               overlay={
                 <Menu onClick={(e) => setCalcFunc(e.key === 'clear' ? '' : e.key)} selectedKeys={[calcFunc]}>
-                  <Menu.Item key='rate_1m'>rate_1m</Menu.Item>
-                  <Menu.Item key='rate_5m'>rate_5m</Menu.Item>
-                  <Menu.Item key='increase_1m'>increase_1m</Menu.Item>
-                  <Menu.Item key='increase_5m'>increase_5m</Menu.Item>
+                  <Menu.Item key='rate'>rate</Menu.Item>
+                  <Menu.Item key='increase'>increase</Menu.Item>
                   <Menu.Divider></Menu.Divider>
                   <Menu.Item key='clear'>clear</Menu.Item>
                 </Menu>

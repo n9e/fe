@@ -18,9 +18,10 @@
  * 时间选择器组件
  * 时间范围默认值：如果开启了本地缓存，需要调用 getDefaultValue(localKey: string, defaultValue: IRawTimeRange) 来获取真实的默认值
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import moment from 'moment';
 
+import { CommonStateContext } from '@/App';
 import { useGlobalVar } from '@/utils/useHook';
 
 import TimeRangePicker from './TimeRangePicker';
@@ -37,11 +38,13 @@ export { AutoRefresh };
 
 export default function index(props: ITimeRangePickerProps) {
   const { localKey, dateFormat = 'YYYY-MM-DD HH:mm', onChange } = props;
+  const { rangePickerShowSecond } = useContext(CommonStateContext);
   const [globalVar] = useGlobalVar();
 
   return (
     <TimeRangePicker
       limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
+      showSecond={rangePickerShowSecond}
       {...props}
       onChange={(val) => {
         if (localKey) {

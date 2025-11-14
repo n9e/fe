@@ -9,17 +9,23 @@ const ru_RU = {
   database_table_required: 'Пожалуйста, выберите базу данных и таблицу',
   query: {
     mode: {
-      raw: 'Сырые данные',
-      metric: 'Статистический график',
+      query: 'Режим запроса',
+      sql: 'Режим SQL',
     },
-    time_field: 'Поле времени',
-    time_field_msg: 'Пожалуйста, введите поле времени',
+    submode: {
+      raw: 'Исходный текст журнала',
+      timeSeries: 'Временная диаграмма',
+    },
     query_tip:
       'Пример SQL: Чтобы запросить количество записей журнала за последние 5 минут, используйте SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Запрос',
     database: 'База данных',
-    database_placeholder: 'По умолчанию можно оставить пустым',
+    database_msg: 'Пожалуйста, выберите базу данных',
+    table: 'Таблица',
+    table_msg: 'Пожалуйста, выберите таблицу',
+    time_field: 'Дата поле',
+    time_field_msg: 'Пожалуйста, выберите дата поле',
     query: 'Запрос',
     query_required: 'Запрос является обязательным',
     advancedSettings: {
@@ -70,6 +76,7 @@ const ru_RU = {
     fieldValues_topnNoData: 'Нет данных',
     stats: {
       numberOfUniqueValues: 'Количество уникальных значений',
+      unique_count: 'Количество уникальных значений',
       min: 'Минимальное значение',
       max: 'Максимальное значение',
       sum: 'Сумма',

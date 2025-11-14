@@ -52,6 +52,10 @@ const getNetworkDevicesList = () => {};
 const getNetworkDevicesTags = () => {};
 const searchDrilldown = () => {};
 const proDocumentPathMap = {};
+const AckBtnDefault = () => {
+  return null;
+};
+const getBrainLicense = null;
 export {
   AlertRule,
   QueryBuilder,
@@ -75,4 +79,6 @@ export {
   getNetworkDevicesTags,
   proDocumentPathMap,
   searchDrilldown,
+  AckBtnDefault,
+  getBrainLicense,
 };

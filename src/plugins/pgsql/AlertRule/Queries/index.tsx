@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
+import { IS_PLUS } from '@/utils/constant';
 import LogQL from '@/components/LogQL';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
@@ -59,7 +60,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
           >
             {fields.map((field, index) => {
               return (
-                <div key={field.key} className='n9e-fill-color-3' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
+                <div key={field.key} className='bg-fc-200' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
                   <Row gutter={8}>
                     <Col flex='32px'>
                       <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
@@ -76,7 +77,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </div>
                     </Col>
                   </Row>
-                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit />
+                  <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit={IS_PLUS} />
                   {fields.length > 1 && (
                     <CloseCircleOutlined
                       style={{ position: 'absolute', right: -4, top: -4 }}

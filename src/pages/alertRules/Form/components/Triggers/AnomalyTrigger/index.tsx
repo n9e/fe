@@ -34,7 +34,7 @@ export default function index(props: Props) {
   return (
     <Spin spinning={algorithmsLoading}>
       <div>
-        <div className='mb2'>
+        <div className='mb-4'>
           <Space>
             <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
               <Switch />
@@ -56,7 +56,7 @@ export default function index(props: Props) {
             </Form.Item>
           </Space>
         </div>
-        <div className='mb2'>
+        <div className='mb-4'>
           <Space align='baseline'>
             {t('severity_label')}
             <Form.Item name={[...names, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle initialValue={2}>

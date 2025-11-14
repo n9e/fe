@@ -48,7 +48,7 @@ export default function Query(props: Props) {
   }, [datasourceValue, indexPatternsRefreshFlag]);
 
   return (
-    <div key={field.key} className='n9e-fill-color-3' style={{ padding: 10, marginBottom: 10, position: 'relative' }}>
+    <div key={field.key} className='bg-fc-200' style={{ padding: 10, marginBottom: 10, position: 'relative' }}>
       <Row gutter={8}>
         <Col flex='32px'>
           <Form.Item name={[field.name, 'ref']} initialValue={alphabet[field.name]}>

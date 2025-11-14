@@ -50,7 +50,7 @@ interface IPageLayoutProps {
   docFn?: Function;
 }
 
-const i18nMap = {
+export const i18nMap = {
   zh_CN: '简体',
   zh_HK: '繁體',
   en_US: 'En',
@@ -63,7 +63,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { profile, siteInfo } = useContext(CommonStateContext);
+  const { profile, siteInfo, i18nList } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
   const [themeVisible, setThemeVisible] = useState(false);
@@ -140,9 +140,9 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                 </div>
 
                 <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
-                  {introIcon}
+                  <span className='page-layout-intro-container'>{introIcon}</span>
                   {docFn && (
-                    <a onClick={() => docFn()} style={{ marginRight: 20 }}>
+                    <a onClick={() => docFn()} className='page-layout-doc-container'>
                       {t('docs')}
                     </a>
                   )}
@@ -186,7 +186,7 @@ const PageLayoutOld: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, int
                       >
                         {Object.keys(i18nMap)
                           .filter((el) => {
-                            return IS_ENT ? el !== 'ru_RU' : true;
+                            return i18nList ? i18nList.includes(el) : true;
                           })
                           .map((el) => {
                             return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;

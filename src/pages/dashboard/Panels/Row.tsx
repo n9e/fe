@@ -58,10 +58,10 @@ export default function Row(props: IProps) {
         }}
       >
         {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
-        <span className='pl1'>
+        <span className='pl-2'>
           <span>{replaceTemplateVariables(name)}</span>
           {!row.collapsed && (
-            <span className='ml2 dashboards-panels-row-name-panels-count'>
+            <span className='ml-4 dashboards-panels-row-name-panels-count'>
               (
               {rowPanels > 1
                 ? t('row.panels_plural', {

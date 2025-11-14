@@ -43,7 +43,7 @@ function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
           <div
             className={cn(
               'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-              isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-primary') : props.isCustomBg ? '' : 'text-primary-80',
+              isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-primary') : props.isCustomBg ? '' : 'text-primary/80',
               !collapsed ? 'mr-4' : '',
             )}
           >
@@ -102,7 +102,7 @@ function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean
           {item.label}
           {item.beta && (
             <span
-              className='absolute border text-[9px] px-[3px] py-[1px] right-[25px] top-[4px] h-[18px] scale-75 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 text-yellow-700'
+              className='absolute fc-border text-[9px] px-[3px] py-[1px] right-[25px] top-[4px] h-[18px] scale-75 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 text-yellow-700'
               style={{ lineHeight: '15px' }}
             >
               Beta
@@ -137,7 +137,7 @@ export default function MenuList(
             props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
           )}
         >
-          <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', props.isCustomBg ? '' : 'text-primary-80')}>{<IconFont type='icon-Menu_Search' />}</div>
+          <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', props.isCustomBg ? '' : 'text-primary/80')}>{<IconFont type='icon-Menu_Search' />}</div>
           <div className={`overflow-hidden truncate text-l1 tracking-wide`}>{t('quickJump')} </div>
         </div>
         <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>

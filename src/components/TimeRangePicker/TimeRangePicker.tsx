@@ -80,6 +80,7 @@ const AbsoluteTimePicker = ({
   rangeStatus,
   setRangeStatus,
   dateFormat,
+  showSecond = false,
 }: {
   type: 'start' | 'end';
   limitHour?: number;
@@ -91,6 +92,7 @@ const AbsoluteTimePicker = ({
   };
   setRangeStatus: any;
   dateFormat: string;
+  showSecond?: boolean;
 }) => {
   const { t, i18n } = useTranslation('timeRangePicker');
   const labelMap = {
@@ -152,7 +154,7 @@ const AbsoluteTimePicker = ({
               locale={localeMap[i18n.language] || en_US}
               showTime={{
                 defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
-                showSecond: false,
+                showSecond,
               }}
               disabledDate={(current: Moment) => {
                 const exceedHourLimit = limitHour
@@ -209,6 +211,7 @@ export default function index(props: ITimeRangePickerProps) {
     showTimezone = false,
     timezone = InternalTimeZones.localBrowserTime,
     onTimezoneChange,
+    showSecond,
   } = props;
   const [visible, setVisible] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>();
@@ -258,6 +261,7 @@ export default function index(props: ITimeRangePickerProps) {
                       rangeStatus={rangeStatus}
                       setRangeStatus={setRangeStatus}
                       dateFormat={dateFormat}
+                      showSecond={showSecond}
                     />
                     <AbsoluteTimePicker
                       type='end'
@@ -267,6 +271,7 @@ export default function index(props: ITimeRangePickerProps) {
                       rangeStatus={rangeStatus}
                       setRangeStatus={setRangeStatus}
                       dateFormat={dateFormat}
+                      showSecond={showSecond}
                     />
                     <div>
                       <Space>

@@ -83,6 +83,8 @@ const zh_CN = {
     integration_url_tip: '此处填写的是 Flashduty 集成中心创建的集成地址，可以到 https://console.flashcat.cloud/settings/source/alert/add/n9e 去创建',
     proxy: '代理',
     proxy_tip: 'HTTP PROXY 地址，用于需要代理的场景',
+    timeout: '超时时间 (单位: 毫秒)',
+    retry_times: '重试次数',
   },
 };
 export default zh_CN;

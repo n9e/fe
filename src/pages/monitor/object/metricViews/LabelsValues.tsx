@@ -48,8 +48,12 @@ export default function LabelsValues(props: IProps) {
   });
 
   useEffect(() => {
-    const dynamicLabelsRequests = _.map(dynamicLabels, (item) => {
-      return getLabelValues(datasourceValue, item.label, range, filtersStr ? `{${filtersStr}}` : '');
+    const dynamicLabelsRequests = _.map(dynamicLabels, (item, index) => {
+      // 级联查询：只使用当前标签之前的已选择标签值
+      const previousLabels = dynamicLabels.slice(0, index);
+      const dynamicLabelsStr = getDynamicLabelsStr(previousLabels);
+      const matchStr = _.join(_.compact(_.concat(filtersStr, dynamicLabelsStr)), ',');
+      return getLabelValues(datasourceValue, item.label, range, matchStr ? `{${matchStr}}` : '');
     });
     Promise.all(dynamicLabelsRequests).then((res) => {
       const _labelValues = {};
@@ -58,7 +62,7 @@ export default function LabelsValues(props: IProps) {
       });
       setLabelValues(_labelValues);
     });
-  }, [filtersStr, datasourceValue, _.join(_.map(dynamicLabels, 'label'))]);
+  }, [filtersStr, datasourceValue, JSON.stringify(dynamicLabels)]);
 
   useEffect(() => {
     const matchStr = _.join(_.compact(_.concat(filtersStr, dynamicLabelsStr)), ',');

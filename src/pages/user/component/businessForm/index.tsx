@@ -107,7 +107,7 @@ const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
           <Form.List name='members'>
             {(fields, { add, remove }) => (
               <>
-                <div className='mb8'>
+                <div className='mb-2'>
                   <Space>
                     {t('business.team_name')}
                     <Tooltip title={t('business.team_name_tip')}>

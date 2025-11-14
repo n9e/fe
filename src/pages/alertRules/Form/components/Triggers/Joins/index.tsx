@@ -26,7 +26,7 @@ export default function index(props: Props) {
     <div>
       <Row wrap={false} gutter={8}>
         <Col flex='none'>
-          <div className='mt1'>{t('trigger.joins.label')}</div>
+          <div className='mt-2'>{t('trigger.joins.label')}</div>
         </Col>
         {}
         <Col

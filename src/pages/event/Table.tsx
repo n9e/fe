@@ -74,7 +74,7 @@ export default function TableCpt(props: IProps) {
       render(title, { id, tags }) {
         return (
           <>
-            <div className='mb1'>
+            <div className='mb-2'>
               <Link to={`/alert-cur-events/${id}`}>{title}</Link>
             </div>
             <div>
@@ -84,7 +84,7 @@ export default function TableCpt(props: IProps) {
                     <Tag
                       // color='purple'
                       style={{ maxWidth: '100%' }}
-                      onClick={() => {
+                      onDoubleClick={() => {
                         if (!filter.queryContent.includes(item)) {
                           setFilter({
                             ...filter,
@@ -235,10 +235,10 @@ export default function TableCpt(props: IProps) {
 
   return (
     <div className='event-content'>
-      <div className='n9e-border-base' style={{ padding: 16, width: '100%', overflowY: 'auto' }}>
+      <div className='fc-border' style={{ padding: 16, width: '100%', overflowY: 'auto' }}>
         <div style={{ display: 'flex' }}>{header}</div>
         <Table
-          className='mt8'
+          className='mt-2'
           size='small'
           tableLayout='fixed'
           rowKey={(record) => record.id}

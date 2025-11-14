@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { FloatFcMenu } from '@fc-components/menu';
+// import { FloatFcMenu } from '@fc-components/menu';
 import React, { FC, useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import Icon from '@ant-design/icons';
@@ -353,7 +353,7 @@ const SideMenu: FC = () => {
           </div>
         </div>
       )}
-      <FloatFcMenu
+      {/* <FloatFcMenu
         fullModeWidth={i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 180 : undefined}
         items={menus}
         selectedKeys={defaultSelectedKeys}
@@ -362,7 +362,7 @@ const SideMenu: FC = () => {
         switchCollapsed={switchCollapsed}
         quickIcon={<IconFont type='icon-Menu_Search' />}
         quickActiveIcon={<Icon component={menuIcon.Menu_Search as any} />}
-      />
+      /> */}
     </div>
   );
 };

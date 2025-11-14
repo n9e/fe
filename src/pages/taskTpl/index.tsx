@@ -200,9 +200,9 @@ const index = (_props: any) => {
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
         {gids ? (
-          <div className='n9e-border-base p2' style={{ flex: 1 }}>
+          <div className='fc-border p-4' style={{ flex: 1 }}>
             <Row>
-              <Col span={14} className='mb10'>
+              <Col span={14} className='mb-2'>
                 <Input
                   style={{ width: 200 }}
                   prefix={<SearchOutlined />}
@@ -253,7 +253,7 @@ const index = (_props: any) => {
               )}
             </Row>
             <Table
-              className='mt8'
+              className='mt-2'
               size='small'
               rowKey='id'
               columns={columns}

@@ -13,6 +13,10 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import LabelEnrich from 'plus:/parcels/eventPipeline/LabelEnrich';
 // @ts-ignore
 import Script from 'plus:/parcels/eventPipeline/Script';
+// @ts-ignore
+import Inhibit from 'plus:/parcels/eventPipeline/Inhibit';
+// @ts-ignore
+import InhibitQd from 'plus:/parcels/eventPipeline/InhibitQd';
 
 import { NS, DEFAULT_PROCESSOR_CONFIG_MAP } from '../../../constants';
 import TestModal from '../TestModal';
@@ -144,6 +148,14 @@ export default function NotifyConfig(props: Props) {
                     label: 'Script',
                     value: 'script',
                   },
+                  {
+                    label: 'Inhibit',
+                    value: 'inhibit',
+                  },
+                  {
+                    label: 'Inhibit by Query Data',
+                    value: 'inhibit_qd',
+                  },
                 ]
               : [],
           )}
@@ -163,6 +175,8 @@ export default function NotifyConfig(props: Props) {
       {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} />}
       {processorType === 'script' && <Script field={field} namePath={[field.name, 'config']} />}
+      {processorType === 'inhibit' && <Inhibit field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
+      {processorType === 'inhibit_qd' && <InhibitQd field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
 
       <TestModal type='processor' config={processorConfig} />
     </Card>

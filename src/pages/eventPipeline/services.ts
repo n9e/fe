@@ -53,3 +53,20 @@ export const eventPipelineTryrun = function (data: { event_id: number; pipeline_
     data,
   });
 };
+
+export function getEventTagKeys() {
+  return request('/api/n9e/event-tagkeys', {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res.dat;
+  });
+}
+
+export function getEventTagValues(key: string) {
+  return request('/api/n9e/event-tagvalues', {
+    method: RequestMethod.Get,
+    params: { key },
+  }).then((res) => {
+    return res.dat;
+  });
+}

@@ -22,6 +22,8 @@ const zh_HK = {
   export: '匯出',
   export_failed: '匯出失敗',
   prod: '監控類型',
+  claimant: '認領人',
+  shield: '屏蔽',
   rule_prod: {
     firemap: '滅火圖',
     northstar: '北極星',
@@ -30,6 +32,18 @@ const zh_HK = {
     logging: 'Log',
     anomaly: 'Anomaly',
     loki: 'Loki',
+  },
+  delete_events: {
+    title: '事件清理',
+    alert_message: '一旦刪除將無法找回，請謹慎操作！',
+    severities: '等級篩選',
+    timestamp: '時間篩選',
+    timestamp_options: {
+      '1': '1 個月之前',
+      '3': '3 個月之前',
+      '6': '6 個月之前',
+      '12': '1 年之前',
+    },
   },
 };
 

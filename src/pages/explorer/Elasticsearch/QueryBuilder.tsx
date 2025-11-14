@@ -164,7 +164,7 @@ export default function QueryBuilder(props: Props) {
             </>
           }
           addonAfter={
-            <Form.Item name={['query', 'syntax']} noStyle initialValue='lucene'>
+            <Form.Item name={['query', 'syntax']} noStyle initialValue='kuery'>
               <Select
                 bordered={false}
                 options={SYNTAX_OPTIONS}

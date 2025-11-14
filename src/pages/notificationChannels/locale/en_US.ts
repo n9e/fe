@@ -88,6 +88,8 @@ const en_US = {
     integration_url_tip: 'The integration address created by the Flashduty Integration Center can be found at https://console.flashcat.cloud/settings/source/alert/add/n9e',
     proxy: 'Proxy',
     proxy_tip: 'HTTP PROXY address, used in scenarios that require a proxy',
+    timeout: 'Timeout (unit: ms)',
+    retry_times: 'Retry Times',
   },
 };
 export default en_US;

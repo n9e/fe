@@ -8,7 +8,6 @@ function withOpacityValue(variable) {
 }
 
 module.exports = {
-  important: '#tailwind',
   darkMode: 'class',
   important: true,
   content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
@@ -38,19 +37,21 @@ module.exports = {
       },
       colors: {
         fc: {
-          50: withOpacityValue('--fc-fill-1'),
-          100: withOpacityValue('--fc-fill-2'),
-          200: withOpacityValue('--fc-fill-3'),
-          300: withOpacityValue('--fc-fill-4'),
-          400: withOpacityValue('--fc-fill-5'),
-          500: withOpacityValue('--fc-fill-6'),
-          600: withOpacityValue('--fc-fill-7'),
+          50: withOpacityValue('--fc-fill-1-rgb'),
+          100: withOpacityValue('--fc-fill-2-rgb'),
+          150: withOpacityValue('--fc-fill-2-5-rgb'),
+          200: withOpacityValue('--fc-fill-3-rgb'),
+          300: withOpacityValue('--fc-fill-4-rgb'),
+          400: withOpacityValue('--fc-fill-5-rgb'),
+          500: withOpacityValue('--fc-fill-6-rgb'),
+          600: withOpacityValue('--fc-fill-7-rgb'),
         },
-        primary: withOpacityValue('--fc-fill-primary'),
-        success: withOpacityValue('--fc-fill-success'),
-        warning: withOpacityValue('--fc-fill-warning'),
-        alert: withOpacityValue('--fc-fill-alert'),
-        error: withOpacityValue('--fc-fill-error'),
+        primary: withOpacityValue('--fc-fill-primary-rgb'),
+        success: withOpacityValue('--fc-fill-success-rgb'),
+        warning: withOpacityValue('--fc-fill-warning-rgb'),
+        alert: withOpacityValue('--fc-fill-alert-rgb'),
+        error: withOpacityValue('--fc-fill-error-rgb'),
+        antd: 'var(--fc-antd-border-color)',
         // use for background
         'primary-pale': '#F0ECF9',
         // use for border
