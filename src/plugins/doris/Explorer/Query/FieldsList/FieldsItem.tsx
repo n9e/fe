@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Form } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Form, Button } from 'antd';
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
@@ -15,7 +15,7 @@ import { Field, getDorisLogsQuery } from '../../../services';
 
 interface Props {
   record: Field;
-  onValueFilter: (parmas: { key: string; value: string; operator: 'and' | 'not' }) => void;
+  onValueFilter: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
 }
 
 const FieldBooleanSvg = () => (
@@ -112,24 +112,32 @@ export default function FieldsItem(props: Props) {
                         <div className='text-primary'>{percent}%</div>
                       </div>
                     </div>
-                    <div style={{ width: 32 }}>
-                      <Space>
-                        <PlusCircleOutlined
+                    <div style={{ width: 64 }}>
+                      <Space size={0}>
+                        <Button
+                          className='p-0'
+                          type='text'
+                          icon={<PlusCircleOutlined />}
+                          disabled={name === '' || name === null}
                           onClick={() => {
                             onValueFilter({
                               key: record.field,
                               value: name,
-                              operator: 'and',
+                              operator: 'AND',
                             });
                             setTopNVisible(false);
                           }}
                         />
-                        <MinusCircleOutlined
+                        <Button
+                          className='p-0'
+                          type='text'
+                          icon={<MinusCircleOutlined />}
+                          disabled={name === '' || name === null}
                           onClick={() => {
                             onValueFilter({
                               key: record.field,
                               value: name,
-                              operator: 'not',
+                              operator: 'NOT',
                             });
                             setTopNVisible(false);
                           }}

@@ -8,7 +8,7 @@ import FieldsItem from './FieldsItem';
 
 interface Props {
   fields: Field[];
-  onValueFilter: (parmas: { key: string; value: string; operator: 'and' | 'not' }) => void;
+  onValueFilter: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
 }
 
 export default function index(props: Props) {

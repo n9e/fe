@@ -210,7 +210,12 @@ export default function index(props: Props) {
                   if (queryStr === '*') {
                     queryStr = '';
                   }
-                  queryStr += `${queryStr === '' ? '' : ` ${params.operator}`} ${params.key}:"${params.value}"`;
+                  if (params.operator === 'AND') {
+                    queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}:"${params.value}"`;
+                  }
+                  if (params.operator === 'NOT') {
+                    queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}:"${params.value}"`;
+                  }
                   form.setFieldsValue({
                     query: {
                       query: queryStr,
