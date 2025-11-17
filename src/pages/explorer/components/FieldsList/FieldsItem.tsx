@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Button } from 'antd';
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
@@ -112,9 +112,13 @@ export default function FieldsItem(props: Props) {
                         <div className='text-primary'>{percent}%</div>
                       </div>
                     </div>
-                    <div style={{ width: 32 }}>
-                      <Space>
-                        <PlusCircleOutlined
+                    <div style={{ width: 64 }}>
+                      <Space size={0}>
+                        <Button
+                          className='p-0'
+                          type='text'
+                          icon={<PlusCircleOutlined />}
+                          disabled={fieldValue === '' || fieldValue === null}
                           onClick={() => {
                             onValueFilter?.({
                               key: field.field,
@@ -124,7 +128,11 @@ export default function FieldsItem(props: Props) {
                             setTopNVisible(false);
                           }}
                         />
-                        <MinusCircleOutlined
+                        <Button
+                          className='p-0'
+                          type='text'
+                          icon={<MinusCircleOutlined />}
+                          disabled={fieldValue === '' || fieldValue === null}
                           onClick={() => {
                             onValueFilter?.({
                               key: field.field,
