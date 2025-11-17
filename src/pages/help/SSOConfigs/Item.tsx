@@ -59,7 +59,7 @@ export default function Item(props: Props) {
           <Form.Item name={['setting', 'redirect_url']} hidden initialValue={`${window.location.origin}/callback/dingtalk`}>
             <div />
           </Form.Item>
-          <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={true}>
+          <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
             <Switch size='small' />
           </Form.Item>
           <Row gutter={SIZE}>
@@ -152,7 +152,7 @@ export default function Item(props: Props) {
                   tooltip={t('dingtalk_setting.use_member_info_tip')}
                   name={['setting', 'use_member_info']}
                   valuePropName='checked'
-                  initialValue={true}
+                  initialValue={false}
                 >
                   <Switch size='small' />
                 </Form.Item>
