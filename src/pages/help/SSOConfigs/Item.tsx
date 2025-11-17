@@ -62,48 +62,69 @@ export default function Item(props: Props) {
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={true}>
             <Switch size='small' />
           </Form.Item>
-          <Form.Item label={t('dingtalk_setting.display_name')} name={['setting', 'display_name']} rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
+          <Row gutter={SIZE}>
+            <Col span={12}>
+              <Form.Item label={t('dingtalk_setting.display_name')} name={['setting', 'display_name']} rules={[{ required: true }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label={t('dingtalk_setting.corpId')} tooltip={t('dingtalk_setting.corpId_tip')} name={['setting', 'corpId']} rules={[{ required: true }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item label={t('dingtalk_setting.client_id')} name={['setting', 'client_id']} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.client_secret')} name={['setting', 'client_secret']} rules={[{ required: true }]}>
             <Input.Password />
           </Form.Item>
+          <Form.Item
+            label={t('dingtalk_setting.cover_attributes')}
+            tooltip={t('dingtalk_setting.cover_attributes_tip')}
+            name={['setting', 'cover_attributes']}
+            valuePropName='checked'
+            initialValue={true}
+          >
+            <Switch size='small' />
+          </Form.Item>
           <Row gutter={SIZE}>
-            <Col flex='none'>
-              <Form.Item
-                label={t('dingtalk_setting.use_dingtalk_name')}
-                tooltip={t('dingtalk_setting.use_dingtalk_name_tip')}
-                name={['setting', 'use_dingtalk_name']}
-                valuePropName='checked'
-                initialValue={true}
-              >
-                <Switch size='small' />
+            <Col span={12}>
+              <Form.Item label={t('dingtalk_setting.username_field')} name={['setting', 'username_field']} rules={[{ required: true }]}>
+                <Select
+                  options={[
+                    {
+                      label: t('dingtalk_setting.username_field_map.phone'),
+                      value: 'phone',
+                    },
+                    {
+                      label: t('dingtalk_setting.username_field_map.name'),
+                      value: 'name',
+                    },
+                    {
+                      label: t('dingtalk_setting.username_field_map.email'),
+                      value: 'email',
+                    },
+                  ]}
+                  optionFilterProp='label'
+                />
               </Form.Item>
             </Col>
-            <Col flex='none'>
-              <Form.Item
-                label={t('dingtalk_setting.cover_attributes')}
-                tooltip={t('dingtalk_setting.cover_attributes_tip')}
-                name={['setting', 'cover_attributes']}
-                valuePropName='checked'
-                initialValue={true}
-              >
-                <Switch size='small' />
+            <Col span={12}>
+              <Form.Item label={t('dingtalk_setting.default_roles')} name={['setting', 'default_roles']} rules={[{ required: true }]}>
+                <Select
+                  mode='multiple'
+                  options={_.map(roles, (item) => {
+                    return { label: item, value: item };
+                  })}
+                  optionFilterProp='label'
+                />
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item label={t('dingtalk_setting.default_roles')} name={['setting', 'default_roles']} rules={[{ required: true }]}>
-            <Select
-              mode='multiple'
-              options={_.map(roles, (item) => {
-                return { label: item, value: item };
-              })}
-              optionFilterProp='label'
-            />
-          </Form.Item>
+
           <div className='mb-4'>
             <Space className='cursor-pointer' onClick={() => setAdvancedSettingsVisible(!advancedSettingsVisible)}>
               {t('common:advanced_settings')}
@@ -118,18 +139,27 @@ export default function Item(props: Props) {
             <Form.Item label={t('dingtalk_setting.auth_url')} name={['setting', 'auth_url']}>
               <Input placeholder='https://login.dingtalk.com/oauth2/auth' />
             </Form.Item>
+            <Form.Item label='Endpoint' name={['setting', 'endpoint']}>
+              <Input placeholder='https://api.dingtalk.com' />
+            </Form.Item>
             <Form.Item label={t('dingtalk_setting.proxy')} name={['setting', 'proxy']}>
               <Input />
             </Form.Item>
             <Row gutter={SIZE}>
               <Col flex='none'>
-                <Form.Item label={t('dingtalk_setting.scope')} tooltip={t('dingtalk_setting.scope_tip')} name={['setting', 'scope']} valuePropName='checked' initialValue={true}>
+                <Form.Item
+                  label={t('dingtalk_setting.use_member_info')}
+                  tooltip={t('dingtalk_setting.use_member_info_tip')}
+                  name={['setting', 'use_member_info']}
+                  valuePropName='checked'
+                  initialValue={true}
+                >
                   <Switch size='small' />
                 </Form.Item>
               </Col>
               <Col flex='auto'>
-                <Form.Item label={t('dingtalk_setting.corpId')} tooltip={t('dingtalk_setting.corpId_tip')} name={['setting', 'corpId']}>
-                  <Input />
+                <Form.Item label={t('dingtalk_setting.dingtalk_api')} tooltip={t('dingtalk_setting.dingtalk_api_tip')} name={['setting', 'dingtalk_api']}>
+                  <Input placeholder='https://oapi.dingtalk.com' />
                 </Form.Item>
               </Col>
             </Row>
