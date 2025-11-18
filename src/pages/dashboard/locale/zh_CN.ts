@@ -513,13 +513,13 @@ const zh_CN = {
         gradientMode_opacity: '开启',
         gradientMode_none: '关闭',
         stack: '堆叠',
-        stack_noraml: '开启',
+        stack_normal: '开启',
         stack_off: '关闭',
         yAxis: {
           title: 'Y轴设置',
           rightYAxis: {
             label: '右侧Y轴显示',
-            noraml: '开启',
+            normal: '开启',
             off: '关闭',
           },
         },

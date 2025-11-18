@@ -56,7 +56,7 @@ export default function Bar(props: IProps) {
     series,
     calc,
     {
-      unit: options?.standardOptions?.util,
+      unit: options?.standardOptions?.unit,
       decimals: options?.standardOptions?.decimals,
       dateFormat: options?.standardOptions?.dateFormat,
     },
@@ -118,7 +118,7 @@ export default function Bar(props: IProps) {
         labelFormatter: (d) => {
           const valueObj = valueFormatter(
             {
-              unit: options?.standardOptions?.util,
+              unit: options?.standardOptions?.unit,
               decimals: options?.standardOptions?.decimals,
               dateFormat: options?.standardOptions?.dateFormat,
             },
@@ -138,7 +138,7 @@ export default function Bar(props: IProps) {
             valueFormatter: (d) => {
               const valueObj = valueFormatter(
                 {
-                  unit: options?.standardOptions?.util,
+                  unit: options?.standardOptions?.unit,
                   decimals: options?.standardOptions?.decimals,
                   dateFormat: options?.standardOptions?.dateFormat,
                 },

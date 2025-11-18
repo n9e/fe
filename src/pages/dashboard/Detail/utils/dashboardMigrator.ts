@@ -41,8 +41,29 @@ export default function dashboardMigrator(data: any) {
           panelCopy.queryOptionsTime = target.time;
           target.time = undefined;
         }
-        panelCopy.version = '3.2.0';
       }
+      panelCopy.version = '3.2.0';
+    }
+    if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.3.0')) {
+      if (panelCopy.options.standardOptions?.util) {
+        panelCopy.options.standardOptions.unit = panelCopy.options.standardOptions?.util;
+        delete panelCopy.options.standardOptions.util;
+      }
+      if (panelCopy.custom.stack === 'noraml') {
+        panelCopy.custom.stack = 'normal';
+      }
+      panelCopy.overrides = _.map(panelCopy.overrides, (item) => {
+        let itemCopy = _.cloneDeep(item);
+        if (itemCopy?.properties?.rightYAxisDisplay === 'noraml') {
+          _.set(itemCopy, ['properties', 'rightYAxisDisplay'], 'normal');
+        }
+        if (itemCopy?.properties?.standardOptions?.util) {
+          _.set(itemCopy, ['properties', 'standardOptions', 'unit'], itemCopy.properties.standardOptions.util);
+          _.set(itemCopy, ['properties', 'standardOptions', 'util'], undefined);
+        }
+        return itemCopy;
+      });
+      panelCopy.version = '3.3.0';
     }
     return panelCopy;
   });

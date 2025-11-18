@@ -494,13 +494,13 @@ const ja_JP = {
         gradientMode_opacity: 'オン',
         gradientMode_none: 'オフ',
         stack: 'スタック',
-        stack_noraml: 'オン',
+        stack_normal: 'オン',
         stack_off: 'オフ',
         yAxis: {
           title: 'Y軸の設定',
           rightYAxis: {
             label: '右側Y軸を表示',
-            noraml: 'オン',
+            normal: 'オン',
             off: 'オフ',
           },
         },

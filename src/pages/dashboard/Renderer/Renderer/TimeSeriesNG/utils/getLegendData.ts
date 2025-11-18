@@ -38,7 +38,7 @@ export interface DataItem {
 }
 
 function getUnit(standardOptions: any) {
-  return standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
+  return standardOptions?.unit;
 }
 
 export default function getLegendData(props: Props): DataItem[] {
@@ -49,7 +49,7 @@ export default function getLegendData(props: Props): DataItem[] {
     const seriesItem = baseSeries[idx];
     const override = _.find(overrides, (item) => item.matcher?.value === seriesItem.n9e_internal.refId);
     if (override) {
-      unit = override?.properties?.standardOptions?.util;
+      unit = override?.properties?.standardOptions?.unit;
       decimals = override?.properties?.standardOptions?.decimals;
       dateFormat = override?.properties?.standardOptions?.dateFormat;
     }
