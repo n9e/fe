@@ -34,7 +34,7 @@ const en_US = {
   effective_time_tip: 'Both 00:00-00:00 and 00:00-23:59 mean effective all day',
   enable_in_bg: 'Enable in buisness group',
   enable_in_bg_tip:
-    'Determined according to the ownership relationship of the ident tag in the alert event, that is: if the machine corresponding to the ident tag in the alert event does not belong to the business group, the alert event will be discarded',
+    'If the alert event contains the ident tag and the corresponding machine does not belong to this business group, the alert event will be discarded; if the alert event does not contain the ident tag, this filter condition will not take effect and will continue to follow-up processing.',
   notify_configs: 'Notification Configuration',
   notify_rule_ids: 'Notification rule',
   switch_to_old: 'Switch to old version',
