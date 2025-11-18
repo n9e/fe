@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import semver from 'semver';
 
 export default function dashboardMigrator(data: any) {
   const panels = _.map(data.panels, (panel: any) => {
@@ -26,6 +27,21 @@ export default function dashboardMigrator(data: any) {
           });
           _.set(custom, ['baseColor'], undefined);
         }
+      }
+    }
+    if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.2.0')) {
+      // 取 targets[0].maxDataPoints 和 targets[0].time 改动 panel.maxDataPoints 和 panel.queryOptionsTime
+      if (panelCopy.targets && panelCopy.targets.length > 0) {
+        const target = panelCopy.targets[0];
+        if (_.isNumber(target.maxDataPoints)) {
+          panelCopy.maxDataPoints = target.maxDataPoints;
+          target.maxDataPoints = undefined;
+        }
+        if (target.time) {
+          panelCopy.queryOptionsTime = target.time;
+          target.time = undefined;
+        }
+        panelCopy.version = '3.2.0';
       }
     }
     return panelCopy;

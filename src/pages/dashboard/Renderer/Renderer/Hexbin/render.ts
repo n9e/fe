@@ -195,7 +195,7 @@ function renderHoneyComb(
       })
       .text(function (_d, i) {
         let name = getName(data[i], valueField);
-        if (name && isShowEllipses) {
+        if (typeof name === 'string' && isShowEllipses) {
           name = name.substring(0, numOfChars) + '...';
           return name;
         }

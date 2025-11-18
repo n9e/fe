@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Space, Button, Row, Col } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { Resizable } from 're-resizable';
+import { useRequest } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -11,15 +11,13 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import QueryInput from '@/pages/explorer/components/LogsViewer/components/QueryInput';
 
-import { QUERY_CACHE_KEY, NAME_SPACE, QUERY_SIDEBAR_CACHE_KEY, DATE_TYPE_LIST, QUERY_CACHE_PICK_KEYS } from '../../constants';
+import { QUERY_CACHE_KEY, NAME_SPACE, DATE_TYPE_LIST, QUERY_CACHE_PICK_KEYS } from '../../constants';
 import { getDorisIndex, Field } from '../../services';
-import QueryInput from '../components/QueryInput';
 import DatabaseSelect from './DatabaseSelect';
 import TableSelect from './TableSelect';
 import DateFieldSelect from './DateFieldSelect';
-import FieldsList from './FieldsList';
-import Histogram from './Histogram';
 import Content from './Content';
 
 interface Props {
@@ -34,16 +32,12 @@ export default function index(props: Props) {
   const form = Form.useFormInstance();
   const { disabled, datasourceValue, executeQuery } = props;
   const queryValues = Form.useWatch(['query']);
-  const [width, setWidth] = useState(_.toNumber(localStorage.getItem(QUERY_SIDEBAR_CACHE_KEY) || 200));
-  const [fields, setFields] = useState<Field[]>([]);
-  const [total, setTotal] = useState(0);
 
-  useEffect(() => {
+  const indexDataService = () => {
+    const queryValues = form.getFieldValue('query');
     if (datasourceValue && queryValues?.database && queryValues?.table) {
-      getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database: queryValues.database, table: queryValues.table })
+      return getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database: queryValues.database, table: queryValues.table })
         .then((res) => {
-          setFields(res);
-          // 如果 time_field 值不存在或者不在字段列表中，则用第一个时间字段作为默认值
           const timeField = form.getFieldValue('query')?.time_field;
           const fieldExists = _.some(res, (item) => item.field === timeField);
           if (!timeField || !fieldExists) {
@@ -59,12 +53,18 @@ export default function index(props: Props) {
               executeQuery();
             }
           }
+          return res;
         })
         .catch(() => {
-          setFields([]);
+          return [];
         });
     }
-  }, [datasourceValue, queryValues?.database, queryValues?.table]);
+    return Promise.resolve(undefined);
+  };
+
+  const { data: indexData, loading: indexDataLoading } = useRequest<Field[] | undefined, any>(indexDataService, {
+    refreshDeps: [datasourceValue, queryValues?.database, queryValues?.table],
+  });
 
   return (
     <div className='h-full min-h-0 flex flex-col'>
@@ -113,7 +113,7 @@ export default function index(props: Props) {
           <InputGroupWithFormItem label={t('query.time_field')}>
             <Form.Item name={['query', 'time_field']} rules={[{ required: true, message: t('query.time_field_msg') }]}>
               <DateFieldSelect
-                dateFields={_.filter(fields, (item) => {
+                dateFields={_.filter(indexData, (item) => {
                   return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
                 })}
                 onChange={executeQuery}
@@ -186,49 +186,7 @@ export default function index(props: Props) {
           }}
         />
       </div>
-      {!_.isEmpty(fields) && queryValues?.time_field && (
-        <div className='h-full min-h-0 flex gap-[10px]'>
-          <div className='flex-shrink-0'>
-            <Resizable
-              size={{ width, height: '100%' }}
-              enable={{
-                right: true,
-              }}
-              onResizeStop={(e, direction, ref, d) => {
-                let curWidth = width + d.width;
-                if (curWidth < 200) {
-                  curWidth = 200;
-                }
-                setWidth(curWidth);
-                localStorage.setItem(QUERY_SIDEBAR_CACHE_KEY, curWidth.toString());
-              }}
-            >
-              <FieldsList
-                fields={fields}
-                onValueFilter={(params) => {
-                  let queryStr = _.trim(_.split(queryValues.query, '|')?.[0]);
-                  if (queryStr === '*') {
-                    queryStr = '';
-                  }
-                  queryStr += `${queryStr === '' ? '' : ` ${params.operator}`} ${params.key}:"${params.value}"`;
-                  form.setFieldsValue({
-                    query: {
-                      query: queryStr,
-                    },
-                  });
-                  executeQuery();
-                }}
-              />
-            </Resizable>
-          </div>
-          <div className='w-full min-w-0 border border-antd rounded-sm flex flex-col'>
-            <div className='h-full min-h-0 p-2 flex-shrink-0 flex flex-col'>
-              <Histogram total={total} />
-              <Content fields={fields} executeQuery={executeQuery} setTotal={setTotal} />
-            </div>
-          </div>
-        </div>
-      )}
+      {indexData && <Content indexData={indexData} indexDataLoading={indexDataLoading} executeQuery={executeQuery} />}
     </div>
   );
 }

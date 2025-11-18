@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Button } from 'antd';
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
@@ -93,6 +93,7 @@ export default function FieldsItem(props: Props) {
               {_.isEmpty(topNData) && t('stats.topn_no_data')}
               {_.map(topNData, (item) => {
                 const fieldValue = item?.value;
+                const emptyValueNotSupported = fieldValue === '' || fieldValue === null;
                 const percent = _.floor(item.percent, 2);
                 return (
                   <div key={fieldValue} className='flex gap-[10px] mb-2'>
@@ -112,28 +113,40 @@ export default function FieldsItem(props: Props) {
                         <div className='text-primary'>{percent}%</div>
                       </div>
                     </div>
-                    <div style={{ width: 32 }}>
-                      <Space>
-                        <PlusCircleOutlined
-                          onClick={() => {
-                            onValueFilter?.({
-                              key: field.field,
-                              value: fieldValue,
-                              operator: 'and',
-                            });
-                            setTopNVisible(false);
-                          }}
-                        />
-                        <MinusCircleOutlined
-                          onClick={() => {
-                            onValueFilter?.({
-                              key: field.field,
-                              value: fieldValue,
-                              operator: 'not',
-                            });
-                            setTopNVisible(false);
-                          }}
-                        />
+                    <div style={{ width: 64 }}>
+                      <Space size={0}>
+                        <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
+                          <Button
+                            className='p-0'
+                            type='text'
+                            icon={<PlusCircleOutlined />}
+                            disabled={emptyValueNotSupported}
+                            onClick={() => {
+                              onValueFilter?.({
+                                key: field.field,
+                                value: fieldValue,
+                                operator: 'and',
+                              });
+                              setTopNVisible(false);
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
+                          <Button
+                            className='p-0'
+                            type='text'
+                            icon={<MinusCircleOutlined />}
+                            disabled={emptyValueNotSupported}
+                            onClick={() => {
+                              onValueFilter?.({
+                                key: field.field,
+                                value: fieldValue,
+                                operator: 'not',
+                              });
+                              setTopNVisible(false);
+                            }}
+                          />
+                        </Tooltip>
                       </Space>
                     </div>
                   </div>

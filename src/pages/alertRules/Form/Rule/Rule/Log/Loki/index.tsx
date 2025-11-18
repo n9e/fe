@@ -39,7 +39,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                 onClick={() =>
                   add({
                     prom_ql: '',
-                    severity: 3,
+                    severity: 2,
                   })
                 }
               />

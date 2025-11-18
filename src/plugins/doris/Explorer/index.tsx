@@ -78,7 +78,7 @@ const HeaderExtra = ({ disabled, datasourceValue }) => {
   );
 };
 
-export default function Prometheus(props: IProps) {
+export default function Doris(props: IProps) {
   const [, setExplorerParsedRange] = useGlobalState('explorerParsedRange');
   const [, setExplorerSnapRange] = useGlobalState('explorerSnapRange');
   const params = new URLSearchParams(useLocation().search);

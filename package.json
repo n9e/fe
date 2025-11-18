@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "v8.4.0",
+  "version": "v8.4.1",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
@@ -36,7 +36,7 @@
     "@dnd-kit/sortable": "7.0.2",
     "@fc-components/codemirror-promql": "^0.19.13",
     "@fc-components/es-query": "^0.0.3",
-    "@fc-components/monaco-editor": "^0.1.16",
+    "@fc-components/monaco-editor": "^0.1.17",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
     "@fc-plot/ts-graph": "^0.27.2",
     "@radix-ui/react-scroll-area": "^1.0.5",

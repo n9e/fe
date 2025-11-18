@@ -170,6 +170,7 @@ const ja_JP = {
   disabled: '無効',
   disabling: '無効化中',
   select_event: 'アラートイベントを選択',
+  click_to_view_doc: 'クリックしてドキュメントを表示します',
 
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',

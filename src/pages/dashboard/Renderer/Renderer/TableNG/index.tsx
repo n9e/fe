@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import getFontFamily from '@/utils/getFontFamily';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
@@ -35,7 +34,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface Props {
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
   values: IPanel;
   series: any[];
@@ -65,7 +63,6 @@ function index(props: Props) {
   const { siteInfo } = useContext(CommonStateContext);
   const {
     themeMode,
-    time,
     isPreview,
     values,
     series,
@@ -86,7 +83,6 @@ function index(props: Props) {
   const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder } = custom || {};
   const linksRef = React.useRef<any>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [, setSeries] = useGlobalState('series');
   const [, setTableFields] = useGlobalState('tableFields');
   const { data, rowData, columns, formattedData } = useMemo(() => {
@@ -231,7 +227,7 @@ function index(props: Props) {
           if (onCellClick) {
             onCellClick(cellEvent);
           } else {
-            cellClickCallback(cellEvent, { links: options.links, linksRef, dashboardMeta, time });
+            cellClickCallback(cellEvent, { links: options.links, linksRef });
           }
         }}
       />
@@ -251,7 +247,7 @@ function index(props: Props) {
           }}
         />
       )}
-      <Links ref={linksRef} links={options.links} time={time} />
+      <Links ref={linksRef} links={options.links} />
     </div>
   );
 }

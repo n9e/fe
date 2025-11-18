@@ -6,28 +6,29 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
 import { IPanel } from '../../../../types';
 
-import getStartAndEndByTargets from './getStartAndEndByTargets';
-
 interface Props {
   range?: IRawTimeRange;
-  panel: IPanel;
+  queryOptionsTime?: IRawTimeRange;
 }
 
 export function getScalesXMinMax(props: Props) {
-  const { range, panel } = props;
-  const { targets } = panel;
+  const { range, queryOptionsTime } = props;
   let xMinMax: Range.MinMax | undefined = undefined;
   if (range) {
     const parsedRange = parseRange(range);
-    const startAndEnd = getStartAndEndByTargets(targets);
-    const start = startAndEnd.start || moment(parsedRange.start).unix();
-    const end = startAndEnd.end || moment(parsedRange.end).unix();
+    let start = moment(parsedRange.start).unix();
+    let end = moment(parsedRange.end).unix();
+    if (queryOptionsTime) {
+      const startAndEnd = parseRange(queryOptionsTime);
+      start = moment(startAndEnd.start).unix();
+      end = moment(startAndEnd.end).unix();
+    }
     xMinMax = [start, end];
   }
   return xMinMax;
 }
 
-export function getScalesYRange(props: Props) {
+export function getScalesYRange(props: { panel: IPanel }) {
   const { panel } = props;
   const { options = {} } = panel;
   let yRange: Range.MinMax | undefined = undefined;

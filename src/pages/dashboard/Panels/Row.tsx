@@ -20,9 +20,11 @@ import { CaretRightOutlined, CaretDownOutlined, HolderOutlined, SettingOutlined,
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
+
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
-import { IVariable, replaceExpressionVars } from '../VariableConfig';
 
 interface IProps {
   isAuthorized: boolean;
@@ -34,25 +36,13 @@ interface IProps {
   onDeleteClick: (mode: 'self' | 'withPanels') => void;
 }
 
-function replaceFieldWithVariable(value: string, dashboardId?: string, variableConfig?: IVariable[]) {
-  if (!dashboardId || !variableConfig) {
-    return value;
-  }
-  return replaceExpressionVars({
-    text: value,
-    variables: variableConfig,
-    limit: variableConfig.length,
-    dashboardId,
-  });
-}
-
 export default function Row(props: IProps) {
   const { t } = useTranslation('dashboard');
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const { isAuthorized, name, row, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);
   const [newName, setNewName] = useState<string>();
   const [deleteVisible, setDeleteVisible] = useState(false);
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const rowPanels = row.panels?.length ?? 0;
 
   return (
@@ -69,7 +59,7 @@ export default function Row(props: IProps) {
       >
         {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
         <span className='pl-2'>
-          <span>{replaceFieldWithVariable(name, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions)}</span>
+          <span>{replaceTemplateVariables(name)}</span>
           {!row.collapsed && (
             <span className='ml-4 dashboards-panels-row-name-panels-count'>
               (
@@ -137,7 +127,7 @@ export default function Row(props: IProps) {
               setEditVisble(false);
             }}
           >
-            {_.map(dashboardMeta.variableConfigWithOptions, (item) => {
+            {_.map(variablesWithOptions, (item) => {
               return (
                 <Mentions.Option key={item.name} value={item.name}>
                   {item.name}
