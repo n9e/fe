@@ -52,11 +52,11 @@ export function formatString(str: string, data: Record<string, any>): string {
 export function formatDatasource(str: string, data: Record<string, any>): number | undefined {
   const result = formatString(str, data);
   if (!result) {
-    console.error('数据源插值处理器解析失败');
+    console.warn('数据源插值处理器解析失败');
     return;
   }
   if (isNaN(Number(result))) {
-    console.error(`数据源插值处理器解析失败，结果 ${result} 不是数据源 ID`);
+    console.warn(`数据源插值处理器解析失败，结果 ${result} 不是数据源 ID`);
   }
   return Number(result);
 }
