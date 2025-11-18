@@ -93,6 +93,7 @@ const ja_JP = {
     show_fields: 'フィールドを表示',
     available_fields: '利用可能なフィールド',
   },
+  empty_value_not_supported_tip: '空の値はサポートされていません',
 };
 
 export default ja_JP;

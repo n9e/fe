@@ -93,5 +93,6 @@ const zh_CN = {
     show_fields: '显示字段',
     available_fields: '可用字段',
   },
+  empty_value_not_supported_tip: '暂不支持对空值做检索',
 };
 export default zh_CN;

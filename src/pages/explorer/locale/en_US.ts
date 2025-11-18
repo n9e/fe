@@ -93,5 +93,6 @@ const en_US = {
     show_fields: 'Show fields',
     available_fields: 'Available fields',
   },
+  empty_value_not_supported_tip: 'Empty value search is not supported',
 };
 export default en_US;

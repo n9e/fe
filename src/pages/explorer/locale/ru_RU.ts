@@ -93,6 +93,7 @@ const ru_RU = {
     show_fields: 'Показать поля',
     available_fields: 'Доступные поля',
   },
+  empty_value_not_supported_tip: 'Пустые значения в настоящее время не поддерживаются в фильтрах поиска',
 };
 
 export default ru_RU;
