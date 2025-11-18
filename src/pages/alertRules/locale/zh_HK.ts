@@ -31,6 +31,7 @@ const zh_HK = {
   effective_time_end: '結束時間',
   effective_time_end_msg: '結束時間不能為空',
   effective_time_week_msg: '請選擇生效週期',
+  effective_time_tip: '00:00-00:00 和 00:00-23:59 都表示全天生效',
   enable_in_bg: '僅在本業務組生效',
   enable_in_bg_tip: '根據告警事件中的 ident 歸屬關係判斷，即：如果告警事件中有 ident 標籤且 ident 對應的機器不屬於該業務組，則丟棄此告警事件',
   notify_configs: '通知配置',

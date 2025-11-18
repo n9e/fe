@@ -170,6 +170,7 @@ export default function index(props: IProps) {
           <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
             <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
               <PromQLInputNG
+                maxHeight={200}
                 enableAutocomplete={completeEnabled}
                 datasourceValue={datasourceValue}
                 showBuiltinMetrics={showBuiltinMetrics}

@@ -289,8 +289,22 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                               <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
                             </Space>
                           </div>
-                          <div style={{ width: 110 }}>{t('mute_type.start')}</div>
-                          <div style={{ width: 110 }}>{t('mute_type.end')}</div>
+                          <div style={{ width: 110 }}>
+                            <Space>
+                              {t('mute_type.start')}
+                              <Tooltip title={t('alertRules:effective_time_tip')}>
+                                <InfoCircleOutlined />
+                              </Tooltip>
+                            </Space>
+                          </div>
+                          <div style={{ width: 110 }}>
+                            <Space>
+                              {t('mute_type.end')}
+                              <Tooltip title={t('alertRules:effective_time_tip')}>
+                                <InfoCircleOutlined />
+                              </Tooltip>
+                            </Space>
+                          </div>
                         </Space>
                         {fields.map(({ key, name, ...restField }) => (
                           <Space

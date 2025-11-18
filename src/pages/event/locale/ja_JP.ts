@@ -93,6 +93,7 @@ const ja_JP = {
     task_tpls: {
       label: '自動回復テンプレート',
     },
+    step_tip: 'グラフの時間間隔、単位は秒',
   },
 
   sharing_link: {

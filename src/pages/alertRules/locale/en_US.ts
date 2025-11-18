@@ -31,6 +31,7 @@ const en_US = {
   effective_time_end: 'End time',
   effective_time_end_msg: 'End time is required',
   effective_time_week_msg: 'Please select effective week',
+  effective_time_tip: 'Both 00:00-00:00 and 00:00-23:59 mean effective all day',
   enable_in_bg: 'Enable in buisness group',
   enable_in_bg_tip:
     'Determined according to the ownership relationship of the ident tag in the alert event, that is: if the machine corresponding to the ident tag in the alert event does not belong to the business group, the alert event will be discarded',
