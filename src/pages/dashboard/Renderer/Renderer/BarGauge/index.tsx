@@ -50,7 +50,7 @@ export default function BarGauge(props: IProps) {
     series,
     calc,
     {
-      unit: options?.standardOptions?.util,
+      unit: options?.standardOptions?.unit,
       decimals: options?.standardOptions?.decimals,
       dateFormat: options?.standardOptions?.dateFormat,
     },
@@ -65,7 +65,7 @@ export default function BarGauge(props: IProps) {
         const result = getSerieTextObj(
           value,
           {
-            unit: options?.standardOptions?.util,
+            unit: options?.standardOptions?.unit,
             decimals: options?.standardOptions?.decimals,
             dateFormat: options?.standardOptions?.dateFormat,
           },
@@ -96,7 +96,7 @@ export default function BarGauge(props: IProps) {
       const textObj = getSerieTextObj(
         sumValue,
         {
-          unit: options?.standardOptions?.util,
+          unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
           dateFormat: options?.standardOptions?.dateFormat,
         },

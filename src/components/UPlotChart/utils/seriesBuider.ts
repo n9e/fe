@@ -68,7 +68,7 @@ export default function seriesBuider(props: Props) {
       });
       let scaleKey = 'y';
       // refIds.length > 1 TODO: 暂时不支持单独设置右侧Y轴
-      if (refIds.length > 1 && rightYAxisDisplay === 'noraml' && matchRefId === refId) {
+      if (refIds.length > 1 && rightYAxisDisplay === 'normal' && matchRefId === refId) {
         scaleKey = 'y2';
       }
       if (curOverride) {

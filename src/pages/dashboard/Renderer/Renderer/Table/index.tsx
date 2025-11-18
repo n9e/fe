@@ -116,7 +116,7 @@ function TableCpt(props: IProps, ref: any) {
       series,
       calc,
       {
-        unit: options?.standardOptions?.util,
+        unit: options?.standardOptions?.unit,
         decimals: options?.standardOptions?.decimals,
         dateFormat: options?.standardOptions?.dateFormat,
       },

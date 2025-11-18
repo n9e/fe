@@ -25,7 +25,7 @@ export default function StatItem(props) {
       const result = getSerieTextObj(
         value,
         {
-          unit: options?.standardOptions?.util,
+          unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
           dateFormat: options?.standardOptions?.dateFormat,
         },

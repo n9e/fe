@@ -468,13 +468,13 @@ const ru_RU = {
         gradientMode_opacity: 'Включить',
         gradientMode_none: 'Выключить',
         stack: 'Наложение',
-        stack_noraml: 'Включить',
+        stack_normal: 'Включить',
         stack_off: 'Выключить',
         yAxis: {
           title: 'Настройка Y-оси',
           rightYAxis: {
             label: 'Правая Y-ось',
-            noraml: 'Включить',
+            normal: 'Включить',
             off: 'Выключить',
           },
         },
