@@ -45,11 +45,11 @@ export default function dashboardMigrator(data: any) {
       panelCopy.version = '3.2.0';
     }
     if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.3.0')) {
-      if (panelCopy.options.standardOptions?.util) {
+      if (panelCopy?.options?.standardOptions?.util) {
         panelCopy.options.standardOptions.unit = panelCopy.options.standardOptions?.util;
         delete panelCopy.options.standardOptions.util;
       }
-      if (panelCopy.custom.stack === 'noraml') {
+      if (panelCopy?.custom?.stack === 'noraml') {
         panelCopy.custom.stack = 'normal';
       }
       panelCopy.overrides = _.map(panelCopy.overrides, (item) => {
