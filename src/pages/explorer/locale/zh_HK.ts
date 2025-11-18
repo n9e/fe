@@ -93,6 +93,7 @@ const zh_HK = {
     show_fields: '顯示欄位',
     available_fields: '可用欄位',
   },
+  empty_value_not_supported_tip: '不支持空值查詢',
   logs: {
     title: '日誌詳情',
     count: '結果數',
