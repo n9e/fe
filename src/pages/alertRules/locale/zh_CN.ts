@@ -33,7 +33,7 @@ const zh_CN = {
   effective_time_week_msg: '请选择生效周期',
   effective_time_tip: '00:00-00:00 和 00:00-23:59 都表示全天生效',
   enable_in_bg: '仅在本业务组生效',
-  enable_in_bg_tip: '根据告警事件中的 ident 归属关系判断，即：如果告警事件中有 ident 标签且 ident 对应的机器不属于该业务组，则丢弃此告警事件',
+  enable_in_bg_tip: '若告警事件中包含 ident 标签，且对应的机器不属于本业务组，则丢弃该告警事件；若告警事件中不包含 ident 标签，则此过滤条件不生效，会继续后续处理。',
   notify_configs: '通知配置',
   notify_rule_ids: '通知规则',
   switch_to_old: '切换旧版',
