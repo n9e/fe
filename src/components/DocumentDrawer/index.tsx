@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Drawer, Space, Spin } from 'antd';
-import { ExportOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
+import { useTranslation } from 'react-i18next';
+
+import { IS_ENT } from '@/utils/constant';
+
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import Document from './Document';
 import './style.less';
@@ -26,11 +29,16 @@ const filenameMap = {
 };
 
 function index(props: Props & ModalWrapProps) {
+  const { t } = useTranslation();
   const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md', zIndex } = props;
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
   // 去除 documentPath 结尾的 /
-  const realDocumentPath = documentPath.replace(/\/$/, '');
+  let realDocumentPath = documentPath.replace(/\/$/, '');
+
+  if (type === 'iframe' && IS_ENT) {
+    realDocumentPath = realDocumentPath.replace('https://flashcat.cloud', '');
+  }
 
   useEffect(() => {
     if (documentPath && type === 'md') {
@@ -59,15 +67,13 @@ function index(props: Props & ModalWrapProps) {
   return (
     <Drawer
       width={width}
-      title={
-        <Space>
-          {title}
-          {type === 'iframe' && (
-            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/`}>
-              <ExportOutlined />
-            </a>
-          )}
-        </Space>
+      title={<Space>{title}</Space>}
+      extra={
+        type === 'iframe' && (
+          <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/`}>
+            {t('common:more_document_link')}
+          </a>
+        )
       }
       zIndex={zIndex}
       placement='right'
