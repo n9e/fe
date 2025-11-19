@@ -18,6 +18,7 @@ const zh_HK = {
   unit: '單位',
   page_help: '使用說明',
   document_title: '使用文檔',
+  more_document_link: '更多文檔',
   and: '且',
   yes: '是',
   no: '否',
