@@ -52,7 +52,7 @@ export default function Pie(props: IProps) {
   const dataFormatter = (text: number) => {
     const resFormatter = valueFormatter(
       {
-        unit: options?.standardOptions?.util,
+        unit: options?.standardOptions?.unit,
         decimals: options?.standardOptions?.decimals,
         dateFormat: options?.standardOptions?.dateFormat,
       },
@@ -71,7 +71,7 @@ export default function Pie(props: IProps) {
     series,
     calc,
     {
-      unit: options?.standardOptions?.util,
+      unit: options?.standardOptions?.unit,
       decimals: options?.standardOptions?.decimals,
       dateFormat: options?.standardOptions?.dateFormat,
     },

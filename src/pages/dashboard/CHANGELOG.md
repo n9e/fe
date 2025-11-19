@@ -18,3 +18,7 @@
 - refactor: 新增 Variables 组件，废弃 VariableConfig 组件
 - feat: 新增变量预览功能
 - perf: 优化变量数据查询和渲染
+
+## 3.3.0
+
+- fix: 修正一些错别字（noraml -> normal, unit -> unit）

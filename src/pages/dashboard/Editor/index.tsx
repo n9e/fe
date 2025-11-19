@@ -25,6 +25,7 @@ import { SIZE } from '@/utils/constant';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 
+import { DASHBOARD_VERSION } from '../config';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
 import FormCpt from './Form';
 import { IPanel } from '../types';
@@ -63,7 +64,7 @@ function index(props: IProps) {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
         let formData = Object.assign(values, {
-          version: '3.1.0',
+          version: DASHBOARD_VERSION,
         });
         if (values && values.id) {
           formData.id = values.id;

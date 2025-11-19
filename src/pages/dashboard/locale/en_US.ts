@@ -490,13 +490,13 @@ const en_US = {
         gradientMode_opacity: 'Opacity',
         gradientMode_none: 'None',
         stack: 'Stack',
-        stack_noraml: 'Normal',
+        stack_normal: 'Normal',
         stack_off: 'Off',
         yAxis: {
           title: 'Y-Axis settings',
           rightYAxis: {
             label: 'Right Y-Axis',
-            noraml: 'On',
+            normal: 'On',
             off: 'Off',
           },
         },
