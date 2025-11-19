@@ -26,8 +26,8 @@ export default function Query(props: Props) {
   const [searchValue, setSearchValue] = useState('');
   const formatedDefinition = formatString(item.definition, data);
   const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
-  const datasourceCate = item.datasource.cate;
-  const datasourceValue = formatDatasource(item.datasource.value as any, data);
+  const datasourceCate = item.datasource?.cate;
+  const datasourceValue = formatDatasource(item.datasource?.value as any, data);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   useEffect(() => {

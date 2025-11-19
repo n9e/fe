@@ -244,7 +244,7 @@ export default function index(props: IProps) {
           gradientOpacityStopColor: themeMode === 'dark' ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
         },
         stack: {
-          enabled: custom.stack === 'noraml',
+          enabled: custom.stack === 'normal',
         },
         curve: {
           enabled: true,
@@ -273,7 +273,7 @@ export default function index(props: IProps) {
             if (override) {
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.util,
+                  unit: override?.properties?.standardOptions?.unit,
                   decimals: override?.properties?.standardOptions?.decimals,
                   dateFormat: override?.properties?.standardOptions?.dateFormat,
                 },
@@ -282,7 +282,7 @@ export default function index(props: IProps) {
             }
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -318,7 +318,7 @@ export default function index(props: IProps) {
           tickValueFormatter: (val) => {
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -328,7 +328,7 @@ export default function index(props: IProps) {
         },
         yAxis2: {
           ...chartRef.current.options.yAxis,
-          visible: overrides?.[0]?.properties?.rightYAxisDisplay === 'noraml',
+          visible: overrides?.[0]?.properties?.rightYAxisDisplay === 'normal',
           matchRefId: overrides?.[0]?.matcher?.value,
           min: overrides?.[0]?.properties?.standardOptions?.min,
           max: overrides?.[0]?.properties?.standardOptions?.max,
@@ -336,7 +336,7 @@ export default function index(props: IProps) {
           tickValueFormatter: (val) => {
             return valueFormatter(
               {
-                unit: overrides?.[0]?.properties?.standardOptions?.util,
+                unit: overrides?.[0]?.properties?.standardOptions?.unit,
                 decimals: overrides?.[0]?.properties?.standardOptions?.decimals,
                 dateFormat: overrides?.[0]?.properties?.standardOptions?.dateFormat,
               },
@@ -372,7 +372,7 @@ export default function index(props: IProps) {
       });
     }
     if (hasLegend) {
-      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, custom.stack === 'noraml', options?.valueMappings, overrides));
+      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, custom.stack === 'normal', options?.valueMappings, overrides));
     } else {
       setLegendData([]);
     }

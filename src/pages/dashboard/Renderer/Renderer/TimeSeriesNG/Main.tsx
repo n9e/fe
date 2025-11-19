@@ -136,7 +136,7 @@ export default function index(props: Props) {
             if (override) {
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.util,
+                  unit: override?.properties?.standardOptions?.unit,
                   decimals: override?.properties?.standardOptions?.decimals,
                   dateFormat: override?.properties?.standardOptions?.dateFormat,
                 },
@@ -145,7 +145,7 @@ export default function index(props: Props) {
             }
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -207,7 +207,7 @@ export default function index(props: Props) {
           formatValue: (v) => {
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -300,7 +300,7 @@ export default function index(props: Props) {
   ]);
   let data = frames;
 
-  if (custom.stack === 'noraml') {
+  if (custom.stack === 'normal') {
     const stackedDataAndBands = getStackedDataAndBands(frames);
     const stackedData = stackedDataAndBands.data;
     uOptions.bands = stackedDataAndBands.bands;

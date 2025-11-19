@@ -95,6 +95,7 @@ const en_US = {
     task_tpls: {
       label: 'Self-healing template',
     },
+    step_tip: 'Time interval of the curve, in seconds',
   },
 
   sharing_link: {

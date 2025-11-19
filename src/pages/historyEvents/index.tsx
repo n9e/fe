@@ -47,11 +47,25 @@ export default function List() {
   const history = useHistory();
   const filter = getFilter(query);
   const setFilter = (newFilter) => {
+    const range = newFilter.range;
+    let currentRange: IRawTimeRange = {} as IRawTimeRange;
+    if (range?.start && range?.end) {
+      if (isMathString(range.start) && isMathString(range.end)) {
+        currentRange = range;
+      }
+      if (moment.isMoment(range.start) && moment.isMoment(range.end)) {
+        currentRange = {
+          start: range.start.unix(),
+          end: range.end.unix(),
+        };
+      }
+    }
     history.replace({
       pathname: location.pathname,
       search: queryString.stringify({
         ...query,
-        ..._.omit(newFilter, 'range'), // range 仍然通过 loclalStorage 存储
+        ..._.omit(newFilter, 'range'),
+        ...currentRange,
       }),
     });
   };

@@ -37,7 +37,7 @@ export default function StatItem(props: Props) {
       const result = getSerieTextObj(
         value,
         {
-          unit: options?.standardOptions?.util,
+          unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
           dateFormat: options?.standardOptions?.dateFormat,
         },
