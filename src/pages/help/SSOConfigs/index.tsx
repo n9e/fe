@@ -1,26 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Button, Card, message, Space } from 'antd';
+import { Tabs, Card } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { EditorView } from '@codemirror/view';
+
 import PageLayout from '@/components/pageLayout';
-import CodeMirror from '@/components/CodeMirror';
-import DocumentDrawer from '@/components/DocumentDrawer';
-import { getSSOConfigs, putSSOConfig } from './services';
+
+import { getSSOConfigs } from './services';
 import { SSOConfigType } from './types';
+import Item from './Item';
 import './locale';
+
 //@ts-ignore
 import Global from 'plus:/parcels/SSOConfigs/Global';
 
-const documentMap = {
-  OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/oauth2',
-  LDAP: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/ldap',
-  CAS: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/cas',
-  OIDC: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/oidc',
-};
-
 export default function index() {
-  const { t, i18n } = useTranslation('SSOConfigs');
+  const { t } = useTranslation('SSOConfigs');
   const [data, setData] = useState<SSOConfigType[]>([]);
   const [activeKey, setActiveKey] = useState<string>();
 
@@ -33,11 +27,7 @@ export default function index() {
 
   return (
     <PageLayout title={t('title')}>
-      <main
-        style={{
-          padding: 16,
-        }}
-      >
+      <main className='p-4'>
         <Global SSOConfigs={data} />
         <Card
           bordered
@@ -54,64 +44,8 @@ export default function index() {
           >
             {data.map((item) => {
               return (
-                <Tabs.TabPane tab={item.name} key={item.name}>
-                  <div>
-                    <CodeMirror
-                      value={item.content}
-                      onChange={(value) => {
-                        const dataClone = _.cloneDeep(data);
-                        const curItem = _.find(dataClone, (i) => i.id === item.id);
-                        if (curItem) {
-                          curItem.content = value;
-                        }
-                        setData(dataClone);
-                      }}
-                      height='auto'
-                      basicSetup
-                      editable
-                      extensions={[
-                        EditorView.lineWrapping,
-                        EditorView.theme({
-                          '&': {
-                            backgroundColor: '#F6F6F6 !important',
-                          },
-                          '&.cm-editor.cm-focused': {
-                            outline: 'unset',
-                          },
-                        }),
-                      ]}
-                    />
-                    <Space className='mt-4'>
-                      <Button
-                        type='primary'
-                        onClick={() => {
-                          const curItem = _.find(data, (i) => i.id === item.id);
-                          if (curItem) {
-                            putSSOConfig(curItem).then(() => {
-                              message.success(t('common:success.save'));
-                            });
-                          }
-                        }}
-                      >
-                        {t('common:btn.save')}
-                      </Button>
-                      {activeKey && documentMap[activeKey] && (
-                        <Button
-                          type='link'
-                          onClick={() => {
-                            DocumentDrawer({
-                              language: i18n.language,
-                              title: t('common:document_link'),
-                              type: 'iframe',
-                              documentPath: documentMap[activeKey],
-                            });
-                          }}
-                        >
-                          {t('common:document_link')}
-                        </Button>
-                      )}
-                    </Space>
-                  </div>
+                <Tabs.TabPane tab={t(item.name)} key={item.name}>
+                  <Item activeKey={activeKey} item={item} />
                 </Tabs.TabPane>
               );
             })}
