@@ -61,6 +61,7 @@ const ru_RU = {
     urlConfig: 'Ссылка',
     dashboardConfig: 'Панель мониторинга',
     logExplore: 'Поиск логов',
+    no_drilldown_rules: 'Нет пути сверху, можно добавить в правило',
   },
 };
 

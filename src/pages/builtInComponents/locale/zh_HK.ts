@@ -61,6 +61,7 @@ const zh_HK = {
     urlConfig: '跳轉地址',
     dashboardConfig: '儀表板',
     logExplore: '日誌檢索',
+    no_drilldown_rules: '無下鑽路徑，可在規則中新增',
   },
 };
 

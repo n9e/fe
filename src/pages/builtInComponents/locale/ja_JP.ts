@@ -61,6 +61,7 @@ const ja_JP = {
     urlConfig: 'リンクアドレス',
     dashboardConfig: 'ダッシュボード',
     logExplore: 'ログ検索',
+    no_drilldown_rules: '上位パスがありません。ルールに追加できます',
   },
 };
 

@@ -61,6 +61,7 @@ const zh_CN = {
     urlConfig: '跳转地址',
     dashboardConfig: '仪表盘',
     logExplore: '日志检索',
+    no_drilldown_rules: '无下钻路径，可在规则中新增',
   },
 };
 export default zh_CN;
