@@ -62,6 +62,7 @@ const zh_HK = {
     dashboardConfig: '儀表板',
     logExplore: '日誌檢索',
     no_drilldown_rules: '無下鑽路徑，可在規則中新增',
+    no_drilldown_rules_other: '已內置若干下鑽路徑，無需單獨配置',
   },
 };
 
