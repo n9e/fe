@@ -61,6 +61,7 @@ const en_US = {
     urlConfig: 'Jump address',
     dashboardConfig: 'Dashboard',
     logExplore: 'Log search',
+    no_drilldown_rules: 'No drilldown path, can be added in the rule',
   },
 };
 export default en_US;
