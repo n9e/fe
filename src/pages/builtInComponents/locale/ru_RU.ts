@@ -62,6 +62,7 @@ const ru_RU = {
     dashboardConfig: 'Панель мониторинга',
     logExplore: 'Поиск логов',
     no_drilldown_rules: 'Нет пути сверху, можно добавить в правило',
+    no_drilldown_rules_other: 'Уже есть несколько путей сверху, не нужно отдельно конфигурировать',
   },
 };
 

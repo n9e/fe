@@ -62,6 +62,7 @@ const zh_CN = {
     dashboardConfig: '仪表盘',
     logExplore: '日志检索',
     no_drilldown_rules: '无下钻路径，可在规则中新增',
+    no_drilldown_rules_other: '已内置若干下钻路径，无需单独配置',
   },
 };
 export default zh_CN;

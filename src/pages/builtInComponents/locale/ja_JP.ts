@@ -62,6 +62,7 @@ const ja_JP = {
     dashboardConfig: 'ダッシュボード',
     logExplore: 'ログ検索',
     no_drilldown_rules: '上位パスがありません。ルールに追加できます',
+    no_drilldown_rules_other: 'すでにいくつかの上位パスがあります。別途設定する必要はありません',
   },
 };
 
