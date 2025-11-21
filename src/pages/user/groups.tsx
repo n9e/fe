@@ -355,16 +355,26 @@ const Resource: React.FC = () => {
                     // color: '#666',
                   }}
                 >
-                  <Space>
+                  <Space wrap>
                     <span>ID：{teamInfo?.id ? teamInfo.id : '-'}</span>
                     <span>
-                      {t('common:table.note')}：{teamInfo?.note ? teamInfo.note : '-'}
+                      {t('common:table.note')}: {teamInfo?.note ? teamInfo.note : '-'}
                     </span>
                     <span>
-                      {t('common:table.update_by')}：{teamInfo?.update_by ? teamInfo.update_by : '-'}
+                      {t('common:table.update_by')}: {teamInfo?.update_by ? teamInfo.update_by : '-'}
                     </span>
                     <span>
-                      {t('common:table.update_at')}：{teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
+                      {t('common:table.update_at')}: {teamInfo?.update_at ? moment.unix(teamInfo.update_at).format('YYYY-MM-DD HH:mm:ss') : '-'}
+                    </span>
+                    <span>
+                      {t('common:business_groups')}:{' '}
+                      {_.map(teamInfo?.busi_groups, (item) => {
+                        return (
+                          <Tag className='mb-1' key={item.id}>
+                            {item.name}
+                          </Tag>
+                        );
+                      })}
                     </span>
                   </Space>
                 </Col>
