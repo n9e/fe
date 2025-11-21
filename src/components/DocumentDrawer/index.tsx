@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Drawer, Space, Spin } from 'antd';
+import { ExportOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
 import { useTranslation } from 'react-i18next';
 
@@ -67,13 +68,18 @@ function index(props: Props & ModalWrapProps) {
   return (
     <Drawer
       width={width}
-      title={<Space>{title}</Space>}
-      extra={
-        type === 'iframe' && (
-          <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/`}>
-            {t('common:more_document_link')}
-          </a>
-        )
+      title={
+        <Space>
+          {title}
+          {type === 'iframe' && (
+            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/`} className='text-[12px]'>
+              <Space size={4}>
+                {t('common:more_document_link')}
+                <ExportOutlined />
+              </Space>
+            </a>
+          )}
+        </Space>
       }
       zIndex={zIndex}
       placement='right'
