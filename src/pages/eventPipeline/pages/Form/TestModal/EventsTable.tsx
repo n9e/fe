@@ -17,7 +17,7 @@ import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 interface Props {
   rowSelectionType?: 'checkbox' | 'radio';
   selectedEventIds?: number[];
-  onChange?: (ids: number[]) => void;
+  onChange?: (ids: number[], rows: any[]) => void;
 }
 
 export default function EventsTable(props: Props) {
@@ -244,7 +244,7 @@ export default function EventsTable(props: Props) {
           type: rowSelectionType,
           selectedRowKeys: selectedEventIds,
           onChange: (selectedRowKeys: number[], selectedRows: any[]) => {
-            onChange && onChange(selectedRowKeys);
+            onChange && onChange(selectedRowKeys, selectedRows);
           },
         }}
         rowClassName={(record: { severity: number; is_recovered: number }) => {

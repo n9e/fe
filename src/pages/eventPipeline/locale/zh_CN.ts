@@ -179,5 +179,20 @@ const zh_CN = {
     help: '按查询结果抑制事件：当告警触发时，会执行下方数据查询；若返回至少一条数据，则抑制本次告警（不再通知）；无数据则正常通知。更多说明见 <a>使用文档</a>',
     t_1: '且 查询到以下 <b>数据</b>',
   },
+  annotation_qd: {
+    help: '简洁说明 <a>使用文档</a>',
+    query_configs: '数据查询',
+    enable_alert_datasource: '使用告警事件数据源',
+    datasource_cate_required: '数据源类型不能为空',
+    datasource_ids_required: '数据源不能为空',
+    select_alert_event_btn: '选择告警事件',
+    select_alert_event_tip: '选项告警事件提示信息',
+    select_alert_event_label: '已选告警事件',
+    query_required: '查询条件不能为空',
+    sql_limit_valid: 'SQL 查询语句必须包含 LIMIT 子句',
+    annotation_configs: '数据追加',
+    annotation_key_placeholder: '附加字段名称',
+    annotation_value_placeholder: '附加字段内容，支持模板语法，将查询结果以变量方式填充',
+  },
 };
 export default zh_CN;
