@@ -701,7 +701,7 @@ export default function List(props: IProps) {
                           language: i18n.language,
                           darkMode,
                           title: t('categraf_doc'),
-                          documentPath: '/docs/categraf',
+                          documentPath: '/n9e-docs/categraf',
                         });
                       }}
                     />

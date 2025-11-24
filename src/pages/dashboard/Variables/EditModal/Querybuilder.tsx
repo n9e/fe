@@ -8,7 +8,6 @@ import { VariableQuerybuilder as ClickHouse } from '@/plugins/clickHouse';
 import { VariableQuerybuilder as Prometheus } from '@/plugins/prometheus';
 import { VariableQuerybuilder as Elasticsearch } from '@/plugins/elasticsearch';
 
-import { IVariable } from '../types';
 import { replaceDatasourceVariables } from '../utils/replaceTemplateVariables';
 
 // @ts-ignore

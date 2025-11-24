@@ -46,7 +46,7 @@ export default function JoinByField(props: IProps) {
                   language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                   darkMode,
                   title: t('transformations.timeSeriesTable.title'),
-                  documentPath: '/docs/transformations/timeSeriesTable',
+                  documentPath: '/n9e-docs/transformations/timeSeriesTable',
                 });
               }}
             />

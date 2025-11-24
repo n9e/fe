@@ -52,7 +52,7 @@ export default function GroupedAggregateTable(props: IProps) {
                   language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                   darkMode,
                   title: t('transformations.groupedAggregateTable.title'),
-                  documentPath: '/docs/transformations/groupedAggregateTable',
+                  documentPath: '/n9e-docs/transformations/groupedAggregateTable',
                 });
               }}
             />

@@ -180,7 +180,7 @@ export default function Query(props: Props) {
                           language: i18n.language,
                           darkMode,
                           title: t('common:document_link'),
-                          documentPath: '/docs/dashboards/variables/named-text-and-value-capture-groups',
+                          documentPath: '/n9e-docs/dashboards/variables/named-text-and-value-capture-groups',
                         });
                       }}
                     />
