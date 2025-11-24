@@ -108,7 +108,7 @@ export default function FormCpt(props: Props) {
                 </div>
               ),
               value: 'pagerduty',
-            }
+            },
           ]}
         />
       </Form.Item>
@@ -198,7 +198,7 @@ export default function FormCpt(props: Props) {
               overflow: 'auto',
             }}
           >
-            {requestType && <Document documentPath={`/docs/notification-channel/${requestType}-request`} />}
+            {requestType && <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />}
           </Card>
         </Col>
       </Row>
