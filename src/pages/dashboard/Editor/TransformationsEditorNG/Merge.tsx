@@ -37,7 +37,7 @@ export default function Merge(props: IProps) {
                   language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                   darkMode,
                   title: t('transformations.merge.title'),
-                  documentPath: '/docs/transformations/merge',
+                  documentPath: '/n9e-docs/transformations/merge',
                 });
               }}
             />

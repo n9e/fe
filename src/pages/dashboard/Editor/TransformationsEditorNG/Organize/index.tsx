@@ -69,7 +69,7 @@ export default function OrganizeFields(props: IProps) {
                   language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                   darkMode,
                   title: t('transformations.organize.title'),
-                  documentPath: '/docs/transformations/organize',
+                  documentPath: '/n9e-docs/transformations/organize',
                 });
               }}
             />

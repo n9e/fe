@@ -143,7 +143,7 @@ export default function index(props: Props) {
                     language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                     darkMode,
                     title: t('common:document_link'),
-                    documentPath: '/docs/doris/query-string',
+                    documentPath: '/n9e-docs/doris/query-string',
                   });
                 }}
               />
