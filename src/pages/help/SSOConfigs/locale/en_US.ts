@@ -9,8 +9,7 @@ const en_US = {
     enable: 'Enable',
     display_name: 'Display Name',
     corpId: 'Corporation ID',
-    corpId_tip:
-      'Corporation ID. If specified, users will be logged in directly with the specified organization on the DingTalk login page without the organization selection page appearing',
+    corpId_tip: 'Corporation ID, you can find the CorpId on the homepage of the DingTalk Open Platform',
     client_id: 'Client ID',
     client_secret: 'Client Secret',
     cover_attributes: 'Update User Information',
@@ -27,7 +26,7 @@ const en_US = {
     proxy: 'Proxy Address',
     use_member_info: 'User Details',
     use_member_info_tip:
-      'Requires permissions for reading member information under address book management, personal information such as email, and employee phone number information',
+      'This feature needs to be enabled when you need to access employee emails and phone numbers in your address book. Enabling this feature requires granting the "Address Book User Details" permission. Please add the corresponding permission on the DingTalk Open Platform',
     dingtalk_api: 'DingTalk API',
     dingtalk_api_tip: 'Set the API endpoint for querying employee information in the address book',
   },

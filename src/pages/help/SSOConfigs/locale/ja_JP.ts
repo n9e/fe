@@ -9,7 +9,7 @@ const ja_JP = {
     enable: '有効化',
     display_name: '表示名',
     corpId: '組織ID',
-    corpId_tip: '組織ID。指定された場合、DingTalkログインページで指定された組織で直接ログインされ、組織選択ページは表示されません',
+    corpId_tip: '組織ID、DingTalkオープンプラットフォームのホームページでCorpIdを確認できます',
     client_id: 'Client ID',
     client_secret: 'Client Secret',
     cover_attributes: 'ユーザー情報を更新',
@@ -24,7 +24,8 @@ const ja_JP = {
     auth_url: '認証URL',
     proxy: 'プロキシアドレス',
     use_member_info: 'ユーザー詳細',
-    use_member_info_tip: 'アドレス帳管理下のメンバー情報読み取り権限、メールなどの個人情報、企業従業員の電話番号情報などの権限が必要です',
+    use_member_info_tip:
+      'アドレス帳から従業員情報を取得するには、「アドレス帳ユーザー詳細」権限を有効にする必要があります。DingTalkオープンプラットフォームで対応する権限を追加してください',
     dingtalk_api: 'DingTalk API',
     dingtalk_api_tip: 'アドレス帳の従業員情報を照会するAPIエンドポイントを設定',
   },
