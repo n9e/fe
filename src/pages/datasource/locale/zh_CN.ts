@@ -33,6 +33,7 @@ const zh_CN = {
     disabled: '停用中',
   },
   form: {
+    advanced_settings: '高级设置',
     other: '其他',
     name: '名称',
     name_msg: '请输入字母/数字/下划线，必须以字母开头',
@@ -54,7 +55,10 @@ const zh_CN = {
     cluster_confirm_ok: '不做关联',
     cluster_confirm_cancel: '去做关联',
     cluster_not_found: '关联告警引擎已停用，当前数据源的告警不再生效。请检查告警引擎配置或重新修改数据源关联的告警引擎',
+    protocol: '协议',
+    secure_connection: '安全连接（SSL/TLS）',
     url_no_spaces_msg: 'URL不能包含空格',
+    url_no_http_msg: 'URL不能以 http:// 或 https:// 开头',
     url_required_msg: 'URL不能为空',
     prom: {
       write_addr_tip: '记录规则产生的数据的回写地址，常见时序数据库配置示例',

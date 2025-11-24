@@ -37,6 +37,9 @@ const zh_HK = {
   },
   datasource: {
     max_query_rows: '單次請求允許檢索的最大行數',
+    max_idle_conns: '最大空閒連接數',
+    max_open_conns: '最大打開連接數',
+    conn_max_lifetime: '連接生命週期（秒）',
   },
 };
 

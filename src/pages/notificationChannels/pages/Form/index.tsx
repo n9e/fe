@@ -18,6 +18,7 @@ import HTTP from './HTTP';
 import SMTP from './SMTP';
 import Script from './Script';
 import Flashduty from './Flashduty';
+import Pagerduty from './Pagerduty';
 
 interface Props {
   initialValues?: ChannelItem;
@@ -99,6 +100,15 @@ export default function FormCpt(props: Props) {
               ),
               value: 'flashduty',
             },
+            {
+              label: (
+                <div className='flex items-center gap-2'>
+                  <img height={16} src='/image/notification/pagerduty.png' />
+                  {t('pagerduty_request_config.title')}
+                </div>
+              ),
+              value: 'pagerduty',
+            }
           ]}
         />
       </Form.Item>
@@ -177,6 +187,7 @@ export default function FormCpt(props: Props) {
               <SMTP />
               <Script />
               <Flashduty />
+              <Pagerduty />
             </Card>
           </div>
         </Col>

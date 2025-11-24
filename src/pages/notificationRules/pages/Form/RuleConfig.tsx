@@ -73,7 +73,7 @@ export default function NotifyConfig(props: Props) {
       )}
       <div className='p-4 pb-0 mb-4 rounded bg-fc-100 fc-border'>
         <Row gutter={SIZE}>
-          <Col span={channelItem?.request_type !== 'flashduty' ? 12 : 24}>
+          <Col span={channelItem?.request_type !== 'flashduty' && channelItem?.request_type !== 'pagerduty' ? 12 : 24}>
             <ChannelSelect
               prefixNamePath={['notify_configs']}
               field={field}
@@ -82,7 +82,7 @@ export default function NotifyConfig(props: Props) {
               }}
             />
           </Col>
-          {channelItem?.request_type !== 'flashduty' && (
+          {channelItem?.request_type !== 'flashduty' && channelItem?.request_type !== 'pagerduty' && (
             <Col span={12}>
               <TemplateSelect prefixNamePath={['notify_configs']} field={field} />
             </Col>

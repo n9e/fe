@@ -33,6 +33,7 @@ const zh_HK = {
     disabled: '停用中',
   },
   form: {
+    advanced_settings: '高級設置',
     other: '其他',
     name: '名稱',
     name_msg: '請輸入字母/數字/下劃線，必須以字母開頭',
@@ -54,7 +55,10 @@ const zh_HK = {
     cluster_confirm_ok: '不做關聯',
     cluster_confirm_cancel: '去做關聯',
     cluster_not_found: '關聯告警引擎已停用，當前數據源的告警不再生效。請檢查告警引擎配置或重新修改數據源關聯的告警引擎',
+    protocol: '協議',
+    secure_connection: '安全連接（SSL/TLS）',
     url_no_spaces_msg: '請勿輸入空格',
+    url_no_http_msg: 'URL 不能以 http:// 或 https:// 開頭',
     url_required_msg: 'URL 不能為空',
     prom: {
       write_addr_tip: '記錄規則產生的資料的回寫地址，常見時序資料庫配置示例',
