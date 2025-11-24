@@ -26,6 +26,7 @@ interface MonacoEditorPromQLProps {
   size?: 'small' | 'middle' | 'large';
   value?: string;
   placeholder?: string;
+  maxHeight?: number | string;
   enableAutocomplete?: boolean;
   durationVariablesCompletion?: boolean;
   showGlobalMetrics?: boolean;
@@ -52,6 +53,7 @@ export default function index(props: MonacoEditorPromQLProps) {
     variablesNames,
     size,
     placeholder,
+    maxHeight,
     enableAutocomplete,
     durationVariablesCompletion,
     showGlobalMetrics,
@@ -91,7 +93,17 @@ export default function index(props: MonacoEditorPromQLProps) {
             }}
           />
         )}
-        <span className='ant-input-affix-wrapper'>
+        <span
+          className='ant-input-affix-wrapper'
+          style={
+            maxHeight !== undefined
+              ? {
+                  maxHeight: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
+                  overflowY: 'auto',
+                }
+              : undefined
+          }
+        >
           <PromQLMonacoEditor
             readOnly={readOnly}
             size={size}
@@ -100,6 +112,7 @@ export default function index(props: MonacoEditorPromQLProps) {
             placeholder={placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
             apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
+            enableRequests={datasourceValue !== undefined}
             request={(resource, options) => {
               const params = options?.body?.toString();
               const search = params ? `?${params}` : '';

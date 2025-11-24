@@ -16,12 +16,12 @@
  */
 import React, { useEffect } from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+
 import G2PieChart from '@/components/G2PieChart';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
-import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import valueFormatter from '../../utils/valueFormatter';
 import { useGlobalState } from '../../../globalState';
 import './style.less';
@@ -30,7 +30,6 @@ interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
 }
 
@@ -46,15 +45,14 @@ const getColumnsKeys = (data: any[]) => {
 };
 
 export default function Pie(props: IProps) {
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const [statFields, setStatFields] = useGlobalState('statFields');
-  const { values, series, themeMode, time, isPreview } = props;
+  const [, setStatFields] = useGlobalState('statFields');
+  const { values, series, themeMode, isPreview } = props;
   const { custom, options } = values;
   const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false, valueField = 'Value', countOfValueField = true } = custom;
   const dataFormatter = (text: number) => {
     const resFormatter = valueFormatter(
       {
-        unit: options?.standardOptions?.util,
+        unit: options?.standardOptions?.unit,
         decimals: options?.standardOptions?.decimals,
         dateFormat: options?.standardOptions?.dateFormat,
       },
@@ -64,14 +62,16 @@ export default function Pie(props: IProps) {
   };
 
   const detailFormatter = (data: any) => {
-    return getDetailUrl(detailUrl, data, dashboardMeta, time);
+    return replaceTemplateVariables(detailUrl, {
+      scopedVars: data,
+    });
   };
 
   const calculatedValues = getCalculatedValuesBySeries(
     series,
     calc,
     {
-      unit: options?.standardOptions?.util,
+      unit: options?.standardOptions?.unit,
       decimals: options?.standardOptions?.decimals,
       dateFormat: options?.standardOptions?.dateFormat,
     },

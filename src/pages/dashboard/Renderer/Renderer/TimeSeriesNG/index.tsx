@@ -1,12 +1,10 @@
 import React, { useContext, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
-import moment from 'moment-timezone';
 
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { hexPalette } from '@/pages/dashboard/config';
-import { InternalTimeZones } from '@/utils/datetime/types';
 
 import { IPanel } from '../../../types';
 
@@ -21,7 +19,6 @@ export { getDataFrameAndBaseSeries };
 export type { BaseSeriesItem };
 
 interface Props {
-  dashboardID: number;
   id?: string;
   values: IPanel;
   series: any[];
@@ -132,16 +129,7 @@ export default function index(props: Props) {
     >
       <div className='renderer-timeseries-ng-graph-container'>
         {props.id && chartContainerSize.width && chartContainerSize.height && (
-          <Main
-            {...mainProps}
-            dashboardID={props.dashboardID}
-            id={props.id}
-            darkMode={darkMode}
-            width={chartContainerSize.width}
-            height={chartContainerSize.height}
-            frames={frames}
-            baseSeries={seriesData}
-          />
+          <Main {...mainProps} id={props.id} darkMode={darkMode} width={chartContainerSize.width} height={chartContainerSize.height} frames={frames} baseSeries={seriesData} />
         )}
       </div>
       {(legendDisplayMode === 'list' || legendDisplayMode === 'table') && (
@@ -156,7 +144,6 @@ export default function index(props: Props) {
           {legendDisplayMode === 'list' && (
             <LegendList
               panel={mainProps.panel}
-              range={mainProps.range}
               data={legendData}
               legendColumns={legendColumns}
               placement={legendPlacement}
@@ -172,7 +159,6 @@ export default function index(props: Props) {
           {legendDisplayMode === 'table' && (
             <LegendTable
               panel={mainProps.panel}
-              range={mainProps.range}
               data={legendData}
               legendColumns={legendColumns}
               onRowClick={(record) => {

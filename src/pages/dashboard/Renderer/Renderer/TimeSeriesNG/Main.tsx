@@ -29,7 +29,6 @@ import './style.less';
 export { getDataFrameAndBaseSeries };
 
 interface Props {
-  dashboardID: number;
   id: string;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
@@ -56,7 +55,6 @@ export default function index(props: Props) {
   const history = useHistory();
   const location = useLocation();
   const {
-    dashboardID,
     frames,
     baseSeries,
     darkMode,
@@ -77,7 +75,7 @@ export default function index(props: Props) {
     onZoomWithoutDefult,
   } = props;
   const id = isPreview ? `${props.id}__view` : props.id;
-  const { custom, options = {}, targets, overrides } = panel;
+  const { custom, options = {}, targets, overrides, queryOptionsTime } = panel;
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const uplotRef = useRef<any>();
   // 保存 x 和 y 轴初始缩放范围
@@ -86,8 +84,8 @@ export default function index(props: Props) {
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const [annotationSettingUp, setAnnotationSettingUp] = useState(false);
   const xMinMax = useMemo(() => {
-    return getScalesXMinMax({ range, panel });
-  }, [range, JSON.stringify(_.map(panel.targets, 'time'))]);
+    return getScalesXMinMax({ range, queryOptionsTime });
+  }, [range, JSON.stringify(queryOptionsTime)]);
 
   const uOptions: Options = useMemo(() => {
     const yRange = getScalesYRange({ panel });
@@ -108,7 +106,6 @@ export default function index(props: Props) {
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
             ReactDOM.render(
               <AddAnnotationButton
-                dashboardID={dashboardID}
                 panelID={id}
                 timeZone={timezone}
                 closeOverlay={closeOverlay}
@@ -139,7 +136,7 @@ export default function index(props: Props) {
             if (override) {
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.util,
+                  unit: override?.properties?.standardOptions?.unit,
                   decimals: override?.properties?.standardOptions?.decimals,
                   dateFormat: override?.properties?.standardOptions?.dateFormat,
                 },
@@ -148,7 +145,7 @@ export default function index(props: Props) {
             }
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -210,7 +207,7 @@ export default function index(props: Props) {
           formatValue: (v) => {
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -303,7 +300,7 @@ export default function index(props: Props) {
   ]);
   let data = frames;
 
-  if (custom.stack === 'noraml') {
+  if (custom.stack === 'normal') {
     const stackedDataAndBands = getStackedDataAndBands(frames);
     const stackedData = stackedDataAndBands.data;
     uOptions.bands = stackedDataAndBands.bands;

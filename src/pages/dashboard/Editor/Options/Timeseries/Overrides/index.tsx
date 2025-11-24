@@ -119,7 +119,7 @@ export default function index({ targets }) {
                 <Panel header={t('panel.custom.timeseries.yAxis.title')}>
                   <Form.Item label={t('panel.custom.timeseries.yAxis.rightYAxis.label')} name={[name, 'properties', 'rightYAxisDisplay']} initialValue='off'>
                     <Radio.Group buttonStyle='solid'>
-                      <Radio.Button value='noraml'>{t('panel.custom.timeseries.yAxis.rightYAxis.noraml')}</Radio.Button>
+                      <Radio.Button value='normal'>{t('panel.custom.timeseries.yAxis.rightYAxis.normal')}</Radio.Button>
                       <Radio.Button value='off'>{t('panel.custom.timeseries.yAxis.rightYAxis.off')}</Radio.Button>
                     </Radio.Group>
                   </Form.Item>

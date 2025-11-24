@@ -30,19 +30,19 @@
   --fc-fill-7-rgb: 151 156 163;
   --fc-fill-7: rgb(var(--fc-fill-7-rgb));
 
-  --fc-fill-primary-rgb: 108, 83, 177;
+  --fc-fill-primary-rgb: 108 83 177;
   --fc-fill-primary: rgb(var(--fc-fill-primary-rgb));
 
-  --fc-fill-success-rgb: 0, 167, 0;
+  --fc-fill-success-rgb: 0 167 0;
   --fc-fill-success: rgb(var(--fc-fill-success-rgb));
 
-  --fc-fill-warning-rgb: 250, 200, 0;
+  --fc-fill-warning-rgb: 250 200 0;
   --fc-fill-warning: rgb(var(--fc-fill-warning-rgb));
 
-  --fc-fill-alert-rgb: 250, 125, 0;
+  --fc-fill-alert-rgb: 250 125 0;
   --fc-fill-alert: rgb(var(--fc-fill-alert-rgb));
 
-  --fc-fill-error-rgb: 200, 0, 0;
+  --fc-fill-error-rgb: 200 0 0;
   --fc-fill-error: rgb(var(--fc-fill-error-rgb));
 
   --fc-fill-gold: #ffbc0d;
@@ -158,19 +158,19 @@
   --fc-fill-7-rgb: 62 63 70;
   --fc-fill-7: rgb(var(--fc-fill-7-rgb));
 
-  --fc-fill-primary-rgb: 148, 112, 255;
+  --fc-fill-primary-rgb: 148 112 255;
   --fc-fill-primary: rgb(var(--fc-fill-primary-rgb));
 
-  --fc-fill-success-rgb: 63, 196, 83;
+  --fc-fill-success-rgb: 63 196 83;
   --fc-fill-success: rgb(var(--fc-fill-success-rgb));
 
-  --fc-fill-warning-rgb: 230, 198, 39;
+  --fc-fill-warning-rgb: 230 198 39;
   --fc-fill-warning: rgb(var(--fc-fill-warning-rgb));
 
-  --fc-fill-alert-rgb: 250, 125, 0;
+  --fc-fill-alert-rgb: 250 125 0;
   --fc-fill-alert: rgb(var(--fc-fill-alert-rgb));
 
-  --fc-fill-error-rgb: 255, 101, 107;
+  --fc-fill-error-rgb: 255 101 107;
   --fc-fill-error: rgb(var(--fc-fill-error-rgb));
 
   --fc-fill-gold: #ffbc0d;

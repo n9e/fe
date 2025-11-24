@@ -18,6 +18,7 @@ const en_US = {
   unit: 'Unit',
   page_help: 'Help',
   document_title: 'Documentation',
+  more_document_link: 'More documents',
   and: 'And',
   yes: 'Yes',
   no: 'No',
@@ -170,6 +171,7 @@ const en_US = {
   disabled: 'Disabled',
   disabling: 'Disabling',
   select_event: 'Select an alert event',
+  click_to_view_doc: 'Click to view documentation',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

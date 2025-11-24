@@ -117,7 +117,7 @@ export default function Graph(props: IProps) {
     custom: {
       drawStyle: 'lines',
       fillOpacity: chartType === ChartType.Line ? 0 : 0.5,
-      stack: chartType === ChartType.Line ? 'hidden' : 'noraml',
+      stack: chartType === ChartType.Line ? 'hidden' : 'normal',
       lineInterpolation: 'smooth',
     },
     options: {

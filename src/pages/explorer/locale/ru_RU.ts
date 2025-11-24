@@ -93,6 +93,50 @@ const ru_RU = {
     show_fields: 'Показать поля',
     available_fields: 'Доступные поля',
   },
+  empty_value_not_supported_tip: 'Пустые значения в настоящее время не поддерживаются в фильтрах поиска',
+  logs: {
+    title: 'Журналы',
+    count: 'Количество',
+    filter_fields: 'Фильтр полей',
+    settings: {
+      mode: {
+        origin: 'Исходный',
+        table: 'Таблица',
+      },
+      breakLine: 'Перенос строки',
+      reverse: 'Время',
+      lines: 'Номера строк',
+      time: 'Время журнала',
+      organizeFields: {
+        title: 'Настройки столбцов полей',
+        allFields: 'Доступные поля',
+        showFields: 'Отображаемые поля',
+        showFields_empty: 'По умолчанию отображаются все поля журнала',
+      },
+      jsonSettings: {
+        title: 'Настройки JSON',
+        displayMode: 'Тип отображения по умолчанию',
+        displayMode_tree: 'Древовидное отображение',
+        displayMode_string: 'Строковое отображение',
+        expandLevel: 'Уровень раскрытия по умолчанию',
+      },
+    },
+    tagsDetail: 'Детали тегов',
+    expand: 'Развернуть',
+    collapse: 'Свернуть',
+    fieldValues_topnNoData: 'Нет данных',
+    stats: {
+      numberOfUniqueValues: 'Количество уникальных значений',
+      min: 'Минимум',
+      max: 'Максимум',
+      sum: 'Сумма',
+      avg: 'Среднее',
+    },
+    fieldLabelTip: 'Статистика для поля не включена, статистический анализ невозможен',
+    filterAnd: 'Добавить к этому поиску',
+    filterNot: 'Исключить из этого поиска',
+    total: 'Количество записей журнала',
+  },
 };
 
 export default ru_RU;

@@ -147,7 +147,7 @@ export default function index(props: IProps) {
                         logicalOperator: '&&',
                       },
                     ],
-                    severity: 1,
+                    severity: 2,
                   });
                 }}
               />

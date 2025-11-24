@@ -1,8 +1,9 @@
 import React from 'react';
+
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { IPanel, ITextStyles } from '../../../types';
 import Markdown from '../../../Editor/Components/Markdown';
-import { replaceFieldWithVariable } from '../../../VariableConfig/constant';
-import { useGlobalState } from '../../../globalState';
 
 interface IProps {
   values: IPanel;
@@ -11,11 +12,10 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { values, themeMode } = props;
   const { custom } = values;
   const { textColor, textDarkColor, bgColor, textSize, justifyContent, alignItems } = custom as ITextStyles;
-  const content = replaceFieldWithVariable(custom.content, dashboardMeta.dashboardId, dashboardMeta.variableConfigWithOptions);
+  const content = replaceTemplateVariables(custom.content);
 
   return (
     <Markdown

@@ -18,7 +18,7 @@ import React, { useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
 import { corelib, extend, Runtime } from '@antv/g2';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../utils/valueFormatter';
@@ -31,7 +31,6 @@ interface IProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
 }
 
@@ -57,7 +56,7 @@ export default function Bar(props: IProps) {
     series,
     calc,
     {
-      unit: options?.standardOptions?.util,
+      unit: options?.standardOptions?.unit,
       decimals: options?.standardOptions?.decimals,
       dateFormat: options?.standardOptions?.dateFormat,
     },
@@ -119,7 +118,7 @@ export default function Bar(props: IProps) {
         labelFormatter: (d) => {
           const valueObj = valueFormatter(
             {
-              unit: options?.standardOptions?.util,
+              unit: options?.standardOptions?.unit,
               decimals: options?.standardOptions?.decimals,
               dateFormat: options?.standardOptions?.dateFormat,
             },
@@ -139,7 +138,7 @@ export default function Bar(props: IProps) {
             valueFormatter: (d) => {
               const valueObj = valueFormatter(
                 {
-                  unit: options?.standardOptions?.util,
+                  unit: options?.standardOptions?.unit,
                   decimals: options?.standardOptions?.decimals,
                   dateFormat: options?.standardOptions?.dateFormat,
                 },

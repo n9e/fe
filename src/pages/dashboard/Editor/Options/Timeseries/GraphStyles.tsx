@@ -77,7 +77,7 @@ export default function GraphStyles() {
           </Form.Item>
           <Form.Item label={t('panel.custom.timeseries.stack')} name={[...namePrefix, 'stack']}>
             <Radio.Group buttonStyle='solid'>
-              <Radio.Button value='noraml'>{t('panel.custom.timeseries.stack_noraml')}</Radio.Button>
+              <Radio.Button value='normal'>{t('panel.custom.timeseries.stack_normal')}</Radio.Button>
               <Radio.Button value='off'>{t('panel.custom.timeseries.stack_off')}</Radio.Button>
             </Radio.Group>
           </Form.Item>

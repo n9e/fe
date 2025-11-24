@@ -10,7 +10,7 @@ export default function secondYAxisBuilder(panel: IPanel, darkMode: boolean) {
   const rightYAxisDisplay = _.get(overrides, [0, 'properties', 'rightYAxisDisplay']);
   let standardOptions = options.standardOptions;
 
-  if (rightYAxisDisplay === 'noraml') {
+  if (rightYAxisDisplay === 'normal') {
     standardOptions = _.get(overrides, [0, 'properties', 'standardOptions']);
     return [
       axisBuilder({
@@ -20,7 +20,7 @@ export default function secondYAxisBuilder(panel: IPanel, darkMode: boolean) {
         formatValue: (v) => {
           return valueFormatter(
             {
-              unit: standardOptions?.util,
+              unit: standardOptions?.unit,
               decimals: standardOptions?.decimals,
               dateFormat: standardOptions?.dateFormat,
             },

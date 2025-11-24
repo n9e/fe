@@ -100,7 +100,8 @@ const zh_CN = {
     definition_msg1: '请输入变量定义',
     definition_msg2: '变量定义必须是合法的JSON',
     reg: '正则',
-    reg_tip: '可选，可通过正则来过滤可选项，或提取值。这里是填写的<a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成',
+    reg_tip: '可选，可通过正则来过滤可选项。这里是填写的 <a>正则表达式字面量</a>，其由包含在斜杠之间的模式组成',
+    reg_tip2: '如果您想要提取选项中的一部分，<a>命名捕获组可用于分隔显示文本和值</a>',
     multi: '多选',
     allOption: '包含全选',
     allValue: '自定义全选值',
@@ -138,7 +139,7 @@ const zh_CN = {
       <1 />
       \${__field.labels.__name__}: 指标名
       <1 />
-      \${__interval}: 时间间隔（秒）, 例如 15s
+      \${__interval}: 时间间隔（秒）, 例如 15s, 默认为 step
       <1 />
       \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
       <1 />
@@ -163,7 +164,7 @@ const zh_CN = {
       <br />
       \${__row.column_name}: 行数据的某一列值
       <br />
-      \${__interval}: 时间间隔（秒）, 例如 15s
+      \${__interval}: 时间间隔（秒）, 例如 15s, 默认为 step
       <br />
       \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
       <br />
@@ -512,13 +513,13 @@ const zh_CN = {
         gradientMode_opacity: '开启',
         gradientMode_none: '关闭',
         stack: '堆叠',
-        stack_noraml: '开启',
+        stack_normal: '开启',
         stack_off: '关闭',
         yAxis: {
           title: 'Y轴设置',
           rightYAxis: {
             label: '右侧Y轴显示',
-            noraml: '开启',
+            normal: '开启',
             off: '关闭',
           },
         },
@@ -574,26 +575,40 @@ const zh_CN = {
   },
   query: {
     title: '查询条件',
+    add_query_btn: '添加查询条件',
+    add_expression_btn: '添加表达式',
     transform: '数据转换',
     datasource_placeholder: '请选择数据源',
     datasource_msg: '请选择数据源',
     time: '时间选择',
     time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
     prometheus: {
+      query: '查询语句（PromQL）',
       maxDataPoints: {
         tip: '每条曲线最多的点数，默认为面板宽度（新增时默认为 240），计算 step = (end - start) / maxDataPoints',
         tip_2: '每条曲线最多的点数，默认为面板宽度，计算 step = (end - start) / maxDataPoints',
       },
       minStep: {
-        tip: '最小的 step，默认为 15，计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
+        label: '最小步长（Min step）',
+        tip: '最小步长，默认为 15，计算 step = max(step, minStep, safeStep)，safeStep = (end - start) / 11000',
       },
       step: {
         tag_tip: '计算 step = max((end - start) / maxDataPoints, minStep, safeStep), safeStep = (end - start) / 11000',
       },
+      instant: {
+        label: '即时查询（Instant）',
+        tip: '查询 "结束" 时间点的数据，只有一个时间点值',
+      },
     },
     expression_placeholder: '对一个或多个查询进行数学运算。您通过 ${refId} 引用查询，即 $A、$B、$C 等。两个标量值的总和：$A + $B > 10',
+    legend: '图例（Legend）',
     legendTip: '图例名称的覆盖或模板，例如 {{hostname}} 将替换为 hostname 标签的值',
     legendTip2: '图例名称的覆盖或模板，例如 {{hostname}} 将替换为 hostname 标签的值，目前只在时序数据下生效',
+    options: '查询选项',
+    options_max_data_points: '最大数据点数',
+    options_max_data_points_tip: '每条曲线最多的点数，默认为面板宽度（新增时默认为 240）。用于计算 step = (end - start) / maxDataPoints',
+    options_time: '查询时间范围',
+    options_time_tip: '可指定查询时间范围，默认为仪表盘全局时间范围',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',

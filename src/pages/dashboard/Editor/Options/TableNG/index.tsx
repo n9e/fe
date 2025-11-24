@@ -9,12 +9,12 @@ import Thresholds from '@/pages/dashboard/Editor/Fields/Thresholds';
 
 import GraphStyles from './GraphStyles';
 
-export default function Table({ targets, chartForm, variableConfigWithOptions }) {
+export default function Table({ targets }) {
   const cellOptionsType = Form.useWatch(['custom', 'cellOptions', 'type']);
 
   return (
     <>
-      <GraphStyles chartForm={chartForm} variableConfigWithOptions={variableConfigWithOptions} />
+      <GraphStyles />
       <DataLinks />
       {cellOptionsType !== 'none' && <Thresholds showMode />}
       <ValueMappings isActive={false} />

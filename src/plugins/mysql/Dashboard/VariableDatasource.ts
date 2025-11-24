@@ -2,8 +2,7 @@ import moment from 'moment';
 import _ from 'lodash';
 
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import { Props } from '@/pages/dashboard/VariableConfig/datasource';
-import { replaceExpressionVars } from '@/pages/dashboard/VariableConfig/constant';
+import { Props } from '@/pages/dashboard/Variables/datasource';
 
 import { getLogsQuery } from '../services';
 
@@ -13,15 +12,8 @@ export default async function variableDatasource(
     query?: string;
   }>,
 ) {
-  const { dashboardId, datasourceCate, datasourceValue, variables, query } = props;
-  const queryValue = query?.query
-    ? replaceExpressionVars({
-        text: query?.query,
-        variables,
-        limit: variables.length,
-        dashboardId,
-      })
-    : undefined;
+  const { datasourceCate, datasourceValue, query } = props;
+  const queryValue = query?.query;
   let options: string[] = [];
 
   if (queryValue && query.range) {

@@ -18,6 +18,7 @@ const zh_HK = {
   unit: '單位',
   page_help: '使用說明',
   document_title: '使用文檔',
+  more_document_link: '更多文檔',
   and: '且',
   yes: '是',
   no: '否',
@@ -169,6 +170,7 @@ const zh_HK = {
   disabled: '禁用',
   disabling: '禁用中',
   select_event: '選擇告警事件',
+  click_to_view_doc: '點擊查看文檔',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

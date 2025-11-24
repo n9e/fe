@@ -18,6 +18,7 @@ const ru_RU = {
   unit: 'Единица',
   page_help: 'Инструкция',
   document_title: 'Документация',
+  more_document_link: 'Больше документов',
   and: 'И',
   yes: 'Да',
   no: 'Нет',
@@ -170,6 +171,7 @@ const ru_RU = {
   disabled: 'Отключено',
   disabling: 'Отключение',
   select_event: 'Выбрать событие оповещения',
+  click_to_view_doc: 'Нажмите, чтобы просмотреть документацию',
 
   tpl: 'Скрипт самовосстановления',
   'tpl.create': 'Создать',

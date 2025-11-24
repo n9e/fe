@@ -27,14 +27,16 @@ import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
 import '@fc-plot/ts-graph/dist/index.css';
+
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { IPanel } from '../../../types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
 import getSerieName from '../../utils/getSerieName';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
-import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
 import './style.less';
 
@@ -150,8 +152,10 @@ export default function index(props: IProps) {
   let _tableHeight = hasLegend ? `${heightInPercentage}%` : '0px';
 
   const detailFormatter = (data: any) => {
-    if (detailUrl && time) {
-      return getDetailUrl(detailUrl, data, dashboardMeta, time);
+    if (detailUrl) {
+      return replaceTemplateVariables(detailUrl, {
+        scopedVars: data,
+      });
     }
     return;
   };
@@ -240,7 +244,7 @@ export default function index(props: IProps) {
           gradientOpacityStopColor: themeMode === 'dark' ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
         },
         stack: {
-          enabled: custom.stack === 'noraml',
+          enabled: custom.stack === 'normal',
         },
         curve: {
           enabled: true,
@@ -269,7 +273,7 @@ export default function index(props: IProps) {
             if (override) {
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.util,
+                  unit: override?.properties?.standardOptions?.unit,
                   decimals: override?.properties?.standardOptions?.decimals,
                   dateFormat: override?.properties?.standardOptions?.dateFormat,
                 },
@@ -278,7 +282,7 @@ export default function index(props: IProps) {
             }
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -314,7 +318,7 @@ export default function index(props: IProps) {
           tickValueFormatter: (val) => {
             return valueFormatter(
               {
-                unit: options?.standardOptions?.util,
+                unit: options?.standardOptions?.unit,
                 decimals: options?.standardOptions?.decimals,
                 dateFormat: options?.standardOptions?.dateFormat,
               },
@@ -324,7 +328,7 @@ export default function index(props: IProps) {
         },
         yAxis2: {
           ...chartRef.current.options.yAxis,
-          visible: overrides?.[0]?.properties?.rightYAxisDisplay === 'noraml',
+          visible: overrides?.[0]?.properties?.rightYAxisDisplay === 'normal',
           matchRefId: overrides?.[0]?.matcher?.value,
           min: overrides?.[0]?.properties?.standardOptions?.min,
           max: overrides?.[0]?.properties?.standardOptions?.max,
@@ -332,7 +336,7 @@ export default function index(props: IProps) {
           tickValueFormatter: (val) => {
             return valueFormatter(
               {
-                unit: overrides?.[0]?.properties?.standardOptions?.util,
+                unit: overrides?.[0]?.properties?.standardOptions?.unit,
                 decimals: overrides?.[0]?.properties?.standardOptions?.decimals,
                 dateFormat: overrides?.[0]?.properties?.standardOptions?.dateFormat,
               },
@@ -368,7 +372,7 @@ export default function index(props: IProps) {
       });
     }
     if (hasLegend) {
-      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, custom.stack === 'noraml', options?.valueMappings, overrides));
+      setLegendData(getLegendValues(seriesData, options?.standardOptions, colors || hexPalette, custom.stack === 'normal', options?.valueMappings, overrides));
     } else {
       setLegendData([]);
     }

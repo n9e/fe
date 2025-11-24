@@ -43,6 +43,7 @@ const zh_HK = {
     card_title: '告警事件詳情',
     buisness_not_exist: '該業務組已刪除或無檢視權限',
     rule_name: '規則標題',
+    hash: 'Hash',
     group_name: '業務組',
     rule_note: '規則備註',
     cate: '數據源類型',
@@ -92,6 +93,7 @@ const zh_HK = {
     task_tpls: {
       label: '自癒模板',
     },
+    step_tip: '曲線時間間隔，單位秒',
   },
 
   sharing_link: {

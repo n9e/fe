@@ -19,15 +19,19 @@ import { Form, Select, Row, Col, Switch, Radio, Button, Mentions, Space, Tooltip
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
+
+import { useGlobalState } from '@/pages/dashboard/globalState';
+
 import { Panel } from '../../Components/Collapse';
 import { calcsOptions } from '../../config';
-import { useGlobalState } from '../../../globalState';
 
-export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
+export default function GraphStyles() {
   const { t, i18n } = useTranslation('dashboard');
   const namePrefix = ['custom'];
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const [tableFields, setTableFields] = useGlobalState('tableFields');
   const [tableRefIds, setTableRefIds] = useGlobalState('tableRefIds');
+  const chartForm = Form.useFormInstance();
   const calc = Form.useWatch([...namePrefix, 'calc']);
 
   useEffect(() => {
@@ -288,7 +292,7 @@ export default function GraphStyles({ chartForm, variableConfigWithOptions }) {
         </Form.Item>
         <Form.Item label={t('panel.base.description')} name='description'>
           <Mentions prefix='$' split='' rows={3}>
-            {_.map(variableConfigWithOptions, (item) => {
+            {_.map(variablesWithOptions, (item) => {
               return (
                 <Mentions.Option key={item.name} value={item.name}>
                   {item.name}

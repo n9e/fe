@@ -18,6 +18,7 @@ const zh_CN = {
   unit: '单位',
   page_help: '使用说明',
   document_title: '使用文档',
+  more_document_link: '更多文档',
   and: '且',
   yes: '是',
   no: '否',
@@ -169,6 +170,7 @@ const zh_CN = {
   disabled: '禁用',
   disabling: '禁用中',
   select_event: '选择告警事件',
+  click_to_view_doc: '点击查看文档',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

@@ -8,7 +8,6 @@ function withOpacityValue(variable) {
 }
 
 module.exports = {
-  important: '#tailwind',
   darkMode: 'class',
   important: true,
   content: ['./src/**/*.{html,js,jsx,ts,tsx}'],

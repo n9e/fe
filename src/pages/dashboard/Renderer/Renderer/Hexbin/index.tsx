@@ -20,20 +20,22 @@ import { useEffect, useRef, FunctionComponent } from 'react';
 import _ from 'lodash';
 import * as d3 from 'd3';
 import { useSize } from 'ahooks';
+
+import { IRawTimeRange } from '@/components/TimeRangePicker';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+
 import { renderFn } from './render';
 import { IPanel, IHexbinStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
-import { getDetailUrl } from '../../utils/replaceExpressionDetail';
 import { useGlobalState } from '../../../globalState';
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+
 import './style.less';
 
 interface HoneyCombProps {
   values: IPanel;
   series: any[];
   themeMode?: 'dark';
-  time: IRawTimeRange;
   isPreview?: boolean;
 }
 
@@ -49,7 +51,7 @@ const getColumnsKeys = (data: any[]) => {
 };
 
 const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
-  const { values, series, themeMode, time, isPreview } = props;
+  const { values, series, themeMode, isPreview } = props;
   const { custom = {}, options } = values;
   const {
     calc,
@@ -65,7 +67,6 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
   const groupEl = useRef<SVGGElement>(null);
   const svgEl = useRef<HTMLDivElement>(null);
   const svgSize = useSize(svgEl);
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [statFields, setStatFields] = useGlobalState('statFields');
 
   useEffect(() => {
@@ -73,7 +74,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       series,
       calc,
       {
-        unit: options?.standardOptions?.util,
+        unit: options?.standardOptions?.unit,
         decimals: options?.standardOptions?.decimals,
         dateFormat: options?.standardOptions?.dateFormat,
       },
@@ -90,7 +91,9 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
 
     const detailFormatter = (data: any) => {
-      return getDetailUrl(detailUrl, data, dashboardMeta, time);
+      return replaceTemplateVariables(detailUrl, {
+        scopedVars: data,
+      });
     };
 
     if (svgSize?.width && svgSize?.height) {

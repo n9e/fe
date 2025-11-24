@@ -3,11 +3,9 @@ import { Tooltip, Space } from 'antd';
 import _ from 'lodash';
 import Color from 'color';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, IBarGaugeStyles } from '../../../../types';
-import { useGlobalState } from '../../../../globalState';
-import { getDetailUrl } from '../../../utils/replaceExpressionDetail';
 import { getSerieTextObj } from '../../../utils/getCalculatedValuesBySeries';
 
 interface Props {
@@ -17,7 +15,6 @@ interface Props {
   themeMode?: 'dark';
   minValue: number;
   maxValue: number;
-  time: IRawTimeRange;
   maxNameWidth: number;
   maxBarWidth: number;
 }
@@ -27,8 +24,7 @@ const CELL_HEIGHT = 16;
 const CELL_SPACING = 2;
 
 export default function LCDBar(props: Props) {
-  const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const { item, custom, options, themeMode, minValue, maxValue, time, maxNameWidth, maxBarWidth } = props;
+  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxBarWidth } = props;
   const { stat, metric } = item;
   const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;
   const name = nameField ? _.get(metric, nameField, item.name) : item.name;
@@ -41,7 +37,7 @@ export default function LCDBar(props: Props) {
     const textObj = getSerieTextObj(
       currentValue,
       {
-        unit: options?.standardOptions?.util,
+        unit: options?.standardOptions?.unit,
         decimals: options?.standardOptions?.decimals,
         dateFormat: options?.standardOptions?.dateFormat,
       },
@@ -81,7 +77,12 @@ export default function LCDBar(props: Props) {
           }}
         >
           {detailUrl ? (
-            <a target='_blank' href={getDetailUrl(detailUrl, item, dashboardMeta, time)}>
+            <a
+              target='_blank'
+              href={replaceTemplateVariables(detailUrl, {
+                scopedVars: item,
+              })}
+            >
               {name}
             </a>
           ) : (
