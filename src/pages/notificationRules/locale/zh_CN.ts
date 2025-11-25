@@ -35,6 +35,7 @@ const zh_CN = {
       is_recovered: '是恢复事件？',
       rule_id: '告警规则',
       severity: '告警等级',
+      target_group: '机器业务组',
     },
     run_test_btn: '通知测试',
     run_test_btn_tip: '可以选择几个已经产生的事件，测试一下此通知配置是否正确，如果正确，应该会收到相关的通知消息',

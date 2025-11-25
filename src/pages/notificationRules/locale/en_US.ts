@@ -38,6 +38,7 @@ const en_US = {
       is_recovered: 'Is recovered?',
       rule_id: 'Alarm rule',
       severity: 'Severity',
+      target_group: 'Host business group',
     },
     run_test_btn: 'Run test',
     run_test_btn_tip:
