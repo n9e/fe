@@ -6,6 +6,7 @@ const ja_JP = {
   sub_rule_selected: '選択されたルール',
   tags: 'サブスクライブのタグ',
   user_groups: 'アラート受信グループ',
+  notify_rule_ids: '通知ルール',
   tag: {
     key: {
       label: 'サブスクライブイベントのタグキー',

@@ -6,6 +6,7 @@ const en_US = {
   sub_rule_selected: 'Selected rules',
   tags: 'Tags',
   user_groups: 'Receiving group',
+  notify_rule_ids: 'Notification rules',
   tag: {
     key: {
       label: 'Subscribed event tag key',

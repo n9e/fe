@@ -97,6 +97,16 @@ const Resource: React.FC = () => {
       dataIndex: 'phone',
       render: (text: string, record) => record.phone || '-',
     },
+    {
+      title: t('user.busi_groups'),
+      dataIndex: 'busi_groups',
+      render: (text: string, record) => {
+        if (_.isEmpty(record.busi_groups)) return '-';
+        return _.map(record.busi_groups, (item) => {
+          return <Tag key={item.id}>{item.name}</Tag>;
+        });
+      },
+    },
   ];
 
   const teamMemberColumns: ColumnsType<User> = [
