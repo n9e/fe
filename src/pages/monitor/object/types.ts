@@ -30,4 +30,5 @@ export interface IMatch {
     label: string;
     value: string[];
   }[];
+  ignorePrefix: string;
 }

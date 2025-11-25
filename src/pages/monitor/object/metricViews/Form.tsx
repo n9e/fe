@@ -214,7 +214,17 @@ function FormCpt(props: ModalWrapProps & IProps) {
               {getLabelsOptions(filteredLabels)}
             </Select>
           </Form.Item>
-          <div style={{ textAlign: 'right', marginBottom: 10 }}>
+          <Form.Item
+            label={t('list.ignorePrefix')}
+            tooltip={{
+              title: t('list.ignorePrefix_tip'),
+              overlayClassName: 'ant-tooltip-max-width-400',
+            }}
+            name='ignorePrefix'
+          >
+            <Input />
+          </Form.Item>
+          <div className='text-right mb-2'>
             <Button
               onClick={() => {
                 const values = form.getFieldsValue();

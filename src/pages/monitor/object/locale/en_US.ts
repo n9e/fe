@@ -14,6 +14,9 @@ const en_US = {
     filters: 'Filters',
     dynamicLabels: 'Dynamic labels',
     dimensionLabels: 'Dimension labels',
+    ignorePrefix: 'Ignore metric prefix',
+    ignorePrefix_tip:
+      'After configuration, the prefix will be ignored when classifying metrics. For example, if monitor_ is configured, monitor_cpu_usage will be classified under cpu.',
     preview: 'Preview',
     count: 'Count',
     sample: 'Sample',
