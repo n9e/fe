@@ -109,7 +109,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/open-source/alarm-rule-template/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/integration/alert-rule-template/' />
           <AuthorizationWrapper allowedPerms={['/components/add']}>
             <Button
               type='primary'

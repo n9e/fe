@@ -14,11 +14,11 @@ import { SSOConfigType } from './types';
 import { putSSOConfig } from './services';
 
 const documentMap = {
-  OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/oauth2',
-  LDAP: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/ldap',
-  CAS: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/cas',
-  OIDC: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/oidc',
-  dingtalk: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/sso/dingtalk',
+  OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/oauth2/',
+  LDAP: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/ldap/',
+  CAS: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/cas/',
+  OIDC: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/oidc/',
+  dingtalk: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/dingtalk',
 };
 
 interface Props {

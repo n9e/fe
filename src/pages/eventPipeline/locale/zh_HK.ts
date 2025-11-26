@@ -84,7 +84,7 @@ const zh_HK = {
     url_tip: `- **說明**: AI服務的API接口地址\n- **示例**: \`https://api.deepseek.com/v1/chat/completions\``,
     api_key_tip: `- **說明**: AI服務提供商的API密鑰\n- **獲取方式**:\n  - OpenAI: 在OpenAI官網申請\n  - DeepSeek: 在DeepSeek官網註冊獲取`,
     model_name_tip: `- **說明**: 指定使用的AI模型名稱\n- **常用模型**:\n  - \`gpt-3.5-turbo\` (OpenAI)\n  - \`gpt-4\` (OpenAI)\n  - \`deepseek-chat\` (DeepSeek)`,
-    prompt_template_tip: `提示詞模板是AI分析的核心，可以使用 {{$event}} 引用事件的各個字段，事件的詳細結構參考[告警歷史表](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/)說明，剛開始使用提供的默認模板即可`,
+    prompt_template_tip: `提示詞模板是AI分析的核心，可以使用 {{$event}} 引用事件的各個字段，事件的詳細結構參考[告警歷史表](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/schema/alert_his_event/)說明，剛開始使用提供的默認模板即可`,
     custom_params_tip: `- AI模型參數配置\n\n用於精細化調整AI模型的行為：\n\n| 參數名 | 說明 | 推薦值 | 示例 |\n|--------|------|--------|------|\n| temperature | 控制回答的隨機性 | 0.3-0.7 | 0.7 |\n| max_tokens | 最大輸出token數 | 200-500 | 300 |\n| top_p | 採樣概率閾值 | 0.8-1.0 | 0.9 |\n\n**配置方法**:\n1. 點擊 "Custom Params" 旁的 + 按鈕\n2. 在"參數名"欄輸入參數名（如：temperature）\n3. 在"參數值"欄輸入對應值（如：0.7）`,
     prompt_template_placeholder: `請分析以下告警事件信息，並提供一個簡潔明了的中文總結：
 告警規則: {{$event.RuleName}}

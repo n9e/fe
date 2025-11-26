@@ -76,7 +76,7 @@ export default function List() {
       title={
         <Space>
           {t('title')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/historical-alarms/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-history/' />
         </Space>
       }
     >

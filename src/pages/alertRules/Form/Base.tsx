@@ -37,7 +37,7 @@ export default function Base() {
       title={
         <Space>
           {t('basic_configs')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/alert-basic-conf/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/alert-basic-conf/' />
         </Space>
       }
     >

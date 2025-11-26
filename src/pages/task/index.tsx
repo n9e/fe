@@ -136,7 +136,7 @@ const index = (_props: any) => {
       title={
         <Space>
           {t('task')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm_self-healing/create-temporary-task/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/self-healing/create-temporary-task/' />
         </Space>
       }
     >

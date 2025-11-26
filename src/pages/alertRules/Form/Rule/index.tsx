@@ -43,7 +43,7 @@ export default function Rule({ form }) {
         <Space>
           {t('rule_configs')}
           {prod === 'metric' && cate === 'prometheus' && (
-            <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/rule-configuration/metric-alarm-rule-configuration/' />
+            <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/query-data/promethues/' />
           )}
         </Space>
       }
