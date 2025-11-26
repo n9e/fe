@@ -56,7 +56,7 @@ export default function index() {
                 language: i18n.language,
                 title: t('common:document_link'),
                 type: 'iframe',
-                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/var_set/variable',
+                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/variable/',
               });
             }}
           >

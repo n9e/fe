@@ -54,7 +54,7 @@ export default function index() {
       title={
         <Space>
           {t('title')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/timing-indicators/quick-view/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/time-series/quick-view/' />
         </Space>
       }
       icon={<LineChartOutlined />}

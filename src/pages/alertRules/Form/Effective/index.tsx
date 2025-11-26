@@ -39,7 +39,7 @@ export default function index() {
       title={
         <Space>
           {t('effective_configs')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/effective-configuration/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/effective-configuration/' />
         </Space>
       }
     >

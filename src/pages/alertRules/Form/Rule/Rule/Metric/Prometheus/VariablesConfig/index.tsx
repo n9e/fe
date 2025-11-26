@@ -76,7 +76,7 @@ export default function index(props: Props) {
                   });
                 }}
               />
-              <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/alert-promql-var-set/' />
+              <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/query-data/alert-promql-var-set/' />
             </Space>
           </div>
           <Table
