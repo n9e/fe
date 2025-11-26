@@ -38,6 +38,7 @@ const ru_RU = {
       is_recovered: 'Событие восстановления?',
       rule_id: 'Правило тревоги',
       severity: 'Уровень тревоги',
+      target_group: 'Бизнес-группа хоста',
     },
     run_test_btn: 'Тестирование уведомления',
     run_test_btn_tip:
