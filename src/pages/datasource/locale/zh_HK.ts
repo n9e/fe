@@ -103,6 +103,7 @@ const zh_HK = {
   label_mapping: {
     title: '標籤豐富',
   },
+  endpoint_title: '服務入口',
 };
 
 export default zh_HK;
