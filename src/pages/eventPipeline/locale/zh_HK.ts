@@ -171,7 +171,7 @@ const zh_HK = {
     sql_limit_valid: 'SQL 查詢語句必須包含 LIMIT 子句',
     annotation_configs: '數據追加',
     annotation_key_placeholder: '附加字段名稱',
-    annotation_value_placeholder: '附加字段內容，支持模板語法，將查詢結果以變量方式填充',
+    annotation_val_placeholder: '附加字段內容，支持模板語法，將查詢結果以變量方式填充',
     data_preview: '數據預覽',
     data_preview_query: '查詢語句',
     data_preview_no_eventid: '請先選擇告警事件',

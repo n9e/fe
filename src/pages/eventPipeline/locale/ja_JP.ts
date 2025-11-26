@@ -174,7 +174,7 @@ const ja_JP = {
     sql_limit_valid: 'SQLクエリステートメントにはLIMIT句が必要です',
     annotation_configs: 'データ追加',
     annotation_key_placeholder: '追加フィールド名',
-    annotation_value_placeholder: '追加フィールド内容。テンプレート構文をサポートし、クエリ結果を変数として埋め込みます',
+    annotation_val_placeholder: '追加フィールド内容。テンプレート構文をサポートし、クエリ結果を変数として埋め込みます',
     data_preview: 'データプレビュー',
     data_preview_query: 'クエリステートメント',
     data_preview_no_eventid: 'まずアラートイベントを選択してください',
