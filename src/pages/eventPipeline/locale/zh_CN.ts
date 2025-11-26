@@ -182,7 +182,7 @@ const zh_CN = {
   annotation_qd: {
     help: '简洁说明 <a>使用文档</a>',
     query_configs: '数据查询',
-    enable_alert_datasource: '使用告警事件数据源',
+    use_event_datasource: '使用告警事件数据源',
     datasource_cate_required: '数据源类型不能为空',
     datasource_ids_required: '数据源不能为空',
     select_alert_event_btn: '选择告警事件',
@@ -193,6 +193,8 @@ const zh_CN = {
     annotation_configs: '数据追加',
     annotation_key_placeholder: '附加字段名称',
     annotation_value_placeholder: '附加字段内容，支持模板语法，将查询结果以变量方式填充',
+    data_preview: '数据预览',
+    data_preview_query: '查询语句',
   },
 };
 export default zh_CN;
