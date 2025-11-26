@@ -161,6 +161,24 @@ const ja_JP = {
     help: 'クエリ結果に基づくイベント抑制：アラートがトリガーされると、以下のデータクエリが実行されます。少なくとも1件のデータが返された場合、本アラートは抑制され（通知されません）。データがない場合は通常通り通知されます。詳細は<a>使用文書</a>を参照してください',
     t_1: 'かつ 以下の<b>データ</b>をクエリ',
   },
+  annotation_qd: {
+    help: '追加クエリプロセッサーはアラート強化の手段です。アラートがトリガーされると、データソースからログなどの関連情報をクエリし、アラートに付加します。詳細は<a>使用文書</a>を参照してください',
+    query_configs: 'データクエリ',
+    use_event_datasource: 'アラートイベントのデータソースを使用',
+    datasource_cate_required: 'データソースタイプは必須です',
+    datasource_ids_required: 'データソースは必須です',
+    select_alert_event_btn: 'アラートイベントを選択',
+    select_alert_event_tip: 'アラートイベント選択のヒント',
+    select_alert_event_label: '選択されたアラートイベント',
+    query_required: 'クエリ条件は必須です',
+    sql_limit_valid: 'SQLクエリステートメントにはLIMIT句が必要です',
+    annotation_configs: 'データ追加',
+    annotation_key_placeholder: '追加フィールド名',
+    annotation_value_placeholder: '追加フィールド内容。テンプレート構文をサポートし、クエリ結果を変数として埋め込みます',
+    data_preview: 'データプレビュー',
+    data_preview_query: 'クエリステートメント',
+    data_preview_no_eventid: 'まずアラートイベントを選択してください',
+  },
 };
 
 export default ja_JP;

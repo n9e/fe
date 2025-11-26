@@ -160,5 +160,23 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     help: 'Suppress events based on query results: When an alert is triggered, the data query below will be executed; if at least one piece of data is returned, this alert will be suppressed (no notification); if no data is returned, normal notification will occur. For more information, see <a>documentation</a>',
     t_1: 'and query the following <b>data</b>',
   },
+  annotation_qd: {
+    help: 'Annotation query processor is an alert enrichment method. When an alert is triggered, it can query relevant information from the data source, such as logs, and attach it to the alert. See <a>documentation</a> for details',
+    query_configs: 'Data query',
+    use_event_datasource: 'Use alert event data source',
+    datasource_cate_required: 'Data source type cannot be empty',
+    datasource_ids_required: 'Data source cannot be empty',
+    select_alert_event_btn: 'Select alert event',
+    select_alert_event_tip: 'Select alert event tooltip',
+    select_alert_event_label: 'Selected alert event',
+    query_required: 'Query condition cannot be empty',
+    sql_limit_valid: 'SQL query statement must contain LIMIT clause',
+    annotation_configs: 'Data append',
+    annotation_key_placeholder: 'Annotation field name',
+    annotation_value_placeholder: 'Annotation field content, supports template syntax, fill query results as variables',
+    data_preview: 'Data preview',
+    data_preview_query: 'Query statement',
+    data_preview_no_eventid: 'Please select an alert event first',
+  },
 };
 export default en_US;

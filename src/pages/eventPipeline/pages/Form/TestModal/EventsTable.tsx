@@ -15,6 +15,7 @@ import { getEvents } from '@/pages/historyEvents/services';
 import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 
 interface Props {
+  cate?: string;
   rowSelectionType?: 'checkbox' | 'radio';
   selectedEventIds?: number[];
   onChange?: (ids: number[], rows: any[]) => void;
@@ -23,7 +24,7 @@ interface Props {
 export default function EventsTable(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
   const { datasourceList } = useContext(CommonStateContext);
-  const { rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
+  const { cate, rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
   const [filter, setFilter] = useState<{
     range: IRawTimeRange;
     datasourceIds: number[];
@@ -59,6 +60,7 @@ export default function EventsTable(props: Props) {
       ..._.omit(filterObj, 'range'),
       stime: moment(parsedRange.start).unix(),
       etime: moment(parsedRange.end).unix(),
+      cate: cate,
     }).then((res) => {
       return {
         total: res.dat.total,
@@ -67,7 +69,7 @@ export default function EventsTable(props: Props) {
     });
   };
   const { tableProps } = useAntdTable(fetchData, {
-    refreshDeps: [JSON.stringify(filterObj)],
+    refreshDeps: [JSON.stringify(filterObj), cate],
     defaultPageSize: 30,
     debounceWait: 500,
   });
@@ -75,7 +77,7 @@ export default function EventsTable(props: Props) {
   return (
     <>
       <div>
-        <Space>
+        <Space wrap>
           <TimeRangePicker
             value={filter.range}
             onChange={(val) => {
