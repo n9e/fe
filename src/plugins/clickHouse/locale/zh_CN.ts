@@ -35,11 +35,5 @@ const zh_CN = {
     title: '告警条件',
     value_msg: '请输入表达式值',
   },
-  datasource: {
-    max_query_rows: '单次请求允许检索的最大行数',
-    max_idle_conns: '最大空闲连接数',
-    max_open_conns: '最大打开连接数',
-    conn_max_lifetime: '连接生命周期（秒）',
-  },
 };
 export default zh_CN;

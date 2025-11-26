@@ -13,10 +13,14 @@ export default function MysqlLike(props: Props) {
 
   return (
     <div>
-      <div className='page-title'>HTTP</div>
+      <div className='page-title'>{t('endpoint_title')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
-          {_.map(data?.settings?.['ck.nodes'], (el, index) => (
+          <Col span={4}>{t('form.protocol')}：</Col>
+          <Col span={20} className='second-color'>
+            {data?.settings?.[`${type}.protocol`] || '-'}
+          </Col>
+          {_.map(data?.settings?.[`${type}.nodes`], (el, index) => (
             <Fragment key={index}>
               <Col span={4}>URL：</Col>
               <Col span={20} className='second-color'>
@@ -26,23 +30,52 @@ export default function MysqlLike(props: Props) {
           ))}
         </Row>
       </div>
+      <div className='page-title'>{t('form.auth')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
-          <Col span={8}>{t('form.username')}：</Col>
-          <Col span={8}>{t('form.password')}：</Col>
-          <Col span={8}>{t('form.timeout')}：</Col>
-          <Col span={8} className='second-color'>
+          <Col span={12}>{t('form.secure_connection')}：</Col>
+          <Col span={12}>{t('form.skip_ssl_verify')}：</Col>
+          <Col span={12} className='second-color'>
+            {data?.settings?.[`${type}.secure_connection`] ? t('common:yes') : t('common:no')}
+          </Col>
+          <Col span={12} className='second-color'>
+            {data?.settings?.[`${type}.skip_ssl_verify`] ? t('common:yes') : t('common:no')}
+          </Col>
+          <Col span={12}>{t('form.username')}：</Col>
+          <Col span={12}>{t('form.password')}：</Col>
+          <Col span={12} className='second-color'>
             {data?.settings?.[`${type}.user`]}
           </Col>
-          <Col span={8} className='second-color'>
+          <Col span={12} className='second-color'>
             {data?.settings?.[`${type}.password`] ? '******' : '-'}
-          </Col>
-          <Col span={8} className='second-color'>
-            {data.settings?.['ck.timeout']}
           </Col>
         </Row>
       </div>
-      <div className='flash-cat-block' style={{ marginTop: 16 }}>
+      <div className='page-title'>{t('common:advanced_settings')}</div>
+      <div className='flash-cat-block'>
+        <Col span={24}>{t('datasource:datasource.timeout_ms')}</Col>
+        <Col span={24} className='second-color'>
+          {data.settings[`${type}.timeout`] || '-'}
+        </Col>
+        <Col span={24}>{t('datasource:datasource.max_query_rows')}</Col>
+        <Col span={24} className='second-color'>
+          {data.settings[`${type}.max_query_rows`] || '-'}
+        </Col>
+        <Col span={24}>{t('datasource:datasource.max_idle_conns')}</Col>
+        <Col span={24} className='second-color'>
+          {data.settings[`${type}.max_idle_conns`] || '-'}
+        </Col>
+        <Col span={24}>{t('datasource:datasource.max_open_conns')}</Col>
+        <Col span={24} className='second-color'>
+          {data.settings[`${type}.max_open_conns`] || '-'}
+        </Col>
+        <Col span={24}>{t('datasource:datasource.conn_max_lifetime')}</Col>
+        <Col span={24} className='second-color'>
+          {data.settings[`${type}.conn_max_lifetime`] || '-'}
+        </Col>
+      </div>
+      <div className='page-title'>{t('form.other')}</div>
+      <div className='flash-cat-block'>
         <Row gutter={16}>
           <Col span={24}>{t('form.cluster')}：</Col>
           <Col span={24} className='second-color'>

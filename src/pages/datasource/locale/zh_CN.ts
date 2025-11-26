@@ -105,5 +105,6 @@ const zh_CN = {
   label_mapping: {
     title: '标签丰富',
   },
+  endpoint_title: '服务入口',
 };
 export default zh_CN;

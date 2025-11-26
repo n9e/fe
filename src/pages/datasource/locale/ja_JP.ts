@@ -110,6 +110,7 @@ const ja_JP = {
   label_mapping: {
     title: 'ラベルの強化',
   },
+  endpoint_title: 'サービスエントリ',
 };
 
 export default ja_JP;

@@ -110,6 +110,7 @@ const ru_RU = {
   label_mapping: {
     title: 'Обогащение меток',
   },
+  endpoint_title: 'Точка входа в сервис',
 };
 
 export default ru_RU;

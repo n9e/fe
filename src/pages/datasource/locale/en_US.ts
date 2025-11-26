@@ -109,5 +109,6 @@ const en_US = {
   label_mapping: {
     title: 'Label Enrichment',
   },
+  endpoint_title: 'Service Entry',
 };
 export default en_US;
