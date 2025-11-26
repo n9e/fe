@@ -173,7 +173,7 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     sql_limit_valid: 'SQL query statement must contain LIMIT clause',
     annotation_configs: 'Data append',
     annotation_key_placeholder: 'Annotation field name',
-    annotation_value_placeholder: 'Annotation field content, supports template syntax, fill query results as variables',
+    annotation_val_placeholder: 'Annotation field content, supports template syntax, fill query results as variables',
     data_preview: 'Data preview',
     data_preview_query: 'Query statement',
     data_preview_no_eventid: 'Please select an alert event first',

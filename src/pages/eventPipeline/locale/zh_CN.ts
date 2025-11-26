@@ -192,7 +192,7 @@ const zh_CN = {
     sql_limit_valid: 'SQL 查询语句必须包含 LIMIT 子句',
     annotation_configs: '数据追加',
     annotation_key_placeholder: '附加字段名称',
-    annotation_value_placeholder: '附加字段内容，支持模板语法，将查询结果以变量方式填充',
+    annotation_val_placeholder: '附加字段内容，支持模板语法，将查询结果以变量方式填充',
     data_preview: '数据预览',
     data_preview_query: '查询语句',
     data_preview_no_eventid: '请先选择告警事件',
