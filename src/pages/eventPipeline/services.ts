@@ -70,3 +70,13 @@ export function getEventTagValues(key: string) {
     return res.dat;
   });
 }
+
+export function getEventEnrichDataPreview(data: { cate: string; config: Record<string, any>; event_id: number }) {
+  return request('/api/n9e-plus/event-enrich-data-preview', {
+    method: RequestMethod.Post,
+    data,
+    silence: true,
+  }).then((res) => {
+    return res.dat;
+  });
+}
