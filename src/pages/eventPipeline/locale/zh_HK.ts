@@ -158,6 +158,24 @@ const zh_HK = {
     help: '按查詢結果抑制事件：當告警觸發時，會執行下方數據查詢；若返回至少一條數據，則抑制本次告警（不再通知）；無數據則正常通知。更多說明見 <a>使用文檔</a>',
     t_1: '且 查詢到以下 <b>數據</b>',
   },
+  annotation_qd: {
+    help: '附加查詢處理器是一種告警增強方式。告警觸發時，它能從數據源中查詢相關信息，比如日誌等，並附加到告警中。詳見 <a>使用文檔</a>',
+    query_configs: '數據查詢',
+    use_event_datasource: '使用告警事件數據源',
+    datasource_cate_required: '數據源類型不能為空',
+    datasource_ids_required: '數據源不能為空',
+    select_alert_event_btn: '選擇告警事件',
+    select_alert_event_tip: '選項告警事件提示信息',
+    select_alert_event_label: '已選告警事件',
+    query_required: '查詢條件不能為空',
+    sql_limit_valid: 'SQL 查詢語句必須包含 LIMIT 子句',
+    annotation_configs: '數據追加',
+    annotation_key_placeholder: '附加字段名稱',
+    annotation_value_placeholder: '附加字段內容，支持模板語法，將查詢結果以變量方式填充',
+    data_preview: '數據預覽',
+    data_preview_query: '查詢語句',
+    data_preview_no_eventid: '請先選擇告警事件',
+  },
 };
 
 export default zh_HK;
