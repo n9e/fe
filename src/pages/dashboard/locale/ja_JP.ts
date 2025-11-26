@@ -42,7 +42,7 @@ const ja_JP = {
   batch: {
     import: '夜鶯ダッシュボード JSON をインポート',
     label: 'ダッシュボード JSON',
-    import_grafana: 'Grafanaダッシュボードをインポート',
+    import_grafana: 'Grafanaダッシュボードをインポート（非推奨）',
     import_grafana_tip:
       'Prometheus タイプのデータ ソースをインポートするダッシュボードだけがサポートされており、ナイチンゲールでサポートされているチャート タイプと関数もサポートされています <a>問題フィードバック</a>',
     import_grafana_tip_version_error: 'v7未満のバージョンのダッシュボード設定をインポートすることはできません',

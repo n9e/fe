@@ -46,7 +46,7 @@ const ru_RU = {
   batch: {
     import: 'Импорт JSON панели Nightingale',
     label: 'Панель JSON',
-    import_grafana: 'Импорт панели Grafana',
+    import_grafana: 'Импорт панели Grafana (не рекомендуется)',
     import_grafana_tip: 'Поддерживается импорт панелей только из Prometheus типа источников данных, а также диаграммы и функции, поддерживаемые Nightingale <a>Отзывы</a>',
     import_grafana_tip_version_error: 'Не поддерживается импорт панелей конфигурации версии меньше v7',
     import_grafana_tip_version_warning: 'Импорт панелей конфигурации версии меньше v8, возможны частичные не поддерживаемые диаграммы и проблемы с рендерингом',
