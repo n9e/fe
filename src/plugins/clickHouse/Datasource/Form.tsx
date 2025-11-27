@@ -63,41 +63,40 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                   <PlusCircleOutlined className='cursor-pointer text-lg text-gray-600' onClick={() => add()} />
                 </Space>
               </div>
-              {fields.map((field, index) => {
+              {fields.map((field) => {
                 return (
                   <div key={field.key}>
-                    <Form.Item label={index === 0 ? <span className='text-sm font-medium'>URL</span> : null} required className='mb-0'>
-                      <Row gutter={16}>
-                        <Col flex={1}>
-                          <Form.Item
-                            {...field}
-                            name={[field.name]}
-                            rules={[
-                              {
-                                required: true,
+                    <Row gutter={16}>
+                      <Col flex={1}>
+                        <Form.Item
+                          {...field}
+                          name={[field.name]}
+                          rules={[
+                            {
+                              required: true,
+                              message: t('form.url_required_msg'),
+                            },
+                            { pattern: /(^\S)((.)*\S)?(\S*$)/, message: t('form.url_no_spaces_msg') },
+                            () => ({
+                              validator(_, value) {
+                                if (!value) return Promise.resolve();
+                                if (/^https?:\/\//i.test(value)) {
+                                  return Promise.reject(new Error(t('form.url_no_http_msg') || ''));
+                                }
+                                return Promise.resolve();
                               },
-                              { pattern: /(^\S)((.)*\S)?(\S*$)/, message: t('form.url_no_spaces_msg') },
-                              () => ({
-                                validator(_, value) {
-                                  if (!value) return Promise.resolve();
-                                  if (/^https?:\/\//i.test(value)) {
-                                    return Promise.reject(new Error(t('form.url_no_http_msg') || ''));
-                                  }
-                                  return Promise.resolve();
-                                },
-                              }),
-                            ]}
-                          >
-                            <Input placeholder='http://localhost:9200' className='w-full' />
-                          </Form.Item>
+                            }),
+                          ]}
+                        >
+                          <Input placeholder='localhost:9200' className='w-full' />
+                        </Form.Item>
+                      </Col>
+                      {fields.length > 1 ? (
+                        <Col>
+                          <MinusCircleOutlined className='cursor-pointer text-lg mt-2 mr-4 text-gray-600' onClick={() => remove(field.name)} />
                         </Col>
-                        {fields.length > 1 ? (
-                          <Col>
-                            <MinusCircleOutlined className='cursor-pointer text-lg mt-2 mr-4 text-gray-600' onClick={() => remove(field.name)} />
-                          </Col>
-                        ) : null}
-                      </Row>
-                    </Form.Item>
+                      ) : null}
+                    </Row>
                   </div>
                 );
               })}
