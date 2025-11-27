@@ -4,6 +4,7 @@ import { Location } from 'history';
 import { Modal } from 'antd';
 
 interface Props {
+  defaultPath?: string;
   when: boolean;
   title?: string;
   onOK?: () => boolean | Promise<boolean>;
@@ -16,10 +17,10 @@ interface Props {
 }
 
 export default forwardRef(function RouterPrompt(props: Props, ref) {
-  const { when, onOK, onCancel, title = 'Unsaved changes', message = 'Are you sure want to leave this page ?', okText, cancelText, footer, validator } = props;
+  const { defaultPath = '', when, onOK, onCancel, title = 'Unsaved changes', message = 'Are you sure want to leave this page ?', okText, cancelText, footer, validator } = props;
   const history = useHistory();
   const [showPrompt, setShowPrompt] = useState(false);
-  const [currentPath, setCurrentPath] = useState('');
+  const [currentPath, setCurrentPath] = useState(defaultPath);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
