@@ -181,6 +181,7 @@ const zh_HK = {
     data_preview: '數據預覽',
     data_preview_query: '查詢語句',
     data_preview_no_eventid: '請先選擇告警事件',
+    query_limit: '返回條數限制',
   },
 };
 
