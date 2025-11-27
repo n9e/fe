@@ -563,6 +563,7 @@ export default function DetailV2(props: IProps) {
       />
       <RouterPrompt
         ref={routerPromptRef}
+        defaultPath='/dashboards'
         when={!allowedLeave}
         title={t('detail.prompt.title')}
         message={<div style={{ fontSize: 16 }}>{t('detail.prompt.message')}</div>}
