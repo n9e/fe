@@ -141,6 +141,9 @@ export default function NotifyConfig(props: Props) {
 
             form.setFieldsValue(newFormValues);
           }}
+          showSearch
+          optionFilterProp='label'
+          disabled={disabled}
         />
       </Form.Item>
       {processorType === 'relabel' && <Relabel field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
