@@ -202,6 +202,7 @@ const zh_CN = {
     data_preview: '数据预览',
     data_preview_query: '查询语句',
     data_preview_no_eventid: '请先选择告警事件',
+    query_limit: '返回条数限制',
   },
 };
 export default zh_CN;

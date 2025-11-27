@@ -183,6 +183,7 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     data_preview: 'Data Preview',
     data_preview_query: 'Query Statement',
     data_preview_no_eventid: 'Please select an alert event first',
+    query_limit: 'Return limit',
   },
 };
 export default en_US;

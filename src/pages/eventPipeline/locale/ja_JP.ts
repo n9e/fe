@@ -184,6 +184,7 @@ const ja_JP = {
     data_preview: 'データプレビュー',
     data_preview_query: 'クエリステートメント',
     data_preview_no_eventid: '先にアラートイベントを選択してください',
+    query_limit: '返却件数制限',
   },
 };
 
