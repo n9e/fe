@@ -16,6 +16,7 @@ import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 
 interface Props {
   cate?: string;
+  datasourceSelectDisable?: boolean;
   rowSelectionType?: 'checkbox' | 'radio';
   selectedEventIds?: number[];
   onChange?: (ids: number[], rows: any[]) => void;
@@ -24,7 +25,7 @@ interface Props {
 export default function EventsTable(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
   const { datasourceList } = useContext(CommonStateContext);
-  const { cate, rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
+  const { cate, datasourceSelectDisable, rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
   const [filter, setFilter] = useState<{
     range: IRawTimeRange;
     datasourceIds: number[];
@@ -89,6 +90,7 @@ export default function EventsTable(props: Props) {
             dateFormat='YYYY-MM-DD HH:mm:ss'
           />
           <DatasourceSelect
+            disabled={datasourceSelectDisable}
             style={{ width: 100 }}
             filterKey='alertRule'
             value={filter.datasourceIds}
