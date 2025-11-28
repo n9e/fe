@@ -10,13 +10,7 @@ import { IS_PLUS } from '@/utils/constant';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 // @ts-ignore
-import LabelEnrich from 'plus:/parcels/eventPipeline/LabelEnrich';
-// @ts-ignore
-import Script from 'plus:/parcels/eventPipeline/Script';
-// @ts-ignore
-import Inhibit from 'plus:/parcels/eventPipeline/Inhibit';
-// @ts-ignore
-import InhibitQd from 'plus:/parcels/eventPipeline/InhibitQd';
+import PlusProcessor, { options as PlusOptions } from 'plus:/parcels/eventPipeline';
 
 import { NS, DEFAULT_PROCESSOR_CONFIG_MAP } from '../../../constants';
 import TestModal from '../TestModal';
@@ -138,26 +132,7 @@ export default function NotifyConfig(props: Props) {
                 value: 'ai_summary',
               },
             ],
-            IS_PLUS
-              ? [
-                  {
-                    label: 'Label Enrich',
-                    value: 'label_enrich',
-                  },
-                  {
-                    label: 'Script',
-                    value: 'script',
-                  },
-                  {
-                    label: 'Inhibit',
-                    value: 'inhibit',
-                  },
-                  {
-                    label: 'Inhibit by Query Data',
-                    value: 'inhibit_qd',
-                  },
-                ]
-              : [],
+            IS_PLUS ? PlusOptions : [],
           )}
           onChange={(newTyp) => {
             const newConfig = _.cloneDeep(DEFAULT_PROCESSOR_CONFIG_MAP[newTyp]);
@@ -166,17 +141,17 @@ export default function NotifyConfig(props: Props) {
 
             form.setFieldsValue(newFormValues);
           }}
+          showSearch
+          optionFilterProp='label'
+          disabled={disabled}
         />
       </Form.Item>
       {processorType === 'relabel' && <Relabel field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'callback' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'event_update' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
-      {processorType === 'label_enrich' && <LabelEnrich field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} />}
-      {processorType === 'script' && <Script field={field} namePath={[field.name, 'config']} />}
-      {processorType === 'inhibit' && <Inhibit field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
-      {processorType === 'inhibit_qd' && <InhibitQd field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
+      <PlusProcessor processorType={processorType} field={field} />
 
       <TestModal type='processor' config={processorConfig} />
     </Card>

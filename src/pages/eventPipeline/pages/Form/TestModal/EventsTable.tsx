@@ -15,15 +15,17 @@ import { getEvents } from '@/pages/historyEvents/services';
 import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
 
 interface Props {
+  cate?: string;
+  datasourceSelectDisable?: boolean;
   rowSelectionType?: 'checkbox' | 'radio';
   selectedEventIds?: number[];
-  onChange?: (ids: number[]) => void;
+  onChange?: (ids: number[], rows: any[]) => void;
 }
 
 export default function EventsTable(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
   const { datasourceList } = useContext(CommonStateContext);
-  const { rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
+  const { cate, datasourceSelectDisable, rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
   const [filter, setFilter] = useState<{
     range: IRawTimeRange;
     datasourceIds: number[];
@@ -59,6 +61,7 @@ export default function EventsTable(props: Props) {
       ..._.omit(filterObj, 'range'),
       stime: moment(parsedRange.start).unix(),
       etime: moment(parsedRange.end).unix(),
+      cate: cate,
     }).then((res) => {
       return {
         total: res.dat.total,
@@ -67,7 +70,7 @@ export default function EventsTable(props: Props) {
     });
   };
   const { tableProps } = useAntdTable(fetchData, {
-    refreshDeps: [JSON.stringify(filterObj)],
+    refreshDeps: [JSON.stringify(filterObj), cate],
     defaultPageSize: 30,
     debounceWait: 500,
   });
@@ -75,7 +78,7 @@ export default function EventsTable(props: Props) {
   return (
     <>
       <div>
-        <Space>
+        <Space wrap>
           <TimeRangePicker
             value={filter.range}
             onChange={(val) => {
@@ -87,6 +90,7 @@ export default function EventsTable(props: Props) {
             dateFormat='YYYY-MM-DD HH:mm:ss'
           />
           <DatasourceSelect
+            disabled={datasourceSelectDisable}
             style={{ width: 100 }}
             filterKey='alertRule'
             value={filter.datasourceIds}
@@ -244,7 +248,7 @@ export default function EventsTable(props: Props) {
           type: rowSelectionType,
           selectedRowKeys: selectedEventIds,
           onChange: (selectedRowKeys: number[], selectedRows: any[]) => {
-            onChange && onChange(selectedRowKeys);
+            onChange && onChange(selectedRowKeys, selectedRows);
           },
         }}
         rowClassName={(record: { severity: number; is_recovered: number }) => {

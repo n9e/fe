@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 
 interface Props {
+  disabled?: boolean;
   value?: number[];
   onChange: (val?: number[]) => void;
   filterKey?: string;
@@ -16,10 +17,11 @@ interface Props {
 export default function DatasourceSelect(props: Props) {
   const { t } = useTranslation();
   const { groupedDatasourceList, datasourceCateOptions, isPlus } = useContext(CommonStateContext);
-  const { value, onChange, filterKey, style, disableResponsive, showHost } = props;
+  const { disabled, value, onChange, filterKey, style, disableResponsive, showHost } = props;
 
   return (
     <Select
+      disabled={disabled}
       showSearch
       style={style}
       maxTagCount={disableResponsive ? undefined : 'responsive'}
