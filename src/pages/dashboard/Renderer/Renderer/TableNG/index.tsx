@@ -139,6 +139,7 @@ function index(props: Props) {
         columnDefs={_.map(ajustColumns ? ajustColumns(columns) : columns, (item) => {
           return {
             field: item,
+            unSortIcon: true,
             headerName: item,
             cellStyle: {
               padding: 0,
