@@ -27,8 +27,17 @@ export const units: any = [
     value: 'none',
   },
   {
-    label: 'SI short',
-    value: 'sishort',
+    label: 'Misc',
+    options: [
+      {
+        label: 'SI short',
+        value: 'sishort',
+      },
+      {
+        label: 'Count',
+        value: 'count',
+      },
+    ],
   },
   {
     label: 'Data',
