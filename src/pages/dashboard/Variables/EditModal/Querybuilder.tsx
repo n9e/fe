@@ -31,7 +31,7 @@ export default function Querybuilder() {
         {datasourceCate === DatasourceCateEnum.prometheus && <Prometheus />}
         {datasourceCate === DatasourceCateEnum.elasticsearch && <Elasticsearch />}
         {datasourceCate === DatasourceCateEnum.ck && <ClickHouse />}
-        <VariableQuerybuilderPro {...subProps} datasourceValue={currentdatasourceValue} />
+        <VariableQuerybuilderPro {...subProps} datasourceValue={currentdatasourceValue!} />
       </div>
     </>
   );
