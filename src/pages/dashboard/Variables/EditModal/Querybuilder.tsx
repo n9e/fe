@@ -24,19 +24,15 @@ export default function Querybuilder() {
     datasourceCate,
   };
 
-  if (currentdatasourceValue === undefined) {
-    if (datasourceValue === undefined) return null;
-    return <Alert className='mb-2' type='warning' message={`Invalid datasource value ${datasourceValue}`} />;
-  }
-
-  if (datasourceCate === DatasourceCateEnum.prometheus) {
-    return <Prometheus />;
-  }
-  if (datasourceCate === DatasourceCateEnum.elasticsearch) {
-    return <Elasticsearch />;
-  }
-  if (datasourceCate === DatasourceCateEnum.ck) {
-    return <ClickHouse />;
-  }
-  return <VariableQuerybuilderPro {...subProps} datasourceValue={currentdatasourceValue} />;
+  return (
+    <>
+      {currentdatasourceValue === undefined && datasourceValue !== undefined && <Alert className='mb-2' type='warning' message={`Invalid datasource value ${datasourceValue}`} />}
+      <div style={{ display: currentdatasourceValue === undefined ? 'none' : 'block' }}>
+        {datasourceCate === DatasourceCateEnum.prometheus && <Prometheus />}
+        {datasourceCate === DatasourceCateEnum.elasticsearch && <Elasticsearch />}
+        {datasourceCate === DatasourceCateEnum.ck && <ClickHouse />}
+        <VariableQuerybuilderPro {...subProps} datasourceValue={currentdatasourceValue} />
+      </div>
+    </>
+  );
 }

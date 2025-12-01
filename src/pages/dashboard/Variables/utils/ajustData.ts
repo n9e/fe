@@ -92,7 +92,7 @@ export default function adjustData(
   const data = _.reduce(
     variables,
     (result, variable) => {
-      const { name, options, reg, value, allValue, type, datasource } = variable;
+      const { options, reg, defaultValue, definition, value, allValue, type, datasource } = variable;
       const datasourceCate = (datasource?.cate as DatasourceCateEnum) || DatasourceCateEnum.prometheus;
       const separator = replaceAllSeparatorMap[datasourceCate];
       const params = {
@@ -101,7 +101,10 @@ export default function adjustData(
         isPlaceholderQuoted,
         isEscapeJsonString,
       };
-      let joinedValue = value;
+      // value: 已选的值
+      // defaultValue: 数据源变量默认值
+      // definition: 常量定义的值
+      let joinedValue = value ?? defaultValue ?? definition;
       if (_.isEqual(value, ['all']) || _.isEqual(value, ['__all__'])) {
         if (allValue) {
           joinedValue = allValue;
