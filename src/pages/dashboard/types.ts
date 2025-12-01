@@ -81,7 +81,6 @@ export interface LinksItem {
 }
 
 export interface IStandardOptions {
-  util?: string; // 错别字
   unit?: string; // 纠正的单位
   min?: number;
   max?: number;

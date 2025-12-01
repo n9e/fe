@@ -41,7 +41,7 @@ export default function index(props: IProps) {
       <>
         <Form.Item shouldUpdate noStyle>
           {({ getFieldValue }) => {
-            const unit = getFieldValue([...namePrefix, 'util']) || '';
+            const unit = getFieldValue([...namePrefix, 'unit']) || '';
             return (
               <Row gutter={10}>
                 <Col span={unit.indexOf('datetime') > -1 ? 12 : 24}>
@@ -68,7 +68,7 @@ export default function index(props: IProps) {
                         </Tooltip>
                       </div>
                     }
-                    name={[...namePrefix, 'util']} // TODO: Change this to 'unit'
+                    name={[...namePrefix, 'unit']}
                   >
                     <CustomUnitPicker
                       placeholder='SI prefixes'
