@@ -62,8 +62,15 @@ export default function Pie(props: IProps) {
   };
 
   const detailFormatter = (data: any) => {
+    const scopedVars = {
+      '__field.name': data.name,
+      '__field.value': data.value,
+    };
+    _.forEach(data.metric, (value, key) => {
+      scopedVars[`__field.labels.${key}`] = value;
+    });
     return replaceTemplateVariables(detailUrl, {
-      scopedVars: data,
+      scopedVars,
     });
   };
 

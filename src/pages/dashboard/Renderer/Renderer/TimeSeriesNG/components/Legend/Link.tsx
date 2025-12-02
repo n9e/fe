@@ -15,8 +15,16 @@ interface Props {
 export default function Link(props: Props) {
   const { data, name, url, style } = props;
   if (!url) return null;
+  const scopedVars = {
+    '__field.name': data.name,
+    '__field.value': data.last?.stat,
+  };
+  _.forEach(data.metric, (value, key) => {
+    scopedVars[`__field.labels.${key}`] = value;
+  });
+
   const linkHref = replaceTemplateVariables(url, {
-    scopedVars: data,
+    scopedVars,
   });
 
   return (

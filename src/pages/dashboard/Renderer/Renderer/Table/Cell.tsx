@@ -28,6 +28,14 @@ export default function Cell(props: Props) {
     metric: record.metric,
   };
 
+  const scopedVars = {
+    '__field.name': data.name,
+    '__field.value': data.value,
+  };
+  _.forEach(data.metric, (value, key) => {
+    scopedVars[`__field.labels.${key}`] = value;
+  });
+
   return (
     <Tooltip placement='topLeft' title={nowrap ? text : undefined}>
       <div
@@ -53,7 +61,7 @@ export default function Cell(props: Props) {
                           <a
                             target={link.targetBlank ? '_blank' : '_self'}
                             href={replaceTemplateVariables(link.url, {
-                              scopedVars: data,
+                              scopedVars,
                             })}
                           >
                             <LinkOutlined /> {link.title}
@@ -70,7 +78,7 @@ export default function Cell(props: Props) {
               <a
                 target={firstLink?.targetBlank ? '_blank' : '_self'}
                 href={replaceTemplateVariables(firstLink?.url, {
-                  scopedVars: data,
+                  scopedVars,
                 })}
                 style={styleObj}
               >
