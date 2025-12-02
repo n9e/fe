@@ -56,6 +56,14 @@ const ru_RU = {
   import_to_buisGroup: 'Импортировать в бизнес-группу',
   import_to_buisGroup_invaild: 'Невозможно импортировать правила оповещений различных типов источников данных',
   payload_by_system: 'Встроенный в систему',
+  firemap: {
+    drill_path: 'Путь сверху',
+    urlConfig: 'Ссылка',
+    dashboardConfig: 'Панель мониторинга',
+    logExplore: 'Поиск логов',
+    no_drilldown_rules: 'Нет пути сверху, можно добавить в правило',
+    no_drilldown_rules_other: 'Уже есть несколько путей сверху, не нужно отдельно конфигурировать',
+  },
 };
 
 export default ru_RU;

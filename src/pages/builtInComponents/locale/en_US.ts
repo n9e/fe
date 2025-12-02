@@ -56,5 +56,13 @@ const en_US = {
   import_to_buisGroup: 'Import to business group',
   import_to_buisGroup_invaild: 'Cannot import alert rules of different data source types',
   payload_by_system: 'System',
+  firemap: {
+    drill_path: 'Drill down path',
+    urlConfig: 'Jump address',
+    dashboardConfig: 'Dashboard',
+    logExplore: 'Log search',
+    no_drilldown_rules: 'No drilldown path, can be added in the rule',
+    no_drilldown_rules_other: 'Already have several drilldown paths, no need to configure separately',
+  },
 };
 export default en_US;

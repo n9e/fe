@@ -56,6 +56,14 @@ const ja_JP = {
   import_to_buisGroup: 'ビジネスグループにインポート',
   import_to_buisGroup_invaild: '異なるデータソースタイプのアラートルールをインポートできません',
   payload_by_system: 'システム内蔵',
+  firemap: {
+    drill_path: 'ドリルダウンパス',
+    urlConfig: 'リンクアドレス',
+    dashboardConfig: 'ダッシュボード',
+    logExplore: 'ログ検索',
+    no_drilldown_rules: '上位パスがありません。ルールに追加できます',
+    no_drilldown_rules_other: 'すでにいくつかの上位パスがあります。別途設定する必要はありません',
+  },
 };
 
 export default ja_JP;
