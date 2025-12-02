@@ -60,7 +60,7 @@ export const rangeOptions: ITimeOption[] = _.filter(
   ],
   (item) => {
     if (IS_ENT) {
-      return !['now-1m', 'now-2m', 'now-3m', 'now-3h'].includes(item.start);
+      return !['now-1m', 'now-2m', 'now-3m'].includes(item.start);
     }
     return true;
   },
