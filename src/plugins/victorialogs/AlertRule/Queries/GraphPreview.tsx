@@ -4,10 +4,11 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { DatasourceCateEnum } from '@/utils/constant';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 
-import { getLogsQuery } from '../../services';
+import { logQuery } from '../../services';
 
 export default function GraphPreview({ datasourceValue, query }) {
   const { t } = useTranslation();
@@ -24,23 +25,16 @@ export default function GraphPreview({ datasourceValue, query }) {
   const fetchData = () => {
     if (datasourceValue) {
       const parsedRange = parseRange(range);
-      const from = moment(parsedRange.start);
-      const to = moment(parsedRange.end);
+      const from = moment(parsedRange.start).unix();
+      const to = moment(parsedRange.end).unix();
       setLoading(true);
-      getLogsQuery(datasourceValue, {
-        query: query || '',
-        limit: 100,
-        start: from.toISOString(),
-        end: to.toISOString(),
+      logQuery({
+        cate: DatasourceCateEnum.victorialogs,
+        datasource_id: datasourceValue,
+        query: [{ query: query?.query, start: from, end: to }],
       })
         .then((res) => {
-          const data = _.flatten(
-            _.map(res, (item) => {
-              return _.map(item?.data, (subItem) => {
-                return subItem;
-              });
-            }),
-          );
+          const data = res?.list;
           setErrorContent('');
           setData(data);
           setColumns(
@@ -80,24 +74,13 @@ export default function GraphPreview({ datasourceValue, query }) {
           setVisible(visible);
         }}
         title={
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div
-              style={{
-                lineHeight: '32px',
-              }}
-            >
-              {t('datasource:es.alert.query.preview')}
-            </div>
+          <div className='flex justify-between'>
+            <div className='leading-[32px]'>{t('datasource:es.alert.query.preview')}</div>
           </div>
         }
         content={
-          <div style={{ width: 700 }}>
-            {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
+          <div className='w-[800px]'>
+            {errorContent && <Alert className='mb-4' message={errorContent} type='error' />}
             {_.isEmpty(data) ? (
               <Spin spinning={loading}>
                 <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

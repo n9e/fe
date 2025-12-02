@@ -96,6 +96,8 @@ const zh_CN = {
       label: '自愈模板',
     },
     step_tip: '曲线时间间隔，单位秒',
+    query_label: '查询条件',
+    trigger_label: '告警条件',
   },
 
   sharing_link: {
