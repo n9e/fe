@@ -68,3 +68,10 @@ export const getLogsQuery = function (
       return jsonLinesToJson(res);
     });
 };
+
+export const logQuery = function (data: any) {
+  return request('/api/n9e/logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+};
