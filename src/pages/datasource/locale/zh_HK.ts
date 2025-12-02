@@ -60,6 +60,7 @@ const zh_HK = {
     url_no_spaces_msg: '請勿輸入空格',
     url_no_http_msg: 'URL 不能以 http:// 或 https:// 開頭',
     url_required_msg: 'URL 不能為空',
+    logs_max_query_rows: '返回的最大日誌條數',
     prom: {
       write_addr_tip: '記錄規則產生的資料的回寫地址，常見時序資料庫配置示例',
       read_addr: '時序庫內網地址',
