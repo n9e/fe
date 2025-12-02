@@ -7,6 +7,7 @@ import Opensearch from '@/plugins/opensearch/Datasource/Form';
 import MySQL from '@/plugins/mysql/Datasource/Form';
 import PgSQL from '@/plugins/pgsql/Datasource/Form';
 import Doris from '@/plugins/doris/Datasource/Form';
+import Victorialogs from '@/plugins/victorialogs/Datasource/Form';
 
 import Prometheus from './Prometheus/Form';
 import ElasticSearch from './ElasticSearch/Form';
@@ -47,6 +48,9 @@ export default function Form(props) {
   }
   if (params.type === DatasourceCateEnum.doris) {
     return <Doris {...props} />;
+  }
+  if (params.type === DatasourceCateEnum.victorialogs) {
+    return <Victorialogs {...props} />;
   }
   return <Plus type={params.type} {...props} />;
 }

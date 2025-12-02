@@ -1,0 +1,55 @@
+const ja_JP = {
+  explorer: {
+    execute: '実行',
+    query: 'クエリ',
+    query_required: 'クエリを入力してください',
+    query_lanaguage_docs: 'クエリ言語ドキュメント',
+    limit: '制限エントリ',
+    hits: 'ヒット数',
+    graph_settings: {
+      title: 'グラフ設定',
+      stacked: 'スタック',
+      fill: '塗りつぶし',
+    },
+    view: {
+      group: 'グループ',
+      table: 'テーブル',
+      json: 'JSON',
+    },
+    total_logs_returned: '返されたログの合計',
+    total_groups: 'グループの合計',
+    page_size: 'ページサイズ',
+    page_size_all: 'すべて',
+    expand_all: 'すべて展開',
+    collapse_all: 'すべて折りたたむ',
+    group_view: {
+      ungrouped: '未グループ化',
+      group_by_field: '"{{field}}" でグループ化',
+      entries: 'エントリ',
+      show_field_tip: 'フィールドを表示',
+      hide_field_tip: 'フィールドを非表示',
+      group_by_field_icon_tip: 'このフィールドでグループ化',
+    },
+    group_view_settings: {
+      title: 'グループビュー設定',
+      group_by_field: 'グループ化フィールド',
+      group_by_field_help: 'ログをグループ化するフィールドを選択します（デフォルト：_stream）',
+      ungrouped: '未グループ化',
+      display_fields: '表示フィールド',
+      display_fields_help: '表示するフィールドを選択します（デフォルト：_msg）',
+      date_format: '日付形式',
+      date_format_help01: '日付形式を設定します（例：YYYY-MM-DD HH:mm:ss）。<a>このドキュメントで詳細を確認</a>',
+      date_format_help02: '現在の日付形式：{{dateFormat}}',
+    },
+    table_view_settings: {
+      title: 'テーブルビュー設定',
+      customize_columns: 'カスタマイズ列',
+      search_columns: '検索列',
+      check_all: 'すべて選択',
+    },
+    copy_json: 'JSONをコピー',
+  },
+  datasource: {},
+};
+
+export default ja_JP;

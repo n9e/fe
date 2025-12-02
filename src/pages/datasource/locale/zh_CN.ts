@@ -60,6 +60,7 @@ const zh_CN = {
     url_no_spaces_msg: 'URL 不能包含空格',
     url_no_http_msg: 'URL 不能以 http:// 或 https:// 开头',
     url_required_msg: 'URL 不能为空',
+    logs_max_query_rows: '返回的最大日志条数',
     prom: {
       write_addr_tip: '记录规则产生的数据的回写地址，常见时序数据库配置示例',
       read_addr: '时序库内网地址',
