@@ -103,7 +103,7 @@ export default function index(props: IProps) {
               topN: _.map(top5Result, (item) => {
                 return {
                   value: item[record.field],
-                  percent: _.toNumber(item.ratio) * 100,
+                  percent: _.toNumber(item.ratio),
                   count: _.toNumber(item.count),
                 };
               }),
