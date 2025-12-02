@@ -92,7 +92,7 @@ const zh_CN = {
   - \`gpt-3.5-turbo\` (OpenAI)
   - \`gpt-4\` (OpenAI)
   - \`deepseek-chat\` (DeepSeek)`,
-    prompt_template_tip: `提示词模板是AI分析的核心，可以使用 {{$event}} 引用事件的各个字段，事件的详细结构参考[告警历史表](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/schema/alert_his_event/)说明，刚开始使用提供的默认模板即可`,
+    prompt_template_tip: `提示词模板是AI分析的核心，可以使用 {{$event}} 引用事件的各个字段，事件的详细结构参考[告警历史表](https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/schema/alert_his_event/)说明，刚开始使用提供的默认模板即可`,
     prompt_template_placeholder: `请分析以下告警事件信息，并提供一个简洁明了的中文总结：
 告警规则: {{$event.RuleName}}
 严重程度: {{$event.Severity}}

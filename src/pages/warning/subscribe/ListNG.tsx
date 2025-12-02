@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { Button, Input, Table, message, Modal, Space, Switch, Tag, Dropdown, Menu } from 'antd';
+import React, { useState, useContext, useEffect } from 'react';
+import { Button, Input, Table, message, Modal, Space, Switch, Tag, Dropdown, Menu, Tooltip } from 'antd';
 import { ExclamationCircleOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { Link } from 'react-router-dom';
@@ -16,6 +16,8 @@ import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/Tags';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
+import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
+import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
 
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import './locale';
@@ -58,6 +60,8 @@ const Subscribe = (props: Props) => {
     console.error(e);
   }
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultDatasourceIds);
+  const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
+
   const columns: ColumnsType = _.concat(
     hideBusinessGroupColumn
       ? []
@@ -181,6 +185,36 @@ const Subscribe = (props: Props) => {
         dataIndex: 'user_groups',
         render: (data) => {
           return <Tags width={110} data={_.map(data, 'name')} />;
+        },
+      },
+      {
+        title: t('notify_rule_ids'),
+        dataIndex: 'notify_rule_ids',
+        render: (data) => {
+          return (
+            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
+              {_.map(data, (id) => {
+                const val = _.find(notificationRules, { id })?.name || id;
+                return (
+                  <Link to={`/${notificationRulesNS}/edit/${id}`} key={val} target='_blank'>
+                    <Tooltip title={val}>
+                      <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
+                        <div
+                          style={{
+                            maxWidth: 'max-content',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {val}
+                        </div>
+                      </Tag>
+                    </Tooltip>
+                  </Link>
+                );
+              })}
+            </div>
+          );
         },
       },
       {
@@ -335,6 +369,12 @@ const Subscribe = (props: Props) => {
   const refreshList = () => {
     setRefreshFlag(_.uniqueId('refresh_'));
   };
+
+  useEffect(() => {
+    getNotificationRules().then((res) => {
+      setNotificationRules(res);
+    });
+  }, []);
 
   return (
     <>

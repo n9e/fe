@@ -35,6 +35,7 @@ export interface User {
   create_by: number;
   update_at: number;
   update_by: number;
+  busi_groups?: null | { id: number; name: string }[];
 }
 export interface Team {
   id: string;
@@ -44,6 +45,7 @@ export interface Team {
   create_by: string;
   update_at: number;
   update_by: string;
+  busi_groups: Array<{ id: string; name: string }>;
 }
 export interface UserList {
   list: Array<User>;

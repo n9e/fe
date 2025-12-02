@@ -16,17 +16,14 @@
  */
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Form, Switch, Space, Select, TimePicker } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Card, Form, Switch, Space, Select, TimePicker, Tooltip } from 'antd';
+import { PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
-import AlertEventRuleTesterWithButton from '@/components/AlertEventRuleTesterWithButton';
 
 import { panelBaseProps, daysOfWeek } from '../../constants';
-import { alertRulesEnableTryrun } from '../../services';
-import { processFormValues } from '../utils';
 
 // @ts-ignore
 import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSelect';
@@ -42,7 +39,7 @@ export default function index() {
       title={
         <Space>
           {t('effective_configs')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm-management/alert-rules/effective-configuration/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/effective-configuration/' />
         </Space>
       }
     >
@@ -66,8 +63,22 @@ export default function index() {
               </div>
               {!_.isEmpty(fields) && (
                 <>
-                  <div style={{ width: 110 }}>{t('effective_time_start')}</div>
-                  <div style={{ width: 110 }}>{t('effective_time_end')}</div>
+                  <div style={{ width: 110 }}>
+                    <Space>
+                      {t('effective_time_start')}
+                      <Tooltip title={t('effective_time_tip')}>
+                        <InfoCircleOutlined />
+                      </Tooltip>
+                    </Space>
+                  </div>
+                  <div style={{ width: 110 }}>
+                    <Space>
+                      {t('effective_time_end')}
+                      <Tooltip title={t('effective_time_tip')}>
+                        <InfoCircleOutlined />
+                      </Tooltip>
+                    </Space>
+                  </div>
                 </>
               )}
             </Space>

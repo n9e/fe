@@ -56,6 +56,7 @@ const AckBtnDefault = () => {
   return null;
 };
 const getBrainLicense = null;
+const options = [];
 export {
   AlertRule,
   QueryBuilder,
@@ -81,4 +82,5 @@ export {
   searchDrilldown,
   AckBtnDefault,
   getBrainLicense,
+  options,
 };

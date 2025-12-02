@@ -93,6 +93,7 @@ const ru_RU = {
     task_tpls: {
       label: 'Шаблоны самовосстановления',
     },
+    step_tip: 'Интервал времени кривой в секундах',
   },
 
   sharing_link: {

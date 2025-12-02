@@ -45,7 +45,7 @@ const en_US = {
   batch: {
     import: 'Import Nightingale dashboard JSON',
     label: 'Dashboard JSON',
-    import_grafana: 'Import Grafana dashboard',
+    import_grafana: 'Import Grafana dashboard (not recommended)',
     import_grafana_tip: 'Only supports importing dashboards of Prometheus type data sources, as well as chart types and functions supported by Nightingale <a>feedback</a>',
     import_grafana_tip_version_error: 'Import of dashboard config less than v7 version is not supported',
     import_grafana_tip_version_warning: 'The imported dashboard config version is less than v8, some panels may not be displayed properly, do you want to continue importing?',
@@ -490,13 +490,13 @@ const en_US = {
         gradientMode_opacity: 'Opacity',
         gradientMode_none: 'None',
         stack: 'Stack',
-        stack_noraml: 'Normal',
+        stack_normal: 'Normal',
         stack_off: 'Off',
         yAxis: {
           title: 'Y-Axis settings',
           rightYAxis: {
             label: 'Right Y-Axis',
-            noraml: 'On',
+            normal: 'On',
             off: 'Off',
           },
         },

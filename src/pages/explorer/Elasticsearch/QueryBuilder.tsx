@@ -156,7 +156,7 @@ export default function QueryBuilder(props: Props) {
                       darkMode,
                       title: t('common:page_help'),
                       type: 'iframe',
-                      documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/open-source/elasticserch/',
+                      documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/elasticserch/',
                     });
                   }}
                 />

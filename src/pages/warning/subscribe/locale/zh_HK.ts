@@ -6,6 +6,7 @@ const zh_HK = {
   sub_rule_selected: '已選規則',
   tags: '訂閱標籤',
   user_groups: '告警接收組',
+  notify_rule_ids: '通知規則',
   tag: {
     key: {
       label: '訂閱事件標籤鍵',

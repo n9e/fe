@@ -95,6 +95,7 @@ const zh_CN = {
     task_tpls: {
       label: '自愈模板',
     },
+    step_tip: '曲线时间间隔，单位秒',
   },
 
   sharing_link: {

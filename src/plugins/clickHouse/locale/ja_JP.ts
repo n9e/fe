@@ -42,9 +42,6 @@ const ja_JP = {
     title: 'トリガー',
     value_msg: '式の値を入力してください',
   },
-  datasource: {
-    max_query_rows: '単一リクエストで取得可能な最大行数',
-  },
 };
 
 export default ja_JP;

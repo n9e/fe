@@ -48,6 +48,10 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'notify_rule_ids',
+    visible: true,
+  },
+  {
     name: 'new_severity',
     i18nKey: 'redefine_severity',
     visible: false,

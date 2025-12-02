@@ -25,6 +25,7 @@ const ru_RU = {
     effective_time_week_msg: 'Пожалуйста, выберите период активации',
     effective_time_start_msg: 'Пожалуйста, укажите начало',
     effective_time_end_msg: 'Пожалуйста, укажите окончание',
+    fetch_integration_key_failed_remove: 'Не удалось получить следующие ключи PagerDuty: {list}, пожалуйста, попробуйте снова выбрать',
     label_keys: 'Применимые теги',
     label_keys_tip:
       'Правило уведомления может ограничивать действие только для событий, соответствующих условиям (отфильтрованным по тегам), если не настроено, действие не ограничивается',
@@ -37,6 +38,7 @@ const ru_RU = {
       is_recovered: 'Событие восстановления?',
       rule_id: 'Правило тревоги',
       severity: 'Уровень тревоги',
+      target_group: 'Бизнес-группа хоста',
     },
     run_test_btn: 'Тестирование уведомления',
     run_test_btn_tip:
@@ -49,6 +51,9 @@ const ru_RU = {
     },
     flashduty: {
       ids: 'Пространство flashduty',
+    },
+    pagerduty: {
+      services: 'Сервисы/Интеграции',
     },
   },
   user_group_id_invalid_tip: 'Команда не существует',

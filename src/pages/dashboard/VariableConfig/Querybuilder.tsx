@@ -56,7 +56,7 @@ export default function Querybuilder(props: Props) {
                         language: i18n.language,
                         darkMode,
                         title: t('var.definition'),
-                        documentPath: '/docs/elasticsearch-template-variables',
+                        documentPath: '/n9e-docs/elasticsearch-template-variables',
                       });
                     }
                   }}

@@ -24,6 +24,7 @@ const zh_CN = {
     smtp: 'SMTP 配置',
     script: 'Script 配置',
     flashduty: 'FlashDuty 配置',
+    pagerduty: 'PagerDuty 配置',
   },
   request_type: '发送类型',
   http_request_config: {
@@ -86,5 +87,14 @@ const zh_CN = {
     timeout: '超时时间 (单位: 毫秒)',
     retry_times: '重试次数',
   },
+  pagerduty_request_config: {
+    title: 'PagerDuty',
+    api_key: 'API Key',
+    api_key_tip: '此处填写的是 PagerDuty 的集成 API Key，可以查看 https://developer.pagerduty.com/docs/authentication 文档来了解如何获取 API Key',
+    proxy: '代理',
+    proxy_tip: 'HTTP PROXY 地址，用于需要代理的场景',
+    timeout: '超时时间 (单位: 毫秒)',
+    retry_times: '重试次数',
+  }
 };
 export default zh_CN;

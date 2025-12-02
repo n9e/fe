@@ -193,7 +193,7 @@ const index = (_props: any) => {
       title={
         <Space>
           {t('tpl')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alarm_self-healing/self-healing-script/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/self-healing/self-healing-script/' />
         </Space>
       }
     >

@@ -11,6 +11,8 @@ const ru_RU = {
   menu_small_logo_url_tip: 'Введите URL ресурса изображения, рекомендуемый размер 38x38',
   document_url: 'URL документации',
   document_url_tip: 'Перезаписывает URL по умолчанию для ссылки на документацию Nightingale',
+  site_url: 'URL сайта',
+  site_url_tip: 'Адрес, используемый для внешнего доступа к Nightingale. Бэкенд может использовать его для создания ссылок, которые могут получить доступ к экземпляру Nightingale',
   page_title: 'Заголовок сайта',
   page_title_tip: 'Перезаписывает заголовок по умолчанию (Nightingale)',
   home_page_url: 'URL главной страницы',

@@ -105,17 +105,7 @@ export default function index({ disabled }) {
               display: notifyTargetCollapsed ? 'none' : 'block',
             }}
           >
-            <Form.Item
-              label={
-                <Space>
-                  {t('notify_channels')}
-                  <a target='_blank' href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/usage/alert/alert-notify/'>
-                    {t('notify_channels_doc')}
-                  </a>
-                </Space>
-              }
-              name='notify_channels'
-            >
+            <Form.Item label={<Space>{t('notify_channels')}</Space>} name='notify_channels'>
               <Checkbox.Group disabled={disabled}>
                 {contactList.map((item) => {
                   return (
@@ -217,7 +207,7 @@ export default function index({ disabled }) {
                       <Trans
                         ns='alertRules'
                         i18nKey='alertRules:callbacks_tip'
-                        components={{ a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v6/faq/go-template/' target='_blank' /> }}
+                        components={{ a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/tpl_func/' target='_blank' /> }}
                       />
                     }
                     overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'

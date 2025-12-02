@@ -24,6 +24,7 @@ const zh_HK = {
     smtp: 'SMTP 配置',
     script: 'Script 配置',
     flashduty: 'FlashDuty 配置',
+    pagerduty: 'PagerDuty 配置',
   },
   request_type: '發送類型',
   http_request_config: {
@@ -86,6 +87,15 @@ const zh_HK = {
     timeout: '超時時間 (單位: 毫秒)',
     retry_times: '重試次數',
   },
+  pagerduty_request_config: {
+    title: 'PagerDuty',
+    api_key: 'API Key',
+    api_key_tip: '此處填寫的是 PagerDuty 的整合 API Key，可以查看 https://developer.pagerduty.com/docs/authentication 文件來了解如何獲取 API Key',
+    proxy: '代理',
+    proxy_tip: 'HTTP PROXY 地址，用於需要代理的場景',
+    timeout: '超時時間 (單位: 毫秒)',
+    retry_times: '重試次數',
+  }
 };
 
 export default zh_HK;

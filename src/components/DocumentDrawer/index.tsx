@@ -3,6 +3,10 @@ import _ from 'lodash';
 import { Drawer, Space, Spin } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import MDEditor from '@uiw/react-md-editor';
+import { useTranslation } from 'react-i18next';
+
+import { IS_ENT } from '@/utils/constant';
+
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import Document from './Document';
 import './style.less';
@@ -26,11 +30,17 @@ const filenameMap = {
 };
 
 function index(props: Props & ModalWrapProps) {
-  const { visible, destroy, darkMode, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md', zIndex } = props;
+  const { t } = useTranslation();
+  const { visible, destroy, language = 'zh_CN', title, width = '60%', documentPath, onClose, type = 'md', zIndex } = props;
+  const darkMode = props.darkMode ?? window.document.body.classList.contains('theme-dark');
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
   // 去除 documentPath 结尾的 /
-  const realDocumentPath = documentPath.replace(/\/$/, '');
+  let realDocumentPath = documentPath.replace(/\/$/, '');
+
+  if (type === 'iframe' && IS_ENT) {
+    realDocumentPath = realDocumentPath.replace('https://flashcat.cloud', '');
+  }
 
   useEffect(() => {
     if (documentPath && type === 'md') {
@@ -63,8 +73,11 @@ function index(props: Props & ModalWrapProps) {
         <Space>
           {title}
           {type === 'iframe' && (
-            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/`}>
-              <ExportOutlined />
+            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/`} className='text-[12px]'>
+              <Space size={4}>
+                {t('common:more_document_link')}
+                <ExportOutlined />
+              </Space>
             </a>
           )}
         </Space>
@@ -95,7 +108,7 @@ function index(props: Props & ModalWrapProps) {
       {type === 'iframe' && (
         <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
           <iframe
-            src={`${realDocumentPath}${filenameMap[language]}/?onlyContent`}
+            src={`${realDocumentPath}${filenameMap[language]}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}`}
             style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
             onLoad={() => {
               setLoading(false);

@@ -170,7 +170,7 @@ const Resource: React.FC = () => {
       title={
         <Space>
           {t('business.title')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/-business-group/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/business-group/' />
         </Space>
       }
       icon={<UserOutlined />}

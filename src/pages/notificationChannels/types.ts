@@ -57,6 +57,10 @@ interface FlashdutyRequestConfig {
   proxy: string;
 }
 
+interface PagerdutyRequestConfig {
+  integration_keys: string[];
+}
+
 export interface ChannelItem {
   id: number;
   name: string;
@@ -64,11 +68,12 @@ export interface ChannelItem {
   description: string;
   enable: boolean;
   param_config: ParamConfig;
-  request_type: 'http' | 'smtp' | 'script' | 'flashduty';
+  request_type: 'http' | 'smtp' | 'script' | 'flashduty' | 'pagerduty';
   request_config: {
     http_request_config: HttpRequestConfig;
     smtp_request_config: SmtpRequestConfig;
     script_request_config: ScriptRequestConfig;
     flashduty_request_config: FlashdutyRequestConfig;
+    pagerduty_request_config: PagerdutyRequestConfig;
   };
 }

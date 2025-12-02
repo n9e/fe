@@ -23,6 +23,7 @@ const zh_HK = {
     effective_time_week_msg: '請選擇生效星期',
     effective_time_start_msg: '請選擇開始時間',
     effective_time_end_msg: '請選擇結束時間',
+    fetch_integration_key_failed_remove: '獲取以下 PagerDuty key 失敗：{list}，請嘗試重新點擊選取',
     label_keys: '適用標籤',
     label_keys_tip: '通知規則可以限制僅對符合條件（通過事件標籤做篩選）的部分告警事件生效，不配置表示不做限制',
     attributes: '適用屬性',
@@ -34,6 +35,7 @@ const zh_HK = {
       is_recovered: '是恢復事件？',
       rule_id: '告警規則',
       severity: '告警等級',
+      target_group: '機器業務組',
     },
     run_test_btn: '通知測試',
     run_test_btn_tip: '可以選擇幾個已經產生的事件，測試一下此通知配置是否正確，如果正確，應該會收到相關的通知消息',
@@ -45,6 +47,9 @@ const zh_HK = {
     },
     flashduty: {
       ids: '協作空間',
+    },
+    pagerduty: {
+      services: '服務/集成',
     },
   },
   user_group_id_invalid_tip: '授權團隊不存在',

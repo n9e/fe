@@ -1,4 +1,32 @@
 const zh_CN = {
   title: '单点登录管理',
+  LDAP: 'LDAP',
+  CAS: 'CAS',
+  OIDC: 'OIDC',
+  OAuth2: 'OAuth2',
+  dingtalk: '钉钉',
+  dingtalk_setting: {
+    enable: '启用',
+    display_name: '显示名称',
+    corpId: '所属组织 ID',
+    corpId_tip: '所属组织 ID，CorpId 需要在钉钉开放平台首页可以看到',
+    client_id: 'Client ID',
+    client_secret: 'Client secret',
+    cover_attributes: '更新用户信息',
+    cover_attributes_tip: '每次登陆后，如果用户信息有变化，会使用钉钉中用户的信息覆盖夜莺中用户的信息(手机号、邮箱)',
+    username_field: '用户名字段',
+    username_field_map: {
+      phone: '手机号',
+      name: '名称',
+      email: '邮箱',
+    },
+    default_roles: '默认角色',
+    auth_url: '登陆认证地址',
+    proxy: '代理地址',
+    use_member_info: '用户详情',
+    use_member_info_tip: '当需要获取通讯录中的员工邮箱、手机号时需要开启；开启此功能需要开通「通讯录用户详情」相关权限，请在钉钉开放平台添加对应权限',
+    dingtalk_api: '钉钉 API',
+    dingtalk_api_tip: '设置通讯录员工信息查询 API 接口',
+  },
 };
 export default zh_CN;

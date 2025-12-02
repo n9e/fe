@@ -23,6 +23,7 @@ const zh_CN = {
     effective_time_week_msg: '请选择生效星期',
     effective_time_start_msg: '请选择开始时间',
     effective_time_end_msg: '请选择结束时间',
+    fetch_integration_key_failed_remove: '获取以下 PagerDuty key 失败：{list}，请尝试重新点击选取',
     label_keys: '适用标签',
     label_keys_tip: '通知规则可以限制仅对符合条件（通过事件标签做筛选）的部分告警事件生效，不配置表示不做限制',
     attributes: '适用属性',
@@ -34,6 +35,7 @@ const zh_CN = {
       is_recovered: '是恢复事件？',
       rule_id: '告警规则',
       severity: '告警等级',
+      target_group: '机器业务组',
     },
     run_test_btn: '通知测试',
     run_test_btn_tip: '可以选择几个已经产生的事件，测试一下此通知配置是否正确，如果正确，应该会收到相关的通知消息',
@@ -45,6 +47,9 @@ const zh_CN = {
     },
     flashduty: {
       ids: '协作空间',
+    },
+    pagerduty: {
+      services: '服务/集成',
     },
   },
   user_group_id_invalid_tip: '授权团队不存在',

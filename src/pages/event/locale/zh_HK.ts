@@ -93,6 +93,7 @@ const zh_HK = {
     task_tpls: {
       label: '自癒模板',
     },
+    step_tip: '曲線時間間隔，單位秒',
   },
 
   sharing_link: {

@@ -86,7 +86,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/template-center/business/collection-template/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/infrastructure/collection/' />
           <AuthorizationWrapper allowedPerms={['/components/add']}>
             <Button
               type='primary'

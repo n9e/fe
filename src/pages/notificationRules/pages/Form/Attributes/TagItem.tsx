@@ -86,6 +86,19 @@ const TagItem = (props: Props) => {
       { label: 'not in', value: 'not in' },
       { label: '!=', value: '!=' },
     ];
+  } else if (key === 'target_group') {
+    selectOptions = _.map(busiGroups, (item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+    funcOptions = [
+      { label: 'in', value: 'in' },
+      { label: 'not in', value: 'not in' },
+      { label: '=~', value: '=~' },
+      { label: '!~', value: '!~' },
+    ];
   }
 
   return (
@@ -125,6 +138,10 @@ const TagItem = (props: Props) => {
                           label: t(`${NS}:notification_configuration.attributes_options.severity`),
                           value: 'severity',
                         },
+                        {
+                          label: t(`${NS}:notification_configuration.attributes_options.target_group`),
+                          value: 'target_group',
+                        },
                       ],
                       (item) => {
                         if (keyOptions) {
@@ -133,9 +150,13 @@ const TagItem = (props: Props) => {
                         return true;
                       },
                     )}
-                    onChange={() => {
+                    onChange={(val) => {
                       const newValues = _.cloneDeep(form.getFieldsValue());
-                      _.set(newValues, [...fullName, field.name, 'func'], '==');
+                      if (val === 'target_group') {
+                        _.set(newValues, [...fullName, field.name, 'func'], 'in');
+                      } else {
+                        _.set(newValues, [...fullName, field.name, 'func'], '==');
+                      }
                       _.set(newValues, [...fullName, field.name, 'value'], undefined);
                       form.setFieldsValue(newValues);
                     }}

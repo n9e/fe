@@ -33,7 +33,7 @@ export const getSerieTextObj = (
   rangeMode: 'lcro' | 'lcrc' = 'lcrc', // lcro: 左闭右开； lcrc: 左闭右闭
 ) => {
   const { decimals, dateFormat } = standardOptions || {};
-  const unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
+  const unit = standardOptions?.unit;
   const matchedValueMapping = _.find(valueMappings, (item: any) => {
     const { type, match } = item;
     if (value === null || value === '' || value === undefined) {
@@ -252,12 +252,12 @@ const getCalculatedValuesBySeries = (
 
 export const getLegendValues = (series: any[], standardOptions, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
   let { decimals, dateFormat } = standardOptions || {};
-  let unit = standardOptions?.unit || standardOptions?.util; // TODO: 兼容之前写错的 util
+  let unit = standardOptions?.unit;
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
     const override = _.find(overrides, (item) => item.matcher?.value === serie.refId);
     if (override) {
-      unit = override?.properties?.standardOptions?.util;
+      unit = override?.properties?.standardOptions?.unit;
       decimals = override?.properties?.standardOptions?.decimals;
       dateFormat = override?.properties?.standardOptions?.dateFormat;
     }

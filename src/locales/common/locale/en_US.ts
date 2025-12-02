@@ -18,6 +18,7 @@ const en_US = {
   unit: 'Unit',
   page_help: 'Help',
   document_title: 'Documentation',
+  more_document_link: 'More documents',
   and: 'And',
   yes: 'Yes',
   no: 'No',

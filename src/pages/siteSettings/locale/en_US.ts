@@ -10,6 +10,8 @@ const en_US = {
   menu_small_logo_url_tip: 'Enter the image resource address, recommended size 38x38',
   document_url: 'Document URL',
   document_url_tip: 'Override the default Nightingale document link address',
+  site_url: 'Site URL',
+  site_url_tip: 'The address used for external access to Nightingale. The backend can use this to generate links that can access the Nightingale instance',
   page_title: 'Site title',
   page_title_tip: 'Override the default title (Nightingale)',
   home_page_url: 'Home page URL',

@@ -6,6 +6,9 @@ const ja_JP = {
     post: 'ロールの追加',
     put: 'ロールの編集',
   },
+  unselect_role: '最初にロールを選択してください',
+  expand_all: 'すべて展開',
+  collapse_all: 'すべて折りたたむ',
 };
 
 export default ja_JP;

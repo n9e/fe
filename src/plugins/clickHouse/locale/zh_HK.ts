@@ -35,9 +35,6 @@ const zh_HK = {
     title: '告警條件',
     value_msg: '請輸入數值',
   },
-  datasource: {
-    max_query_rows: '單次請求允許檢索的最大行數',
-  },
 };
 
 export default zh_HK;

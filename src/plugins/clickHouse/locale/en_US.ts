@@ -35,8 +35,5 @@ const en_US = {
     title: 'Trigger',
     value_msg: 'Please input expression value',
   },
-  datasource: {
-    max_query_rows: 'Maximum number of rows allowed to be retrieved in a single request',
-  },
 };
 export default en_US;

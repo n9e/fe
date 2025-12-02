@@ -9,20 +9,24 @@ import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import { getFullFields, Field } from '@/pages/explorer/Elasticsearch/services';
+import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 export default function VariableQuerybuilder() {
   const { t, i18n } = useTranslation('dashboard');
-  const { darkMode } = useContext(CommonStateContext);
+  const { darkMode, datasourceList } = useContext(CommonStateContext);
   const [dateFields, setDateFields] = useState<Field[]>([]);
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasource', 'value']);
   const definition = Form.useWatch(['definition']);
   const indexValue = Form.useWatch(['config', 'index']);
+  const currentdatasourceValue = replaceDatasourceVariables(datasourceValue, {
+    datasourceList,
+  });
 
   const { run: onIndexChange } = useDebounceFn(
     (val) => {
-      if (datasourceValue && val) {
-        getFullFields(datasourceValue, val, {
+      if (currentdatasourceValue && val) {
+        getFullFields(currentdatasourceValue, val, {
           type: 'date',
         }).then((res) => {
           setDateFields(res.fields);
@@ -53,7 +57,7 @@ export default function VariableQuerybuilder() {
     <>
       <Row gutter={16}>
         <Col span={12}>
-          <IndexSelect name={['config', 'index']} cate='elasticsearch' datasourceValue={datasourceValue} />
+          <IndexSelect name={['config', 'index']} cate='elasticsearch' datasourceValue={currentdatasourceValue} />
         </Col>
         <Col span={12}>
           <Form.Item label={t('datasource:es.date_field')} name={['config', 'date_field']} rules={[{ required: true, message: t('datasource:es.date_field_msg') }]}>
@@ -81,7 +85,7 @@ export default function VariableQuerybuilder() {
                     language: i18n.language,
                     darkMode,
                     title: t('var.definition'),
-                    documentPath: '/docs/dashboards/variables/query/elasticsearch',
+                    documentPath: '/n9e-docs/dashboards/variables/query/elasticsearch',
                   });
                 }}
               />
