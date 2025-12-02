@@ -372,6 +372,13 @@ function TableCpt(props: IProps, ref: any) {
                   value: record.value,
                   metric: record.metric,
                 };
+                const scopedVars = {
+                  '__field.name': data.name,
+                  '__field.value': data.value,
+                };
+                _.forEach(data.metric, (value, key) => {
+                  scopedVars[`__field.labels.${key}`] = value;
+                });
                 if (displayMode === 'labelValuesToRows' && aggrDimension) {
                   data.metric = {};
                   _.forEach(getColumnsKeys(calculatedValues), (item) => {
@@ -382,7 +389,7 @@ function TableCpt(props: IProps, ref: any) {
                   <a
                     key={idx}
                     href={replaceTemplateVariables(link.url, {
-                      scopedVars: data,
+                      scopedVars,
                     })}
                     target='_blank'
                   >

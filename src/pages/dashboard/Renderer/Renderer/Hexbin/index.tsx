@@ -91,8 +91,15 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
 
     const detailFormatter = (data: any) => {
+      const scopedVars = {
+        '__field.name': data.name,
+        '__field.value': data.stat,
+      };
+      _.forEach(data.metric, (value, key) => {
+        scopedVars[`__field.labels.${key}`] = value;
+      });
       return replaceTemplateVariables(detailUrl, {
-        scopedVars: data,
+        scopedVars,
       });
     };
 
