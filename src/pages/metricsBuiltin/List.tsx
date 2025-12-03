@@ -319,10 +319,15 @@ export default function index() {
     }).then((res) => {
       setTypesList(res);
     });
-    getCollectors().then((res) => {
+  }, []);
+
+  useEffect(() => {
+    getCollectors({
+      typ: filter.typ,
+    }).then((res) => {
       setCollectorsList(res);
     });
-  }, [refreshFlag]);
+  }, [filter.typ]);
 
   return (
     <PageLayout title={t('title')} icon={<SettingOutlined />}>
@@ -349,7 +354,7 @@ export default function index() {
               <Select
                 value={filter.typ}
                 onChange={(val) => {
-                  const newFilter = { ...filter, typ: val };
+                  const newFilter = { ...filter, typ: val, collector: undefined };
                   setFilter(newFilter);
                   window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
                 }}
