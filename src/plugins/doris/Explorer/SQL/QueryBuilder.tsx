@@ -49,7 +49,7 @@ export default function QueryBuilder(props: Props) {
               query={{}}
               historicalRecords={[]}
               onPressEnter={executeQuery}
-              placeholder={t('query.query_placeholder')}
+              placeholder='SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
             />
           </Form.Item>
         </InputGroupWithFormItem>
