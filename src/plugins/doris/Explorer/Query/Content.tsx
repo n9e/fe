@@ -280,6 +280,12 @@ export default function index(props: Props) {
                 to: params.to,
               });
             }
+            if (params.reverse !== undefined) {
+              setServiceParams((prev) => ({
+                ...prev,
+                reverse: params.reverse,
+              }));
+            }
             setQueryRefreshFlag(_.uniqueId('queryRefreshFlag_'));
           }}
           // state context
