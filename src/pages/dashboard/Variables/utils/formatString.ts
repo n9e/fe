@@ -37,12 +37,25 @@ export function formatString(str: string, data: Record<string, any>): string {
       return match;
     });
 
-    // 2. 处理 [[variableName]] 格式 - 转换为 ${variableName}
-    processedStr = processedStr.replace(/\[\[([a-zA-Z0-9_]+)\]\]/g, '${$1}');
+    // 2. 处理 [[variableName]] 格式 - 仅在变量存在时转换为 ${variableName}
+    processedStr = processedStr.replace(/\[\[([a-zA-Z0-9_]+)\]\]/g, (match, varName) => {
+      if (data.hasOwnProperty(varName)) {
+        return '${' + varName + '}';
+      }
+      return match;
+    });
 
-    // 3. 使用 lodash template 处理 ${variableName} 格式
-    const compiled = template(processedStr);
-    return compiled(data);
+    // 3. 处理 ${variableName} 格式，支持包含点的键（如 __field.labels.ident）
+    // 仅当整个占位符内容作为 data 的键存在时才替换，避免误解析嵌套路径
+    processedStr = processedStr.replace(/\$\{([^}]+)\}/g, (match, varName) => {
+      if (Object.prototype.hasOwnProperty.call(data, varName)) {
+        return String(data[varName]);
+      }
+      return match;
+    });
+
+    // 保留不匹配的 ${...}（例如包含点路径的占位），不做替换
+    return processedStr;
   } catch (error) {
     // 如果处理失败，返回原字符串
     return str;

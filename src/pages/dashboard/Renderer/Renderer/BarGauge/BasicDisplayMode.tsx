@@ -41,6 +41,14 @@ export default function BasicDisplayMode(props: Props) {
     return 0;
   };
 
+  const scopedVars = {
+    '__field.name': item.name,
+    '__field.value': item.value,
+  };
+  _.forEach(item.metric, (value, key) => {
+    scopedVars[`__field.labels.${key}`] = value;
+  });
+
   return (
     <Tooltip
       title={
@@ -62,7 +70,7 @@ export default function BasicDisplayMode(props: Props) {
             <a
               target='_blank'
               href={replaceTemplateVariables(detailUrl, {
-                scopedVars: item,
+                scopedVars,
               })}
             >
               {name}

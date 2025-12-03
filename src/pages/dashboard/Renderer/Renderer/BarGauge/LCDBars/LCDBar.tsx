@@ -58,6 +58,14 @@ export default function LCDBar(props: Props) {
     cells.push(<div key={i.toString()} style={cellStyles} className='renderer-bar-gauge-lcd-item-cells' />);
   }
 
+  const scopedVars = {
+    '__field.name': item.name,
+    '__field.value': item.value,
+  };
+  _.forEach(item.metric, (value, key) => {
+    scopedVars[`__field.labels.${key}`] = value;
+  });
+
   return (
     <Tooltip
       mouseEnterDelay={0.5}
@@ -80,7 +88,7 @@ export default function LCDBar(props: Props) {
             <a
               target='_blank'
               href={replaceTemplateVariables(detailUrl, {
-                scopedVars: item,
+                scopedVars,
               })}
             >
               {name}
