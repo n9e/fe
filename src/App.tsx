@@ -34,6 +34,7 @@ import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
 import Feedback from '@/components/Feedback';
+import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
@@ -125,6 +126,7 @@ export interface ICommonState {
   installTs: number; // 安装时间戳
   i18nList?: string[];
   rangePickerShowSecond?: boolean; // 时间范围选择器是否显示秒选择
+  logsDefaultRange: IRawTimeRange; // 日志默认时间范围
 }
 
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
@@ -212,6 +214,7 @@ function App() {
     dashboardSaveMode: 'manual',
     screenTemplates: [],
     installTs: 0,
+    logsDefaultRange: { start: 'now-1h', end: 'now' },
   });
 
   const removePreloader = () => {

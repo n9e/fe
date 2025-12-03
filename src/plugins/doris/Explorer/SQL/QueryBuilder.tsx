@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
-import { Form, Space } from 'antd';
+import { useTranslation, Trans } from 'react-i18next';
+import { Form, Space, Tooltip } from 'antd';
 
+import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import LogQL from '@/components/LogQL';
@@ -20,6 +21,7 @@ interface Props {
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
+  const { logsDefaultRange } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const { extra, executeQuery, datasourceValue, labelInfo } = props;
 
@@ -49,7 +51,7 @@ export default function QueryBuilder(props: Props) {
               query={{}}
               historicalRecords={[]}
               onPressEnter={executeQuery}
-              placeholder={t('query.query_placeholder')}
+              placeholder='SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
             />
           </Form.Item>
         </InputGroupWithFormItem>
@@ -65,9 +67,23 @@ export default function QueryBuilder(props: Props) {
             executeQuery();
           }}
         />
-        <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-          <TimeRangePicker />
-        </Form.Item>
+        <Tooltip
+          overlayClassName='ant-tooltip-with-link'
+          title={
+            <Trans
+              ns={NAME_SPACE}
+              i18nKey='query.time_field_tip'
+              components={{
+                br: <br />,
+                a: <a target='__blank' href='/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/#%E6%97%B6%E9%97%B4%E5%AE%8F' />,
+              }}
+            />
+          }
+        >
+          <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>
+            <TimeRangePicker />
+          </Form.Item>
+        </Tooltip>
         {extra}
       </div>
     </div>

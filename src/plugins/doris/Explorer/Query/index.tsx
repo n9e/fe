@@ -28,7 +28,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { darkMode } = useContext(CommonStateContext);
+  const { darkMode, logsDefaultRange } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const { disabled, datasourceValue, executeQuery } = props;
   const queryValues = Form.useWatch(['query']);
@@ -122,7 +122,7 @@ export default function index(props: Props) {
           </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
-          <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
+          <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>
             <TimeRangePicker onChange={executeQuery} />
           </Form.Item>
         </Col>

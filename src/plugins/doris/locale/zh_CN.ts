@@ -24,6 +24,7 @@ const zh_CN = {
     table_msg: '请选择数据表',
     time_field: '日期字段',
     time_field_msg: '请选择日期字段',
+    time_field_tip: '需在查询条件中使用时间宏才能联动此时间选择器<br/>时间宏使用介绍: <a>详情</a>',
     query: '查询条件',
     query_required: '查询条件不能为空',
     advancedSettings: {
@@ -35,6 +36,14 @@ const zh_CN = {
       labelKey: '标签字段',
       labelKey_tip: 'SQL 查询结果通常包含多个列，您可以指定哪些列作为曲线的标签元信息',
     },
+    get_index_fail: '获取数据表索引失败',
+    warn_message_btn_1: '继续提交查询',
+    warn_message_btn_2: '返回修改',
+    warn_message: '查询条件中未包含时间宏，所选的时间区间将不会生效！',
+    warn_message_content_1: '该查询条件可能触发全表查询，请自行评估对存储性能的影响，确定是否继续提交查询，或返回修改，增加时间宏。',
+    warn_message_content_2: '常用的时间宏: ',
+    warn_message_content_3: '样例：',
+    warn_message_content_4: '时间宏使用方法: <a>详情</a>',
   },
   logs: {
     title: '日志数据',
