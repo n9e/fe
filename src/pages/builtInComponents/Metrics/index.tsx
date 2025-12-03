@@ -227,7 +227,9 @@ export default function index(props: Props) {
   );
 
   useEffect(() => {
-    getCollectors().then((res) => {
+    getCollectors({
+      typ: component,
+    }).then((res) => {
       setCollectorsList(res);
     });
     getMenuPerm().then((res) => {
