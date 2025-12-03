@@ -82,7 +82,7 @@ export default function index(props: Props) {
                   darkMode,
                   title: t('common:document_link'),
                   type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
+                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
                 });
               }}
             />
