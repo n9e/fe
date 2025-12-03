@@ -1,7 +1,7 @@
 const en_US = {
   title: 'Built-in metrics',
   name: 'Name',
-  collector: 'Collector',
+  collector: 'Category',
   typ: 'Type',
   unit: 'Unit',
   unit_tip: 'When drawing, the value is automatically formatted according to the unit of the metric',

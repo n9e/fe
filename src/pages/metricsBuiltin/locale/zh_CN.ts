@@ -1,7 +1,7 @@
 const zh_CN = {
   title: '指标视图',
   name: '指标名称',
-  collector: '采集器',
+  collector: '分类',
   typ: '类型',
   unit: '单位',
   unit_tip: '绘图时，根据指标单位自动格式化值',

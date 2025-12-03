@@ -1,7 +1,7 @@
 const zh_HK = {
   title: '指標管理',
   name: '名稱',
-  collector: '采集器',
+  collector: '分類',
   typ: '類型',
   unit: '單位',
   unit_tip: '繪圖時，根據指標單位自動格式化值',
