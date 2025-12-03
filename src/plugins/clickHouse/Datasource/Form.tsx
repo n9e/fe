@@ -44,7 +44,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
 
         <div className='page-title'>{t('endpoint_title')}</div>
         {/* 全局协议选择：HTTP / Native */}
-        <Form.Item label={t('form.protocol')} name={[...names, `${type}.protocol`]} initialValue={'native'}>
+        <Form.Item label={t('form.protocol')} name={[...names, `${type}.protocol`]} initialValue={action === 'add' ? 'native' : undefined}>
           <Radio.Group
             value={protocol}
             options={[
