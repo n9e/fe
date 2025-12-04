@@ -9,6 +9,7 @@ import TimeRangePicker from '@/components/TimeRangePicker';
 import LogQL from '@/components/LogQL';
 import { DatasourceCateEnum } from '@/utils/constant';
 import HistoricalRecords from '@/components/HistoricalRecords';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { SQL_CACHE_KEY, NAME_SPACE } from '../../constants';
 
@@ -20,8 +21,8 @@ interface Props {
 }
 
 export default function QueryBuilder(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
-  const { logsDefaultRange } = useContext(CommonStateContext);
+  const { t, i18n } = useTranslation(NAME_SPACE);
+  const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const { extra, executeQuery, datasourceValue, labelInfo } = props;
 
@@ -68,14 +69,34 @@ export default function QueryBuilder(props: Props) {
           }}
         />
         <Tooltip
-          overlayClassName='ant-tooltip-with-link'
+          overlayClassName='ant-tooltip-with-link ant-tooltip-auto-width'
           title={
             <Trans
               ns={NAME_SPACE}
               i18nKey='query.time_field_tip'
               components={{
+                span: (
+                  <span
+                    style={{
+                      color: 'var(--fc-orange-5-color)',
+                    }}
+                  />
+                ),
                 br: <br />,
-                a: <a target='__blank' href='/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/#%E6%97%B6%E9%97%B4%E5%AE%8F' />,
+                a: (
+                  <a
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                        darkMode,
+                        title: t('common:document_link'),
+                        type: 'iframe',
+                        documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                        anchor: i18n.language === 'zh_CN' ? '#宏变量列表' : '',
+                      });
+                    }}
+                  />
+                ),
               }}
             />
           }

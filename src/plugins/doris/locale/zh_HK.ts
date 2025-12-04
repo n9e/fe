@@ -24,7 +24,7 @@ const zh_HK = {
     table_msg: '請選擇數據表',
     time_field: '日期字段',
     time_field_msg: '請選擇日期字段',
-    time_field_tip: '需在查詢條件中使用時間宏才能聯動此時間選擇器<br/>時間宏使用介紹: <a>詳情</a>',
+    time_field_tip: '<span>需在查詢條件中使用時間宏才能聯動此時間選擇器</span><br/>時間宏使用介紹: <a>詳情</a>',
     query: '查詢條件',
     query_required: '查詢條件不能為空',
     advancedSettings: {

@@ -127,7 +127,6 @@ export default function index(props: Props) {
         footer={[
           <Button
             key='ok'
-            type='primary'
             onClick={() => {
               setQueryWarnModalVisible(false);
               executeQuery();
@@ -137,6 +136,7 @@ export default function index(props: Props) {
           </Button>,
           <Button
             key='cancel'
+            type='primary'
             onClick={() => {
               setQueryWarnModalVisible(false);
             }}
@@ -147,7 +147,7 @@ export default function index(props: Props) {
         onCancel={() => setQueryWarnModalVisible(false)}
       >
         <Alert className='mt-4 mb-4' type='warning' showIcon message={t('query.warn_message')} />
-        <div className='mb-2'>{t('query.warn_message_content_1')}</div>
+        <div className='mb-4'>{t('query.warn_message_content_1')}</div>
         <div className='mb-2'>{t('query.warn_message_content_2')}</div>
         <div className='mb-2'>
           <div>
@@ -204,7 +204,20 @@ export default function index(props: Props) {
             ns={NAME_SPACE}
             i18nKey='query.warn_message_content_4'
             components={{
-              a: <a target='__blank' href='/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/' />,
+              a: (
+                <a
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                      darkMode,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                      anchor: i18n.language === 'zh_CN' ? '#宏变量列表' : '',
+                    });
+                  }}
+                />
+              ),
             }}
           />
         </div>
