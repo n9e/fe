@@ -26,7 +26,7 @@ const en_US = {
     table_msg: 'Please select table',
     time_field: 'Date Field',
     time_field_msg: 'Please select date field',
-    time_field_tip: 'To link this time picker, you need to use a time macro in the query condition<br/>Introduction to time macro usage: <a>Details</a>',
+    time_field_tip: '<span>To link this time picker, you need to use a time macro in the query condition</span><br/>Introduction to time macro usage: <a>Details</a>',
     query: 'Query',
     query_required: 'Query is required',
     advancedSettings: {

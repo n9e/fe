@@ -24,7 +24,7 @@ const zh_CN = {
     table_msg: '请选择数据表',
     time_field: '日期字段',
     time_field_msg: '请选择日期字段',
-    time_field_tip: '需在查询条件中使用时间宏才能联动此时间选择器<br/>时间宏使用介绍: <a>详情</a>',
+    time_field_tip: '<span>需在查询条件中使用时间宏才能联动此时间选择器</span><br/>时间宏使用介绍: <a>详情</a>',
     query: '查询条件',
     query_required: '查询条件不能为空',
     advancedSettings: {

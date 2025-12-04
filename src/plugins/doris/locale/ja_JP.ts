@@ -25,7 +25,7 @@ const ja_JP = {
     table_msg: 'テーブルを選択してください',
     time_field: '日付フィールド',
     time_field_msg: '日付フィールドを選択してください',
-    time_field_tip: 'このタイムピッカーをリンクするには、クエリ条件で時間マクロを使用する必要があります<br/>時間マクロの使用方法の紹介: <a>詳細</a>',
+    time_field_tip: '<span>このタイムピッカーをリンクするには、クエリ条件で時間マクロを使用する必要があります</span><br/>時間マクロの使用方法の紹介: <a>詳細</a>',
     query: 'クエリ',
     query_required: 'クエリは必須です',
     advancedSettings: {
