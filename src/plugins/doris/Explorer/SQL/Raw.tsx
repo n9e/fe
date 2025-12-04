@@ -110,6 +110,7 @@ function Raw(props: IProps) {
               }}
               optionsExtraRender={IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
               onOptionsChange={updateOptions}
+              showDateField={false}
             />
           </div>
         </div>
