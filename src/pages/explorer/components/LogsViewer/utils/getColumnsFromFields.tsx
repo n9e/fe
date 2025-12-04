@@ -16,7 +16,9 @@ export default function getColumnsFromFields(selectedFields: string[], time_fiel
         return (
           <div
             style={{
-              minWidth: getTextWidth(item),
+              minWidth: getTextWidth(item, {
+                fontWeight: '500', // table header font weight
+              }),
               maxHeight: 140,
               overflow: 'auto',
             }}
