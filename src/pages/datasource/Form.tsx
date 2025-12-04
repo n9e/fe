@@ -110,9 +110,9 @@ export default function FormCpt() {
               },
             ]}
           />
-          {helpLinkMap[type] && <HelpLink src={helpLinkMap[type]} />}
         </Space>
       }
+      doc={helpLinkMap[type]}
     >
       <div className='srm'>
         {action === 'edit' && data === undefined ? (

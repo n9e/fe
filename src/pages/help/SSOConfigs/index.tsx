@@ -26,7 +26,7 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/sso/'>
       <main className='p-4'>
         <Global SSOConfigs={data} />
         <Card

@@ -14,7 +14,7 @@ export default function Add() {
   const history = useHistory();
 
   return (
-    <PageLayout title={t('title')} showBack backPath={`/${NS}`}>
+    <PageLayout title={t('title')} showBack backPath={`/${NS}`} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/quickstart/notify-rules/'>
       <div className='n9e'>
         <Form
           onOk={(values) => {

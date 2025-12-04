@@ -45,7 +45,7 @@ export default function List() {
   }, [gids, refreshFlag]);
 
   return (
-    <PageLayout title={t('title')} icon={<CopyOutlined />}>
+    <PageLayout title={t('title')} icon={<CopyOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/subscribe/'>
       <div className='shield-content'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div

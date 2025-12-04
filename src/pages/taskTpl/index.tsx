@@ -190,12 +190,8 @@ const index = (_props: any) => {
   return (
     <PageLayout
       icon={<CodeOutlined />}
-      title={
-        <Space>
-          {t('tpl')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/self-healing/self-healing-script/' />
-        </Space>
-      }
+      title={<Space>{t('tpl')}</Space>}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/self-healing/self-healing-script/'
     >
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
