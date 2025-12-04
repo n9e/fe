@@ -10,6 +10,9 @@ export const getFontStr = (font = defaultFont) => {
   return `${font.fontWeight} ${font.fontSize} ${font.fontFamily}`;
 };
 
+const canvas = document.createElement('canvas');
+const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+
 export default function getTextWidth(text: string, font = {}) {
   const bodyFontWeight = window.getComputedStyle(document.body).fontWeight;
   const bodyFontSize = window.getComputedStyle(document.body).fontSize;
@@ -20,8 +23,6 @@ export default function getTextWidth(text: string, font = {}) {
     fontFamily: bodyFont,
     ...font,
   };
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
   context.font = getFontStr(curFont);
   const metrics = context.measureText(text);
   return Math.ceil(metrics.width);

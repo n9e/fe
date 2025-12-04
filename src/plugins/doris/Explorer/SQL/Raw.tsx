@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Empty, Form } from 'antd';
+import { Empty, Form, Space, Pagination } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { useRequest } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 
 import { IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -11,7 +12,7 @@ import flatten from '@/pages/explorer/components/LogsViewer/utils/flatten';
 import getFieldsFromTableData from '@/pages/explorer/components/LogsViewer/utils/getFieldsFromTableData';
 import LogsViewer from '@/pages/explorer/components/LogsViewer';
 
-import { SQL_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
+import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
 import { logQuery } from '../../services';
 import { getLocalstorageOptions, setLocalstorageOptions, filteredFields } from '../utils';
 
@@ -23,13 +24,17 @@ interface IProps {
 }
 
 function Raw(props: IProps) {
-  const { setExecuteLoading } = props;
+  const { t } = useTranslation(NAME_SPACE);
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch(['query']);
   const [options, setOptions] = useState(getLocalstorageOptions(SQL_LOGS_OPTIONS_CACHE_KEY));
   const [fields, setFields] = useState<string[]>([]);
+  const [serviceParams, setServiceParams] = useState({
+    current: 1,
+    pageSize: 10,
+  });
 
   const updateOptions = (newOptions) => {
     const mergedOptions = {
@@ -102,13 +107,33 @@ function Raw(props: IProps) {
               timeField={queryValues?.time_field}
               hideHistogram
               loading={loading}
-              logs={data?.list || []}
+              logs={_.slice(data?.list, (serviceParams.current - 1) * serviceParams.pageSize, serviceParams.current * serviceParams.pageSize) || []}
               fields={fields}
               options={options}
               filterFields={(fieldKeys) => {
                 return filteredFields(fieldKeys, options.organizeFields);
               }}
-              optionsExtraRender={IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+              optionsExtraRender={
+                <Space size={0}>
+                  <Pagination
+                    size='small'
+                    total={data?.total}
+                    current={serviceParams.current}
+                    pageSize={serviceParams.pageSize}
+                    onChange={(current, pageSize) => {
+                      setServiceParams((prev) => ({
+                        ...prev,
+                        current,
+                        pageSize,
+                      }));
+                    }}
+                    showTotal={(total) => {
+                      return t('common:table.total', { total });
+                    }}
+                  />
+                  {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+                </Space>
+              }
               onOptionsChange={updateOptions}
               showDateField={false}
             />
