@@ -38,7 +38,7 @@ const EditShield: React.FC = () => {
   }
 
   return (
-    <PageLayout title={t('title')} showBack>
+    <PageLayout title={t('title')} showBack doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-mute/'>
       <div className='shield-add'>{state.id && <OperateForm detail={state} type={!isClone ? 1 : 2} />}</div>
     </PageLayout>
   );

@@ -71,15 +71,7 @@ export default function List() {
   };
 
   return (
-    <PageLayout
-      icon={<AlertOutlined />}
-      title={
-        <Space>
-          {t('title')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-history/' />
-        </Space>
-      }
-    >
+    <PageLayout icon={<AlertOutlined />} title={<Space>{t('title')}</Space>} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-history/'>
       <div className='event-content'>
         <div className='table-area fc-border'>
           <ListNG
