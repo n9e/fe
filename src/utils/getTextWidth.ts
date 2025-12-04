@@ -24,7 +24,7 @@ export default function getTextWidth(text: string, font = {}) {
   const context = canvas.getContext('2d') as CanvasRenderingContext2D;
   context.font = getFontStr(curFont);
   const metrics = context.measureText(text);
-  return metrics.width;
+  return Math.ceil(metrics.width);
 }
 
 // 根据容器宽高计算出文本的最大字体大小
