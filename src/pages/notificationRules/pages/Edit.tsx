@@ -29,7 +29,7 @@ export default function Add() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} showBack backPath={`/${NS}`}>
+    <PageLayout title={t('title')} showBack backPath={`/${NS}`} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/quickstart/notify-rules/'>
       <div className={`n9e ${CN}`}>
         {data ? (
           <Form

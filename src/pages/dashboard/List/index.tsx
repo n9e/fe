@@ -108,7 +108,7 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} icon={<FundViewOutlined />}>
+    <PageLayout title={t('title')} icon={<FundViewOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/quickstart/dashboard/'>
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll
           gids={gids}
