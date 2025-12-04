@@ -11,8 +11,13 @@ export const getFontStr = (font = defaultFont) => {
 };
 
 export default function getTextWidth(text: string, font = {}) {
+  const bodyFontWeight = window.getComputedStyle(document.body).fontWeight;
+  const bodyFontSize = window.getComputedStyle(document.body).fontSize;
+  const bodyFont = window.getComputedStyle(document.body).fontFamily;
   const curFont = {
-    ...defaultFont,
+    fontWeight: bodyFontWeight,
+    fontSize: bodyFontSize,
+    fontFamily: bodyFont,
     ...font,
   };
   const canvas = document.createElement('canvas');
