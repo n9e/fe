@@ -7,7 +7,7 @@ import BuiltinMetrics from './BuiltinMetrics';
 import PromQLInput, { CMExpressionInputProps } from './index';
 import './locale';
 
-export function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasourceValue: number; showBuiltinMetrics?: boolean; showBuilder?: boolean }) {
+export default function PromQLInputWithBuilder(props: CMExpressionInputProps & { datasourceValue: number; showBuiltinMetrics?: boolean; showBuilder?: boolean }) {
   const { t } = useTranslation('promQLInput');
   const inputProps: any = { ...props };
 
