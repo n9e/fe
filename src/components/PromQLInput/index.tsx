@@ -36,8 +36,6 @@ import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 import './style.less';
 
-export { PromQLInputWithBuilder } from './PromQLInputWithBuilder';
-
 const dynamicConfigCompartment = new Compartment();
 const promqlExtension = new PromQLExtension();
 
