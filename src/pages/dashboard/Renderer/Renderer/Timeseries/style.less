@@ -1,29 +1,36 @@
 .renderer-timeseries-container {
   height: 100%;
 }
+
 .renderer-timeseries-legend-table {
+
   .ant-table,
   .ant-table-wrapper {
     margin-top: 0 !important;
   }
+
   .ant-table-placeholder .ant-table-cell {
     height: unset !important;
     line-height: unset !important;
     padding: 0 !important;
   }
+
   .ant-table-row.disabled {
     .ant-table-cell {
       color: #24292e80
     }
   }
-  .ant-table.ant-table-small .ant-table-thead > tr > th {
+
+  .ant-table.ant-table-small .ant-table-thead>tr>th {
     padding: 4px 8px;
   }
 }
+
 .renderer-timeseries-legend-container {
   position: relative;
   height: calc(100% - 8px);
 }
+
 .renderer-timeseries-legend-list {
   overflow-y: auto;
   overflow-x: hidden;
@@ -37,6 +44,7 @@
   cursor: pointer;
   user-select: none;
   background: var(--fc-fill-3);
+
   .renderer-timeseries-legend-list-item {
     width: max-content;
     display: flex;
@@ -44,37 +52,46 @@
     white-space: nowrap;
     gap: 8px;
   }
+
   .renderer-timeseries-legend-list-item-name {
     width: 100%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
+
   .renderer-timeseries-legend-list-item-calcs {
     display: flex;
     gap: 4px;
   }
-  .renderer-timeseries-legend-list-item-calcs,.renderer-timeseries-legend-list-item-link {
+
+  .renderer-timeseries-legend-list-item-calcs,
+  .renderer-timeseries-legend-list-item-link {
     flex-shrink: 0;
   }
+
   .renderer-timeseries-legend-list-item.disabled {
     color: #24292e80
   }
 }
+
 .renderer-timeseries-legend-list-placement-right {
   flex-direction: column !important;
   flex-wrap: unset !important;
   height: 100% !important;
-  & > div {
+
+  &>div {
     flex-shrink: 0 !important;
   }
 }
+
 .renderer-timeseries-legend-color-symbol {
   height: 6px;
   width: 6px;
   border-radius: 6px;
   flex-shrink: 0;
 }
+
 .renderer-timeseries-legend-toggle {
   position: absolute;
   top: 0;
@@ -84,14 +101,27 @@
   text-align: center;
   cursor: pointer;
 }
+
 .renderer-timeseries-legend-table-row {
   cursor: pointer;
+
   td {
     padding: 2px 8px !important;
   }
 }
+
 .dashboards-panels {
-  .renderer-timeseries-legend-table .ant-table.ant-table-small .ant-table-thead > tr > th {
+  .renderer-timeseries-legend-table .ant-table.ant-table-small .ant-table-thead>tr>th {
     padding: 2px 8px !important;
+  }
+}
+
+.theme-dark {
+  .renderer-timeseries-legend-table {
+    .ant-table-row.disabled {
+      .ant-table-cell {
+        color: #ffffff80
+      }
+    }
   }
 }
