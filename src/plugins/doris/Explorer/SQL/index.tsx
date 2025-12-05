@@ -213,7 +213,7 @@ export default function index(props: Props) {
                       title: t('common:document_link'),
                       type: 'iframe',
                       documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                      anchor: i18n.language === 'zh_CN' ? '#时间宏' : '',
+                      anchor: '#时间宏',
                     });
                   }}
                 />
