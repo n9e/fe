@@ -16,7 +16,11 @@ export default function getColumnsFromFields(selectedFields: string[], time_fiel
         return (
           <div
             style={{
-              minWidth: getTextWidth(item) + 40, // sorter width
+              minWidth: getTextWidth(item, {
+                fontWeight: '500', // table header font weight
+              }),
+              maxHeight: 140,
+              overflow: 'auto',
             }}
           >
             {onValueFilter ? <FieldValueWithFilter name={item} value={toString(record[item])} onValueFilter={onValueFilter} rawValue={record} /> : toString(record[item])}
@@ -29,18 +33,32 @@ export default function getColumnsFromFields(selectedFields: string[], time_fiel
     columns.unshift({
       title: i18next.t('explorer:logs.settings.time'),
       dataIndex: time_field,
-      width: 200,
       render: (text) => {
-        return moment(text).format('MM-DD HH:mm:ss.SSS');
+        return (
+          <div
+            style={{
+              minWidth: getTextWidth(i18next.t('explorer:logs.settings.time')),
+            }}
+          >
+            {moment(text).format('MM-DD HH:mm:ss.SSS')}
+          </div>
+        );
       },
     });
   }
   if (options?.lines === 'true') {
     columns.unshift({
       title: i18next.t('explorer:logs.settings.lines'),
-      width: 50,
       render: (_, _record, idx) => {
-        return idx + 1;
+        return (
+          <div
+            style={{
+              minWidth: getTextWidth(i18next.t('explorer:logs.settings.lines')),
+            }}
+          >
+            {idx + 1}
+          </div>
+        );
       },
     });
   }

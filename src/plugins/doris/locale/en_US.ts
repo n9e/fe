@@ -26,6 +26,7 @@ const en_US = {
     table_msg: 'Please select table',
     time_field: 'Date Field',
     time_field_msg: 'Please select date field',
+    time_field_tip: '<span>To link this time picker, you need to use a time macro in the query condition</span><br/>Introduction to time macro usage: <a>Details</a>',
     query: 'Query',
     query_required: 'Query is required',
     advancedSettings: {
@@ -37,6 +38,15 @@ const en_US = {
       labelKey: 'Label Field',
       labelKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as label metadata for curves',
     },
+    get_index_fail: 'Getting table index failed',
+    warn_message_btn_1: 'Continue to submit query',
+    warn_message_btn_2: 'Return to modify',
+    warn_message: 'The query condition does not contain a time macro, and the selected time range will not take effect!',
+    warn_message_content_1:
+      'This query condition may trigger a full table scan. Please evaluate the impact on storage performance yourself and decide whether to continue submitting the query or return to modify and add a time macro.',
+    warn_message_content_2: 'Common time macros: ',
+    warn_message_content_3: 'Example:',
+    warn_message_content_4: 'Usage of time macros: <a>Details</a>',
   },
   logs: {
     title: 'Logs',
