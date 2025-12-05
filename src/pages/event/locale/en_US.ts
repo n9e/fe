@@ -96,6 +96,8 @@ const en_US = {
       label: 'Self-healing template',
     },
     step_tip: 'Time interval of the curve, in seconds',
+    query_label: 'Query',
+    trigger_label: 'Trigger',
   },
 
   sharing_link: {

@@ -1,0 +1,55 @@
+const zh_HK = {
+  explorer: {
+    execute: '查詢',
+    query: '查詢條件',
+    query_required: '查詢條件不能為空',
+    query_lanaguage_docs: '查詢語言文檔',
+    limit: '限制數量',
+    hits: '匹配結果',
+    graph_settings: {
+      title: '圖表設置',
+      stacked: '堆疊',
+      fill: '填充',
+    },
+    view: {
+      group: '分組',
+      table: '表格',
+      json: 'JSON',
+    },
+    total_logs_returned: '返回的日誌總數',
+    total_groups: '分組總數',
+    page_size: '每頁數量',
+    page_size_all: '全部',
+    expand_all: '展開全部',
+    collapse_all: '收起全部',
+    group_view: {
+      ungrouped: '未分組',
+      group_by_field: '按 "{{field}}" 分組',
+      entries: '條目',
+      show_field_tip: '顯示字段',
+      hide_field_tip: '隱藏字段',
+      group_by_field_icon_tip: '按這個字段分組',
+    },
+    group_view_settings: {
+      title: '分組視圖設置',
+      group_by_field: '分組字段',
+      group_by_field_help: '選擇一個字段來對日誌進行分組（默認值：_stream）',
+      ungrouped: '不分組',
+      display_fields: '顯示字段',
+      display_fields_help: '選擇要顯示的字段（默認值：_msg）',
+      date_format: '日期格式',
+      date_format_help01: '設置日期格式（例如 YYYY-MM-DD HH:mm:ss）。<a>請參閱此文檔了解更多信息</a>',
+      date_format_help02: '您當前的日期格式：{{dateFormat}}',
+    },
+    table_view_settings: {
+      title: '表格視圖設置',
+      customize_columns: '自定義列',
+      search_columns: '搜索列',
+      check_all: '全選',
+    },
+    copy_json: '複製 JSON',
+  },
+  datasource: {},
+};
+
+export default zh_HK;

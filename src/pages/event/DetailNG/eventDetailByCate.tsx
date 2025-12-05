@@ -7,6 +7,7 @@ import TDengineDetail from '@/plugins/TDengine/Event';
 import { Event as ElasticsearchDetail } from '@/plugins/elasticsearch';
 import { Event as MySQLDetail } from '@/plugins/mysql';
 import { Event as Pgsql } from '@/plugins/pgsql';
+import { Event as Victorialogs } from '@/plugins/victorialogs';
 
 import Host from '../Detail/Host';
 import PrometheusDetail from '../Detail/Prometheus';
@@ -44,6 +45,9 @@ const eventDetail = ({ eventDetail, t, history, commonState, indexPatterns }) =>
   }
   if (cate === DatasourceCateEnum.pgsql) {
     return Pgsql();
+  }
+  if (cate === DatasourceCateEnum.victorialogs) {
+    return Victorialogs();
   }
 
   return [false];
