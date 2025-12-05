@@ -94,6 +94,8 @@ const ja_JP = {
       label: '自動回復テンプレート',
     },
     step_tip: 'グラフの時間間隔、単位は秒',
+    query_label: 'クエリ条件',
+    trigger_label: 'アラート条件',
   },
 
   sharing_link: {

@@ -58,11 +58,12 @@ const ja_JP = {
     cluster_confirm_cancel: '関連付けを行う',
     cluster_not_found:
       '関連付けられたアラートエンジンが無効になっており、現在のデータソースのアラートはもはや有効ではありません。アラートエンジンの設定を確認するか、データソースの関連付けを再度修正してください。',
+    protocol: 'プロトコル',
     secure_connection: '安全な接続（SSL/TLS）',
     url_no_spaces_msg: 'URLには空白を含めることはできません',
     url_no_http_msg: 'URLは http:// または https:// で始めることはできません',
     url_required_msg: 'URLは空にできません',
-    protocol: 'プロトコル',
+    logs_max_query_rows: '返される最大ログエントリ数',
     prom: {
       write_addr_tip: '記録ルールが生成するデータの書き込みアドレスの例（時系列データベースの設定例）',
       read_addr: '時系列データベースの内網アドレス',

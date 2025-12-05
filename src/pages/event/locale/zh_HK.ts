@@ -94,6 +94,8 @@ const zh_HK = {
       label: '自癒模板',
     },
     step_tip: '曲線時間間隔，單位秒',
+    query_label: '查詢條件',
+    trigger_label: '告警條件',
   },
 
   sharing_link: {

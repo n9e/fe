@@ -126,6 +126,17 @@ export const baseCates: Cate[] = [
     alertPro: false,
     logo: '/image/logos/pgsql.png',
   },
+  {
+    value: 'victorialogs',
+    label: 'VictoriaLogs',
+    type: ['logging'],
+    alertRule: true,
+    dashboard: false,
+    dashboardVariable: false,
+    graphPro: true,
+    alertPro: false,
+    logo: '/image/logos/victorialogs.png',
+  },
 ];
 
 export const allCates = [...baseCates, ...advancedCates];
