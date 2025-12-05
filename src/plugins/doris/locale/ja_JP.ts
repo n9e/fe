@@ -25,6 +25,7 @@ const ja_JP = {
     table_msg: 'テーブルを選択してください',
     time_field: '日付フィールド',
     time_field_msg: '日付フィールドを選択してください',
+    time_field_tip: '<span>このタイムピッカーをリンクするには、クエリ条件で時間マクロを使用する必要があります</span><br/>時間マクロの使用方法の紹介: <a>詳細</a>',
     query: 'クエリ',
     query_required: 'クエリは必須です',
     advancedSettings: {
@@ -36,6 +37,15 @@ const ja_JP = {
         'このフィールドとその対応する値を、タグとして監視データのラベルに追加します。例えば、クエリ条件が `select count() cnt, event_time, type from system.query_log GROUP BY type, event_time` 結果が `[{cnt:11 type:QueryFinish},{cnt:10 type:QueryStart}]`, LabelKey に type を書いた場合、返されたデータの中で type が時系列データのラベルとして使用されます',
       labelKey_placeholder: '複数入力可能',
     },
+    get_index_fail: 'データテーブルのインデックス取得に失敗しました',
+    warn_message_btn_1: 'クエリの送信を続行',
+    warn_message_btn_2: '修正に戻る',
+    warn_message: 'クエリ条件に時間マクロが含まれていないため、選択した時間範囲は有効になりません！',
+    warn_message_content_1:
+      'このクエリ条件は全表スキャンを引き起こす可能性があります。ストレージパフォーマンスへの影響を自己評価し、クエリの送信を続行するか、修正に戻って時間マクロを追加するかを決定してください。',
+    warn_message_content_2: '一般的な時間マクロ: ',
+    warn_message_content_3: '例：',
+    warn_message_content_4: '時間マクロの使用方法: <a>詳細</a>',
   },
   logs: {
     title: 'ログデータ',
