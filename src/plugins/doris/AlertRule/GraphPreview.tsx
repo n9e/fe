@@ -8,7 +8,7 @@ import getTextWidth from '@/utils/getTextWidth';
 import { logQuery } from '../services';
 import { getFields } from '../utils';
 
-export default function GraphPreview({ cate, datasourceValue, sql, keys, database }) {
+export default function GraphPreview({ cate, datasourceValue, sql, database }: { cate: string; datasourceValue: number; sql: string; database?: string }) {
   const { t } = useTranslation('db_doris');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
