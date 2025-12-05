@@ -28,7 +28,7 @@ import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils';
 import { MenuMatchResult } from '@/components/SideMenu/types';
-
+import DocLink from './DocLink';
 import { TabMenu } from './TabMenu';
 import LanguageIcon from '../icons/LanguageIcon';
 import DocIcon from '../icons/DocIcon';
@@ -52,7 +52,7 @@ interface IPageLayoutProps {
   customArea?: ReactNode;
   showBack?: Boolean;
   backPath?: string;
-  docFn?: Function;
+  doc?: string;
   tabGroup?: string;
 }
 
@@ -64,7 +64,7 @@ const i18nMap = {
   ru_RU: 'Русский',
 };
 
-const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, docFn, tabGroup }) => {
+const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
@@ -150,7 +150,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
                 }}
               >
-                <div className='flex gap-4 align-center'>
+                <div className='flex items-center'>
                   {!currentMenu?.parentItem?.label && (
                     <div className={'page-header-title'}>
                       {showBack && window.history.state && (
@@ -171,15 +171,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
+                  {IS_ENT && doc && <DocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   <span className='page-layout-intro-container'>{introIcon}</span>
-                  {docFn && (
-                    <a onClick={() => docFn()} className='page-layout-doc-container'>
-                      {t('docs')}
-                    </a>
-                  )}
                   <Version />
 
                   <Space className='mr-2'>{rightArea}</Space>

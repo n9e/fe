@@ -59,7 +59,7 @@ const EditSubscribe: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('title')} showBack>
+    <PageLayout title={t('title')} showBack doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/subscribe/'>
       {curSubscribeData?.id && <OperateForm detail={curSubscribeData} type={!isClone ? 1 : 2} />}
     </PageLayout>
   );

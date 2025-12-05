@@ -233,13 +233,9 @@ const Resource: React.FC = () => {
 
   return (
     <PageLayout
-      title={
-        <Space>
-          {t('team.title')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/team-management/' />
-        </Space>
-      }
+      title={<Space>{t('team.title')}</Space>}
       icon={<UserOutlined />}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/team-management/'
     >
       <div className='user-manage-content'>
         <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>

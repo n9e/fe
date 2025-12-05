@@ -135,12 +135,8 @@ export default function Servers() {
   return (
     <PageLayout
       icon={<Icon component={SystemInfoSvg as any} />}
-      title={
-        <Space>
-          {t('title')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/alert-engine/' />
-        </Space>
-      }
+      title={<Space>{t('title')}</Space>}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/alert-engine/'
     >
       <div>
         <div className='fc-border' style={{ padding: 20 }}>
