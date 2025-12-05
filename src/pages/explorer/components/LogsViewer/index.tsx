@@ -208,7 +208,7 @@ export default function LogsViewer(props: Props) {
                   options={options}
                   onValueFilter={onAddToQuery}
                   scroll={{
-                    x: '100%',
+                    x: 'max-content',
                     y: 'calc(100% - 40px)',
                   }}
                   filterFields={filterFields}

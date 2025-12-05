@@ -34,7 +34,7 @@ export default function Table(props: Props) {
     <AntdTable
       className='n9e-event-logs-table'
       size='small'
-      tableLayout='auto'
+      tableLayout='fixed'
       rowKey={(record) => {
         return _.join(
           _.map(record, (val) => val),
