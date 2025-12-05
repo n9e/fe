@@ -33,7 +33,7 @@ const filenameMap = {
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation();
   const { visible, destroy, title, width = '60%', documentPath, onClose, type = 'md', zIndex, anchor } = props;
-  const language = 'zh_CN'; // TODO: 因为文档那边还没有多语言支持，先默认写死为中文
+  const language = IS_ENT ? 'zh_CN' : props.language ?? 'zh_CN'; // TODO: 因为文档那边还没有多语言支持，先默认写死为中文
   const darkMode = props.darkMode ?? window.document.body.classList.contains('theme-dark');
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
