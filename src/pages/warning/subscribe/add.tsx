@@ -23,7 +23,7 @@ import './index.less';
 const AddSubscribe: React.FC = () => {
   const { t } = useTranslation('alertSubscribes');
   return (
-    <PageLayout title={t('title')} showBack>
+    <PageLayout title={t('title')} showBack doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/subscribe/'>
       <OperateForm />
     </PageLayout>
   );

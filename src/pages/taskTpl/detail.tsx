@@ -65,6 +65,7 @@ const Detail = (props: any) => {
           {t('tpl')}
         </>
       }
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/self-healing/self-healing-script/'
     >
       <div className='p-4'>
         <Card title={t('common:btn.detail')}>
