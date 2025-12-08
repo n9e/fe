@@ -255,7 +255,8 @@ export default function EditModal(props: IProps) {
                   if (prevFinded && finded) {
                     const preDefaultValue = prevFinded?.defaultValue;
                     if (preDefaultValue !== val.defaultValue) {
-                      finded.value = val.defaultValue;
+                      const currentValue = val.defaultValue;
+                      finded.value = currentValue;
 
                       // replace url 参数
                       const newQueryParams = location.search ? queryString.parse(location.search) : {};
@@ -263,10 +264,18 @@ export default function EditModal(props: IProps) {
                         pathname: location.pathname,
                         search: queryString.stringify(
                           _.assign(newQueryParams, {
-                            [val.name]: val.defaultValue,
+                            [val.name]: currentValue,
                           }),
                         ),
                       });
+
+                      // localStorage 本地保存
+                      if (dashboardMeta.dashboardId && val !== undefined) {
+                        localStorage.setItem(
+                          `dashboard_v6_${dashboardMeta.dashboardId}_${val.name}`,
+                          typeof currentValue === 'string' ? currentValue : JSON.stringify(currentValue),
+                        );
+                      }
                     }
                   }
                 }
