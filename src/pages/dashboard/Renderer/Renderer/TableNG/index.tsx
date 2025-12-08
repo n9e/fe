@@ -87,7 +87,6 @@ function index(props: Props) {
   const [, setTableFields] = useGlobalState('tableFields');
   const { data, rowData, columns, formattedData } = useMemo(() => {
     const data = normalizeData(series, transformations);
-    console.log(data, series);
     const columns = _.uniq(_.flatMap(data, 'columns'));
     setTableFields(columns);
 
