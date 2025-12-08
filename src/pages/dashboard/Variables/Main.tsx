@@ -15,7 +15,7 @@ interface Props {
 
 export default function Main(props: Props) {
   const history = useHistory();
-  const localtion = useLocation();
+  const location = useLocation();
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
   const { variableValueFixed, loading, renderBtns } = props;
@@ -29,7 +29,7 @@ export default function Main(props: Props) {
   useEffect(() => {
     if (!shouldUpdateUrl.current) return;
 
-    let newQueryParams = localtion.search ? queryString.parse(localtion.search) : {};
+    let newQueryParams = location.search ? queryString.parse(location.search) : {};
     newQueryParams = _.omit(newQueryParams, _.map(variableNameValues, 'name')); // 先移除之前的变量参数
 
     const dataToQueryParams = _.reduce(
@@ -42,12 +42,12 @@ export default function Main(props: Props) {
     );
 
     history.replace({
-      pathname: localtion.pathname,
+      pathname: location.pathname,
       search: queryString.stringify(_.assign(newQueryParams, dataToQueryParams)),
     });
 
     shouldUpdateUrl.current = false;
-  }, [variableNameValues, localtion.search]);
+  }, [variableNameValues, location.search]);
 
   return (
     <div className='flex flex-wrap items-center gap-2 px-2'>
