@@ -14,6 +14,8 @@ const zh_CN = {
     filters: '前置過濾條件',
     dynamicLabels: '動態過濾標籤',
     dimensionLabels: '展開維度標籤',
+    ignorePrefix: '指標分類忽略前綴',
+    ignorePrefix_tip: '配置後，指標分類時會忽略該前綴，例如配置 monitor_，則 monitor_cpu_usage 會歸類到 cpu 分類下',
     preview: '預覽',
     count: '數量',
     sample: '樣例',
