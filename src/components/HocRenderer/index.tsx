@@ -11,22 +11,19 @@ export const hocRendererRef = React.createRef<HocRendererHandle>();
 export default function HocRenderer() {
   const [element, setElement] = useState<React.ReactNode>(null);
 
-  useImperativeHandle(hocRendererRef, () => ({
-    render: (node) => setElement(node),
-    clear: () => setElement(null),
-  }));
+  useImperativeHandle(
+    hocRendererRef,
+    () => ({
+      render: (node) => setElement(node),
+      clear: () => setElement(null),
+    }),
+    [],
+  );
 
-  const container = typeof window !== 'undefined' ? document.getElementById('hoc-renderer-root') : null;
+  const container = document.getElementById('hoc-renderer-root');
+  if (!container) return null;
 
-  return <div id='hoc-renderer-root'>{element && container ? ReactDOM.createPortal(element, container) : null}</div>;
-}
-
-function destroy() {
-  if (!hocRendererRef?.current) {
-    console.warn('HocRenderer ref is not attached yet.');
-    return;
-  }
-  hocRendererRef.current.clear();
+  return element && container ? ReactDOM.createPortal(element, container) : null;
 }
 
 export interface ICreatePortalLauncherProps {
@@ -36,12 +33,25 @@ export interface ICreatePortalLauncherProps {
 
 export function CreatePortalLauncher<T extends object>(WrappedComponent: React.FC<T & ICreatePortalLauncherProps>): (props: T & { language: string }) => { destroy: () => void } {
   return function (props: T & { language: string }) {
+    const destroy = () => {
+      hocRendererRef?.current?.clear();
+    };
+
     if (!hocRendererRef.current) {
       console.warn('HocRenderer ref is not attached yet.');
-    } else {
-      const childProps = { ...props, visible: true, destroy };
-      hocRendererRef?.current?.render(<WrappedComponent {...childProps} />);
+      return {
+        destroy: () => {},
+      };
     }
+
+    const childProps = {
+      ...props,
+      visible: true,
+      destroy,
+    };
+
+    hocRendererRef.current.render(<WrappedComponent {...childProps} />);
+
     return {
       destroy,
     };
