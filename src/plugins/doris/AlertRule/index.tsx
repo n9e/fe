@@ -131,7 +131,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                         const keys = getFieldValue(['rule_config', 'queries', field.name, 'keys']);
                         const database = getFieldValue(['rule_config', 'queries', field.name, 'database']);
 
-                        return <GraphPreview cate={cate} datasourceValue={datasourceId} sql={sql} keys={keys} database={database} />;
+                        return <GraphPreview cate={cate} datasourceValue={datasourceId} sql={sql} database={database} />;
                       }}
                     </Form.Item>
                   </div>
