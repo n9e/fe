@@ -62,6 +62,7 @@ interface Dashboard {
   name: string;
   ident?: string;
   tags: string;
+  note?: string;
   configs?: string;
 }
 // 创建仪表盘
@@ -112,7 +113,7 @@ export const getDashboard = function (id: string | number) {
 };
 
 // 更新仪表盘 - 只能更新 name 和 tags
-export const updateDashboard = function (id: string | number, data: { name: string; ident?: string; tags: string }) {
+export const updateDashboard = function (id: string | number, data: { name: string; ident?: string; tags: string; note?: string }) {
   return request(`/api/n9e/board/${id}`, {
     method: RequestMethod.Put,
     data,

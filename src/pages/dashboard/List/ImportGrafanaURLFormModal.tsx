@@ -63,6 +63,7 @@ function index(props: Props & ModalWrapProps) {
               name: values.name,
               ident: values.ident,
               tags: _.join(values.tags, ' '),
+              note: values.note,
             });
             message.success(t('common:success.edit'));
             if (result) {
@@ -89,6 +90,7 @@ function index(props: Props & ModalWrapProps) {
           name: initialValues?.name,
           ident: initialValues?.ident,
           tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
+          note: initialValues?.note,
           iframe_url: initialValues?.configs?.iframe_url,
         }}
       >
@@ -117,6 +119,9 @@ function index(props: Props & ModalWrapProps) {
         </Form.Item>
         <Form.Item label={t('tags')} name='tags'>
           <Select mode='tags' tokenSeparators={[' ']} open={false} />
+        </Form.Item>
+        <Form.Item label={t('common:table.note')} name='note'>
+          <Input.TextArea autoSize={{ minRows: 1 }} />
         </Form.Item>
         <Form.Item
           label={t('batch.import_grafana_url_label')}
