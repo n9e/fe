@@ -44,6 +44,13 @@ const zh_HK = {
     warn_message_content_2: '常用的時間宏: ',
     warn_message_content_3: '範例：',
     warn_message_content_4: '時間宏使用方法: <a>詳情</a>',
+    dashboard: {
+      mode: {
+        label: '查詢模式',
+        table: '非時序數據',
+        timeSeries: '時序數據',
+      },
+    },
   },
   logs: {
     title: '日誌詳情',

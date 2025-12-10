@@ -44,6 +44,13 @@ const zh_CN = {
     warn_message_content_2: '常用的时间宏: ',
     warn_message_content_3: '样例：',
     warn_message_content_4: '时间宏使用方法: <a>详情</a>',
+    dashboard: {
+      mode: {
+        label: '查询模式',
+        table: '非时序数据',
+        timeSeries: '时序数据',
+      },
+    },
   },
   logs: {
     title: '日志数据',
