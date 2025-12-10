@@ -88,6 +88,7 @@
     "react-draggable": "^4.4.5",
     "react-fast-compare": "^3.2.0",
     "react-grid-layout": "^1.2.5",
+    "react-hexgrid": "^2.0.1",
     "react-highlight-words": "^0.17.0",
     "react-hooks-global-state": "^2.0.0",
     "react-i18next": "^14.0.0",
