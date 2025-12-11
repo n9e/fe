@@ -97,7 +97,7 @@ function index(
     scopedVars: values.scopedVars,
   });
   const tipsVisible = description || !_.isEmpty(values.links);
-  const panelCustomTimeDescribe = getPanelCustomTimeDescribe(series);
+  const panelCustomTimeDescribe = getPanelCustomTimeDescribe(values.queryOptionsTime);
 
   // TODO: 如果 hexbin 的 colorRange 为 string 时转成成 array
   if (typeof _.get(values, 'custom.colorRange') === 'string') {
