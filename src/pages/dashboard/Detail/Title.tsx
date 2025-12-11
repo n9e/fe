@@ -242,6 +242,7 @@ export default function Title(props: IProps) {
                     name: dashboard.name,
                     ident: dashboard.ident,
                     tags: dashboard.tags,
+                    note: dashboard.note,
                   });
                   updateDashboardConfigs(dashboard.id, {
                     configs: JSON.stringify(dashboard.configs),
@@ -338,6 +339,7 @@ export default function Title(props: IProps) {
                             name: values.name,
                             ident: values.ident,
                             tags: _.join(values.tags, ' '),
+                            note: values.note,
                             configs: JSON.stringify(dashboardConfigs),
                           });
                         } else {

@@ -146,3 +146,35 @@ export function getDorisLogsQuery(data: {
     data,
   }).then((res) => res.dat || { list: [], total: 0 });
 }
+
+export const getDsQuery2 = function (data: {
+  queries: {
+    ref: string;
+    ds_id: number;
+    ds_cate: string;
+    query: {
+      from: number;
+      to: number;
+      sql: string;
+      keys: {
+        valueKey: string;
+        labelKey: string;
+      };
+    };
+  }[];
+  exps: {
+    ref: string;
+    expr: string;
+  }[];
+}): Promise<
+  {
+    metric: { [index: string]: string };
+    values: [number, number][];
+  }[]
+> {
+  return request('/api/n9e-plus/query-batch', {
+    method: RequestMethod.Post,
+    data,
+    silence: true,
+  }).then((res) => res.dat);
+};

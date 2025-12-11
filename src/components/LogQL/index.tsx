@@ -35,6 +35,7 @@ export interface Props {
   headers?: { [index: string]: string };
   value?: string;
   onChange?: (expr?: string) => void;
+  validateBeforeChange?: (expr?: string) => boolean; // 在 onChange 之前执行的校验方法，返回 true 才继续执行 onChange
   executeQuery?: (expr?: string) => void;
   validateTrigger?: string[];
   completeEnabled?: boolean;
@@ -53,6 +54,7 @@ export default function index(props: Props) {
     headers,
     value,
     onChange,
+    validateBeforeChange,
     executeQuery,
     readonly = false,
     validateTrigger = ['onChange', 'onBlur'],
@@ -161,7 +163,10 @@ export default function index(props: Props) {
                     executeQueryCallback.current(realValue.current);
                   }
                   if (typeof onChange === 'function' && _.includes(trigger, 'onEnter')) {
-                    onChange(realValue.current);
+                    const shouldProceed = typeof validateBeforeChange === 'function' ? validateBeforeChange(realValue.current) : true;
+                    if (shouldProceed) {
+                      onChange(realValue.current);
+                    }
                   }
                   if (typeof onPressEnter === 'function') {
                     onPressEnter();
@@ -181,7 +186,10 @@ export default function index(props: Props) {
               if (val !== realValue.current) {
                 realValue.current = val;
                 if (_.includes(validateTrigger, 'onChange')) {
-                  onChange(val);
+                  const shouldProceed = typeof validateBeforeChange === 'function' ? validateBeforeChange(val) : true;
+                  if (shouldProceed) {
+                    onChange(val);
+                  }
                 }
                 if (val === '' && viewRef.current) {
                   startCompletion(viewRef.current);
@@ -223,7 +231,10 @@ export default function index(props: Props) {
       onBlur={() => {
         if (typeof onChange === 'function' && _.includes(trigger, 'onBlur')) {
           if (realValue.current !== value) {
-            onChange(realValue.current);
+            const shouldProceed = typeof validateBeforeChange === 'function' ? validateBeforeChange(realValue.current) : true;
+            if (shouldProceed) {
+              onChange(realValue.current);
+            }
           }
         }
         if (viewRef.current) {

@@ -49,6 +49,13 @@ const ru_RU = {
     warn_message_content_2: 'Распространенные временные макросы: ',
     warn_message_content_3: 'Пример:',
     warn_message_content_4: 'Использование временных макросов: <a>Подробнее</a>',
+    dashboard: {
+      mode: {
+        label: 'Режим запроса',
+        table: 'Невременные данные',
+        timeSeries: 'Временные ряды',
+      },
+    },
   },
   logs: {
     title: 'Детали журнала',

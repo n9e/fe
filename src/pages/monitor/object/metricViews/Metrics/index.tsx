@@ -53,10 +53,10 @@ export default function Metrics(props: IProps) {
   const mainContainerSize = useSize(mainContainerRef);
 
   const matchStr = getMatchStr(match);
-  const renderMetricList = (metrics: any[] = [], metricTabKey: string) => {
+  const renderMetricList = (metrics: any[] = [], metricTabKey: string, ignorePrefix = '') => {
     const filtered = _.filter(metrics, (metric) => {
       let flag = true;
-      flag = metricTabKey === 'all' ? true : metric.indexOf(`${metricTabKey}_`) === 0;
+      flag = metricTabKey === 'all' ? true : metric.indexOf(`${ignorePrefix}${metricTabKey}_`) === 0;
       if (flag && search) {
         try {
           const reg = new RegExp(search, 'gi');
@@ -105,7 +105,11 @@ export default function Metrics(props: IProps) {
         const metricPrefixes = _.union(
           _.compact(
             _.map(_metrics, (m) => {
-              return _.get(_.split(m, '_'), '[0]');
+              let name = m;
+              if (match.ignorePrefix) {
+                name = m.replace(match.ignorePrefix, '');
+              }
+              return _.get(_.split(name, '_'), '[0]');
             }),
           ),
         );
@@ -116,7 +120,7 @@ export default function Metrics(props: IProps) {
         });
       });
     }
-  }, [refreshFlag, matchStr]);
+  }, [refreshFlag, matchStr, match.ignorePrefix]);
 
   useEffect(() => {
     if (metricModeWhenMatchChange === 'append') return;
@@ -177,7 +181,7 @@ export default function Metrics(props: IProps) {
                   activeTabKey={activeKey}
                   onTabChange={setActiveKey}
                 >
-                  <div>{renderMetricList(metrics, activeKey)}</div>
+                  <div>{renderMetricList(metrics, activeKey, match.ignorePrefix)}</div>
                 </Card>
               )}
               {parentSource === 'srm' && (
