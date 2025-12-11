@@ -47,6 +47,13 @@ const en_US = {
     warn_message_content_2: 'Common time macros: ',
     warn_message_content_3: 'Example:',
     warn_message_content_4: 'Usage of time macros: <a>Details</a>',
+    dashboard: {
+      mode: {
+        label: 'Query Mode',
+        table: 'Table',
+        timeSeries: 'TimeSeries',
+      },
+    },
   },
   logs: {
     title: 'Logs',

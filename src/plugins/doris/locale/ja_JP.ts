@@ -46,6 +46,13 @@ const ja_JP = {
     warn_message_content_2: '一般的な時間マクロ: ',
     warn_message_content_3: '例：',
     warn_message_content_4: '時間マクロの使用方法: <a>詳細</a>',
+    dashboard: {
+      mode: {
+        label: 'クエリモード',
+        table: '非時系列データ',
+        timeSeries: '時系列データ',
+      },
+    },
   },
   logs: {
     title: 'ログデータ',

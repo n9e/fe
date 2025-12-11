@@ -98,7 +98,7 @@ export const baseCates: Cate[] = [
     label: 'Doris',
     type: ['logging'],
     alertRule: true,
-    dashboard: false,
+    dashboard: true,
     dashboardVariable: false,
     graphPro: true,
     alertPro: false,
