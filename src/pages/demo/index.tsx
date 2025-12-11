@@ -1,37 +1,59 @@
-/*
- * Copyright 2022 Nightingale Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 import React from 'react';
 import _ from 'lodash';
 
+import HoneycombChart from '@/components/HoneycombChart';
+import calculateHexCoordinates from '@/components/HoneycombChart/utils/calculateHexCoordinates';
+
 import './style.less';
 
+const config = {
+  width: 800,
+  height: 400,
+  spacing: 1.02,
+  enableRounded: true, // 是否启用圆角
+};
+
+const dataGenerator = () => {
+  const count = 100;
+  const colors = ['#FFB6C1', '#87CEFA', '#90EE90', '#FFD700', '#FFA500', '#DA70D6'];
+  const data: any[] = [];
+  for (let i = 0; i < count; i++) {
+    data.push({
+      color: colors[i % colors.length],
+      title: `Title Title Title Title Title ${i + 1}`,
+      subtitle: `Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle ${i + 1}`,
+      tooltip: `This is hexagon ${i + 1}`,
+    });
+  }
+  return data;
+};
+
 export default function Demo() {
+  const data = dataGenerator();
+  const coordinates = calculateHexCoordinates(data.length, config.spacing, config.width, config.height);
+  const currentData = _.map(data, (item, index) => ({
+    ...item,
+    ...coordinates.coordinates[index],
+  }));
+
   return (
-    <div
-      style={{
-        padding: 100,
-      }}
-    >
-      <div
-        style={{
-          width: 'max-content',
-          border: '1px solid #ddd',
-        }}
-      ></div>
+    <div className='p-2'>
+      <div className='w-max border border-antd'>
+        <HoneycombChart
+          data={currentData}
+          hexSize={coordinates.hexSize}
+          viewBoxWidth={coordinates.viewBoxWidth}
+          viewBoxHeight={coordinates.viewBoxHeight}
+          minX={coordinates.minX}
+          minY={coordinates.minY}
+          options={{
+            width: config.width,
+            height: config.height,
+            spacing: config.spacing,
+            enableRounded: config.enableRounded,
+          }}
+        />
+      </div>
     </div>
   );
 }
