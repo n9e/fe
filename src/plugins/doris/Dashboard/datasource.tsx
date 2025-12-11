@@ -61,6 +61,7 @@ export default async function dorisQuery(options: IOptions): Promise<Result> {
             ds_id: datasourceValue,
             ds_cate: DatasourceCateEnum.doris,
             query: {
+              mode: 'query',
               from: start,
               to: end,
               offset: 0,
@@ -97,6 +98,7 @@ export default async function dorisQuery(options: IOptions): Promise<Result> {
               ds_cate: DatasourceCateEnum.doris,
               query: {
                 ref: target.refId,
+                mode: 'sql',
                 from: start,
                 to: end,
                 sql: queryStr,
