@@ -2,10 +2,8 @@ import React from 'react';
 import { Form, Row, Col, Input, Button, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { alphabet } from '@/utils/constant';
-import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
@@ -131,36 +129,6 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
                           }}
                         >
                           <Input />
-                        </Form.Item>
-                      </Col>
-                      <Col flex='100px'>
-                        <Form.Item
-                          label={t('query.time')}
-                          {...field}
-                          name={[field.name, 'time']}
-                          tooltip={{
-                            getPopupContainer: () => document.body,
-                            title: t('query.time_tip'),
-                          }}
-                          normalize={(val) => {
-                            return {
-                              start: isMathString(val.start) ? val.start : moment(val.start).format('YYYY-MM-DD HH:mm:ss'),
-                              end: isMathString(val.end) ? val.end : moment(val.end).format('YYYY-MM-DD HH:mm:ss'),
-                            };
-                          }}
-                        >
-                          <TimeRangePicker
-                            dateFormat='YYYY-MM-DD HH:mm:ss'
-                            allowClear
-                            onClear={() => {
-                              const targets = chartForm.getFieldValue('targets');
-                              const targetsClone = _.cloneDeep(targets);
-                              _.set(targetsClone, [field.name, 'time'], undefined);
-                              chartForm.setFieldsValue({
-                                targets: targetsClone,
-                              });
-                            }}
-                          />
                         </Form.Item>
                       </Col>
                     </Row>

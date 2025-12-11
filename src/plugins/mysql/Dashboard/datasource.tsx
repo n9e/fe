@@ -16,6 +16,7 @@ interface IOptions {
   scopedVars?: any;
   inspect?: boolean;
   custom: any;
+  queryOptionsTime?: IRawTimeRange; // 2025-10-20 新增， queryOptionsTime 会覆盖 time
 }
 
 interface Result {
@@ -24,7 +25,7 @@ interface Result {
 }
 
 export default async function mysqlQuery(options: IOptions): Promise<Result> {
-  const { time, targets, datasourceValue } = options;
+  const { time, targets, datasourceValue, queryOptionsTime } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -35,8 +36,8 @@ export default async function mysqlQuery(options: IOptions): Promise<Result> {
   let series: any[] = [];
   if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target) => {
-      if (target.time) {
-        const parsedRange = parseRange(target.time);
+      if (queryOptionsTime) {
+        const parsedRange = parseRange(queryOptionsTime);
         start = moment(parsedRange.start).unix();
         end = moment(parsedRange.end).unix();
       }
