@@ -2,10 +2,8 @@ import React from 'react';
 import { Form, Row, Col, Space, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import LogQL from '@/components/LogQL';
 import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
@@ -19,7 +17,6 @@ import './style.less';
 
 export default function MySQLQueryBuilder({ datasourceValue }) {
   const { t } = useTranslation(NAME_SPACE);
-  const chartForm = Form.useFormInstance();
   const type = Form.useWatch('type');
   const targets = Form.useWatch('targets');
 
@@ -119,36 +116,6 @@ export default function MySQLQueryBuilder({ datasourceValue }) {
                             }}
                           >
                             <LegendInput />
-                          </Form.Item>
-                        </Col>
-                        <Col flex='100px'>
-                          <Form.Item
-                            label={t('dashboard:query.time')}
-                            {...field}
-                            name={[field.name, 'time']}
-                            tooltip={{
-                              getPopupContainer: () => document.body,
-                              title: t('dashboard:query.time_tip'),
-                            }}
-                            normalize={(val) => {
-                              return {
-                                start: isMathString(val.start) ? val.start : moment(val.start).format('YYYY-MM-DD HH:mm:ss'),
-                                end: isMathString(val.end) ? val.end : moment(val.end).format('YYYY-MM-DD HH:mm:ss'),
-                              };
-                            }}
-                          >
-                            <TimeRangePicker
-                              dateFormat='YYYY-MM-DD HH:mm:ss'
-                              allowClear
-                              onClear={() => {
-                                const targets = chartForm.getFieldValue('targets');
-                                const targetsClone = _.cloneDeep(targets);
-                                _.set(targetsClone, [field.name, 'time'], undefined);
-                                chartForm.setFieldsValue({
-                                  targets: targetsClone,
-                                });
-                              }}
-                            />
                           </Form.Item>
                         </Col>
                       </Row>

@@ -15,6 +15,7 @@ interface IOptions {
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
+  queryOptionsTime?: IRawTimeRange;
 }
 
 interface Result {
@@ -23,7 +24,7 @@ interface Result {
 }
 
 export default async function mysqlQuery(options: IOptions): Promise<Result> {
-  const { time, targets, datasourceValue } = options;
+  const { time, targets, datasourceValue, queryOptionsTime } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -34,8 +35,8 @@ export default async function mysqlQuery(options: IOptions): Promise<Result> {
   let series: any[] = [];
   if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target) => {
-      if (target.time) {
-        const parsedRange = parseRange(target.time);
+      if (queryOptionsTime) {
+        const parsedRange = parseRange(queryOptionsTime);
         start = moment(parsedRange.start).unix();
         end = moment(parsedRange.end).unix();
       }

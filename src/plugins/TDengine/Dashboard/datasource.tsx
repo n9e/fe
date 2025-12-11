@@ -14,6 +14,7 @@ interface IOptions {
   spanNulls?: boolean;
   scopedVars?: any;
   inspect?: boolean;
+  queryOptionsTime?: IRawTimeRange;
 }
 
 interface Result {
@@ -22,7 +23,7 @@ interface Result {
 }
 
 export default async function prometheusQuery(options: IOptions): Promise<Result> {
-  const { time, targets, datasourceValue } = options;
+  const { time, targets, datasourceValue, queryOptionsTime } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).toISOString();
@@ -37,8 +38,8 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
       cate: DatasourceCateEnum.tdengine,
       datasource_id: datasourceValue,
       query: _.map(targets, (target) => {
-        if (target.time) {
-          const parsedRange = parseRange(target.time);
+        if (queryOptionsTime) {
+          const parsedRange = parseRange(queryOptionsTime);
           start = moment(parsedRange.start).toISOString();
           end = moment(parsedRange.end).toISOString();
         }
