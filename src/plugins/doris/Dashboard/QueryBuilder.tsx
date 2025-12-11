@@ -63,13 +63,13 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                       <Form.Item noStyle {...field} name={[field.name, 'refId']}>
                         <div />
                       </Form.Item>
-                      <Form.Item {...field} name={[field.name, 'query', 'queryStrategy']} initialValue='query'>
+                      <Form.Item {...field} name={[field.name, 'query', 'queryStrategy']} initialValue='sql'>
                         <Radio.Group
                           options={[
-                            {
-                              label: t('query.mode.query'),
-                              value: 'query',
-                            },
+                            // {
+                            //   label: t('query.mode.query'),
+                            //   value: 'query',
+                            // },
                             {
                               label: t('query.mode.sql'),
                               value: 'sql',
