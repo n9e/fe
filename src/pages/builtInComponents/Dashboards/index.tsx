@@ -187,6 +187,11 @@ export default function index(props: Props) {
             },
           },
           {
+            title: t('common:table.note'),
+            dataIndex: 'note',
+            key: 'note',
+          },
+          {
             title: t('common:table.update_by'),
             dataIndex: 'updated_by',
             key: 'updated_by',

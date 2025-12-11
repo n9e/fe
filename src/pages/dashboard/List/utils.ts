@@ -28,6 +28,7 @@ export function exportDataStringify(data: any) {
     {
       name: data.name,
       tags: data.tags,
+      note: data.note,
       ident: data.ident,
       uuid: data.uuid || moment().valueOf() * 1000,
       configs: JSONParse(data.configs),
