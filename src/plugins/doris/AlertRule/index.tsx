@@ -89,7 +89,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                       <Col flex='none'>
                         <InputGroupWithFormItem label={t('query.database')}>
                           <Form.Item {...field} name={[field.name, 'database']}>
-                            <Select style={{ width: 200 }} placeholder={t('query.database_placeholder')} disabled={disabled}>
+                            <Select style={{ width: 200 }} disabled={disabled}>
                               {dbList.map((db) => (
                                 <Select.Option key={db} value={db}>
                                   {db}
@@ -128,7 +128,6 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                       {({ getFieldValue }) => {
                         const cate = getFieldValue('cate');
                         const sql = getFieldValue(['rule_config', 'queries', field.name, 'sql']);
-                        const keys = getFieldValue(['rule_config', 'queries', field.name, 'keys']);
                         const database = getFieldValue(['rule_config', 'queries', field.name, 'database']);
 
                         return <GraphPreview cate={cate} datasourceValue={datasourceId} sql={sql} database={database} />;
