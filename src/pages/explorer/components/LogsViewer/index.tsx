@@ -48,6 +48,7 @@ interface Props {
   histogramExtraRender?: React.ReactNode;
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
+  stacked?: boolean;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -94,6 +95,7 @@ export default function LogsViewer(props: Props) {
     histogramExtraRender,
     optionsExtraRender,
     showDateField = true,
+    stacked = false,
   } = props;
   const [options, setOptions] = useState(props.options);
 
@@ -116,25 +118,20 @@ export default function LogsViewer(props: Props) {
     >
       <>
         {!hideHistogram && (
-          <div className='h-[120px]'>
+          <div className='h-[130px]'>
             <div className='mt-1 px-2 flex justify-between'>
               <Space>
                 <Spin spinning={histogramLoading} size='small' />
               </Space>
               {histogramExtraRender}
             </div>
-            <div className='h-[102px] py-2'>
+            <div className='h-[120px]'>
               {props.range && histogram && (
                 <HistogramChart
-                  time={props.range}
                   series={histogram}
-                  onClick={(event, datetime, value, points) => {
-                    const start = _.get(points, '[0][0]');
-                    const allPoints = _.get(histogram, '[0].data');
-                    if (start && allPoints) {
-                      const step = _.get(allPoints, '[2][0]') - _.get(allPoints, '[1][0]');
-                      const end = start + step;
-
+                  stacked={stacked}
+                  onClick={(start, end) => {
+                    if (start && end) {
                       onLogRequestParamsChange?.({
                         from: start,
                         to: end,

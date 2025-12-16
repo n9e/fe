@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Space, Button, Row, Col } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -19,6 +19,7 @@ import DatabaseSelect from './DatabaseSelect';
 import TableSelect from './TableSelect';
 import DateFieldSelect from './DateFieldSelect';
 import Content from './Content';
+import SQLFormatButton from './SQLFormatButton';
 
 interface Props {
   disabled?: boolean;
@@ -32,6 +33,11 @@ export default function index(props: Props) {
   const form = Form.useFormInstance();
   const { disabled, datasourceValue, executeQuery } = props;
   const queryValues = Form.useWatch(['query']);
+  // 用于显示展示的时间范围
+  const rangeRef = useRef<{
+    from: number;
+    to: number;
+  }>();
 
   const indexDataService = () => {
     const queryValues = form.getFieldValue('query');
@@ -159,6 +165,7 @@ export default function index(props: Props) {
             />
           </Form.Item>
         </InputGroupWithFormItem>
+        <SQLFormatButton rangeRef={rangeRef} />
         <ConditionHistoricalRecords
           localKey={QUERY_CACHE_KEY}
           datasourceValue={datasourceValue!}
@@ -187,7 +194,7 @@ export default function index(props: Props) {
           }}
         />
       </div>
-      {indexData && <Content indexData={indexData} indexDataLoading={indexDataLoading} executeQuery={executeQuery} />}
+      {indexData && <Content rangeRef={rangeRef} indexData={indexData} indexDataLoading={indexDataLoading} executeQuery={executeQuery} />}
     </div>
   );
 }

@@ -20,10 +20,17 @@ import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 import { getDorisLogsQuery, Field, getDorisHistogram } from '../../services';
 import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
-import { getLocalstorageOptions, setLocalstorageOptions, filteredFields } from '../utils';
+import { getLocalstorageOptions, setLocalstorageOptions, filteredFields, getPinIndexFromLocalstorage } from '../utils';
 import FieldsSidebar from './FieldsSidebar';
 
 interface Props {
+  rangeRef: React.MutableRefObject<
+    | {
+        from: number;
+        to: number;
+      }
+    | undefined
+  >;
   indexData: Field[];
   indexDataLoading: boolean;
   executeQuery: () => void;
@@ -31,7 +38,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { indexData, indexDataLoading, executeQuery } = props;
+  const { rangeRef, indexData, indexDataLoading, executeQuery } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
@@ -44,11 +51,13 @@ export default function index(props: Props) {
     from: undefined,
     to: undefined,
   });
-  // 用于显示展示的时间范围
-  const rangeRef = useRef<{
-    from: number;
-    to: number;
-  }>();
+  const [pinIndex, setPinIndex] = useState<Field | undefined>(
+    getPinIndexFromLocalstorage({
+      datasourceValue,
+      database: queryValues?.database,
+      table: queryValues?.table,
+    }),
+  );
   const [collapsed, setCollapsed] = useState(true);
   const [options, setOptions] = useState(getLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
@@ -165,6 +174,7 @@ export default function index(props: Props) {
             from: moment(range.start).unix(),
             to: moment(range.end).unix(),
             query: queryValues.query,
+            group_by: pinIndex?.field,
           },
         ],
       })
@@ -172,8 +182,8 @@ export default function index(props: Props) {
           return _.map(res, (item) => {
             return {
               id: _.uniqueId('series_'),
-              refId: '',
-              name: '',
+              ref: '',
+              name: item.ref,
               metric: {},
               data: item.values,
             };
@@ -188,7 +198,7 @@ export default function index(props: Props) {
   };
 
   const { data: histogramData, loading: histogramLoading } = useRequest<any[] | undefined, any>(histogramService, {
-    refreshDeps: [refreshFlag],
+    refreshDeps: [refreshFlag, pinIndex],
   });
 
   useEffect(() => {
@@ -219,6 +229,20 @@ export default function index(props: Props) {
     };
   }, [JSON.stringify(queryValues?.range)]);
 
+  useEffect(() => {
+    if (datasourceValue && queryValues?.database && queryValues?.table) {
+      setPinIndex(
+        getPinIndexFromLocalstorage({
+          datasourceValue,
+          database: queryValues.database,
+          table: queryValues.table,
+        }),
+      );
+    } else {
+      setPinIndex(undefined);
+    }
+  }, [datasourceValue, queryValues?.database, queryValues?.table]);
+
   return !_.isEmpty(data?.list) ? (
     <div className='flex h-full min-h-0 gap-[16px]'>
       <div
@@ -227,7 +251,15 @@ export default function index(props: Props) {
           display: collapsed ? 'block' : 'none',
         }}
       >
-        <FieldsSidebar organizeFields={options.organizeFields} data={indexData} loading={indexDataLoading} onValueFilter={handleValueFilter} setOptions={updateOptions} />
+        <FieldsSidebar
+          organizeFields={options.organizeFields}
+          data={indexData}
+          loading={indexDataLoading}
+          onValueFilter={handleValueFilter}
+          setOptions={updateOptions}
+          pinIndex={pinIndex}
+          setPinIndex={setPinIndex}
+        />
       </div>
       <div className='min-h-0 min-w-0 w-full border border-antd rounded-sm flex flex-col relative'>
         <LogsViewer
@@ -310,6 +342,7 @@ export default function index(props: Props) {
           fieldConfig={currentFieldConfig}
           indexData={indexData}
           range={queryValues?.range}
+          stacked={!!pinIndex} // only for histogram
         />
         <div
           className='h-[58px] w-[10px] cursor-pointer absolute top-1/2 left-[-14px] mt-[-29px] flex items-center justify-center rounded n9e-fill-color-4'

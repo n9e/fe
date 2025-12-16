@@ -51,6 +51,10 @@ const zh_CN = {
         timeSeries: '时序数据',
       },
     },
+    stack_disabled_tip: '唯一值个数只有 1 个或是超过10个，不支持开启堆叠图',
+    stack_tip_pin: '开启堆叠图',
+    stack_tip_unpin: '关闭堆叠图',
+    sql_format: 'SQL预览',
   },
   logs: {
     title: '日志数据',
