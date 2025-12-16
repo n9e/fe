@@ -25,9 +25,10 @@ export interface TimeSeriesBarChartProps {
   onBrushEnd?: (timeRange: [number, number]) => void; // 框选回调
   stacked?: boolean; // 是否堆叠
   stepMs?: number; // x 轴步长（毫秒），用于刻度格式化
+  xTitle?: string;
 }
 
-const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs }) => {
+const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs, xTitle }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
@@ -71,10 +72,22 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
       .animate(false)
       .axis('x', {
         // 去除标题
-        title: null,
+        title: xTitle ?? null,
+        titleSpacing: 2,
         // 禁用自动旋转，水平展示
         labelAutoRotate: false,
         labelTransform: 'rotate(0)',
+        tickFilter: (_datum, index, data) => {
+          const approxLabelWidth = 150;
+          const containerWidth = containerRef.current?.clientWidth || width || 800;
+          const calculatedTickCount = Math.max(2, Math.floor(containerWidth / approxLabelWidth));
+          // 只保留 calculatedTickCount 个刻度
+          const step = Math.max(1, Math.floor(data.length / calculatedTickCount));
+          if (index % step !== 0) {
+            return false;
+          }
+          return true;
+        },
         // 基于 stepMs 的格式化
         labelFormatter: (val: string) => {
           const date = new Date(val);
@@ -121,8 +134,6 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
 
     if (stacked) {
       chartOptions.legend = {
-        orientation: 'vertical',
-        maxRows: 1,
         color: {
           position: 'bottom',
           layout: {
@@ -180,36 +191,25 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
     // 启用 G2 内置的图例单选过滤交互
     chart.interaction('legendFilter', true);
 
-    // 根据容器宽度与步长，动态设置 x 轴刻度数量，避免每柱一刻度
-    try {
-      const approxLabelWidth = 80; // 每个刻度预留像素
-      const containerWidth = containerRef.current?.clientWidth || width || 800;
-      const tickCount = Math.max(2, Math.floor(containerWidth / approxLabelWidth));
-      // 采用连续时间尺度，确保 tickCount 生效
-      chart.options({
-        scales: {
-          x: {
-            type: 'utc',
-            nice: true,
-            tickCount,
-          },
-        },
-      });
-    } catch {}
-
     // 渲染图表
     chart.render();
 
-    // 监听柱子点击事件
-    chart.on('interval:click', (event: any) => {
-      if (onBarClick && event.data?.data) {
-        const clickedData = event.data.data;
-        onBarClick({
-          time: clickedData.time,
-          value: clickedData.value,
-          category: clickedData.category,
-        });
-      }
+    // 监听绘图区域点击，命中最近的柱子（即使柱子高度很低）
+    chart.on('plot:click', (event: any) => {
+      if (!onBarClick) return;
+
+      // 使用 snap 记录获取最近的柱子数据
+      const records = chart.getDataByXY({ x: event.x, y: event.y }, { shared: stacked }) || [];
+      if (!records.length) return;
+
+      const clickedData = records[0];
+      if (!clickedData) return;
+
+      onBarClick({
+        time: clickedData.time,
+        value: clickedData.value,
+        category: clickedData.category,
+      });
     });
 
     // 监听框选事件

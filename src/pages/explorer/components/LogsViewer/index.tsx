@@ -49,6 +49,7 @@ interface Props {
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
   stacked?: boolean;
+  histogramXTitle?: string;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -96,6 +97,7 @@ export default function LogsViewer(props: Props) {
     optionsExtraRender,
     showDateField = true,
     stacked = false,
+    histogramXTitle,
   } = props;
   const [options, setOptions] = useState(props.options);
 
@@ -130,6 +132,7 @@ export default function LogsViewer(props: Props) {
                 <HistogramChart
                   series={histogram}
                   stacked={stacked}
+                  histogramXTitle={histogramXTitle}
                   onClick={(start, end) => {
                     if (start && end) {
                       onLogRequestParamsChange?.({

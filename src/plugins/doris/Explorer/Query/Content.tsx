@@ -343,6 +343,7 @@ export default function index(props: Props) {
           indexData={indexData}
           range={queryValues?.range}
           stacked={!!pinIndex} // only for histogram
+          histogramXTitle={pinIndex ? pinIndex.field : undefined}
         />
         <div
           className='h-[58px] w-[10px] cursor-pointer absolute top-1/2 left-[-14px] mt-[-29px] flex items-center justify-center rounded n9e-fill-color-4'
