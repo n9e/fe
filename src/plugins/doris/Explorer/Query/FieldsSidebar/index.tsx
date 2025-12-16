@@ -188,6 +188,18 @@ export default function index(props: IProps) {
             </Tooltip>
           );
         }}
+        renderFieldNameExtra={(field) => {
+          if (pinIndex && pinIndex.field === field.field) {
+            return (
+              <PinIcon
+                className='text-[12px]'
+                style={{
+                  color: 'var(--fc-primary-color)',
+                }}
+              />
+            );
+          }
+        }}
       />
     </div>
   );

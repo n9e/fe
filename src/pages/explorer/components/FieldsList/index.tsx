@@ -26,11 +26,23 @@ interface Props {
     };
     setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
   }) => React.ReactNode;
+  renderFieldNameExtra?: (field: Field) => React.ReactNode;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('explorer');
-  const { typeMap = TYPE_MAP, organizeFieldNames, onOperClick, fields, enableStats = true, onValueFilter, fetchStats, loading, renderStatsPopoverTitleExtra } = props;
+  const {
+    typeMap = TYPE_MAP,
+    organizeFieldNames,
+    onOperClick,
+    fields,
+    enableStats = true,
+    onValueFilter,
+    fetchStats,
+    loading,
+    renderStatsPopoverTitleExtra,
+    renderFieldNameExtra,
+  } = props;
   const [fieldsSearch, setFieldsSearch] = useState('');
   const [showFieldsCollapsed, setShowFieldsCollapsed] = useState(false);
   const [availableFieldsCollapsed, setAvailableFieldsCollapsed] = useState(false);
@@ -83,6 +95,7 @@ export default function index(props: Props) {
                         fetchStats={fetchStats}
                         enableStats={enableStats}
                         renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
+                        renderFieldNameExtra={renderFieldNameExtra}
                       />
                     );
                   },
@@ -120,6 +133,7 @@ export default function index(props: Props) {
                       fetchStats={fetchStats}
                       enableStats={enableStats}
                       renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
+                      renderFieldNameExtra={renderFieldNameExtra}
                     />
                   );
                 },
