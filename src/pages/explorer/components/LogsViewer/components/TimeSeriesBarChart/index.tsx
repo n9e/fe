@@ -17,6 +17,7 @@ export interface TimeSeriesDataPoint {
 }
 
 export interface TimeSeriesBarChartProps {
+  darkMode?: boolean;
   data: TimeSeriesDataPoint[];
   width?: number;
   height?: number;
@@ -26,7 +27,7 @@ export interface TimeSeriesBarChartProps {
   stepMs?: number; // x 轴步长（毫秒），用于刻度格式化
 }
 
-const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs }) => {
+const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
@@ -134,10 +135,40 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ data, width, he
       };
     }
 
+    if (darkMode) {
+      chartOptions.theme = { type: 'dark' };
+    }
+
     chart.interaction('tooltip', {
       shared: stacked,
-      bounding: {
-        y: 50,
+      crosshairs: true,
+      render: (event: any, { container }: any) => {
+        // 自定义 tooltip 渲染，确保不溢出屏幕
+        const tooltipElement = container;
+        if (tooltipElement) {
+          // 获取 tooltip 的位置和尺寸
+          const tooltipRect = tooltipElement.getBoundingClientRect();
+          const viewportWidth = window.innerWidth;
+          const viewportHeight = window.innerHeight;
+
+          // 调整水平位置
+          if (tooltipRect.right > viewportWidth) {
+            const offsetX = tooltipRect.right - viewportWidth + 10;
+            tooltipElement.style.left = `${parseFloat(tooltipElement.style.left || '0') - offsetX}px`;
+          }
+          if (tooltipRect.left < 0) {
+            tooltipElement.style.left = '10px';
+          }
+
+          // 调整垂直位置
+          if (tooltipRect.bottom > viewportHeight) {
+            const offsetY = tooltipRect.bottom - viewportHeight + 10;
+            tooltipElement.style.top = `${parseFloat(tooltipElement.style.top || '0') - offsetY}px`;
+          }
+          if (tooltipRect.top < 0) {
+            tooltipElement.style.top = '10px';
+          }
+        }
       },
     });
 

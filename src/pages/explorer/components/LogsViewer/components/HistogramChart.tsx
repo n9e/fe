@@ -69,7 +69,7 @@ export default function HistogramChart(props: Props) {
   // 直接渲染新的时序柱状图组件
   return (
     <div className='w-full min-w-0 h-full min-h-0'>
-      <TimeSeriesBarChart data={chartData} height={120} onBarClick={handleBarClick} onBrushEnd={handleBrushEnd} stacked={stacked} stepMs={stepMs} />
+      <TimeSeriesBarChart data={chartData} height={120} onBarClick={handleBarClick} onBrushEnd={handleBrushEnd} stacked={stacked} stepMs={stepMs} darkMode={darkMode} />
     </div>
   );
 }
