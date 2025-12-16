@@ -17,6 +17,13 @@ interface Props {
   enableStats: boolean;
   onValueFilter?: (parmas: { key: string; value: string; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
+  renderStatsPopoverTitleExtra?: (options: {
+    index: Field;
+    stats?: {
+      [index: string]: number;
+    };
+    setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  }) => React.ReactNode;
 }
 
 const FieldBooleanSvg = () => (
@@ -48,7 +55,7 @@ const operIconMap = {
 
 export default function FieldsItem(props: Props) {
   const { t } = useTranslation('explorer');
-  const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats } = props;
+  const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats, renderStatsPopoverTitleExtra } = props;
   const [topNVisible, setTopNVisible] = useState<boolean>(false);
   const [topNData, setTopNData] = useState<any[]>([]);
   const [topNLoading, setTopNLoading] = useState<boolean>(false);
@@ -64,7 +71,12 @@ export default function FieldsItem(props: Props) {
         width: 360,
       }}
       visible={topNVisible}
-      title={field.field}
+      title={
+        <div className='flex justify-between items-center'>
+          {field.field}
+          {topNVisible ? renderStatsPopoverTitleExtra?.({ index: field, stats, setTopNVisible }) : null}
+        </div>
+      }
       content={
         <div>
           <Spin spinning={topNLoading}>

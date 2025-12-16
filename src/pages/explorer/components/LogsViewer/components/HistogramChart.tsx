@@ -1,99 +1,75 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import TsGraph from '@fc-plot/ts-graph';
-import '@fc-plot/ts-graph/dist/index.css';
-import moment from 'moment';
+import React, { useContext, useMemo } from 'react';
 import _ from 'lodash';
 
-import { PRIMARY_COLOR } from '@/utils/constant';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 
+import TimeSeriesBarChart, { TimeSeriesDataPoint } from './TimeSeriesBarChart';
+
 interface Props {
-  time: IRawTimeRange;
   series: any[];
-  onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
+  stacked: boolean;
+  onClick?: (start: number, end: number) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
 }
 
 export default function HistogramChart(props: Props) {
   const { darkMode } = useContext(CommonStateContext);
-  const { time, series, onClick, onZoomWithoutDefult } = props;
-  const chartEleRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<TsGraph>(null);
+  const { series, stacked, onClick, onZoomWithoutDefult } = props;
 
-  useEffect(() => {
-    if (chartEleRef.current) {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-      chartRef.current = new TsGraph({
-        timestamp: 'X',
-        xkey: 0,
-        ykey: 1,
-        ykey2: 2,
-        ykeyFormatter: (value) => Number(value),
-        chart: {
-          renderTo: chartEleRef.current,
-          height: chartEleRef.current.clientHeight,
-          colors: [PRIMARY_COLOR],
-          marginTop: 0,
-        },
-        series: [],
-        hideResetBtn: true,
-        onClick: (event, datetime, value, points) => {
-          if (onClick) onClick(event, datetime, value, points);
-        },
+  // 将原有 series 结构转换为 TimeSeriesBarChart 所需的数据结构
+  const chartData: TimeSeriesDataPoint[] = useMemo(() => {
+    if (!Array.isArray(series)) return [];
+    // 兼容两种可能：
+    // 1) series 为 [{ name, data: [[ts, val], ...] }, ...]
+    // 2) series 为 [[ts, val], ...]
+    const mapped = series.flatMap((s: any) => {
+      const dataArr = Array.isArray(s?.data) ? s.data : Array.isArray(s) ? s : [];
+      const category = s?.name;
+      return dataArr.map((d: any) => {
+        const ts = Array.isArray(d) ? d[0] : d?.time;
+        const val = Array.isArray(d) ? d[1] : d?.value;
+        // 原来使用的是 Unix 秒，TimeSeriesBarChart 期望毫秒时间戳
+        const timeMs = typeof ts === 'number' && ts < 1e12 ? ts * 1000 : ts;
+        return {
+          time: timeMs,
+          value: Number(val) || 0,
+          category,
+        } as TimeSeriesDataPoint;
       });
-    }
-    return () => {
-      if (chartRef.current && typeof chartRef.current.destroy === 'function') {
-        chartRef.current.destroy();
-      }
-    };
-  }, []);
+    });
+    return mapped;
+  }, [series]);
 
-  useEffect(() => {
-    let xAxisDamin = {};
-    if (time) {
-      const parsedRange = parseRange(time);
-      const start = moment(parsedRange.start).unix();
-      const end = moment(parsedRange.end).unix();
-      xAxisDamin = { min: start, max: end };
+  // 计算步长（用于 x 轴刻度格式化）
+  const stepMs = useMemo(() => {
+    const sorted = _.sortBy(chartData, (d) => (typeof d.time === 'number' ? d.time : new Date(d.time).getTime()));
+    if (sorted.length >= 2) {
+      const t0 = typeof sorted[0].time === 'number' ? sorted[0].time : new Date(sorted[0].time).getTime();
+      const t1 = typeof sorted[1].time === 'number' ? sorted[1].time : new Date(sorted[1].time).getTime();
+      return Math.max(1, t1 - t0);
     }
-    if (chartRef.current) {
-      chartRef.current.update({
-        type: 'bar',
-        series: _.cloneDeep(series),
-        area: {
-          ...chartRef.current.options.area,
-          opacity: 1,
-        },
-        tooltip: {
-          ...chartRef.current.options.tooltip,
-          shared: true,
-          pointValueformatter: (val) => {
-            return Number(val).toFixed(0);
-          },
-        },
-        xAxis: {
-          ...chartRef.current.options.xAxis,
-          ...xAxisDamin,
-          lineColor: darkMode ? 'rgba(255,255,255,0.2)' : '#ccc',
-          tickColor: darkMode ? 'rgba(255,255,255,0.2)' : '#ccc',
-        },
-        yAxis: {
-          ...chartRef.current.options.yAxis,
-          backgroundColor: darkMode ? 'rgb(24,27,31)' : '#fff',
-          gridLineColor: darkMode ? 'rgba(255,255,255,0.05)' : '#efefef',
-        },
-        onClick: (event, datetime, value, points) => {
-          if (onClick) onClick(event, datetime, value, points);
-        },
-        hideResetBtn: true,
-        onZoomWithoutDefult,
-      });
-    }
-  }, [JSON.stringify(series), darkMode]);
+    return undefined;
+  }, [chartData]);
 
-  return <div ref={chartEleRef} className='w-full min-w-0 h-full min-h-0' />;
+  // 将原 onClick/onZoomWithoutDefult 回调映射到新组件回调
+  const handleBarClick = (data: TimeSeriesDataPoint) => {
+    if (onClick) {
+      const start = typeof data.time === 'number' ? data.time : new Date(data.time).getTime();
+      const end = start + (stepMs || 0);
+      onClick(start, end);
+    }
+  };
+
+  const handleBrushEnd = (range: [number, number]) => {
+    if (onZoomWithoutDefult) {
+      onZoomWithoutDefult([new Date(range[0]), new Date(range[1])]);
+    }
+  };
+
+  // 直接渲染新的时序柱状图组件
+  return (
+    <div className='w-full min-w-0 h-full min-h-0'>
+      <TimeSeriesBarChart data={chartData} height={120} onBarClick={handleBarClick} onBrushEnd={handleBrushEnd} stacked={stacked} stepMs={stepMs} />
+    </div>
+  );
 }

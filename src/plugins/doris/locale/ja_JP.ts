@@ -53,6 +53,10 @@ const ja_JP = {
         timeSeries: '時系列データ',
       },
     },
+    stack_disabled_tip: 'ユニークな値の数が1または10を超える場合、積み上げグラフはサポートされていません',
+    stack_tip_pin: '積み上げグラフを有効にする',
+    stack_tip_unpin: '積み上げグラフを無効にする',
+    sql_format: 'SQLフォーマット',
   },
   logs: {
     title: 'ログデータ',
