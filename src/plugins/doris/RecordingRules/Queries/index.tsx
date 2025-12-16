@@ -8,10 +8,10 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import LogQL from '@/components/LogQL';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
-import { NAME_SPACE } from '@/plugins/mysql/constants';
-
-import AdvancedSettings from '../../components/AdvancedSettings';
 import DocumentDrawer from '@/components/DocumentDrawer';
+
+import { NAME_SPACE } from '../../constants';
+import AdvancedSettings from '../../components/AdvancedSettings';
 import GraphPreview from '../../AlertRule/GraphPreview';
 
 interface IProps {
@@ -26,7 +26,7 @@ export default function index(props: IProps) {
   const { darkMode } = useContext(CommonStateContext);
   const { datasourceValue, field, prefixPath } = props;
   const disabled = false;
-  const cate = DatasourceCateEnum.mysql;
+  const cate = DatasourceCateEnum.doris;
   const path = [field.name, 'config'];
   const query = Form.useWatch([...prefixPath, 'config']);
 
@@ -51,7 +51,7 @@ export default function index(props: IProps) {
         }
       >
         <Form.Item {...field} name={[...path, 'sql']}>
-          <LogQL datasourceCate={DatasourceCateEnum.mysql} datasourceValue={datasourceValue} query={{}} historicalRecords={[]} placeholder={t('query.query_placeholder2')} />
+          <LogQL datasourceCate={DatasourceCateEnum.doris} datasourceValue={datasourceValue} query={{}} historicalRecords={[]} />
         </Form.Item>
       </InputGroupWithFormItem>
       <AdvancedSettings prefixField={field} prefixName={path} disabled={disabled} expanded />
