@@ -79,6 +79,8 @@ const en_US = {
     es: {
       enable_write: 'Enable Write',
       version: 'Version',
+      version_placeholder: 'Leave blank to auto-detect',
+      version_tip: 'Leave blank to auto-detect',
       max_shard: 'Max concurrent Shard Requests',
       min_interval: 'Min time interval(s)',
       min_interval_tip:

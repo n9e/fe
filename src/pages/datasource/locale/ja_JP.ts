@@ -81,6 +81,8 @@ const ja_JP = {
       disable_write: '書き込みを許可しない',
       enable_write: '書き込みを許可',
       version: 'バージョン',
+      version_placeholder: '空白のまま自動取得',
+      version_tip: '空白のまま自動取得',
       max_shard: '最大並行シャードリクエスト数',
       min_interval: '最小時間間隔(s)',
       min_interval_tip: '時間間隔による自動グループ化の下限。書き込み頻度に応じて設定することをお勧めします。例えば、データが毎分書き込まれる場合は1mに設定します。',
