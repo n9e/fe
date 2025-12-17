@@ -54,6 +54,10 @@ const en_US = {
         timeSeries: 'TimeSeries',
       },
     },
+    stack_disabled_tip: 'Stacked charts are not supported when the number of unique values is 1 or exceeds 10',
+    stack_tip_pin: 'Enable stacked chart',
+    stack_tip_unpin: 'Disable stacked chart',
+    sql_format: 'SQL Format',
   },
   logs: {
     title: 'Logs',

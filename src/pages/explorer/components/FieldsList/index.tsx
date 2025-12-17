@@ -19,11 +19,30 @@ interface Props {
   onValueFilter?: (parmas: { key: string; value: any; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
   loading?: boolean;
+  renderStatsPopoverTitleExtra?: (options: {
+    index: Field;
+    stats?: {
+      [index: string]: number;
+    };
+    setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  }) => React.ReactNode;
+  renderFieldNameExtra?: (field: Field) => React.ReactNode;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('explorer');
-  const { typeMap = TYPE_MAP, organizeFieldNames, onOperClick, fields, enableStats = true, onValueFilter, fetchStats, loading } = props;
+  const {
+    typeMap = TYPE_MAP,
+    organizeFieldNames,
+    onOperClick,
+    fields,
+    enableStats = true,
+    onValueFilter,
+    fetchStats,
+    loading,
+    renderStatsPopoverTitleExtra,
+    renderFieldNameExtra,
+  } = props;
   const [fieldsSearch, setFieldsSearch] = useState('');
   const [showFieldsCollapsed, setShowFieldsCollapsed] = useState(false);
   const [availableFieldsCollapsed, setAvailableFieldsCollapsed] = useState(false);
@@ -75,6 +94,8 @@ export default function index(props: Props) {
                         typeMap={typeMap}
                         fetchStats={fetchStats}
                         enableStats={enableStats}
+                        renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
+                        renderFieldNameExtra={renderFieldNameExtra}
                       />
                     );
                   },
@@ -111,6 +132,8 @@ export default function index(props: Props) {
                       typeMap={typeMap}
                       fetchStats={fetchStats}
                       enableStats={enableStats}
+                      renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
+                      renderFieldNameExtra={renderFieldNameExtra}
                     />
                   );
                 },

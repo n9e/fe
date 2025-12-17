@@ -51,6 +51,10 @@ const zh_HK = {
         timeSeries: '時序數據',
       },
     },
+    stack_disabled_tip: '唯一值個數只有 1 個或是超過 10 個，不支持開啟堆疊圖',
+    stack_tip_pin: '開啟堆疊圖',
+    stack_tip_unpin: '關閉堆疊圖',
+    sql_format: 'SQL預覽',
   },
   logs: {
     title: '日誌詳情',
