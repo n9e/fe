@@ -115,6 +115,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
           {relatedLinks?.map((i) => {
             return (
               <li
+                key={i}
                 className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                 style={{ textDecoration: 'underline' }}
                 onClick={() => {
