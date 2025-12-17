@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Form } from 'antd';
+import { Button, Form, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -9,7 +10,10 @@ import FieldsList, { Field } from '@/pages/explorer/components/FieldsList';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
 import { getDorisLogsQuery } from '../../../services';
-import { TYPE_MAP } from '../../../constants';
+import { NAME_SPACE, TYPE_MAP } from '../../../constants';
+
+import { setPinIndexToLocalstorage } from '../../utils';
+import { PinIcon, UnPinIcon } from './PinIcon';
 
 interface IProps {
   organizeFields: string[];
@@ -17,10 +21,13 @@ interface IProps {
   loading: boolean;
   onValueFilter: (parmas: { key: string; value: any; operator: 'AND' | 'NOT' }) => void;
   setOptions: (options: { organizeFields: string[] }) => void;
+  pinIndex?: Field;
+  setPinIndex: React.Dispatch<React.SetStateAction<Field | undefined>>;
 }
 
 export default function index(props: IProps) {
-  const { organizeFields, data, loading, onValueFilter, setOptions } = props;
+  const { t } = useTranslation(NAME_SPACE);
+  const { organizeFields, data, loading, onValueFilter, setOptions, pinIndex, setPinIndex } = props;
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
 
@@ -129,6 +136,68 @@ export default function index(props: IProps) {
               topN: [],
               stats: {},
             };
+          }
+        }}
+        renderStatsPopoverTitleExtra={({ index, stats, setTopNVisible }) => {
+          const unique_count = stats?.unique_count !== undefined ? _.toNumber(stats.unique_count) : 0;
+          const disabled = _.isNaN(unique_count) || unique_count <= 1 || unique_count > 10;
+          if (pinIndex && pinIndex.field === index.field) {
+            return (
+              <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
+                <Button
+                  disabled={disabled}
+                  icon={<UnPinIcon className='text-[14px]' />}
+                  type='text'
+                  size='small'
+                  onClick={() => {
+                    setPinIndex(undefined);
+                    setPinIndexToLocalstorage(
+                      {
+                        datasourceValue,
+                        database: queryValues?.database,
+                        table: queryValues?.table,
+                      },
+                      undefined,
+                    );
+                    setTopNVisible(false);
+                  }}
+                />
+              </Tooltip>
+            );
+          }
+          return (
+            <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin')}>
+              <Button
+                disabled={disabled}
+                icon={<PinIcon className='text-[14px]' />}
+                type='text'
+                size='small'
+                onClick={() => {
+                  setPinIndex(index);
+                  setPinIndexToLocalstorage(
+                    {
+                      datasourceValue,
+                      database: queryValues?.database,
+                      table: queryValues?.table,
+                    },
+                    index,
+                  );
+                  setTopNVisible(false);
+                }}
+              />
+            </Tooltip>
+          );
+        }}
+        renderFieldNameExtra={(field) => {
+          if (pinIndex && pinIndex.field === field.field) {
+            return (
+              <PinIcon
+                className='text-[12px]'
+                style={{
+                  color: 'var(--fc-primary-color)',
+                }}
+              />
+            );
           }
         }}
       />

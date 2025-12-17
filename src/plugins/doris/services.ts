@@ -112,6 +112,7 @@ export function getDorisHistogram(data: {
       from: number;
       to: number;
       query: string;
+      group_by?: string;
     },
   ];
 }): Promise<any[]> {
@@ -178,3 +179,26 @@ export const getDsQuery2 = function (data: {
     silence: true,
   }).then((res) => res.dat);
 };
+
+export function getDorisSQLFormat(data: {
+  cate: string;
+  datasource_id: number;
+  query: [
+    {
+      database: string;
+      table: string;
+      time_field: string;
+      query: string;
+      from: number;
+      to: number;
+      lines: number;
+      offset: number;
+      reverse: boolean;
+    },
+  ];
+}): Promise<string> {
+  return request('/api/n9e-plus/doris-sql-format', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+}
