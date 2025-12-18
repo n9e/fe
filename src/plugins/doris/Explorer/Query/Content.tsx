@@ -64,6 +64,7 @@ export default function index(props: Props) {
   const [collapsed, setCollapsed] = useState(true);
 
   const [options, setOptions] = useState(getLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY));
+  const pageLoadMode = options.pageLoadMode || 'pagination';
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
@@ -150,7 +151,7 @@ export default function index(props: Props) {
               total: res.total,
             };
           } else {
-            if (options.pageLoadMode === 'infiniteScroll') {
+            if (pageLoadMode === 'infiniteScroll') {
               const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
               tableEleNodes?.scrollTo(0, 0);
             }
@@ -310,7 +311,7 @@ export default function index(props: Props) {
             )
           }
           optionsExtraRender={
-            options.pageLoadMode === 'pagination' ? (
+            pageLoadMode === 'pagination' ? (
               <Space size={0}>
                 <Pagination
                   size='small'
@@ -372,7 +373,7 @@ export default function index(props: Props) {
             if (tableEleNodes?.scrollHeight - (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight) === 0) {
               // 滚动到底后加载下一页
               const currentServiceParams = getServiceParams();
-              if (options.pageLoadMode === 'infiniteScroll' && data && data.list.length < data.total) {
+              if (pageLoadMode === 'infiniteScroll' && data && data.list.length < data.total) {
                 appendRef.current = true;
                 setServiceParams((prev) => ({
                   ...prev,
