@@ -86,12 +86,21 @@ function FormCpt(props: IProps, ref) {
               </div>
               <div className='fc-border n9e-dashboard-editor-modal-left-chart-wrapper'>
                 {values && (
-                  <Renderer id={`${id}__editor__`} time={range} timezone={timezone} values={values} isPreview themeMode={darkMode ? 'dark' : undefined} annotations={[]} />
+                  <Renderer
+                    id={`${id}__editor__`}
+                    panelWidth={panelWidth}
+                    time={range}
+                    timezone={timezone}
+                    values={values}
+                    isPreview
+                    themeMode={darkMode ? 'dark' : undefined}
+                    annotations={[]}
+                  />
                 )}
               </div>
               {!_.includes(['text', 'iframe'], type) && (
                 <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
-                  <QueryEditor panelWidth={panelWidth} type={type} variablesWithOptions={variablesWithOptions} />
+                  <QueryEditor panelWidth={panelWidth} type={type} variablesWithOptions={variablesWithOptions} range={range} />
                 </div>
               )}
             </div>
