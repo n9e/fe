@@ -120,6 +120,11 @@ const en_US = {
         displayMode_string: 'String',
         expandLevel: 'Default expand level',
       },
+      pageLoadMode: {
+        title: 'Page load mode',
+        pagination: 'Pagination',
+        infiniteScroll: 'Infinite scroll',
+      },
     },
     tagsDetail: 'Tag detail',
     expand: 'Expand',

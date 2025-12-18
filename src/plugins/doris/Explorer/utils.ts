@@ -35,6 +35,7 @@ export function getLocalstorageOptions(logsOptionsCacheKey: string) {
     organizeFields: [],
     lines: 'true',
     time: 'true',
+    pageLoadMode: 'pagination',
   };
   const options = localStorage.getItem(`${logsOptionsCacheKey}@options`);
 

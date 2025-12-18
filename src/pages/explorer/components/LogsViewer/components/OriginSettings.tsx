@@ -23,12 +23,16 @@ export default function OriginSettings({
 }) {
   const { t } = useTranslation('explorer');
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
+  const [organizeFields, setOrganizeFields] = useState(options.organizeFields);
+
   const [jsonSettingsModalVisible, setJsonSettingsModalVisible] = useState(false);
   const [jsonSettings, setJsonSettings] = useState({
     jsonDisplaType: options.jsonDisplaType,
     jsonExpandLevel: options.jsonExpandLevel,
   });
-  const [organizeFields, setOrganizeFields] = useState(options.organizeFields);
+
+  const [pageLoadModeModalVisible, setPageLoadModeModalVisible] = useState(false);
+  const [pageLoadMode, setPageLoadMode] = useState(options.pageLoadMode || 'pagination');
 
   useEffect(() => {
     setJsonSettings({
@@ -94,6 +98,18 @@ export default function OriginSettings({
                       }}
                     >
                       {t('logs.settings.organizeFields.title')}
+                    </a>
+                  ),
+                },
+                {
+                  key: 'pageLoadMode',
+                  label: (
+                    <a
+                      onClick={() => {
+                        setPageLoadModeModalVisible(true);
+                      }}
+                    >
+                      {t('logs.settings.pageLoadMode.title')}
                     </a>
                   ),
                 },
@@ -250,6 +266,34 @@ export default function OriginSettings({
               />
             </Form.Item>
           )}
+        </Form>
+      </Modal>
+      <Modal
+        title={t('logs.settings.pageLoadMode.title')}
+        visible={pageLoadModeModalVisible}
+        onOk={() => {
+          setOptions({
+            pageLoadMode,
+          });
+          setPageLoadModeModalVisible(false);
+        }}
+        onCancel={() => {
+          setPageLoadModeModalVisible(false);
+        }}
+      >
+        <Form>
+          <Form.Item>
+            <Radio.Group
+              buttonStyle='solid'
+              value={pageLoadMode}
+              onChange={(e) => {
+                setPageLoadMode(e.target.value);
+              }}
+            >
+              <Radio value='pagination'>{t('logs.settings.pageLoadMode.pagination')}</Radio>
+              <Radio value='infiniteScroll'>{t('logs.settings.pageLoadMode.infiniteScroll')}</Radio>
+            </Radio.Group>
+          </Form.Item>
         </Form>
       </Modal>
     </>

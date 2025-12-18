@@ -120,6 +120,11 @@ const zh_CN = {
         displayMode_string: '字符串展示',
         expandLevel: '默认展开层级',
       },
+      pageLoadMode: {
+        title: '翻页模式',
+        pagination: '分页器',
+        infiniteScroll: '滚动加载更多',
+      },
     },
     tagsDetail: 'Tag 详情',
     expand: '展开',

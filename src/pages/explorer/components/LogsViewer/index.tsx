@@ -13,6 +13,16 @@ import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
 
+interface OptionsType {
+  logMode: 'origin' | 'table';
+  lineBreak: 'true' | 'false';
+  lines: number;
+  organizeFields: string[];
+  jsonDisplaType: 'formatted' | 'raw';
+  jsonExpandLevel: number;
+  pageLoadMode?: 'pagination' | 'infiniteScroll'; // 默认 pagination
+}
+
 interface Props {
   /** 时间字段 */
   timeField: string;
@@ -30,9 +40,9 @@ interface Props {
   /** 字段列表 */
   fields: string[];
   /** 日志格式配置项 */
-  options: any;
+  options: OptionsType;
   /** 配置项变更回调 */
-  onOptionsChange?: (options: any) => void;
+  onOptionsChange?: (options: OptionsType) => void;
   /** 添加过滤条件回调 */
   onAddToQuery?: (condition: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
   /** 时间范围变更回调 */
@@ -45,11 +55,11 @@ interface Props {
   rowPrefixRender?: (record: { [index: string]: any }) => React.ReactNode;
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   filterFields?: (fieldKeys: string[]) => string[];
-  histogramExtraRender?: React.ReactNode;
+  histogramAddonBeforeRender?: React.ReactNode;
+  histogramAddonAfterRender?: React.ReactNode;
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
   stacked?: boolean;
-  histogramXTitle?: string;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -93,11 +103,11 @@ export default function LogsViewer(props: Props) {
     onScrollCapture,
     rowPrefixRender,
     filterFields,
-    histogramExtraRender,
+    histogramAddonBeforeRender,
+    histogramAddonAfterRender,
     optionsExtraRender,
     showDateField = true,
     stacked = false,
-    histogramXTitle,
   } = props;
   const [options, setOptions] = useState(props.options);
 
@@ -121,18 +131,18 @@ export default function LogsViewer(props: Props) {
       <>
         {!hideHistogram && (
           <div className='h-[130px]'>
-            <div className='mt-1 px-2 flex justify-between'>
+            <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
               <Space>
+                {histogramAddonBeforeRender}
                 <Spin spinning={histogramLoading} size='small' />
               </Space>
-              {histogramExtraRender}
+              {histogramAddonAfterRender}
             </div>
             <div className='h-[120px]'>
               {props.range && histogram && (
                 <HistogramChart
                   series={histogram}
                   stacked={stacked}
-                  histogramXTitle={histogramXTitle}
                   onClick={(start, end) => {
                     if (start && end) {
                       onLogRequestParamsChange?.({

@@ -11,6 +11,7 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import flatten from '@/pages/explorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/explorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConfig';
+import { useGlobalState } from '@/pages/explorer/globalState';
 
 import { parseRange } from '@/components/TimeRangePicker';
 import LogsViewer from '@/pages/explorer/components/LogsViewer';
@@ -38,6 +39,8 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
+  const [tabKey] = useGlobalState('tabKey');
+  const logsTableSelectors = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const { rangeRef, indexData, indexDataLoading, executeQuery } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
@@ -59,7 +62,9 @@ export default function index(props: Props) {
     }),
   );
   const [collapsed, setCollapsed] = useState(true);
+
   const [options, setOptions] = useState(getLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY));
+  const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
     pageSize: 10,
@@ -133,10 +138,23 @@ export default function index(props: Props) {
               ___id___: _.uniqueId('log_id_'),
             };
           });
-          return {
-            list: newLogs,
-            total: res.total,
-          };
+          if (appendRef.current) {
+            appendRef.current = false;
+            return {
+              list: _.concat(data?.list, newLogs),
+              total: res.total,
+            };
+          } else {
+            if (options.pageLoadMode === 'infiniteScroll') {
+              const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
+              tableEleNodes?.scrollTo(0, 0);
+            }
+            appendRef.current = false;
+            return {
+              list: newLogs,
+              total: res.total,
+            };
+          }
         })
         .catch(() => {
           return {
@@ -273,7 +291,8 @@ export default function index(props: Props) {
           filterFields={(fieldKeys) => {
             return filteredFields(fieldKeys, options.organizeFields);
           }}
-          histogramExtraRender={
+          histogramAddonBeforeRender={<span>{pinIndex ? pinIndex.field : undefined}</span>}
+          histogramAddonAfterRender={
             data && (
               <Space>
                 {rangeRef.current && (
@@ -286,24 +305,26 @@ export default function index(props: Props) {
             )
           }
           optionsExtraRender={
-            <Space size={0}>
-              <Pagination
-                size='small'
-                total={data?.total}
-                current={serviceParams.current}
-                pageSize={serviceParams.pageSize}
-                onChange={(current, pageSize) => {
-                  setServiceParams((prev) => ({
-                    ...prev,
-                    current,
-                    pageSize,
-                  }));
-                }}
-                showTotal={(total) => {
-                  return t('common:table.total', { total });
-                }}
-              />
-            </Space>
+            options.pageLoadMode === 'pagination' ? (
+              <Space size={0}>
+                <Pagination
+                  size='small'
+                  total={data?.total}
+                  current={serviceParams.current}
+                  pageSize={serviceParams.pageSize}
+                  onChange={(current, pageSize) => {
+                    setServiceParams((prev) => ({
+                      ...prev,
+                      current,
+                      pageSize,
+                    }));
+                  }}
+                  showTotal={(total) => {
+                    return t('common:table.total', { total });
+                  }}
+                />
+              </Space>
+            ) : null
           }
           onOptionsChange={updateOptions}
           onAddToQuery={handleValueFilter}
@@ -334,8 +355,23 @@ export default function index(props: Props) {
             if (params.reverse !== undefined) {
               setServiceParams((prev) => ({
                 ...prev,
+                current: 1,
                 reverse: params.reverse,
               }));
+            }
+          }}
+          onScrollCapture={() => {
+            const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
+            if (tableEleNodes?.scrollHeight - (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight) === 0) {
+              // 滚动到底后加载下一页
+              const currentServiceParams = getServiceParams();
+              if (options.pageLoadMode === 'infiniteScroll' && data && data.list.length < data.total) {
+                appendRef.current = true;
+                setServiceParams((prev) => ({
+                  ...prev,
+                  current: currentServiceParams.current + 1,
+                }));
+              }
             }
           }}
           // state context
@@ -343,7 +379,6 @@ export default function index(props: Props) {
           indexData={indexData}
           range={queryValues?.range}
           stacked={!!pinIndex} // only for histogram
-          histogramXTitle={pinIndex ? pinIndex.field : undefined}
         />
         <div
           className='h-[58px] w-[10px] cursor-pointer absolute top-1/2 left-[-14px] mt-[-29px] flex items-center justify-center rounded n9e-fill-color-4'
