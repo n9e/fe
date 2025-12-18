@@ -77,7 +77,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                                     darkMode,
                                     title: t('common:page_help'),
                                     type: 'iframe',
-                                    documentPath: '',
+                                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usage/alert/query-data/victorialogs/',
                                   });
                                 }}
                               />
