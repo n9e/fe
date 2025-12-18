@@ -74,8 +74,8 @@ const zh_HK = {
     es: {
       enable_write: '允許寫入',
       version: '版本',
-      version_placeholder: '留空自動獲取',
-      version_tip: '留空自動獲取',
+      version_placeholder: '留空即可',
+      version_tip: '留空將自動獲取版本，沒特殊需求留空即可；如需指定，請按 x.y.z 填寫（例：7.10.2）',
       max_shard: '最大併發分片請求數',
       min_interval: '最小時間間隔 (s)',
       min_interval_tip: '按時間間隔自動分組的下限。建議設定為寫入頻率，例如，如果資料每分鐘寫入一次，則為 1m。',
