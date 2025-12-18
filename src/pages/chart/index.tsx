@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import semver from 'semver';
 import { Space, Alert } from 'antd';
 import { FieldNumberOutlined } from '@ant-design/icons';
@@ -22,17 +22,18 @@ import { useParams } from 'react-router';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { useSize } from 'ahooks';
+
 import { GetTmpChartData } from '@/services/metric';
 import { TimeRangePickerWithRefresh, IRawTimeRange, isMathString } from '@/components/TimeRangePicker';
-import { CommonStateContext } from '@/App';
 import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
-import Renderer from '../dashboard/Renderer/Renderer';
+
+import Main from './Main';
 import './locale';
 import './index.less';
 
 export default function Chart() {
   const { t } = useTranslation('shareChart');
-  const { darkMode } = useContext(CommonStateContext);
   const datasourceCateOptions = getAuthorizedDatasourceCates(undefined, true);
   const { ids } = useParams<{
     ids: string;
@@ -49,6 +50,8 @@ export default function Chart() {
   });
   const datasourceCate = useRef<string>();
   const datasourceName = useRef<string>();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const containerSize = useSize(containerRef);
 
   useEffect(() => {
     initChart();
@@ -106,30 +109,14 @@ export default function Chart() {
               </Space>
             </div>
           </div>
-          {chartData.map((item: any, index) => {
-            if (semver.valid(item.dataProps?.version)) {
-              return (
-                <div style={{ height: 740 }}>
-                  <Renderer
-                    id={item.dataProps.id}
-                    key={index}
-                    time={range}
-                    values={_.merge({}, item.dataProps, {
-                      options: {
-                        legend: {
-                          displayMode: 'table',
-                        },
-                      },
-                    })}
-                    isPreview
-                    themeMode={darkMode ? 'dark' : undefined}
-                    annotations={[]}
-                  />
-                </div>
-              );
-            }
-            return <Alert type='warning' message='v6 版本不再支持 < v5.4.0 的配置，请重新生成临时图' />;
-          })}
+          <div ref={containerRef}>
+            {chartData.map((item: any, index) => {
+              if (semver.valid(item.dataProps?.version) && containerSize?.width) {
+                return <Main key={index} range={range} item={item} width={containerSize.width} />;
+              }
+              return <Alert type='warning' message='v6 版本不再支持 < v5.4.0 的配置，请重新生成临时图' />;
+            })}
+          </div>
         </>
       ) : (
         <h2 className='holder'>
