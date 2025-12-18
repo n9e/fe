@@ -12,16 +12,7 @@ import HistogramChart from './components/HistogramChart';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
-
-interface OptionsType {
-  logMode: 'origin' | 'table';
-  lineBreak: 'true' | 'false';
-  lines: number;
-  organizeFields: string[];
-  jsonDisplaType: 'formatted' | 'raw';
-  jsonExpandLevel: number;
-  pageLoadMode?: 'pagination' | 'infiniteScroll'; // 默认 pagination
-}
+import { OptionsType } from './types';
 
 interface Props {
   /** 时间字段 */
@@ -42,7 +33,7 @@ interface Props {
   /** 日志格式配置项 */
   options: OptionsType;
   /** 配置项变更回调 */
-  onOptionsChange?: (options: OptionsType) => void;
+  onOptionsChange?: (options: OptionsType, reload?: boolean) => void;
   /** 添加过滤条件回调 */
   onAddToQuery?: (condition: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
   /** 时间范围变更回调 */
@@ -111,8 +102,8 @@ export default function LogsViewer(props: Props) {
   } = props;
   const [options, setOptions] = useState(props.options);
 
-  const updateOptions = (newOptions) => {
-    onOptionsChange?.(newOptions);
+  const updateOptions = (newOptions: any, reload?: boolean) => {
+    onOptionsChange?.(newOptions, reload);
   };
 
   useEffect(() => {
@@ -187,7 +178,7 @@ export default function LogsViewer(props: Props) {
                   });
                 }}
               />
-              <OriginSettings showDateField={showDateField} options={options} setOptions={updateOptions} fields={fields} />
+              <OriginSettings showDateField={showDateField} options={options} updateOptions={updateOptions} fields={fields} />
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>

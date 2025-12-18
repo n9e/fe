@@ -10,14 +10,16 @@ import { Space, Switch, Dropdown, Menu, Modal, Row, Col, Form, Radio, InputNumbe
 import _ from 'lodash';
 import { SettingOutlined, EyeInvisibleOutlined, PlusSquareOutlined, CloseSquareOutlined } from '@ant-design/icons';
 
+import { OptionsType } from '../types';
+
 export default function OriginSettings({
   options,
-  setOptions,
+  updateOptions,
   fields,
   showDateField,
 }: {
-  options: any;
-  setOptions: (options: any) => void;
+  options: OptionsType;
+  updateOptions: (options: any, reload?: boolean) => void;
   fields: string[];
   showDateField?: boolean;
 }) {
@@ -52,7 +54,7 @@ export default function OriginSettings({
               size='small'
               checked={options.lineBreak === 'true'}
               onChange={(val) => {
-                setOptions({
+                updateOptions({
                   lineBreak: val ? 'true' : 'false',
                 });
               }}
@@ -65,7 +67,7 @@ export default function OriginSettings({
             size='small'
             checked={options.lines === 'true'}
             onChange={(val) => {
-              setOptions({
+              updateOptions({
                 lines: val ? 'true' : 'false',
               });
             }}
@@ -78,7 +80,7 @@ export default function OriginSettings({
               size='small'
               checked={options.time === 'true'}
               onChange={(val) => {
-                setOptions({
+                updateOptions({
                   time: val ? 'true' : 'false',
                 });
               }}
@@ -146,7 +148,7 @@ export default function OriginSettings({
         title={t('logs.settings.organizeFields.title')}
         visible={organizeFieldsModalVisible}
         onOk={() => {
-          setOptions({
+          updateOptions({
             organizeFields,
           });
           setOrganizeFieldsModalVisible(false);
@@ -229,7 +231,7 @@ export default function OriginSettings({
         title={t('logs.settings.jsonSettings.title')}
         visible={jsonSettingsModalVisible}
         onOk={() => {
-          setOptions(jsonSettings);
+          updateOptions(jsonSettings);
           setJsonSettingsModalVisible(false);
         }}
         onCancel={() => {
@@ -272,9 +274,12 @@ export default function OriginSettings({
         title={t('logs.settings.pageLoadMode.title')}
         visible={pageLoadModeModalVisible}
         onOk={() => {
-          setOptions({
-            pageLoadMode,
-          });
+          updateOptions(
+            {
+              pageLoadMode,
+            },
+            true,
+          );
           setPageLoadModeModalVisible(false);
         }}
         onCancel={() => {

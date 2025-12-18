@@ -70,13 +70,18 @@ export default function index(props: Props) {
     pageSize: 10,
     reverse: true,
   });
-  const updateOptions = (newOptions) => {
+  const updateOptions = (newOptions, reload?: boolean) => {
     const mergedOptions = {
       ...options,
       ...newOptions,
     };
     setOptions(mergedOptions);
     setLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+    if (reload) {
+      form.setFieldsValue({
+        refreshFlag: _.uniqueId('refreshFlag_'),
+      });
+    }
   };
 
   const handleValueFilter = (params) => {
@@ -324,7 +329,9 @@ export default function index(props: Props) {
                   }}
                 />
               </Space>
-            ) : null
+            ) : (
+              t('common:table.total', { total: data?.total })
+            )
           }
           onOptionsChange={updateOptions}
           onAddToQuery={handleValueFilter}
