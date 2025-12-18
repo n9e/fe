@@ -76,6 +76,8 @@ const zh_CN = {
       disable_write: '不允许写入',
       enable_write: '允许写入',
       version: '版本',
+      version_placeholder: '留空将自动获取版本，没特殊需求留空即可；如需指定，请按 x.y.z 填写（例：7.10.2）',
+      version_tip: '留空将自动获取版本，没特殊需求留空即可；如需指定，请按 x.y.z 填写（例：7.10.2）',
       max_shard: '最大并发分片请求数',
       min_interval: '最小时间间隔(s)',
       min_interval_tip: '按时间间隔自动分组的下限。建议设置为写入频率，例如，如果数据每分钟写入一次，则为1m。',
