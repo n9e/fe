@@ -76,7 +76,7 @@ const zh_CN = {
       disable_write: '不允许写入',
       enable_write: '允许写入',
       version: '版本',
-      version_placeholder: '留空即可',
+      version_placeholder: '留空将自动获取版本，没特殊需求留空即可；如需指定，请按 x.y.z 填写（例：7.10.2）',
       version_tip: '留空将自动获取版本，没特殊需求留空即可；如需指定，请按 x.y.z 填写（例：7.10.2）',
       max_shard: '最大并发分片请求数',
       min_interval: '最小时间间隔(s)',
