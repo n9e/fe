@@ -13,7 +13,7 @@ import DatasourceSelect from './components/DatasourceSelect';
 import QueryBuilder from './QueryBuilder';
 import QueryOptions from './QueryOptions';
 
-export default function index({ panelWidth, type, variablesWithOptions }) {
+export default function index({ panelWidth, type, variablesWithOptions, range }) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
   const { datasourceList } = useContext(CommonStateContext);
@@ -47,7 +47,7 @@ export default function index({ panelWidth, type, variablesWithOptions }) {
           display: mode === 'query' ? 'block' : 'none',
         }}
       >
-        <QueryBuilder panelWidth={panelWidth} cate={cate} datasourceValue={datasourceValue} />
+        <QueryBuilder panelWidth={panelWidth} cate={cate} datasourceValue={datasourceValue} range={range} />
       </div>
       {mode === 'transform' && <OrganizeFields />}
       <div

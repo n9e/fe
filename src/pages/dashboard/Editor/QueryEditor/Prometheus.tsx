@@ -15,16 +15,16 @@ import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-export default function Prometheus({ panelWidth, datasourceValue }) {
+export default function Prometheus({ panelWidth, datasourceValue, range }) {
   const { t } = useTranslation('dashboard');
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
-  const [range] = useGlobalState('range');
   const varNams = _.map(variablesWithOptions, (item) => {
     return `$${item.name}`;
   });
   const targets = Form.useWatch('targets');
   const chartType = Form.useWatch('type');
   const maxDataPoints = Form.useWatch('maxDataPoints');
+  const queryOptionsTime = Form.useWatch('queryOptionsTime');
 
   return (
     <Form.List name='targets'>
@@ -44,7 +44,7 @@ export default function Prometheus({ panelWidth, datasourceValue }) {
                         {({ getFieldValue }) => {
                           const target = getFieldValue(['targets', field.name]);
                           const step = getRealStep({
-                            time: range,
+                            time: queryOptionsTime || range,
                             maxDataPoints,
                             panelWidth: panelWidth,
                             minStep: target?.step,
