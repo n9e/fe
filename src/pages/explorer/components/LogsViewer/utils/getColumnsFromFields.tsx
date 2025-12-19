@@ -17,7 +17,7 @@ export default function getColumnsFromFields(params: {
   fields: string[];
   timeField?: string;
   options?: OptionsType;
-  updateOptions: (options: any, reload?: boolean) => void;
+  updateOptions?: (options: any, reload?: boolean) => void;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
 }) {
   const { indexData, fields, timeField: time_field, options, updateOptions, onValueFilter } = params;
@@ -36,30 +36,34 @@ export default function getColumnsFromFields(params: {
       title: (
         <Space>
           {item}
-          {!_.includes(organizeFields, realName) && (
-            <PlusCircleOutlined
-              onClick={() => {
-                updateOptions({
-                  organizeFields: _.concat(organizeFields, realName),
-                });
-              }}
-            />
+          {updateOptions && (
+            <>
+              {!_.includes(organizeFields, realName) && (
+                <PlusCircleOutlined
+                  onClick={() => {
+                    updateOptions({
+                      organizeFields: _.concat(organizeFields, realName),
+                    });
+                  }}
+                />
+              )}
+              <MinusCircleOutlined
+                onClick={() => {
+                  if (_.includes(organizeFields, realName)) {
+                    // 如果该字段已选，则移除
+                    updateOptions({
+                      organizeFields: _.filter(organizeFields, (field) => field !== realName),
+                    });
+                  } else {
+                    // 否则就反选
+                    updateOptions({
+                      organizeFields: _.filter(_.map(indexData, 'field'), (field) => field !== realName),
+                    });
+                  }
+                }}
+              />
+            </>
           )}
-          <MinusCircleOutlined
-            onClick={() => {
-              if (_.includes(organizeFields, realName)) {
-                // 如果该字段已选，则移除
-                updateOptions({
-                  organizeFields: _.filter(organizeFields, (field) => field !== realName),
-                });
-              } else {
-                // 否则就反选
-                updateOptions({
-                  organizeFields: _.filter(_.map(indexData, 'field'), (field) => field !== realName),
-                });
-              }
-            }}
-          />
         </Space>
       ),
       render: (record) => {

@@ -22,7 +22,7 @@ interface Props {
   }[];
   /** 日志格式配置项 */
   options?: OptionsType;
-  updateOptions: (options: OptionsType, reload?: boolean) => void;
+  updateOptions?: (options: OptionsType, reload?: boolean) => void;
   /** 表格滚动配置 */
   scroll?: { x: number | string; y: number | string };
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
