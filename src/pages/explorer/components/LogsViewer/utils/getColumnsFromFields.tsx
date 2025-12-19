@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import i18next from 'i18next';
-import { Space } from 'antd';
+import { Space, Tooltip } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
 import { Field } from '@/pages/explorer/components/FieldsList/types';

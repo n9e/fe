@@ -145,7 +145,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
       }
     >
       <Tooltip title={enableTooltip ? value : undefined} placement='topLeft' overlayClassName='ant-tooltip-max-width-600'>
-        <>{relatedLinks && relatedLinks.length > 0 ? <Link text={value} /> : <div className='explorer-origin-field-val'>{value}</div>}</>
+        {relatedLinks && relatedLinks.length > 0 ? <Link text={value} /> : <div className='explorer-origin-field-val'>{value}</div>}
       </Tooltip>
     </Popover>
   );
