@@ -6,7 +6,7 @@ import React, { useState, useMemo, useContext } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Space, Popover } from 'antd';
+import { Space, Popover, Tooltip } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import { Field } from '@/pages/explorer/components/FieldsList/types';
 
@@ -21,16 +21,17 @@ interface RenderValueProps {
   value: string;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT'; indexName: string }) => void;
   rawValue?: { [key: string]: any };
+  enableTooltip?: boolean;
 }
 
-export default function FieldValueWithFilter({ name, value, onValueFilter, rawValue }: RenderValueProps) {
+export default function FieldValueWithFilter({ name, value, onValueFilter, rawValue, enableTooltip }: RenderValueProps) {
   const { indexData, getAddToQueryInfo } = useContext(LogsViewerStateContext);
 
   if (getAddToQueryInfo && (!indexData || _.isEmpty(indexData))) return null;
-  return <FieldValueWithFilterContext name={name} value={value} onValueFilter={onValueFilter} rawValue={rawValue} indexData={indexData || []} />;
+  return <FieldValueWithFilterContext name={name} value={value} onValueFilter={onValueFilter} rawValue={rawValue} indexData={indexData || []} enableTooltip={enableTooltip} />;
 }
 
-function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, indexData }: RenderValueProps & { indexData: Field[] }) {
+function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, indexData, enableTooltip }: RenderValueProps & { indexData: Field[] }) {
   const { t } = useTranslation('explorer');
   const { fieldConfig, range, getAddToQueryInfo } = useContext(LogsViewerStateContext);
   const [popoverVisible, setPopoverVisible] = useState(false);
@@ -50,6 +51,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
 
   return (
     <Popover
+      placement='bottom'
       visible={popoverVisible}
       onVisibleChange={(visible) => {
         if (onValueFilter) {
@@ -142,7 +144,9 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
         </ul>
       }
     >
-      {relatedLinks && relatedLinks.length > 0 ? <Link text={value} /> : <div className='explorer-origin-field-val'>{value}</div>}
+      <Tooltip title={enableTooltip ? value : undefined} placement='topLeft' overlayClassName='ant-tooltip-max-width-600'>
+        {relatedLinks && relatedLinks.length > 0 ? <Link text={value} /> : <div className='explorer-origin-field-val'>{value}</div>}
+      </Tooltip>
     </Popover>
   );
 }

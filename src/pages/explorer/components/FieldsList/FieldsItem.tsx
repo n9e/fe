@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Button } from 'antd';
-import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
 import { PRIMARY_COLOR } from '@/utils/constant';
@@ -50,7 +50,7 @@ export const typeIconMap = {
 };
 
 const operIconMap = {
-  show: <CloseCircleOutlined />,
+  show: <MinusCircleOutlined />,
   available: <PlusCircleOutlined />,
 };
 
