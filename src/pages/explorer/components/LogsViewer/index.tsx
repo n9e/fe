@@ -204,9 +204,11 @@ export default function LogsViewer(props: Props) {
               )}
               {options.logMode === 'table' && (
                 <Table
+                  indexData={props.indexData}
                   timeField={timeField}
                   data={logs}
                   options={options}
+                  updateOptions={updateOptions}
                   onValueFilter={onAddToQuery}
                   scroll={{
                     x: 'max-content',

@@ -19,7 +19,12 @@ export const filteredFields = (fields: string[], organizeFields: string[]) => {
       return false;
     }
     if (!_.isEmpty(organizeFields)) {
-      return _.includes(organizeFields, item);
+      let included = _.includes(organizeFields, item);
+      if (!included) {
+        const firstPart = item.split('.')[0];
+        included = _.includes(organizeFields, firstPart);
+      }
+      return included;
     }
     return true;
   });

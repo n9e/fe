@@ -370,7 +370,7 @@ export default function index(props: Props) {
           }}
           onScrollCapture={() => {
             const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
-            if (tableEleNodes?.scrollHeight - (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight) === 0) {
+            if (tableEleNodes?.scrollHeight - (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight) <= 1) {
               // 滚动到底后加载下一页
               const currentServiceParams = getServiceParams();
               if (pageLoadMode === 'infiniteScroll' && data && data.list.length < data.total) {

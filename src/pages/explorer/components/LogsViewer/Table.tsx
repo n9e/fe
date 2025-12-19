@@ -3,12 +3,17 @@ import { Table as AntdTable } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
+import { Field } from '@/pages/explorer/components/FieldsList/types';
+
 import getColumnsFromFields from './utils/getColumnsFromFields';
 import toString from './utils/toString';
 import getFieldsFromTableData from './utils/getFieldsFromTableData';
 import FieldValueWithFilter from './components/FieldValueWithFilter';
+import { OptionsType } from './types';
 
 interface Props {
+  /** 索引数据 */
+  indexData?: Field[];
   /** 时间字段 */
   timeField?: string;
   /** 日志数据 */
@@ -16,7 +21,8 @@ interface Props {
     [index: string]: any;
   }[];
   /** 日志格式配置项 */
-  options?: any;
+  options?: OptionsType;
+  updateOptions: (options: OptionsType, reload?: boolean) => void;
   /** 表格滚动配置 */
   scroll?: { x: number | string; y: number | string };
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
@@ -26,7 +32,7 @@ interface Props {
 }
 
 export default function Table(props: Props) {
-  const { timeField, data, options, scroll, filterFields, onValueFilter } = props;
+  const { indexData, timeField, data, options, updateOptions, scroll, filterFields, onValueFilter } = props;
   let fields = getFieldsFromTableData(data);
   fields = filterFields ? filterFields(fields) : fields;
 
@@ -41,7 +47,14 @@ export default function Table(props: Props) {
           '-',
         );
       }}
-      columns={getColumnsFromFields(fields, timeField, options, onValueFilter)}
+      columns={getColumnsFromFields({
+        indexData,
+        fields,
+        timeField,
+        options,
+        updateOptions,
+        onValueFilter,
+      })}
       dataSource={data}
       expandable={{
         expandedRowRender: (record) => {
