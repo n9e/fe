@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Table as AntdTable } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { useAntdResizableHeader } from '@fc-components/use-antd-resizable-header';
+import '@fc-components/use-antd-resizable-header/dist/style.css';
 
 import { Field } from '@/pages/explorer/components/FieldsList/types';
 
@@ -10,6 +12,15 @@ import toString from './utils/toString';
 import getFieldsFromTableData from './utils/getFieldsFromTableData';
 import FieldValueWithFilter from './components/FieldValueWithFilter';
 import { OptionsType } from './types';
+
+export function useDeepCompareWithRef(value) {
+  const ref = useRef();
+  if (!_.isEqual(value, ref.current)) {
+    ref.current = value; //ref.current contains the previous object value
+  }
+
+  return ref.current;
+}
 
 interface Props {
   /** 索引数据 */
@@ -20,6 +31,9 @@ interface Props {
   data: {
     [index: string]: any;
   }[];
+  logsHash?: string;
+  colWidths?: { [key: string]: number };
+  tableColumnsWidthCacheKey?: string;
   /** 日志格式配置项 */
   options?: OptionsType;
   updateOptions?: (options: OptionsType, reload?: boolean) => void;
@@ -31,10 +45,42 @@ interface Props {
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
 }
 
-export default function Table(props: Props) {
-  const { indexData, timeField, data, options, updateOptions, scroll, filterFields, onValueFilter } = props;
-  let fields = getFieldsFromTableData(data);
-  fields = filterFields ? filterFields(fields) : fields;
+function Table(props: Props) {
+  const { indexData, timeField, data, colWidths, tableColumnsWidthCacheKey, options, updateOptions, scroll, filterFields, onValueFilter } = props;
+  const fields = useMemo(() => {
+    const resolvedFields = getFieldsFromTableData(data);
+    return filterFields ? filterFields(resolvedFields) : resolvedFields;
+  }, [data, filterFields]);
+
+  const indexDataFields = useMemo(() => _.map(indexData, 'field'), [indexData]);
+  const columnDeps = useDeepCompareWithRef({ indexData: indexDataFields, fields, timeField, options, colWidths });
+  const columns = useMemo(
+    () =>
+      getColumnsFromFields({
+        colWidths,
+        indexData,
+        fields,
+        timeField,
+        options,
+        updateOptions,
+        onValueFilter,
+      }),
+    [columnDeps, updateOptions, onValueFilter],
+  );
+  const resizableHeaderConfig = useMemo(() => {
+    const config: any = {
+      columns,
+    };
+    if (tableColumnsWidthCacheKey) {
+      config.columnsState = {
+        persistenceType: 'localStorage',
+        persistenceKey: tableColumnsWidthCacheKey,
+      };
+    }
+    return config;
+  }, [tableColumnsWidthCacheKey]);
+
+  const { components, resizableColumns, tableWidth } = useAntdResizableHeader(resizableHeaderConfig);
 
   return (
     <AntdTable
@@ -47,14 +93,8 @@ export default function Table(props: Props) {
           '-',
         );
       }}
-      columns={getColumnsFromFields({
-        indexData,
-        fields,
-        timeField,
-        options,
-        updateOptions,
-        onValueFilter,
-      })}
+      columns={resizableColumns}
+      components={components}
       dataSource={data}
       expandable={{
         expandedRowRender: (record) => {
@@ -74,7 +114,15 @@ export default function Table(props: Props) {
         expandIcon: ({ expanded, onExpand, record }) => (expanded ? <DownOutlined onClick={(e) => onExpand(record, e)} /> : <RightOutlined onClick={(e) => onExpand(record, e)} />),
       }}
       pagination={false}
-      scroll={scroll}
+      scroll={{
+        ...scroll,
+        x: tableWidth,
+      }}
     />
   );
 }
+
+export default React.memo(Table, (prevProps, nextProps) => {
+  const pickKeys = ['logsHash'];
+  return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
+});
