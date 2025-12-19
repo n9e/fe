@@ -24,10 +24,12 @@ interface Props {
     metric: string;
     data: [number, number][];
   }[];
+  histogramHash?: string;
   /** 日志数据加载状态 */
   loading: boolean;
   /** 日志数据 */
   logs: { [index: string]: string }[];
+  logsHash?: string;
   /** 字段列表 */
   fields: string[];
   /** 日志格式配置项 */
@@ -51,6 +53,8 @@ interface Props {
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
   stacked?: boolean;
+  colWidths?: { [key: string]: number };
+  tableColumnsWidthCacheKey?: string;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -77,7 +81,7 @@ interface LogsViewerState {
 }
 export const LogsViewerStateContext = createContext({} as LogsViewerState);
 
-export default function LogsViewer(props: Props) {
+function LogsViewer(props: Props) {
   const { t } = useTranslation('explorer');
   const {
     timeField,
@@ -86,6 +90,7 @@ export default function LogsViewer(props: Props) {
     histogram,
     loading,
     logs,
+    logsHash,
     fields,
     onOptionsChange,
     onAddToQuery,
@@ -99,6 +104,8 @@ export default function LogsViewer(props: Props) {
     optionsExtraRender,
     showDateField = true,
     stacked = false,
+    colWidths,
+    tableColumnsWidthCacheKey,
   } = props;
   const [options, setOptions] = useState(props.options);
 
@@ -207,6 +214,7 @@ export default function LogsViewer(props: Props) {
                   indexData={props.indexData}
                   timeField={timeField}
                   data={logs}
+                  logsHash={logsHash}
                   options={options}
                   updateOptions={updateOptions}
                   onValueFilter={onAddToQuery}
@@ -215,6 +223,8 @@ export default function LogsViewer(props: Props) {
                     y: 'calc(100% - 40px)',
                   }}
                   filterFields={filterFields}
+                  colWidths={colWidths}
+                  tableColumnsWidthCacheKey={tableColumnsWidthCacheKey}
                 />
               )}
             </div>
@@ -224,3 +234,8 @@ export default function LogsViewer(props: Props) {
     </LogsViewerStateContext.Provider>
   );
 }
+
+export default React.memo(LogsViewer, (prevProps, nextProps) => {
+  const pickKeys = ['loading', 'logsHash', 'histogramLoading', 'histogramHash', 'fields', 'options'];
+  return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
+});

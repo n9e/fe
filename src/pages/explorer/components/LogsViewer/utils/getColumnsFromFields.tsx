@@ -5,7 +5,6 @@ import i18next from 'i18next';
 import { Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 
-import getTextWidth from '@/utils/getTextWidth';
 import { Field } from '@/pages/explorer/components/FieldsList/types';
 
 import toString from './toString';
@@ -13,6 +12,7 @@ import FieldValueWithFilter from '../components/FieldValueWithFilter';
 import { OptionsType } from '../types';
 
 export default function getColumnsFromFields(params: {
+  colWidths?: { [key: string]: number };
   indexData?: Field[];
   fields: string[];
   timeField?: string;
@@ -20,7 +20,7 @@ export default function getColumnsFromFields(params: {
   updateOptions?: (options: any, reload?: boolean) => void;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
 }) {
-  const { indexData, fields, timeField: time_field, options, updateOptions, onValueFilter } = params;
+  const { colWidths, indexData, fields, timeField: time_field, options, updateOptions, onValueFilter } = params;
   const columns: any[] = _.map(fields, (item) => {
     const organizeFields = options?.organizeFields || [];
     const iconsWidth = _.includes(organizeFields, item) ? 20 : 40; // 预留图标宽度
@@ -33,6 +33,8 @@ export default function getColumnsFromFields(params: {
     }
 
     return {
+      width: (colWidths?.[item] || 160) + iconsWidth + 16, // 16 是表格内边距
+      key: item,
       title: (
         <Space>
           {item}
@@ -66,17 +68,10 @@ export default function getColumnsFromFields(params: {
           )}
         </Space>
       ),
-      render: (record) => {
+      dataIndex: item,
+      render: (_text, record) => {
         return (
-          <div
-            className='max-h-[140px] overflow-auto'
-            style={{
-              minWidth:
-                getTextWidth(item, {
-                  fontWeight: '500', // table header font weight
-                }) + iconsWidth,
-            }}
-          >
+          <div className='max-h-[140px]'>
             {onValueFilter ? (
               <FieldValueWithFilter enableTooltip name={item} value={toString(record[item])} onValueFilter={onValueFilter} rawValue={record} />
             ) : (
@@ -90,33 +85,20 @@ export default function getColumnsFromFields(params: {
   if (time_field && options?.time === 'true') {
     columns.unshift({
       title: i18next.t('explorer:logs.settings.time'),
-      dataIndex: time_field,
-      render: (text) => {
-        return (
-          <div
-            style={{
-              minWidth: getTextWidth(i18next.t('explorer:logs.settings.time')),
-            }}
-          >
-            {moment(text).format('MM-DD HH:mm:ss.SSS')}
-          </div>
-        );
+      dataIndex: '___time___',
+      width: 140,
+      render: (_text, record) => {
+        return <div>{moment(record[time_field]).format('MM-DD HH:mm:ss.SSS')}</div>;
       },
     });
   }
   if (options?.lines === 'true') {
     columns.unshift({
       title: i18next.t('explorer:logs.settings.lines'),
+      dataIndex: '___lines___',
+      width: 40,
       render: (_, _record, idx) => {
-        return (
-          <div
-            style={{
-              minWidth: getTextWidth(i18next.t('explorer:logs.settings.lines')),
-            }}
-          >
-            {idx + 1}
-          </div>
-        );
+        return <div>{idx + 1}</div>;
       },
     });
   }

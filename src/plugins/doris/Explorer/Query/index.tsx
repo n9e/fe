@@ -32,6 +32,7 @@ export default function index(props: Props) {
   const { darkMode, logsDefaultRange } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const { disabled, datasourceValue, executeQuery } = props;
+  const refreshFlag = Form.useWatch('refreshFlag');
   const queryValues = Form.useWatch(['query']);
   // 用于显示展示的时间范围
   const rangeRef = useRef<{
@@ -194,7 +195,17 @@ export default function index(props: Props) {
           }}
         />
       </div>
-      {indexData && <Content rangeRef={rangeRef} indexData={indexData} indexDataLoading={indexDataLoading} executeQuery={executeQuery} />}
+      {indexData && datasourceValue && queryValues && refreshFlag && (
+        <Content
+          refreshFlag={refreshFlag}
+          datasourceValue={datasourceValue}
+          queryValues={queryValues}
+          rangeRef={rangeRef}
+          indexData={indexData}
+          indexDataLoading={indexDataLoading}
+          executeQuery={executeQuery}
+        />
+      )}
     </div>
   );
 }

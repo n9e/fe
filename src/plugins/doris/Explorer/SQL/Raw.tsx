@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Empty, Form, Space, Pagination } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -12,8 +12,9 @@ import flatten from '@/pages/explorer/components/LogsViewer/utils/flatten';
 import getFieldsFromTableData from '@/pages/explorer/components/LogsViewer/utils/getFieldsFromTableData';
 import LogsViewer from '@/pages/explorer/components/LogsViewer';
 import { useGlobalState } from '@/pages/explorer/globalState';
+import calcColWidthByData from '@/pages/explorer/components/LogsViewer/utils/calcColWidthByData';
 
-import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
+import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../constants';
 import { logQuery } from '../../services';
 import { getLocalstorageOptions, setLocalstorageOptions, filteredFields } from '../utils';
 
@@ -37,7 +38,7 @@ function Raw(props: IProps) {
   const [fields, setFields] = useState<string[]>([]);
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: 10,
+    pageSize: options.pageLoadMode === 'pagination' ? 10 : 50,
   });
   const [logs, setLogs] = useState<any[]>([]);
 
@@ -51,7 +52,7 @@ function Raw(props: IProps) {
     if (reload) {
       setServiceParams({
         current: 1,
-        pageSize: 10,
+        pageSize: mergedOptions.pageLoadMode === 'pagination' ? 10 : 50,
       });
       const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
       tableEleNodes?.scrollTo(0, 0);
@@ -90,12 +91,15 @@ function Raw(props: IProps) {
           return {
             list: newLogs,
             total: res.total,
+            hash: _.uniqueId('logs_'),
+            colWidths: calcColWidthByData(newLogs),
           };
         })
         .catch(() => {
           return {
             list: [],
             total: 0,
+            hash: _.uniqueId('logs_'),
           };
         });
     }
@@ -189,6 +193,9 @@ function Raw(props: IProps) {
                   }
                 }
               }}
+              tableColumnsWidthCacheKey={`${SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({
+                datasourceValue,
+              })}`}
             />
           </div>
         </div>

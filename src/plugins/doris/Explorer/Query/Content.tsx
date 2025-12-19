@@ -12,7 +12,7 @@ import flatten from '@/pages/explorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/explorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConfig';
 import { useGlobalState } from '@/pages/explorer/globalState';
-
+import calcColWidthByData from '@/pages/explorer/components/LogsViewer/utils/calcColWidthByData';
 import { parseRange } from '@/components/TimeRangePicker';
 import LogsViewer from '@/pages/explorer/components/LogsViewer';
 
@@ -20,11 +20,14 @@ import LogsViewer from '@/pages/explorer/components/LogsViewer';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 import { getDorisLogsQuery, Field, getDorisHistogram } from '../../services';
-import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
+import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../constants';
 import { getLocalstorageOptions, setLocalstorageOptions, filteredFields, getPinIndexFromLocalstorage } from '../utils';
 import FieldsSidebar from './FieldsSidebar';
 
 interface Props {
+  refreshFlag: string;
+  datasourceValue: number;
+  queryValues: any;
   rangeRef: React.MutableRefObject<
     | {
         from: number;
@@ -37,15 +40,13 @@ interface Props {
   executeQuery: () => void;
 }
 
-export default function index(props: Props) {
+function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const [tabKey] = useGlobalState('tabKey');
   const logsTableSelectors = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
-  const { rangeRef, indexData, indexDataLoading, executeQuery } = props;
+  const { refreshFlag, datasourceValue, queryValues, rangeRef, indexData, indexDataLoading, executeQuery } = props;
   const form = Form.useFormInstance();
-  const refreshFlag = Form.useWatch('refreshFlag');
-  const datasourceValue = Form.useWatch(['datasourceValue']);
-  const queryValues = Form.useWatch(['query']);
+
   // 点击直方图某个柱子时，设置的时间范围
   const snapRangeRef = useRef<{
     from?: number;
@@ -68,7 +69,7 @@ export default function index(props: Props) {
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: 10,
+    pageSize: options.pageLoadMode === 'pagination' ? 10 : 50,
     reverse: true,
   });
   const updateOptions = (newOptions, reload?: boolean) => {
@@ -79,6 +80,10 @@ export default function index(props: Props) {
     setOptions(mergedOptions);
     setLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
     if (reload) {
+      setServiceParams({
+        ...serviceParams,
+        pageSize: mergedOptions.pageLoadMode === 'pagination' ? 10 : 50,
+      });
       form.setFieldsValue({
         refreshFlag: _.uniqueId('refreshFlag_'),
       });
@@ -149,6 +154,8 @@ export default function index(props: Props) {
             return {
               list: _.concat(data?.list, newLogs),
               total: res.total,
+              hash: _.uniqueId('logs_'),
+              colWidths: calcColWidthByData(_.concat(data?.list, newLogs)),
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
@@ -159,6 +166,8 @@ export default function index(props: Props) {
             return {
               list: newLogs,
               total: res.total,
+              hash: _.uniqueId('logs_'),
+              colWidths: calcColWidthByData(newLogs),
             };
           }
         })
@@ -166,6 +175,7 @@ export default function index(props: Props) {
           return {
             list: [],
             total: 0,
+            hash: _.uniqueId('logs_'),
           };
         });
     }
@@ -203,25 +213,40 @@ export default function index(props: Props) {
         ],
       })
         .then((res) => {
-          return _.map(res, (item) => {
-            return {
-              id: _.uniqueId('series_'),
-              ref: '',
-              name: item.ref,
-              metric: {},
-              data: item.values,
-            };
-          });
+          return {
+            data: _.map(res, (item) => {
+              return {
+                id: _.uniqueId('series_'),
+                ref: '',
+                name: item.ref,
+                metric: {},
+                data: item.values,
+              };
+            }),
+            hash: _.uniqueId('histogram_'),
+          };
         })
         .catch(() => {
-          return [];
+          return {
+            data: [],
+            hash: _.uniqueId('histogram_'),
+          };
         });
     } else {
-      return Promise.resolve(undefined);
+      return Promise.resolve({
+        data: [],
+        hash: _.uniqueId('histogram_'),
+      });
     }
   };
 
-  const { data: histogramData, loading: histogramLoading } = useRequest<any[] | undefined, any>(histogramService, {
+  const { data: histogramData, loading: histogramLoading } = useRequest<
+    {
+      data: any[];
+      hash: string;
+    },
+    any
+  >(histogramService, {
     refreshDeps: [refreshFlag, pinIndex],
   });
 
@@ -289,9 +314,11 @@ export default function index(props: Props) {
         <LogsViewer
           timeField={queryValues?.time_field}
           histogramLoading={histogramLoading}
-          histogram={histogramData || []}
+          histogram={histogramData?.data || []}
+          histogramHash={histogramData?.hash}
           loading={loading}
           logs={data?.list || []}
+          logsHash={data?.hash}
           fields={_.map(indexData, 'field')}
           options={options}
           filterFields={(fieldKeys) => {
@@ -387,6 +414,13 @@ export default function index(props: Props) {
           indexData={indexData}
           range={queryValues?.range}
           stacked={!!pinIndex} // only for histogram
+          colWidths={data?.colWidths}
+          tableColumnsWidthCacheKey={`${QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({
+            datasourceValue,
+            database: queryValues?.database,
+            table: queryValues?.table,
+            indexData: _.sortBy(indexData, 'field'),
+          })}`}
         />
         <div
           className='h-[58px] w-[10px] cursor-pointer absolute top-1/2 left-[-14px] mt-[-29px] flex items-center justify-center rounded n9e-fill-color-4'
@@ -404,3 +438,8 @@ export default function index(props: Props) {
     </div>
   );
 }
+
+export default React.memo(index, (prevProps, nextProps) => {
+  const pickKeys = ['refreshFlag', 'datasourceValue', 'queryValues'];
+  return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
+});
