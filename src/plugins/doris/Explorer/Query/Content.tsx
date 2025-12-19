@@ -69,7 +69,7 @@ function index(props: Props) {
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: options.pageLoadMode === 'pagination' ? 10 : 50,
+    pageSize: options.pageLoadMode === 'pagination' ? 10 : 20,
     reverse: true,
   });
   const updateOptions = (newOptions, reload?: boolean) => {

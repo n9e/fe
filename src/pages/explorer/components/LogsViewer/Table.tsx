@@ -78,7 +78,7 @@ function Table(props: Props) {
       };
     }
     return config;
-  }, [tableColumnsWidthCacheKey]);
+  }, [columns, tableColumnsWidthCacheKey]);
 
   const { components, resizableColumns, tableWidth } = useAntdResizableHeader(resizableHeaderConfig);
 
@@ -123,6 +123,6 @@ function Table(props: Props) {
 }
 
 export default React.memo(Table, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash'];
+  const pickKeys = ['logsHash', 'options'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

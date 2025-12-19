@@ -38,7 +38,7 @@ function Raw(props: IProps) {
   const [fields, setFields] = useState<string[]>([]);
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: options.pageLoadMode === 'pagination' ? 10 : 50,
+    pageSize: options.pageLoadMode === 'pagination' ? 10 : 20,
   });
   const [logs, setLogs] = useState<any[]>([]);
 
@@ -52,7 +52,7 @@ function Raw(props: IProps) {
     if (reload) {
       setServiceParams({
         current: 1,
-        pageSize: mergedOptions.pageLoadMode === 'pagination' ? 10 : 50,
+        pageSize: mergedOptions.pageLoadMode === 'pagination' ? 10 : 20,
       });
       const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
       tableEleNodes?.scrollTo(0, 0);
@@ -103,15 +103,20 @@ function Raw(props: IProps) {
           };
         });
     }
-    return Promise.resolve(undefined);
+    return Promise.resolve({
+      list: [],
+      total: 0,
+      hash: _.uniqueId('logs_'),
+    });
   };
 
   const { data, loading } = useRequest<
-    | {
-        list: { [index: string]: string }[];
-        total: number;
-      }
-    | undefined,
+    {
+      list: { [index: string]: string }[];
+      total: number;
+      colWidths?: { [key: string]: number };
+      hash: string;
+    },
     any
   >(service, {
     refreshDeps: [refreshFlag],
@@ -127,6 +132,8 @@ function Raw(props: IProps) {
               hideHistogram
               loading={loading}
               logs={logs}
+              logsHash={data?.hash}
+              colWidths={data?.colWidths}
               fields={fields}
               options={options}
               filterFields={(fieldKeys) => {
