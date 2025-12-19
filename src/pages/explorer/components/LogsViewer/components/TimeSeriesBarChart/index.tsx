@@ -217,8 +217,12 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
         const selection = event.data.selection;
         // 从选中的数据中提取时间范围
         if (selection.length > 0) {
-          const [[x1, x2]] = selection;
-          onBrushEnd([x1, x2]);
+          const times = selection[0];
+          const x1 = times[0];
+          const x2 = times[times.length - 1];
+          if (x1 && x2) {
+            onBrushEnd([x1, x2]);
+          }
         }
       }
       try {
