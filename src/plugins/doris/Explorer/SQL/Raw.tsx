@@ -47,8 +47,8 @@ function Raw(props: IProps) {
       ...newOptions,
     };
     setOptions(mergedOptions);
+    setLocalstorageOptions(SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
     if (reload) {
-      setLocalstorageOptions(SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
       setServiceParams({
         current: 1,
         pageSize: 10,

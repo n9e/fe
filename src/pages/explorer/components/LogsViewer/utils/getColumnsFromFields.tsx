@@ -25,7 +25,7 @@ export default function getColumnsFromFields(params: {
     const organizeFields = options?.organizeFields || [];
     const iconsWidth = _.includes(organizeFields, item) ? 20 : 40; // 预留图标宽度
     let realName = item;
-    if (!_.find(indexData, { field: item })) {
+    if (indexData && !_.find(indexData, { field: item })) {
       const firstPart = item.split('.')[0];
       if (_.find(indexData, { field: firstPart })) {
         realName = firstPart;
@@ -57,7 +57,7 @@ export default function getColumnsFromFields(params: {
                   } else {
                     // 否则就反选
                     updateOptions({
-                      organizeFields: _.filter(_.map(indexData, 'field'), (field) => field !== realName),
+                      organizeFields: _.filter(indexData ? _.map(indexData, 'field') : fields, (field) => field !== realName),
                     });
                   }
                 }}
