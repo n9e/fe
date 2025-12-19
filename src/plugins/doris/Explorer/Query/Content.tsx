@@ -179,15 +179,20 @@ function index(props: Props) {
           };
         });
     }
-    return Promise.resolve(undefined);
+    return Promise.resolve({
+      list: [],
+      total: 0,
+      hash: _.uniqueId('logs_'),
+    });
   };
 
   const { data, loading } = useRequest<
-    | {
-        list: { [index: string]: string }[];
-        total: number;
-      }
-    | undefined,
+    {
+      list: { [index: string]: string }[];
+      total: number;
+      hash: string;
+      colWidths?: { [key: string]: number };
+    },
     any
   >(service, {
     refreshDeps: [refreshFlag, JSON.stringify(serviceParams)],
