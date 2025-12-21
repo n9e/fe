@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import getTextWidth from '@/utils/getTextWidth';
 
+const buffer = 2;
+
 // 计算每列的宽度，根据数据内容来计算，取最大值
 export default function calcColWidthByData(data: any[]) {
   const colWidths: { [key: string]: number } = {};
@@ -8,12 +10,14 @@ export default function calcColWidthByData(data: any[]) {
   _.forEach(data, (row) => {
     _.forEach(row, (value, key) => {
       const text = _.toString(value);
-      const textWidth = getTextWidth(text, {
-        fontWeight: '500',
-      });
-      const keyWidth = getTextWidth(key, {
-        fontWeight: '500',
-      });
+      const textWidth =
+        getTextWidth(text, {
+          fontWeight: '700',
+        }) + buffer;
+      const keyWidth =
+        getTextWidth(key, {
+          fontWeight: '700',
+        }) + buffer;
       const totalWidth = Math.max(textWidth, keyWidth);
 
       if (!colWidths[key] || totalWidth > colWidths[key]) {

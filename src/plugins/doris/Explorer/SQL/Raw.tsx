@@ -38,7 +38,7 @@ function Raw(props: IProps) {
   const [fields, setFields] = useState<string[]>([]);
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: options.pageLoadMode === 'pagination' ? 10 : 20,
+    pageSize: 20,
   });
   const [logs, setLogs] = useState<any[]>([]);
 

@@ -19,8 +19,23 @@ export default function getColumnsFromFields(params: {
   options?: OptionsType;
   updateOptions?: (options: any, reload?: boolean) => void;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  data?: any[];
+  tableColumnsWidthCacheKey?: string;
 }) {
-  const { colWidths, indexData, fields, timeField: time_field, options, updateOptions, onValueFilter } = params;
+  const { colWidths, indexData, fields, timeField: time_field, options, updateOptions, onValueFilter, data, tableColumnsWidthCacheKey } = params;
+
+  let tableColumnsWidthCacheValue: { [index: string]: number | undefined } = {};
+  if (tableColumnsWidthCacheKey) {
+    const cacheStr = localStorage.getItem(tableColumnsWidthCacheKey);
+    if (cacheStr) {
+      try {
+        tableColumnsWidthCacheValue = JSON.parse(cacheStr);
+      } catch (e) {
+        console.warn('Parse table columns width cache value error', e);
+      }
+    }
+  }
+
   const columns: any[] = _.map(fields, (item) => {
     const organizeFields = options?.organizeFields || [];
     const iconsWidth = _.includes(organizeFields, item) ? 20 : 40; // 预留图标宽度
@@ -31,11 +46,13 @@ export default function getColumnsFromFields(params: {
         realName = firstPart;
       }
     }
+    const width = tableColumnsWidthCacheValue[item];
 
     return {
-      width: (colWidths?.[item] || 160) + iconsWidth + 16, // 16 是表格内边距
+      minWidth: (colWidths?.[item] || 160) + iconsWidth + 16, // 16 是表格内边距
+      width: width ? width + iconsWidth + 16 : undefined,
       key: item,
-      title: (
+      name: (
         <Space>
           {item}
           {updateOptions && (
@@ -68,14 +85,16 @@ export default function getColumnsFromFields(params: {
           )}
         </Space>
       ),
-      dataIndex: item,
-      render: (_text, record) => {
+      formatter: (params) => {
+        const record = params.row;
         return (
           <div className='max-h-[140px]'>
             {onValueFilter ? (
               <FieldValueWithFilter enableTooltip name={item} value={toString(record[item])} onValueFilter={onValueFilter} rawValue={record} />
             ) : (
-              toString(record[item])
+              <Tooltip placement='topLeft' overlayClassName='ant-tooltip-max-width-600' title={toString(record[item])}>
+                {toString(record[item])}
+              </Tooltip>
             )}
           </div>
         );
@@ -84,20 +103,24 @@ export default function getColumnsFromFields(params: {
   });
   if (time_field && options?.time === 'true') {
     columns.unshift({
-      title: i18next.t('explorer:logs.settings.time'),
-      dataIndex: '___time___',
+      name: i18next.t('explorer:logs.settings.time'),
+      key: '___time___',
       width: 140,
-      render: (_text, record) => {
-        return <div>{moment(record[time_field]).format('MM-DD HH:mm:ss.SSS')}</div>;
+      sortable: true,
+      resizable: false,
+      formatter: ({ row }) => {
+        return <div>{moment(row[time_field]).format('MM-DD HH:mm:ss.SSS')}</div>;
       },
     });
   }
   if (options?.lines === 'true') {
     columns.unshift({
-      title: i18next.t('explorer:logs.settings.lines'),
-      dataIndex: '___lines___',
+      name: i18next.t('explorer:logs.settings.lines'),
+      key: '___lines___',
       width: 40,
-      render: (_, _record, idx) => {
+      resizable: false,
+      formatter: ({ row }) => {
+        const idx = _.findIndex(data, { ___id___: row.___id___ });
         return <div>{idx + 1}</div>;
       },
     });
