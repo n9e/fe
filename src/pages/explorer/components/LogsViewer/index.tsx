@@ -216,6 +216,12 @@ function LogsViewer(props: Props) {
                   data={logs}
                   logsHash={logsHash}
                   options={options}
+                  onReverseChange={(val) => {
+                    onLogRequestParamsChange?.({
+                      reverse: val,
+                      context: undefined,
+                    });
+                  }}
                   updateOptions={updateOptions}
                   onValueFilter={onAddToQuery}
                   scroll={{

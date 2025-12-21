@@ -43,7 +43,8 @@ interface Props {
 function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const [tabKey] = useGlobalState('tabKey');
-  const logsTableSelectors = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
+  const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
+  const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
   const { refreshFlag, datasourceValue, queryValues, rangeRef, indexData, indexDataLoading, executeQuery } = props;
   const form = Form.useFormInstance();
 
@@ -69,7 +70,7 @@ function index(props: Props) {
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: options.pageLoadMode === 'pagination' ? 10 : 20,
+    pageSize: 20,
     reverse: true,
   });
   const updateOptions = (newOptions, reload?: boolean) => {
@@ -159,8 +160,13 @@ function index(props: Props) {
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
-              const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
-              tableEleNodes?.scrollTo(0, 0);
+              const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
+              const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
+              if (antdTableEleNodes) {
+                antdTableEleNodes?.scrollTo(0, 0);
+              } else if (rgdTableEleNodes) {
+                rgdTableEleNodes?.scrollTo(0, 0);
+              }
             }
             appendRef.current = false;
             return {
@@ -401,11 +407,19 @@ function index(props: Props) {
             }
           }}
           onScrollCapture={() => {
-            const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
-            if (tableEleNodes?.scrollHeight - (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight) <= 1) {
+            if (loading || pageLoadMode !== 'infiniteScroll') return;
+            const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
+            const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
+            let isAtBottom = false;
+            if (antdTableEleNodes) {
+              isAtBottom = antdTableEleNodes && antdTableEleNodes?.scrollHeight - (Math.round(antdTableEleNodes?.scrollTop) + antdTableEleNodes?.clientHeight) <= 1;
+            } else if (rgdTableEleNodes) {
+              isAtBottom = rgdTableEleNodes && rgdTableEleNodes?.scrollHeight - (Math.round(rgdTableEleNodes?.scrollTop) + rgdTableEleNodes?.clientHeight) <= 1;
+            }
+            if (isAtBottom) {
               // 滚动到底后加载下一页
               const currentServiceParams = getServiceParams();
-              if (pageLoadMode === 'infiniteScroll' && data && data.list.length < data.total) {
+              if (data && data.list.length < data.total) {
                 appendRef.current = true;
                 setServiceParams((prev) => ({
                   ...prev,
