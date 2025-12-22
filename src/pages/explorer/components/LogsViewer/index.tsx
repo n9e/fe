@@ -253,6 +253,6 @@ function LogsViewer(props: Props) {
 }
 
 export default React.memo(LogsViewer, (prevProps, nextProps) => {
-  const pickKeys = ['loading', 'logsHash', 'histogramLoading', 'histogramHash', 'fields', 'options'];
+  const pickKeys = ['loading', 'logsHash', 'histogramLoading', 'histogramHash', 'fields', 'options', 'optionsExtraRender'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

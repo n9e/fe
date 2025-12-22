@@ -28,7 +28,8 @@ interface IProps {
 function Raw(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
   const [tabKey] = useGlobalState('tabKey');
-  const logsTableSelectors = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
+  const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
+  const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);
@@ -40,7 +41,13 @@ function Raw(props: IProps) {
     current: 1,
     pageSize: 20,
   });
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<{
+    data: any[];
+    hash: string;
+  }>({
+    data: [],
+    hash: '',
+  });
 
   const updateOptions = (newOptions, reload?: boolean) => {
     const mergedOptions = {
@@ -54,8 +61,16 @@ function Raw(props: IProps) {
         current: 1,
         pageSize: 20,
       });
-      const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
-      tableEleNodes?.scrollTo(0, 0);
+      const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
+      const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
+      if (antdTableEleNodes) {
+        antdTableEleNodes?.scrollTo(0, 0);
+      } else if (rgdTableEleNodes) {
+        rgdTableEleNodes?.scrollTo(0, 0);
+      }
+      form.setFieldsValue({
+        refreshFlag: _.uniqueId('refresh_'),
+      });
     }
   };
 
@@ -86,7 +101,10 @@ function Raw(props: IProps) {
           const columnsKeys = getFieldsFromTableData(res.list || []);
           setFields(columnsKeys);
 
-          setLogs(_.slice(newLogs, 0, serviceParams.pageSize)); // 首次只加载一页数据
+          setLogs({
+            data: _.slice(newLogs, 0, serviceParams.pageSize),
+            hash: _.uniqueId('logs_'),
+          }); // 首次只加载一页数据
 
           return {
             list: newLogs,
@@ -131,8 +149,8 @@ function Raw(props: IProps) {
               timeField={queryValues?.time_field}
               hideHistogram
               loading={loading}
-              logs={logs}
-              logsHash={data?.hash}
+              logs={logs.data}
+              logsHash={data?.hash + '_' + logs.hash}
               colWidths={data?.colWidths}
               fields={fields}
               options={options}
@@ -154,14 +172,15 @@ function Raw(props: IProps) {
                           pageSize,
                         }));
                         const newLogs = _.slice(data?.list, (current - 1) * pageSize, current * pageSize) || [];
-                        setLogs(
-                          _.map(newLogs, (item) => {
+                        setLogs({
+                          data: _.map(newLogs, (item) => {
                             return {
                               ...item,
                               ___id___: _.uniqueId('log_id_'),
                             };
                           }),
-                        );
+                          hash: _.uniqueId('logs_'),
+                        });
                       }}
                       showTotal={(total) => {
                         return t('common:table.total', { total });
@@ -176,19 +195,31 @@ function Raw(props: IProps) {
               onOptionsChange={updateOptions}
               showDateField={false}
               onScrollCapture={() => {
-                const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
-                if (tableEleNodes?.scrollHeight - (Math.round(tableEleNodes?.scrollTop) + tableEleNodes?.clientHeight) <= 1) {
+                if (loading || pageLoadMode !== 'infiniteScroll') return;
+                const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
+                const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
+                let isAtBottom = false;
+                if (antdTableEleNodes) {
+                  isAtBottom = antdTableEleNodes && antdTableEleNodes?.scrollHeight - (Math.round(antdTableEleNodes?.scrollTop) + antdTableEleNodes?.clientHeight) <= 1;
+                } else if (rgdTableEleNodes) {
+                  isAtBottom = rgdTableEleNodes && rgdTableEleNodes?.scrollHeight - (Math.round(rgdTableEleNodes?.scrollTop) + rgdTableEleNodes?.clientHeight) <= 1;
+                }
+                if (isAtBottom) {
                   // 滚动到底后加载下一页
                   const currentServiceParams = getServiceParams();
-                  if (pageLoadMode === 'infiniteScroll' && data && logs.length < data.total) {
+                  if (pageLoadMode === 'infiniteScroll' && data && logs.data.length < data.total) {
                     setServiceParams((prev) => ({
                       ...prev,
                       current: currentServiceParams.current + 1,
                     }));
-                    const appendLogs = _.slice(data.list, 0, (currentServiceParams.current + 1) * currentServiceParams.pageSize);
-                    setLogs(
-                      _.concat(
-                        logs,
+                    const appendLogs = _.slice(
+                      data.list,
+                      currentServiceParams.current * currentServiceParams.pageSize,
+                      (currentServiceParams.current + 1) * currentServiceParams.pageSize,
+                    );
+                    setLogs({
+                      data: _.concat(
+                        logs.data,
                         _.map(appendLogs, (item) => {
                           return {
                             ...item,
@@ -196,7 +227,8 @@ function Raw(props: IProps) {
                           };
                         }),
                       ),
-                    );
+                      hash: _.uniqueId('logs_'),
+                    });
                   }
                 }
               }}
