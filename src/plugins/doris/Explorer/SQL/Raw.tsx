@@ -14,7 +14,7 @@ import LogsViewer from '@/pages/explorer/components/LogsViewer';
 import { useGlobalState } from '@/pages/explorer/globalState';
 import calcColWidthByData from '@/pages/explorer/components/LogsViewer/utils/calcColWidthByData';
 
-import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../constants';
+import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../constants';
 import { logQuery } from '../../services';
 import { getLocalstorageOptions, setLocalstorageOptions, filteredFields } from '../utils';
 
@@ -39,7 +39,7 @@ function Raw(props: IProps) {
   const [fields, setFields] = useState<string[]>([]);
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: 20,
+    pageSize: DEFAULT_LOGS_PAGE_SIZE,
   });
   const [logs, setLogs] = useState<{
     data: any[];
@@ -59,7 +59,7 @@ function Raw(props: IProps) {
     if (reload) {
       setServiceParams({
         current: 1,
-        pageSize: 20,
+        pageSize: DEFAULT_LOGS_PAGE_SIZE,
       });
       const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
       const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
