@@ -55,6 +55,7 @@ interface Props {
   stacked?: boolean;
   colWidths?: { [key: string]: number };
   tableColumnsWidthCacheKey?: string;
+  showPageLoadMode?: boolean;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -106,6 +107,7 @@ function LogsViewer(props: Props) {
     stacked = false,
     colWidths,
     tableColumnsWidthCacheKey,
+    showPageLoadMode,
   } = props;
   const [options, setOptions] = useState(props.options);
 
@@ -185,7 +187,7 @@ function LogsViewer(props: Props) {
                   });
                 }}
               />
-              <OriginSettings showDateField={showDateField} options={options} updateOptions={updateOptions} fields={fields} />
+              <OriginSettings showDateField={showDateField} options={options} updateOptions={updateOptions} fields={fields} showPageLoadMode={showPageLoadMode} />
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>

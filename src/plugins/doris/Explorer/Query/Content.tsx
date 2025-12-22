@@ -83,7 +83,7 @@ function index(props: Props) {
     if (reload) {
       setServiceParams({
         ...serviceParams,
-        pageSize: mergedOptions.pageLoadMode === 'pagination' ? 10 : 50,
+        pageSize: 20,
       });
       form.setFieldsValue({
         refreshFlag: _.uniqueId('refreshFlag_'),
@@ -348,6 +348,14 @@ function index(props: Props) {
               </Space>
             )
           }
+          stacked={!!pinIndex} // only for histogram
+          colWidths={data?.colWidths}
+          tableColumnsWidthCacheKey={`${QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({
+            datasourceValue,
+            database: queryValues?.database,
+            table: queryValues?.table,
+            indexData: _.sortBy(indexData, 'field'),
+          })}`}
           optionsExtraRender={
             pageLoadMode === 'pagination' ? (
               <Space size={0}>
@@ -372,6 +380,7 @@ function index(props: Props) {
               t('common:table.total', { total: data?.total })
             )
           }
+          showPageLoadMode
           onOptionsChange={updateOptions}
           onAddToQuery={handleValueFilter}
           onRangeChange={(range) => {
@@ -432,14 +441,6 @@ function index(props: Props) {
           fieldConfig={currentFieldConfig}
           indexData={indexData}
           range={queryValues?.range}
-          stacked={!!pinIndex} // only for histogram
-          colWidths={data?.colWidths}
-          tableColumnsWidthCacheKey={`${QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({
-            datasourceValue,
-            database: queryValues?.database,
-            table: queryValues?.table,
-            indexData: _.sortBy(indexData, 'field'),
-          })}`}
         />
         <div
           className='h-[58px] w-[10px] cursor-pointer absolute top-1/2 left-[-14px] mt-[-29px] flex items-center justify-center rounded n9e-fill-color-4'

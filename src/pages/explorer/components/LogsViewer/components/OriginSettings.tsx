@@ -17,11 +17,13 @@ export default function OriginSettings({
   updateOptions,
   fields,
   showDateField,
+  showPageLoadMode,
 }: {
   options: OptionsType;
   updateOptions: (options: any, reload?: boolean) => void;
   fields: string[];
   showDateField?: boolean;
+  showPageLoadMode?: boolean;
 }) {
   const { t } = useTranslation('explorer');
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
@@ -90,44 +92,50 @@ export default function OriginSettings({
         <Dropdown
           overlay={
             <Menu
-              items={[
-                {
-                  key: 'organizeFieldsBtn',
-                  label: (
-                    <a
-                      onClick={() => {
-                        setOrganizeFieldsModalVisible(true);
-                      }}
-                    >
-                      {t('logs.settings.organizeFields.title')}
-                    </a>
-                  ),
-                },
-                {
-                  key: 'pageLoadMode',
-                  label: (
-                    <a
-                      onClick={() => {
-                        setPageLoadModeModalVisible(true);
-                      }}
-                    >
-                      {t('logs.settings.pageLoadMode.title')}
-                    </a>
-                  ),
-                },
-                // {
-                //   key: 'jsonSettingsBtn',
-                //   label: (
-                //     <a
-                //       onClick={() => {
-                //         setJsonSettingsModalVisible(true);
-                //       }}
-                //     >
-                //       {t('logs.settings.jsonSettings.title')}
-                //     </a>
-                //   ),
-                // },
-              ]}
+              items={_.concat(
+                [
+                  {
+                    key: 'organizeFieldsBtn',
+                    label: (
+                      <a
+                        onClick={() => {
+                          setOrganizeFieldsModalVisible(true);
+                        }}
+                      >
+                        {t('logs.settings.organizeFields.title')}
+                      </a>
+                    ),
+                  },
+                  // {
+                  //   key: 'jsonSettingsBtn',
+                  //   label: (
+                  //     <a
+                  //       onClick={() => {
+                  //         setJsonSettingsModalVisible(true);
+                  //       }}
+                  //     >
+                  //       {t('logs.settings.jsonSettings.title')}
+                  //     </a>
+                  //   ),
+                  // },
+                ],
+                showPageLoadMode
+                  ? [
+                      {
+                        key: 'pageLoadMode',
+                        label: (
+                          <a
+                            onClick={() => {
+                              setPageLoadModeModalVisible(true);
+                            }}
+                          >
+                            {t('logs.settings.pageLoadMode.title')}
+                          </a>
+                        ),
+                      },
+                    ]
+                  : [],
+              )}
             />
           }
           trigger={['click']}
