@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Space, Switch, Dropdown, Menu, Modal, Row, Col, Form, Radio, InputNumber, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -12,19 +12,22 @@ import { SettingOutlined, EyeInvisibleOutlined, PlusSquareOutlined, CloseSquareO
 
 import { OptionsType } from '../types';
 
-export default function OriginSettings({
-  options,
-  updateOptions,
-  fields,
-  showDateField,
-  showPageLoadMode,
-}: {
-  options: OptionsType;
-  updateOptions: (options: any, reload?: boolean) => void;
-  fields: string[];
-  showDateField?: boolean;
-  showPageLoadMode?: boolean;
-}) {
+export default forwardRef(function OriginSettings(
+  {
+    options,
+    updateOptions,
+    fields,
+    showDateField,
+    showPageLoadMode,
+  }: {
+    options: OptionsType;
+    updateOptions: (options: any, reload?: boolean) => void;
+    fields: string[];
+    showDateField?: boolean;
+    showPageLoadMode?: boolean;
+  },
+  ref,
+) {
   const { t } = useTranslation('explorer');
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
   const [organizeFields, setOrganizeFields] = useState(options.organizeFields);
@@ -45,6 +48,18 @@ export default function OriginSettings({
     });
     setOrganizeFields(options.organizeFields);
   }, [JSON.stringify(options)]);
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        setOrganizeFieldsModalVisible(newVisible: boolean) {
+          setOrganizeFieldsModalVisible(newVisible);
+        },
+      };
+    },
+    [],
+  );
 
   return (
     <>
@@ -311,4 +326,4 @@ export default function OriginSettings({
       </Modal>
     </>
   );
-}
+});

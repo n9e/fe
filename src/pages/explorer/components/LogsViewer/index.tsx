@@ -115,6 +115,10 @@ function LogsViewer(props: Props) {
     onOptionsChange?.(newOptions, reload);
   };
 
+  const originSettingsRef = React.useRef<{
+    setOrganizeFieldsModalVisible: (newVisible: boolean) => void;
+  }>(null);
+
   useEffect(() => {
     setOptions(props.options);
   }, [props.options]);
@@ -187,7 +191,14 @@ function LogsViewer(props: Props) {
                   });
                 }}
               />
-              <OriginSettings showDateField={showDateField} options={options} updateOptions={updateOptions} fields={fields} showPageLoadMode={showPageLoadMode} />
+              <OriginSettings
+                ref={originSettingsRef}
+                showDateField={showDateField}
+                options={options}
+                updateOptions={updateOptions}
+                fields={fields}
+                showPageLoadMode={showPageLoadMode}
+              />
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
@@ -224,15 +235,13 @@ function LogsViewer(props: Props) {
                       context: undefined,
                     });
                   }}
-                  updateOptions={updateOptions}
                   onValueFilter={onAddToQuery}
-                  scroll={{
-                    x: 'max-content',
-                    y: 'calc(100% - 40px)',
-                  }}
                   filterFields={filterFields}
                   colWidths={colWidths}
                   tableColumnsWidthCacheKey={tableColumnsWidthCacheKey}
+                  onOpenOrganizeFieldsModal={() => {
+                    originSettingsRef.current?.setOrganizeFieldsModalVisible(true);
+                  }}
                 />
               )}
             </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Form } from 'antd';
+import { Form, Tooltip } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 import { useRequest, useGetState } from 'ahooks';
@@ -335,7 +335,7 @@ function index(props: Props) {
           filterFields={(fieldKeys) => {
             return filteredFields(fieldKeys, options.organizeFields);
           }}
-          histogramAddonBeforeRender={<span>{pinIndex ? pinIndex.field : undefined}</span>}
+          histogramAddonBeforeRender={<Tooltip title={t('explorer:logs.stack_group_by_tip')}>{pinIndex ? pinIndex.field : undefined}</Tooltip>}
           histogramAddonAfterRender={
             data && (
               <Space>

@@ -141,6 +141,7 @@ const zh_CN = {
     filterAnd: '添加到本次检索',
     filterNot: '从本次检索中排除',
     total: '日志条数',
+    stack_group_by_tip: '以此字段值展示堆叠趋势图',
   },
 };
 export default zh_CN;
