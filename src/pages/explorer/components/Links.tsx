@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import IconFont from '@/components/IconFont';
 import { Popover } from 'antd';
 import moment from 'moment';
 import { basePrefix } from '@/App';
-import { ILogExtract, ILogURL, ILogMappingParams } from '@/pages/log/IndexPatterns/types';
+import { ILogExtract, ILogURL, ILogMappingParams, LinkContext } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-
 export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]): string {
   const param = new URLSearchParams(link);
   let reallink = link;
@@ -215,12 +214,28 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr,
   );
 }
 
-export function Link({ onClick, text, onMouseEnter, onMouseLeave }: { onClick?: () => void; text: React.ReactNode; onMouseEnter?: () => void; onMouseLeave?: () => void }) {
+export function Link({
+  onClick,
+  text,
+  onMouseEnter,
+  onMouseLeave,
+  linkContext,
+}: {
+  onClick?: () => void;
+  text: React.ReactNode;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  linkContext?: LinkContext;
+}) {
   const isGold = localStorage.getItem('n9e-dark-mode') === '2';
+  const iconTips = !!linkContext;
+  const { rawValue, name, fieldConfig, range, parentKey } = linkContext || {};
+  const relatedLinks = iconTips && fieldConfig ? fieldConfig?.linkArr?.filter((item) => (parentKey ? item.field === parentKey : item.field === name)) : [];
+  const parsedRange = range ? parseRange(range) : null;
+  let start = parsedRange ? moment(parsedRange.start).unix() : 0;
+  let end = parsedRange ? moment(parsedRange.end).unix() : 0;
   return (
     <span
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
       style={{
         display: 'inline-flex',
         textDecoration: 'underline',
@@ -234,12 +249,68 @@ export function Link({ onClick, text, onMouseEnter, onMouseLeave }: { onClick?: 
         lineHeight: '22px',
         alignItems: 'center',
       }}
-      onClick={onClick}
     >
-      {text}
-      <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
-        <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+      <span onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onClick} style={{ display: 'inline-flex', alignItems: 'center' }}>
+        {text}
+        {!iconTips && (
+          <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+            <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+          </span>
+        )}
       </span>
+      {iconTips && (
+        <Popover
+          placement='right'
+          overlayClassName='popover-json'
+          content={relatedLinks.map((item, i) => (
+            <div key={i} style={{ lineHeight: '24px' }}>
+              <a
+                onClick={() => {
+                  const valueObjected = Object.entries(rawValue || {}).reduce((acc, [key, value]) => {
+                    if (typeof value === 'string') {
+                      try {
+                        acc[key] = JSON.parse(value);
+                      } catch (e) {
+                        acc[key] = value;
+                      }
+                    } else {
+                      acc[key] = value;
+                    }
+                    return acc;
+                  }, {});
+
+                  handleNav(item.urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
+                }}
+              >
+                {item.name}
+              </a>
+            </div>
+          ))}
+        >
+          <span
+            style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}
+            onClick={() => {
+              const valueObjected = Object.entries(rawValue || {}).reduce((acc, [key, value]) => {
+                if (typeof value === 'string') {
+                  try {
+                    acc[key] = JSON.parse(value);
+                  } catch (e) {
+                    acc[key] = value;
+                  }
+                } else {
+                  acc[key] = value;
+                }
+                return acc;
+              }, {});
+              if (relatedLinks.length > 0) {
+                handleNav(relatedLinks[0].urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
+              }
+            }}
+          >
+            <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+          </span>
+        </Popover>
+      )}
     </span>
   );
 }
