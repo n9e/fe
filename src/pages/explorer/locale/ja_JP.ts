@@ -120,6 +120,11 @@ const ja_JP = {
         displayMode_string: '文字列表示',
         expandLevel: 'デフォルト展開レベル',
       },
+      pageLoadMode: {
+        title: 'ページ読み込みモード',
+        pagination: 'ページネーション',
+        infiniteScroll: '無限スクロール',
+      },
     },
     tagsDetail: 'Tag 詳細',
     expand: '展開',
@@ -136,6 +141,7 @@ const ja_JP = {
     filterAnd: 'この検索に追加',
     filterNot: 'この検索から除外',
     total: 'ログの数',
+    stack_group_by_tip: 'このフィールド値でスタックされたトレンドチャートを表示',
   },
 };
 

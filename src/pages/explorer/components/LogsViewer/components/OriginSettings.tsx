@@ -4,31 +4,42 @@
  */
 
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Space, Switch, Dropdown, Menu, Modal, Row, Col, Form, Radio, InputNumber, Tooltip } from 'antd';
 import _ from 'lodash';
 import { SettingOutlined, EyeInvisibleOutlined, PlusSquareOutlined, CloseSquareOutlined } from '@ant-design/icons';
 
-export default function OriginSettings({
-  options,
-  setOptions,
-  fields,
-  showDateField,
-}: {
-  options: any;
-  setOptions: (options: any) => void;
-  fields: string[];
-  showDateField?: boolean;
-}) {
+import { OptionsType } from '../types';
+
+export default forwardRef(function OriginSettings(
+  {
+    options,
+    updateOptions,
+    fields,
+    showDateField,
+    showPageLoadMode,
+  }: {
+    options: OptionsType;
+    updateOptions: (options: any, reload?: boolean) => void;
+    fields: string[];
+    showDateField?: boolean;
+    showPageLoadMode?: boolean;
+  },
+  ref,
+) {
   const { t } = useTranslation('explorer');
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
+  const [organizeFields, setOrganizeFields] = useState(options.organizeFields);
+
   const [jsonSettingsModalVisible, setJsonSettingsModalVisible] = useState(false);
   const [jsonSettings, setJsonSettings] = useState({
     jsonDisplaType: options.jsonDisplaType,
     jsonExpandLevel: options.jsonExpandLevel,
   });
-  const [organizeFields, setOrganizeFields] = useState(options.organizeFields);
+
+  const [pageLoadModeModalVisible, setPageLoadModeModalVisible] = useState(false);
+  const [pageLoadMode, setPageLoadMode] = useState(options.pageLoadMode || 'pagination');
 
   useEffect(() => {
     setJsonSettings({
@@ -37,6 +48,18 @@ export default function OriginSettings({
     });
     setOrganizeFields(options.organizeFields);
   }, [JSON.stringify(options)]);
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        setOrganizeFieldsModalVisible(newVisible: boolean) {
+          setOrganizeFieldsModalVisible(newVisible);
+        },
+      };
+    },
+    [],
+  );
 
   return (
     <>
@@ -48,7 +71,7 @@ export default function OriginSettings({
               size='small'
               checked={options.lineBreak === 'true'}
               onChange={(val) => {
-                setOptions({
+                updateOptions({
                   lineBreak: val ? 'true' : 'false',
                 });
               }}
@@ -61,7 +84,7 @@ export default function OriginSettings({
             size='small'
             checked={options.lines === 'true'}
             onChange={(val) => {
-              setOptions({
+              updateOptions({
                 lines: val ? 'true' : 'false',
               });
             }}
@@ -74,7 +97,7 @@ export default function OriginSettings({
               size='small'
               checked={options.time === 'true'}
               onChange={(val) => {
-                setOptions({
+                updateOptions({
                   time: val ? 'true' : 'false',
                 });
               }}
@@ -84,32 +107,50 @@ export default function OriginSettings({
         <Dropdown
           overlay={
             <Menu
-              items={[
-                {
-                  key: 'organizeFieldsBtn',
-                  label: (
-                    <a
-                      onClick={() => {
-                        setOrganizeFieldsModalVisible(true);
-                      }}
-                    >
-                      {t('logs.settings.organizeFields.title')}
-                    </a>
-                  ),
-                },
-                // {
-                //   key: 'jsonSettingsBtn',
-                //   label: (
-                //     <a
-                //       onClick={() => {
-                //         setJsonSettingsModalVisible(true);
-                //       }}
-                //     >
-                //       {t('logs.settings.jsonSettings.title')}
-                //     </a>
-                //   ),
-                // },
-              ]}
+              items={_.concat(
+                [
+                  {
+                    key: 'organizeFieldsBtn',
+                    label: (
+                      <a
+                        onClick={() => {
+                          setOrganizeFieldsModalVisible(true);
+                        }}
+                      >
+                        {t('logs.settings.organizeFields.title')}
+                      </a>
+                    ),
+                  },
+                  // {
+                  //   key: 'jsonSettingsBtn',
+                  //   label: (
+                  //     <a
+                  //       onClick={() => {
+                  //         setJsonSettingsModalVisible(true);
+                  //       }}
+                  //     >
+                  //       {t('logs.settings.jsonSettings.title')}
+                  //     </a>
+                  //   ),
+                  // },
+                ],
+                showPageLoadMode
+                  ? [
+                      {
+                        key: 'pageLoadMode',
+                        label: (
+                          <a
+                            onClick={() => {
+                              setPageLoadModeModalVisible(true);
+                            }}
+                          >
+                            {t('logs.settings.pageLoadMode.title')}
+                          </a>
+                        ),
+                      },
+                    ]
+                  : [],
+              )}
             />
           }
           trigger={['click']}
@@ -130,7 +171,7 @@ export default function OriginSettings({
         title={t('logs.settings.organizeFields.title')}
         visible={organizeFieldsModalVisible}
         onOk={() => {
-          setOptions({
+          updateOptions({
             organizeFields,
           });
           setOrganizeFieldsModalVisible(false);
@@ -213,7 +254,7 @@ export default function OriginSettings({
         title={t('logs.settings.jsonSettings.title')}
         visible={jsonSettingsModalVisible}
         onOk={() => {
-          setOptions(jsonSettings);
+          updateOptions(jsonSettings);
           setJsonSettingsModalVisible(false);
         }}
         onCancel={() => {
@@ -252,6 +293,37 @@ export default function OriginSettings({
           )}
         </Form>
       </Modal>
+      <Modal
+        title={t('logs.settings.pageLoadMode.title')}
+        visible={pageLoadModeModalVisible}
+        onOk={() => {
+          updateOptions(
+            {
+              pageLoadMode,
+            },
+            true,
+          );
+          setPageLoadModeModalVisible(false);
+        }}
+        onCancel={() => {
+          setPageLoadModeModalVisible(false);
+        }}
+      >
+        <Form>
+          <Form.Item>
+            <Radio.Group
+              buttonStyle='solid'
+              value={pageLoadMode}
+              onChange={(e) => {
+                setPageLoadMode(e.target.value);
+              }}
+            >
+              <Radio value='pagination'>{t('logs.settings.pageLoadMode.pagination')}</Radio>
+              <Radio value='infiniteScroll'>{t('logs.settings.pageLoadMode.infiniteScroll')}</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
-}
+});

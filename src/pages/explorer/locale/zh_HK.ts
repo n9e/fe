@@ -120,6 +120,11 @@ const zh_HK = {
         displayMode_string: '字符串展示',
         expandLevel: '默認展開層級',
       },
+      pageLoadMode: {
+        title: '翻頁模式',
+        pagination: '分頁器',
+        infiniteScroll: '滾動加載更多',
+      },
     },
     tagsDetail: 'Tag 詳情',
     expand: '展開',
@@ -136,6 +141,7 @@ const zh_HK = {
     filterAnd: '添加到本次檢索',
     filterNot: '從本次檢索中排除',
     total: '日誌條數',
+    stack_group_by_tip: '以此字段值展示堆疊趨勢圖',
   },
 };
 

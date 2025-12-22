@@ -6,6 +6,8 @@ export const QUERY_SIDEBAR_CACHE_KEY = 'doris-query-sidebar';
 export const SQL_SIDEBAR_CACHE_KEY = 'doris-meta-sidebar';
 export const QUERY_LOGS_OPTIONS_CACHE_KEY = 'doris-query-logs-options';
 export const SQL_LOGS_OPTIONS_CACHE_KEY = 'doris-sql-logs-options';
+export const QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY = 'doris-query-logs-table-columns-width';
+export const SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY = 'doris-sql-logs-table-columns-width';
 export const TYPE_MAP: Record<string, string> = {
   float: 'number',
   float64: 'number',
@@ -23,3 +25,4 @@ export const TYPE_MAP: Record<string, string> = {
   boolean: 'boolean',
 };
 export const DATE_TYPE_LIST = ['date', 'timestamp', 'datetime'];
+export const DEFAULT_LOGS_PAGE_SIZE = 30;

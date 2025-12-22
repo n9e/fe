@@ -120,6 +120,11 @@ const en_US = {
         displayMode_string: 'String',
         expandLevel: 'Default expand level',
       },
+      pageLoadMode: {
+        title: 'Page load mode',
+        pagination: 'Pagination',
+        infiniteScroll: 'Infinite scroll',
+      },
     },
     tagsDetail: 'Tag detail',
     expand: 'Expand',
@@ -136,6 +141,7 @@ const en_US = {
     filterAnd: 'Add to this search',
     filterNot: 'Exclude from this search',
     total: 'Total',
+    stack_group_by_tip: 'Display stacked trend chart by this field value',
   },
 };
 export default en_US;

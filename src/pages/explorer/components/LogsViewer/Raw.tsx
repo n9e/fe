@@ -46,35 +46,36 @@ function RenderValue({ name, value, onValueFilter }: RenderValueProps) {
   const [expand, setExpand] = useState(false);
   const { rawValue } = useContext(DataContext);
 
-  if (typeof value === 'string' && value.indexOf('\n') > -1) {
-    const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
-    return (
-      <div className={explorerOrigiFieldValClassName}>
-        {_.map(lines, (v, idx) => {
-          return (
-            <div key={idx}>
-              {v}
-              {idx === lines.length - 1 && (
-                <a
-                  onClick={() => {
-                    setExpand(!expand);
-                  }}
-                  style={{
-                    marginLeft: 8,
-                  }}
-                >
-                  {expand ? t('logs.collapse') : t('logs.expand')}
-                  {expand ? <LeftOutlined /> : <RightOutlined />}
-                </a>
-              )}
+  // TODO: 暂时关闭根据换行符展开功能，这块现在展示效果不是很好，后续再优化
+  // if (typeof value === 'string' && value.indexOf('\n') > -1) {
+  //   const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
+  //   return (
+  //     <div className={explorerOrigiFieldValClassName}>
+  //       {_.map(lines, (v, idx) => {
+  //         return (
+  //           <div key={idx}>
+  //             {v}
+  //             {idx === lines.length - 1 && (
+  //               <a
+  //                 onClick={() => {
+  //                   setExpand(!expand);
+  //                 }}
+  //                 style={{
+  //                   marginLeft: 8,
+  //                 }}
+  //               >
+  //                 {expand ? t('logs.collapse') : t('logs.expand')}
+  //                 {expand ? <LeftOutlined /> : <RightOutlined />}
+  //               </a>
+  //             )}
 
-              <br />
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
+  //             <br />
+  //           </div>
+  //         );
+  //       })}
+  //     </div>
+  //   );
+  // }
 
   return <FieldValueWithFilter name={name} value={value} onValueFilter={onValueFilter} rawValue={rawValue} />;
 }
