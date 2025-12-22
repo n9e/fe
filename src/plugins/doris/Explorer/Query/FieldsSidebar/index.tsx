@@ -145,7 +145,6 @@ export default function index(props: IProps) {
             return (
               <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
                 <Button
-                  disabled={disabled}
                   icon={<UnPinIcon className='text-[14px]' />}
                   type='text'
                   size='small'

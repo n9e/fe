@@ -1,0 +1,82 @@
+.n9e-logs-viewer-rdg {
+  border-radius: 2px;
+  border-left: 0 none;
+  border-right: 0 none;
+
+  /* 允许表格水平滚动 */
+  overflow-x: auto;
+
+  /* 覆盖内置变量 */
+  --rdg-color: var(--fc-text-2);
+  --rdg-border-color: #f0f0f0;
+  --rdg-background-color: var(--fc-fill-2);
+  --rdg-header-background-color: var(--fc-fill-3);
+  --rdg-row-hover-background-color: #EAE8F2;
+  --rdg-font-size: 12px;
+
+
+  .rdg-header-row {
+    .rdg-cell:first-child {
+      border-right: none;
+    }
+
+    .rdg-cell {
+      border-inline-end: 1px solid var(--fc-border-base);
+    }
+  }
+
+  .rdg-row {
+    .rdg-cell {
+      border-right: none;
+    }
+  }
+
+  /* 移除选中单元格的轮廓 */
+  .rdg-cell:focus,
+  .rdg-cell[aria-selected="true"] {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .rdg-row-detail {
+    background-color: #fbfbfb !important;
+
+    &:hover {
+      background-color: unset !important;
+    }
+  }
+}
+
+.theme-dark {
+  .n9e-logs-viewer-rdg {
+    /* 覆盖内置变量 */
+    --rdg-border-color: #393c4d;
+    --rdg-row-hover-background-color: #262626;
+
+    .rdg-row-detail {
+      background-color: #22252b !important;
+    }
+
+    /* 暗黑模式滚动条样式（仅作用于该组件） */
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #4b4f5c #1e1f25;
+
+    /* WebKit 浏览器 */
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #1e1f25;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #4b4f5c;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+  }
+}

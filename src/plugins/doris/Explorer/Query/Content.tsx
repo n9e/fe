@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Form } from 'antd';
+import { Form, Tooltip } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 import { useRequest, useGetState } from 'ahooks';
@@ -11,7 +11,8 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import flatten from '@/pages/explorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/explorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/explorer/components/RenderValue/useFieldConfig';
-
+import { useGlobalState } from '@/pages/explorer/globalState';
+import calcColWidthByData from '@/pages/explorer/components/LogsViewer/utils/calcColWidthByData';
 import { parseRange } from '@/components/TimeRangePicker';
 import LogsViewer from '@/pages/explorer/components/LogsViewer';
 
@@ -19,11 +20,14 @@ import LogsViewer from '@/pages/explorer/components/LogsViewer';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 import { getDorisLogsQuery, Field, getDorisHistogram } from '../../services';
-import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../constants';
+import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../constants';
 import { getLocalstorageOptions, setLocalstorageOptions, filteredFields, getPinIndexFromLocalstorage } from '../utils';
 import FieldsSidebar from './FieldsSidebar';
 
 interface Props {
+  refreshFlag: string;
+  datasourceValue: number;
+  queryValues: any;
   rangeRef: React.MutableRefObject<
     | {
         from: number;
@@ -36,13 +40,14 @@ interface Props {
   executeQuery: () => void;
 }
 
-export default function index(props: Props) {
+function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { rangeRef, indexData, indexDataLoading, executeQuery } = props;
+  const [tabKey] = useGlobalState('tabKey');
+  const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
+  const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
+  const { refreshFlag, datasourceValue, queryValues, rangeRef, indexData, indexDataLoading, executeQuery } = props;
   const form = Form.useFormInstance();
-  const refreshFlag = Form.useWatch('refreshFlag');
-  const datasourceValue = Form.useWatch(['datasourceValue']);
-  const queryValues = Form.useWatch(['query']);
+
   // 点击直方图某个柱子时，设置的时间范围
   const snapRangeRef = useRef<{
     from?: number;
@@ -59,19 +64,31 @@ export default function index(props: Props) {
     }),
   );
   const [collapsed, setCollapsed] = useState(true);
+
   const [options, setOptions] = useState(getLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY));
+  const pageLoadMode = options.pageLoadMode || 'pagination';
+  const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: 10,
+    pageSize: DEFAULT_LOGS_PAGE_SIZE,
     reverse: true,
   });
-  const updateOptions = (newOptions) => {
+  const updateOptions = (newOptions, reload?: boolean) => {
     const mergedOptions = {
       ...options,
       ...newOptions,
     };
     setOptions(mergedOptions);
     setLocalstorageOptions(QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+    if (reload) {
+      setServiceParams({
+        ...serviceParams,
+        pageSize: DEFAULT_LOGS_PAGE_SIZE,
+      });
+      form.setFieldsValue({
+        refreshFlag: _.uniqueId('refreshFlag_'),
+      });
+    }
   };
 
   const handleValueFilter = (params) => {
@@ -133,27 +150,55 @@ export default function index(props: Props) {
               ___id___: _.uniqueId('log_id_'),
             };
           });
-          return {
-            list: newLogs,
-            total: res.total,
-          };
+          if (appendRef.current) {
+            appendRef.current = false;
+            return {
+              list: _.concat(data?.list, newLogs),
+              total: res.total,
+              hash: _.uniqueId('logs_'),
+              colWidths: calcColWidthByData(_.concat(data?.list, newLogs)),
+            };
+          } else {
+            if (pageLoadMode === 'infiniteScroll') {
+              const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
+              const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
+              if (antdTableEleNodes) {
+                antdTableEleNodes?.scrollTo(0, 0);
+              } else if (rgdTableEleNodes) {
+                rgdTableEleNodes?.scrollTo(0, 0);
+              }
+            }
+            appendRef.current = false;
+            return {
+              list: newLogs,
+              total: res.total,
+              hash: _.uniqueId('logs_'),
+              colWidths: calcColWidthByData(newLogs),
+            };
+          }
         })
         .catch(() => {
           return {
             list: [],
             total: 0,
+            hash: _.uniqueId('logs_'),
           };
         });
     }
-    return Promise.resolve(undefined);
+    return Promise.resolve({
+      list: [],
+      total: 0,
+      hash: _.uniqueId('logs_'),
+    });
   };
 
   const { data, loading } = useRequest<
-    | {
-        list: { [index: string]: string }[];
-        total: number;
-      }
-    | undefined,
+    {
+      list: { [index: string]: string }[];
+      total: number;
+      hash: string;
+      colWidths?: { [key: string]: number };
+    },
     any
   >(service, {
     refreshDeps: [refreshFlag, JSON.stringify(serviceParams)],
@@ -179,25 +224,40 @@ export default function index(props: Props) {
         ],
       })
         .then((res) => {
-          return _.map(res, (item) => {
-            return {
-              id: _.uniqueId('series_'),
-              ref: '',
-              name: item.ref,
-              metric: {},
-              data: item.values,
-            };
-          });
+          return {
+            data: _.map(res, (item) => {
+              return {
+                id: _.uniqueId('series_'),
+                ref: '',
+                name: item.ref,
+                metric: {},
+                data: item.values,
+              };
+            }),
+            hash: _.uniqueId('histogram_'),
+          };
         })
         .catch(() => {
-          return [];
+          return {
+            data: [],
+            hash: _.uniqueId('histogram_'),
+          };
         });
     } else {
-      return Promise.resolve(undefined);
+      return Promise.resolve({
+        data: [],
+        hash: _.uniqueId('histogram_'),
+      });
     }
   };
 
-  const { data: histogramData, loading: histogramLoading } = useRequest<any[] | undefined, any>(histogramService, {
+  const { data: histogramData, loading: histogramLoading } = useRequest<
+    {
+      data: any[];
+      hash: string;
+    },
+    any
+  >(histogramService, {
     refreshDeps: [refreshFlag, pinIndex],
   });
 
@@ -265,15 +325,18 @@ export default function index(props: Props) {
         <LogsViewer
           timeField={queryValues?.time_field}
           histogramLoading={histogramLoading}
-          histogram={histogramData || []}
+          histogram={histogramData?.data || []}
+          histogramHash={histogramData?.hash}
           loading={loading}
           logs={data?.list || []}
+          logsHash={data?.hash}
           fields={_.map(indexData, 'field')}
           options={options}
           filterFields={(fieldKeys) => {
             return filteredFields(fieldKeys, options.organizeFields);
           }}
-          histogramExtraRender={
+          histogramAddonBeforeRender={<Tooltip title={t('explorer:logs.stack_group_by_tip')}>{pinIndex ? pinIndex.field : undefined}</Tooltip>}
+          histogramAddonAfterRender={
             data && (
               <Space>
                 {rangeRef.current && (
@@ -285,26 +348,39 @@ export default function index(props: Props) {
               </Space>
             )
           }
+          stacked={!!pinIndex} // only for histogram
+          colWidths={data?.colWidths}
+          tableColumnsWidthCacheKey={`${QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({
+            datasourceValue,
+            database: queryValues?.database,
+            table: queryValues?.table,
+            indexData: _.sortBy(indexData, 'field'),
+          })}`}
           optionsExtraRender={
-            <Space size={0}>
-              <Pagination
-                size='small'
-                total={data?.total}
-                current={serviceParams.current}
-                pageSize={serviceParams.pageSize}
-                onChange={(current, pageSize) => {
-                  setServiceParams((prev) => ({
-                    ...prev,
-                    current,
-                    pageSize,
-                  }));
-                }}
-                showTotal={(total) => {
-                  return t('common:table.total', { total });
-                }}
-              />
-            </Space>
+            pageLoadMode === 'pagination' ? (
+              <Space size={0}>
+                <Pagination
+                  size='small'
+                  total={data?.total}
+                  current={serviceParams.current}
+                  pageSize={serviceParams.pageSize}
+                  onChange={(current, pageSize) => {
+                    setServiceParams((prev) => ({
+                      ...prev,
+                      current,
+                      pageSize,
+                    }));
+                  }}
+                  showTotal={(total) => {
+                    return t('common:table.total', { total });
+                  }}
+                />
+              </Space>
+            ) : (
+              t('common:table.total', { total: data?.total })
+            )
           }
+          showPageLoadMode
           onOptionsChange={updateOptions}
           onAddToQuery={handleValueFilter}
           onRangeChange={(range) => {
@@ -334,16 +410,37 @@ export default function index(props: Props) {
             if (params.reverse !== undefined) {
               setServiceParams((prev) => ({
                 ...prev,
+                current: 1,
                 reverse: params.reverse,
               }));
+            }
+          }}
+          onScrollCapture={() => {
+            if (loading || pageLoadMode !== 'infiniteScroll') return;
+            const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
+            const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
+            let isAtBottom = false;
+            if (antdTableEleNodes) {
+              isAtBottom = antdTableEleNodes && antdTableEleNodes?.scrollHeight - (Math.round(antdTableEleNodes?.scrollTop) + antdTableEleNodes?.clientHeight) <= 1;
+            } else if (rgdTableEleNodes) {
+              isAtBottom = rgdTableEleNodes && rgdTableEleNodes?.scrollHeight - (Math.round(rgdTableEleNodes?.scrollTop) + rgdTableEleNodes?.clientHeight) <= 1;
+            }
+            if (isAtBottom) {
+              // 滚动到底后加载下一页
+              const currentServiceParams = getServiceParams();
+              if (data && data.list.length < data.total) {
+                appendRef.current = true;
+                setServiceParams((prev) => ({
+                  ...prev,
+                  current: currentServiceParams.current + 1,
+                }));
+              }
             }
           }}
           // state context
           fieldConfig={currentFieldConfig}
           indexData={indexData}
           range={queryValues?.range}
-          stacked={!!pinIndex} // only for histogram
-          histogramXTitle={pinIndex ? pinIndex.field : undefined}
         />
         <div
           className='h-[58px] w-[10px] cursor-pointer absolute top-1/2 left-[-14px] mt-[-29px] flex items-center justify-center rounded n9e-fill-color-4'
@@ -361,3 +458,8 @@ export default function index(props: Props) {
     </div>
   );
 }
+
+export default React.memo(index, (prevProps, nextProps) => {
+  const pickKeys = ['refreshFlag', 'datasourceValue', 'queryValues'];
+  return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
+});

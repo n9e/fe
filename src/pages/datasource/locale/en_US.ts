@@ -79,6 +79,8 @@ const en_US = {
     es: {
       enable_write: 'Enable Write',
       version: 'Version',
+      version_placeholder: 'Leave blank to auto-detect version. If no special requirements, leave it blank; if you need to specify, please fill in x.y.z format (e.g., 7.10.2)',
+      version_tip: 'Leave blank to auto-detect version. If no special requirements, leave it blank; if you need to specify, please fill in x.y.z format (e.g., 7.10.2)',
       max_shard: 'Max concurrent Shard Requests',
       min_interval: 'Min time interval(s)',
       min_interval_tip:

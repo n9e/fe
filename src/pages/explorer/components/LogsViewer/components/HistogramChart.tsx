@@ -8,14 +8,13 @@ import TimeSeriesBarChart, { TimeSeriesDataPoint } from './TimeSeriesBarChart';
 interface Props {
   series: any[];
   stacked: boolean;
-  histogramXTitle?: string;
   onClick?: (start: number, end: number) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
 }
 
 export default function HistogramChart(props: Props) {
   const { darkMode } = useContext(CommonStateContext);
-  const { series, stacked, histogramXTitle, onClick, onZoomWithoutDefult } = props;
+  const { series, stacked, onClick, onZoomWithoutDefult } = props;
 
   // 将原有 series 结构转换为 TimeSeriesBarChart 所需的数据结构
   const chartData: TimeSeriesDataPoint[] = useMemo(() => {
@@ -77,16 +76,7 @@ export default function HistogramChart(props: Props) {
   // 直接渲染新的时序柱状图组件
   return (
     <div className='w-full min-w-0 h-full min-h-0'>
-      <TimeSeriesBarChart
-        data={chartData}
-        height={120}
-        onBarClick={handleBarClick}
-        onBrushEnd={handleBrushEnd}
-        stacked={stacked}
-        stepMs={stepMs}
-        darkMode={darkMode}
-        xTitle={histogramXTitle}
-      />
+      <TimeSeriesBarChart data={chartData} height={120} onBarClick={handleBarClick} onBrushEnd={handleBrushEnd} stacked={stacked} stepMs={stepMs} darkMode={darkMode} />
     </div>
   );
 }

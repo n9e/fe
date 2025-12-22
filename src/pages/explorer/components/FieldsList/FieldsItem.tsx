@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Button } from 'antd';
-import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
 import { PRIMARY_COLOR } from '@/utils/constant';
@@ -50,7 +50,7 @@ export const typeIconMap = {
 };
 
 const operIconMap = {
-  show: <CloseCircleOutlined />,
+  show: <MinusCircleOutlined />,
   available: <PlusCircleOutlined />,
 };
 
@@ -110,7 +110,7 @@ export default function FieldsItem(props: Props) {
                 const percent = _.floor(item.percent, 2);
                 return (
                   <div key={fieldValue} className='flex gap-[10px] mb-2'>
-                    <div style={{ width: 'calc(100% - 40px)' }}>
+                    <div className='flex-shrink-0' style={{ width: 'calc(100% - 64px)' }}>
                       <div className='flex justify-between'>
                         <Tooltip title={fieldValue}>
                           <div style={{ width: 'calc(100% - 50px)' }} className='nowrap overflow-hidden text-ellipsis'>

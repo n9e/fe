@@ -12,6 +12,7 @@ import HistogramChart from './components/HistogramChart';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
+import { OptionsType } from './types';
 
 interface Props {
   /** 时间字段 */
@@ -23,16 +24,18 @@ interface Props {
     metric: string;
     data: [number, number][];
   }[];
+  histogramHash?: string;
   /** 日志数据加载状态 */
   loading: boolean;
   /** 日志数据 */
   logs: { [index: string]: string }[];
+  logsHash?: string;
   /** 字段列表 */
   fields: string[];
   /** 日志格式配置项 */
-  options: any;
+  options: OptionsType;
   /** 配置项变更回调 */
-  onOptionsChange?: (options: any) => void;
+  onOptionsChange?: (options: OptionsType, reload?: boolean) => void;
   /** 添加过滤条件回调 */
   onAddToQuery?: (condition: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
   /** 时间范围变更回调 */
@@ -45,11 +48,14 @@ interface Props {
   rowPrefixRender?: (record: { [index: string]: any }) => React.ReactNode;
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   filterFields?: (fieldKeys: string[]) => string[];
-  histogramExtraRender?: React.ReactNode;
+  histogramAddonBeforeRender?: React.ReactNode;
+  histogramAddonAfterRender?: React.ReactNode;
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
   stacked?: boolean;
-  histogramXTitle?: string;
+  colWidths?: { [key: string]: number };
+  tableColumnsWidthCacheKey?: string;
+  showPageLoadMode?: boolean;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -76,7 +82,7 @@ interface LogsViewerState {
 }
 export const LogsViewerStateContext = createContext({} as LogsViewerState);
 
-export default function LogsViewer(props: Props) {
+function LogsViewer(props: Props) {
   const { t } = useTranslation('explorer');
   const {
     timeField,
@@ -85,6 +91,7 @@ export default function LogsViewer(props: Props) {
     histogram,
     loading,
     logs,
+    logsHash,
     fields,
     onOptionsChange,
     onAddToQuery,
@@ -93,17 +100,24 @@ export default function LogsViewer(props: Props) {
     onScrollCapture,
     rowPrefixRender,
     filterFields,
-    histogramExtraRender,
+    histogramAddonBeforeRender,
+    histogramAddonAfterRender,
     optionsExtraRender,
     showDateField = true,
     stacked = false,
-    histogramXTitle,
+    colWidths,
+    tableColumnsWidthCacheKey,
+    showPageLoadMode,
   } = props;
   const [options, setOptions] = useState(props.options);
 
-  const updateOptions = (newOptions) => {
-    onOptionsChange?.(newOptions);
+  const updateOptions = (newOptions: any, reload?: boolean) => {
+    onOptionsChange?.(newOptions, reload);
   };
+
+  const originSettingsRef = React.useRef<{
+    setOrganizeFieldsModalVisible: (newVisible: boolean) => void;
+  }>(null);
 
   useEffect(() => {
     setOptions(props.options);
@@ -121,18 +135,18 @@ export default function LogsViewer(props: Props) {
       <>
         {!hideHistogram && (
           <div className='h-[130px]'>
-            <div className='mt-1 px-2 flex justify-between'>
+            <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
               <Space>
+                {histogramAddonBeforeRender}
                 <Spin spinning={histogramLoading} size='small' />
               </Space>
-              {histogramExtraRender}
+              {histogramAddonAfterRender}
             </div>
             <div className='h-[120px]'>
               {props.range && histogram && (
                 <HistogramChart
                   series={histogram}
                   stacked={stacked}
-                  histogramXTitle={histogramXTitle}
                   onClick={(start, end) => {
                     if (start && end) {
                       onLogRequestParamsChange?.({
@@ -177,7 +191,14 @@ export default function LogsViewer(props: Props) {
                   });
                 }}
               />
-              <OriginSettings showDateField={showDateField} options={options} setOptions={updateOptions} fields={fields} />
+              <OriginSettings
+                ref={originSettingsRef}
+                showDateField={showDateField}
+                options={options}
+                updateOptions={updateOptions}
+                fields={fields}
+                showPageLoadMode={showPageLoadMode}
+              />
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
@@ -203,15 +224,24 @@ export default function LogsViewer(props: Props) {
               )}
               {options.logMode === 'table' && (
                 <Table
+                  indexData={props.indexData}
                   timeField={timeField}
                   data={logs}
+                  logsHash={logsHash}
                   options={options}
-                  onValueFilter={onAddToQuery}
-                  scroll={{
-                    x: 'max-content',
-                    y: 'calc(100% - 40px)',
+                  onReverseChange={(val) => {
+                    onLogRequestParamsChange?.({
+                      reverse: val,
+                      context: undefined,
+                    });
                   }}
+                  onValueFilter={onAddToQuery}
                   filterFields={filterFields}
+                  colWidths={colWidths}
+                  tableColumnsWidthCacheKey={tableColumnsWidthCacheKey}
+                  onOpenOrganizeFieldsModal={() => {
+                    originSettingsRef.current?.setOrganizeFieldsModalVisible(true);
+                  }}
                 />
               )}
             </div>
@@ -221,3 +251,8 @@ export default function LogsViewer(props: Props) {
     </LogsViewerStateContext.Provider>
   );
 }
+
+export default React.memo(LogsViewer, (prevProps, nextProps) => {
+  const pickKeys = ['loading', 'logsHash', 'histogramLoading', 'histogramHash', 'fields', 'options', 'optionsExtraRender'];
+  return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
+});

@@ -25,10 +25,9 @@ export interface TimeSeriesBarChartProps {
   onBrushEnd?: (timeRange: [number, number]) => void; // 框选回调
   stacked?: boolean; // 是否堆叠
   stepMs?: number; // x 轴步长（毫秒），用于刻度格式化
-  xTitle?: string;
 }
 
-const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs, xTitle }) => {
+const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
@@ -72,7 +71,7 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
       .animate(false)
       .axis('x', {
         // 去除标题
-        title: xTitle ?? null,
+        title: null,
         titleSpacing: 2,
         // 禁用自动旋转，水平展示
         labelAutoRotate: false,
@@ -218,8 +217,12 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
         const selection = event.data.selection;
         // 从选中的数据中提取时间范围
         if (selection.length > 0) {
-          const [[x1, x2]] = selection;
-          onBrushEnd([x1, x2]);
+          const times = selection[0];
+          const x1 = times[0];
+          const x2 = times[times.length - 1];
+          if (x1 && x2) {
+            onBrushEnd([x1, x2]);
+          }
         }
       }
       try {

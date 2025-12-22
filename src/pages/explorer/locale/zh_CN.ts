@@ -120,6 +120,11 @@ const zh_CN = {
         displayMode_string: '字符串展示',
         expandLevel: '默认展开层级',
       },
+      pageLoadMode: {
+        title: '翻页模式',
+        pagination: '分页器',
+        infiniteScroll: '滚动加载更多',
+      },
     },
     tagsDetail: 'Tag 详情',
     expand: '展开',
@@ -136,6 +141,7 @@ const zh_CN = {
     filterAnd: '添加到本次检索',
     filterNot: '从本次检索中排除',
     total: '日志条数',
+    stack_group_by_tip: '以此字段值展示堆叠趋势图',
   },
 };
 export default zh_CN;
