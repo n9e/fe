@@ -52,7 +52,7 @@ function Raw(props: IProps) {
     if (reload) {
       setServiceParams({
         current: 1,
-        pageSize: mergedOptions.pageLoadMode === 'pagination' ? 10 : 20,
+        pageSize: 20,
       });
       const tableEleNodes = document.querySelectorAll(logsTableSelectors)[0];
       tableEleNodes?.scrollTo(0, 0);
@@ -203,6 +203,7 @@ function Raw(props: IProps) {
               tableColumnsWidthCacheKey={`${SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({
                 datasourceValue,
               })}`}
+              showPageLoadMode
             />
           </div>
         </div>
