@@ -110,7 +110,7 @@ export default function FieldsItem(props: Props) {
                 const percent = _.floor(item.percent, 2);
                 return (
                   <div key={fieldValue} className='flex gap-[10px] mb-2'>
-                    <div style={{ width: 'calc(100% - 40px)' }}>
+                    <div className='flex-shrink-0' style={{ width: 'calc(100% - 64px)' }}>
                       <div className='flex justify-between'>
                         <Tooltip title={fieldValue}>
                           <div style={{ width: 'calc(100% - 50px)' }} className='nowrap overflow-hidden text-ellipsis'>
