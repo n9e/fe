@@ -25,3 +25,4 @@ export const TYPE_MAP: Record<string, string> = {
   boolean: 'boolean',
 };
 export const DATE_TYPE_LIST = ['date', 'timestamp', 'datetime'];
+export const DEFAULT_LOGS_PAGE_SIZE = 30;

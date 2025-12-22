@@ -20,7 +20,7 @@ import LogsViewer from '@/pages/explorer/components/LogsViewer';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 import { getDorisLogsQuery, Field, getDorisHistogram } from '../../services';
-import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../constants';
+import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../constants';
 import { getLocalstorageOptions, setLocalstorageOptions, filteredFields, getPinIndexFromLocalstorage } from '../utils';
 import FieldsSidebar from './FieldsSidebar';
 
@@ -70,7 +70,7 @@ function index(props: Props) {
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
     current: 1,
-    pageSize: 20,
+    pageSize: DEFAULT_LOGS_PAGE_SIZE,
     reverse: true,
   });
   const updateOptions = (newOptions, reload?: boolean) => {
@@ -83,7 +83,7 @@ function index(props: Props) {
     if (reload) {
       setServiceParams({
         ...serviceParams,
-        pageSize: 20,
+        pageSize: DEFAULT_LOGS_PAGE_SIZE,
       });
       form.setFieldsValue({
         refreshFlag: _.uniqueId('refreshFlag_'),
