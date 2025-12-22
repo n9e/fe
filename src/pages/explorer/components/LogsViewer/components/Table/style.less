@@ -56,5 +56,27 @@
     .rdg-row-detail {
       background-color: #22252b !important;
     }
+
+    /* 暗黑模式滚动条样式（仅作用于该组件） */
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #4b4f5c #1e1f25;
+
+    /* WebKit 浏览器 */
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #1e1f25;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #4b4f5c;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
   }
 }
