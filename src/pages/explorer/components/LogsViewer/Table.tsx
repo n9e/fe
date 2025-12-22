@@ -34,19 +34,17 @@ interface Props {
   tableColumnsWidthCacheKey?: string;
   /** 日志格式配置项 */
   options?: OptionsType;
-  updateOptions?: (options: OptionsType, reload?: boolean) => void;
-  /** 表格滚动配置 */
-  scroll?: { x: number | string; y: number | string };
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   filterFields?: (fieldKeys: string[]) => string[];
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
   /** 排序反转回调 */
   onReverseChange?: (reverse: boolean) => void;
+  onOpenOrganizeFieldsModal?: () => void;
 }
 
 function Table(props: Props) {
-  const { indexData, timeField, data, colWidths, tableColumnsWidthCacheKey, options, updateOptions, scroll, filterFields, onValueFilter, onReverseChange } = props;
+  const { indexData, timeField, data, colWidths, tableColumnsWidthCacheKey, options, filterFields, onValueFilter, onReverseChange, onOpenOrganizeFieldsModal } = props;
   const fields = useMemo(() => {
     const resolvedFields = getFieldsFromTableData(data);
     return filterFields ? filterFields(resolvedFields) : resolvedFields;
@@ -62,12 +60,12 @@ function Table(props: Props) {
         fields,
         timeField,
         options,
-        updateOptions,
         onValueFilter,
         data,
         tableColumnsWidthCacheKey,
+        onOpenOrganizeFieldsModal,
       }),
-    [columnDeps, updateOptions, onValueFilter],
+    [columnDeps, onValueFilter, onOpenOrganizeFieldsModal],
   );
   const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>(
     timeField

@@ -17,12 +17,12 @@ export default function getColumnsFromFields(params: {
   fields: string[];
   timeField?: string;
   options?: OptionsType;
-  updateOptions?: (options: any, reload?: boolean) => void;
   onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
   data?: any[];
   tableColumnsWidthCacheKey?: string;
+  onOpenOrganizeFieldsModal?: () => void;
 }) {
-  const { colWidths, indexData, fields, timeField: time_field, options, updateOptions, onValueFilter, data, tableColumnsWidthCacheKey } = params;
+  const { colWidths, indexData, fields, timeField: time_field, options, onValueFilter, data, tableColumnsWidthCacheKey, onOpenOrganizeFieldsModal } = params;
 
   let tableColumnsWidthCacheValue: { [index: string]: number | undefined } = {};
   if (tableColumnsWidthCacheKey) {
@@ -52,36 +52,17 @@ export default function getColumnsFromFields(params: {
       minWidth: (colWidths?.[item] || 160) + iconsWidth + 16, // 16 是表格内边距
       width: width ? width + iconsWidth + 16 : undefined,
       key: item,
+      headerCellClass: 'group',
       name: (
         <Space>
           {item}
-          {updateOptions && (
-            <>
-              {!_.includes(organizeFields, realName) && (
-                <PlusCircleOutlined
-                  onClick={() => {
-                    updateOptions({
-                      organizeFields: _.concat(organizeFields, realName),
-                    });
-                  }}
-                />
-              )}
-              <MinusCircleOutlined
-                onClick={() => {
-                  if (_.includes(organizeFields, realName)) {
-                    // 如果该字段已选，则移除
-                    updateOptions({
-                      organizeFields: _.filter(organizeFields, (field) => field !== realName),
-                    });
-                  } else {
-                    // 否则就反选
-                    updateOptions({
-                      organizeFields: _.filter(indexData ? _.map(indexData, 'field') : fields, (field) => field !== realName),
-                    });
-                  }
-                }}
-              />
-            </>
+          {onOpenOrganizeFieldsModal && (
+            <PlusCircleOutlined
+              className='invisible group-hover:visible'
+              onClick={() => {
+                onOpenOrganizeFieldsModal();
+              }}
+            />
           )}
         </Space>
       ),
