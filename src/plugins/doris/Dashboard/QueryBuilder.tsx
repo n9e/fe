@@ -55,7 +55,6 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                           </Form.Item>
                           {fields.length > 1 ? (
                             <DeleteOutlined
-                              style={{ marginLeft: 10 }}
                               onClick={() => {
                                 remove(field.name);
                               }}
