@@ -47,7 +47,7 @@ export default function SQLBuilder(props: Props) {
                     title: t('common:document_link'),
                     type: 'iframe',
                     documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                    anchor: '#时间宏',
+                    anchor: '#2-时间宏',
                   });
                 }}
               />
@@ -81,7 +81,7 @@ export default function SQLBuilder(props: Props) {
           placeholder={
             mode === 'raw'
               ? 'SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
-              : 'SELECT count(*) as count, $__timeGroup(timestamp, $__interval) as time FROM db_name.table_name WHERE $__timeFilter(`timestamp`) GROUP BY time'
+              : 'SELECT count(*) as count, $__timeGroup(timestamp, $__interval) as time FROM db_name.table_name WHERE $__timeFilter(`timestamp`) GROUP BY time ORDER BY time'
           }
           validateBeforeChange={(val) => {
             if (val && !val.includes('$__time') && !val.includes('$__unixEpoch')) {
@@ -212,7 +212,7 @@ export default function SQLBuilder(props: Props) {
                       title: t('common:document_link'),
                       type: 'iframe',
                       documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                      anchor: '#时间宏',
+                      anchor: '#2-时间宏',
                     });
                   }}
                 />
