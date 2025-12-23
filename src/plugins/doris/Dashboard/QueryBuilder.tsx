@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Radio } from 'antd';
+import { Form, Radio, Space } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import { alphabet } from '@/utils/constant';
 import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
 import AddQueryButtons from '@/pages/dashboard/Editor/Components/AddQueryButtons';
+import HideButton from '@/pages/dashboard/Components/HideButton';
 
 import { NAME_SPACE } from '../constants';
 import QueryStringBuilder from './QueryStringBuilder';
@@ -48,7 +49,10 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                       }
                       key={field.key}
                       extra={
-                        <div>
+                        <Space>
+                          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+                            <HideButton />
+                          </Form.Item>
                           {fields.length > 1 ? (
                             <DeleteOutlined
                               style={{ marginLeft: 10 }}
@@ -57,7 +61,7 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                               }}
                             />
                           ) : null}
-                        </div>
+                        </Space>
                       }
                     >
                       <Form.Item noStyle {...field} name={[field.name, 'refId']}>
