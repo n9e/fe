@@ -45,7 +45,9 @@ export const LinkTip = (t, collapse: boolean) => {
   }
   return (
     <>
-      <div>{t('日志中的字段均可被作为变量引用，如')}$key1，$key2，$a.b</div>
+      <div>
+        {t('日志中的字段均可被作为变量引用，如')}$key1，$key2，$a.b {t('tip3')}
+      </div>
       <div>{t('内置变量')}：</div>
       <ul style={{ paddingInlineStart: 24 }}>
         <li>
@@ -82,6 +84,23 @@ export const LinkTip = (t, collapse: boolean) => {
             }}
             onClick={() => {
               const address = '$local_url/dashboards/132?p1=$key1&p2=$key2&__from=$__from&__to=$__to';
+              copy2ClipBoard(address);
+            }}
+          >
+            {t('复制')}
+          </a>
+        </li>
+        <li style={{ marginTop: 8 }}>
+          {t('跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）')}:
+          $local_url/dashboards/132?__from=$__from&__to=$__to&p1=$key1&p2=$key2&__variable_value_fixed=true
+          <a
+            style={{
+              fontWeight: 'bold',
+              marginLeft: 5,
+              marginRight: 5,
+            }}
+            onClick={() => {
+              const address = '$local_url/dashboards/132?__from=$__from&__to=$__to&p1=$key1&p2=$key2&__variable_value_fixed=true';
               copy2ClipBoard(address);
             }}
           >

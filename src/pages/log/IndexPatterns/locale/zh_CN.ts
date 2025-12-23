@@ -1,4 +1,5 @@
 const zh_CN = {
+  tip3: '（仅当变量后紧跟 & 或位于 URL 末尾时可用），也支持${key3}（可用于任意位置）',
   unauthorized: '没有权限',
   title: '索引模式',
   name: '名称',
@@ -20,7 +21,7 @@ const zh_CN = {
   displayStyle: '展示样式',
   tip1: '其中{{value}}为指定字段的值，可在该变量的基础上增加信息。',
   'log-reg-extract': "e.g. address field 17:356:256291904:1740920581 after extraction by ':(d+)$', generates a new field phone 1740920581",
-  'link-tip-time-format': '默认单位为毫秒, 如需格式化可带入$__time_format__,格式包括 unix YYYY-MM-DD HH:mm:ss等',
+  'link-tip-time-format': '默认单位为毫秒，如需格式化可带入$__time_format__，格式包括 unix YYYY-MM-DD HH:mm:ss等',
   field: {
     alias1: '链接别名',
     fieldPlaceholder: '请选择字段',
