@@ -40,7 +40,7 @@ const en_US = {
       time_sort_asc: 'Ascending by time',
       all: 'All',
       custom: 'Custom',
-      custom_validated: 'The number of logs must be between 1-65535',
+      custom_validated: 'Count cannot exceed {{maxCount}}',
       all_quantity: 'Total approximately',
       createSuccess: 'Task created successfully',
     },

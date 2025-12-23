@@ -40,7 +40,7 @@ const ja_JP = {
       time_sort_asc: '時間昇順',
       all: '全て',
       custom: 'カスタム',
-      custom_validated: '数は1-65535の間でなければなりません',
+      custom_validated: '数値を超過できません{{maxCount}}',
       all_quantity: '合計約',
       createSuccess: 'タスク作成成功',
     },
