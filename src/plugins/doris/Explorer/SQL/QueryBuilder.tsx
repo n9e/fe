@@ -18,13 +18,14 @@ interface Props {
   executeQuery: () => void;
   datasourceValue: number;
   labelInfo?: React.ReactNode;
+  submode: string;
 }
 
 export default function QueryBuilder(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
-  const { extra, executeQuery, datasourceValue, labelInfo } = props;
+  const { extra, executeQuery, datasourceValue, labelInfo, submode } = props;
 
   return (
     <div style={{ width: '100%' }}>
@@ -47,12 +48,17 @@ export default function QueryBuilder(props: Props) {
             ]}
           >
             <LogQL
+              key={submode}
               datasourceCate={DatasourceCateEnum.doris}
               datasourceValue={datasourceValue}
               query={{}}
               historicalRecords={[]}
               onPressEnter={executeQuery}
-              placeholder='SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
+              placeholder={
+                submode === 'raw'
+                  ? 'SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
+                  : 'SELECT count(*) as cnt, $__timeGroup(timestamp, 1m) as time FROM db_name.table_name $__timeFilter(timestamp) GROUP BY time'
+              }
             />
           </Form.Item>
         </InputGroupWithFormItem>
