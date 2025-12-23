@@ -40,7 +40,7 @@ const zh_CN = {
       time_sort_asc: '时间升序',
       all: '全部',
       custom: '自定义',
-      custom_validated: '数量必须在1-65535之间',
+      custom_validated: '数量不能超过{{maxCount}}',
       all_quantity: '总数约',
       createSuccess: '任务创建成功',
     },

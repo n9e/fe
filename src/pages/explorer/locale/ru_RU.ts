@@ -40,7 +40,7 @@ const ru_RU = {
       time_sort_asc: 'Сортировка по возрастанию',
       all: 'Все',
       custom: 'Пользовательский',
-      custom_validated: 'Количество должно быть от 1 до 65535',
+      custom_validated: 'Количество не может превышать {{maxCount}}',
       all_quantity: 'Общее количество',
       createSuccess: 'Задача создана успешно',
     },
