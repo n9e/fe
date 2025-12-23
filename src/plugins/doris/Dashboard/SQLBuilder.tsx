@@ -72,12 +72,17 @@ export default function SQLBuilder(props: Props) {
         style={{ flex: 1 }}
       >
         <LogQL
+          key={mode}
           datasourceCate={DatasourceCateEnum.doris}
           datasourceValue={datasourceValue}
           query={{}}
           historicalRecords={[]}
           validateTrigger={[]}
-          placeholder='SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
+          placeholder={
+            mode === 'raw'
+              ? 'SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
+              : 'SELECT count(*) as count, $__timeGroup(timestamp, $__interval) as time FROM db_name.table_name WHERE $__timeFilter(`timestamp`) GROUP BY time'
+          }
           validateBeforeChange={(val) => {
             if (val && !val.includes('$__time') && !val.includes('$__unixEpoch')) {
               queryValueRef.current = val;
