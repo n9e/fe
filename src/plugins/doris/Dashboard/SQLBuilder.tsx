@@ -47,7 +47,7 @@ export default function SQLBuilder(props: Props) {
                     title: t('common:document_link'),
                     type: 'iframe',
                     documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                    anchor: '#时间宏',
+                    anchor: '#2-时间宏',
                   });
                 }}
               />
@@ -212,7 +212,7 @@ export default function SQLBuilder(props: Props) {
                       title: t('common:document_link'),
                       type: 'iframe',
                       documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                      anchor: '#时间宏',
+                      anchor: '#2-时间宏',
                     });
                   }}
                 />
