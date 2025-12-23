@@ -57,7 +57,7 @@ export default function QueryBuilder(props: Props) {
               placeholder={
                 submode === 'raw'
                   ? 'SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
-                  : 'SELECT count(*) as cnt, $__timeGroup(timestamp, 1m) as time FROM db_name.table_name $__timeFilter(timestamp) GROUP BY time'
+                  : 'SELECT count(*) as cnt, $__timeGroup(timestamp, 1m) as time FROM db_name.table_name WHERE $__timeFilter(timestamp) GROUP BY time'
               }
             />
           </Form.Item>
