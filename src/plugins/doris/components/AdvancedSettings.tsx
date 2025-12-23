@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Row, Col, Form, Tooltip, Select, Space } from 'antd';
+import { Row, Col, Form, Tooltip, Select, Space, InputNumber } from 'antd';
 import { DownOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
+
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
+
 import { NAME_SPACE } from '../constants';
 
 interface IProps {
@@ -17,11 +19,12 @@ interface IProps {
   onChange?: (key: string, value: any) => void;
   options?: any[];
   showUnit?: boolean;
+  showOffset?: boolean;
 }
 
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { span = 6, prefixField = {}, prefixName = [], disabled, expandTriggerVisible = true, onChange, options = [], showUnit } = props;
+  const { span = 6, prefixField = {}, prefixName = [], disabled, expandTriggerVisible = true, onChange, options = [], showUnit, showOffset } = props;
   const [open, setOpen] = useState(!!props.expanded);
 
   return (
@@ -104,8 +107,36 @@ function AdvancedSettings(props: IProps) {
             {showUnit && (
               <Col span={span}>
                 <InputGroupWithFormItem label={t('common:unit')}>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'unit']} initialValue='none' noStyle>
+                  <Form.Item {...prefixField} name={[...prefixName, 'unit']} initialValue='none' noStyle>
                     <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </Col>
+            )}
+            {showOffset && (
+              <Col span={span}>
+                <InputGroupWithFormItem
+                  label={
+                    <Space>
+                      {t('query.offset')}
+                      <Tooltip
+                        title={
+                          <Trans
+                            ns={NAME_SPACE}
+                            i18nKey='query.offset_tip'
+                            components={{
+                              br: <br />,
+                            }}
+                          />
+                        }
+                      >
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+                    </Space>
+                  }
+                >
+                  <Form.Item {...prefixField} name={[...prefixName, 'offset']} initialValue={0}>
+                    <InputNumber addonAfter={t('common:time.second')} min={0} className='w-full' />
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>

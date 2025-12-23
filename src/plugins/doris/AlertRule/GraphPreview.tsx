@@ -8,7 +8,19 @@ import getTextWidth from '@/utils/getTextWidth';
 import { logQuery } from '../services';
 import { getFields } from '../utils';
 
-export default function GraphPreview({ cate, datasourceValue, sql, database }: { cate: string; datasourceValue: number; sql: string; database?: string }) {
+export default function GraphPreview({
+  cate,
+  datasourceValue,
+  sql,
+  database,
+  interval,
+}: {
+  cate: string;
+  datasourceValue: number;
+  sql: string;
+  database?: string;
+  interval?: number;
+}) {
   const { t } = useTranslation('db_doris');
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -19,7 +31,7 @@ export default function GraphPreview({ cate, datasourceValue, sql, database }: {
       logQuery({
         cate,
         datasource_id: datasourceValue,
-        query: [{ sql, database }],
+        query: [{ sql, database, interval }],
       })
         .then((res) => {
           setData(res.list || []);

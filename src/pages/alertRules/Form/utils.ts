@@ -358,6 +358,23 @@ export function getDefaultValuesByCate(prod, cate) {
       ...datasourceDefaultValue,
     };
   }
+  if (cate === DatasourceCateEnum.doris) {
+    return {
+      prod,
+      cate,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            ref: 'A',
+            interval: 1,
+            interval_unit: 'min',
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
+    };
+  }
   if (IS_PLUS) {
     if (_.isFunction(alertUtils.getDefaultValuesByCate)) {
       return alertUtils.getDefaultValuesByCate(prod, cate);

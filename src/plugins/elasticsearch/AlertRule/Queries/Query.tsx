@@ -168,7 +168,7 @@ export default function Query(props: Props) {
             <Col span={5}>
               <Input.Group>
                 <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
-                <Form.Item {...field} name={[field.name, 'interval']} noStyle>
+                <Form.Item {...field} name={[field.name, 'interval']} noStyle initialValue={1}>
                   <InputNumber disabled={disabled} style={{ width: '100%' }} min={0} />
                 </Form.Item>
                 <span className='ant-input-group-addon'>
