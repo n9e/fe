@@ -16,21 +16,19 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
-import { Form, Row, Col, Card, Space, Input, Tooltip, Select } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Form, Card, Space } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { alphabet, IS_PLUS } from '@/utils/constant';
+import { alphabet } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
-import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import QueryName, { generateQueryName } from '@/components/QueryName';
 
-import AdvancedSettings from './AdvancedSettings';
-import GraphPreview from './GraphPreview';
 import { getDorisDatabases } from '../services';
+import { NAME_SPACE } from '../constants';
+import Query from './Query';
 
 const DATASOURCE_ALL = 0;
 
@@ -40,12 +38,11 @@ function getFirstDatasourceId(datasourceIds: number[] = [], datasourceList: { id
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[]; disabled: boolean }) {
   const { datasourceCate, datasourceValue, disabled } = props;
-  const { t } = useTranslation('db_doris');
+  const { t } = useTranslation(NAME_SPACE);
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const curDatasourceList = groupedDatasourceList[datasourceCate] || [];
   const datasourceId = getFirstDatasourceId(datasourceValue, curDatasourceList);
   const [dbList, setDbList] = useState<string[]>([]);
-  const queries = Form.useWatch(['rule_config', 'queries']);
 
   useEffect(() => {
     if (!datasourceId) return;
@@ -79,61 +76,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
             >
               <div className='alert-rule-triggers-container'>
                 {fields.map((field) => (
-                  <div key={field.key} className='alert-rule-trigger-container'>
-                    <Row gutter={8} wrap={false}>
-                      <Col flex='none'>
-                        <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
-                          <QueryName existingNames={_.map(queries, 'ref')} />
-                        </Form.Item>
-                      </Col>
-                      <Col flex='none'>
-                        <InputGroupWithFormItem label={t('query.database')}>
-                          <Form.Item {...field} name={[field.name, 'database']}>
-                            <Select style={{ width: 200 }} disabled={disabled}>
-                              {dbList.map((db) => (
-                                <Select.Option key={db} value={db}>
-                                  {db}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                        </InputGroupWithFormItem>
-                      </Col>
-                      <Col flex='auto'>
-                        <InputGroupWithFormItem
-                          label={
-                            <Space>
-                              SQL
-                              <Tooltip title={t('query.query_tip')}>
-                                <QuestionCircleOutlined />
-                              </Tooltip>
-                            </Space>
-                          }
-                        >
-                          <Form.Item
-                            {...field}
-                            name={[field.name, 'sql']}
-                            validateTrigger={['onBlur']}
-                            trigger='onChange'
-                            rules={[{ required: true, message: t('datasource:query.query_required') }]}
-                          >
-                            <Input placeholder={t('query.query_placeholder')} disabled={disabled}></Input>
-                          </Form.Item>
-                        </InputGroupWithFormItem>
-                      </Col>
-                    </Row>
-                    <AdvancedSettings prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} />
-                    <CloseCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
-                    <Form.Item shouldUpdate noStyle>
-                      {({ getFieldValue }) => {
-                        const cate = getFieldValue('cate');
-                        const sql = getFieldValue(['rule_config', 'queries', field.name, 'sql']);
-                        const database = getFieldValue(['rule_config', 'queries', field.name, 'database']);
-
-                        return <GraphPreview cate={cate} datasourceValue={datasourceId} sql={sql} database={database} />;
-                      }}
-                    </Form.Item>
-                  </div>
+                  <Query key={field.key} datasourceId={datasourceId} field={field} dbList={dbList} disabled={disabled} remove={remove} />
                 ))}
               </div>
             </Card>

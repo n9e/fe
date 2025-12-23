@@ -58,6 +58,15 @@ const en_US = {
     stack_tip_pin: 'Enable stacked chart',
     stack_tip_unpin: 'Disable stacked chart',
     sql_format: 'SQL Format',
+    interval: 'Interval',
+    interval_tip:
+      'The query interval configuration will only take effect when the $__timeFilter time macro is used in the SQL.<br />The alerting system will limit the data scanning range based on this time window to ensure alert timeliness and database performance',
+    offset: 'Offset',
+    offset_tip:
+      'On the basis of the current query time, offset a specified number of seconds forward before executing the query, similar to offset in PromQL.<br />It is commonly used to handle scenarios such as data write delay and link delay to avoid alert misreporting due to data not arriving in time',
+    sql_warning_1:
+      'It is strongly recommended to use $__timeFilter(time field) in the WHERE condition to explicitly limit the time range, otherwise it may lead to issues such as: <b>abnormal database load, alert query timeout</b>',
+    sql_warning_2: 'The SQL uses $__timeGroup, which will return data for multiple time points. In this scenario, <b>the system only uses the results of the latest time point</b>',
   },
   logs: {
     title: 'Logs',
