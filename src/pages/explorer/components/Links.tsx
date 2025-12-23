@@ -157,6 +157,7 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
   }
   const unReplaceKeyReg = /\$\{(.+?)\}/g;
   const valueWithExtract = _.cloneDeep(rawValue);
+  // 把extractArr中的field merge到了rawValue中
   regExtractArr?.forEach((i) => {
     const { field, newField, reg } = i;
     const fieldValueWholeWord = valueWithExtract[field];
@@ -166,10 +167,12 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
       valueWithExtract[newField] = arr[1];
     }
   });
+  // 第一次替换：${fieldName} 格式
   reallink = reallink.replace(unReplaceKeyReg, function (a, b) {
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
+  // 第二次替换：$fieldName 格式，到 & 或结尾为止
   const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
     const wholeWord = valueWithExtract[b];

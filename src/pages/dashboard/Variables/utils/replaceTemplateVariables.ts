@@ -23,13 +23,15 @@ export default function replaceTemplateVariables(
     scopedVars?: { [key: string]: any };
   },
 ) {
+  // 如果 str 为空，如果没有包含变量则直接返回
+  if (!str || !_.includes(str, '$')) {
+    return str;
+  }
+
   const variablesWithOptions = getGlobalState('variablesWithOptions');
   const globalRange = getGlobalState('range');
   const { scopedVars } = params || {};
   const range = params?.range ?? globalRange;
-  if (!str || !variablesWithOptions || variablesWithOptions.length === 0) {
-    return str;
-  }
 
   let extVariables: IVariable[] = getBuiltInVariables(range, params);
 
