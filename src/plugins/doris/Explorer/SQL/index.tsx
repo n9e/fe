@@ -118,6 +118,7 @@ export default function index(props: Props) {
               }}
             />
           }
+          submode={submode}
         />
         <Content submode={submode} setExecuteLoading={setExecuteLoading} />
       </div>
