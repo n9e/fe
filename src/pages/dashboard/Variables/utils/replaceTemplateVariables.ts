@@ -47,7 +47,7 @@ export default function replaceTemplateVariables(
     );
   }
 
-  const data = adjustData(_.concat(variablesWithOptions, extVariables), {
+  const data = adjustData(_.concat(variablesWithOptions ?? [], extVariables), {
     datasourceList: [],
   });
   const result = formatString(str, data);
