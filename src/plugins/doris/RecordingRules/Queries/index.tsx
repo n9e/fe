@@ -137,7 +137,7 @@ export default function index(props: IProps) {
         </Col>
       </Row>
       <AdvancedSettings prefixField={field} prefixName={path} disabled={disabled} expanded showOffset span={8} />
-      <GraphPreview cate={cate} datasourceValue={datasourceValue} sql={query?.sql} interval={intervalValue} />
+      <GraphPreview cate={cate} datasourceValue={datasourceValue} sql={query?.sql} interval={intervalValue} offset={query?.offset} />
     </>
   );
 }

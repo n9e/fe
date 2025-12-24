@@ -14,12 +14,14 @@ export default function GraphPreview({
   sql,
   database,
   interval,
+  offset,
 }: {
   cate: string;
   datasourceValue: number;
   sql: string;
   database?: string;
   interval?: number;
+  offset?: string;
 }) {
   const { t } = useTranslation('db_doris');
   const divRef = useRef<HTMLDivElement>(null);
@@ -31,7 +33,7 @@ export default function GraphPreview({
       logQuery({
         cate,
         datasource_id: datasourceValue,
-        query: [{ sql, database, interval }],
+        query: [{ sql, database, interval, offset }],
       })
         .then((res) => {
           setData(res.list || []);

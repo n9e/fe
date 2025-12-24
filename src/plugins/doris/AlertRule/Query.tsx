@@ -152,8 +152,9 @@ export default function Query(props: Props) {
           const interval = getFieldValue(['rule_config', 'queries', field.name, 'interval']);
           const interval_unit = getFieldValue(['rule_config', 'queries', field.name, 'interval_unit']);
           const intervalValue = normalizeTime(interval, interval_unit);
+          const offset = getFieldValue(['rule_config', 'queries', field.name, 'offset']);
 
-          return <GraphPreview cate={cate} datasourceValue={datasourceId} sql={sql} database={database} interval={intervalValue} />;
+          return <GraphPreview cate={cate} datasourceValue={datasourceId} sql={sql} database={database} interval={intervalValue} offset={offset} />;
         }}
       </Form.Item>
     </div>
