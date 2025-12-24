@@ -33,6 +33,7 @@ import { CommonStateContext } from '@/App';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
+import ViewSelect from '@/components/ViewSelect';
 
 import { useGlobalState } from './globalState';
 import Prometheus from './Prometheus';
@@ -45,6 +46,12 @@ import './index.less';
 import PlusExplorer from 'plus:/parcels/Explorer';
 
 type Type = 'logging' | 'metric';
+
+interface Query {
+  datasourceCate: string;
+  datasourceValue: number;
+  [key: string]: string | number;
+}
 
 interface IProps {
   tabKey: string;
@@ -106,6 +113,26 @@ const Panel = (props: IProps) => {
         <div className='explorer-content'>
           <Row gutter={8}>
             <Col flex='none'>
+              <ViewSelect<Query>
+                page='logs-explorer'
+                getFilterValuesJSONString={() => {
+                  return JSON.stringify({});
+                }}
+                renderOptionExtra={(filterValues) => {
+                  const { datasourceCate, datasourceValue } = filterValues;
+                  return (
+                    <div className='flex items-center gap-2'>
+                      <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
+                      <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
+                    </div>
+                  );
+                }}
+                onSelect={(filterValues) => {
+                  console.log(filterValues);
+                }}
+              />
+            </Col>
+            <Col flex='none'>
               <>
                 <Form.Item name='datasourceCate' hidden>
                   <div />
@@ -164,7 +191,6 @@ const Panel = (props: IProps) => {
                 </InputGroupWithFormItem>
               </>
             </Col>
-
             <Col flex='auto'>
               <div ref={headerExtraRef} />
             </Col>
