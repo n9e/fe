@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, Form, Radio, message } from 'antd';
+import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, message } from 'antd';
 import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, MoreOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
 import _ from 'lodash';
 
-import { View, getViews, updateView, deleteView } from './services';
+import { View, getViews, updateView, deleteView, postViewFavorite, deleteViewFavorite } from './services';
 import { ModalStat } from './types';
 import FormModal from './FormModal';
 
@@ -222,25 +222,62 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
 
               return {
                 label: (
-                  <div key={item.id} className='group'>
+                  <div key={item.id} className='group/option'>
                     <div className='flex items-center justify-between gap-2'>
-                      <div className='flex-1 min-w-0 flex items-center gap-2'>
-                        {item.is_favorite ? (
-                          <StarFilled
-                            style={{
-                              color: '#FAAD14',
-                            }}
-                          />
-                        ) : (
-                          <StarOutlined />
-                        )}
+                      <div className='flex-1 min-w-0 flex items-center gap-2 group/icon'>
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (item.is_favorite) {
+                              deleteViewFavorite(item.id).then(() => {
+                                message.success(t('delete_favorite'));
+                                run();
+                              });
+                            } else {
+                              postViewFavorite(item.id).then(() => {
+                                message.success(t('post_favorite'));
+                                run();
+                              });
+                            }
+                          }}
+                        >
+                          {item.is_favorite ? (
+                            <StarFilled className='text-amber-400 group-hover/icon:text-amber-500' />
+                          ) : (
+                            <StarOutlined className='group-hover/icon:text-amber-400' />
+                          )}
+                        </span>
                         <span className='flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap'>{item.name}</span>
                       </div>
                       <Space className='flex-shrink-0'>
                         <Tag className='m-0'>{t(`public_cate_${item.public_cate}`)}</Tag>
-                        <Space className='invisible group-hover:visible'>
-                          <EditOutlined />
-                          <DeleteOutlined />
+                        <Space className='invisible group-hover/option:visible'>
+                          <EditOutlined
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setModalState({
+                                visible: true,
+                                action: 'edit',
+                                values: item,
+                              });
+                            }}
+                          />
+                          <DeleteOutlined
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              Modal.confirm({
+                                title: t('confirm_delete'),
+                                onOk: () => {
+                                  if (selected) {
+                                    deleteView(selected).then(() => {
+                                      message.success(t('common:success.delete'));
+                                      run();
+                                    });
+                                  }
+                                },
+                              });
+                            }}
+                          />
                         </Space>
                       </Space>
                     </div>

@@ -14,5 +14,7 @@ const zh_CN = {
   public_cate_2: '全员可见',
   search_placeholder: '搜索视图',
   gids: '团队',
+  post_favorite: '收藏视图成功',
+  delete_favorite: '取消收藏视图成功',
 };
 export default zh_CN;

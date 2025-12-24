@@ -34,3 +34,17 @@ export function deleteView(id: number) {
     data: { id },
   });
 }
+
+export function postViewFavorite(id: number) {
+  return request(`/api/n9e/saved-view/${id}/favorite`, {
+    method: RequestMethod.Post,
+    data: { id },
+  });
+}
+
+export function deleteViewFavorite(id: number) {
+  return request(`/api/n9e/saved-view/${id}/favorite`, {
+    method: RequestMethod.Delete,
+    data: { id },
+  });
+}
