@@ -16,22 +16,21 @@ export function getViews(page: string): Promise<View[]> {
 
 export function postView(data: View) {
   return request('/api/n9e/saved-views', {
-    method: RequestMethod.Delete,
+    method: RequestMethod.Post,
     data: _.omit(data, ['id', 'is_favorite']),
   });
 }
 
 export function updateView(data: View) {
   return request(`/api/n9e/saved-view/${data.id}`, {
-    method: RequestMethod.Delete,
+    method: RequestMethod.Put,
     data: _.omit(data, ['id', 'is_favorite']),
   });
 }
 
 export function deleteView(id: number) {
-  return request('/api/n9e/saved-views', {
+  return request(`/api/n9e/saved-view/${id}`, {
     method: RequestMethod.Delete,
-    data: { id },
   });
 }
 

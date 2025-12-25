@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, message } from 'antd';
+import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, Badge, message, Tooltip } from 'antd';
 import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, MoreOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
@@ -8,17 +8,22 @@ import _ from 'lodash';
 import { View, getViews, updateView, deleteView, postViewFavorite, deleteViewFavorite } from './services';
 import { ModalStat } from './types';
 import FormModal from './FormModal';
+import DropdownTrigger from './DropdownTrigger';
 
 interface Props<FilterValues> {
+  disabled?: boolean;
   page: string;
   getFilterValuesJSONString: () => string;
   renderOptionExtra: (filterValues: FilterValues) => React.ReactNode;
   onSelect?: (filterValues: FilterValues) => void;
+
+  oldFilterValues?: FilterValues;
+  adjustOldFilterValues?: (values: any) => any;
 }
 
 export default function index<FilterValues>(props: Props<FilterValues>) {
   const { t } = useTranslation('viewSelect');
-  const { page, getFilterValuesJSONString, renderOptionExtra, onSelect } = props;
+  const { disabled, page, getFilterValuesJSONString, renderOptionExtra, onSelect, oldFilterValues, adjustOldFilterValues } = props;
   const selectDropdownContainer = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [filters, setFilters] = useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
@@ -27,80 +32,6 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
   });
 
   const service = () => {
-    return Promise.resolve([
-      {
-        id: 1,
-        name: '示例视图',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 0,
-        is_favorite: false,
-      },
-      {
-        id: 2,
-        name: '示例视2',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 1,
-        is_favorite: true,
-      },
-      {
-        id: 3,
-        name: '示例视3示例视3示例视3示例视3示例视3示例视3',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 2,
-        is_favorite: true,
-      },
-      {
-        id: 4,
-        name: '示例视图',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 0,
-        is_favorite: false,
-      },
-      {
-        id: 5,
-        name: '示例视2',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 1,
-        is_favorite: true,
-      },
-      {
-        id: 6,
-        name: '示例视3示例视3示例视3示例视3示例视3示例视3',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 2,
-        is_favorite: true,
-      },
-      {
-        id: 7,
-        name: '示例视图',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 0,
-        is_favorite: false,
-      },
-      {
-        id: 8,
-        name: '示例视2',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 1,
-        is_favorite: true,
-      },
-      {
-        id: 9,
-        name: '示例视3示例视3示例视3示例视3示例视3示例视3',
-        page: 'logs-explorer',
-        filter: '{ "datasourceCate": "doris", "datasourceValue": 10049 }',
-        public_cate: 2,
-        is_favorite: true,
-      },
-    ] as View[]);
     return getViews(page);
   };
   const {
@@ -124,11 +55,26 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
     });
   }, [_.map(_.sortBy(views, 'id'), 'id'), filters]);
 
+  const filterValues = useMemo(() => {
+    if (selected) {
+      const finded = _.find(views, { id: selected });
+      if (finded) {
+        try {
+          return JSON.parse(finded.filter);
+        } catch (e) {
+          console.warn('parse filter error', e);
+        }
+      }
+    }
+    return {} as FilterValues;
+  }, [selected, views]);
+
   return (
-    <>
+    <Tooltip title={disabled ? t('tip') : undefined}>
       <Input.Group compact className='input-group-with-form-item'>
         <div className='input-group-with-form-item-content'>
           <Select
+            disabled={disabled}
             placeholder={t('placeholder')}
             className='w-full max-w-[160px]'
             dropdownMatchSelectWidth={false}
@@ -268,12 +214,13 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                               Modal.confirm({
                                 title: t('confirm_delete'),
                                 onOk: () => {
-                                  if (selected) {
-                                    deleteView(selected).then(() => {
-                                      message.success(t('common:success.delete'));
-                                      run();
-                                    });
-                                  }
+                                  deleteView(item.id).then(() => {
+                                    message.success(t('common:success.delete'));
+                                    run();
+                                    if (selected === item.id) {
+                                      setSelected(undefined);
+                                    }
+                                  });
                                 },
                               });
                             }}
@@ -308,6 +255,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
           />
         </div>
         <Dropdown
+          disabled={disabled}
           overlay={
             <Menu
               items={[
@@ -384,6 +332,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                         deleteView(selected).then(() => {
                           message.success(t('common:success.delete'));
                           run();
+                          setSelected(undefined);
                         });
                       }
                     },
@@ -394,10 +343,10 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
           }
           placement='topLeft'
         >
-          <Button icon={<MoreOutlined className='w-[32px]' />} />
+          <DropdownTrigger disabled={disabled} filterValues={filterValues} oldFilterValues={oldFilterValues} adjustOldFilterValues={adjustOldFilterValues} />
         </Dropdown>
       </Input.Group>
-      <FormModal modalStat={modalStat} setModalState={setModalState} getFilterValuesJSONString={getFilterValuesJSONString} run={run} />
-    </>
+      <FormModal page={page} modalStat={modalStat} setModalState={setModalState} getFilterValuesJSONString={getFilterValuesJSONString} run={run} />
+    </Tooltip>
   );
 }

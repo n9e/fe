@@ -1,4 +1,5 @@
 const zh_CN = {
+  tip: '目前只支持 Prometheus, Doris 数据源的视图功能',
   placeholder: '筛选视图',
   save_new: '保存为新视图',
   save: '保存视图',

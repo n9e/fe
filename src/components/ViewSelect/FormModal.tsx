@@ -9,6 +9,7 @@ import { postView, updateView } from './services';
 import { ModalStat } from './types';
 
 interface Props {
+  page: string;
   modalStat: ModalStat;
   setModalState: React.Dispatch<React.SetStateAction<ModalStat>>;
   getFilterValuesJSONString: () => string;
@@ -17,7 +18,7 @@ interface Props {
 
 export default function FormModal(props: Props) {
   const { t } = useTranslation('viewSelect');
-  const { modalStat, setModalState, getFilterValuesJSONString, run } = props;
+  const { page, modalStat, setModalState, getFilterValuesJSONString, run } = props;
   const [form] = Form.useForm();
   const publicCate = Form.useWatch('public_cate', form);
   const [teamList, setTeamList] = React.useState<{ id: number; name: string }[]>([]);
@@ -80,6 +81,9 @@ export default function FormModal(props: Props) {
       destroyOnClose
     >
       <Form layout='vertical' form={form}>
+        <Form.Item name='page' rules={[{ required: true }]} hidden initialValue={page}>
+          <Input />
+        </Form.Item>
         <Form.Item label={t('name')} name='name' rules={[{ required: true }]}>
           <Input placeholder={t('name_placeholder')} />
         </Form.Item>
@@ -90,7 +94,7 @@ export default function FormModal(props: Props) {
             <Radio value={2}>{t('public_cate_2')}</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item label={t('gids')} name='gids' rules={[{ required: true }]} hidden={publicCate !== 1}>
+        <Form.Item label={t('gids')} name='gids' rules={[{ required: publicCate === 1 }]} hidden={publicCate !== 1}>
           <Select mode='multiple' options={_.map(teamList, (team) => ({ label: team.name, value: team.id }))} showSearch optionFilterProp='label' />
         </Form.Item>
       </Form>
