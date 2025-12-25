@@ -56,7 +56,11 @@ const ja_JP = {
     stack_disabled_tip: 'ユニークな値の数が1または10を超える場合、積み上げグラフはサポートされていません',
     stack_tip_pin: '積み上げグラフを有効にする',
     stack_tip_unpin: '積み上げグラフを無効にする',
+    stack_group_by_tip: 'このフィールド値で積み上げ傾向グラフを表示する',
     sql_format: 'SQLフォーマット',
+    default_search_tip_1: 'デフォルトの検索フィールドとして設定',
+    default_search_tip_2: 'デフォルトの検索フィールドをキャンセル',
+    default_search_by_tip: 'デフォルトの検索フィールド',
   },
   logs: {
     title: 'ログデータ',

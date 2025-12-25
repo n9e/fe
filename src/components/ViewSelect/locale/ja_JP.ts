@@ -1,2 +1,21 @@
-const ja_JP = {};
+const ja_JP = {
+  tip: '現在、ビュー機能は Prometheus と Doris のデータソースのみをサポートしています',
+  placeholder: 'ビューを絞り込む',
+  save_new: '新規ビューとして保存',
+  save: 'ビューを保存',
+  edit: 'ビューを編集',
+  delete: 'ビューを削除',
+  confirm_delete: 'このビューを削除してもよろしいですか？',
+  name: 'ビュー名',
+  name_placeholder: 'ビュー名を入力してください',
+  public_cate: '公開範囲',
+  public_cate_placeholder: 'すべて',
+  public_cate_0: '自分のみ',
+  public_cate_1: 'チームに公開',
+  public_cate_2: '全員に公開',
+  search_placeholder: 'ビューを検索',
+  gids: 'チーム',
+  post_favorite: 'ビューをお気に入りに追加しました',
+  delete_favorite: 'ビューをお気に入りから削除しました',
+};
 export default ja_JP;

@@ -57,7 +57,11 @@ const en_US = {
     stack_disabled_tip: 'Stacked charts are not supported when the number of unique values is 1 or exceeds 10',
     stack_tip_pin: 'Enable stacked chart',
     stack_tip_unpin: 'Disable stacked chart',
+    stack_group_by_tip: 'Display stacked trend chart by this field value',
     sql_format: 'SQL Format',
+    default_search_tip_1: 'Set as default search field',
+    default_search_tip_2: 'Cancel default search field',
+    default_search_by_tip: 'Default search field',
   },
   logs: {
     title: 'Logs',

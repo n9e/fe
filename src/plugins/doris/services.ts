@@ -113,6 +113,7 @@ export function getDorisHistogram(data: {
       to: number;
       query: string;
       group_by?: string;
+      default_field?: string;
     },
   ];
 }): Promise<any[]> {
@@ -136,6 +137,7 @@ export function getDorisLogsQuery(data: {
       lines: number;
       offset: number;
       reverse: boolean;
+      default_field?: string;
     },
   ];
 }): Promise<{

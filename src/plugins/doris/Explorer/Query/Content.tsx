@@ -21,7 +21,7 @@ import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 import { getDorisLogsQuery, Field, getDorisHistogram } from '../../services';
 import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../constants';
-import { getLocalstorageOptions, setLocalstorageOptions, filteredFields, getPinIndexFromLocalstorage } from '../utils';
+import { getLocalstorageOptions, setLocalstorageOptions, filteredFields, getPinIndexFromLocalstorage, getDefaultSearchIndexFromLocalstorage } from '../utils';
 import FieldsSidebar from './FieldsSidebar';
 
 interface Props {
@@ -58,6 +58,13 @@ function index(props: Props) {
   });
   const [pinIndex, setPinIndex] = useState<Field | undefined>(
     getPinIndexFromLocalstorage({
+      datasourceValue,
+      database: queryValues?.database,
+      table: queryValues?.table,
+    }),
+  );
+  const [defaultSearchIndex, setDefaultSearchIndex] = useState<Field | undefined>(
+    getDefaultSearchIndexFromLocalstorage({
       datasourceValue,
       database: queryValues?.database,
       table: queryValues?.table,
@@ -138,6 +145,7 @@ function index(props: Props) {
             lines: serviceParams.pageSize,
             offset: (serviceParams.current - 1) * serviceParams.pageSize,
             reverse: serviceParams.reverse,
+            default_field: defaultSearchIndex?.field,
           },
         ],
       })
@@ -201,7 +209,7 @@ function index(props: Props) {
     },
     any
   >(service, {
-    refreshDeps: [refreshFlag, JSON.stringify(serviceParams)],
+    refreshDeps: [refreshFlag, JSON.stringify(serviceParams), defaultSearchIndex],
   });
 
   const histogramService = () => {
@@ -220,6 +228,7 @@ function index(props: Props) {
             to: moment(range.end).unix(),
             query: queryValues.query,
             group_by: pinIndex?.field,
+            default_field: defaultSearchIndex?.field,
           },
         ],
       })
@@ -258,7 +267,7 @@ function index(props: Props) {
     },
     any
   >(histogramService, {
-    refreshDeps: [refreshFlag, pinIndex],
+    refreshDeps: [refreshFlag, pinIndex, defaultSearchIndex],
   });
 
   useEffect(() => {
@@ -319,6 +328,8 @@ function index(props: Props) {
           setOptions={updateOptions}
           pinIndex={pinIndex}
           setPinIndex={setPinIndex}
+          defaultSearchIndex={defaultSearchIndex}
+          setDefaultSearchIndex={setDefaultSearchIndex}
         />
       </div>
       <div className='min-h-0 min-w-0 w-full border border-antd rounded-sm flex flex-col relative'>

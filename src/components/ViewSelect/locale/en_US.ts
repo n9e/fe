@@ -1,2 +1,21 @@
-const en_US = {};
+const en_US = {
+  tip: 'Currently, the view feature only supports Prometheus and Doris data sources',
+  placeholder: 'Filter views',
+  save_new: 'Save as new view',
+  save: 'Save view',
+  edit: 'Edit view',
+  delete: 'Delete view',
+  confirm_delete: 'Are you sure you want to delete this view?',
+  name: 'View name',
+  name_placeholder: 'Please enter a view name',
+  public_cate: 'Visibility',
+  public_cate_placeholder: 'All',
+  public_cate_0: 'Only me',
+  public_cate_1: 'Team visible',
+  public_cate_2: 'Visible to everyone',
+  search_placeholder: 'Search views',
+  gids: 'Team',
+  post_favorite: 'Added view to favorites successfully',
+  delete_favorite: 'Removed view from favorites successfully',
+};
 export default en_US;
