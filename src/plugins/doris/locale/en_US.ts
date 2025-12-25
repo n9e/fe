@@ -57,6 +57,7 @@ const en_US = {
     stack_disabled_tip: 'Stacked charts are not supported when the number of unique values is 1 or exceeds 10',
     stack_tip_pin: 'Enable stacked chart',
     stack_tip_unpin: 'Disable stacked chart',
+    stack_group_by_tip: 'Display stacked trend chart by this field value',
     sql_format: 'SQL Format',
     interval: 'Interval',
     interval_tip:
@@ -67,6 +68,9 @@ const en_US = {
     sql_warning_1:
       'It is strongly recommended to use $__timeFilter(time field) in the WHERE condition to explicitly limit the time range, otherwise it may lead to issues such as: <b>abnormal database load, alert query timeout</b>',
     sql_warning_2: 'The SQL uses $__timeGroup, which will return data for multiple time points. In this scenario, <b>the system only uses the results of the latest time point</b>',
+    default_search_tip_1: 'Set as default search field',
+    default_search_tip_2: 'Cancel default search field',
+    default_search_by_tip: 'Default search field',
   },
   logs: {
     title: 'Logs',

@@ -1,0 +1,21 @@
+const zh_HK = {
+  tip: '目前只支援 Prometheus、Doris 數據源的視圖功能',
+  placeholder: '篩選視圖',
+  save_new: '儲存為新視圖',
+  save: '儲存視圖',
+  edit: '編輯視圖',
+  delete: '刪除視圖',
+  confirm_delete: '確認刪除該視圖嗎？',
+  name: '視圖名稱',
+  name_placeholder: '請輸入視圖名稱',
+  public_cate: '可見範圍',
+  public_cate_placeholder: '全部',
+  public_cate_0: '僅自己',
+  public_cate_1: '團隊可見',
+  public_cate_2: '全員可見',
+  search_placeholder: '搜尋視圖',
+  gids: '團隊',
+  post_favorite: '收藏視圖成功',
+  delete_favorite: '取消收藏視圖成功',
+};
+export default zh_HK;

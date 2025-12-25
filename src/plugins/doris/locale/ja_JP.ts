@@ -56,6 +56,7 @@ const ja_JP = {
     stack_disabled_tip: 'ユニークな値の数が1または10を超える場合、積み上げグラフはサポートされていません',
     stack_tip_pin: '積み上げグラフを有効にする',
     stack_tip_unpin: '積み上げグラフを無効にする',
+    stack_group_by_tip: 'このフィールド値で積み上げ傾向グラフを表示する',
     sql_format: 'SQLフォーマット',
     interval: 'クエリ間隔',
     interval_tip:
@@ -66,6 +67,9 @@ const ja_JP = {
     sql_warning_1:
       'WHERE条件で$__timeFilter(時間フィールド)を使用して時間範囲を明示的に制限することを強くお勧めします。そうしないと、<b>データベースの負荷異常、アラートクエリのタイムアウト</b>などの問題が発生する可能性があります',
     sql_warning_2: 'SQLは$__timeGroupを使用しており、このクエリは複数の時間ポイントのデータを返します。このシナリオでは、<b>システムは最新の時間ポイントの結果のみを使用します</b>',
+    default_search_tip_1: 'デフォルトの検索フィールドとして設定',
+    default_search_tip_2: 'デフォルトの検索フィールドをキャンセル',
+    default_search_by_tip: 'デフォルトの検索フィールド',
   },
   logs: {
     title: 'ログデータ',

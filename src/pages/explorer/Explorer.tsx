@@ -22,6 +22,7 @@
 import React, { useRef, useContext, useEffect } from 'react';
 import { Form, Row, Col } from 'antd';
 import _ from 'lodash';
+import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useHistory } from 'react-router-dom';
 
@@ -33,6 +34,7 @@ import { CommonStateContext } from '@/App';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
+import ViewSelect from '@/components/ViewSelect';
 
 import { useGlobalState } from './globalState';
 import Prometheus from './Prometheus';
@@ -45,6 +47,12 @@ import './index.less';
 import PlusExplorer from 'plus:/parcels/Explorer';
 
 type Type = 'logging' | 'metric';
+
+interface Query {
+  datasourceCate: string;
+  datasourceValue: number;
+  [key: string]: any;
+}
 
 interface IProps {
   tabKey: string;
@@ -83,12 +91,14 @@ const Panel = (props: IProps) => {
   const [tabKey, setTabKey] = useGlobalState('tabKey');
   const [form] = Form.useForm();
   const history = useHistory();
+  const location = useLocation();
   const headerExtraRef = useRef<HTMLDivElement>(null);
-  const params = new URLSearchParams(useLocation().search);
+  const params = new URLSearchParams(location.search);
   const defaultDatasourceCate = params.get('data_source_name') || getDefaultDatasourceCate(datasourceList, defaultCate);
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);
+  const [promql, setPromql] = React.useState<string>();
 
   useEffect(() => {
     setTabKey(props.tabKey);
@@ -105,6 +115,103 @@ const Panel = (props: IProps) => {
       >
         <div className='explorer-content'>
           <Row gutter={8}>
+            <Col flex='none'>
+              <ViewSelect<Query>
+                disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus], datasourceCate)}
+                page={location.pathname}
+                getFilterValuesJSONString={() => {
+                  const formValues = form.getFieldsValue();
+                  if (datasourceCate === DatasourceCateEnum.prometheus) {
+                    const filterValues = {
+                      datasourceCate: formValues.datasourceCate,
+                      datasourceValue: formValues.datasourceValue,
+                      query: {
+                        query: promql || '',
+                      },
+                    };
+                    return JSON.stringify(filterValues);
+                  } else {
+                    console.log('formValues', formValues);
+                    let range = formValues.query?.range;
+                    if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
+                      range = {
+                        start: range.start.unix(),
+                        end: range.end.unix(),
+                      };
+                    }
+                    const filterValues = {
+                      datasourceCate: formValues.datasourceCate,
+                      datasourceValue: formValues.datasourceValue,
+                      query: {
+                        ...formValues.query,
+                        range,
+                      },
+                    };
+                    return JSON.stringify(filterValues);
+                  }
+                }}
+                renderOptionExtra={(filterValues) => {
+                  const { datasourceCate, datasourceValue } = filterValues;
+                  return (
+                    <div className='flex items-center gap-2'>
+                      <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
+                      <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
+                    </div>
+                  );
+                }}
+                onSelect={(filterValues) => {
+                  if (datasourceCate === DatasourceCateEnum.prometheus) {
+                    form.setFieldsValue({
+                      datasourceCate: filterValues.datasourceCate,
+                      datasourceValue: filterValues.datasourceValue,
+                    });
+                    setPromql(filterValues.query?.query || '');
+                  } else {
+                    // 完全重置表单后再设置新值，避免旧值残留
+                    form.setFieldsValue({
+                      query: undefined,
+                    });
+                    let range = filterValues.query?.range;
+                    if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
+                      range = {
+                        start: moment.unix(range.start),
+                        end: moment.unix(range.end),
+                      };
+                    }
+                    form.setFieldsValue({
+                      ...filterValues,
+                      range,
+                      refreshFlag: _.uniqueId('refreshFlag_'),
+                    });
+                  }
+                }}
+                oldFilterValues={
+                  datasourceCate === DatasourceCateEnum.prometheus
+                    ? {
+                        datasourceCate,
+                        datasourceValue: form.getFieldValue('datasourceValue'),
+                        query: {
+                          query: promql || '',
+                        },
+                      }
+                    : undefined
+                }
+                adjustOldFilterValues={(values) => {
+                  if (values) {
+                    if (datasourceCate !== DatasourceCateEnum.prometheus) {
+                      // 去掉 query 中值为 undefined 的字段
+                      const cleanedQuery = _.omitBy(values.query, _.isUndefined);
+                      return {
+                        datasourceCate: values.datasourceCate,
+                        datasourceValue: values.datasourceValue,
+                        query: cleanedQuery,
+                      };
+                    }
+                  }
+                  return {};
+                }}
+              />
+            </Col>
             <Col flex='none'>
               <>
                 <Form.Item name='datasourceCate' hidden>
@@ -164,7 +271,6 @@ const Panel = (props: IProps) => {
                 </InputGroupWithFormItem>
               </>
             </Col>
-
             <Col flex='auto'>
               <div ref={headerExtraRef} />
             </Col>
@@ -178,7 +284,18 @@ const Panel = (props: IProps) => {
                   return <Elasticsearch headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
                 } else if (datasourceCate === DatasourceCateEnum.prometheus) {
                   return (
-                    <Prometheus headerExtra={headerExtraRef.current} datasourceValue={datasourceValue} form={form} panelIdx={panelIdx} allowReplaceHistory showBuilder={false} />
+                    <Prometheus
+                      promQL={promql}
+                      onChange={(newPromQL) => {
+                        setPromql(newPromQL);
+                      }}
+                      headerExtra={headerExtraRef.current}
+                      datasourceValue={datasourceValue}
+                      form={form}
+                      panelIdx={panelIdx}
+                      allowReplaceHistory
+                      showBuilder={false}
+                    />
                   );
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
                   return <TDengine datasourceValue={datasourceValue} form={form} />;
