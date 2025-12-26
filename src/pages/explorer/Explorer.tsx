@@ -179,6 +179,8 @@ const Panel = (props: IProps) => {
                   );
                 }}
                 onSelect={(filterValues) => {
+                  filterValues.datasourceCate = filterValues.datasourceCate || defaultDatasourceCate;
+                  filterValues.datasourceValue = filterValues.datasourceValue || defaultDatasourceValue;
                   if (datasourceCate === DatasourceCateEnum.prometheus) {
                     form.setFieldsValue({
                       datasourceCate: filterValues.datasourceCate,
@@ -205,7 +207,7 @@ const Panel = (props: IProps) => {
                   }
                   if (panelIdx === 0) {
                     history.replace({
-                      search: `?data_source_name=${datasourceCate}${filterValues.datasourceValue ? `&data_source_id=${filterValues.datasourceValue}` : ''}`,
+                      search: `?data_source_name=${filterValues.datasourceCate ?? defaultDatasourceCate}&${filterValues.datasourceValue ?? defaultDatasourceValue}`,
                     });
                   }
                 }}
