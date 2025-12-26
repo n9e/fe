@@ -1,3 +1,5 @@
+import { IRawTimeRange } from '@/components/TimeRangePicker';
+
 export interface IndexPattern {
   id: number;
   datasource_id: number;
@@ -43,6 +45,14 @@ export interface ILogMappingParams {
   v: string;
   str: string;
   field: string;
+}
+
+export interface LinkContext {
+  rawValue: object;
+  name?: string;
+  fieldConfig?: FieldConfigVersion2;
+  range?: IRawTimeRange;
+  parentKey?: string;
 }
 
 export interface FieldConfigVersion2 {

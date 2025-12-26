@@ -4,6 +4,7 @@ import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
+import IconFont from '@/components/IconFont';
 
 import { Link, handleNav } from '@/pages/explorer/components/Links';
 import { FieldConfigVersion2 } from '@/pages/log/IndexPatterns/types';
@@ -126,13 +127,28 @@ export default function Token(props: Props) {
                 }}
               >
                 {i.name}
+                <span style={{ background: 'var(--fc-fill-4)', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+                  <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+                </span>
               </li>
             );
           })}
         </ul>
       }
     >
-      {relatedLinks && relatedLinks.length > 0 ? <Link text={toString(valueNode)} /> : <div className='n9e-log-field-val-token'>{toString(valueNode)}</div>}
+      {relatedLinks && relatedLinks.length > 0 ? (
+        <Link
+          text={toString(valueNode)}
+          linkContext={{
+            rawValue: rawValue!,
+            name,
+            fieldConfig,
+            range,
+          }}
+        />
+      ) : (
+        <div className='n9e-log-field-val-token'>{toString(valueNode)}</div>
+      )}
     </Popover>
   );
 }
