@@ -196,6 +196,7 @@ export function getDorisSQLFormat(data: {
       lines: number;
       offset: number;
       reverse: boolean;
+      default_field?: string;
     },
   ];
 }): Promise<string> {

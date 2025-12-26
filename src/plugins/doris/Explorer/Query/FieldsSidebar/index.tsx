@@ -170,7 +170,6 @@ export default function index(props: IProps) {
               ) : (
                 <Tooltip title={t('query.default_search_tip_1')}>
                   <Button
-                    disabled={disabled}
                     icon={<DefaultSearchIcon className='text-[14px]' />}
                     type='text'
                     size='small'

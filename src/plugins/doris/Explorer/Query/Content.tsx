@@ -38,6 +38,8 @@ interface Props {
   indexData: Field[];
   indexDataLoading: boolean;
   executeQuery: () => void;
+  defaultSearchIndex: Field | undefined;
+  setDefaultSearchIndex: React.Dispatch<React.SetStateAction<Field | undefined>>;
 }
 
 function index(props: Props) {
@@ -45,7 +47,7 @@ function index(props: Props) {
   const [tabKey] = useGlobalState('tabKey');
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
-  const { refreshFlag, datasourceValue, queryValues, rangeRef, indexData, indexDataLoading, executeQuery } = props;
+  const { refreshFlag, datasourceValue, queryValues, rangeRef, indexData, indexDataLoading, executeQuery, defaultSearchIndex, setDefaultSearchIndex } = props;
   const form = Form.useFormInstance();
 
   // 点击直方图某个柱子时，设置的时间范围
@@ -58,13 +60,6 @@ function index(props: Props) {
   });
   const [pinIndex, setPinIndex] = useState<Field | undefined>(
     getPinIndexFromLocalstorage({
-      datasourceValue,
-      database: queryValues?.database,
-      table: queryValues?.table,
-    }),
-  );
-  const [defaultSearchIndex, setDefaultSearchIndex] = useState<Field | undefined>(
-    getDefaultSearchIndexFromLocalstorage({
       datasourceValue,
       database: queryValues?.database,
       table: queryValues?.table,
@@ -471,6 +466,6 @@ function index(props: Props) {
 }
 
 export default React.memo(index, (prevProps, nextProps) => {
-  const pickKeys = ['refreshFlag', 'datasourceValue', 'queryValues', 'indexData'];
+  const pickKeys = ['refreshFlag', 'datasourceValue', 'queryValues', 'indexData', 'defaultSearchIndex'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });
