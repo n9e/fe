@@ -57,7 +57,7 @@ export default function index() {
         }}
       />
 
-      {cate === DatasourceCateEnum.elasticsearch && <AdvancedSettings />}
+      {/* {cate === DatasourceCateEnum.elasticsearch && <AdvancedSettings />} */}
     </div>
   );
 }

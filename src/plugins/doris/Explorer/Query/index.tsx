@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Space, Button, Row, Col } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -15,6 +15,7 @@ import QueryInput from '@/pages/explorer/components/LogsViewer/components/QueryI
 
 import { QUERY_CACHE_KEY, NAME_SPACE, DATE_TYPE_LIST, QUERY_CACHE_PICK_KEYS } from '../../constants';
 import { getDorisIndex, Field } from '../../services';
+import { getDefaultSearchIndexFromLocalstorage } from '../utils';
 import DatabaseSelect from './DatabaseSelect';
 import TableSelect from './TableSelect';
 import DateFieldSelect from './DateFieldSelect';
@@ -34,6 +35,13 @@ export default function index(props: Props) {
   const { disabled, datasourceValue, executeQuery } = props;
   const refreshFlag = Form.useWatch('refreshFlag');
   const queryValues = Form.useWatch(['query']);
+  const [defaultSearchIndex, setDefaultSearchIndex] = useState<Field | undefined>(
+    getDefaultSearchIndexFromLocalstorage({
+      datasourceValue,
+      database: queryValues?.database,
+      table: queryValues?.table,
+    }),
+  );
   // 用于显示展示的时间范围
   const rangeRef = useRef<{
     from: number;
@@ -41,7 +49,6 @@ export default function index(props: Props) {
   }>();
 
   const indexDataService = () => {
-    const queryValues = form.getFieldValue('query');
     if (datasourceValue && queryValues?.database && queryValues?.table) {
       return getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database: queryValues.database, table: queryValues.table })
         .then((res) => {
@@ -166,7 +173,7 @@ export default function index(props: Props) {
             />
           </Form.Item>
         </InputGroupWithFormItem>
-        <SQLFormatButton rangeRef={rangeRef} />
+        <SQLFormatButton rangeRef={rangeRef} defaultSearchIndex={defaultSearchIndex} />
         <ConditionHistoricalRecords
           localKey={QUERY_CACHE_KEY}
           datasourceValue={datasourceValue!}
@@ -204,6 +211,8 @@ export default function index(props: Props) {
           indexData={indexData}
           indexDataLoading={indexDataLoading}
           executeQuery={executeQuery}
+          defaultSearchIndex={defaultSearchIndex}
+          setDefaultSearchIndex={setDefaultSearchIndex}
         />
       )}
     </div>

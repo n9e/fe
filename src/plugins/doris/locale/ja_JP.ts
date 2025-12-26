@@ -16,7 +16,8 @@ const ja_JP = {
       raw: 'ログ原文',
       timeSeries: '時系列',
     },
-    query_tip: 'SQL例：最近5分間のログ行数をクエリするには、SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)を使用します',
+    query_tip:
+      'SQL例：最近5分間のログ行数をクエリするには、SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)を使用します。<br />詳細なSQLモードの説明については、<a>Doris SQLモードの説明</a>を参照してください。',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'クエリ',
     database: 'データベース',
@@ -56,7 +57,20 @@ const ja_JP = {
     stack_disabled_tip: 'ユニークな値の数が1または10を超える場合、積み上げグラフはサポートされていません',
     stack_tip_pin: '積み上げグラフを有効にする',
     stack_tip_unpin: '積み上げグラフを無効にする',
+    stack_group_by_tip: 'このフィールド値で積み上げ傾向グラフを表示する',
     sql_format: 'SQLフォーマット',
+    default_search_tip_1: 'デフォルトの検索フィールドとして設定',
+    default_search_tip_2: 'デフォルトの検索フィールドをキャンセル',
+    default_search_by_tip: 'デフォルトの検索フィールド',
+    interval: 'クエリ間隔',
+    interval_tip:
+      'SQLで$__timeFilter時間マクロを使用する場合にのみ、クエリ間隔の構成が有効になります。<br />アラートシステムは、この時間ウィンドウに基づいてデータスキャン範囲を制限し、アラートの即時性とデータベースのパフォーマンスを保証します',
+    offset: 'オフセット',
+    offset_tip:
+      '現在のクエリ時間に基づいて、指定された秒数を前方にオフセットしてからクエリを実行します。これはPromQLのoffsetに似ています。<br />データ書き込みの遅延、リンクの遅延などのシナリオを処理するために一般的に使用され、データがタイムリーに到達しないことによるアラートの誤報を回避します',
+    sql_warning_1:
+      'WHERE条件で$__timeFilter(時間フィールド)を使用して時間範囲を明示的に制限することを強くお勧めします。そうしないと、<b>データベースの負荷異常、アラートクエリのタイムアウト</b>などの問題が発生する可能性があります',
+    sql_warning_2: 'SQLは$__timeGroupを使用しており、このクエリは複数の時間ポイントのデータを返します。このシナリオでは、<b>システムは最新の時間ポイントの結果のみを使用します</b>',
   },
   logs: {
     title: 'ログデータ',

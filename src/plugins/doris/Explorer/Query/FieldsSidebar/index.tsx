@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Button, Form, Tooltip } from 'antd';
+import { Button, Form, Space, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -12,8 +12,9 @@ import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 import { getDorisLogsQuery } from '../../../services';
 import { NAME_SPACE, TYPE_MAP } from '../../../constants';
 
-import { setPinIndexToLocalstorage } from '../../utils';
+import { setPinIndexToLocalstorage, setDefaultSearchIndexToLocalstorage } from '../../utils';
 import { PinIcon, UnPinIcon } from './PinIcon';
+import { DefaultSearchIcon, UnDefaultSearchIcon } from './DefaultSearchIcon';
 
 interface IProps {
   organizeFields: string[];
@@ -23,11 +24,13 @@ interface IProps {
   setOptions: (options: { organizeFields: string[] }) => void;
   pinIndex?: Field;
   setPinIndex: React.Dispatch<React.SetStateAction<Field | undefined>>;
+  defaultSearchIndex?: Field;
+  setDefaultSearchIndex: React.Dispatch<React.SetStateAction<Field | undefined>>;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { organizeFields, data, loading, onValueFilter, setOptions, pinIndex, setPinIndex } = props;
+  const { organizeFields, data, loading, onValueFilter, setOptions, pinIndex, setPinIndex, defaultSearchIndex, setDefaultSearchIndex } = props;
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
 
@@ -77,6 +80,7 @@ export default function index(props: IProps) {
                   field: record.field,
                   func,
                   ref: func,
+                  default_field: defaultSearchIndex?.field,
                 };
               }),
             };
@@ -141,63 +145,119 @@ export default function index(props: IProps) {
         renderStatsPopoverTitleExtra={({ index, stats, setTopNVisible }) => {
           const unique_count = stats?.unique_count !== undefined ? _.toNumber(stats.unique_count) : 0;
           const disabled = _.isNaN(unique_count) || unique_count <= 1 || unique_count > 10;
-          if (pinIndex && pinIndex.field === index.field) {
-            return (
-              <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
-                <Button
-                  icon={<UnPinIcon className='text-[14px]' />}
-                  type='text'
-                  size='small'
-                  onClick={() => {
-                    setPinIndex(undefined);
-                    setPinIndexToLocalstorage(
-                      {
-                        datasourceValue,
-                        database: queryValues?.database,
-                        table: queryValues?.table,
-                      },
-                      undefined,
-                    );
-                    setTopNVisible(false);
-                  }}
-                />
-              </Tooltip>
-            );
-          }
           return (
-            <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin')}>
-              <Button
-                disabled={disabled}
-                icon={<PinIcon className='text-[14px]' />}
-                type='text'
-                size='small'
-                onClick={() => {
-                  setPinIndex(index);
-                  setPinIndexToLocalstorage(
-                    {
-                      datasourceValue,
-                      database: queryValues?.database,
-                      table: queryValues?.table,
-                    },
-                    index,
-                  );
-                  setTopNVisible(false);
-                }}
-              />
-            </Tooltip>
+            <Space>
+              {defaultSearchIndex && defaultSearchIndex.field === index.field ? (
+                <Tooltip title={t('query.default_search_tip_2')}>
+                  <Button
+                    icon={<UnDefaultSearchIcon className='text-[14px]' />}
+                    type='text'
+                    size='small'
+                    onClick={() => {
+                      setDefaultSearchIndex(undefined);
+                      setDefaultSearchIndexToLocalstorage(
+                        {
+                          datasourceValue,
+                          database: queryValues?.database,
+                          table: queryValues?.table,
+                        },
+                        undefined,
+                      );
+                      setTopNVisible(false);
+                    }}
+                  />
+                </Tooltip>
+              ) : (
+                <Tooltip title={t('query.default_search_tip_1')}>
+                  <Button
+                    icon={<DefaultSearchIcon className='text-[14px]' />}
+                    type='text'
+                    size='small'
+                    onClick={() => {
+                      setDefaultSearchIndex(index);
+                      setDefaultSearchIndexToLocalstorage(
+                        {
+                          datasourceValue,
+                          database: queryValues?.database,
+                          table: queryValues?.table,
+                        },
+                        index,
+                      );
+                      setTopNVisible(false);
+                    }}
+                  />
+                </Tooltip>
+              )}
+              {pinIndex && pinIndex.field === index.field ? (
+                <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
+                  <Button
+                    icon={<UnPinIcon className='text-[14px]' />}
+                    type='text'
+                    size='small'
+                    onClick={() => {
+                      setPinIndex(undefined);
+                      setPinIndexToLocalstorage(
+                        {
+                          datasourceValue,
+                          database: queryValues?.database,
+                          table: queryValues?.table,
+                        },
+                        undefined,
+                      );
+                      setTopNVisible(false);
+                    }}
+                  />
+                </Tooltip>
+              ) : (
+                <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin')}>
+                  <Button
+                    disabled={disabled}
+                    icon={<PinIcon className='text-[14px]' />}
+                    type='text'
+                    size='small'
+                    onClick={() => {
+                      setPinIndex(index);
+                      setPinIndexToLocalstorage(
+                        {
+                          datasourceValue,
+                          database: queryValues?.database,
+                          table: queryValues?.table,
+                        },
+                        index,
+                      );
+                      setTopNVisible(false);
+                    }}
+                  />
+                </Tooltip>
+              )}
+            </Space>
           );
         }}
         renderFieldNameExtra={(field) => {
-          if (pinIndex && pinIndex.field === field.field) {
-            return (
-              <PinIcon
-                className='text-[12px]'
-                style={{
-                  color: 'var(--fc-primary-color)',
-                }}
-              />
-            );
-          }
+          return (
+            <Space size={2}>
+              {defaultSearchIndex && defaultSearchIndex.field === field.field && (
+                <Tooltip title={t('query.default_search_by_tip')}>
+                  <DefaultSearchIcon
+                    className='text-[12px]'
+                    style={{
+                      color: 'var(--fc-primary-color)',
+                    }}
+                  />
+                </Tooltip>
+              )}
+              {pinIndex && pinIndex.field === field.field && (
+                <Tooltip title={t('query.stack_group_by_tip')}>
+                  <PinIcon
+                    className='text-[12px]'
+                    style={{
+                      color: 'var(--fc-primary-color)',
+                    }}
+                  />
+                </Tooltip>
+              )}
+            </Space>
+          );
         }}
       />
     </div>
