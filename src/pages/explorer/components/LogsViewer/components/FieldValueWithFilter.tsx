@@ -67,7 +67,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
             className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
             onClick={() => {
               setPopoverVisible(false);
-              copy2ClipBoard(value, true);
+              copy2ClipBoard(`${name}:${value}`);
             }}
           >
             <Space>
