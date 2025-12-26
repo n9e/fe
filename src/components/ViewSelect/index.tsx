@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, Badge, message, Tooltip } from 'antd';
-import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, MoreOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
+import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, message, Tooltip } from 'antd';
+import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
 import _ from 'lodash';
@@ -74,6 +74,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
       <Input.Group compact className='input-group-with-form-item'>
         <div className='input-group-with-form-item-content'>
           <Select
+            allowClear
             disabled={disabled}
             placeholder={t('placeholder')}
             className='w-full max-w-[160px]'
@@ -298,6 +299,16 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                   key: 'delete',
                   disabled: selected === undefined,
                 },
+                {
+                  label: (
+                    <Space>
+                      <ReloadOutlined />
+                      <span>{t('reset')}</span>
+                    </Space>
+                  ),
+                  key: 'reset',
+                  disabled: selected === undefined,
+                },
               ]}
               onClick={({ key }) => {
                 if (key === 'save_new') {
@@ -309,7 +320,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                   const finded = _.find(views, { id: selected });
                   if (finded) {
                     const filterValuesJSONString = getFilterValuesJSONString();
-                    updateView({
+                    updateView(finded.id, {
                       ...finded,
                       filter: filterValuesJSONString,
                     }).then(() => {
@@ -337,6 +348,19 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                       }
                     },
                   });
+                } else if (key === 'reset') {
+                  if (onSelect) {
+                    let filterValues: FilterValues = {} as FilterValues;
+                    const finded = _.find(views, { id: selected });
+                    if (finded) {
+                      try {
+                        filterValues = JSON.parse(finded.filter);
+                      } catch (e) {
+                        console.warn('parse filter error', e);
+                      }
+                    }
+                    onSelect(filterValues);
+                  }
                 }
               }}
             />

@@ -6,6 +6,8 @@ const zh_CN = {
   edit: '编辑视图',
   delete: '删除视图',
   confirm_delete: '确认删除该视图吗？',
+  reset: '重置视图',
+  reset_tip: '将当前页面的查询条件重置为该视图保存时的查询条件',
   name: '视图名称',
   name_placeholder: '请输入视图名称',
   public_cate: '可见范围',

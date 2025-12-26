@@ -21,8 +21,8 @@ export function postView(data: View) {
   });
 }
 
-export function updateView(data: View) {
-  return request(`/api/n9e/saved-view/${data.id}`, {
+export function updateView(id: number, data: View) {
+  return request(`/api/n9e/saved-view/${id}`, {
     method: RequestMethod.Put,
     data: _.omit(data, ['id', 'is_favorite']),
   });

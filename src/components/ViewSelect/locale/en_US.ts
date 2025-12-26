@@ -6,6 +6,8 @@ const en_US = {
   edit: 'Edit view',
   delete: 'Delete view',
   confirm_delete: 'Are you sure you want to delete this view?',
+  reset: 'Reset view',
+  reset_tip: "Reset the current page's query conditions to those saved in this view",
   name: 'View name',
   name_placeholder: 'Please enter a view name',
   public_cate: 'Visibility',

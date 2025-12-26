@@ -63,18 +63,20 @@ export default function FormModal(props: Props) {
             });
           } else if (modalStat.action === 'edit') {
             const filterValuesJSONString = getFilterValuesJSONString();
-            updateView({
-              ...values,
-              filter: filterValuesJSONString,
-            }).then(() => {
-              message.success(t('common:success.edit'));
-              run();
-              setModalState({
-                ...modalStat,
-                visible: false,
+            if (modalStat.values) {
+              updateView(modalStat.values.id, {
+                ...values,
+                filter: filterValuesJSONString,
+              }).then(() => {
+                message.success(t('common:success.edit'));
+                run();
+                setModalState({
+                  ...modalStat,
+                  visible: false,
+                });
+                form.resetFields();
               });
-              form.resetFields();
-            });
+            }
           }
         });
       }}

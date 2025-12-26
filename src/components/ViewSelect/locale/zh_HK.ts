@@ -6,6 +6,8 @@ const zh_HK = {
   edit: '編輯視圖',
   delete: '刪除視圖',
   confirm_delete: '確認刪除該視圖嗎？',
+  reset: '重置視圖',
+  reset_tip: '將當前頁面的查詢條件重置為該視圖儲存時的查詢條件',
   name: '視圖名稱',
   name_placeholder: '請輸入視圖名稱',
   public_cate: '可見範圍',

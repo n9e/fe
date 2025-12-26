@@ -15,7 +15,8 @@ const zh_HK = {
       raw: '日誌原文',
       timeSeries: '時序圖',
     },
-    query_tip: 'SQL樣例：查詢最近5分鐘的日志行數 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+    query_tip:
+      'SQL樣例：查詢最近5分鐘的日誌行數 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />更多SQL模式說明，請參考 <a>Doris SQL模式說明</a>',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查詢',
     database: '數據庫',

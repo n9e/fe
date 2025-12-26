@@ -17,7 +17,7 @@ const ru_RU = {
       timeSeries: 'Временная диаграмма',
     },
     query_tip:
-      'Пример SQL: Чтобы запросить количество записей журнала за последние 5 минут, используйте SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+      'SQL пример: Запрос количества строк журнала за последние 5 минут SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />Для получения дополнительных инструкций по режиму SQL, пожалуйста, обратитесь к <a>Инструкциям по режиму SQL Doris</a>',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Запрос',
     database: 'База данных',

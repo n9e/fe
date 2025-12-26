@@ -88,7 +88,19 @@ export default function Query(props: Props) {
             label={
               <Space>
                 SQL
-                <Tooltip title={t('query.query_tip')}>
+                <Tooltip
+                  overlayClassName='ant-tooltip-with-link ant-tooltip-auto-width'
+                  title={
+                    <Trans
+                      ns='db_doris'
+                      i18nKey='query.query_tip'
+                      components={{
+                        br: <br />,
+                        a: <a href='/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/' target='_blank' />,
+                      }}
+                    />
+                  }
+                >
                   <QuestionCircleOutlined />
                 </Tooltip>
               </Space>
