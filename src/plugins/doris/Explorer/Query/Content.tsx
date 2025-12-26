@@ -471,6 +471,6 @@ function index(props: Props) {
 }
 
 export default React.memo(index, (prevProps, nextProps) => {
-  const pickKeys = ['refreshFlag', 'datasourceValue', 'queryValues'];
+  const pickKeys = ['refreshFlag', 'datasourceValue', 'queryValues', 'indexData'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

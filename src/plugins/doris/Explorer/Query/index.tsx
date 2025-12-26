@@ -41,7 +41,6 @@ export default function index(props: Props) {
   }>();
 
   const indexDataService = () => {
-    const queryValues = form.getFieldValue('query');
     if (datasourceValue && queryValues?.database && queryValues?.table) {
       return getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database: queryValues.database, table: queryValues.table })
         .then((res) => {
