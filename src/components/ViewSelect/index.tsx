@@ -301,10 +301,12 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                 },
                 {
                   label: (
-                    <Space>
-                      <ReloadOutlined />
-                      <span>{t('reset')}</span>
-                    </Space>
+                    <Tooltip title={t('reset_tip')} placement='right'>
+                      <Space>
+                        <ReloadOutlined />
+                        <span>{t('reset')}</span>
+                      </Space>
+                    </Tooltip>
                   ),
                   key: 'reset',
                   disabled: selected === undefined,
