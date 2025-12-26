@@ -135,20 +135,18 @@ export const getFormValuesBySearchParams = (params: { [index: string]: string | 
       const database = _.get(params, 'database');
       const table = _.get(params, 'table');
       const time_field = _.get(params, 'time_field');
-      if (database && table && time_field) {
-        return {
-          ...formValues,
-          query: {
-            mode,
-            submode,
-            database,
-            table,
-            time_field,
-            query,
-            range,
-          },
-        };
-      }
+      return {
+        ...formValues,
+        query: {
+          mode,
+          submode,
+          database,
+          table,
+          time_field,
+          query,
+          range,
+        },
+      };
     } else {
       return getPlusFormValuesByParams(params);
     }
