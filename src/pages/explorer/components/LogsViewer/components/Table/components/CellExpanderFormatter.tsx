@@ -1,5 +1,4 @@
 import React from 'react';
-import { useFocusRef } from 'react-data-grid';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 
 interface CellExpanderFormatterProps {
@@ -9,8 +8,6 @@ interface CellExpanderFormatterProps {
 }
 
 export default function CellExpanderFormatter({ isCellSelected, expanded, onCellExpand }: CellExpanderFormatterProps) {
-  const { ref, tabIndex } = useFocusRef<HTMLSpanElement>(isCellSelected);
-
   function handleKeyDown(e: React.KeyboardEvent<HTMLSpanElement>) {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
@@ -18,9 +15,14 @@ export default function CellExpanderFormatter({ isCellSelected, expanded, onCell
     }
   }
 
+  function handleClick(e: React.MouseEvent<HTMLSpanElement>) {
+    e.preventDefault();
+    onCellExpand();
+  }
+
   return (
-    <span onClick={onCellExpand} onKeyDown={handleKeyDown}>
-      <span className='cursor-pointer' ref={ref} tabIndex={tabIndex}>
+    <span onKeyDown={handleKeyDown}>
+      <span className='cursor-pointer' onClick={handleClick}>
         {expanded ? <DownOutlined /> : <RightOutlined />}
       </span>
     </span>

@@ -204,7 +204,7 @@ function index(props: Props) {
     },
     any
   >(service, {
-    refreshDeps: [refreshFlag, JSON.stringify(serviceParams), defaultSearchIndex],
+    refreshDeps: [refreshFlag, JSON.stringify(serviceParams)],
   });
 
   const histogramService = () => {
@@ -262,7 +262,7 @@ function index(props: Props) {
     },
     any
   >(histogramService, {
-    refreshDeps: [refreshFlag, pinIndex, defaultSearchIndex],
+    refreshDeps: [refreshFlag, pinIndex],
   });
 
   useEffect(() => {
