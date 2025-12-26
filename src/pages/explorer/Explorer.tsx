@@ -84,6 +84,26 @@ function getDefaultDatasourceCate(datasourceList, defaultCate) {
   return defaultCate;
 }
 
+function omitUndefinedDeep<T>(val: T): T {
+  if (Array.isArray(val)) {
+    // Remove undefined entries and clean nested structures inside arrays
+    return val.map((item) => omitUndefinedDeep(item)).filter((item) => item !== undefined) as unknown as T;
+  }
+  if (_.isPlainObject(val)) {
+    return _.transform(
+      val as Record<string, any>,
+      (acc, v, k) => {
+        const cleaned = omitUndefinedDeep(v);
+        if (cleaned !== undefined) {
+          acc[k] = cleaned;
+        }
+      },
+      {},
+    ) as unknown as T;
+  }
+  return val;
+}
+
 const Panel = (props: IProps) => {
   const { t } = useTranslation('explorer');
   const { type, defaultCate, panelIdx = 0, defaultFormValuesControl } = props;
@@ -131,7 +151,6 @@ const Panel = (props: IProps) => {
                     };
                     return JSON.stringify(filterValues);
                   } else {
-                    console.log('formValues', formValues);
                     let range = formValues.query?.range;
                     if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
                       range = {
@@ -184,6 +203,11 @@ const Panel = (props: IProps) => {
                       refreshFlag: _.uniqueId('refreshFlag_'),
                     });
                   }
+                  if (panelIdx === 0) {
+                    history.replace({
+                      search: `?data_source_name=${datasourceCate}&data_source_id=${filterValues.datasourceValue}`,
+                    });
+                  }
                 }}
                 oldFilterValues={
                   datasourceCate === DatasourceCateEnum.prometheus
@@ -200,7 +224,7 @@ const Panel = (props: IProps) => {
                   if (values) {
                     if (datasourceCate !== DatasourceCateEnum.prometheus) {
                       // 去掉 query 中值为 undefined 的字段
-                      const cleanedQuery = _.omitBy(values.query, _.isUndefined);
+                      const cleanedQuery = omitUndefinedDeep(values.query) || {};
                       return {
                         datasourceCate: values.datasourceCate,
                         datasourceValue: values.datasourceValue,
