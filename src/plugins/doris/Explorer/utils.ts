@@ -77,3 +77,23 @@ export const setPinIndexToLocalstorage = (options: { datasourceValue: number; da
     localStorage.removeItem(`${PIN_INDEX_CACHE_KEY}@${options.datasourceValue}@${options.database}@${options.table}`);
   }
 };
+
+const DEFAULT_SEARCH_INDEX_CACHE_KEY = 'doris_query_logs_default_search_index';
+export const getDefaultSearchIndexFromLocalstorage = (options: { datasourceValue: number; database: string; table: string }): Field | undefined => {
+  const str = localStorage.getItem(`${DEFAULT_SEARCH_INDEX_CACHE_KEY}@${options.datasourceValue}@${options.database}@${options.table}`);
+  if (str) {
+    try {
+      return JSON.parse(str);
+    } catch (e) {
+      return undefined;
+    }
+  }
+  return undefined;
+};
+export const setDefaultSearchIndexToLocalstorage = (options: { datasourceValue: number; database: string; table: string }, field: Field | undefined) => {
+  if (field) {
+    localStorage.setItem(`${DEFAULT_SEARCH_INDEX_CACHE_KEY}@${options.datasourceValue}@${options.database}@${options.table}`, JSON.stringify(field));
+  } else {
+    localStorage.removeItem(`${DEFAULT_SEARCH_INDEX_CACHE_KEY}@${options.datasourceValue}@${options.database}@${options.table}`);
+  }
+};

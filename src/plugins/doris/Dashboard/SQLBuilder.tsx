@@ -3,14 +3,12 @@ import { Form, Select, Row, Col, Space, Modal, Button, Alert } from 'antd';
 import { InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
-import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
 import { copy2ClipBoard } from '@/utils';
 import { DatasourceCateEnum } from '@/utils/constant';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import LogQL from '@/components/LogQL';
-import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 
 import { NAME_SPACE } from '../constants';
 import AdvancedSettings from '../components/AdvancedSettings';
@@ -81,7 +79,7 @@ export default function SQLBuilder(props: Props) {
           placeholder={
             mode === 'raw'
               ? 'SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'
-              : 'SELECT count(*) as count, $__timeGroup(timestamp, $__interval) as time FROM db_name.table_name WHERE $__timeFilter(`timestamp`) GROUP BY time ORDER BY time'
+              : 'SELECT count(*) as count, $__timeGroup(timestamp, $__interval) as time FROM db_name.table_name WHERE $__timeFilter(`timestamp`) GROUP BY time ORDER BY time DESC'
           }
           validateBeforeChange={(val) => {
             if (val && !val.includes('$__time') && !val.includes('$__unixEpoch')) {

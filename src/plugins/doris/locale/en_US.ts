@@ -17,7 +17,7 @@ const en_US = {
       timeSeries: 'TimeSeries',
     },
     query_tip:
-      'SQL example: To query the number of log entries in the last 5 minutes, use SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+      'SQL example: Query the number of log lines in the last 5 minutes SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />For more SQL mode instructions, please refer to <a>Doris SQL Mode Instructions</a>',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',
@@ -57,7 +57,20 @@ const en_US = {
     stack_disabled_tip: 'Stacked charts are not supported when the number of unique values is 1 or exceeds 10',
     stack_tip_pin: 'Enable stacked chart',
     stack_tip_unpin: 'Disable stacked chart',
+    stack_group_by_tip: 'Display stacked trend chart by this field value',
     sql_format: 'SQL Format',
+    default_search_tip_1: 'Set as default search field',
+    default_search_tip_2: 'Cancel default search field',
+    default_search_by_tip: 'Default search field',
+    interval: 'Interval',
+    interval_tip:
+      'The query interval configuration will only take effect when the $__timeFilter time macro is used in the SQL.<br />The alerting system will limit the data scanning range based on this time window to ensure alert timeliness and database performance',
+    offset: 'Offset',
+    offset_tip:
+      'On the basis of the current query time, offset a specified number of seconds forward before executing the query, similar to offset in PromQL.<br />It is commonly used to handle scenarios such as data write delay and link delay to avoid alert misreporting due to data not arriving in time',
+    sql_warning_1:
+      'It is strongly recommended to use $__timeFilter(time field) in the WHERE condition to explicitly limit the time range, otherwise it may lead to issues such as: <b>abnormal database load, alert query timeout</b>',
+    sql_warning_2: 'The SQL uses $__timeGroup, which will return data for multiple time points. In this scenario, <b>the system only uses the results of the latest time point</b>',
   },
   logs: {
     title: 'Logs',

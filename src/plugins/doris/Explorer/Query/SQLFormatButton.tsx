@@ -8,7 +8,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { copy2ClipBoard } from '@/utils';
 
 import { NAME_SPACE } from '../../constants';
-import { getDorisSQLFormat } from '../../services';
+import { getDorisSQLFormat, Field } from '../../services';
 
 interface SQLFormatParams {
   rangeRef: React.MutableRefObject<
@@ -18,11 +18,12 @@ interface SQLFormatParams {
       }
     | undefined
   >;
+  defaultSearchIndex: Field | undefined;
 }
 
 export default function SQLFormatButton(props: SQLFormatParams) {
   const { t } = useTranslation(NAME_SPACE);
-  const { rangeRef } = props;
+  const { rangeRef, defaultSearchIndex } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const form = Form.useFormInstance();
   const { run: fetchFormattedSQL, data } = useRequest(getDorisSQLFormat, {
@@ -61,6 +62,7 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                   lines: 10,
                   offset: 0,
                   reverse: true,
+                  default_field: defaultSearchIndex?.field,
                 },
               ],
             });

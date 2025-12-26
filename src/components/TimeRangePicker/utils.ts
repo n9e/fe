@@ -196,6 +196,7 @@ export function describeTextRange(expr: any) {
 }
 
 export function describeTimeRange(range: IRawTimeRange, dateFormat: string): string {
+  if (!range || !range.start || !range.end) return '';
   const option = rangeIndex[range.start.toString() + ' ~ ' + range.end.toString()];
 
   if (option) {

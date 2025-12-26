@@ -1,4 +1,7 @@
 const en_US = {
+  tip3: '(Only when the variable is followed by & or at the end of the URL), also supports ${key3} for any position',
+  '跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）':
+    'Jump to the dashboard, and support fixed variables (used when the variables passed by the drilldown link cannot be aligned with the dashboard filter variables, for example, the dashboard has 3 filter variables, but the drilldown link only passes in 1 variable)',
   unauthorized: 'Unauthorized',
   title: 'Index Patterns',
   name: 'Name',

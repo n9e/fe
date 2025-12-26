@@ -13,6 +13,7 @@ import { Field } from '@/pages/explorer/components/FieldsList/types';
 import { copy2ClipBoard } from '@/utils';
 import { parseRange } from '@/components/TimeRangePicker';
 import { Link, handleNav } from '@/pages/explorer/components/Links';
+import IconFont from '@/components/IconFont';
 
 import { LogsViewerStateContext } from '../index';
 
@@ -66,7 +67,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
             className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
             onClick={() => {
               setPopoverVisible(false);
-              copy2ClipBoard(value, true);
+              copy2ClipBoard(`${name}:${value}`);
             }}
           >
             <Space>
@@ -138,6 +139,9 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
                 }}
               >
                 {i.name}
+                <span style={{ background: 'var(--fc-fill-4)', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+                  <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+                </span>
               </li>
             );
           })}
@@ -145,7 +149,19 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
       }
     >
       <Tooltip title={enableTooltip ? value : undefined} placement='topLeft' overlayClassName='ant-tooltip-max-width-600'>
-        {relatedLinks && relatedLinks.length > 0 ? <Link text={value} /> : <div className='explorer-origin-field-val'>{value}</div>}
+        {relatedLinks && relatedLinks.length > 0 ? (
+          <Link
+            text={value}
+            linkContext={{
+              rawValue: rawValue!,
+              name,
+              fieldConfig,
+              range,
+            }}
+          />
+        ) : (
+          <div className='explorer-origin-field-val'>{value}</div>
+        )}
       </Tooltip>
     </Popover>
   );
