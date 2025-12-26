@@ -18,6 +18,8 @@ export function postView(data: View) {
   return request('/api/n9e/saved-views', {
     method: RequestMethod.Post,
     data: _.omit(data, ['id', 'is_favorite']),
+  }).then((res) => {
+    return res.dat;
   });
 }
 

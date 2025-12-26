@@ -372,7 +372,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
           <DropdownTrigger disabled={disabled} filterValues={filterValues} oldFilterValues={oldFilterValues} adjustOldFilterValues={adjustOldFilterValues} />
         </Dropdown>
       </Input.Group>
-      <FormModal page={page} modalStat={modalStat} setModalState={setModalState} getFilterValuesJSONString={getFilterValuesJSONString} run={run} />
+      <FormModal page={page} modalStat={modalStat} setModalState={setModalState} getFilterValuesJSONString={getFilterValuesJSONString} run={run} setSelected={setSelected} />
     </Tooltip>
   );
 }

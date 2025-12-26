@@ -33,5 +33,14 @@ export default function RowDetail({ children, rowId, onHeightChange }: RowDetail
     return () => resizeObserver.disconnect();
   }, [rowId, onHeightChange]);
 
-  return <div ref={containerRef}>{children}</div>;
+  return (
+    <div
+      ref={containerRef}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      {children}
+    </div>
+  );
 }
