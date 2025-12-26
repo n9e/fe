@@ -187,7 +187,7 @@ const Panel = (props: IProps) => {
                       datasourceValue: filterValues.datasourceValue,
                     });
                     setPromql(filterValues.query?.query || '');
-                  } else {
+                  } else if (datasourceCate === DatasourceCateEnum.doris) {
                     // 完全重置表单后再设置新值，避免旧值残留
                     form.setFieldsValue({
                       query: undefined,
@@ -203,6 +203,10 @@ const Panel = (props: IProps) => {
                       ...filterValues,
                       range,
                       refreshFlag: _.uniqueId('refreshFlag_'),
+                      query: {
+                        ...filterValues.query,
+                        mode: filterValues.query?.mode || 'query',
+                      },
                     });
                   }
                   if (panelIdx === 0) {
