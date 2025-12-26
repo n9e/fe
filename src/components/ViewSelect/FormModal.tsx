@@ -14,11 +14,12 @@ interface Props {
   setModalState: React.Dispatch<React.SetStateAction<ModalStat>>;
   getFilterValuesJSONString: () => string;
   run: () => void;
+  setSelected: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export default function FormModal(props: Props) {
   const { t } = useTranslation('viewSelect');
-  const { page, modalStat, setModalState, getFilterValuesJSONString, run } = props;
+  const { page, modalStat, setModalState, getFilterValuesJSONString, run, setSelected } = props;
   const [form] = Form.useForm();
   const publicCate = Form.useWatch('public_cate', form);
   const [teamList, setTeamList] = React.useState<{ id: number; name: string }[]>([]);
@@ -52,7 +53,7 @@ export default function FormModal(props: Props) {
             postView({
               ...values,
               filter: filterValuesJSONString,
-            }).then(() => {
+            }).then((newId) => {
               message.success(t('common:success.add'));
               run();
               setModalState({
@@ -60,6 +61,7 @@ export default function FormModal(props: Props) {
                 visible: false,
               });
               form.resetFields();
+              setSelected(newId);
             });
           } else if (modalStat.action === 'edit') {
             const filterValuesJSONString = getFilterValuesJSONString();
