@@ -139,6 +139,17 @@ export default function Doris(props: IProps) {
     }
   }, []);
 
+  // 视图清空时会导致 mode 变为 undefined，这里做个兼容，设置回默认值 query
+  useEffect(() => {
+    if (mode === undefined) {
+      form.setFieldsValue({
+        query: {
+          mode: 'query',
+        },
+      });
+    }
+  }, [mode]);
+
   return (
     <div className={`${NAME_SPACE}-explorer-container`}>
       <Form.Item name='refreshFlag' hidden>

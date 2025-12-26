@@ -17,7 +17,7 @@ const en_US = {
       timeSeries: 'TimeSeries',
     },
     query_tip:
-      'SQL example: To query the number of log entries in the last 5 minutes, use SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)',
+      'SQL example: Query the number of log lines in the last 5 minutes SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />For more SQL mode instructions, please refer to <a>Doris SQL Mode Instructions</a>',
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',

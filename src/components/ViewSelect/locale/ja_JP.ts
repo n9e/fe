@@ -6,6 +6,8 @@ const ja_JP = {
   edit: 'ビューを編集',
   delete: 'ビューを削除',
   confirm_delete: 'このビューを削除してもよろしいですか？',
+  reset: 'ビューをリセット',
+  reset_tip: '現在のページのクエリ条件を、このビューに保存されたクエリ条件にリセットします',
   name: 'ビュー名',
   name_placeholder: 'ビュー名を入力してください',
   public_cate: '公開範囲',
