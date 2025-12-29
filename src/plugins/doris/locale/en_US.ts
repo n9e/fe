@@ -119,6 +119,7 @@ const en_US = {
     filterAnd: 'Add to this search',
     filterNot: 'Exclude from this search',
     total: 'Total',
+    loading: 'Loading data...',
   },
 };
 export default en_US;
