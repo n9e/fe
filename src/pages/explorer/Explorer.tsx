@@ -201,11 +201,11 @@ const Panel = (props: IProps) => {
                     }
                     form.setFieldsValue({
                       ...filterValues,
-                      range,
                       refreshFlag: _.uniqueId('refreshFlag_'),
                       query: {
                         ...filterValues.query,
                         mode: filterValues.query?.mode || 'query',
+                        range,
                       },
                     });
                   }
@@ -231,10 +231,20 @@ const Panel = (props: IProps) => {
                     if (datasourceCate !== DatasourceCateEnum.prometheus) {
                       // 去掉 query 中值为 undefined 的字段
                       const cleanedQuery = omitUndefinedDeep(values.query) || {};
+                      let range = cleanedQuery.range;
+                      if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
+                        range = {
+                          start: range.start.unix(),
+                          end: range.end.unix(),
+                        };
+                      }
                       return {
                         datasourceCate: values.datasourceCate,
                         datasourceValue: values.datasourceValue,
-                        query: cleanedQuery,
+                        query: {
+                          ...cleanedQuery,
+                          range,
+                        },
                       };
                     }
                   }
