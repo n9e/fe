@@ -114,6 +114,7 @@ const zh_HK = {
     filterAnd: '添加到本次檢索',
     filterNot: '從本次檢索中排除',
     total: '日誌條數',
+    loading: '數據加載中...',
   },
 };
 

@@ -122,6 +122,7 @@ const ru_RU = {
     filterAnd: 'Добавить к этому поиску',
     filterNot: 'Исключить из этого поиска',
     total: 'Общее количество записей',
+    loading: 'Загрузка данных...',
   },
 };
 export default ru_RU;

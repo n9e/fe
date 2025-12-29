@@ -119,6 +119,7 @@ const ja_JP = {
     filterAnd: 'この検索に追加',
     filterNot: 'この検索から除外',
     total: 'ログの数',
+    loading: 'データを読み込み中...',
   },
 };
 
