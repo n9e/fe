@@ -65,6 +65,47 @@ export default function dashboardMigrator(data: any) {
       });
       panelCopy.version = '3.3.0';
     }
+    if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.4.0')) {
+      // row panel 迁移子面板
+      if (panelCopy.panels && panelCopy.panels.length > 0) {
+        panelCopy.panels = panelCopy.panels.map((subPanel: any) => {
+          let subPanelCopy = _.cloneDeep(subPanel);
+          if (subPanelCopy.targets && subPanelCopy.targets.length > 0) {
+            const subPanelTarget = subPanelCopy.targets[0];
+            if (_.isNumber(subPanelTarget.maxDataPoints)) {
+              subPanelCopy.maxDataPoints = subPanelTarget.maxDataPoints;
+              subPanelTarget.maxDataPoints = undefined;
+            }
+            if (subPanelTarget.time) {
+              subPanelCopy.queryOptionsTime = subPanelTarget.time;
+              subPanelTarget.time = undefined;
+            }
+          }
+          if (subPanelCopy?.options?.standardOptions?.util) {
+            subPanelCopy.options.standardOptions.unit = subPanelCopy.options.standardOptions?.util;
+            delete subPanelCopy.options.standardOptions.util;
+          }
+          if (subPanelCopy?.custom?.stack === 'noraml') {
+            subPanelCopy.custom.stack = 'normal';
+          }
+          if (subPanelCopy.overrides && subPanelCopy.overrides.length > 0) {
+            subPanelCopy.overrides = _.map(subPanelCopy.overrides, (item) => {
+              let itemCopy = _.cloneDeep(item);
+              if (itemCopy?.properties?.rightYAxisDisplay === 'noraml') {
+                _.set(itemCopy, ['properties', 'rightYAxisDisplay'], 'normal');
+              }
+              if (itemCopy?.properties?.standardOptions?.util) {
+                _.set(itemCopy, ['properties', 'standardOptions', 'unit'], itemCopy.properties.standardOptions.util);
+                _.set(itemCopy, ['properties', 'standardOptions', 'util'], undefined);
+              }
+              return itemCopy;
+            });
+          }
+          return subPanelCopy;
+        });
+      }
+      panelCopy.version = '3.4.0';
+    }
     return panelCopy;
   });
 
