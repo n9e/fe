@@ -22,3 +22,7 @@
 ## 3.3.0
 
 - fix: 修正一些错别字（noraml -> normal, unit -> unit）
+
+## 3.4.0
+
+- fix: 修复分组里的面板没有做 maxDataPoints、queryOptionsTime 迁移的问题
