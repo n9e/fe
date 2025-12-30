@@ -81,6 +81,26 @@ export default function dashboardMigrator(data: any) {
               subPanelTarget.time = undefined;
             }
           }
+          if (subPanelCopy?.options?.standardOptions?.util) {
+            subPanelCopy.options.standardOptions.unit = subPanelCopy.options.standardOptions?.util;
+            delete subPanelCopy.options.standardOptions.util;
+          }
+          if (subPanelCopy?.custom?.stack === 'noraml') {
+            subPanelCopy.custom.stack = 'normal';
+          }
+          if (subPanelCopy.overrides && subPanelCopy.overrides.length > 0) {
+            subPanelCopy.overrides = _.map(subPanelCopy.overrides, (item) => {
+              let itemCopy = _.cloneDeep(item);
+              if (itemCopy?.properties?.rightYAxisDisplay === 'noraml') {
+                _.set(itemCopy, ['properties', 'rightYAxisDisplay'], 'normal');
+              }
+              if (itemCopy?.properties?.standardOptions?.util) {
+                _.set(itemCopy, ['properties', 'standardOptions', 'unit'], itemCopy.properties.standardOptions.util);
+                _.set(itemCopy, ['properties', 'standardOptions', 'util'], undefined);
+              }
+              return itemCopy;
+            });
+          }
           return subPanelCopy;
         });
       }
