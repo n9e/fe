@@ -65,6 +65,27 @@ export default function dashboardMigrator(data: any) {
       });
       panelCopy.version = '3.3.0';
     }
+    if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.4.0')) {
+      // row panel 迁移子面板
+      if (panelCopy.panels && panelCopy.panels.length > 0) {
+        panelCopy.panels = panelCopy.panels.map((subPanel: any) => {
+          let subPanelCopy = _.cloneDeep(subPanel);
+          if (subPanelCopy.targets && subPanelCopy.targets.length > 0) {
+            const subPanelTarget = subPanelCopy.targets[0];
+            if (_.isNumber(subPanelTarget.maxDataPoints)) {
+              subPanelCopy.maxDataPoints = subPanelTarget.maxDataPoints;
+              subPanelTarget.maxDataPoints = undefined;
+            }
+            if (subPanelTarget.time) {
+              subPanelCopy.queryOptionsTime = subPanelTarget.time;
+              subPanelTarget.time = undefined;
+            }
+          }
+          return subPanelCopy;
+        });
+      }
+      panelCopy.version = '3.4.0';
+    }
     return panelCopy;
   });
 
