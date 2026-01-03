@@ -123,6 +123,31 @@ export function getDorisHistogram(data: {
   }).then((res) => res.dat || []);
 }
 
+export function getDorisHistogramV2(data: {
+  cate: string;
+  datasource_id: number;
+  query: [
+    {
+      database: string;
+      table: string;
+      time_field: string;
+      from: number;
+      to: number;
+      query: string;
+      group_by?: string;
+      default_field?: string;
+    },
+  ];
+}): Promise<{
+  list: any[];
+  total: number;
+}> {
+  return request('/api/n9e-plus/v2/doris-histogram', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat || { list: [], total: 0 });
+}
+
 export function getDorisLogsQuery(data: {
   cate: string;
   datasource_id: number;
@@ -148,6 +173,30 @@ export function getDorisLogsQuery(data: {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat || { list: [], total: 0 });
+}
+
+export function getDorisLogsQueryV2(data: {
+  cate: string;
+  datasource_id: number;
+  query: [
+    {
+      database: string;
+      table: string;
+      time_field: string;
+      query: string;
+      from: number;
+      to: number;
+      lines: number;
+      offset: number;
+      reverse: boolean;
+      default_field?: string;
+    },
+  ];
+}): Promise<{ [index: string]: string }[]> {
+  return request('/api/n9e-plus/v2/doris-logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat || []);
 }
 
 export const getDsQuery2 = function (data: {

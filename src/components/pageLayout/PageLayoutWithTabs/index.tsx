@@ -150,9 +150,9 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
                 }}
               >
-                <div className='flex items-center'>
+                <div className='flex items-center min-w-0 flex-1'>
                   {!currentMenu?.parentItem?.label && (
-                    <div className={'page-header-title'}>
+                    <div className={'page-header-title w-full'}>
                       {showBack && window.history.state && (
                         <RollbackOutlined
                           onClick={() => {
@@ -174,7 +174,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   {IS_ENT && doc && <DocLink link={doc} />}
                 </div>
 
-                <div className={'page-header-right-area'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
+                <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <Version />
 
