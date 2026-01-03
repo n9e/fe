@@ -11,8 +11,6 @@ import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
 import { getDorisLogsQuery } from '../../../../services';
 import { NAME_SPACE, TYPE_MAP } from '../../../../constants';
-import { setPinIndexToLocalstorage } from '../../../utils/pinIndexLocalstorage';
-import { setDefaultSearchIndexToLocalstorage } from '../../../utils/defaultSearchIndexLocalstorage';
 import { PinIcon, UnPinIcon } from './PinIcon';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from './DefaultSearchIcon';
 
@@ -153,14 +151,6 @@ export default function index(props: IProps) {
                     size='small'
                     onClick={() => {
                       setDefaultSearchIndex(undefined);
-                      setDefaultSearchIndexToLocalstorage(
-                        {
-                          datasourceValue,
-                          database: queryValues?.database,
-                          table: queryValues?.table,
-                        },
-                        undefined,
-                      );
                       setTopNVisible(false);
                     }}
                   />
@@ -173,14 +163,6 @@ export default function index(props: IProps) {
                     size='small'
                     onClick={() => {
                       setDefaultSearchIndex(index);
-                      setDefaultSearchIndexToLocalstorage(
-                        {
-                          datasourceValue,
-                          database: queryValues?.database,
-                          table: queryValues?.table,
-                        },
-                        index,
-                      );
                       setTopNVisible(false);
                     }}
                   />
@@ -194,14 +176,6 @@ export default function index(props: IProps) {
                     size='small'
                     onClick={() => {
                       setPinIndex(undefined);
-                      setPinIndexToLocalstorage(
-                        {
-                          datasourceValue,
-                          database: queryValues?.database,
-                          table: queryValues?.table,
-                        },
-                        undefined,
-                      );
                       setTopNVisible(false);
                     }}
                   />
@@ -215,14 +189,6 @@ export default function index(props: IProps) {
                     size='small'
                     onClick={() => {
                       setPinIndex(index);
-                      setPinIndexToLocalstorage(
-                        {
-                          datasourceValue,
-                          database: queryValues?.database,
-                          table: queryValues?.table,
-                        },
-                        index,
-                      );
                       setTopNVisible(false);
                     }}
                   />

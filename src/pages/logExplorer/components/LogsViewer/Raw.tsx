@@ -321,6 +321,6 @@ function Raw(props: Props) {
 }
 
 export default React.memo(Raw, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash', 'options', 'timeField'];
+  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

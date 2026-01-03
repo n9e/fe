@@ -20,6 +20,7 @@ const zh_CN = {
     topn_no_data: '无数据',
     unindexable: '字段未开启统计，无法进行统计分析',
   },
+  field_search_placeholder: '搜索字段',
   field_list: {
     show_fields: '显示字段',
     available_fields: '可用字段',

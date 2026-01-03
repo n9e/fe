@@ -159,6 +159,6 @@ function Table(props: Props) {
 }
 
 export default React.memo(Table, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash', 'options', 'timeField'];
+  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

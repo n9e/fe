@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { Spin, Space, Radio } from 'antd';
+import { Spin, Space, Radio, Button } from 'antd';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,7 @@ import Table from './Table';
 import { OptionsType } from './types';
 
 import './style.less';
+import classNames from 'classnames';
 
 interface Props {
   /** 时间字段 */
@@ -117,6 +118,7 @@ export default function LogsViewer(props: Props) {
     showPageLoadMode,
   } = props;
   const [options, setOptions] = useState(props.options);
+  const [histogramVisible, setHistogramVisible] = useState(true);
 
   const updateOptions = (newOptions: any, reload?: boolean) => {
     onOptionsChange?.(newOptions, reload);
@@ -141,15 +143,37 @@ export default function LogsViewer(props: Props) {
     >
       <>
         {!hideHistogram && (
-          <div className='h-[130px]'>
+          <div
+            className={classNames('flex-shrink-0', {
+              'h-[130px]': histogramVisible,
+              'h-[30px]': !histogramVisible,
+            })}
+          >
             <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
               <Space>
                 {histogramAddonBeforeRender}
                 <Spin spinning={histogramLoading} size='small' />
               </Space>
-              {histogramAddonAfterRender}
+              <Space>
+                <Button
+                  size='small'
+                  type='text'
+                  onClick={() => {
+                    setHistogramVisible(!histogramVisible);
+                  }}
+                >
+                  {histogramVisible ? t('histogram_hide') : t('histogram_show')}
+                </Button>
+                {histogramAddonAfterRender}
+              </Space>
             </div>
-            <div className='h-[120px]'>
+            <div
+              className={classNames('flex-shrink-0', {
+                'h-[120px]': histogramVisible,
+                block: histogramVisible,
+                hidden: !histogramVisible,
+              })}
+            >
               {props.range && histogram && (
                 <HistogramChart
                   series={histogram}

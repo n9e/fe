@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Form, Segmented } from 'antd';
-import { useLocation } from 'react-router-dom';
 import { Resizable } from 're-resizable';
 
 import { CommonStateContext } from '@/App';
@@ -17,8 +16,8 @@ import { useGlobalState } from '../globalState';
 import { NAME_SPACE, QUERY_CACHE_KEY, QUERY_CACHE_PICK_KEYS, SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
 import { Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
-import { getPinIndexFromLocalstorage } from './utils/pinIndexLocalstorage';
-import { getDefaultSearchIndexFromLocalstorage } from './utils/defaultSearchIndexLocalstorage';
+import { getPinIndexFromLocalstorage, setPinIndexToLocalstorage } from './utils/pinIndexLocalstorage';
+import { getDefaultSearchIndexFromLocalstorage, setDefaultSearchIndexToLocalstorage } from './utils/defaultSearchIndexLocalstorage';
 import QueryModeQuerySidebar from './QueryMode/Sidebar';
 import SQLModeQuerySidebar from './SQLMode/Sidebar';
 import QueryModeMain from './QueryMode/Main';
@@ -33,7 +32,6 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const location = useLocation();
   const { datasourceCateOptions } = useContext(CommonStateContext);
   const [, setExplorerParsedRange] = useGlobalState('explorerParsedRange');
   const [, setExplorerSnapRange] = useGlobalState('explorerSnapRange');
@@ -42,7 +40,6 @@ export default function index(props: Props) {
   const datasourceValue = Form.useWatch('datasourceValue');
   const mode = Form.useWatch(['query', 'mode']);
   const range = Form.useWatch(['query', 'range']);
-  const refreshFlag = Form.useWatch('refreshFlag');
 
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem(SIDEBAR_CACHE_KEY) || 200));
   const [queryLogsOrganizeFields, setQueryLogsOrganizeFields] = useState<string[]>([]);
@@ -86,6 +83,32 @@ export default function index(props: Props) {
         refreshFlag: _.uniqueId('refreshFlag_'),
       });
     });
+  };
+
+  const handleSetPinIndex = (index) => {
+    const queryValues = form.getFieldValue('query');
+    setPinIndex(index);
+    setPinIndexToLocalstorage(
+      {
+        datasourceValue,
+        database: queryValues?.database,
+        table: queryValues?.table,
+      },
+      index,
+    );
+  };
+
+  const handleSetDefaultSearchIndex = (index) => {
+    const queryValues = form.getFieldValue('query');
+    setDefaultSearchIndex(index);
+    setDefaultSearchIndexToLocalstorage(
+      {
+        datasourceValue,
+        database: queryValues?.database,
+        table: queryValues?.table,
+      },
+      index,
+    );
   };
 
   useEffect(() => {
@@ -229,9 +252,9 @@ export default function index(props: Props) {
                   );
                 }}
                 pinIndex={pinIndex}
-                setPinIndex={setPinIndex}
+                setPinIndex={handleSetPinIndex}
                 defaultSearchIndex={defaultSearchIndex}
-                setDefaultSearchIndex={setDefaultSearchIndex}
+                setDefaultSearchIndex={handleSetDefaultSearchIndex}
                 onIndexDataChange={setIndexData}
               />
             )}
@@ -242,7 +265,9 @@ export default function index(props: Props) {
           {mode === 'query' && (
             <QueryModeMain
               pinIndex={pinIndex}
+              setPinIndex={handleSetPinIndex}
               defaultSearchIndex={defaultSearchIndex}
+              setDefaultSearchIndex={handleSetDefaultSearchIndex}
               indexData={indexData}
               organizeFields={queryLogsOrganizeFields}
               setOrganizeFields={(value) => {

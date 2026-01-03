@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
-import { Form, Row, Col, Button, Space, Tooltip, Pagination, Empty } from 'antd';
+import { Form, Row, Col, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -24,6 +24,8 @@ import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../util
 import filteredFields from '../../utils/filteredFields';
 import QueryInput from '../../components/QueryInput';
 import MainMoreOperations from '../../components/MainMoreOperations';
+import { PinIcon, UnPinIcon } from '../Sidebar/FieldsSidebar/PinIcon';
+import { DefaultSearchIcon, UnDefaultSearchIcon } from '../Sidebar/FieldsSidebar/DefaultSearchIcon';
 import QueryInputAddonAfter from './QueryInputAddonAfter';
 import SQLFormatButton from './SQLFormatButton';
 
@@ -32,7 +34,9 @@ import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
   pinIndex?: Field;
+  setPinIndex?: (field?: Field) => void;
   defaultSearchIndex?: Field;
+  setDefaultSearchIndex?: (field?: Field) => void;
   indexData: Field[];
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
@@ -45,7 +49,7 @@ export default function index(props: Props) {
   const [tabKey] = useGlobalState('tabKey');
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
-  const { pinIndex, defaultSearchIndex, indexData, organizeFields, setOrganizeFields, executeQuery } = props;
+  const { pinIndex, setPinIndex, defaultSearchIndex, setDefaultSearchIndex, indexData, organizeFields, setOrganizeFields, executeQuery } = props;
   const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
@@ -293,13 +297,50 @@ export default function index(props: Props) {
       <Row gutter={SIZE} className='flex-shrink-0'>
         <Col flex='auto'>
           <InputGroupWithFormItem label={<Space>{t(`${logExplorerNS}:query`)}</Space>} addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}>
-            <Form.Item name={['query', 'query']}>
-              <QueryInput
-                onChange={() => {
-                  executeQuery();
-                }}
-              />
-            </Form.Item>
+            <div className='relative'>
+              <Form.Item name={['query', 'query']}>
+                <QueryInput
+                  onChange={() => {
+                    executeQuery();
+                  }}
+                  enableAddonBefore={defaultSearchIndex?.field !== undefined}
+                />
+              </Form.Item>
+              {defaultSearchIndex?.field && (
+                <Popover
+                  content={
+                    <Space>
+                      <span>{t('query.default_search_by_tip')} :</span>
+                      <span>{defaultSearchIndex?.field}</span>
+                      <Tooltip title={t('query.default_search_tip_2')}>
+                        <Button
+                          icon={<UnDefaultSearchIcon />}
+                          size='small'
+                          type='text'
+                          onClick={() => {
+                            setDefaultSearchIndex?.(undefined);
+                          }}
+                        />
+                      </Tooltip>
+                    </Space>
+                  }
+                >
+                  <Button
+                    className='absolute top-[4px] left-[4px] z-10'
+                    size='small'
+                    type='text'
+                    icon={
+                      <DefaultSearchIcon
+                        className='text-[12px]'
+                        style={{
+                          color: 'var(--fc-primary-color)',
+                        }}
+                      />
+                    }
+                  />
+                </Popover>
+              )}
+            </div>
           </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
@@ -337,7 +378,43 @@ export default function index(props: Props) {
               filterFields={(fieldKeys) => {
                 return filteredFields(fieldKeys, organizeFields);
               }}
-              histogramAddonBeforeRender={<Tooltip title={t('explorer:logs.stack_group_by_tip')}>{pinIndex ? pinIndex.field : undefined}</Tooltip>}
+              histogramAddonBeforeRender={
+                pinIndex ? (
+                  <Popover
+                    content={
+                      <Space>
+                        <span>{t('query.stack_group_by_tip')} :</span>
+                        <span>{pinIndex?.field}</span>
+                        <Tooltip title={t('query.stack_tip_unpin')}>
+                          <Button
+                            icon={<UnPinIcon />}
+                            size='small'
+                            type='text'
+                            onClick={() => {
+                              setPinIndex?.(undefined);
+                            }}
+                          />
+                        </Tooltip>
+                      </Space>
+                    }
+                  >
+                    <Button
+                      size='small'
+                      type='text'
+                      icon={
+                        <PinIcon
+                          className='text-[12px]'
+                          style={{
+                            color: 'var(--fc-primary-color)',
+                          }}
+                        />
+                      }
+                    >
+                      {pinIndex.field}
+                    </Button>
+                  </Popover>
+                ) : undefined
+              }
               histogramAddonAfterRender={
                 data && (
                   <Space>

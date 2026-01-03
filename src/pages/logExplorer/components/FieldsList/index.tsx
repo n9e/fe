@@ -51,7 +51,7 @@ export default function index(props: Props) {
   return (
     <div className='h-full min-h-0'>
       <Input
-        placeholder={t('log.search_placeholder')}
+        placeholder={t('field_search_placeholder')}
         value={fieldsSearch}
         onChange={(e) => {
           setFieldsSearch(e.target.value);
