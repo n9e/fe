@@ -91,9 +91,11 @@ interface Props {
   localKey: string;
   datasourceValue: number;
   renderItem: (item: { [index: string]: string }, setVisible: (visible) => void) => React.ReactNode;
+  type?: 'button' | 'text';
+  children?: React.ReactNode;
 }
 
-export default function index({ localKey, datasourceValue, renderItem }: Props) {
+export default function index({ localKey, datasourceValue, renderItem, type = 'button', children }: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const [search, setSearch] = useState('');
   const [visible, setVisible] = useState(false);
@@ -131,13 +133,25 @@ export default function index({ localKey, datasourceValue, renderItem }: Props) 
       trigger='click'
       placement='bottomLeft'
     >
-      <Button
-        onClick={() => {
-          setVisible(true);
-        }}
-      >
-        {t('query.historicalRecords.button')}
-      </Button>
+      {type === 'button' && (
+        <Button
+          onClick={() => {
+            setVisible(true);
+          }}
+        >
+          {children || t('query.historicalRecords.button')}
+        </Button>
+      )}
+      {type === 'text' && (
+        <span
+          className='cursor-pointer underline'
+          onClick={() => {
+            setVisible(true);
+          }}
+        >
+          {children || t('query.historicalRecords.button')}
+        </span>
+      )}
     </Popover>
   );
 }
