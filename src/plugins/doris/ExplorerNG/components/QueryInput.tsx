@@ -4,6 +4,7 @@ import classNames from 'classnames';
 
 interface Props {
   disabled?: boolean;
+  placeholder?: string;
   value?: string;
   onChange?: (value?: string) => void;
 }
@@ -49,6 +50,7 @@ export default function QueryInput(props: Props) {
       onFocus={() => {
         setFocused(true);
       }}
+      placeholder={props.placeholder}
     />
   );
 }
