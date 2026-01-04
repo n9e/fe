@@ -9,13 +9,13 @@
   // 浮动标签
   .outlined-select-label {
     position: absolute;
-    left: 11px;
+    left: 9px;
     top: 50%;
     transform: translateY(-50%);
     background: var(--fc-fill-2); // 使用主题背景色
     color: var(--fc-text-placeholder); // 使用占位符文本色
     padding: 0 4px;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1.5715;
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     pointer-events: none; // 防止阻挡 Select 点击
@@ -42,6 +42,22 @@
   // Select 组件样式覆盖
   .outlined-select {
     width: 100%;
+
+    &.ant-select-multiple {
+      &.ant-select-sm {
+        .ant-select-selection-item {
+          height: 12px;
+          line-height: 10px;
+          margin-top: 2px;
+        }
+      }
+
+      .ant-select-selection-item {
+        height: 18px;
+        line-height: 16px;
+        margin-top: 4px;
+      }
+    }
 
     &-content {
       display: flex;
