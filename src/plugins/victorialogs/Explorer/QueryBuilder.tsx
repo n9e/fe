@@ -1,12 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Form, Space, Input, Row, Col, InputNumber } from 'antd';
+import { Form, Space, Row, Col, InputNumber } from 'antd';
 
 import { SIZE } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 
 import { NAME_SPACE } from '../constants';
+import QueryInput from './components/QueryInput';
 
 interface Props {
   executeQuery: () => void;
@@ -31,7 +32,7 @@ export default function QueryBuilder(props: Props) {
               ]}
               initialValue='*'
             >
-              <Input.TextArea onPressEnter={executeQuery} autoSize={{ minRows: 0 }} />
+              <QueryInput onChange={executeQuery} />
             </Form.Item>
           </InputGroupWithFormItem>
         </Col>
