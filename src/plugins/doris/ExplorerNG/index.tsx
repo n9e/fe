@@ -13,7 +13,7 @@ import { allCates } from '@/components/AdvancedWrap/utils';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
-import { ENABLED_VIEW_CATES } from '@/pages/logExplorer/constants';
+import { ENABLED_VIEW_CATES, NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import { DefaultFormValuesControl } from '@/pages/logExplorer/types';
 import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 
@@ -34,7 +34,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceList, datasourceCateOptions, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
   const { disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -189,6 +189,7 @@ export default function index(props: Props) {
                     filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[DatasourceCateEnum.doris]?.[0]?.id;
                     // 完全重置表单后再设置新值，避免旧值残留
                     form.setFieldsValue({
+                      refreshFlag: undefined,
                       query: undefined,
                     });
                     let range = filterValues.query?.range;
@@ -200,9 +201,9 @@ export default function index(props: Props) {
                     }
                     form.setFieldsValue({
                       ...filterValues,
-                      range,
                       query: {
                         ...filterValues.query,
+                        range,
                         mode: filterValues.query?.mode || 'query',
                       },
                     });
@@ -220,6 +221,7 @@ export default function index(props: Props) {
                     }
                     return {};
                   }}
+                  placeholder={t(`${logExplorerNS}:view_placeholder`)}
                 />
               </div>
               <Form.Item
@@ -253,10 +255,7 @@ export default function index(props: Props) {
                     });
                     form.setFieldsValue({
                       query: {
-                        range: {
-                          start: 'now-1h',
-                          end: 'now',
-                        },
+                        range: logsDefaultRange,
                       },
                     });
                   }}

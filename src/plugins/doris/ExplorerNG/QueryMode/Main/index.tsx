@@ -50,7 +50,14 @@ export default function index(props: Props) {
   const [tabKey] = useGlobalState('tabKey');
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
+
+  const form = Form.useFormInstance();
+  const refreshFlag = Form.useWatch('refreshFlag');
+  const datasourceValue = Form.useWatch('datasourceValue');
+  const queryValues = Form.useWatch('query');
+
   const { indexData, organizeFields, setOrganizeFields, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+
   const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
@@ -112,13 +119,8 @@ export default function index(props: Props) {
     to: undefined,
   });
 
-  const form = Form.useFormInstance();
-  const refreshFlag = Form.useWatch('refreshFlag');
-  const datasourceValue = Form.useWatch('datasourceValue');
-  const queryValues = Form.useWatch('query');
-
   const service = () => {
-    if (datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
+    if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
       const range = parseRange(queryValues.range);
       let timeParams = {
         from: moment(range.start).unix(),
@@ -414,18 +416,22 @@ export default function index(props: Props) {
                   </Popover>
                 ) : undefined
               }
-              histogramAddonAfterRender={
-                data && (
-                  <Space>
-                    {rangeRef.current && (
-                      <>
-                        {moment.unix(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment.unix(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
-                      </>
-                    )}
-                    {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
-                  </Space>
-                )
-              }
+              renderHistogramAddonAfterRender={(toggleNode) => {
+                if (data) {
+                  return (
+                    <Space>
+                      {rangeRef.current && (
+                        <>
+                          {moment.unix(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment.unix(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
+                        </>
+                      )}
+                      {toggleNode}
+                      {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+                    </Space>
+                  );
+                }
+                return toggleNode;
+              }}
               stacked={!!stackByField} // only for histogram
               colWidths={data?.colWidths}
               tableColumnsWidthCacheKey={`${QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({

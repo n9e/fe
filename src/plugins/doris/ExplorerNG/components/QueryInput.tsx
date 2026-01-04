@@ -37,6 +37,7 @@ export default function QueryInput(props: Props) {
         'resize-none': !foucsed,
         'overflow-y-hidden': !foucsed,
         'pl-[32px]': props.enableAddonBefore,
+        'doris-log-explorer-query-input-default': !foucsed,
       })}
       disabled={props.disabled}
       autoSize={{ minRows: 1, maxRows: foucsed ? 4 : 1 }}
