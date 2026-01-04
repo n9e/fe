@@ -225,7 +225,7 @@ export function Link({
   onMouseEnter,
   onMouseLeave,
   linkContext,
-  inTable,
+  inTable = true,
 }: {
   onClick?: () => void;
   text: React.ReactNode;
