@@ -16,7 +16,7 @@
  */
 import React, { useState } from 'react';
 import _ from 'lodash';
-import { Form, Input, Button, Radio, Tooltip, Space } from 'antd';
+import { Form, Row, Col, Button, Radio, Tooltip, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { OutlinedSelect } from '@/components/OutlinedSelect';
 import TableColumnSelect from '@/components/TableColumnSelect';
@@ -31,22 +31,137 @@ export default function Demo() {
       style={{
         padding: 100,
         background: 'var(--fc-fill-2)',
-        width: 500,
+        width: 1000,
       }}
     >
-      <p>表格展示列选择，支持排序</p>
-      <TableColumnSelect
-        options={[
-          { label: '1', value: '1' },
-          { label: '2', value: '2' },
-          { label: '3', value: '3' },
-        ]}
-        value={multiSelectValue}
-        onChange={(value) => {
-          setMultiSelectValue(value);
-        }}
-        sortable={true}
-      />
+      <Row gutter={16}>
+        <Col span={12}>
+          <p>表格展示列选择，支持排序，只展示下拉内容</p>
+          <TableColumnSelect
+            options={[
+              { label: '列1', value: '1' },
+              { label: '列2', value: '2' },
+              { label: '列3', value: '3' },
+              { label: '列4', value: '4' },
+              { label: '列5', value: '5' },
+              { label: '列6', value: '6' },
+              { label: '列7', value: '7' },
+              { label: '列8', value: '8' },
+              { label: '列9', value: '9' },
+              { label: '列10', value: '10' },
+              { label: '列11', value: '11' },
+              { label: '列12', value: '12' },
+              { label: '列13', value: '13' },
+              { label: '列14', value: '14' },
+              { label: '列15', value: '15' },
+              { label: '列16', value: '16' },
+              { label: '列17', value: '17' },
+              { label: '列18', value: '18' },
+              { label: '列19', value: '19' },
+              { label: '列20', value: '20' },
+              { label: '列21', value: '21' },
+              { label: '列22', value: '22' },
+              { label: '列23', value: '23' },
+              { label: '列24', value: '24' },
+              { label: '列25', value: '25' },
+              { label: '列26', value: '26' },
+              { label: '列27', value: '27' },
+              { label: '列28', value: '28' },
+              { label: '列29', value: '29' },
+              { label: '列30', value: '30' },
+              { label: '列31', value: '31' },
+              { label: '列32', value: '32' },
+              { label: '列33', value: '33' },
+              { label: '列34', value: '34' },
+              { label: '列35', value: '35' },
+              { label: '列36', value: '36' },
+              { label: '列37', value: '37' },
+              { label: '列38', value: '38' },
+              { label: '列39', value: '39' },
+              { label: '列40', value: '40' },
+              { label: '列41', value: '41' },
+              { label: '列42', value: '42' },
+              { label: '列43', value: '43' },
+              { label: '列44', value: '44' },
+              { label: '列45', value: '45' },
+              { label: '列46', value: '46' },
+              { label: '列47', value: '47' },
+              { label: '列48', value: '48' },
+              { label: '列49', value: '49' },
+              { label: '列50', value: '50' },
+            ]}
+            value={multiSelectValue}
+            onChange={(value) => {
+              setMultiSelectValue(value);
+            }}
+            sortable={true}
+            showDropdown={false}
+          />
+        </Col>
+        <Col span={12}>
+          <p>表格展示列选择，支持排序，展示按钮</p>
+          <TableColumnSelect
+            options={[
+              { label: '列1', value: '1' },
+              { label: '列2', value: '2' },
+              { label: '列3', value: '3' },
+              { label: '列4', value: '4' },
+              { label: '列5', value: '5' },
+              { label: '列6', value: '6' },
+              { label: '列7', value: '7' },
+              { label: '列8', value: '8' },
+              { label: '列9', value: '9' },
+              { label: '列10', value: '10' },
+              { label: '列11', value: '11' },
+              { label: '列12', value: '12' },
+              { label: '列13', value: '13' },
+              { label: '列14', value: '14' },
+              { label: '列15', value: '15' },
+              { label: '列16', value: '16' },
+              { label: '列17', value: '17' },
+              { label: '列18', value: '18' },
+              { label: '列19', value: '19' },
+              { label: '列20', value: '20' },
+              { label: '列21', value: '21' },
+              { label: '列22', value: '22' },
+              { label: '列23', value: '23' },
+              { label: '列24', value: '24' },
+              { label: '列25', value: '25' },
+              { label: '列26', value: '26' },
+              { label: '列27', value: '27' },
+              { label: '列28', value: '28' },
+              { label: '列29', value: '29' },
+              { label: '列30', value: '30' },
+              { label: '列31', value: '31' },
+              { label: '列32', value: '32' },
+              { label: '列33', value: '33' },
+              { label: '列34', value: '34' },
+              { label: '列35', value: '35' },
+              { label: '列36', value: '36' },
+              { label: '列37', value: '37' },
+              { label: '列38', value: '38' },
+              { label: '列39', value: '39' },
+              { label: '列40', value: '40' },
+              { label: '列41', value: '41' },
+              { label: '列42', value: '42' },
+              { label: '列43', value: '43' },
+              { label: '列44', value: '44' },
+              { label: '列45', value: '45' },
+              { label: '列46', value: '46' },
+              { label: '列47', value: '47' },
+              { label: '列48', value: '48' },
+              { label: '列49', value: '49' },
+              { label: '列50', value: '50' },
+            ]}
+            value={multiSelectValue}
+            onChange={(value) => {
+              setMultiSelectValue(value);
+            }}
+            sortable={true}
+          />
+        </Col>
+      </Row>
+
       <br />
       <br />
       <br />

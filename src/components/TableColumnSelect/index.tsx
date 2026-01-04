@@ -4,6 +4,7 @@ import { SettingOutlined, HolderOutlined, SearchOutlined } from '@ant-design/ico
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 import './index.less';
 
 export interface ColumnOption {
@@ -13,6 +14,7 @@ export interface ColumnOption {
 }
 
 interface IProps {
+  showDropdown?: boolean;
   /** 所有可选列 */
   options: ColumnOption[];
   /** 当前选中的列值 */
@@ -68,7 +70,10 @@ function NormalItem({ option, onToggle, checked = false }: { option: ColumnOptio
 
 export default function TableColumnSelect(props: IProps) {
   const { t } = useTranslation('tableColumnSelect');
-  const { options, value, onChange, buttonText = t('displayColumns'), searchPlaceholder = t('searchColumns'), maxHeight = 400, sortable = true } = props;
+  const { options, value, onChange, buttonText = t('displayColumns'), searchPlaceholder = t('searchColumns'), maxHeight, sortable = true, showDropdown = true } = props;
+
+  // 根据 showDropdown 和用户传入的 maxHeight 来决定最终的高度
+  const finalMaxHeight = maxHeight !== undefined ? maxHeight : showDropdown ? 400 : undefined;
 
   const [searchValue, setSearchValue] = useState('');
   const [open, setOpen] = useState(false);
@@ -162,14 +167,14 @@ export default function TableColumnSelect(props: IProps) {
   };
 
   const dropdownContent = (
-    <div className='table-column-select-dropdown'>
+    <div className={classNames('table-column-select-dropdown', { 'show-dropdown-only': !showDropdown })}>
       {/* 搜索框 */}
       <div className='table-column-select-search'>
         <Input size='small' placeholder={searchPlaceholder} value={searchValue} onChange={(e) => setSearchValue(e.target.value)} prefix={<SearchOutlined />} />
       </div>
 
       {/* 选项列表 */}
-      <div className='table-column-select-options best-looking-scroll' style={{ maxHeight }}>
+      <div className='table-column-select-options best-looking-scroll' style={{ maxHeight: finalMaxHeight }}>
         {/* 已选中项 - 可拖拽排序 */}
         {filteredSelected.length > 0 && sortable && !searchValue && (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -219,6 +224,10 @@ export default function TableColumnSelect(props: IProps) {
       </div>
     </div>
   );
+
+  if (!showDropdown) {
+    return dropdownContent;
+  }
 
   return (
     <Dropdown visible={open} onVisibleChange={setOpen} trigger={['click']} overlay={dropdownContent} placement='bottomRight' overlayClassName='table-column-select-overlay'>
