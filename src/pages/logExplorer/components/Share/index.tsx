@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { copyToClipBoard } from '@/utils';
 
 import { NAME_SPACE } from '../../constants';
-import getFormValuesBySearchParams from '../../utils/getFormValuesBySearchParams';
+import { getLocationSearchByFormValues } from '../../utils/getFormValuesBySearchParams';
 
 interface Props {
   tooltip?: string;
@@ -27,7 +27,7 @@ export default function index(props: Props) {
         icon={!hideIcon && <ShareAltOutlined />}
         onClick={() => {
           const values = form.getFieldsValue();
-          const locationsearch = getFormValuesBySearchParams(values);
+          const locationsearch = getLocationSearchByFormValues(values);
           if (locationsearch) {
             copyToClipBoard(`${window.location.origin}${location.pathname}?${locationsearch}&__execute__=true`);
           }
@@ -50,7 +50,7 @@ export function ShareLinkText(props: Props) {
       <Space
         onClick={() => {
           const values = form.getFieldsValue();
-          const locationsearch = getFormValuesBySearchParams(values);
+          const locationsearch = getLocationSearchByFormValues(values);
           if (locationsearch) {
             copyToClipBoard(`${window.location.origin}${location.pathname}?${locationsearch}&__execute__=true`);
           }

@@ -33,14 +33,15 @@ import SQLFormatButton from './SQLFormatButton';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
-  pinIndex?: Field;
-  setPinIndex?: (field?: Field) => void;
-  defaultSearchIndex?: Field;
-  setDefaultSearchIndex?: (field?: Field) => void;
   indexData: Field[];
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
   executeQuery: () => void;
+
+  stackByField?: string;
+  setStackByField: (field?: string) => void;
+  defaultSearchField?: string;
+  setDefaultSearchField: (field?: string) => void;
 }
 
 export default function index(props: Props) {
@@ -49,7 +50,7 @@ export default function index(props: Props) {
   const [tabKey] = useGlobalState('tabKey');
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
-  const { pinIndex, setPinIndex, defaultSearchIndex, setDefaultSearchIndex, indexData, organizeFields, setOrganizeFields, executeQuery } = props;
+  const { indexData, organizeFields, setOrganizeFields, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
   const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
@@ -141,7 +142,7 @@ export default function index(props: Props) {
             lines: serviceParams.pageSize,
             offset: (serviceParams.current - 1) * serviceParams.pageSize,
             reverse: serviceParams.reverse,
-            default_field: defaultSearchIndex?.field,
+            default_field: defaultSearchField,
           },
         ],
       })
@@ -222,8 +223,8 @@ export default function index(props: Props) {
             from: moment(range.start).unix(),
             to: moment(range.end).unix(),
             query: queryValues.query,
-            group_by: pinIndex?.field,
-            default_field: defaultSearchIndex?.field,
+            group_by: stackByField,
+            default_field: defaultSearchField,
           },
         ],
       })
@@ -262,7 +263,7 @@ export default function index(props: Props) {
     },
     any
   >(histogramService, {
-    refreshDeps: [refreshFlag, pinIndex],
+    refreshDeps: [refreshFlag, stackByField],
   });
 
   useEffect(() => {
@@ -304,22 +305,22 @@ export default function index(props: Props) {
                   onChange={() => {
                     executeQuery();
                   }}
-                  enableAddonBefore={defaultSearchIndex?.field !== undefined}
+                  enableAddonBefore={defaultSearchField !== undefined}
                 />
               </Form.Item>
-              {defaultSearchIndex?.field && (
+              {defaultSearchField && (
                 <Popover
                   content={
                     <Space>
                       <span>{t('query.default_search_by_tip')} :</span>
-                      <span>{defaultSearchIndex?.field}</span>
+                      <span>{defaultSearchField}</span>
                       <Tooltip title={t('query.default_search_tip_2')}>
                         <Button
                           icon={<UnDefaultSearchIcon />}
                           size='small'
                           type='text'
                           onClick={() => {
-                            setDefaultSearchIndex?.(undefined);
+                            setDefaultSearchField?.(undefined);
                           }}
                         />
                       </Tooltip>
@@ -345,7 +346,7 @@ export default function index(props: Props) {
           </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
-          <SQLFormatButton rangeRef={rangeRef} defaultSearchIndex={defaultSearchIndex} />
+          <SQLFormatButton rangeRef={rangeRef} defaultSearchField={defaultSearchField} />
         </Col>
         <Col flex='none'>
           <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>
@@ -380,38 +381,35 @@ export default function index(props: Props) {
                 return filteredFields(fieldKeys, organizeFields);
               }}
               histogramAddonBeforeRender={
-                pinIndex ? (
+                stackByField ? (
                   <Popover
                     content={
                       <Space>
                         <span>{t('query.stack_group_by_tip')} :</span>
-                        <span>{pinIndex?.field}</span>
+                        <span>{stackByField}</span>
                         <Tooltip title={t('query.stack_tip_unpin')}>
                           <Button
                             icon={<UnPinIcon />}
                             size='small'
                             type='text'
                             onClick={() => {
-                              setPinIndex?.(undefined);
+                              setStackByField?.(undefined);
                             }}
                           />
                         </Tooltip>
                       </Space>
                     }
                   >
-                    <Button
-                      size='small'
-                      type='text'
-                      icon={
+                    <Button size='small' type='text'>
+                      <Space>
+                        {stackByField}
                         <PinIcon
                           className='text-[12px]'
                           style={{
                             color: 'var(--fc-primary-color)',
                           }}
                         />
-                      }
-                    >
-                      {pinIndex.field}
+                      </Space>
                     </Button>
                   </Popover>
                 ) : undefined
@@ -428,7 +426,7 @@ export default function index(props: Props) {
                   </Space>
                 )
               }
-              stacked={!!pinIndex} // only for histogram
+              stacked={!!stackByField} // only for histogram
               colWidths={data?.colWidths}
               tableColumnsWidthCacheKey={`${QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({
                 datasourceValue,

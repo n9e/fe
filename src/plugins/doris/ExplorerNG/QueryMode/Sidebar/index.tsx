@@ -19,17 +19,30 @@ interface Props {
   executeQuery: () => void;
   organizeFields: string[];
   setOrganizeFields: (organizeFields: string[]) => void;
-  pinIndex?: Field;
-  setPinIndex: (field?: Field) => void;
-  defaultSearchIndex?: Field;
-  setDefaultSearchIndex: (field?: Field) => void;
   onIndexDataChange: (data: Field[]) => void;
+
+  stackByField?: string;
+  setStackByField: (field?: string) => void;
+  defaultSearchField?: string;
+  setDefaultSearchField: (field?: string) => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const form = Form.useFormInstance();
-  const { disabled, datasourceValue, executeQuery, organizeFields, setOrganizeFields, pinIndex, setPinIndex, defaultSearchIndex, setDefaultSearchIndex, onIndexDataChange } = props;
+  const {
+    disabled,
+    datasourceValue,
+    executeQuery,
+    organizeFields,
+    setOrganizeFields,
+    onIndexDataChange,
+
+    stackByField,
+    setStackByField,
+    defaultSearchField,
+    setDefaultSearchField,
+  } = props;
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
 
@@ -99,6 +112,8 @@ export default function index(props: Props) {
               form.setFieldsValue({
                 refreshFlag: undefined,
                 query: {
+                  stackByField: undefined,
+                  defaultSearchField: undefined,
                   table: undefined,
                   time_field: undefined,
                   query: undefined,
@@ -115,6 +130,8 @@ export default function index(props: Props) {
               form.setFieldsValue({
                 refreshFlag: undefined,
                 query: {
+                  stackByField: undefined,
+                  defaultSearchField: undefined,
                   time_field: undefined,
                   query: undefined,
                 },
@@ -138,10 +155,10 @@ export default function index(props: Props) {
           data={indexData}
           loading={indexDataLoading}
           onValueFilter={handleValueFilter}
-          pinIndex={pinIndex}
-          setPinIndex={setPinIndex}
-          defaultSearchIndex={defaultSearchIndex}
-          setDefaultSearchIndex={setDefaultSearchIndex}
+          stackByField={stackByField}
+          setStackByField={setStackByField}
+          defaultSearchField={defaultSearchField}
+          setDefaultSearchField={setDefaultSearchField}
         />
       </div>
     </div>

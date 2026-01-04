@@ -20,15 +20,16 @@ interface IProps {
   data: Field[];
   loading: boolean;
   onValueFilter: (parmas: { key: string; value: any; operator: 'AND' | 'NOT' }) => void;
-  pinIndex?: Field;
-  setPinIndex: React.Dispatch<React.SetStateAction<Field | undefined>>;
-  defaultSearchIndex?: Field;
-  setDefaultSearchIndex: React.Dispatch<React.SetStateAction<Field | undefined>>;
+
+  stackByField?: string;
+  setStackByField: (field?: string) => void;
+  defaultSearchField?: string;
+  setDefaultSearchField: (field?: string) => void;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, pinIndex, setPinIndex, defaultSearchIndex, setDefaultSearchIndex } = props;
+  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
 
@@ -76,7 +77,7 @@ export default function index(props: IProps) {
                   field: record.field,
                   func,
                   ref: func,
-                  default_field: defaultSearchIndex?.field,
+                  default_field: defaultSearchField,
                 };
               }),
             };
@@ -143,14 +144,14 @@ export default function index(props: IProps) {
           const disabled = _.isNaN(unique_count) || unique_count <= 1 || unique_count > 10;
           return (
             <Space>
-              {defaultSearchIndex && defaultSearchIndex.field === index.field ? (
+              {defaultSearchField && defaultSearchField === index.field ? (
                 <Tooltip title={t('query.default_search_tip_2')}>
                   <Button
                     icon={<UnDefaultSearchIcon className='text-[14px]' />}
                     type='text'
                     size='small'
                     onClick={() => {
-                      setDefaultSearchIndex(undefined);
+                      setDefaultSearchField(undefined);
                       setTopNVisible(false);
                     }}
                   />
@@ -162,20 +163,20 @@ export default function index(props: IProps) {
                     type='text'
                     size='small'
                     onClick={() => {
-                      setDefaultSearchIndex(index);
+                      setDefaultSearchField(index.field);
                       setTopNVisible(false);
                     }}
                   />
                 </Tooltip>
               )}
-              {pinIndex && pinIndex.field === index.field ? (
+              {stackByField && stackByField === index.field ? (
                 <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
                   <Button
                     icon={<UnPinIcon className='text-[14px]' />}
                     type='text'
                     size='small'
                     onClick={() => {
-                      setPinIndex(undefined);
+                      setStackByField(undefined);
                       setTopNVisible(false);
                     }}
                   />
@@ -188,7 +189,7 @@ export default function index(props: IProps) {
                     type='text'
                     size='small'
                     onClick={() => {
-                      setPinIndex(index);
+                      setStackByField(index.field);
                       setTopNVisible(false);
                     }}
                   />
@@ -200,7 +201,7 @@ export default function index(props: IProps) {
         renderFieldNameExtra={(field) => {
           return (
             <Space size={2}>
-              {defaultSearchIndex && defaultSearchIndex.field === field.field && (
+              {defaultSearchField && defaultSearchField === field.field && (
                 <Tooltip title={t('query.default_search_by_tip')}>
                   <DefaultSearchIcon
                     className='text-[12px]'
@@ -210,7 +211,7 @@ export default function index(props: IProps) {
                   />
                 </Tooltip>
               )}
-              {pinIndex && pinIndex.field === field.field && (
+              {stackByField && stackByField === field.field && (
                 <Tooltip title={t('query.stack_group_by_tip')}>
                   <PinIcon
                     className='text-[12px]'

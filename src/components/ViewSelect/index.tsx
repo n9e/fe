@@ -77,7 +77,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
             allowClear
             disabled={disabled}
             placeholder={t('placeholder')}
-            className='w-full max-w-[160px]'
+            className='w-full'
             dropdownMatchSelectWidth={false}
             dropdownRender={(originNode) => {
               return (

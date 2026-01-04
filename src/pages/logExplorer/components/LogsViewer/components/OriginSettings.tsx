@@ -16,15 +16,7 @@ import { NAME_SPACE } from '../../../constants';
 import { OptionsType } from '../types';
 
 export default forwardRef(function OriginSettings(
-  {
-    options,
-    updateOptions,
-    fields,
-    showDateField,
-    showPageLoadMode,
-    organizeFields,
-    setOrganizeFields,
-  }: {
+  props: {
     options: OptionsType;
     updateOptions: (options: any, reload?: boolean) => void;
     fields: string[];
@@ -36,7 +28,10 @@ export default forwardRef(function OriginSettings(
   ref,
 ) {
   const { t } = useTranslation(NAME_SPACE);
+  const { options, updateOptions, fields, showDateField, showPageLoadMode } = props;
+
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
+  const [organizeFields, setOrganizeFields] = useState<string[] | undefined>(props.organizeFields);
 
   const [jsonSettingsModalVisible, setJsonSettingsModalVisible] = useState(false);
   const [jsonSettings, setJsonSettings] = useState({
@@ -53,6 +48,10 @@ export default forwardRef(function OriginSettings(
       jsonExpandLevel: options.jsonExpandLevel,
     });
   }, [JSON.stringify(options)]);
+
+  useEffect(() => {
+    setOrganizeFields(props.organizeFields);
+  }, [props.organizeFields]);
 
   useImperativeHandle(
     ref,
@@ -176,12 +175,11 @@ export default forwardRef(function OriginSettings(
         title={t('logs.settings.organizeFields.title')}
         visible={organizeFieldsModalVisible}
         onOk={() => {
-          updateOptions({
-            organizeFields,
-          });
+          props.setOrganizeFields?.(organizeFields);
           setOrganizeFieldsModalVisible(false);
         }}
         onCancel={() => {
+          setOrganizeFields(props.organizeFields);
           setOrganizeFieldsModalVisible(false);
         }}
       >
@@ -194,9 +192,11 @@ export default forwardRef(function OriginSettings(
           })}
           value={organizeFields ?? []}
           onChange={(value) => {
-            setOrganizeFields?.(value);
+            setOrganizeFields(value);
           }}
           sortable={true}
+          showDropdown={false}
+          maxHeight={400}
         />
       </Modal>
       <Modal

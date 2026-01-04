@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 import _ from 'lodash';
@@ -14,26 +14,17 @@ interface Props {
   setItems: React.Dispatch<React.SetStateAction<LogExplorerTabItem[]>>;
   activeKey: string;
   setActiveKey: React.Dispatch<React.SetStateAction<string>>;
-  viewSelectContainerRef?: React.RefObject<HTMLDivElement>;
-  setHeaderContainerMounted: React.Dispatch<React.SetStateAction<boolean>>;
   defaultDatasourceCate: string;
   defaultDatasourceValue: number;
 }
 
 export default function Header(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { items, setItems, activeKey, setActiveKey, viewSelectContainerRef, setHeaderContainerMounted, defaultDatasourceCate, defaultDatasourceValue } = props;
-
-  useEffect(() => {
-    if (viewSelectContainerRef?.current) {
-      setHeaderContainerMounted(true);
-    }
-  }, []);
+  const { items, setItems, activeKey, setActiveKey, defaultDatasourceCate, defaultDatasourceValue } = props;
 
   return (
     <div className='log-explorer-ng-header w-full flex items-center gap-4'>
       <span className='flex-shrink-0'>{t('title')}</span>
-      <div ref={viewSelectContainerRef} />
       <Tabs
         className='log-explorer-ng-tabs min-w-0 flex-1'
         size='small'

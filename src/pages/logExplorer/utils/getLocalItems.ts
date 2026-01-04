@@ -8,7 +8,7 @@ import formValuesIsInItems from './formValuesIsInItems';
 import getUUID from './getUUID';
 import { DEFAULT_ACTIVE_KEY, LOCALE_KEY } from '../constants';
 
-export function getLocalItems(params) {
+export function getLocalItems(params, defaultFormValues = {}) {
   const localItems = localStorage.getItem(LOCALE_KEY);
   let items: any[] = [];
   const range_start = _.get(params, 'start');
@@ -60,11 +60,13 @@ export function getLocalItems(params) {
       {
         key: DEFAULT_ACTIVE_KEY,
         isInited: false,
-        formValues: searchRange ? { query: { range: searchRange } } : undefined,
+        formValues: searchRange ? { ...defaultFormValues, query: { range: searchRange } } : defaultFormValues,
       },
     ];
   }
+
   const formValues = getFormValuesBySearchParams(params);
+
   if (formValues) {
     if (formValuesIsInItems(formValues, items)) {
       const range_start = _.get(params, 'start');
