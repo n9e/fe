@@ -255,6 +255,7 @@ export default function index(props: Props) {
                     });
                     form.setFieldsValue({
                       query: {
+                        mode: 'query',
                         range: logsDefaultRange,
                       },
                     });
