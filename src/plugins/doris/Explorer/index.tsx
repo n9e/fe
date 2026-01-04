@@ -105,6 +105,10 @@ export default function Doris(props: IProps) {
           setLocalQueryHistoryUtil(`${SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
         }
       }
+
+      form.setFieldsValue({
+        refreshFlag: _.uniqueId('refreshFlag_'),
+      });
     });
   };
 
