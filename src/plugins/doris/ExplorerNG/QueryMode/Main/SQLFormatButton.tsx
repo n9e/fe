@@ -18,12 +18,12 @@ interface SQLFormatParams {
       }
     | undefined
   >;
-  defaultSearchIndex: Field | undefined;
+  defaultSearchField: string | undefined;
 }
 
 export default function SQLFormatButton(props: SQLFormatParams) {
   const { t } = useTranslation(NAME_SPACE);
-  const { rangeRef, defaultSearchIndex } = props;
+  const { rangeRef, defaultSearchField } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const form = Form.useFormInstance();
   const { run: fetchFormattedSQL, data } = useRequest(getDorisSQLFormat, {
@@ -62,7 +62,7 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                   lines: 10,
                   offset: 0,
                   reverse: true,
-                  default_field: defaultSearchIndex?.field,
+                  default_field: defaultSearchField,
                 },
               ],
             });

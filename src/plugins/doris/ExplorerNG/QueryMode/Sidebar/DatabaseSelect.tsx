@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Select } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum } from '@/utils/constant';
+import { OutlinedSelect } from '@/components/OutlinedSelect';
 
+import { NAME_SPACE } from '../../../constants';
 import { getDorisDatabases } from '../../../services';
 
 interface Props {
@@ -14,6 +16,7 @@ interface Props {
 }
 
 export default function DatabaseSelect(props: Props) {
+  const { t } = useTranslation(NAME_SPACE);
   const { datasourceValue, value, onChange, disabled } = props;
   const [databases, setDatabases] = useState<string[]>([]);
 
@@ -30,7 +33,8 @@ export default function DatabaseSelect(props: Props) {
   }, [datasourceValue]);
 
   return (
-    <Select
+    <OutlinedSelect
+      label={t('query.database')}
       showSearch
       optionFilterProp='label'
       options={_.map(databases, (item) => {

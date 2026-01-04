@@ -3,21 +3,23 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Form, Segmented } from 'antd';
 import { Resizable } from 're-resizable';
+import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
-import { parseRange } from '@/components/TimeRangePicker';
+import { setDefaultDatasourceValue } from '@/utils';
+import ViewSelect from '@/components/ViewSelect';
+import { allCates } from '@/components/AdvancedWrap/utils';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
+import { ENABLED_VIEW_CATES } from '@/pages/logExplorer/constants';
 import { DefaultFormValuesControl } from '@/pages/logExplorer/types';
+import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 
-import { useGlobalState } from '../globalState';
 import { NAME_SPACE, QUERY_CACHE_KEY, QUERY_CACHE_PICK_KEYS, SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
 import { Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
-import { getPinIndexFromLocalstorage, setPinIndexToLocalstorage } from './utils/pinIndexLocalstorage';
-import { getDefaultSearchIndexFromLocalstorage, setDefaultSearchIndexToLocalstorage } from './utils/defaultSearchIndexLocalstorage';
 import QueryModeQuerySidebar from './QueryMode/Sidebar';
 import SQLModeQuerySidebar from './SQLMode/Sidebar';
 import QueryModeMain from './QueryMode/Main';
@@ -32,20 +34,17 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceCateOptions } = useContext(CommonStateContext);
-  const [, setExplorerParsedRange] = useGlobalState('explorerParsedRange');
-  const [, setExplorerSnapRange] = useGlobalState('explorerSnapRange');
+  const { datasourceList, datasourceCateOptions, groupedDatasourceList } = useContext(CommonStateContext);
   const { disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const mode = Form.useWatch(['query', 'mode']);
-  const range = Form.useWatch(['query', 'range']);
+  const stackByField = Form.useWatch(['query', 'stackByField']);
+  const defaultSearchField = Form.useWatch(['query', 'defaultSearchField']);
 
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem(SIDEBAR_CACHE_KEY) || 200));
   const [queryLogsOrganizeFields, setQueryLogsOrganizeFields] = useState<string[]>([]);
   const [sqlLogsOrganizeFields, setSqlLogsOrganizeFields] = useState<string[]>([]);
-  const [pinIndex, setPinIndex] = useState<Field | undefined>();
-  const [defaultSearchIndex, setDefaultSearchIndex] = useState<Field | undefined>();
   const [indexData, setIndexData] = useState<Field[]>([]);
 
   const executeQuery = () => {
@@ -71,51 +70,27 @@ export default function index(props: Props) {
         }
       }
 
-      // 如果是相对时间范围，则更新 explorerParsedRange
-      const range = values.query?.range;
-      if (_.isString(range?.start) && _.isString(range?.end)) {
-        setExplorerParsedRange(parseRange(range));
-      }
-
-      // 每次执行查询，重置 explorerSnapRange
-      setExplorerSnapRange({});
       form.setFieldsValue({
         refreshFlag: _.uniqueId('refreshFlag_'),
       });
     });
   };
 
-  const handleSetPinIndex = (index) => {
-    const queryValues = form.getFieldValue('query');
-    setPinIndex(index);
-    setPinIndexToLocalstorage(
-      {
-        datasourceValue,
-        database: queryValues?.database,
-        table: queryValues?.table,
+  const handleSetStackByField = (index) => {
+    form.setFieldsValue({
+      query: {
+        stackByField: index,
       },
-      index,
-    );
+    });
   };
 
-  const handleSetDefaultSearchIndex = (index) => {
-    const queryValues = form.getFieldValue('query');
-    setDefaultSearchIndex(index);
-    setDefaultSearchIndexToLocalstorage(
-      {
-        datasourceValue,
-        database: queryValues?.database,
-        table: queryValues?.table,
+  const handleSetDefaultSearchField = (index) => {
+    form.setFieldsValue({
+      query: {
+        defaultSearchField: index,
       },
-      index,
-    );
+    });
   };
-
-  useEffect(() => {
-    // 外部修改了 range，则更新 explorerParsedRange
-    const parsedRange = range ? parseRange(range) : { start: undefined, end: undefined };
-    setExplorerParsedRange(parsedRange);
-  }, [JSON.stringify(range)]);
 
   useEffect(() => {
     if (defaultFormValuesControl?.isInited) {
@@ -126,20 +101,6 @@ export default function index(props: Props) {
           getOrganizeFieldsFromLocalstorage({
             datasourceValue,
             mode: queryValues?.mode,
-            database: queryValues?.database,
-            table: queryValues?.table,
-          }),
-        );
-        setPinIndex(
-          getPinIndexFromLocalstorage({
-            datasourceValue,
-            database: queryValues?.database,
-            table: queryValues?.table,
-          }),
-        );
-        setDefaultSearchIndex(
-          getDefaultSearchIndexFromLocalstorage({
-            datasourceValue,
             database: queryValues?.database,
             table: queryValues?.table,
           }),
@@ -160,6 +121,12 @@ export default function index(props: Props) {
       <Form.Item name='refreshFlag' hidden>
         <div />
       </Form.Item>
+      <Form.Item name={['query', 'stackByField']} hidden>
+        <div />
+      </Form.Item>
+      <Form.Item name={['query', 'defaultSearchField']} hidden>
+        <div />
+      </Form.Item>
       <div className='h-full flex gap-4'>
         <Resizable
           size={{ width, height: '100%' }}
@@ -173,10 +140,88 @@ export default function index(props: Props) {
             }
             setWidth(curWidth);
             localStorage.setItem(SIDEBAR_CACHE_KEY, curWidth.toString());
+            // 触发 resize 事件，让右侧图表重新计算尺寸
+            setTimeout(() => {
+              window.dispatchEvent(new Event('resize'));
+            }, 0);
           }}
         >
           <div className='flex-shrink-0 h-full flex flex-col'>
             <div className='flex-shrink-0'>
+              <div className='mb-4'>
+                <ViewSelect<{
+                  datasourceCate: string;
+                  datasourceValue: number;
+                  [key: string]: any;
+                }>
+                  disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
+                  page={location.pathname}
+                  getFilterValuesJSONString={() => {
+                    const formValues = form.getFieldsValue();
+                    let range = formValues.query?.range;
+                    if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
+                      range = {
+                        start: range.start.unix(),
+                        end: range.end.unix(),
+                      };
+                    }
+                    const filterValues = {
+                      datasourceCate: formValues.datasourceCate,
+                      datasourceValue: formValues.datasourceValue,
+                      query: {
+                        ...formValues.query,
+                        range,
+                      },
+                    };
+                    return JSON.stringify(filterValues);
+                  }}
+                  renderOptionExtra={(filterValues) => {
+                    const { datasourceCate, datasourceValue } = filterValues;
+                    return (
+                      <div className='flex items-center gap-2'>
+                        <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
+                        <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
+                      </div>
+                    );
+                  }}
+                  onSelect={(filterValues) => {
+                    filterValues.datasourceCate = filterValues.datasourceCate || DatasourceCateEnum.doris;
+                    filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[DatasourceCateEnum.doris]?.[0]?.id;
+                    // 完全重置表单后再设置新值，避免旧值残留
+                    form.setFieldsValue({
+                      query: undefined,
+                    });
+                    let range = filterValues.query?.range;
+                    if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
+                      range = {
+                        start: moment.unix(range.start),
+                        end: moment.unix(range.end),
+                      };
+                    }
+                    form.setFieldsValue({
+                      ...filterValues,
+                      range,
+                      query: {
+                        ...filterValues.query,
+                        mode: filterValues.query?.mode || 'query',
+                      },
+                    });
+                    executeQuery();
+                  }}
+                  adjustOldFilterValues={(values) => {
+                    if (values) {
+                      // 去掉 query 中值为 undefined 的字段
+                      const cleanedQuery = omitUndefinedDeep(values.query) || {};
+                      return {
+                        datasourceCate: values.datasourceCate,
+                        datasourceValue: values.datasourceValue,
+                        query: cleanedQuery,
+                      };
+                    }
+                    return {};
+                  }}
+                />
+              </div>
               <Form.Item
                 name='datasourceValue'
                 rules={[
@@ -199,6 +244,7 @@ export default function index(props: Props) {
                     });
                   }}
                   onChange={(datasourceValue, datasourceCate) => {
+                    setDefaultDatasourceValue(datasourceCate, datasourceValue);
                     // 先清空 query
                     form.setFieldsValue({
                       datasourceCate,
@@ -251,11 +297,11 @@ export default function index(props: Props) {
                     value,
                   );
                 }}
-                pinIndex={pinIndex}
-                setPinIndex={handleSetPinIndex}
-                defaultSearchIndex={defaultSearchIndex}
-                setDefaultSearchIndex={handleSetDefaultSearchIndex}
                 onIndexDataChange={setIndexData}
+                stackByField={stackByField}
+                setStackByField={handleSetStackByField}
+                defaultSearchField={defaultSearchField}
+                setDefaultSearchField={handleSetDefaultSearchField}
               />
             )}
             {mode === 'sql' && <SQLModeQuerySidebar disabled={disabled} datasourceValue={datasourceValue} executeQuery={executeQuery} />}
@@ -264,10 +310,6 @@ export default function index(props: Props) {
         <div className='min-w-0 flex-1'>
           {mode === 'query' && (
             <QueryModeMain
-              pinIndex={pinIndex}
-              setPinIndex={handleSetPinIndex}
-              defaultSearchIndex={defaultSearchIndex}
-              setDefaultSearchIndex={handleSetDefaultSearchIndex}
               indexData={indexData}
               organizeFields={queryLogsOrganizeFields}
               setOrganizeFields={(value) => {
@@ -284,6 +326,10 @@ export default function index(props: Props) {
                 );
               }}
               executeQuery={executeQuery}
+              stackByField={stackByField}
+              setStackByField={handleSetStackByField}
+              defaultSearchField={defaultSearchField}
+              setDefaultSearchField={handleSetDefaultSearchField}
             />
           )}
           {mode === 'sql' && (

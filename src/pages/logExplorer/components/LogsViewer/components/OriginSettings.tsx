@@ -6,23 +6,17 @@
 import React from 'react';
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Space, Switch, Dropdown, Menu, Modal, Row, Col, Form, Radio, InputNumber, Tooltip } from 'antd';
+import { Space, Switch, Dropdown, Menu, Modal, Form, Radio, InputNumber, Tooltip } from 'antd';
 import _ from 'lodash';
-import { SettingOutlined, EyeInvisibleOutlined, PlusSquareOutlined, CloseSquareOutlined } from '@ant-design/icons';
+import { SettingOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+
+import TableColumnSelect from '@/components/TableColumnSelect';
 
 import { NAME_SPACE } from '../../../constants';
 import { OptionsType } from '../types';
 
 export default forwardRef(function OriginSettings(
-  {
-    options,
-    updateOptions,
-    fields,
-    showDateField,
-    showPageLoadMode,
-    organizeFields,
-    setOrganizeFields,
-  }: {
+  props: {
     options: OptionsType;
     updateOptions: (options: any, reload?: boolean) => void;
     fields: string[];
@@ -34,7 +28,10 @@ export default forwardRef(function OriginSettings(
   ref,
 ) {
   const { t } = useTranslation(NAME_SPACE);
+  const { options, updateOptions, fields, showDateField, showPageLoadMode } = props;
+
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
+  const [organizeFields, setOrganizeFields] = useState<string[] | undefined>(props.organizeFields);
 
   const [jsonSettingsModalVisible, setJsonSettingsModalVisible] = useState(false);
   const [jsonSettings, setJsonSettings] = useState({
@@ -51,6 +48,10 @@ export default forwardRef(function OriginSettings(
       jsonExpandLevel: options.jsonExpandLevel,
     });
   }, [JSON.stringify(options)]);
+
+  useEffect(() => {
+    setOrganizeFields(props.organizeFields);
+  }, [props.organizeFields]);
 
   useImperativeHandle(
     ref,
@@ -174,84 +175,29 @@ export default forwardRef(function OriginSettings(
         title={t('logs.settings.organizeFields.title')}
         visible={organizeFieldsModalVisible}
         onOk={() => {
-          updateOptions({
-            organizeFields,
-          });
+          props.setOrganizeFields?.(organizeFields);
           setOrganizeFieldsModalVisible(false);
         }}
         onCancel={() => {
+          setOrganizeFields(props.organizeFields);
           setOrganizeFieldsModalVisible(false);
         }}
       >
-        <Row gutter={16}>
-          <Col span={12}>
-            <div>
-              <div
-                style={{
-                  borderStyle: 'solid',
-                  borderWidth: '1px',
-                  borderBottom: '0 none',
-                  padding: '8px 16px',
-                }}
-                className='n9e-border-color'
-              >
-                <h3 style={{ margin: 0 }}>{t('logs.settings.organizeFields.allFields')}</h3>
-              </div>
-              <div style={{ borderStyle: 'solid', borderWidth: '1px', padding: 16, overflowY: 'auto', height: 450 }} className='n9e-border-color'>
-                {_.map(_.xor(fields, organizeFields), (field: string) => {
-                  return (
-                    <div
-                      key={field}
-                      onClick={() => {
-                        setOrganizeFields?.([...(organizeFields || []), field]);
-                      }}
-                      style={{ cursor: 'pointer', marginBottom: 8 }}
-                    >
-                      <Space>
-                        <PlusSquareOutlined />
-                        {field}
-                      </Space>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </Col>
-          <Col span={12}>
-            <div>
-              <div
-                style={{
-                  borderStyle: 'solid',
-                  borderWidth: '1px',
-                  borderBottom: '0 none',
-                  padding: '8px 16px',
-                }}
-                className='n9e-border-color'
-              >
-                <h3 style={{ margin: 0 }}>{t('logs.settings.organizeFields.showFields')}</h3>
-              </div>
-              <div style={{ borderStyle: 'solid', borderWidth: '1px', padding: 16, overflowY: 'auto', height: 450 }} className='n9e-border-color'>
-                {_.isEmpty(organizeFields) && <div style={{ color: '#999' }}>{t('logs.settings.organizeFields.showFields_empty')}</div>}
-                {_.map(organizeFields, (field) => {
-                  return (
-                    <div
-                      key={field}
-                      onClick={() => {
-                        setOrganizeFields?.(_.filter(organizeFields, (item) => item !== field));
-                      }}
-                      style={{ cursor: 'pointer', marginBottom: 8 }}
-                    >
-                      <Space>
-                        <CloseSquareOutlined />
-                        {field}
-                      </Space>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </Col>
-        </Row>
+        <TableColumnSelect
+          options={_.map(fields, (item) => {
+            return {
+              label: item,
+              value: item,
+            };
+          })}
+          value={organizeFields ?? []}
+          onChange={(value) => {
+            setOrganizeFields(value);
+          }}
+          sortable={true}
+          showDropdown={false}
+          maxHeight={400}
+        />
       </Modal>
       <Modal
         title={t('logs.settings.jsonSettings.title')}

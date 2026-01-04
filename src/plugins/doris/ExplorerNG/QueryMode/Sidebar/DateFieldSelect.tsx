@@ -1,7 +1,10 @@
 import React from 'react';
-import { Select } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
+import { OutlinedSelect } from '@/components/OutlinedSelect';
+
+import { NAME_SPACE } from '../../../constants';
 import { Field } from '../../../services';
 
 interface Props {
@@ -12,10 +15,12 @@ interface Props {
 }
 
 export default function DateFieldSelect(props: Props) {
+  const { t } = useTranslation(NAME_SPACE);
   const { dateFields, value, onChange, disabled } = props;
 
   return (
-    <Select
+    <OutlinedSelect
+      label={t('query.time_field')}
       className='min-w-[100px]'
       showSearch
       optionFilterProp='label'
