@@ -165,7 +165,7 @@ export default function Demo() {
       <br />
       <br />
       <br />
-      <p>Outlined Select</p>
+      <p>Outlined Multiple Select</p>
       <OutlinedSelect
         label='数据源'
         options={[
@@ -179,6 +179,7 @@ export default function Demo() {
           { label: 'MongoDB', value: '8' },
           { label: 'Redis', value: '9' },
         ]}
+        mode='multiple'
         value={value}
         onChange={(value) => {
           setValue(value);
@@ -203,6 +204,30 @@ export default function Demo() {
           { label: 'MongoDB', value: '8' },
           { label: 'Redis', value: '9' },
         ]}
+        value={value}
+        onChange={(value) => {
+          setValue(value);
+        }}
+        size='small'
+        allowClear
+      />
+      <br />
+      <br />
+      <br />
+      <OutlinedSelect
+        label='数据源'
+        options={[
+          { label: 'Doris', value: '1' },
+          { label: 'Prometheus', value: '2' },
+          { label: 'Elasticsearch', value: '3' },
+          { label: 'MySQL', value: '4' },
+          { label: 'PostgreSQL', value: '5' },
+          { label: 'SQL Server', value: '6' },
+          { label: 'Oracle', value: '7' },
+          { label: 'MongoDB', value: '8' },
+          { label: 'Redis', value: '9' },
+        ]}
+        mode='multiple'
         value={value}
         onChange={(value) => {
           setValue(value);
