@@ -158,6 +158,7 @@ export default function index(props: Props) {
             appendRef.current = false;
             return {
               list: _.concat(data?.list, newLogs),
+              total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(_.concat(data?.list, newLogs)),
             };
