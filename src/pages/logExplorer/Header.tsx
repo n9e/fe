@@ -16,11 +16,13 @@ interface Props {
   setActiveKey: React.Dispatch<React.SetStateAction<string>>;
   viewSelectContainerRef?: React.RefObject<HTMLDivElement>;
   setHeaderContainerMounted: React.Dispatch<React.SetStateAction<boolean>>;
+  defaultDatasourceCate: string;
+  defaultDatasourceValue: number;
 }
 
 export default function Header(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { items, setItems, activeKey, setActiveKey, viewSelectContainerRef, setHeaderContainerMounted } = props;
+  const { items, setItems, activeKey, setActiveKey, viewSelectContainerRef, setHeaderContainerMounted, defaultDatasourceCate, defaultDatasourceValue } = props;
 
   useEffect(() => {
     if (viewSelectContainerRef?.current) {
@@ -44,8 +46,10 @@ export default function Header(props: Props) {
               ...items,
               {
                 key: newActiveKey,
-                isInited: true,
+                isInited: false,
                 formValues: {
+                  datasourceCate: defaultDatasourceCate,
+                  datasourceValue: defaultDatasourceValue,
                   query: {
                     range: {
                       start: 'now-1h',

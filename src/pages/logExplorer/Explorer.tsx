@@ -8,14 +8,12 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
-import { getDefaultDatasourceValue } from '@/utils';
 import ViewSelect from '@/components/ViewSelect';
 import { allCates } from '@/components/AdvancedWrap/utils';
 
 import { NAME_SPACE, ENABLED_VIEW_CATES } from './constants';
 import { Query, DefaultFormValuesControl } from './types';
 import omitUndefinedDeep from './utils/omitUndefinedDeep';
-import getDefaultDatasourceCate from './utils/getDefaultDatasourceCate';
 
 // @ts-ignore
 import PlusLogExplorer from 'plus:/parcels/LogExplorer';
@@ -26,17 +24,16 @@ interface Props {
   tabIndex?: number;
   defaultFormValuesControl?: DefaultFormValuesControl;
   viewSelectContainerRef?: React.RefObject<HTMLDivElement>;
+  defaultDatasourceCate: string;
+  defaultDatasourceValue: number;
 }
 
 export default function Explorer(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList } = useContext(CommonStateContext);
   const history = useHistory();
   const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const { headerContainerMounted, tabKey, tabIndex, defaultFormValuesControl, viewSelectContainerRef } = props;
-  const defaultDatasourceCate = params.get('data_source_name') || getDefaultDatasourceCate(datasourceList, DatasourceCateEnum.elasticsearch);
-  const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
+  const { headerContainerMounted, tabKey, tabIndex, defaultFormValuesControl, viewSelectContainerRef, defaultDatasourceCate, defaultDatasourceValue } = props;
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const datasourceValue = Form.useWatch('datasourceValue', form);
