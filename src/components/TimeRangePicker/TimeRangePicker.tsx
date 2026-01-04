@@ -212,6 +212,7 @@ export default function index(props: ITimeRangePickerProps) {
     timezone = InternalTimeZones.localBrowserTime,
     onTimezoneChange,
     showSecond,
+    onVisibleChange,
   } = props;
   const [visible, setVisible] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>();
@@ -395,6 +396,7 @@ export default function index(props: ITimeRangePickerProps) {
         visible={visible}
         onVisibleChange={(v) => {
           !disabled && setVisible(v);
+          onVisibleChange && onVisibleChange(v);
         }}
       >
         <Button

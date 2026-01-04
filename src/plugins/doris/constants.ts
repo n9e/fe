@@ -26,3 +26,11 @@ export const TYPE_MAP: Record<string, string> = {
 };
 export const DATE_TYPE_LIST = ['date', 'timestamp', 'datetime'];
 export const DEFAULT_LOGS_PAGE_SIZE = 30;
+
+export const QUERY_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'doris-query-logs-organize-fields';
+export const SQL_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'doris-sql-logs-organize-fields';
+
+export const PIN_INDEX_CACHE_KEY = 'doris_query_logs_pin_index';
+export const DEFAULT_SEARCH_INDEX_CACHE_KEY = 'doris_query_logs_default_search_index';
+
+export const SIDEBAR_CACHE_KEY = 'doris-explorer-sidebar';
