@@ -174,6 +174,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
               fieldConfig,
               range,
             }}
+            inTable
           />
         ) : (
           <div className={`explorer-origin-field-val ${fieldValueClassName}`}>{value}</div>
