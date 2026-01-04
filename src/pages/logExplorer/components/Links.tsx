@@ -1,13 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
+import IconFont from '@/components/IconFont';
 import { Popover } from 'antd';
 import moment from 'moment';
-
 import { basePrefix } from '@/App';
 import { ILogExtract, ILogURL, ILogMappingParams, LinkContext } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import IconFont from '@/components/IconFont';
-
 export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]): string {
   const param = new URLSearchParams(link);
   let reallink = link;
@@ -190,9 +188,10 @@ interface IProps {
   paramsArr: ILogURL[];
   regExtractArr?: ILogExtract[];
   mappingParamsArr?: ILogMappingParams[];
+  inTable?: boolean;
 }
 
-export default function Links({ rawValue, range, text, paramsArr, regExtractArr, mappingParamsArr }: IProps) {
+export default function Links({ rawValue, range, text, paramsArr, regExtractArr, mappingParamsArr, inTable }: IProps) {
   const isGold = localStorage.getItem('n9e-dark-mode') === '2';
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
@@ -214,6 +213,7 @@ export default function Links({ rawValue, range, text, paramsArr, regExtractArr,
           }
         }}
         text={text}
+        inTable={inTable}
       />
     </Popover>
   );
@@ -225,12 +225,14 @@ export function Link({
   onMouseEnter,
   onMouseLeave,
   linkContext,
+  inTable = true,
 }: {
   onClick?: () => void;
   text: React.ReactNode;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   linkContext?: LinkContext;
+  inTable?: boolean;
 }) {
   const isGold = localStorage.getItem('n9e-dark-mode') === '2';
   const iconTips = !!linkContext;
@@ -239,9 +241,14 @@ export function Link({
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
   let end = parsedRange ? moment(parsedRange.end).unix() : 0;
-  return (
-    <span
-      style={{
+  const style = inTable
+    ? {
+        color: isGold ? 'var(--fc-gold-text)' : 'var(--fc-fill-primary)',
+        textDecoration: 'underline',
+        textDecorationColor: 'rgb(var(--fc-fill-primary-rgb) / 0.5)',
+        textUnderlineOffset: 2,
+      }
+    : {
         display: 'inline-flex',
         textDecoration: 'underline',
         fontWeight: 'bold',
@@ -253,15 +260,24 @@ export function Link({
         cursor: 'pointer',
         lineHeight: '22px',
         alignItems: 'center',
-      }}
-    >
-      <span onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onClick} style={{ display: 'inline-flex', alignItems: 'center' }}>
+      };
+  const linkIcon = inTable ? (
+    <IconFont type='icon-ic_launch' style={{ color: 'var(--fc-fill-primary)', marginLeft: 6 }} />
+  ) : (
+    <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+      <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)' }} />
+    </span>
+  );
+  return (
+    <span style={{ ...style }}>
+      <span
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={onClick}
+        style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'underline', textDecorationColor: 'rgb(var(--fc-fill-primary-rgb) / 0.5)', textUnderlineOffset: 2 }}
+      >
         {text}
-        {!iconTips && (
-          <span style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
-            <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
-          </span>
-        )}
+        {!iconTips && linkIcon}
       </span>
       {iconTips && (
         <Popover
@@ -292,28 +308,7 @@ export function Link({
             </div>
           ))}
         >
-          <span
-            style={{ background: '#fff', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}
-            onClick={() => {
-              const valueObjected = Object.entries(rawValue || {}).reduce((acc, [key, value]) => {
-                if (typeof value === 'string') {
-                  try {
-                    acc[key] = JSON.parse(value);
-                  } catch (e) {
-                    acc[key] = value;
-                  }
-                } else {
-                  acc[key] = value;
-                }
-                return acc;
-              }, {});
-              if (relatedLinks.length > 0) {
-                handleNav(relatedLinks[0].urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
-              }
-            }}
-          >
-            <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
-          </span>
+          {linkIcon}
         </Popover>
       )}
     </span>
