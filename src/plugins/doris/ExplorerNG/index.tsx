@@ -6,6 +6,7 @@ import { Resizable } from 're-resizable';
 
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import { setDefaultDatasourceValue } from '@/utils';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
@@ -199,6 +200,7 @@ export default function index(props: Props) {
                     });
                   }}
                   onChange={(datasourceValue, datasourceCate) => {
+                    setDefaultDatasourceValue(datasourceCate, datasourceValue);
                     // 先清空 query
                     form.setFieldsValue({
                       datasourceCate,
