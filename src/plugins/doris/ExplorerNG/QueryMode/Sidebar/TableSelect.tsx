@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Select } from 'antd';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum } from '@/utils/constant';
+import { OutlinedSelect } from '@/components/OutlinedSelect';
 
+import { NAME_SPACE } from '../../../constants';
 import { getDorisTables } from '../../../services';
 
 interface Props {
@@ -15,6 +17,7 @@ interface Props {
 }
 
 export default function TableSelect(props: Props) {
+  const { t } = useTranslation(NAME_SPACE);
   const { datasourceValue, database, value, onChange, disabled } = props;
   const [tables, setTables] = useState<string[]>([]);
 
@@ -27,7 +30,8 @@ export default function TableSelect(props: Props) {
   }, [datasourceValue, database]);
 
   return (
-    <Select
+    <OutlinedSelect
+      label={t('query.table')}
       showSearch
       optionFilterProp='label'
       options={_.map(tables, (item) => {

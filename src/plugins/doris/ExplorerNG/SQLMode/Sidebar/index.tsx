@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Segmented, Select, message } from 'antd';
+import { Form, Segmented, Button, Tooltip, message } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { DatasourceCateEnum } from '@/utils/constant';
+import { OutlinedSelect } from '@/components/OutlinedSelect';
 import Meta from '@/components/Meta';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
@@ -51,10 +53,30 @@ export default function QueryBuilder(props: Props) {
                 },
               ]}
             >
-              <Select mode='tags' open={false} disabled={disabled} placeholder={t('query.advancedSettings.tags_placeholder')} />
+              <OutlinedSelect
+                label={t('query.advancedSettings.valueKey')}
+                suffix={
+                  <Tooltip title={t('query.advancedSettings.valueKey_tip')}>
+                    <Button icon={<QuestionCircleOutlined />} />
+                  </Tooltip>
+                }
+                mode='tags'
+                open={false}
+                disabled={disabled}
+              />
             </Form.Item>
             <Form.Item name={['query', 'keys', 'labelKey']}>
-              <Select mode='tags' open={false} disabled={disabled} placeholder={t('query.advancedSettings.tags_placeholder')} />
+              <OutlinedSelect
+                label={t('query.advancedSettings.labelKey')}
+                suffix={
+                  <Tooltip title={t('query.advancedSettings.labelKey_tip')}>
+                    <Button icon={<QuestionCircleOutlined />} />
+                  </Tooltip>
+                }
+                mode='tags'
+                open={false}
+                disabled={disabled}
+              />
             </Form.Item>
           </>
         )}
