@@ -19,12 +19,13 @@ import _ from 'lodash';
 import { Form, Input, Button, Radio, Tooltip, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { OutlinedSelect } from '@/components/OutlinedSelect';
-
+import TableColumnSelect from '@/components/TableColumnSelect';
 import './style.less';
 
 export default function Demo() {
   const [value, setValue] = useState<string>('1');
   const [form] = Form.useForm();
+  const [multiSelectValue, setMultiSelectValue] = useState<string[]>([]);
   return (
     <div
       style={{
@@ -33,6 +34,22 @@ export default function Demo() {
         width: 500,
       }}
     >
+      <p>表格展示列选择，支持排序</p>
+      <TableColumnSelect
+        options={[
+          { label: '1', value: '1' },
+          { label: '2', value: '2' },
+          { label: '3', value: '3' },
+        ]}
+        value={multiSelectValue}
+        onChange={(value) => {
+          setMultiSelectValue(value);
+        }}
+        sortable={true}
+      />
+      <br />
+      <br />
+      <br />
       <p>Outlined Select</p>
       <OutlinedSelect
         label='数据源'
