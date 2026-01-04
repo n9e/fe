@@ -72,55 +72,6 @@ const ja_JP = {
       'WHERE条件で$__timeFilter(時間フィールド)を使用して時間範囲を明示的に制限することを強くお勧めします。そうしないと、<b>データベースの負荷異常、アラートクエリのタイムアウト</b>などの問題が発生する可能性があります',
     sql_warning_2: 'SQLは$__timeGroupを使用しており、このクエリは複数の時間ポイントのデータを返します。このシナリオでは、<b>システムは最新の時間ポイントの結果のみを使用します</b>',
   },
-  logs: {
-    title: 'ログデータ',
-    count: '結果数',
-    filter_fields: 'フィルタフィールド',
-    settings: {
-      mode: {
-        origin: '元の',
-        table: 'テーブル',
-      },
-      submode: {
-        table: 'テーブルグラフ',
-        timeSeries: '時系列',
-      },
-      breakLine: '改行',
-      reverse: '時間',
-      lines: '行番号',
-      time: 'ログ時間',
-      organizeFields: {
-        title: 'フィールド列設定',
-        allFields: '利用可能なフィールド',
-        showFields: '表示フィールド',
-        showFields_empty: 'ログのデフォルト表示フィールドを全て表示',
-      },
-      jsonSettings: {
-        title: 'JSON設定',
-        displayMode: 'デフォルト表示タイプ',
-        displayMode_tree: 'ツリー表示',
-        displayMode_string: '文字列表示',
-        expandLevel: 'デフォルト展開レベル',
-      },
-    },
-    tagsDetail: 'Tag 詳細',
-    expand: '展開',
-    collapse: '折りたたむ',
-    fieldValues_topnNoData: 'データなし',
-    stats: {
-      numberOfUniqueValues: 'ユニークな値の数',
-      unique_count: 'ユニークな値の数',
-      min: '最小値',
-      max: '最大値',
-      sum: '合計',
-      avg: '平均値',
-    },
-    fieldLabelTip: 'フィールドが統計に対応していないため、統計分析を行うことができません',
-    filterAnd: 'この検索に追加',
-    filterNot: 'この検索から除外',
-    total: 'ログの数',
-    loading: 'データを読み込み中...',
-  },
 };
 
 export default ja_JP;

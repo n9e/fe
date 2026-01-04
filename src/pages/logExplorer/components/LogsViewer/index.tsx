@@ -55,7 +55,7 @@ interface Props {
   organizeFields?: string[];
   setOrganizeFields?: (value: string[]) => void;
   histogramAddonBeforeRender?: React.ReactNode;
-  histogramAddonAfterRender?: React.ReactNode;
+  renderHistogramAddonAfterRender?: (toggleNode: React.ReactNode) => React.ReactNode;
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
   stacked?: boolean;
@@ -109,7 +109,7 @@ export default function LogsViewer(props: Props) {
     organizeFields,
     setOrganizeFields,
     histogramAddonBeforeRender,
-    histogramAddonAfterRender,
+    renderHistogramAddonAfterRender,
     optionsExtraRender,
     showDateField = true,
     stacked = false,
@@ -154,18 +154,16 @@ export default function LogsViewer(props: Props) {
                 {histogramAddonBeforeRender}
                 <Spin spinning={histogramLoading} size='small' />
               </Space>
-              <Space>
-                <Button
-                  size='small'
-                  type='text'
+
+              {renderHistogramAddonAfterRender?.(
+                <a
                   onClick={() => {
                     setHistogramVisible(!histogramVisible);
                   }}
                 >
                   {histogramVisible ? t('histogram_hide') : t('histogram_show')}
-                </Button>
-                {histogramAddonAfterRender}
-              </Space>
+                </a>,
+              )}
             </div>
             <div
               className={classNames('flex-shrink-0', {

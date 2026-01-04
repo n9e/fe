@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, message, Tooltip } from 'antd';
 import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -19,11 +19,13 @@ interface Props<FilterValues> {
 
   oldFilterValues?: FilterValues;
   adjustOldFilterValues?: (values: any) => any;
+
+  placeholder?: string;
 }
 
 export default function index<FilterValues>(props: Props<FilterValues>) {
   const { t } = useTranslation('viewSelect');
-  const { disabled, page, getFilterValuesJSONString, renderOptionExtra, onSelect, oldFilterValues, adjustOldFilterValues } = props;
+  const { disabled, page, getFilterValuesJSONString, renderOptionExtra, onSelect, oldFilterValues, adjustOldFilterValues, placeholder } = props;
   const selectDropdownContainer = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [filters, setFilters] = useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
@@ -76,7 +78,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
           <Select
             allowClear
             disabled={disabled}
-            placeholder={t('placeholder')}
+            placeholder={placeholder ?? t('placeholder')}
             className='w-full'
             dropdownMatchSelectWidth={false}
             dropdownRender={(originNode) => {

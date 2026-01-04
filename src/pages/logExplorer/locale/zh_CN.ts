@@ -83,5 +83,6 @@ const zh_CN = {
     total: '日志条数',
     stack_group_by_tip: '以此字段值展示堆叠趋势图',
   },
+  view_placeholder: '日志视图',
 };
 export default zh_CN;
