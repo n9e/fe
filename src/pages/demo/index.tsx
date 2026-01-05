@@ -31,13 +31,14 @@ export default function Demo() {
       style={{
         padding: 100,
         background: 'var(--fc-fill-2)',
-        width: 500,
+        width: 1000,
       }}
     >
       <Row gutter={16}>
         <Col span={12}>
           <p>表格展示列选择，支持排序，只展示下拉内容</p>
           <TableColumnSelect
+            showAll={false}
             options={[
               { label: '列1', value: '1' },
               { label: '列2', value: '2' },
@@ -57,6 +58,7 @@ export default function Demo() {
         <Col span={12}>
           <p>表格展示列选择，支持排序，展示按钮</p>
           <TableColumnSelect
+            showAll={true}
             options={[
               { label: '列1', value: '1' },
               { label: '列2', value: '2' },
