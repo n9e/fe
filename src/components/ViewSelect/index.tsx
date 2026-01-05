@@ -10,6 +10,8 @@ import { ModalStat } from './types';
 import FormModal from './FormModal';
 import DropdownTrigger from './DropdownTrigger';
 
+import './style.less';
+
 interface Props<FilterValues> {
   disabled?: boolean;
   page: string;
@@ -79,7 +81,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
             allowClear
             disabled={disabled}
             placeholder={placeholder ?? t('placeholder')}
-            className='w-full'
+            className='w-full n9e-view-select'
             dropdownMatchSelectWidth={false}
             dropdownRender={(originNode) => {
               return (

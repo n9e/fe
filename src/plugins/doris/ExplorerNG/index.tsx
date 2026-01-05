@@ -17,7 +17,7 @@ import { ENABLED_VIEW_CATES, NAME_SPACE as logExplorerNS } from '@/pages/logExpl
 import { DefaultFormValuesControl } from '@/pages/logExplorer/types';
 import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 
-import { NAME_SPACE, QUERY_CACHE_KEY, QUERY_CACHE_PICK_KEYS, SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
+import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
 import { Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
 import QueryModeQuerySidebar from './QueryMode/Sidebar';
@@ -53,7 +53,7 @@ export default function index(props: Props) {
       if (defaultFormValuesControl?.setDefaultFormValues) {
         defaultFormValuesControl.setDefaultFormValues({
           datasourceCate: DatasourceCateEnum.doris,
-          datasourceValue,
+          datasourceValue: values.datasourceValue,
           query: values.query,
         });
       }
@@ -62,11 +62,11 @@ export default function index(props: Props) {
       const queryValues = values.query;
       if (queryValues.mode === 'query') {
         if (queryValues.database && queryValues.table && queryValues.time_field) {
-          setLocalQueryHistory(`${QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
+          setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
         }
       } else if (queryValues.mode === 'sql') {
         if (queryValues.query) {
-          setLocalQueryHistoryUtil(`${SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
+          setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
         }
       }
 
@@ -275,6 +275,14 @@ export default function index(props: Props) {
                       value: 'sql',
                     },
                   ]}
+                  onChange={() => {
+                    // 切换模式时，清空 query 内容
+                    form.setFieldsValue({
+                      query: {
+                        query: undefined,
+                      },
+                    });
+                  }}
                 />
               </Form.Item>
             </div>

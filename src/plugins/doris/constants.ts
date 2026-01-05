@@ -27,6 +27,10 @@ export const TYPE_MAP: Record<string, string> = {
 export const DATE_TYPE_LIST = ['date', 'timestamp', 'datetime'];
 export const DEFAULT_LOGS_PAGE_SIZE = 30;
 
+export const NG_QUERY_CACHE_KEY = 'ng-doris-query-history-records';
+export const NG_QUERY_CACHE_PICK_KEYS = ['database', 'table', 'time_field', 'query', 'stackByField', 'defaultSearchField'];
+export const NG_SQL_CACHE_KEY = 'ng-doris-sql-history-records';
+
 export const QUERY_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'doris-query-logs-organize-fields';
 export const SQL_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'doris-sql-logs-organize-fields';
 

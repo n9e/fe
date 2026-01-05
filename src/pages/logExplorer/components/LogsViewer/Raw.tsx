@@ -10,6 +10,7 @@ import { NAME_SPACE } from '../../constants';
 import { OnValueFilterParams } from './types';
 import LogViewer from './components/LogViewer';
 import FieldValueWithFilter from './components/FieldValueWithFilter';
+import TextSearchIcon from './components/TextSearchIcon';
 
 const explorerOriginInlineCellClassName = 'inline-block mr-1';
 const explorerOriginBreakCellClassName = 'break-all block mr-1';
@@ -240,7 +241,7 @@ function Raw(props: Props) {
         return (
           // <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
           <div
-            className='absolute inset-0 flex items-center cursor-pointer'
+            className='absolute inset-0 flex items-center'
             // onClick={() => {
             //   setLogViewerDrawerState({ visible: true, value: record });
             // }}
@@ -276,7 +277,7 @@ function Raw(props: Props) {
                     setLogViewerDrawerState({ visible: true, value: record });
                   }}
                 >
-                  <RightOutlined />
+                  <TextSearchIcon className='text-[14px]' />
                 </div>
               </Tooltip>
             );
