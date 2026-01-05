@@ -17,7 +17,6 @@ import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/
 import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
-import { useGlobalState } from '@/pages/logExplorer/globalState';
 
 import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
@@ -35,6 +34,7 @@ import SQLFormatButton from './SQLFormatButton';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
+  tabKey: string;
   indexData: Field[];
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
@@ -49,16 +49,16 @@ interface Props {
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
-  const [tabKey] = useGlobalState('tabKey');
-  const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
-  const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
 
-  const { indexData, organizeFields, setOrganizeFields, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const { tabKey, indexData, organizeFields, setOrganizeFields, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+
+  const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
+  const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
   const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
@@ -120,14 +120,19 @@ export default function index(props: Props) {
     from: undefined,
     to: undefined,
   });
+  // 分页时的时间范围不变
+  const fixedRangeRef = useRef<boolean>(false);
 
   const service = () => {
     if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
       const range = parseRange(queryValues.range);
-      let timeParams = {
-        from: moment(range.start).unix(),
-        to: moment(range.end).unix(),
-      };
+      let timeParams =
+        fixedRangeRef.current === false
+          ? {
+              from: moment(range.start).unix(),
+              to: moment(range.end).unix(),
+            }
+          : rangeRef.current!;
       if (snapRangeRef.current && snapRangeRef.current.from && snapRangeRef.current.to) {
         timeParams = snapRangeRef.current as { from: number; to: number };
       }
@@ -192,6 +197,9 @@ export default function index(props: Props) {
             total: 0,
             hash: _.uniqueId('logs_'),
           };
+        })
+        .finally(() => {
+          fixedRangeRef.current = false;
         });
     }
     return Promise.resolve({
@@ -201,7 +209,11 @@ export default function index(props: Props) {
     });
   };
 
-  const { data, loading } = useRequest<
+  const {
+    data,
+    loading,
+    run: fetchLogs,
+  } = useRequest<
     {
       list: { [index: string]: string }[];
       total: number;
@@ -210,7 +222,7 @@ export default function index(props: Props) {
     },
     any
   >(service, {
-    refreshDeps: [refreshFlag, JSON.stringify(serviceParams)],
+    refreshDeps: [JSON.stringify(serviceParams)],
   });
 
   const histogramService = () => {
@@ -278,6 +290,8 @@ export default function index(props: Props) {
           ...prev,
           current: 1,
         }));
+      } else {
+        fetchLogs();
       }
     }
   }, [refreshFlag]);
@@ -469,6 +483,7 @@ export default function index(props: Props) {
                       current={serviceParams.current}
                       pageSize={serviceParams.pageSize}
                       onChange={(current, pageSize) => {
+                        fixedRangeRef.current = true;
                         setServiceParams((prev) => ({
                           ...prev,
                           current,
@@ -534,6 +549,7 @@ export default function index(props: Props) {
                   const currentServiceParams = getServiceParams();
                   if (data && data.list.length < data.total) {
                     appendRef.current = true;
+                    fixedRangeRef.current = true;
                     setServiceParams((prev) => ({
                       ...prev,
                       current: currentServiceParams.current + 1,

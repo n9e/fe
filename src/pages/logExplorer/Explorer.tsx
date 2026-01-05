@@ -41,7 +41,7 @@ export default function Explorer(props: Props) {
           <Form.Item name='datasourceValue' hidden>
             <div />
           </Form.Item>
-          <PlusLogExplorer datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} />
+          <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} />
         </Form>
       </div>
     </div>

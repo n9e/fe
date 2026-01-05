@@ -11,7 +11,6 @@ import { parseRange } from '@/components/TimeRangePicker';
 import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/utils/getFieldsFromTableData';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
-import { useGlobalState } from '@/pages/logExplorer/globalState';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 
 import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../../constants';
@@ -23,6 +22,7 @@ import filteredFields from '../../utils/filteredFields';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface IProps {
+  tabKey: string;
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
   setExecuteLoading: (loading: boolean) => void;
@@ -30,11 +30,12 @@ interface IProps {
 
 export default function Raw(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const [tabKey] = useGlobalState('tabKey');
+
+  const { tabKey, organizeFields, setOrganizeFields, setExecuteLoading } = props;
+
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
-  const { organizeFields, setOrganizeFields, setExecuteLoading } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch(['datasourceValue']);

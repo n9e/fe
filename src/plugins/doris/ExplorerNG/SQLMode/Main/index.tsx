@@ -19,6 +19,7 @@ import Raw from './Raw';
 import Timeseries from './Timeseries';
 
 interface Props {
+  tabKey: string;
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
   executeQuery: () => void;
@@ -27,7 +28,7 @@ interface Props {
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
-  const { organizeFields, setOrganizeFields, executeQuery } = props;
+  const { tabKey, organizeFields, setOrganizeFields, executeQuery } = props;
   const form = Form.useFormInstance();
   const submode = Form.useWatch(['query', 'submode']);
   const [executeLoading, setExecuteLoading] = React.useState(false);
@@ -145,7 +146,7 @@ export default function index(props: Props) {
           <MainMoreOperations />
         </Col>
       </Row>
-      {submode === 'raw' && <Raw organizeFields={organizeFields} setOrganizeFields={setOrganizeFields} setExecuteLoading={setExecuteLoading} />}
+      {submode === 'raw' && <Raw tabKey={tabKey} organizeFields={organizeFields} setOrganizeFields={setOrganizeFields} setExecuteLoading={setExecuteLoading} />}
       {submode === 'timeseries' && <Timeseries setExecuteLoading={setExecuteLoading} />}
       <Modal
         width={700}
