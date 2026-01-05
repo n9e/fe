@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Empty, Form, Space, Pagination } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -80,11 +80,13 @@ export default function Raw(props: IProps) {
     }
   };
 
+  const loadTimeRef = useRef<number | null>(null);
   const service = () => {
     const queryValues = form.getFieldValue('query');
     if (datasourceValue && queryValues.query) {
       setExecuteLoading(true);
       const range = parseRange(queryValues.range);
+      const queryStart = Date.now();
       return logQuery({
         cate: DatasourceCateEnum.doris,
         datasource_id: datasourceValue,
@@ -97,6 +99,7 @@ export default function Raw(props: IProps) {
         ],
       })
         .then((res) => {
+          loadTimeRef.current = Date.now() - queryStart;
           const newLogs = _.map(res.list, (item) => {
             return {
               ...(flatten(item) || {}),
@@ -121,6 +124,7 @@ export default function Raw(props: IProps) {
           };
         })
         .catch(() => {
+          loadTimeRef.current = null;
           return {
             list: [],
             total: 0,
@@ -170,47 +174,55 @@ export default function Raw(props: IProps) {
                 return filteredFields(fieldKeys, organizeFields);
               }}
               optionsExtraRender={
-                pageLoadMode === 'pagination' ? (
-                  <Space>
-                    <Pagination
-                      size='small'
-                      total={data?.total}
-                      current={serviceParams.current}
-                      pageSize={serviceParams.pageSize}
-                      onChange={(current, pageSize) => {
-                        setServiceParams((prev) => ({
-                          ...prev,
-                          current,
-                          pageSize,
-                        }));
-                        const newLogs = _.slice(data?.list, (current - 1) * pageSize, current * pageSize) || [];
-                        setLogs({
-                          data: _.map(newLogs, (item) => {
-                            return {
-                              ...item,
-                              ___id___: _.uniqueId('log_id_'),
-                            };
-                          }),
-                          hash: _.uniqueId('logs_'),
-                        });
-                      }}
-                      showTotal={(total) => {
-                        return (
-                          <Space>
-                            <span>{t('query.count')} :</span>
-                            <span>{total}</span>
-                          </Space>
-                        );
-                      }}
-                    />
-                    {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
-                  </Space>
-                ) : (
-                  <Space>
-                    <span>{t('query.count')} :</span>
-                    <span>{data?.total}</span>
-                  </Space>
-                )
+                <Space>
+                  {loadTimeRef.current !== null && (
+                    <Space size={4}>
+                      <span>{t('query.duration')} :</span>
+                      <span>{loadTimeRef.current} ms</span>
+                    </Space>
+                  )}
+                  {pageLoadMode === 'pagination' ? (
+                    <Space>
+                      <Pagination
+                        size='small'
+                        total={data?.total}
+                        current={serviceParams.current}
+                        pageSize={serviceParams.pageSize}
+                        onChange={(current, pageSize) => {
+                          setServiceParams((prev) => ({
+                            ...prev,
+                            current,
+                            pageSize,
+                          }));
+                          const newLogs = _.slice(data?.list, (current - 1) * pageSize, current * pageSize) || [];
+                          setLogs({
+                            data: _.map(newLogs, (item) => {
+                              return {
+                                ...item,
+                                ___id___: _.uniqueId('log_id_'),
+                              };
+                            }),
+                            hash: _.uniqueId('logs_'),
+                          });
+                        }}
+                        showTotal={(total) => {
+                          return (
+                            <Space>
+                              <span>{t('query.count')} :</span>
+                              <span>{total}</span>
+                            </Space>
+                          );
+                        }}
+                      />
+                      {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+                    </Space>
+                  ) : (
+                    <Space size={4}>
+                      <span>{t('query.count')} :</span>
+                      <span>{data?.total}</span>
+                    </Space>
+                  )}
+                </Space>
               }
               onOptionsChange={updateOptions}
               showDateField={false}
