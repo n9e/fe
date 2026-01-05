@@ -1,5 +1,6 @@
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Form, Row, Col, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -9,6 +10,7 @@ import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum, IS_PLUS, SIZE } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
@@ -45,12 +47,19 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
-  const { logsDefaultRange } = useContext(CommonStateContext);
+  const { t, i18n } = useTranslation(NAME_SPACE);
+  const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
   const [tabKey] = useGlobalState('tabKey');
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
+
+  const form = Form.useFormInstance();
+  const refreshFlag = Form.useWatch('refreshFlag');
+  const datasourceValue = Form.useWatch('datasourceValue');
+  const queryValues = Form.useWatch('query');
+
   const { indexData, organizeFields, setOrganizeFields, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+
   const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
@@ -112,13 +121,8 @@ export default function index(props: Props) {
     to: undefined,
   });
 
-  const form = Form.useFormInstance();
-  const refreshFlag = Form.useWatch('refreshFlag');
-  const datasourceValue = Form.useWatch('datasourceValue');
-  const queryValues = Form.useWatch('query');
-
   const service = () => {
-    if (datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
+    if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
       const range = parseRange(queryValues.range);
       let timeParams = {
         from: moment(range.start).unix(),
@@ -298,7 +302,25 @@ export default function index(props: Props) {
     <div className='flex flex-col h-full'>
       <Row gutter={SIZE} className='flex-shrink-0'>
         <Col flex='auto'>
-          <InputGroupWithFormItem label={<Space>{t(`${logExplorerNS}:query`)}</Space>} addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}>
+          <InputGroupWithFormItem
+            label={
+              <Space>
+                {t(`${logExplorerNS}:query`)}
+                <InfoCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                      darkMode,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
+                    });
+                  }}
+                />
+              </Space>
+            }
+            addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
+          >
             <div className='relative'>
               <Form.Item name={['query', 'query']}>
                 <QueryInput
@@ -414,18 +436,22 @@ export default function index(props: Props) {
                   </Popover>
                 ) : undefined
               }
-              histogramAddonAfterRender={
-                data && (
-                  <Space>
-                    {rangeRef.current && (
-                      <>
-                        {moment.unix(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment.unix(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
-                      </>
-                    )}
-                    {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
-                  </Space>
-                )
-              }
+              renderHistogramAddonAfterRender={(toggleNode) => {
+                if (data) {
+                  return (
+                    <Space>
+                      {rangeRef.current && (
+                        <>
+                          {moment.unix(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment.unix(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
+                        </>
+                      )}
+                      {toggleNode}
+                      {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+                    </Space>
+                  );
+                }
+                return toggleNode;
+              }}
               stacked={!!stackByField} // only for histogram
               colWidths={data?.colWidths}
               tableColumnsWidthCacheKey={`${QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}${JSON.stringify({

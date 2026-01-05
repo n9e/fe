@@ -13,11 +13,11 @@ import { allCates } from '@/components/AdvancedWrap/utils';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
-import { ENABLED_VIEW_CATES } from '@/pages/logExplorer/constants';
+import { ENABLED_VIEW_CATES, NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import { DefaultFormValuesControl } from '@/pages/logExplorer/types';
 import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 
-import { NAME_SPACE, QUERY_CACHE_KEY, QUERY_CACHE_PICK_KEYS, SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
+import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
 import { Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
 import QueryModeQuerySidebar from './QueryMode/Sidebar';
@@ -34,7 +34,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceList, datasourceCateOptions, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
   const { disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -53,7 +53,7 @@ export default function index(props: Props) {
       if (defaultFormValuesControl?.setDefaultFormValues) {
         defaultFormValuesControl.setDefaultFormValues({
           datasourceCate: DatasourceCateEnum.doris,
-          datasourceValue,
+          datasourceValue: values.datasourceValue,
           query: values.query,
         });
       }
@@ -62,11 +62,11 @@ export default function index(props: Props) {
       const queryValues = values.query;
       if (queryValues.mode === 'query') {
         if (queryValues.database && queryValues.table && queryValues.time_field) {
-          setLocalQueryHistory(`${QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
+          setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
         }
       } else if (queryValues.mode === 'sql') {
         if (queryValues.query) {
-          setLocalQueryHistoryUtil(`${SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
+          setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
         }
       }
 
@@ -189,6 +189,7 @@ export default function index(props: Props) {
                     filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[DatasourceCateEnum.doris]?.[0]?.id;
                     // 完全重置表单后再设置新值，避免旧值残留
                     form.setFieldsValue({
+                      refreshFlag: undefined,
                       query: undefined,
                     });
                     let range = filterValues.query?.range;
@@ -200,9 +201,9 @@ export default function index(props: Props) {
                     }
                     form.setFieldsValue({
                       ...filterValues,
-                      range,
                       query: {
                         ...filterValues.query,
+                        range,
                         mode: filterValues.query?.mode || 'query',
                       },
                     });
@@ -220,6 +221,7 @@ export default function index(props: Props) {
                     }
                     return {};
                   }}
+                  placeholder={t(`${logExplorerNS}:view_placeholder`)}
                 />
               </div>
               <Form.Item
@@ -253,10 +255,8 @@ export default function index(props: Props) {
                     });
                     form.setFieldsValue({
                       query: {
-                        range: {
-                          start: 'now-1h',
-                          end: 'now',
-                        },
+                        mode: 'query',
+                        range: logsDefaultRange,
                       },
                     });
                   }}
@@ -275,6 +275,14 @@ export default function index(props: Props) {
                       value: 'sql',
                     },
                   ]}
+                  onChange={() => {
+                    // 切换模式时，清空 query 内容
+                    form.setFieldsValue({
+                      query: {
+                        query: undefined,
+                      },
+                    });
+                  }}
                 />
               </Form.Item>
             </div>

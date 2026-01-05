@@ -1,9 +1,9 @@
 import React from 'react';
 import { Tooltip } from 'antd';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { NAME_SPACE } from '../../../../../constants';
+import TextSearchIcon from '../../TextSearchIcon';
 
 interface CellExpanderFormatterProps {
   expanded: boolean;
@@ -20,7 +20,7 @@ export default function CellExpanderFormatter({ expanded, onCellExpand }: CellEx
   return (
     <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
       <div className='absolute inset-0 flex items-center justify-center cursor-pointer' onClick={handleClick}>
-        {expanded ? <DownOutlined /> : <RightOutlined />}
+        {expanded ? <TextSearchIcon className='text-[14px]' /> : <TextSearchIcon className='text-[14px]' />}
       </div>
     </Tooltip>
   );

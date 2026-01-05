@@ -67,55 +67,6 @@ const zh_HK = {
     sql_warning_1: '強烈建議在 WHERE 條件中使用 $__timeFilter(時間字段) 明確限制時間範圍，否則可能導致：<b>數據庫負載異常，告警查詢超時</b>等問題',
     sql_warning_2: 'SQL 中使用了 $__timeGroup，該查詢將返回多個時間點的數據。在此場景下，<b>系統僅使用最新時間點的結果</b>',
   },
-  logs: {
-    title: '日誌詳情',
-    count: '結果數',
-    filter_fields: '篩選字段',
-    settings: {
-      mode: {
-        origin: '原始',
-        table: '表格',
-      },
-      submode: {
-        table: '表格圖',
-        timeSeries: '時序圖',
-      },
-      breakLine: '換行',
-      reverse: '時間',
-      lines: '行號',
-      time: '日誌時間',
-      organizeFields: {
-        title: '字段列設置',
-        allFields: '可用字段',
-        showFields: '顯示字段',
-        showFields_empty: '日誌默認顯示全部字段',
-      },
-      jsonSettings: {
-        title: 'JSON 設置',
-        displayMode: '默認展示類型',
-        displayMode_tree: '樹形展示',
-        displayMode_string: '字符串展示',
-        expandLevel: '默認展開層級',
-      },
-    },
-    tagsDetail: 'Tag 詳情',
-    expand: '展開',
-    collapse: '收起',
-    fieldValues_topnNoData: '無數據',
-    stats: {
-      numberOfUniqueValues: '唯一值個數',
-      unique_count: '唯一值個數',
-      min: '最小值',
-      max: '最大值',
-      sum: '求和',
-      avg: '平均值',
-    },
-    fieldLabelTip: '字段未開啟統計，無法進行統計分析',
-    filterAnd: '添加到本次檢索',
-    filterNot: '從本次檢索中排除',
-    total: '日誌條數',
-    loading: '數據加載中...',
-  },
 };
 
 export default zh_HK;
