@@ -21,7 +21,7 @@ export default function MainMoreOperations() {
               label: (
                 <Space>
                   <ApartmentOutlined />
-                  <ExportModal datasourceValue={datasourceValue} />
+                  <ExportModal datasourceValue={datasourceValue} type='text' />
                 </Space>
               ),
               key: 'export',
@@ -30,7 +30,7 @@ export default function MainMoreOperations() {
               label: (
                 <Space>
                   <DownloadOutlined />
-                  <DrilldownBtn dataSourceId={datasourceValue} />
+                  <DrilldownBtn dataSourceId={datasourceValue} type='text' />
                 </Space>
               ),
               key: 'drilldown',

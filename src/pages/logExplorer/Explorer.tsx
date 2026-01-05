@@ -19,7 +19,6 @@ export default function Explorer(props: Props) {
   const { tabKey, defaultFormValuesControl } = props;
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
-  const datasourceValue = Form.useWatch('datasourceValue', form);
 
   useEffect(() => {
     if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
