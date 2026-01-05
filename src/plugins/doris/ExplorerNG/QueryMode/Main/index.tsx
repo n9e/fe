@@ -122,6 +122,7 @@ export default function index(props: Props) {
   });
   // 分页时的时间范围不变
   const fixedRangeRef = useRef<boolean>(false);
+  const loadTimeRef = useRef<number | null>(null);
 
   const service = () => {
     if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
@@ -137,6 +138,7 @@ export default function index(props: Props) {
         timeParams = snapRangeRef.current as { from: number; to: number };
       }
       rangeRef.current = timeParams;
+      const queryStart = Date.now();
       return getDorisLogsQuery({
         cate: DatasourceCateEnum.doris,
         datasource_id: datasourceValue,
@@ -156,6 +158,9 @@ export default function index(props: Props) {
         ],
       })
         .then((res) => {
+          if (fixedRangeRef.current === false) {
+            loadTimeRef.current = Date.now() - queryStart;
+          }
           const newLogs = _.map(res.list, (item) => {
             const normalizedItem = normalizeLogStructures(item);
             return {
@@ -192,6 +197,7 @@ export default function index(props: Props) {
           }
         })
         .catch(() => {
+          loadTimeRef.current = null;
           return {
             list: [],
             total: 0,
@@ -475,8 +481,14 @@ export default function index(props: Props) {
                 indexData: _.sortBy(indexData, 'field'),
               })}`}
               optionsExtraRender={
-                pageLoadMode === 'pagination' ? (
-                  <Space size={0}>
+                <Space>
+                  {loadTimeRef.current !== null && (
+                    <Space size={4}>
+                      <span>{t('query.duration')} :</span>
+                      <span>{loadTimeRef.current} ms</span>
+                    </Space>
+                  )}
+                  {pageLoadMode === 'pagination' ? (
                     <Pagination
                       size='small'
                       total={data?.total}
@@ -491,13 +503,21 @@ export default function index(props: Props) {
                         }));
                       }}
                       showTotal={(total) => {
-                        return t('common:table.total', { total });
+                        return (
+                          <Space>
+                            <span>{t('query.count')} :</span>
+                            <span>{total}</span>
+                          </Space>
+                        );
                       }}
                     />
-                  </Space>
-                ) : (
-                  t('common:table.total', { total: data?.total })
-                )
+                  ) : (
+                    <Space size={4}>
+                      <span>{t('query.count')} :</span>
+                      <span>{data?.total}</span>
+                    </Space>
+                  )}
+                </Space>
               }
               showPageLoadMode
               onOptionsChange={updateOptions}

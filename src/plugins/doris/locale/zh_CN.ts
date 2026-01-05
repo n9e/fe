@@ -66,6 +66,8 @@ const zh_CN = {
     offset_tip: '在当前查询时间基础上向前偏移指定秒数后再执行查询，类似 PromQL 中的 offset。<br />常用于处理 数据写入延迟、链路延迟 等场景，避免因数据未及时到达导致告警误报',
     sql_warning_1: '强烈建议在 WHERE 条件中使用 $__timeFilter(时间字段) 明确限制时间范围，否则可能导致：<b>数据库负载异常，告警查询超时</b>等问题',
     sql_warning_2: 'SQL 中使用了 $__timeGroup，该查询将返回多个时间点的数据。在此场景下，<b>系统仅使用最新时间点的结果</b>',
+    duration: '耗时',
+    count: '条数',
   },
 };
 export default zh_CN;

@@ -171,7 +171,7 @@ export default function Raw(props: IProps) {
               }}
               optionsExtraRender={
                 pageLoadMode === 'pagination' ? (
-                  <Space size={0}>
+                  <Space>
                     <Pagination
                       size='small'
                       total={data?.total}
@@ -195,13 +195,21 @@ export default function Raw(props: IProps) {
                         });
                       }}
                       showTotal={(total) => {
-                        return t('common:table.total', { total });
+                        return (
+                          <Space>
+                            <span>{t('query.count')} :</span>
+                            <span>{total}</span>
+                          </Space>
+                        );
                       }}
                     />
                     {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
                   </Space>
                 ) : (
-                  t('common:table.total', { total: data?.total })
+                  <Space>
+                    <span>{t('query.count')} :</span>
+                    <span>{data?.total}</span>
+                  </Space>
                 )
               }
               onOptionsChange={updateOptions}

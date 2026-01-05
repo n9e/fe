@@ -71,6 +71,8 @@ const en_US = {
     sql_warning_1:
       'It is strongly recommended to use $__timeFilter(time field) in the WHERE condition to explicitly limit the time range, otherwise it may lead to issues such as: <b>abnormal database load, alert query timeout</b>',
     sql_warning_2: 'The SQL uses $__timeGroup, which will return data for multiple time points. In this scenario, <b>the system only uses the results of the latest time point</b>',
+    duration: 'Duration',
+    count: 'Count',
   },
 };
 export default en_US;

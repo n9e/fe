@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { Spin, Space, Radio, Button } from 'antd';
+import { Spin, Space, Radio } from 'antd';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
