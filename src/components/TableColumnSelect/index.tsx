@@ -29,6 +29,8 @@ interface IProps {
   maxHeight?: number;
   /** 是否支持拖拽排序 */
   sortable?: boolean;
+  /** 是否显示全选 */
+  showAll?: boolean;
 }
 
 // 可拖拽的选项项
@@ -70,7 +72,17 @@ function NormalItem({ option, onToggle, checked = false }: { option: ColumnOptio
 
 export default function TableColumnSelect(props: IProps) {
   const { t } = useTranslation('tableColumnSelect');
-  const { options, value, onChange, buttonText = t('displayColumns'), searchPlaceholder = t('searchColumns'), maxHeight, sortable = true, showDropdown = true } = props;
+  const {
+    options,
+    value,
+    onChange,
+    buttonText = t('displayColumns'),
+    searchPlaceholder = t('searchColumns'),
+    maxHeight,
+    sortable = true,
+    showDropdown = true,
+    showAll = false,
+  } = props;
 
   // 根据 showDropdown 和用户传入的 maxHeight 来决定最终的高度
   const finalMaxHeight = maxHeight !== undefined ? maxHeight : showDropdown ? 400 : undefined;
@@ -114,6 +126,20 @@ export default function TableColumnSelect(props: IProps) {
     return unselectedOptions.filter((opt) => opt.label.toLowerCase().includes(searchValue.toLowerCase()));
   }, [unselectedOptions, searchValue]);
 
+  // 全选状态计算
+  const selectAllState = useMemo(() => {
+    const totalCount = options.length;
+    const selectedCount = value.length;
+
+    if (selectedCount === 0) {
+      return { checked: false, indeterminate: false };
+    } else if (selectedCount === totalCount) {
+      return { checked: true, indeterminate: false };
+    } else {
+      return { checked: false, indeterminate: true };
+    }
+  }, [options.length, value.length]);
+
   // 传感器配置
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -133,6 +159,19 @@ export default function TableColumnSelect(props: IProps) {
     });
 
     onChange(newValue, newSelectedOptions);
+  };
+
+  // 全选/取消全选
+  const handleSelectAll = () => {
+    if (selectAllState.checked || selectAllState.indeterminate) {
+      // 取消全选
+      onChange([], []);
+    } else {
+      // 全选
+      const allValues = options.map((opt) => opt.value);
+      const allSelectedOptions = options.map((opt, index) => ({ ...opt, order: index }));
+      onChange(allValues, allSelectedOptions);
+    }
   };
 
   // 拖拽开始
@@ -175,6 +214,17 @@ export default function TableColumnSelect(props: IProps) {
 
       {/* 选项列表 */}
       <div className='table-column-select-options best-looking-scroll' style={{ maxHeight: finalMaxHeight }}>
+        {/* 全选选项 */}
+        {showAll && (
+          <div className='table-column-select-all-wrapper'>
+            <div className='table-column-select-item select-all-item'>
+              <Checkbox checked={selectAllState.checked} indeterminate={selectAllState.indeterminate} onChange={handleSelectAll}>
+                {t('selectAll')}
+              </Checkbox>
+            </div>
+          </div>
+        )}
+
         {/* 已选中项 - 可拖拽排序 */}
         {filteredSelected.length > 0 && sortable && !searchValue && (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
