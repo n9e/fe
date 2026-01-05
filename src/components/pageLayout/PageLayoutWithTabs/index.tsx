@@ -152,7 +152,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
               >
                 <div className='flex items-center min-w-0 flex-1'>
                   {!currentMenu?.parentItem?.label && (
-                    <div className={'page-header-title w-full'}>
+                    <div className='page-header-title min-w-0'>
                       {showBack && window.history.state && (
                         <RollbackOutlined
                           onClick={() => {

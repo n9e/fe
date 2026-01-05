@@ -28,6 +28,7 @@ import SQLModeMain from './SQLMode/Main';
 import './style.less';
 
 interface Props {
+  tabKey: string;
   disabled?: boolean;
   defaultFormValuesControl?: DefaultFormValuesControl;
 }
@@ -35,7 +36,7 @@ interface Props {
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
-  const { disabled, defaultFormValuesControl } = props;
+  const { tabKey, disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const mode = Form.useWatch(['query', 'mode']);
@@ -318,6 +319,7 @@ export default function index(props: Props) {
         <div className='min-w-0 flex-1'>
           {mode === 'query' && (
             <QueryModeMain
+              tabKey={tabKey}
               indexData={indexData}
               organizeFields={queryLogsOrganizeFields}
               setOrganizeFields={(value) => {
@@ -342,6 +344,7 @@ export default function index(props: Props) {
           )}
           {mode === 'sql' && (
             <SQLModeMain
+              tabKey={tabKey}
               organizeFields={sqlLogsOrganizeFields}
               setOrganizeFields={(value) => {
                 setSqlLogsOrganizeFields(value);

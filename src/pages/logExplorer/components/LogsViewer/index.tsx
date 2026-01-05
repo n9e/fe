@@ -197,7 +197,7 @@ export default function LogsViewer(props: Props) {
           </div>
         )}
         <FullscreenButton.Provider>
-          <div className='flex justify-between p-2 pt-0'>
+          <div className='flex justify-between pb-2'>
             <Space>
               <Radio.Group
                 size='small'
