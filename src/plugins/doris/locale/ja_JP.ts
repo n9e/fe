@@ -71,6 +71,8 @@ const ja_JP = {
     default_search_tip_1: 'デフォルトの検索フィールドとして設定',
     default_search_tip_2: 'デフォルトの検索フィールドをキャンセル',
     default_search_by_tip: 'デフォルトの検索フィールド',
+    duration: '所要時間',
+    count: '件数',
   },
 };
 

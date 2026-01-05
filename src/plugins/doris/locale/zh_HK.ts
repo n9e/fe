@@ -66,6 +66,8 @@ const zh_HK = {
     default_search_tip_1: '設置為默認檢索字段',
     default_search_tip_2: '取消默認檢索字段',
     default_search_by_tip: '默認檢索字段',
+    duration: '耗時',
+    count: '條數',
   },
 };
 

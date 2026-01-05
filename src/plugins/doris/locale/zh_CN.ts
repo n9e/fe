@@ -66,6 +66,8 @@ const zh_CN = {
     default_search_tip_1: '设置为默认检索字段',
     default_search_tip_2: '取消默认检索字段',
     default_search_by_tip: '默认检索字段',
+    duration: '耗时',
+    count: '条数',
   },
 };
 export default zh_CN;

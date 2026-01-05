@@ -71,6 +71,8 @@ const en_US = {
     default_search_tip_1: 'Set as default search field',
     default_search_tip_2: 'Cancel default search field',
     default_search_by_tip: 'Default search field',
+    duration: 'Duration',
+    count: 'Count',
   },
 };
 export default en_US;

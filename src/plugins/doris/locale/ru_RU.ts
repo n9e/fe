@@ -74,6 +74,8 @@ const ru_RU = {
     default_search_tip_1: 'Установить в качестве поля поиска по умолчанию',
     default_search_tip_2: 'Отменить поле поиска по умолчанию',
     default_search_by_tip: 'Поле поиска по умолчанию',
+    duration: 'Продолжительность',
+    count: 'Количество',
   },
 };
 export default ru_RU;
