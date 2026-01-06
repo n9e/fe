@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { Spin, Empty, Form } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
+import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { getDsQuery } from '../../../services';
 
@@ -14,6 +16,8 @@ interface Props {
 }
 
 export default function TimeseriesCpt(props: Props) {
+  const { t } = useTranslation();
+
   const { setExecuteLoading } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
@@ -93,14 +97,27 @@ export default function TimeseriesCpt(props: Props) {
             />
           </Spin>
         </div>
+      ) : loading ? (
+        <div className='flex justify-center'>
+          <Empty
+            className='ant-empty-normal'
+            image='/image/img_executing.svg'
+            description={t(`${logExplorerNS}:loading`)}
+            imageStyle={{
+              height: 80,
+            }}
+          />
+        </div>
       ) : (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        <div className='flex justify-center'>
+          <Empty
+            className='ant-empty-normal'
+            image='/image/img_empty.svg'
+            description={t(`${logExplorerNS}:no_data`)}
+            imageStyle={{
+              height: 80,
+            }}
+          />
         </div>
       )}
     </>
