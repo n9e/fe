@@ -12,6 +12,7 @@ import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/utils/getFieldsFromTableData';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
+import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../../constants';
 import { logQuery } from '../../../services';
@@ -271,9 +272,27 @@ export default function Raw(props: IProps) {
             />
           </div>
         </div>
+      ) : loading ? (
+        <div className='flex justify-center'>
+          <Empty
+            className='ant-empty-normal'
+            image='/image/img_executing.svg'
+            description={t(`${logExplorerNS}:loading`)}
+            imageStyle={{
+              height: 80,
+            }}
+          />
+        </div>
       ) : (
         <div className='flex justify-center'>
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <Empty
+            className='ant-empty-normal'
+            image='/image/img_empty.svg'
+            description={t(`${logExplorerNS}:no_data`)}
+            imageStyle={{
+              height: 80,
+            }}
+          />
         </div>
       )}
     </>
