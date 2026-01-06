@@ -62,7 +62,7 @@ export const OutlinedSelect = <VT extends any = any>(props: OutlinedSelectProps<
       </label>
       <div className='outlined-select-content'>
         <Select {...restProps} value={value} onChange={onChange} onFocus={handleFocus} onBlur={handleBlur} className={selectClassName} />
-        {suffix}
+        {suffix && <div className='outlined-select-suffix'>{suffix}</div>}
       </div>
     </div>
   );

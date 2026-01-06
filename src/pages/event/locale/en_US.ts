@@ -98,6 +98,7 @@ const en_US = {
     step_tip: 'Time interval of the curve, in seconds',
     query_label: 'Query',
     trigger_label: 'Trigger',
+    current_anomaly_time: 'Current Anomaly Time',
   },
 
   sharing_link: {

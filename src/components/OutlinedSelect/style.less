@@ -19,7 +19,7 @@
     line-height: 1.5715;
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     pointer-events: none; // 防止阻挡 Select 点击
-    z-index: 1;
+    z-index: 2;
     white-space: nowrap;
 
     // 浮动状态 (有值或聚焦时)
@@ -42,6 +42,13 @@
   // Select 组件样式覆盖
   .outlined-select {
     width: 100%;
+    z-index: 1;
+
+    &.ant-select-sm {
+      .ant-select-selector {
+        height: 24px;
+      }
+    }
 
     &.ant-select-multiple {
       &.ant-select-sm {
@@ -64,9 +71,18 @@
       align-items: center;
     }
 
+    &-suffix {
+      margin-left: -1px;
+
+      .ant-btn {
+        border-color: var(--fc-border-color);
+      }
+    }
+
     .ant-select-selector {
       border-color: var(--fc-border-color2) !important;
       transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      height: 32px;
     }
 
     // 聚焦状态
