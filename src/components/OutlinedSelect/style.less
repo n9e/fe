@@ -1,0 +1,127 @@
+// OutlinedSelect 组件样式
+// 使用 CSS 变量实现主题自动适配 (亮色/暗色/金色主题)
+
+.outlined-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  // 浮动标签
+  .outlined-select-label {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--fc-fill-2); // 使用主题背景色
+    color: var(--fc-text-placeholder); // 使用占位符文本色
+    padding: 0 4px;
+    font-size: 12px;
+    line-height: 1.5715;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    pointer-events: none; // 防止阻挡 Select 点击
+    z-index: 2;
+    white-space: nowrap;
+
+    // 浮动状态 (有值或聚焦时)
+    &.floating {
+      top: -5px;
+      left: 5px;
+      transform: none;
+      font-size: 11px;
+      line-height: 1;
+      color: var(--fc-text-2);
+    }
+
+    // 必填标记
+    .outlined-select-required {
+      color: var(--fc-red-5-color);
+      margin-left: 2px;
+    }
+  }
+
+  // Select 组件样式覆盖
+  .outlined-select {
+    width: 100%;
+    z-index: 1;
+
+    &.ant-select-sm {
+      .ant-select-selector {
+        height: 24px;
+      }
+    }
+
+    &.ant-select-multiple {
+      &.ant-select-sm {
+        .ant-select-selection-item {
+          height: 12px;
+          line-height: 10px;
+          margin-top: 3px;
+        }
+      }
+
+      .ant-select-selection-item {
+        height: 18px;
+        line-height: 16px;
+        margin-top: 5px;
+      }
+    }
+
+    &-content {
+      display: flex;
+      align-items: center;
+    }
+
+    &-suffix {
+      margin-left: -1px;
+
+      .ant-btn {
+        border-color: var(--fc-border-color);
+      }
+    }
+
+    .ant-select-selector {
+      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      height: 32px;
+    }
+
+  }
+
+  // 小尺寸适配
+  &:has(.outlined-select.ant-select-sm) .outlined-select-label {
+    font-size: 12px;
+    left: 7px;
+
+    &.floating {
+      top: -5px;
+      left: 3px;
+      font-size: 10px;
+    }
+  }
+
+  // 大尺寸适配
+  &:has(.outlined-select.ant-select-lg) .outlined-select-label {
+    font-size: 16px;
+    left: 11px;
+
+    &.floating {
+      top: -5px;
+      left: 6px;
+      font-size: 11px;
+    }
+  }
+
+  // 多选模式的标签调整
+  .outlined-select.ant-select-multiple {
+    .ant-select-selector {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  }
+
+  // 搜索模式确保输入框的样式一致
+  .outlined-select.ant-select-show-search {
+    .ant-select-selection-search-input {
+      height: 100% !important;
+    }
+  }
+}
