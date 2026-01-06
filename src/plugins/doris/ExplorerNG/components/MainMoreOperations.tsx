@@ -20,7 +20,7 @@ export default function MainMoreOperations() {
             {
               label: (
                 <Space>
-                  <ApartmentOutlined />
+                  <DownloadOutlined />
                   <ExportModal datasourceValue={datasourceValue} type='text' />
                 </Space>
               ),
@@ -29,7 +29,7 @@ export default function MainMoreOperations() {
             {
               label: (
                 <Space>
-                  <DownloadOutlined />
+                  <ApartmentOutlined />
                   <DrilldownBtn dataSourceId={datasourceValue} type='text' />
                 </Space>
               ),
