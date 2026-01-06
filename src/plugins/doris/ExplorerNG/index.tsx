@@ -214,6 +214,12 @@ export default function index(props: Props) {
                     if (values) {
                       // 去掉 query 中值为 undefined 的字段
                       const cleanedQuery = omitUndefinedDeep(values.query) || {};
+                      if (moment.isMoment(cleanedQuery.range?.start) && moment.isMoment(cleanedQuery.range?.end)) {
+                        cleanedQuery.range = {
+                          start: cleanedQuery.range.start.unix(),
+                          end: cleanedQuery.range.end.unix(),
+                        };
+                      }
                       return {
                         datasourceCate: values.datasourceCate,
                         datasourceValue: values.datasourceValue,
@@ -293,18 +299,20 @@ export default function index(props: Props) {
                 datasourceValue={datasourceValue}
                 executeQuery={executeQuery}
                 organizeFields={queryLogsOrganizeFields}
-                setOrganizeFields={(value) => {
+                setOrganizeFields={(value, setLocalstorage = true) => {
                   const queryValues = form.getFieldValue('query');
                   setQueryLogsOrganizeFields(value);
-                  setOrganizeFieldsToLocalstorage(
-                    {
-                      datasourceValue,
-                      mode: 'query',
-                      database: queryValues?.database,
-                      table: queryValues?.table,
-                    },
-                    value,
-                  );
+                  if (setLocalstorage) {
+                    setOrganizeFieldsToLocalstorage(
+                      {
+                        datasourceValue,
+                        mode: 'query',
+                        database: queryValues?.database,
+                        table: queryValues?.table,
+                      },
+                      value,
+                    );
+                  }
                 }}
                 onIndexDataChange={setIndexData}
                 stackByField={stackByField}
@@ -345,16 +353,19 @@ export default function index(props: Props) {
           {mode === 'sql' && (
             <SQLModeMain
               tabKey={tabKey}
+              datasourceValue={datasourceValue}
               organizeFields={sqlLogsOrganizeFields}
-              setOrganizeFields={(value) => {
+              setOrganizeFields={(value, setLocalstorage = true) => {
                 setSqlLogsOrganizeFields(value);
-                setOrganizeFieldsToLocalstorage(
-                  {
-                    datasourceValue,
-                    mode: 'sql',
-                  },
-                  value,
-                );
+                if (setLocalstorage) {
+                  setOrganizeFieldsToLocalstorage(
+                    {
+                      datasourceValue,
+                      mode: 'sql',
+                    },
+                    value,
+                  );
+                }
               }}
               executeQuery={executeQuery}
             />

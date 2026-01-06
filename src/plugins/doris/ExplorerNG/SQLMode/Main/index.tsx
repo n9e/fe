@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Button, Col, Row, Form, Space, Tooltip, Modal, Alert } from 'antd';
 import { InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
+import { getOrganizeFieldsFromLocalstorage } from '../../utils/organizeFieldsLocalstorage';
 import { NAME_SPACE } from '../../../constants';
 import QueryInput from '../../components/QueryInput';
 import MainMoreOperations from '../../components/MainMoreOperations';
@@ -20,15 +21,16 @@ import Timeseries from './Timeseries';
 
 interface Props {
   tabKey: string;
+  datasourceValue: number;
   organizeFields: string[];
-  setOrganizeFields: (value: string[]) => void;
+  setOrganizeFields: (value: string[], setLocalstorage?: boolean) => void;
   executeQuery: () => void;
 }
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
-  const { tabKey, organizeFields, setOrganizeFields, executeQuery } = props;
+  const { tabKey, datasourceValue, organizeFields, setOrganizeFields, executeQuery } = props;
   const form = Form.useFormInstance();
   const submode = Form.useWatch(['query', 'submode']);
   const [executeLoading, setExecuteLoading] = React.useState(false);
@@ -44,6 +46,18 @@ export default function index(props: Props) {
     }
     executeQuery();
   };
+
+  useEffect(() => {
+    if (datasourceValue) {
+      setOrganizeFields(
+        getOrganizeFieldsFromLocalstorage({
+          datasourceValue,
+          mode: 'sql',
+        }),
+        false,
+      );
+    }
+  }, [datasourceValue]);
 
   return (
     <div className='flex flex-col h-full'>
@@ -147,7 +161,7 @@ export default function index(props: Props) {
         </Col>
       </Row>
       {submode === 'raw' && <Raw tabKey={tabKey} organizeFields={organizeFields} setOrganizeFields={setOrganizeFields} setExecuteLoading={setExecuteLoading} />}
-      {submode === 'timeseries' && <Timeseries setExecuteLoading={setExecuteLoading} />}
+      {submode === 'timeSeries' && <Timeseries setExecuteLoading={setExecuteLoading} />}
       <Modal
         width={700}
         visible={queryWarnModalVisible}

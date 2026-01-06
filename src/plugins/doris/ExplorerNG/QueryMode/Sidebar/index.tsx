@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -6,6 +6,7 @@ import { useRequest } from 'ahooks';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 
+import { getOrganizeFieldsFromLocalstorage } from '../../utils/organizeFieldsLocalstorage';
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
 import { getDorisIndex, Field } from '../../../services';
 import DatabaseSelect from './DatabaseSelect';
@@ -18,7 +19,7 @@ interface Props {
   datasourceValue: number;
   executeQuery: () => void;
   organizeFields: string[];
-  setOrganizeFields: (organizeFields: string[]) => void;
+  setOrganizeFields: (organizeFields: string[], setLocalstorage?: boolean) => void;
   onIndexDataChange: (data: Field[]) => void;
 
   stackByField?: string;
@@ -100,6 +101,20 @@ export default function index(props: Props) {
     });
     executeQuery();
   };
+
+  useEffect(() => {
+    if (datasourceValue && database && table) {
+      setOrganizeFields(
+        getOrganizeFieldsFromLocalstorage({
+          datasourceValue,
+          mode: 'query',
+          database,
+          table,
+        }),
+        false,
+      );
+    }
+  }, [datasourceValue, database, table]);
 
   return (
     <div className='min-h-0 flex-1 h-full flex flex-col'>
