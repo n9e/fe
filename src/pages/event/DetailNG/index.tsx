@@ -62,7 +62,29 @@ export default function DetailNG(props: Props) {
       label: t('detail.rule_name'),
       key: 'rule_name',
       render(content, { rule_id }) {
-        if (!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)) {
+        // 从 tags 中解析出 spaceId、businessId 和 alertRuleId
+        const parseIdsFromTags = (tags: string[]) => {
+          const result: { spaceId?: string; businessId?: string; alertRuleId?: string } = {};
+          tags.forEach((tag) => {
+            const [key, value] = tag.split('=');
+            if (key === 'workspace_id') {
+              result.spaceId = value;
+            } else if (key === 'business_id') {
+              result.businessId = value;
+            } else if (key === 'rule_id') {
+              result.alertRuleId = value;
+            }
+          });
+          return result;
+        };
+
+        const { spaceId, businessId, alertRuleId } = parseIdsFromTags(eventDetail.tags || []);
+
+        if (eventDetail?.rule_prod === 'firemap') {
+          return <Link to={`/firemap?spaceId=${spaceId}&alertRuleId=${alertRuleId}`}>{content}</Link>;
+        } else if (eventDetail?.rule_prod === 'northstar') {
+          return <Link to={`/polaris/${businessId}?spaceId=${spaceId}&alertRuleId=${alertRuleId}`}>{content}</Link>;
+        } else {
           return (
             <Link
               to={{
@@ -74,7 +96,6 @@ export default function DetailNG(props: Props) {
             </Link>
           );
         }
-        return content;
       },
     },
     {
@@ -193,6 +214,17 @@ export default function DetailNG(props: Props) {
         return moment(time * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
+    ...(_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
+      ? [
+          {
+            label: t('detail.current_anomaly_time'),
+            key: 'trigger_time',
+            render(time) {
+              return moment(time * 1000).format('YYYY-MM-DD HH:mm:ss');
+            },
+          },
+        ]
+      : [false]),
     {
       label: t('detail.last_eval_time'),
       key: 'last_eval_time',
@@ -245,20 +277,32 @@ export default function DetailNG(props: Props) {
       indexPatterns,
     }) || []),
     ...(plusEventDetail(eventDetail?.cate, t) || []),
-    {
-      label: t('detail.prom_eval_interval'),
-      key: 'prom_eval_interval',
-      render(content) {
-        return `${content} s`;
-      },
-    },
-    {
-      label: t('detail.prom_for_duration'),
-      key: 'prom_for_duration',
-      render(content) {
-        return `${content} s`;
-      },
-    },
+    ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
+      ? [
+          {
+            label: t('detail.prom_eval_interval'),
+            key: 'prom_eval_interval',
+            render(content) {
+              return `${content} s`;
+            },
+          },
+          {
+            label: t('detail.prom_for_duration'),
+            key: 'prom_for_duration',
+            render(content) {
+              return `${content} s`;
+            },
+          },
+        ]
+      : [
+          {
+            label: t('detail.trigger_label'),
+            key: 'rule_config.anomaly_params',
+            render(content, record) {
+              return <Tag>{record.rule_config.anomaly_params}</Tag>;
+            },
+          },
+        ]),
     ...(eventDetail?.notify_version === 0
       ? [
           {
