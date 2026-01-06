@@ -194,9 +194,10 @@ export default forwardRef(function OriginSettings(
           onChange={(value) => {
             setOrganizeFields(value);
           }}
-          sortable={true}
+          sortable
           showDropdown={false}
           maxHeight={400}
+          showAll
         />
       </Modal>
       <Modal

@@ -583,20 +583,53 @@ export default function index(props: Props) {
               range={queryValues?.range}
             />
           ) : loading || histogramLoading ? (
-            <div className='flex justify-center'>{t(`${logExplorerNS}:loading`)}</div>
+            <div className='flex justify-center'>
+              <Empty
+                className='ant-empty-normal'
+                image='/image/img_executing.svg'
+                description={t(`${logExplorerNS}:loading`)}
+                imageStyle={{
+                  height: 80,
+                }}
+              />
+            </div>
           ) : (
             <div className='flex justify-center'>
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              <Empty
+                className='ant-empty-normal'
+                image='/image/img_empty.svg'
+                description={t(`${logExplorerNS}:no_data`)}
+                imageStyle={{
+                  height: 80,
+                }}
+              />
             </div>
           )}
         </>
       ) : (
         <div className='flex justify-center'>
-          <Trans
-            ns={logExplorerNS}
-            i18nKey='before_query'
-            components={{
-              b: <strong className=''></strong>,
+          <Empty
+            className='ant-empty-normal'
+            image='/image/img_execute.svg'
+            description={
+              <Trans
+                ns={logExplorerNS}
+                i18nKey='before_query'
+                components={{
+                  b: (
+                    <a
+                      onClick={() => {
+                        form.setFieldsValue({
+                          refreshFlag: _.uniqueId('refreshFlag_'),
+                        });
+                      }}
+                    />
+                  ),
+                }}
+              />
+            }
+            imageStyle={{
+              height: 80,
             }}
           />
         </div>

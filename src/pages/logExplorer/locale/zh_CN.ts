@@ -4,6 +4,7 @@ const zh_CN = {
   execute: '查询',
   before_query: '请点击 <b>查询</b>，展示数据',
   loading: '数据加载中 ...',
+  no_data: '查询无数据',
   histogram_hide: '隐藏图表',
   histogram_show: '显示图表',
   share_btn: '分享链接',
