@@ -80,49 +80,10 @@
     }
 
     .ant-select-selector {
-      border-color: var(--fc-border-color2) !important;
       transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
       height: 32px;
     }
 
-    // 聚焦状态
-    &.focused .ant-select-selector {
-      border-color: var(--fc-primary-color) !important;
-      box-shadow: 0 0 0 2px rgba(var(--fc-text-link-rgb), 0.1);
-    }
-
-    // 错误状态
-    &.error .ant-select-selector {
-      border-color: var(--fc-red-5-color) !important;
-
-      &:focus,
-      &:hover {
-        border-color: var(--fc-red-5-color) !important;
-      }
-    }
-
-    // 错误状态的聚焦阴影
-    &.error.focused .ant-select-selector {
-      box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
-    }
-  }
-
-  // 悬停状态 (非错误状态)
-  &:hover .outlined-select:not(.error) .ant-select-selector {
-    border-color: var(--fc-geekblue-4-color) !important;
-  }
-
-  // 禁用状态
-  .outlined-select.ant-select-disabled {
-    .ant-select-selector {
-      background: var(--fc-fill-3);
-      border-color: var(--fc-border-color) !important;
-    }
-  }
-
-  // 禁用状态的标签
-  .outlined-select.ant-select-disabled~.outlined-select-label {
-    color: var(--fc-text-4);
   }
 
   // 小尺寸适配
