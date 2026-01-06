@@ -12,5 +12,10 @@ export default {
       component: Index,
       exact: true,
     },
+    {
+      path: `${PATHNAME}-ng`,
+      component: Index,
+      exact: true,
+    },
   ],
 };
