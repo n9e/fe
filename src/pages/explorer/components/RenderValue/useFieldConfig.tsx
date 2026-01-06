@@ -41,6 +41,8 @@ export default function useFieldConfig(search: IFieldSearch, dep: any): FieldCon
             } catch (error) {
               console.error(error);
             }
+          } else {
+            setFieldConfig(undefined);
           }
         });
       }
