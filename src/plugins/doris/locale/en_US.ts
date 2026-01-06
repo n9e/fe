@@ -71,55 +71,8 @@ const en_US = {
     sql_warning_1:
       'It is strongly recommended to use $__timeFilter(time field) in the WHERE condition to explicitly limit the time range, otherwise it may lead to issues such as: <b>abnormal database load, alert query timeout</b>',
     sql_warning_2: 'The SQL uses $__timeGroup, which will return data for multiple time points. In this scenario, <b>the system only uses the results of the latest time point</b>',
-  },
-  logs: {
-    title: 'Logs',
+    duration: 'Duration',
     count: 'Count',
-    filter_fields: 'Filter fields',
-    settings: {
-      mode: {
-        origin: 'Origin',
-        table: 'Table',
-      },
-      submode: {
-        table: 'Table',
-        timeSeries: 'TimeSeries',
-      },
-      breakLine: 'Break line',
-      reverse: 'Time',
-      lines: 'Lines',
-      time: 'Log time',
-      organizeFields: {
-        title: 'Organize fields',
-        allFields: 'All fields',
-        showFields: 'Show fields',
-        showFields_empty: 'Show all fields by default',
-      },
-      jsonSettings: {
-        title: 'JSON settings',
-        displayMode: 'Default display mode',
-        displayMode_tree: 'Tree',
-        displayMode_string: 'String',
-        expandLevel: 'Default expand level',
-      },
-    },
-    tagsDetail: 'Tag detail',
-    expand: 'Expand',
-    collapse: 'Collapse',
-    fieldValues_topnNoData: 'No data',
-    stats: {
-      numberOfUniqueValues: 'Number of unique values',
-      unique_count: 'Number of unique values',
-      min: 'Min',
-      max: 'Max',
-      sum: 'Sum',
-      avg: 'Avg',
-    },
-    fieldLabelTip: 'The field is not enabled for statistics, and statistical analysis cannot be performed',
-    filterAnd: 'Add to this search',
-    filterNot: 'Exclude from this search',
-    total: 'Total',
-    loading: 'Loading data...',
   },
 };
 export default en_US;
