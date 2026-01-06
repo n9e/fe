@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 import HistoricalRecords from '@/components/HistoricalRecords';
 
-import { SQL_CACHE_KEY } from '../../../constants';
+import { NG_SQL_CACHE_KEY } from '../../../constants';
 
 interface Props {
   executeQuery: () => void;
@@ -20,7 +20,7 @@ export default function QueryInputAddonAfter(props: Props) {
 
   return (
     <HistoricalRecords
-      localKey={SQL_CACHE_KEY}
+      localKey={NG_SQL_CACHE_KEY}
       datasourceValue={datasourceValue}
       onSelect={(query) => {
         form.setFieldsValue({

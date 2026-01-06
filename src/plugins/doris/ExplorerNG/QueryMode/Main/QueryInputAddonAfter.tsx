@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 
-import { NAME_SPACE, QUERY_CACHE_KEY, QUERY_CACHE_PICK_KEYS } from '../../../constants';
+import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS } from '../../../constants';
 
 interface Props {
   executeQuery: () => void;
@@ -22,7 +22,7 @@ export default function QueryInputAddonAfter(props: Props) {
 
   return (
     <ConditionHistoricalRecords
-      localKey={QUERY_CACHE_KEY}
+      localKey={NG_QUERY_CACHE_KEY}
       datasourceValue={datasourceValue}
       renderItem={(item, setVisible) => {
         return (
@@ -35,7 +35,7 @@ export default function QueryInputAddonAfter(props: Props) {
               setVisible(false);
             }}
           >
-            {_.map(_.pick(item, QUERY_CACHE_PICK_KEYS), (value, key) => {
+            {_.map(_.pick(item, NG_QUERY_CACHE_PICK_KEYS), (value, key) => {
               if (!value) return <span key={key} />;
               return (
                 <span key={key} className='whitespace-nowrap'>
