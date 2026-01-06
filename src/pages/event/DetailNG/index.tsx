@@ -81,9 +81,17 @@ export default function DetailNG(props: Props) {
         const { spaceId, businessId, alertRuleId } = parseIdsFromTags(eventDetail.tags || []);
 
         if (eventDetail?.rule_prod === 'firemap') {
-          return <Link to={`/firemap?spaceId=${spaceId}&alertRuleId=${alertRuleId}`}>{content}</Link>;
+          return (
+            <Link to={`/firemap?spaceId=${spaceId}&alertRuleId=${alertRuleId}`} target='_blank'>
+              {content}
+            </Link>
+          );
         } else if (eventDetail?.rule_prod === 'northstar') {
-          return <Link to={`/polaris/${businessId}?spaceId=${spaceId}&alertRuleId=${alertRuleId}`}>{content}</Link>;
+          return (
+            <Link to={`/polaris/${businessId}?spaceId=${spaceId}&alertRuleId=${alertRuleId}`} target='_blank'>
+              {content}
+            </Link>
+          );
         } else {
           return (
             <Link
