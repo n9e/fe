@@ -258,5 +258,6 @@ const zh_CN = {
 
   copy_success: '复制成功 {{num}} 条记录',
   request_fail_msg: '网络请求超时，请稍后重试',
+  trim_validator_msg: '前后有空格，请手动删除',
 };
 export default zh_CN;
