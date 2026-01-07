@@ -97,7 +97,7 @@ export default function QueryBuilder(props: Props) {
                 if (firstDateField) {
                   dateField = firstDateField;
                 }
-                _.set(query, 'query', `select * from ${nodeData.database}.${nodeData.table} WHERE $__timeFilter(${dateField}) limit 20;`);
+                _.set(query, 'query', `select * from \`${nodeData.database}\`.\`${nodeData.table}\` WHERE $__timeFilter(\`${dateField}\`) limit 20;`);
                 form.setFieldsValue({
                   query,
                 });
@@ -105,7 +105,7 @@ export default function QueryBuilder(props: Props) {
               })
               .catch(() => {
                 message.warning(t('query.get_index_fail'));
-                _.set(query, 'query', `select * from ${nodeData.database}.${nodeData.table} WHERE $__timeFilter(timestamp) limit 20;`);
+                _.set(query, 'query', `select * from \`${nodeData.database}\`.\`${nodeData.table}\` WHERE $__timeFilter(\`timestamp\`) limit 20;`);
                 form.setFieldsValue({
                   query,
                 });
