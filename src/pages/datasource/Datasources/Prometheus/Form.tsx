@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import { Form, Input, Checkbox, Card, Tooltip, Alert, Drawer, Space, Select } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { IS_PLUS } from '@/utils/constant';
@@ -15,6 +15,7 @@ import Headers from '../../components/items/Headers';
 import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
 import Cluster from '../../components/items/Cluster';
+import MTLS from '../../components/items/MTLS';
 import prom_installation from './prom_installation.md';
 
 export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
@@ -24,6 +25,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasources = _.get(groupedDatasourceList, 'prometheus', []);
   const [helpDrawerVisible, setHelpDrawerVisible] = useState(false);
+  const [advancedVisible, setAdvancedVisible] = useState(false);
 
   return (
     <Form
@@ -84,6 +86,24 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
         />
         <BasicAuth />
         <SkipTLSVerify />
+        <div>
+          <Space
+            className='cursor-pointer mb-2'
+            onClick={() => {
+              setAdvancedVisible(!advancedVisible);
+            }}
+          >
+            <span>{t('common:advanced_settings')}</span>
+            <span>{advancedVisible ? <DownOutlined /> : <RightOutlined />}</span>
+          </Space>
+          <div
+            style={{
+              display: advancedVisible ? 'block' : 'none',
+            }}
+          >
+            <MTLS namePath={['http', `tls`]} />
+          </div>
+        </div>
         <Headers />
         <div className='page-title' style={{ marginTop: 0 }}>
           {t('form.other')}
