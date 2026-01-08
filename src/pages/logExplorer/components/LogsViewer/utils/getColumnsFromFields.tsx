@@ -58,7 +58,7 @@ export default function getColumnsFromFields(params: {
       }
     }
     const width = tableColumnsWidthCacheValue[item];
-    const baseWidth = iconsWidth + 16;
+    const baseWidth = iconsWidth + 20;
     const minWidth = 60;
 
     return {

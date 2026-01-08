@@ -12,7 +12,10 @@ export default function calcColWidthByData(data: any[]) {
     _.forEach(row, (value, key) => {
       const text = _.toString(value);
       const textWidth = getTextWidth(text) + buffer;
-      const keyWidth = getTextWidth(key) + buffer;
+      const keyWidth =
+        getTextWidth(key, {
+          fontWeight: '700',
+        }) + buffer;
       const totalWidth = Math.max(textWidth, keyWidth);
 
       if (!colWidths[key] || totalWidth > colWidths[key]) {
