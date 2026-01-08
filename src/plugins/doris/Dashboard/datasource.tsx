@@ -25,7 +25,7 @@ interface Result {
 }
 
 export default async function dorisQuery(options: IOptions): Promise<Result> {
-  const { time, targets, datasourceValue, queryOptionsTime } = options;
+  const { time, targets, datasourceValue, queryOptionsTime, scopedVars } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).unix();
@@ -42,7 +42,10 @@ export default async function dorisQuery(options: IOptions): Promise<Result> {
         end = moment(parsedRange.end).unix();
       }
       const query: any = target.query || {};
-      const queryStr = replaceTemplateVariables(query.query);
+      const queryStr = replaceTemplateVariables(query.query, {
+        range: time,
+        scopedVars,
+      });
       const mode = query.mode;
       if (target.__mode__ === '__expr__') {
         exps.push({
