@@ -47,11 +47,11 @@ export function interpolateString(options: { query: string; range?: IRawTimeRang
       .replace(/\$__to_date_iso/g, toDateISO)
       .replace(/\$__to_date/g, `${toDateISO}`)
       .replace(/\$__interval/g, `${interval}s`)
-      .replace(/\$__interval_ms/g, `${interval * 1000}ms`)
+      .replace(/\$__interval_ms/g, `${interval * 1000}`)
       .replace(/\$__rate_interval/g, `${interval * 4}s`)
       .replace(/\$__range/g, `${toUnix - fromUnix}s`)
-      .replace(/\$__range_s/g, `${toUnix - fromUnix}s`)
-      .replace(/\$__range_ms/g, `${(toUnix - fromUnix) * 1000}ms`);
+      .replace(/\$__range_s/g, `${toUnix - fromUnix}`)
+      .replace(/\$__range_ms/g, `${(toUnix - fromUnix) * 1000}`);
   }
 
   return query.replace(/\$__interval/g, `${minStep}s`).replace(/\$__rate_interval/g, `${minStep * 4}s`);
@@ -74,7 +74,7 @@ export function instantInterpolateString(options: { query: string; time?: moment
     .replace(/\$__to_date_iso/g, currentTimeDateISO)
     .replace(/\$__to_date/g, `${currentTimeDateISO}`)
     .replace(/\$__interval/g, '5m')
-    .replace(/\$__interval_ms/g, '5m')
+    .replace(/\$__interval_ms/g, '300000')
     .replace(/\$__rate_interval/g, '5m');
 }
 

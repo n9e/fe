@@ -225,8 +225,19 @@ function Raw(props: Props) {
       width: 140,
       dataIndex: timeField,
       key: 'time',
-      render: (val) => {
-        return moment(val).format('MM-DD HH:mm:ss.SSS');
+      render: (val, record) => {
+        return (
+          <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
+            <div
+              className='absolute inset-0 flex items-center cursor-pointer'
+              onClick={() => {
+                setLogViewerDrawerState({ visible: true, value: record });
+              }}
+            >
+              {moment(val).format('MM-DD HH:mm:ss.SSS')}
+            </div>
+          </Tooltip>
+        );
       },
       defaultSortOrder: 'descend',
       sortDirections: ['ascend', 'descend', 'ascend'],
@@ -239,16 +250,16 @@ function Raw(props: Props) {
       width: 50,
       render: (record, _row, index) => {
         return (
-          // <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
-          <div
-            className='absolute inset-0 flex items-center'
-            // onClick={() => {
-            //   setLogViewerDrawerState({ visible: true, value: record });
-            // }}
-          >
-            {index + 1}
-          </div>
-          // </Tooltip>
+          <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
+            <div
+              className='absolute inset-0 flex items-center cursor-pointer'
+              onClick={() => {
+                setLogViewerDrawerState({ visible: true, value: record });
+              }}
+            >
+              {index + 1}
+            </div>
+          </Tooltip>
         );
       },
       onCell: () => ({
