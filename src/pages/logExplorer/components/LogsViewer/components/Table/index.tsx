@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import DataGrid, { Column, RowsChangeData, SortColumn } from 'react-data-grid';
 import classNames from 'classnames';
 import _ from 'lodash';
+import { Empty } from 'antd';
 
 import CellExpanderFormatter from './components/CellExpanderFormatter';
 import RowDetail from './components/RowDetail';
@@ -137,6 +138,10 @@ export default function Table<Row>(props: Props<Row>) {
     return baseColumns;
   }, [columns, handleHeightChange, rowKeyGetterExtra]);
 
+  if (rows.length === 0) {
+    return <Empty className='mt-4' image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+  }
+
   return (
     <DataGrid
       rowKeyGetter={(row) => row.__id}
@@ -173,7 +178,6 @@ export default function Table<Row>(props: Props<Row>) {
       }}
       sortColumns={sortColumns}
       onSortColumnsChange={onSortColumnsChange}
-      renderers={{}}
       onScroll={onScroll}
       onColumnResize={onColumnResize}
     />
