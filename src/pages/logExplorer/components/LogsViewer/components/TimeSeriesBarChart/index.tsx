@@ -152,6 +152,7 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
     chart.interaction('tooltip', {
       shared: stacked,
       crosshairs: true,
+      mount: document.body,
       render: (event: any, { container }: any) => {
         // 自定义 tooltip 渲染，确保不溢出屏幕
         const tooltipElement = container;
