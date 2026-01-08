@@ -55,6 +55,7 @@ function Table(props: Props) {
   const indexDataFields = useMemo(() => _.map(indexData, 'field'), [indexData]);
   const columnDeps = useDeepCompareWithRef({ indexData: indexDataFields, fields, timeField, options, colWidths, data, tableColumnsWidthCacheKey });
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; value: any }>({ visible: false, value: null });
+
   const columns = useMemo(
     () =>
       getColumnsFromFields({

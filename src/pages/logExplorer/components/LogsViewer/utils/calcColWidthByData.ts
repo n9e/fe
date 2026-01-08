@@ -11,10 +11,7 @@ export default function calcColWidthByData(data: any[]) {
   _.forEach(data, (row) => {
     _.forEach(row, (value, key) => {
       const text = _.toString(value);
-      const textWidth =
-        getTextWidth(text, {
-          fontWeight: '700',
-        }) + buffer;
+      const textWidth = getTextWidth(text) + buffer;
       const keyWidth =
         getTextWidth(key, {
           fontWeight: '700',
