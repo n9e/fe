@@ -99,6 +99,8 @@ export default function Table<Row>(props: Props<Row>) {
         name: '',
         minWidth: 30,
         width: 30,
+        resizable: false,
+        frozen: true,
         colSpan(args) {
           return args.type === 'ROW' && args.row.__type === 'DETAIL' ? baseColumns.length + 1 : undefined;
         },

@@ -92,9 +92,11 @@ function index(
   const { query, series, error, loading, loaded, range } = queryResult;
   const name = replaceTemplateVariables(values.name, {
     scopedVars: values.scopedVars,
+    range: time,
   });
   const description = replaceTemplateVariables(values.description, {
     scopedVars: values.scopedVars,
+    range: time,
   });
   const tipsVisible = description || !_.isEmpty(values.links);
   const panelCustomTimeDescribe = getPanelCustomTimeDescribe(values.queryOptionsTime);
@@ -185,11 +187,13 @@ function index(
                           <a
                             href={replaceTemplateVariables(link.url, {
                               scopedVars: values.scopedVars,
+                              range: time,
                             })}
                             target={link.targetBlank ? '_blank' : '_self'}
                           >
                             {replaceTemplateVariables(link.title, {
                               scopedVars: values.scopedVars,
+                              range: time,
                             })}
                           </a>
                         </div>
