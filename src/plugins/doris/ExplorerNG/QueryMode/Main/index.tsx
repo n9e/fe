@@ -67,6 +67,7 @@ export default function index(props: Props) {
     current: 1,
     pageSize: DEFAULT_LOGS_PAGE_SIZE,
     reverse: true,
+    refreshFlag: undefined,
   });
   const updateOptions = (newOptions, reload?: boolean) => {
     const mergedOptions = {
@@ -542,9 +543,11 @@ export default function index(props: Props) {
                     from: params.from,
                     to: params.to,
                   };
-                  form.setFieldsValue({
+                  setServiceParams((prev) => ({
+                    ...prev,
+                    current: 1,
                     refreshFlag: _.uniqueId('refreshFlag_'),
-                  });
+                  }));
                 }
                 if (params.reverse !== undefined) {
                   setServiceParams((prev) => ({
