@@ -70,6 +70,7 @@ const zh_CN = {
     sql_warning_2: 'SQL 中使用了 $__timeGroup，该查询将返回多个时间点的数据。在此场景下，<b>系统仅使用最新时间点的结果</b>',
     duration: '耗时',
     count: '条数',
+    click_doc: '点击查看 <a>查询条件</a> 文档',
   },
 };
 export default zh_CN;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
@@ -317,6 +317,11 @@ export default function index(props: Props) {
     });
     data = _.concat([frames[0]], stackedData) as any;
   }
+
+  useEffect(() => {
+    // 重置缩放按钮状态
+    setShowResetZoomBtn(false);
+  }, [JSON.stringify(xMinMax)]);
 
   return (
     <>

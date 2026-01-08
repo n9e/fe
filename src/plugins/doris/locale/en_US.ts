@@ -75,6 +75,7 @@ const en_US = {
     sql_warning_2: 'The SQL uses $__timeGroup, which will return data for multiple time points. In this scenario, <b>the system only uses the results of the latest time point</b>',
     duration: 'Duration',
     count: 'Count',
+    click_doc: 'Click to view <a>Query Condition</a> documentation',
   },
 };
 export default en_US;

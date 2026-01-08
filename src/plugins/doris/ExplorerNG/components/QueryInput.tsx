@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from 'antd';
 import classNames from 'classnames';
 
@@ -11,9 +11,7 @@ interface Props {
 }
 
 export default function QueryInput(props: Props) {
-  const [currentValue, setCurrentValue] = React.useState(props.value);
-  const [foucsed, setFocused] = React.useState(false);
-  const textAreaRef = React.useRef<any>(null);
+  const [currentValue, setCurrentValue] = useState(props.value);
 
   const handleKeyDown = (e) => {
     // 按下 Enter 键且未按住 Shift 键
@@ -26,30 +24,23 @@ export default function QueryInput(props: Props) {
     // 按下 Enter 键且按住 Shift 键：不阻止默认行为，允许换行
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentValue(props.value);
   }, [props.value]);
 
   return (
     <Input.TextArea
-      ref={textAreaRef}
-      className={classNames('absolute top-0 doris-log-explorer-query-input', {
-        'resize-none': !foucsed,
-        'overflow-y-hidden': !foucsed,
+      className={classNames({
         'pl-[32px]': props.enableAddonBefore,
-        'doris-log-explorer-query-input-default': !foucsed,
       })}
+      autoSize={{ minRows: 1, maxRows: 10 }}
       disabled={props.disabled}
-      autoSize={{ minRows: 1, maxRows: foucsed ? 4 : 1 }}
+      placeholder={props.placeholder}
       value={currentValue}
-      onChange={(e) => setCurrentValue(e.target.value)}
+      onChange={(e) => {
+        setCurrentValue(e.target.value);
+      }}
       onBlur={() => {
-        setFocused(false);
-        // 失去焦点时将滚动条重置到顶部
-        if (textAreaRef.current && textAreaRef.current.resizableTextArea && textAreaRef.current.resizableTextArea.textArea) {
-          textAreaRef.current.resizableTextArea.textArea.scrollTop = 0;
-        }
-
         if (currentValue !== props.value) {
           setTimeout(() => {
             props.onChange && props.onChange(currentValue);
@@ -57,10 +48,6 @@ export default function QueryInput(props: Props) {
         }
       }}
       onKeyDown={handleKeyDown}
-      onFocus={() => {
-        setFocused(true);
-      }}
-      placeholder={props.placeholder}
     />
   );
 }

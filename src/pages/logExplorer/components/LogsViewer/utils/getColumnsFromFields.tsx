@@ -20,8 +20,20 @@ export default function getColumnsFromFields(params: {
   data?: any[];
   tableColumnsWidthCacheKey?: string;
   onOpenOrganizeFieldsModal?: () => void;
+  setLogViewerDrawerState?: React.Dispatch<React.SetStateAction<{ visible: boolean; value: any }>>;
 }) {
-  const { colWidths, indexData, fields, timeField: time_field, options, onValueFilter, data, tableColumnsWidthCacheKey, onOpenOrganizeFieldsModal } = params;
+  const {
+    colWidths,
+    indexData,
+    fields,
+    timeField: time_field,
+    options,
+    onValueFilter,
+    data,
+    tableColumnsWidthCacheKey,
+    onOpenOrganizeFieldsModal,
+    setLogViewerDrawerState,
+  } = params;
 
   let tableColumnsWidthCacheValue: { [index: string]: number | undefined } = {};
   if (tableColumnsWidthCacheKey) {
@@ -83,25 +95,47 @@ export default function getColumnsFromFields(params: {
   });
   if (time_field && options?.time === 'true') {
     columns.unshift({
-      name: i18next.t('explorer:logs.settings.time'),
+      name: i18next.t('log_explorer:logs.settings.time'),
       key: '___time___',
       width: 140,
       sortable: true,
       resizable: false,
       formatter: ({ row }) => {
-        return <div>{moment(row[time_field]).format('MM-DD HH:mm:ss.SSS')}</div>;
+        return (
+          <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
+            <div
+              className='cursor-pointer'
+              onClick={() => {
+                setLogViewerDrawerState?.({ visible: true, value: _.omit(row, ['__expanded', '__id', '__type']) });
+              }}
+            >
+              {moment(row[time_field]).format('MM-DD HH:mm:ss.SSS')}
+            </div>
+          </Tooltip>
+        );
       },
     });
   }
   if (options?.lines === 'true') {
     columns.unshift({
-      name: i18next.t('explorer:logs.settings.lines'),
+      name: i18next.t('log_explorer:logs.settings.lines'),
       key: '___lines___',
       width: 40,
       resizable: false,
       formatter: ({ row }) => {
         const idx = _.findIndex(data, { ___id___: row.___id___ });
-        return <div>{idx + 1}</div>;
+        return (
+          <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
+            <div
+              className='cursor-pointer'
+              onClick={() => {
+                setLogViewerDrawerState?.({ visible: true, value: _.omit(row, ['__expanded', '__id', '__type']) });
+              }}
+            >
+              {idx + 1}
+            </div>
+          </Tooltip>
+        );
       },
     });
   }
