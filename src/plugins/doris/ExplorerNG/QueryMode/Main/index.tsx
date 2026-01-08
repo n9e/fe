@@ -126,6 +126,7 @@ export default function index(props: Props) {
   const loadTimeRef = useRef<number | null>(null);
 
   const service = () => {
+    const queryValues = form.getFieldValue('query');
     if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
       const range = parseRange(queryValues.range);
       let timeParams =
@@ -233,6 +234,7 @@ export default function index(props: Props) {
   });
 
   const histogramService = () => {
+    const queryValues = form.getFieldValue('query');
     if (refreshFlag && datasourceValue && queryValues && queryValues.database && queryValues.table && queryValues.time_field) {
       const range = parseRange(queryValues.range);
       return getDorisHistogram({
