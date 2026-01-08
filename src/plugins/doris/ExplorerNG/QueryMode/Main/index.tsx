@@ -407,7 +407,7 @@ export default function index(props: Props) {
       </Row>
       {refreshFlag ? (
         <>
-          {!_.isEmpty(data?.list) ? (
+          {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
