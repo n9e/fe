@@ -54,6 +54,7 @@ function Table(props: Props) {
 
   const indexDataFields = useMemo(() => _.map(indexData, 'field'), [indexData]);
   const columnDeps = useDeepCompareWithRef({ indexData: indexDataFields, fields, timeField, options, colWidths, data, tableColumnsWidthCacheKey });
+  const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; value: any }>({ visible: false, value: null });
   const columns = useMemo(
     () =>
       getColumnsFromFields({
@@ -66,6 +67,7 @@ function Table(props: Props) {
         data,
         tableColumnsWidthCacheKey,
         onOpenOrganizeFieldsModal,
+        setLogViewerDrawerState,
       }),
     [columnDeps, onValueFilter, onOpenOrganizeFieldsModal],
   );
@@ -79,7 +81,6 @@ function Table(props: Props) {
         ]
       : [],
   );
-  const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; value: any }>({ visible: false, value: null });
 
   return (
     <>
