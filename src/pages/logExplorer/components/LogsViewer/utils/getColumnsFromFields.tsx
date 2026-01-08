@@ -49,7 +49,7 @@ export default function getColumnsFromFields(params: {
 
   const columns: any[] = _.map(fields, (item) => {
     const organizeFields = options?.organizeFields || [];
-    const iconsWidth = _.includes(organizeFields, item) ? 20 : 40; // 预留图标宽度
+    const iconsWidth = _.includes(organizeFields, item) ? 0 : 20; // 预留图标宽度
     let realName = item;
     if (indexData && !_.find(indexData, { field: item })) {
       const firstPart = item.split('.')[0];
@@ -58,10 +58,12 @@ export default function getColumnsFromFields(params: {
       }
     }
     const width = tableColumnsWidthCacheValue[item];
+    const baseWidth = iconsWidth + 16;
+    const minWidth = 60;
 
     return {
-      minWidth: (colWidths?.[item] || 160) + iconsWidth + 16, // 16 是表格内边距
-      width: width ? width + iconsWidth + 16 : undefined,
+      minWidth,
+      width: (width ? width : colWidths?.[item] || minWidth) + baseWidth,
       key: item,
       headerCellClass: 'group',
       name: (
