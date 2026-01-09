@@ -70,6 +70,7 @@ const zh_HK = {
     sql_warning_2: 'SQL 中使用了 $__timeGroup，該查詢將返回多個時間點的數據。在此場景下，<b>系統僅使用最新時間點的結果</b>',
     duration: '耗時',
     count: '條數',
+    click_doc: '點擊查看 <a>查詢條件</a> 文檔',
   },
 };
 

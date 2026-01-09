@@ -67,6 +67,7 @@ export default function index(props: Props) {
     current: 1,
     pageSize: DEFAULT_LOGS_PAGE_SIZE,
     reverse: true,
+    refreshFlag: undefined,
   });
   const updateOptions = (newOptions, reload?: boolean) => {
     const mergedOptions = {
@@ -125,6 +126,7 @@ export default function index(props: Props) {
   const loadTimeRef = useRef<number | null>(null);
 
   const service = () => {
+    const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
       const range = parseRange(queryValues.range);
       let timeParams =
@@ -232,6 +234,7 @@ export default function index(props: Props) {
   });
 
   const histogramService = () => {
+    const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues && queryValues.database && queryValues.table && queryValues.time_field) {
       const range = parseRange(queryValues.range);
       return getDorisHistogram({
@@ -406,7 +409,7 @@ export default function index(props: Props) {
       </Row>
       {refreshFlag ? (
         <>
-          {!_.isEmpty(data?.list) ? (
+          {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
@@ -537,15 +540,20 @@ export default function index(props: Props) {
                 });
               }}
               onLogRequestParamsChange={(params) => {
+                // 这里只更新 serviceParams 从而只刷新日志数据，不刷新直方图
+                // 点击直方图某个柱子时设置时间范围
                 if (params.from && params.to) {
                   snapRangeRef.current = {
                     from: params.from,
                     to: params.to,
                   };
-                  form.setFieldsValue({
-                    refreshFlag: _.uniqueId('refreshFlag_'),
-                  });
+                  setServiceParams((prev) => ({
+                    ...prev,
+                    current: 1,
+                    refreshFlag: _.uniqueId('refreshFlag_'), // 避免其他参数没变时不触发刷新
+                  }));
                 }
+                // 点击表格时间列排序时设置顺序
                 if (params.reverse !== undefined) {
                   setServiceParams((prev) => ({
                     ...prev,

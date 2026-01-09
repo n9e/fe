@@ -141,11 +141,11 @@ const zh_CN = {
       <1 />
       \${__interval}: 时间间隔（秒）, 例如 15s, 默认为 step
       <1 />
-      \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
+      \${__interval_ms}: 时间间隔（毫秒）, 例如 15000
       <1 />
       \${__range}: 时间范围（秒）, 例如 3600s
       <1 />
-      \${__range_ms}: 时间范围（毫秒）, 例如 3600000ms
+      \${__range_ms}: 时间范围（毫秒）, 例如 3600000
       <1 />
       \${__rate_interval}: 时间间隔（秒）, __interval * 4
       <1 />
@@ -166,11 +166,11 @@ const zh_CN = {
       <br />
       \${__interval}: 时间间隔（秒）, 例如 15s, 默认为 step
       <br />
-      \${__interval_ms}: 时间间隔（毫秒）, 例如 15000ms
+      \${__interval_ms}: 时间间隔（毫秒）, 例如 15000
       <br />
       \${__range}: 时间范围（秒）, 例如 3600s
       <br />
-      \${__range_ms}: 时间范围（毫秒）, 例如 3600000ms
+      \${__range_ms}: 时间范围（毫秒）, 例如 3600000
       <br />
       \${__rate_interval}: 时间间隔（秒）, __interval * 4
       <br />
