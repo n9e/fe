@@ -255,6 +255,7 @@ const zh_HK = {
   'msg.sort.success': '排序成功',
   copy_success: '複製成功 {{num}} 條記錄',
   request_fail_msg: '請求失敗，請檢查網絡連線',
+  trim_validator_msg: '前後有空格，請手動刪除',
 };
 
 export default zh_HK;

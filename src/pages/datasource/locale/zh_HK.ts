@@ -107,6 +107,12 @@ const zh_HK = {
     title: '標籤豐富',
   },
   endpoint_title: '服務入口',
+  mtls: {
+    ca_cert: 'CA 證書',
+    server_name: '伺服器名稱',
+    client_cert: '用戶端證書',
+    client_key: '用戶端密鑰',
+  },
 };
 
 export default zh_HK;
