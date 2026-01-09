@@ -11,11 +11,13 @@ import { DEFAULT_DATASOURCE_CATE } from './constants';
 import { getLocalItems, setLocalItems } from './utils/getLocalItems';
 import { getLocalActiveKey } from './utils/getLocalActiveKey';
 import getDefaultDatasourceCate from './utils/getDefaultDatasourceCate';
+import getUUID from './utils/getUUID';
+import { setLocalActiveKey } from './utils/getLocalActiveKey';
 import Header from './Header';
 import Explorer from './Explorer';
 
 export default function index() {
-  const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
   const location = useLocation();
   const params = queryString.parse(location.search) as { [index: string]: string | null };
 
@@ -78,6 +80,29 @@ export default function index() {
                     setLocalItems(newItems);
                     setItems(newItems);
                   },
+                }}
+                onAdd={(queryValues = {}) => {
+                  const newActiveKey = getUUID();
+                  const newItems = [
+                    ...items,
+                    {
+                      key: newActiveKey,
+                      isInited: false,
+                      formValues: {
+                        datasourceCate: defaultDatasourceCate,
+                        datasourceValue: defaultDatasourceValue,
+                        query: {
+                          ...queryValues,
+                          range: logsDefaultRange,
+                        },
+                        refreshFlag: _.uniqueId('refreshFlag_'), // 新增时默认执行查询
+                      },
+                    },
+                  ];
+                  setItems(newItems);
+                  setLocalItems(newItems);
+                  setActiveKey(newActiveKey);
+                  setLocalActiveKey(newActiveKey);
                 }}
               />
             </div>

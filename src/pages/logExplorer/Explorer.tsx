@@ -12,11 +12,12 @@ interface Props {
   tabKey: string;
   tabIndex?: number;
   defaultFormValuesControl?: DefaultFormValuesControl;
+  onAdd: (queryValues?: { [index: string]: any }) => void;
 }
 
 export default function Explorer(props: Props) {
   const location = useLocation();
-  const { tabKey, defaultFormValuesControl } = props;
+  const { tabKey, defaultFormValuesControl, onAdd } = props;
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
 
@@ -26,7 +27,11 @@ export default function Explorer(props: Props) {
       defaultFormValuesControl.setIsInited();
       form.setFieldsValue({
         ...defaultFormValuesControl.defaultFormValues,
-        refreshFlag: searchParams.get('__execute__') ? _.uniqueId('refreshFlag_') : undefined,
+        refreshFlag: defaultFormValuesControl.defaultFormValues?.refreshFlag
+          ? defaultFormValuesControl.defaultFormValues?.refreshFlag
+          : searchParams.get('__execute__')
+          ? _.uniqueId('refreshFlag_')
+          : undefined,
       });
     }
   }, []);
@@ -41,7 +46,7 @@ export default function Explorer(props: Props) {
           <Form.Item name='datasourceValue' hidden>
             <div />
           </Form.Item>
-          <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} />
+          <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} onAdd={onAdd} />
         </Form>
       </div>
     </div>

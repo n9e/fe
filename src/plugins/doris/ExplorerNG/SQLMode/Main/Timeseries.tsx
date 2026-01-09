@@ -10,6 +10,7 @@ import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { getDsQuery } from '../../../services';
+import replaceTemplateVariables from '../../utils/replaceTemplateVariables';
 
 interface Props {
   setExecuteLoading: (loading: boolean) => void;
@@ -41,7 +42,7 @@ export default function TimeseriesCpt(props: Props) {
             {
               from: moment(parseRange(query.range).start).unix(),
               to: moment(parseRange(query.range).end).unix(),
-              sql: query.query,
+              sql: replaceTemplateVariables(_.trim(query.query), query.range),
               keys: query.keys,
             },
           ],
@@ -74,7 +75,7 @@ export default function TimeseriesCpt(props: Props) {
   return (
     <>
       {!_.isEmpty(series) ? (
-        <div className='n9e-antd-table-height-full'>
+        <div className='n9e-antd-table-height-full max-h-[300px]'>
           <Spin spinning={loading}>
             <Timeseries
               series={series}

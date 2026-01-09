@@ -39,6 +39,11 @@ const zh_CN = {
     no_data: '该字段存在于 mapping 中，但不存在于显示的 500 个文档中',
   },
   empty_value_not_supported_tip: '暂不支持对空值做检索',
+  field_tip: '点击查看统计信息',
+  field_value_statistic: {
+    view_statistic: '查看统计图',
+    view_timeseries: '查看时序图',
+  },
   logs: {
     title: '日志数据',
     count: '结果数',

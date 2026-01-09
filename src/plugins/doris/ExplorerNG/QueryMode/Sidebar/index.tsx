@@ -21,6 +21,7 @@ interface Props {
   organizeFields: string[];
   setOrganizeFields: (organizeFields: string[], setLocalstorage?: boolean) => void;
   onIndexDataChange: (data: Field[]) => void;
+  onAdd: (queryValues?: { [index: string]: any }) => void;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
@@ -38,6 +39,7 @@ export default function index(props: Props) {
     organizeFields,
     setOrganizeFields,
     onIndexDataChange,
+    onAdd,
 
     stackByField,
     setStackByField,
@@ -174,6 +176,7 @@ export default function index(props: Props) {
           setStackByField={setStackByField}
           defaultSearchField={defaultSearchField}
           setDefaultSearchField={setDefaultSearchField}
+          onAdd={onAdd}
         />
       </div>
     </div>
