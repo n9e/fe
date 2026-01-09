@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Button, Modal, Form } from 'antd';
+import { Button, Modal, Form, Tooltip } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
 import { parseRange } from '@/components/TimeRangePicker';
 import { copy2ClipBoard } from '@/utils';
 
 import { NAME_SPACE } from '../../../constants';
-import { getDorisSQLFormat, Field } from '../../../services';
+import { getDorisSQLsPreview } from '../../../services';
 
 interface SQLFormatParams {
   rangeRef: React.MutableRefObject<
@@ -19,14 +21,15 @@ interface SQLFormatParams {
     | undefined
   >;
   defaultSearchField: string | undefined;
+  onClick: (values: any) => void;
 }
 
 export default function SQLFormatButton(props: SQLFormatParams) {
   const { t } = useTranslation(NAME_SPACE);
-  const { rangeRef, defaultSearchField } = props;
+  const { rangeRef, defaultSearchField, onClick } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const form = Form.useFormInstance();
-  const { run: fetchFormattedSQL, data } = useRequest(getDorisSQLFormat, {
+  const { run: fetchFormattedSQL, data } = useRequest(getDorisSQLsPreview, {
     manual: true,
     onSuccess: () => {
       setModalVisible(true);
@@ -59,10 +62,9 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                   query: queryValues.query,
                   from: timeParams.from,
                   to: timeParams.to,
-                  lines: 10,
-                  offset: 0,
-                  reverse: true,
                   default_field: defaultSearchField,
+
+                  func: 'count', // 特殊 func 只用于 query 模式预览 SQL
                 },
               ],
             });
@@ -78,15 +80,87 @@ export default function SQLFormatButton(props: SQLFormatParams) {
         onCancel={() => {
           setModalVisible(false);
         }}
-        okText={t('common:btn.copy')}
-        onOk={() => {
-          if (data) {
-            copy2ClipBoard(data);
-            setModalVisible(false);
-          }
-        }}
+        footer={null}
       >
-        <div className='overflow-x-hidden overflow-y-auto max-h-[400px] break-all'>{data}</div>
+        <div className='mb-2'>
+          <div className='mb-2 flex items-center gap-2'>
+            <a
+              className='flex-shrink-0'
+              onClick={() => {
+                setModalVisible(false);
+                onClick({
+                  submode: 'raw',
+                  query: data?.origin,
+                });
+              }}
+            >
+              查看日志原文
+            </a>
+            <Tooltip title={data?.origin}>
+              <div className='flex-1 truncate'>{data?.origin}</div>
+            </Tooltip>
+            <CopyOutlined
+              className='flex-shrink-0'
+              onClick={() => {
+                copy2ClipBoard(data?.origin || '');
+              }}
+            />
+          </div>
+        </div>
+        <div className='mb-2'>
+          <div className='mb-2 flex items-center gap-2'>
+            <a
+              className='flex-shrink-0'
+              onClick={() => {
+                setModalVisible(false);
+                onClick({
+                  submode: 'timeSeries',
+                  query: data?.timeseries?.count?.sql,
+                  keys: {
+                    valueKey: data?.timeseries?.count?.value_key,
+                    labelKey: data?.timeseries?.count?.label_key,
+                  },
+                });
+              }}
+            >
+              查看时序图
+            </a>
+            <Tooltip title={data?.timeseries?.count?.sql}>
+              <div className='flex-1 truncate'>{data?.timeseries?.count?.sql}</div>
+            </Tooltip>
+            <CopyOutlined
+              className='flex-shrink-0'
+              onClick={() => {
+                copy2ClipBoard(data?.timeseries?.count?.sql || '');
+              }}
+            />
+          </div>
+        </div>
+        <div className='mb-2'>
+          <div className='mb-2 flex items-center gap-2'>
+            <a
+              className='flex-shrink-0'
+              onClick={() => {
+                setModalVisible(false);
+                onClick({
+                  submode: 'raw',
+                  query: data?.table?.sql,
+                });
+              }}
+            >
+              查看统计值
+            </a>
+            <Tooltip title={data?.table?.sql}>
+              <div className='flex-1 truncate'>{data?.table?.sql}</div>
+            </Tooltip>
+            <CopyOutlined
+              className='flex-shrink-0'
+              onClick={() => {
+                copy2ClipBoard(data?.table?.sql || '');
+              }}
+            />
+          </div>
+        </div>
       </Modal>
     </>
   );

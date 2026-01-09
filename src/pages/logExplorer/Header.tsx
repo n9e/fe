@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 import _ from 'lodash';
+
+import { CommonStateContext } from '@/App';
 
 import { NAME_SPACE } from './constants';
 import { LogExplorerTabItem } from './types';
@@ -20,6 +22,7 @@ interface Props {
 
 export default function Header(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
+  const { logsDefaultRange } = useContext(CommonStateContext);
   const { items, setItems, activeKey, setActiveKey, defaultDatasourceCate, defaultDatasourceValue } = props;
 
   return (
@@ -42,10 +45,7 @@ export default function Header(props: Props) {
                   datasourceCate: defaultDatasourceCate,
                   datasourceValue: defaultDatasourceValue,
                   query: {
-                    range: {
-                      start: 'now-1h',
-                      end: 'now',
-                    },
+                    range: logsDefaultRange,
                   },
                 },
               },
