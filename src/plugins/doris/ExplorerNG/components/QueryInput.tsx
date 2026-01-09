@@ -30,7 +30,7 @@ export default function QueryInput(props: Props) {
 
   return (
     <Input.TextArea
-      className={classNames({
+      className={classNames('doris-log-explorer-query-input', {
         'pl-[32px]': props.enableAddonBefore,
       })}
       autoSize={{ minRows: 1, maxRows: 10 }}
