@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Form, Select, Row, Col, Space, Modal, Button, Alert } from 'antd';
+import { Form, Select, Row, Col, Space, Modal, Button, Alert, Tooltip } from 'antd';
 import { InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
@@ -37,18 +37,49 @@ export default function SQLBuilder(props: Props) {
           <div className='w-full flex justify-between'>
             <Space>
               {t('query.query')}
-              <InfoCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                    darkMode,
-                    title: t('common:document_link'),
-                    type: 'iframe',
-                    documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                    anchor: '#2-时间宏',
-                  });
-                }}
-              />
+              <Tooltip
+                overlayClassName='ant-tooltip-auto-width ant-tooltip-with-link'
+                title={
+                  <div>
+                    <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />
+                    <div className='mt-2'>
+                      <Trans
+                        ns={NAME_SPACE}
+                        i18nKey='query.click_doc'
+                        components={{
+                          a: (
+                            <a
+                              onClick={() => {
+                                DocumentDrawer({
+                                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                                  darkMode,
+                                  title: t('common:document_link'),
+                                  type: 'iframe',
+                                  documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                                  anchor: '#2-时间宏',
+                                });
+                              }}
+                            />
+                          ),
+                        }}
+                      />
+                    </div>
+                  </div>
+                }
+              >
+                <InfoCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                      darkMode,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                      anchor: '#2-时间宏',
+                    });
+                  }}
+                />
+              </Tooltip>
             </Space>
             <Form.Item name={[field.name, 'query', 'mode']} initialValue={type === 'timeseries' ? 'timeSeries' : 'raw'} noStyle>
               <Select>
