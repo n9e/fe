@@ -30,6 +30,7 @@ export default function QueryInput(props: Props) {
 
   return (
     <Input.TextArea
+      key={!props.value ? props.placeholder : undefined} // reset when placeholder changes
       className={classNames({
         'pl-[32px]': props.enableAddonBefore,
       })}
