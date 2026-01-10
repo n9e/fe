@@ -60,22 +60,9 @@ export default function index(props: IProps) {
         fetchStats={async (record) => {
           try {
             const range = parseRange(queryValues.range);
-            let funcs = [
-              'unique_count',
-              // 'ratio',
-              'max',
-              'min',
-              'avg',
-              //  'median', 'p95',
-              'sum',
-              'top5',
-            ];
+            let funcs = ['exist_ratio', 'unique_count', 'max', 'min', 'avg', 'median', 'p95', 'sum', 'top5'];
             if (TYPE_MAP[record.type] !== 'number') {
-              funcs = [
-                'unique_count',
-                // 'ratio',
-                'top5',
-              ];
+              funcs = ['exist_ratio', 'unique_count', 'top5'];
             }
             const requestParams = {
               cate: DatasourceCateEnum.doris,
@@ -105,7 +92,7 @@ export default function index(props: IProps) {
               }),
               (item) => {
                 const statName = item.ref;
-                const statValue = item?.[item.ref];
+                const statValue = _.toNumber(item?.[item.ref]);
                 if (!_.isNaN(statValue) && _.isNumber(statValue)) {
                   return {
                     [statName]: format(statValue, {
