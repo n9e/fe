@@ -16,8 +16,10 @@ const en_US = {
       raw: 'Raw',
       timeSeries: 'TimeSeries',
     },
-    query_tip:
-      'SQL example: Query the number of log lines in the last 5 minutes SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />For more SQL mode instructions, please refer to <a>Doris SQL Mode Instructions</a>',
+    query_tip: `SQL Examples:<br />
+    1. Query the number of log rows in the last 5 minutes SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. Query the number of log rows in the selected time interval SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    For more information about SQL mode, please refer to <a>Doris SQL Mode</a>`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',

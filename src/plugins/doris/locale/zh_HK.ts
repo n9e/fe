@@ -15,8 +15,10 @@ const zh_HK = {
       raw: '日誌原文',
       timeSeries: '時序圖',
     },
-    query_tip:
-      'SQL樣例：查詢最近5分鐘的日誌行數 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />更多SQL模式說明，請參考 <a>Doris SQL模式說明</a>',
+    query_tip: `SQL樣例：<br />
+    1. 查詢最近5分鐘的日誌行數 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. 查詢所選時間區間的日誌行數 SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    更多SQL模式說明，請參考 <a>Doris SQL模式說明</a>`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查詢',
     database: '數據庫',
