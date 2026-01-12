@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import _ from 'lodash';
 
@@ -19,6 +19,7 @@ import Explorer from './Explorer';
 export default function index() {
   const { datasourceList, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
   const location = useLocation();
+  const history = useHistory();
   const params = queryString.parse(location.search) as { [index: string]: string | null };
 
   const defaultDatasourceCate = params['data_source_name'] || getDefaultDatasourceCate(datasourceList, DEFAULT_DATASOURCE_CATE);
@@ -30,6 +31,11 @@ export default function index() {
   });
   const [items, setItems] = useState<{ key: string; isInited?: boolean; formValues?: any }[]>(defaultItems);
   const [activeKey, setActiveKey] = useState<string>(getLocalActiveKey(params, defaultItems));
+
+  useEffect(() => {
+    // mouted 后清空掉所有参数，这里是多 tabs 的设计，url search 只在外部链接进入时生效一次
+    history.replace({ pathname: location.pathname });
+  }, []);
 
   return (
     <PageLayout
@@ -49,6 +55,7 @@ export default function index() {
           return (
             <div key={item.key} className='h-full w-full' style={{ display: item.key === activeKey ? 'block' : 'none' }}>
               <Explorer
+                active={item.key === activeKey}
                 tabKey={item.key}
                 tabIndex={itemIndex}
                 defaultFormValuesControl={{
