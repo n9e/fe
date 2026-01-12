@@ -243,20 +243,30 @@ export default function index(props: IProps) {
             if (type === 'table') {
               const sqlPreviewData = res.table;
               onAdd({
-                mode: 'sql',
-                subMode: 'raw',
-                query: sqlPreviewData.sql,
+                datasourceCate: DatasourceCateEnum.doris,
+                datasourceValue,
+                query: {
+                  mode: 'sql',
+                  subMode: 'raw',
+                  query: sqlPreviewData.sql,
+                  range: queryValues.range,
+                },
               });
             } else if (type === 'timeseries') {
               let sqlPreviewData = res.timeseries?.[statName];
               if (sqlPreviewData) {
                 onAdd({
-                  mode: 'sql',
-                  submode: 'timeSeries',
-                  query: sqlPreviewData.sql,
-                  keys: {
-                    valueKey: sqlPreviewData.value_key,
-                    labelKey: sqlPreviewData.label_key,
+                  datasourceCate: DatasourceCateEnum.doris,
+                  datasourceValue,
+                  query: {
+                    mode: 'sql',
+                    submode: 'timeSeries',
+                    query: sqlPreviewData.sql,
+                    range: queryValues.range,
+                    keys: {
+                      valueKey: sqlPreviewData.value_key,
+                      labelKey: sqlPreviewData.label_key,
+                    },
                   },
                 });
               } else {

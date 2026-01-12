@@ -397,8 +397,12 @@ export default function index(props: Props) {
             defaultSearchField={defaultSearchField}
             onClick={(values) => {
               onAdd({
-                mode: 'sql',
-                ...values,
+                datasourceCate: DatasourceCateEnum.doris,
+                datasourceValue,
+                query: {
+                  mode: 'sql',
+                  ...values,
+                },
               });
             }}
           />
