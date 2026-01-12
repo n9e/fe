@@ -459,7 +459,7 @@ function index(props: Props) {
       </div>
     </div>
   ) : loading ? (
-    <div className='flex justify-center'>{t('logs.loading')}</div>
+    <div className='flex justify-center'>Loading</div>
   ) : (
     <div className='flex justify-center'>
       <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

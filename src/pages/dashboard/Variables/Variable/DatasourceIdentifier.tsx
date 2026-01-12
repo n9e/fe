@@ -69,7 +69,7 @@ export default function DatasourceIdentifier(props: Props) {
         >
           {_.map(options as any, (item) => (
             <Select.Option key={item.value} value={item.value}>
-              {item.label}
+              {item.identifier}
             </Select.Option>
           ))}
         </Select>

@@ -39,6 +39,7 @@ interface Props {
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
   executeQuery: () => void;
+  onAdd: (queryValues?: { [index: string]: any }) => void;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
@@ -55,7 +56,7 @@ export default function index(props: Props) {
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
 
-  const { tabKey, indexData, organizeFields, setOrganizeFields, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const { tabKey, indexData, organizeFields, setOrganizeFields, executeQuery, onAdd, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
 
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
@@ -391,7 +392,20 @@ export default function index(props: Props) {
           </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
-          <SQLFormatButton rangeRef={rangeRef} defaultSearchField={defaultSearchField} />
+          <SQLFormatButton
+            rangeRef={rangeRef}
+            defaultSearchField={defaultSearchField}
+            onClick={(values) => {
+              onAdd({
+                datasourceCate: DatasourceCateEnum.doris,
+                datasourceValue,
+                query: {
+                  mode: 'sql',
+                  ...values,
+                },
+              });
+            }}
+          />
         </Col>
         <Col flex='none'>
           <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>

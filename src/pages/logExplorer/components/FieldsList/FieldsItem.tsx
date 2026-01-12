@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip, Statistic, Row, Col, Button } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic } from 'antd';
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
@@ -9,6 +9,7 @@ import { PRIMARY_COLOR } from '@/utils/constant';
 
 import { NAME_SPACE } from '../../constants';
 import { Field, StatsResult } from './types';
+import QuickViewPopover from './QuickViewPopover';
 
 interface Props {
   operType: 'show' | 'available';
@@ -26,6 +27,16 @@ interface Props {
     setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
   }) => React.ReactNode;
   renderFieldNameExtra?: (field: Field) => React.ReactNode;
+  onStatisticClick?: (
+    type: string,
+    options: {
+      func: string;
+      field?: string;
+      ref?: string;
+      group_by?: string;
+      appendQuery?: string;
+    },
+  ) => void;
 }
 
 const FieldBooleanSvg = () => (
@@ -57,7 +68,7 @@ const operIconMap = {
 
 export default function FieldsItem(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats, renderStatsPopoverTitleExtra, renderFieldNameExtra } = props;
+  const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats, renderStatsPopoverTitleExtra, renderFieldNameExtra, onStatisticClick } = props;
   const [topNVisible, setTopNVisible] = useState<boolean>(false);
   const [topNData, setTopNData] = useState<any[]>([]);
   const [topNLoading, setTopNLoading] = useState<boolean>(false);
@@ -75,36 +86,74 @@ export default function FieldsItem(props: Props) {
       visible={topNVisible}
       title={
         <div className='flex justify-between items-center'>
-          {field.field}
+          <Space>
+            <span>{field.field}</span>
+            {/* <span className='text-hint'>{field.type2}</span> */}
+          </Space>
           {topNVisible ? renderStatsPopoverTitleExtra?.({ index: field, stats, setTopNVisible }) : null}
         </div>
       }
       content={
         <div>
           <Spin spinning={topNLoading}>
+            <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />
             <div className='bg-fc-200 p-4'>
               <Row>
                 {_.map(stats, (statValue, statName) => {
-                  if (statName === 'unique_count') {
-                    return (
-                      <Col span={24} key={statName}>
-                        <Statistic title={t(`stats.${statName}`)} value={statValue} />
-                      </Col>
-                    );
-                  }
                   return (
-                    <Col span={12} key={statName}>
-                      <Statistic title={t(`stats.${statName}`)} value={statValue} />
-                    </Col>
+                    <QuickViewPopover
+                      key={statName}
+                      options={{
+                        func: statName,
+                        field: field.field,
+                      }}
+                      onStatisticClick={onStatisticClick}
+                      setTopNVisible={setTopNVisible}
+                    >
+                      <Col span={_.includes(['unique_count', 'exist_ratio'], statName) ? 12 : 8} key={statName}>
+                        <Statistic
+                          className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer'
+                          title={t(`stats.${statName}`)}
+                          value={statValue}
+                          suffix={statName === 'exist_ratio' ? '%' : undefined}
+                        />
+                      </Col>
+                    </QuickViewPopover>
                   );
                 })}
               </Row>
             </div>
             <div>
-              <div className='my-2 text-l2'>
+              <div className='my-2 text-l2 flex items-center justify-between'>
                 <strong>{t('field_values_topn.title', { n: 5 })}</strong>
+                <Space>
+                  <QuickViewPopover
+                    options={{
+                      func: 'top5',
+                      group_by: field.field,
+                      field: field.field,
+                      ref: 'top5',
+                    }}
+                    onStatisticClick={onStatisticClick}
+                    setTopNVisible={setTopNVisible}
+                  >
+                    <a className='text-base'>{t('field_values_topn.quick_view_count')}</a>
+                  </QuickViewPopover>
+                  <QuickViewPopover
+                    options={{
+                      func: 'ratio',
+                      group_by: field.field,
+                      field: field.field,
+                      ref: 'top5',
+                    }}
+                    onStatisticClick={onStatisticClick}
+                    setTopNVisible={setTopNVisible}
+                  >
+                    <a className='text-base'>{t('field_values_topn.quick_view_ratio')}</a>
+                  </QuickViewPopover>
+                </Space>
               </div>
-              {_.isEmpty(topNData) && t('stats.topn_no_data')}
+              {_.isEmpty(topNData) && t('topn_no_data')}
               {_.map(topNData, (item) => {
                 const fieldValue = item?.value;
                 const emptyValueNotSupported = fieldValue === '' || fieldValue === null;
@@ -118,13 +167,33 @@ export default function FieldsItem(props: Props) {
                             {_.isEmpty(fieldValue) && !_.isNumber(fieldValue) ? '(empty)' : fieldValue}
                           </div>
                         </Tooltip>
-                        <div className='text-primary'>{item.count}</div>
+                        <QuickViewPopover
+                          options={{
+                            func: 'top5',
+                            field: field.field,
+                            appendQuery: `${field.field}='${fieldValue}'`,
+                          }}
+                          onStatisticClick={onStatisticClick}
+                          setTopNVisible={setTopNVisible}
+                        >
+                          <a>{item.count}</a>
+                        </QuickViewPopover>
                       </div>
                       <div className='flex justify-between'>
                         <div style={{ width: 'calc(100% - 50px)' }} className='truncate flex items-center'>
                           <Progress percent={percent} size='small' showInfo={false} strokeColor={PRIMARY_COLOR} />
                         </div>
-                        <div className='text-primary'>{percent}%</div>
+                        <QuickViewPopover
+                          options={{
+                            func: 'ratio',
+                            field: field.field,
+                            appendQuery: `${field.field}='${fieldValue}'`,
+                          }}
+                          onStatisticClick={onStatisticClick}
+                          setTopNVisible={setTopNVisible}
+                        >
+                          <a>{percent}%</a>
+                        </QuickViewPopover>
                       </div>
                     </div>
                     <div style={{ width: 64 }}>
@@ -195,9 +264,11 @@ export default function FieldsItem(props: Props) {
         }
       }}
     >
-      <Tooltip placement='left' title={field.indexable === false && t('stats.unindexable')}>
+      <Tooltip placement='left' title={field.indexable === false ? t('unindexable') : t('field_tip')}>
         <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'>
-          <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+          <Tooltip placement='top' title={field.type2}>
+            <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+          </Tooltip>
           <span
             style={{
               width: 'calc(100% - 26px)',

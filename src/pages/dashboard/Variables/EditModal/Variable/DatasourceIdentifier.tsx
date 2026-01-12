@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Form, Input, Select } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
@@ -20,7 +20,7 @@ export default function DatasourceIdentifier(props: Props) {
   const { editMode, formatedReg } = props;
   const { groupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const definition = Form.useWatch('definition');
-  const regex = stringToRegex(formatedReg);
+  const regex = useMemo(() => stringToRegex(formatedReg), [formatedReg]);
   const [options, setOptions] = useState<
     {
       label: string;
@@ -71,7 +71,7 @@ export default function DatasourceIdentifier(props: Props) {
         <Input placeholder='/vm/' />
       </Form.Item>
       <Form.Item label={t('var.datasource.defaultValue')} name='defaultValue'>
-        <Select>
+        <Select showSearch>
           {_.map(
             _.filter(groupedDatasourceList[definition], (item) => {
               if (item.identifier) {

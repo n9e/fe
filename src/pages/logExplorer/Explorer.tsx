@@ -9,27 +9,33 @@ import { DefaultFormValuesControl } from './types';
 import PlusLogExplorer from 'plus:/parcels/LogExplorer';
 
 interface Props {
+  active: boolean;
   tabKey: string;
   tabIndex?: number;
   defaultFormValuesControl?: DefaultFormValuesControl;
+  onAdd: (queryValues?: { [index: string]: any }) => void;
 }
 
 export default function Explorer(props: Props) {
   const location = useLocation();
-  const { tabKey, defaultFormValuesControl } = props;
+  const { active, tabKey, defaultFormValuesControl, onAdd } = props;
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
 
   useEffect(() => {
-    if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
+    if (active && defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       const searchParams = new URLSearchParams(location.search);
       defaultFormValuesControl.setIsInited();
       form.setFieldsValue({
         ...defaultFormValuesControl.defaultFormValues,
-        refreshFlag: searchParams.get('__execute__') ? _.uniqueId('refreshFlag_') : undefined,
+        refreshFlag: defaultFormValuesControl.defaultFormValues?.refreshFlag
+          ? defaultFormValuesControl.defaultFormValues?.refreshFlag
+          : searchParams.get('__execute__')
+          ? _.uniqueId('refreshFlag_')
+          : undefined,
       });
     }
-  }, []);
+  }, [active]);
 
   return (
     <div className={`h-full explorer-container-${tabKey}`}>
@@ -41,7 +47,7 @@ export default function Explorer(props: Props) {
           <Form.Item name='datasourceValue' hidden>
             <div />
           </Form.Item>
-          <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} />
+          <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} onAdd={onAdd} />
         </Form>
       </div>
     </div>
