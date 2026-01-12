@@ -267,6 +267,7 @@ export function getDorisSQLsPreview(data: {
       from: number;
       to: number;
       default_field?: string;
+      group_by?: string; // topn 变化趋势
 
       func: string; // 'unique_count' | 'ratio' | 'max' | 'min' | 'avg' 等
       field?: string; // func 作用的字段

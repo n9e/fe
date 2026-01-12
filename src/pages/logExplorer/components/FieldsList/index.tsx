@@ -30,7 +30,16 @@ interface Props {
     setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
   }) => React.ReactNode;
   renderFieldNameExtra?: (field: Field) => React.ReactNode;
-  onStatisticClick?: (type: string, statName: string, field: Field) => void;
+  onStatisticClick?: (
+    type: string,
+    options: {
+      func: string;
+      field?: string;
+      ref?: string;
+      group_by?: string;
+      appendQuery?: string;
+    },
+  ) => void;
 }
 
 export default function index(props: Props) {

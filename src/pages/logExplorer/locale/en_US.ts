@@ -40,6 +40,8 @@ const en_US = {
       title: 'Top N Values Settings',
     },
     no_data: 'This field exists in mapping, but not in the 500 displayed documents',
+    quick_view_count: 'Count',
+    quick_view_ratio: 'Ratio',
   },
   empty_value_not_supported_tip: 'Empty value search is not supported',
   logs: {

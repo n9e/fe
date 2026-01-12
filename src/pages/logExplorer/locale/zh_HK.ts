@@ -40,6 +40,8 @@ const zh_HK = {
       title: '前 N 個值設置',
     },
     no_data: '該字段存在於 mapping 中，但不存在於顯示的 500 個文檔中',
+    quick_view_count: '日誌數',
+    quick_view_ratio: '佔比',
   },
   empty_value_not_supported_tip: '暫不支持對空值做檢索',
   logs: {

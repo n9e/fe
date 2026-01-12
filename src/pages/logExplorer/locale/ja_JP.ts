@@ -40,6 +40,8 @@ const ja_JP = {
       title: '上位 N 件の設定',
     },
     no_data: 'このフィールドはマッピングに存在しますが、表示されている 500 件のドキュメントには存在しません',
+    quick_view_count: '件数',
+    quick_view_ratio: '割合',
   },
   empty_value_not_supported_tip: '空の値の検索はサポートされていません',
   logs: {

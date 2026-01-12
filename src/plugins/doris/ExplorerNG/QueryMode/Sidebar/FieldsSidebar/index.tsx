@@ -219,8 +219,9 @@ export default function index(props: IProps) {
             </Space>
           );
         }}
-        onStatisticClick={(type, statName, field) => {
+        onStatisticClick={(type, options) => {
           const range = parseRange(queryValues.range);
+          const queryStr = queryValues.query || '';
 
           getDorisSQLsPreview({
             cate: DatasourceCateEnum.doris,
@@ -230,13 +231,15 @@ export default function index(props: IProps) {
                 database: queryValues.database,
                 table: queryValues.table,
                 time_field: queryValues.time_field,
-                query: queryValues.query,
                 default_field: defaultSearchField,
                 from: moment(range.start).unix(),
                 to: moment(range.end).unix(),
 
-                field: field.field,
-                func: statName,
+                query: options.appendQuery ? `${queryStr ? `${queryStr} AND ` : ''}${options.appendQuery}` : queryStr,
+                field: options.field,
+                func: options.func,
+                ref: options.ref,
+                group_by: options.group_by,
               },
             ],
           }).then((res) => {
@@ -253,7 +256,7 @@ export default function index(props: IProps) {
                 },
               });
             } else if (type === 'timeseries') {
-              let sqlPreviewData = res.timeseries?.[statName];
+              let sqlPreviewData = res.timeseries?.[options.func];
               if (sqlPreviewData) {
                 onAdd({
                   datasourceCate: DatasourceCateEnum.doris,
