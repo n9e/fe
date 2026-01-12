@@ -23,7 +23,7 @@ export default function Email(props: IProps) {
       onChange={onChange}
       record={record}
       extensions={[html()]}
-      renderPreview={(newValue) => {
+      renderPreview={(newValue: string) => {
         return <iframe srcDoc={purify.sanitize(newValue, { FORCE_BODY: true })} style={{ border: 'none', width: '100%' }} />;
       }}
       limitSize={LIMIT_SIZE}
