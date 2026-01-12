@@ -44,6 +44,11 @@ const zh_HK = {
     quick_view_ratio: '佔比',
   },
   empty_value_not_supported_tip: '暫不支持對空值做檢索',
+  field_tip: '點擊查看統計信息',
+  field_value_statistic: {
+    view_statistic: '查看統計值',
+    view_timeseries: '查看時序圖',
+  },
   logs: {
     title: '日誌數據',
     count: '結果數',

@@ -44,6 +44,11 @@ const ru_RU = {
     quick_view_ratio: 'Процент',
   },
   empty_value_not_supported_tip: 'Поиск пустых значений не поддерживается',
+  field_tip: 'Нажмите, чтобы просмотреть статистику',
+  field_value_statistic: {
+    view_statistic: 'Просмотреть таблицу',
+    view_timeseries: 'Просмотреть временной ряд',
+  },
   logs: {
     title: 'Данные логов',
     count: 'Количество результатов',
