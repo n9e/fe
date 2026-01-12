@@ -69,10 +69,10 @@ export default function SQLFormatButton(props: SQLFormatParams) {
           }
         }}
       >
-        {t('query.sql_format')}
+        {t('query.sql_format.title')}
       </Button>
       <Modal
-        title={t('query.sql_format')}
+        title={t('query.sql_format.title')}
         visible={modalVisible}
         width={800}
         onCancel={() => {

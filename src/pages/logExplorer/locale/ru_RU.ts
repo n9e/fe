@@ -40,6 +40,8 @@ const ru_RU = {
       title: 'Настройки топ N значений',
     },
     no_data: 'Это поле существует в mapping, но не присутствует в отображаемых 500 документах',
+    quick_view_count: 'Количество',
+    quick_view_ratio: 'Процент',
   },
   empty_value_not_supported_tip: 'Поиск пустых значений не поддерживается',
   logs: {

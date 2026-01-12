@@ -41,6 +41,8 @@ const zh_CN = {
       title: '前 N 个值设置',
     },
     no_data: '该字段存在于 mapping 中，但不存在于显示的 500 个文档中',
+    quick_view_count: '日志数',
+    quick_view_ratio: '占比',
   },
   empty_value_not_supported_tip: '暂不支持对空值做检索',
   field_tip: '点击查看统计信息',
