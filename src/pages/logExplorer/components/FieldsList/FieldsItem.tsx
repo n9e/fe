@@ -84,7 +84,7 @@ export default function FieldsItem(props: Props) {
       content={
         <div>
           <Spin spinning={topNLoading}>
-            <Alert className='mb-2' type='info' message={t('field_popover_info_alert')} />
+            <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />
             <div className='bg-fc-200 p-4'>
               <Row>
                 {_.map(stats, (statValue, statName) => {

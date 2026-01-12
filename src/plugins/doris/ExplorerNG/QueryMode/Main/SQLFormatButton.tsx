@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { Button, Modal, Form, Alert, Space } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
+import { Button, Modal, Form, Alert, Space, Tooltip } from 'antd';
+import { CopyOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -88,7 +88,7 @@ export default function SQLFormatButton(props: SQLFormatParams) {
       >
         <Alert showIcon className='mb-4' type='info' message={t('query.sql_format.tip')} />
         <div className='mb-4'>
-          <div>
+          <div className='flex items-center justify-between'>
             <Space>
               <a
                 onClick={() => {
@@ -101,13 +101,15 @@ export default function SQLFormatButton(props: SQLFormatParams) {
               >
                 {t('query.sql_format.origin')}
               </a>
-              <CopyOutlined
-                className='flex-shrink-0'
-                onClick={() => {
-                  copy2ClipBoard(data?.origin || '');
-                }}
-              />
+              <Tooltip title={t('query.sql_format.origin_tip')}>
+                <InfoCircleOutlined />
+              </Tooltip>
             </Space>
+            <CopyOutlined
+              onClick={() => {
+                copy2ClipBoard(data?.origin || '');
+              }}
+            />
           </div>
           <SyntaxHighlighter
             wrapLongLines
@@ -123,7 +125,7 @@ export default function SQLFormatButton(props: SQLFormatParams) {
           />
         </div>
         <div className='mb-4'>
-          <div>
+          <div className='flex items-center justify-between'>
             <Space>
               <a
                 onClick={() => {
@@ -140,13 +142,15 @@ export default function SQLFormatButton(props: SQLFormatParams) {
               >
                 {t('query.sql_format.timeseries')}
               </a>
-              <CopyOutlined
-                className='flex-shrink-0'
-                onClick={() => {
-                  copy2ClipBoard(data?.timeseries?.count?.sql || '');
-                }}
-              />
+              <Tooltip title={t('query.sql_format.timeseries_tip')}>
+                <InfoCircleOutlined />
+              </Tooltip>
             </Space>
+            <CopyOutlined
+              onClick={() => {
+                copy2ClipBoard(data?.timeseries?.count?.sql || '');
+              }}
+            />
           </div>
           <SyntaxHighlighter
             wrapLongLines
@@ -162,7 +166,7 @@ export default function SQLFormatButton(props: SQLFormatParams) {
           />
         </div>
         <div className='mb-2'>
-          <div>
+          <div className='flex items-center justify-between'>
             <Space>
               <a
                 onClick={() => {
@@ -175,13 +179,16 @@ export default function SQLFormatButton(props: SQLFormatParams) {
               >
                 {t('query.sql_format.table')}
               </a>
-              <CopyOutlined
-                className='flex-shrink-0'
-                onClick={() => {
-                  copy2ClipBoard(data?.table?.sql || '');
-                }}
-              />
+
+              <Tooltip title={t('query.sql_format.table_tip')}>
+                <InfoCircleOutlined />
+              </Tooltip>
             </Space>
+            <CopyOutlined
+              onClick={() => {
+                copy2ClipBoard(data?.table?.sql || '');
+              }}
+            />
           </div>
           <SyntaxHighlighter
             wrapLongLines
