@@ -2,6 +2,7 @@ export interface Field {
   field: string;
   indexable: boolean;
   type: string;
+  type2?: string;
 }
 export interface IndexDataItem {
   field: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Button, Form, Space, Tooltip } from 'antd';
+import { Button, Form, message, Space, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -9,7 +9,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import FieldsList, { Field } from '@/pages/logExplorer/components/FieldsList';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
-import { getDorisLogsQuery } from '../../../../services';
+import { getDorisLogsQuery, getDorisSQLsPreview } from '../../../../services';
 import { NAME_SPACE, TYPE_MAP } from '../../../../constants';
 import { PinIcon, UnPinIcon } from './PinIcon';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from './DefaultSearchIcon';
@@ -20,6 +20,7 @@ interface IProps {
   data: Field[];
   loading: boolean;
   onValueFilter: (parmas: { key: string; value: any; operator: 'AND' | 'NOT' }) => void;
+  onAdd: (queryValues?: { [index: string]: any }) => void;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
@@ -29,7 +30,7 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, onAdd, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
 
@@ -59,9 +60,9 @@ export default function index(props: IProps) {
         fetchStats={async (record) => {
           try {
             const range = parseRange(queryValues.range);
-            let funcs = ['unique_count', 'max', 'min', 'avg', 'sum', 'top5'];
+            let funcs = ['exist_ratio', 'unique_count', 'max', 'min', 'avg', 'median', 'p95', 'sum', 'top5'];
             if (TYPE_MAP[record.type] !== 'number') {
-              funcs = ['unique_count', 'top5'];
+              funcs = ['exist_ratio', 'unique_count', 'top5'];
             }
             const requestParams = {
               cate: DatasourceCateEnum.doris,
@@ -91,7 +92,7 @@ export default function index(props: IProps) {
               }),
               (item) => {
                 const statName = item.ref;
-                const statValue = item?.[item.ref];
+                const statValue = _.toNumber(item?.[item.ref]);
                 if (!_.isNaN(statValue) && _.isNumber(statValue)) {
                   return {
                     [statName]: format(statValue, {
@@ -118,12 +119,6 @@ export default function index(props: IProps) {
               stats: _.reduce(
                 statsResult,
                 (result, item) => {
-                  if (_.keys(item)[0] === 'approx_distinct_cnt') {
-                    return {
-                      ...result,
-                      unique_count: item['approx_distinct_cnt'],
-                    };
-                  }
                   return {
                     ...result,
                     ...item,
@@ -223,6 +218,65 @@ export default function index(props: IProps) {
               )}
             </Space>
           );
+        }}
+        onStatisticClick={(type, options) => {
+          const range = parseRange(queryValues.range);
+          const queryStr = queryValues.query || '';
+
+          getDorisSQLsPreview({
+            cate: DatasourceCateEnum.doris,
+            datasource_id: datasourceValue,
+            query: [
+              {
+                database: queryValues.database,
+                table: queryValues.table,
+                time_field: queryValues.time_field,
+                default_field: defaultSearchField,
+                from: moment(range.start).unix(),
+                to: moment(range.end).unix(),
+
+                query: options.appendQuery ? `${queryStr ? `${queryStr} AND ` : ''}${options.appendQuery}` : queryStr,
+                field: options.field,
+                func: options.func,
+                ref: options.ref,
+                group_by: options.group_by,
+              },
+            ],
+          }).then((res) => {
+            if (type === 'table') {
+              const sqlPreviewData = res.table;
+              onAdd({
+                datasourceCate: DatasourceCateEnum.doris,
+                datasourceValue,
+                query: {
+                  mode: 'sql',
+                  subMode: 'raw',
+                  query: sqlPreviewData.sql,
+                  range: queryValues.range,
+                },
+              });
+            } else if (type === 'timeseries') {
+              let sqlPreviewData = res.timeseries?.[options.func];
+              if (sqlPreviewData) {
+                onAdd({
+                  datasourceCate: DatasourceCateEnum.doris,
+                  datasourceValue,
+                  query: {
+                    mode: 'sql',
+                    submode: 'timeSeries',
+                    query: sqlPreviewData.sql,
+                    range: queryValues.range,
+                    keys: {
+                      valueKey: sqlPreviewData.value_key,
+                      labelKey: sqlPreviewData.label_key,
+                    },
+                  },
+                });
+              } else {
+                message.error(t('query.generate_sql_failed'));
+              }
+            }
+          });
         }}
       />
     </div>

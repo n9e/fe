@@ -30,6 +30,7 @@ export default function QueryInput(props: Props) {
 
   return (
     <Input.TextArea
+      key={!props.value ? props.placeholder : undefined} // reset when placeholder changes
       className={classNames('doris-log-explorer-query-input', {
         'pl-[32px]': props.enableAddonBefore,
       })}
@@ -40,13 +41,14 @@ export default function QueryInput(props: Props) {
       onChange={(e) => {
         setCurrentValue(e.target.value);
       }}
-      onBlur={() => {
-        if (currentValue !== props.value) {
-          setTimeout(() => {
-            props.onChange && props.onChange(currentValue);
-          }, 100);
-        }
-      }}
+      // 关闭失去焦点更新功能，改为仅在回车时更新
+      // onBlur={() => {
+      //   if (currentValue !== props.value) {
+      //     setTimeout(() => {
+      //       props.onChange && props.onChange(currentValue);
+      //     }, 100);
+      //   }
+      // }}
       onKeyDown={handleKeyDown}
     />
   );

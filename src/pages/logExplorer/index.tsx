@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useContext, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import _ from 'lodash';
 
@@ -11,12 +11,15 @@ import { DEFAULT_DATASOURCE_CATE } from './constants';
 import { getLocalItems, setLocalItems } from './utils/getLocalItems';
 import { getLocalActiveKey } from './utils/getLocalActiveKey';
 import getDefaultDatasourceCate from './utils/getDefaultDatasourceCate';
+import getUUID from './utils/getUUID';
+import { setLocalActiveKey } from './utils/getLocalActiveKey';
 import Header from './Header';
 import Explorer from './Explorer';
 
 export default function index() {
-  const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
   const location = useLocation();
+  const history = useHistory();
   const params = queryString.parse(location.search) as { [index: string]: string | null };
 
   const defaultDatasourceCate = params['data_source_name'] || getDefaultDatasourceCate(datasourceList, DEFAULT_DATASOURCE_CATE);
@@ -28,6 +31,11 @@ export default function index() {
   });
   const [items, setItems] = useState<{ key: string; isInited?: boolean; formValues?: any }[]>(defaultItems);
   const [activeKey, setActiveKey] = useState<string>(getLocalActiveKey(params, defaultItems));
+
+  useEffect(() => {
+    // mouted 后清空掉所有参数，这里是多 tabs 的设计，url search 只在外部链接进入时生效一次
+    history.replace({ pathname: location.pathname });
+  }, []);
 
   return (
     <PageLayout
@@ -47,6 +55,7 @@ export default function index() {
           return (
             <div key={item.key} className='h-full w-full' style={{ display: item.key === activeKey ? 'block' : 'none' }}>
               <Explorer
+                active={item.key === activeKey}
                 tabKey={item.key}
                 tabIndex={itemIndex}
                 defaultFormValuesControl={{
@@ -78,6 +87,30 @@ export default function index() {
                     setLocalItems(newItems);
                     setItems(newItems);
                   },
+                }}
+                onAdd={(formValues = {}) => {
+                  const newActiveKey = getUUID();
+                  const newItems = [
+                    ...items,
+                    {
+                      key: newActiveKey,
+                      isInited: false,
+                      formValues: {
+                        datasourceCate: defaultDatasourceCate,
+                        datasourceValue: defaultDatasourceValue,
+                        refreshFlag: _.uniqueId('refreshFlag_'), // 新增时默认执行查询
+                        ...formValues,
+                        query: {
+                          range: logsDefaultRange,
+                          ...formValues.query,
+                        },
+                      },
+                    },
+                  ];
+                  setItems(newItems);
+                  setLocalItems(newItems);
+                  setActiveKey(newActiveKey);
+                  setLocalActiveKey(newActiveKey);
                 }}
               />
             </div>

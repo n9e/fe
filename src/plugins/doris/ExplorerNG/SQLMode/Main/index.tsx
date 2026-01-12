@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Button, Col, Row, Form, Space, Tooltip, Modal, Alert } from 'antd';
 import { InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
+import { useSize } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
@@ -37,6 +38,8 @@ export default function index(props: Props) {
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
   const [rangeTooltipVisible, setRangeTooltipVisible] = useState(false);
   const timeRangeOpenRef = React.useRef<boolean>(false);
+  const timeSeriesEleRef = React.useRef<HTMLDivElement>(null);
+  const timeSeriesEleSize = useSize(timeSeriesEleRef);
   const handleExecuteQuery = () => {
     const queryValue = form.getFieldValue(['query', 'query']);
     // 如果 queryValue 里未包含关键字：$__time 或 $__unixEpoch，触发查询时阻断弹窗
@@ -161,7 +164,11 @@ export default function index(props: Props) {
         </Col>
       </Row>
       {submode === 'raw' && <Raw tabKey={tabKey} organizeFields={organizeFields} setOrganizeFields={setOrganizeFields} setExecuteLoading={setExecuteLoading} />}
-      {submode === 'timeSeries' && <Timeseries setExecuteLoading={setExecuteLoading} />}
+      {submode === 'timeSeries' && (
+        <div ref={timeSeriesEleRef} className='w-full h-full min-h-0'>
+          {timeSeriesEleSize?.width && <Timeseries width={timeSeriesEleSize.width} setExecuteLoading={setExecuteLoading} />}
+        </div>
+      )}
       <Modal
         width={700}
         visible={queryWarnModalVisible}

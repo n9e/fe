@@ -33,6 +33,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const time_field = _.get(params, 'time_field');
       const stackByField = _.get(params, 'stackByField');
       const defaultSearchField = _.get(params, 'defaultSearchField');
+      const labelKey = _.get(params, 'labelKey');
+      const valueKey = _.get(params, 'valueKey');
 
       return {
         ...formValues,
@@ -46,6 +48,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           defaultSearchField,
           query,
           range,
+          keys: {
+            labelKey,
+            valueKey,
+          },
         },
       };
     }
@@ -85,6 +91,8 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.stackByField = formValues.query?.stackByField;
     query.defaultSearchField = formValues.query?.defaultSearchField;
     query.query = formValues.query?.query;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
     return queryString.stringify(query);
   }
   return '';

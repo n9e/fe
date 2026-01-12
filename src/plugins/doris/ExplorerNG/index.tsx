@@ -31,12 +31,13 @@ interface Props {
   tabKey: string;
   disabled?: boolean;
   defaultFormValuesControl?: DefaultFormValuesControl;
+  onAdd: (queryValues?: { [index: string]: any }) => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
-  const { tabKey, disabled, defaultFormValuesControl } = props;
+  const { tabKey, disabled, defaultFormValuesControl, onAdd } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const mode = Form.useWatch(['query', 'mode']);
@@ -315,6 +316,7 @@ export default function index(props: Props) {
                   }
                 }}
                 onIndexDataChange={setIndexData}
+                onAdd={onAdd}
                 stackByField={stackByField}
                 setStackByField={handleSetStackByField}
                 defaultSearchField={defaultSearchField}
@@ -344,6 +346,7 @@ export default function index(props: Props) {
                 );
               }}
               executeQuery={executeQuery}
+              onAdd={onAdd}
               stackByField={stackByField}
               setStackByField={handleSetStackByField}
               defaultSearchField={defaultSearchField}

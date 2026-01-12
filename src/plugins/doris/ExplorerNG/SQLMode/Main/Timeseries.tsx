@@ -10,15 +10,16 @@ import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { getDsQuery } from '../../../services';
+import replaceTemplateVariables from '../../utils/replaceTemplateVariables';
 
 interface Props {
+  width: number;
   setExecuteLoading: (loading: boolean) => void;
 }
 
 export default function TimeseriesCpt(props: Props) {
   const { t } = useTranslation();
-
-  const { setExecuteLoading } = props;
+  const { width, setExecuteLoading } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const [loading, setLoading] = useState(false);
@@ -41,7 +42,7 @@ export default function TimeseriesCpt(props: Props) {
             {
               from: moment(parseRange(query.range).start).unix(),
               to: moment(parseRange(query.range).end).unix(),
-              sql: query.query,
+              sql: replaceTemplateVariables(_.trim(query.query), query.range, width),
               keys: query.keys,
             },
           ],
@@ -77,6 +78,7 @@ export default function TimeseriesCpt(props: Props) {
         <div className='n9e-antd-table-height-full'>
           <Spin spinning={loading}>
             <Timeseries
+              chartHeight='200px'
               series={series}
               values={
                 {

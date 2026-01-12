@@ -18,6 +18,7 @@ import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CA
 import { logQuery } from '../../../services';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
+import replaceTemplateVariables from '../../utils/replaceTemplateVariables';
 
 // @ts-ignore
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
@@ -95,7 +96,7 @@ export default function Raw(props: IProps) {
           {
             from: moment(range.start).unix(),
             to: moment(range.end).unix(),
-            sql: _.trim(_.split(queryValues.query, '|')?.[0]),
+            sql: replaceTemplateVariables(_.trim(queryValues.query), queryValues.range),
           },
         ],
       })
