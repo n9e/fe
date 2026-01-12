@@ -16,8 +16,10 @@ const ru_RU = {
       raw: 'Исходный текст журнала',
       timeSeries: 'Временная диаграмма',
     },
-    query_tip:
-      'SQL пример: Запрос количества строк журнала за последние 5 минут SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />Для получения дополнительных инструкций по режиму SQL, пожалуйста, обратитесь к <a>Инструкциям по режиму SQL Doris</a>',
+    query_tip: `Примеры SQL:<br />
+    1. Запрос количества строк журнала за последние 5 минут SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. Запрос количества строк журнала за выбранный интервал времени SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    Дополнительную информацию о режиме SQL см. в разделе <a>Режим Doris SQL</a>`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Запрос',
     database: 'База данных',
