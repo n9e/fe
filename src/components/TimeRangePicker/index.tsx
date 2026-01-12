@@ -37,8 +37,8 @@ import './locale';
 export { AutoRefresh };
 
 export default function index(props: ITimeRangePickerProps) {
-  const { localKey, dateFormat = 'YYYY-MM-DD HH:mm', onChange } = props;
   const { rangePickerShowSecond } = useContext(CommonStateContext);
+  const { localKey, dateFormat = rangePickerShowSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm', onChange } = props;
   const [globalVar] = useGlobalVar();
 
   return (
