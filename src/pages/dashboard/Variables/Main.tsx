@@ -19,7 +19,6 @@ export default function Main(props: Props) {
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
   const { variableValueFixed, loading, renderBtns } = props;
-  const dataWithoutConstant = _.filter(variablesWithOptions, (item) => item.type !== 'constant');
   const shouldUpdateUrl = useRef(false);
 
   // 只提取 name 和 value，用于优化 useEffect 依赖
@@ -51,7 +50,7 @@ export default function Main(props: Props) {
 
   return (
     <div className='flex flex-wrap items-center gap-2 px-2'>
-      {_.map(dataWithoutConstant, (item) => {
+      {_.map(variablesWithOptions, (item) => {
         return (
           <Variable
             key={item.name}
