@@ -110,6 +110,7 @@ export default function index(props: Props) {
                         enableStats={enableStats}
                         renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                         renderFieldNameExtra={renderFieldNameExtra}
+                        onStatisticClick={onStatisticClick}
                       />
                     );
                   },
