@@ -82,7 +82,7 @@ export default function SQLFormatButton(props: SQLFormatParams) {
         }}
         footer={null}
       >
-        <Alert type='info' message='字段最大值、最小值、分位值等复杂 SQL ，可在左侧字段列表上点击查看。' />
+        <Alert showIcon className='mb-2' type='info' message='字段最大值、最小值、分位值等复杂 SQL ，可在左侧字段列表上点击查看。' />
         <div className='mb-2'>
           <div className='mb-2 flex items-center gap-2'>
             <a

@@ -81,7 +81,7 @@ export default function index() {
                     setItems(newItems);
                   },
                 }}
-                onAdd={(queryValues = {}) => {
+                onAdd={(formValues = {}) => {
                   const newActiveKey = getUUID();
                   const newItems = [
                     ...items,
@@ -91,11 +91,12 @@ export default function index() {
                       formValues: {
                         datasourceCate: defaultDatasourceCate,
                         datasourceValue: defaultDatasourceValue,
-                        query: {
-                          ...queryValues,
-                          range: logsDefaultRange,
-                        },
                         refreshFlag: _.uniqueId('refreshFlag_'), // 新增时默认执行查询
+                        ...formValues,
+                        query: {
+                          range: logsDefaultRange,
+                          ...formValues.query,
+                        },
                       },
                     },
                   ];
