@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { Button, Modal, Form, Tooltip, Alert } from 'antd';
+import React, { useContext, useState } from 'react';
+import { Button, Modal, Form, Alert, Space } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
 import { copy2ClipBoard } from '@/utils';
 
@@ -26,6 +29,7 @@ interface SQLFormatParams {
 
 export default function SQLFormatButton(props: SQLFormatParams) {
   const { t } = useTranslation(NAME_SPACE);
+  const { darkMode } = useContext(CommonStateContext);
   const { rangeRef, defaultSearchField, onClick } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const form = Form.useFormInstance();
@@ -71,10 +75,10 @@ export default function SQLFormatButton(props: SQLFormatParams) {
           }
         }}
       >
-        {t('query.sql_format')}
+        {t('query.sql_format.title')}
       </Button>
       <Modal
-        title={t('query.sql_format')}
+        title={t('query.sql_format.title')}
         visible={modalVisible}
         width={800}
         onCancel={() => {
@@ -82,85 +86,115 @@ export default function SQLFormatButton(props: SQLFormatParams) {
         }}
         footer={null}
       >
-        <Alert showIcon className='mb-2' type='info' message='字段最大值、最小值、分位值等复杂 SQL ，可在左侧字段列表上点击查看。' />
-        <div className='mb-2'>
-          <div className='mb-2 flex items-center gap-2'>
-            <a
-              className='flex-shrink-0'
-              onClick={() => {
-                setModalVisible(false);
-                onClick({
-                  submode: 'raw',
-                  query: data?.origin,
-                });
-              }}
-            >
-              查看日志原文
-            </a>
-            <Tooltip title={data?.origin}>
-              <div className='flex-1 truncate'>{data?.origin}</div>
-            </Tooltip>
-            <CopyOutlined
-              className='flex-shrink-0'
-              onClick={() => {
-                copy2ClipBoard(data?.origin || '');
-              }}
-            />
+        <Alert showIcon className='mb-4' type='info' message={t('query.sql_format.tip')} />
+        <div className='mb-4'>
+          <div>
+            <Space>
+              <a
+                onClick={() => {
+                  setModalVisible(false);
+                  onClick({
+                    submode: 'raw',
+                    query: data?.origin,
+                  });
+                }}
+              >
+                {t('query.sql_format.origin')}
+              </a>
+              <CopyOutlined
+                className='flex-shrink-0'
+                onClick={() => {
+                  copy2ClipBoard(data?.origin || '');
+                }}
+              />
+            </Space>
           </div>
+          <SyntaxHighlighter
+            wrapLongLines
+            customStyle={{
+              maxHeight: 100,
+              overflow: 'auto',
+              background: 'var(--fc-fill-3)',
+            }}
+            children={data?.origin}
+            language='sql'
+            PreTag='div'
+            style={darkMode ? dark : undefined}
+          />
+        </div>
+        <div className='mb-4'>
+          <div>
+            <Space>
+              <a
+                onClick={() => {
+                  setModalVisible(false);
+                  onClick({
+                    submode: 'timeSeries',
+                    query: data?.timeseries?.count?.sql,
+                    keys: {
+                      valueKey: data?.timeseries?.count?.value_key,
+                      labelKey: data?.timeseries?.count?.label_key,
+                    },
+                  });
+                }}
+              >
+                {t('query.sql_format.timeseries')}
+              </a>
+              <CopyOutlined
+                className='flex-shrink-0'
+                onClick={() => {
+                  copy2ClipBoard(data?.timeseries?.count?.sql || '');
+                }}
+              />
+            </Space>
+          </div>
+          <SyntaxHighlighter
+            wrapLongLines
+            customStyle={{
+              maxHeight: 100,
+              overflow: 'auto',
+              background: 'var(--fc-fill-3)',
+            }}
+            children={data?.timeseries?.count?.sql}
+            language='sql'
+            PreTag='div'
+            style={darkMode ? dark : undefined}
+          />
         </div>
         <div className='mb-2'>
-          <div className='mb-2 flex items-center gap-2'>
-            <a
-              className='flex-shrink-0'
-              onClick={() => {
-                setModalVisible(false);
-                onClick({
-                  submode: 'timeSeries',
-                  query: data?.timeseries?.count?.sql,
-                  keys: {
-                    valueKey: data?.timeseries?.count?.value_key,
-                    labelKey: data?.timeseries?.count?.label_key,
-                  },
-                });
-              }}
-            >
-              查看时序图
-            </a>
-            <Tooltip title={data?.timeseries?.count?.sql}>
-              <div className='flex-1 truncate'>{data?.timeseries?.count?.sql}</div>
-            </Tooltip>
-            <CopyOutlined
-              className='flex-shrink-0'
-              onClick={() => {
-                copy2ClipBoard(data?.timeseries?.count?.sql || '');
-              }}
-            />
+          <div>
+            <Space>
+              <a
+                onClick={() => {
+                  setModalVisible(false);
+                  onClick({
+                    submode: 'raw',
+                    query: data?.table?.sql,
+                  });
+                }}
+              >
+                {t('query.sql_format.table')}
+              </a>
+              <CopyOutlined
+                className='flex-shrink-0'
+                onClick={() => {
+                  copy2ClipBoard(data?.table?.sql || '');
+                }}
+              />
+            </Space>
           </div>
-        </div>
-        <div className='mb-2'>
-          <div className='mb-2 flex items-center gap-2'>
-            <a
-              className='flex-shrink-0'
-              onClick={() => {
-                setModalVisible(false);
-                onClick({
-                  submode: 'raw',
-                  query: data?.table?.sql,
-                });
-              }}
-            >
-              查看统计值
-            </a>
-            <Tooltip title={data?.table?.sql}>
-              <div className='flex-1 truncate'>{data?.table?.sql}</div>
-            </Tooltip>
-            <CopyOutlined
-              className='flex-shrink-0'
-              onClick={() => {
-                copy2ClipBoard(data?.table?.sql || '');
-              }}
-            />
-          </div>
+          <SyntaxHighlighter
+            wrapLongLines
+            customStyle={{
+              maxHeight: 100,
+              overflow: 'auto',
+              background: 'var(--fc-fill-3)',
+            }}
+            children={data?.table?.sql}
+            language='sql'
+            PreTag='div'
+            style={darkMode ? dark : undefined}
+          />
         </div>
       </Modal>
     </>
