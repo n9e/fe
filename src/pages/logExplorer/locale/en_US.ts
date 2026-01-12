@@ -44,6 +44,11 @@ const en_US = {
     quick_view_ratio: 'Ratio',
   },
   empty_value_not_supported_tip: 'Empty value search is not supported',
+  field_tip: 'Click to view statistics',
+  field_value_statistic: {
+    view_statistic: 'View Table',
+    view_timeseries: 'View Time Series',
+  },
   logs: {
     title: 'Log Data',
     count: 'Result Count',

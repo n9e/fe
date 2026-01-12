@@ -44,6 +44,11 @@ const ja_JP = {
     quick_view_ratio: '割合',
   },
   empty_value_not_supported_tip: '空の値の検索はサポートされていません',
+  field_tip: 'クリックして統計情報を表示',
+  field_value_statistic: {
+    view_statistic: '統計値を表示',
+    view_timeseries: '時系列を表示',
+  },
   logs: {
     title: 'ログデータ',
     count: '結果数',

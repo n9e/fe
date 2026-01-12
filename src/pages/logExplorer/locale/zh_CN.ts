@@ -47,7 +47,7 @@ const zh_CN = {
   empty_value_not_supported_tip: '暂不支持对空值做检索',
   field_tip: '点击查看统计信息',
   field_value_statistic: {
-    view_statistic: '查看统计图',
+    view_statistic: '查看统计值',
     view_timeseries: '查看时序图',
   },
   logs: {
