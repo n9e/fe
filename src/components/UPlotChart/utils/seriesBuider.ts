@@ -61,7 +61,8 @@ export default function seriesBuider(props: Props) {
     _.map(baseSeries, (item, idx) => {
       const refId = _.get(item, 'n9e_internal.refId');
       const curOverride = _.find(overrides, (override) => {
-        if (override.matcher.id === 'byFrameRefID') {
+        // TODO 删除的时候可能会出现 matcher 不存在的情况，一个 bug 需要修复，像是删除的时候出现一个临时的状态（没有被彻底删除前）
+        if (override.matcher?.id === 'byFrameRefID') {
           return override.matcher.value === refId;
         }
         return false;
