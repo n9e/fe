@@ -6,7 +6,7 @@ import adjustData from '@/pages/dashboard/Variables/utils/ajustData';
 import { formatString } from '@/pages/dashboard/Variables/utils/formatString';
 import { getBuiltInVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-export default function replaceTemplateVariables(str: string, range: IRawTimeRange, panelWidth: number) {
+export default function replaceTemplateVariables(str: string, range: IRawTimeRange, panelWidth?: number) {
   const extVariables: IVariable[] = getBuiltInVariables(range, {
     range,
     stepParams: {
