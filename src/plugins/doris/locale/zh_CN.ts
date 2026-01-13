@@ -82,6 +82,18 @@ const zh_CN = {
     duration: '耗时',
     count: '条数',
     click_doc: '点击查看 <a>查询条件</a> 文档',
+    navMode: {
+      fields: '字段视图',
+      schema: '表结构视图',
+    },
+    syntax: {
+      query: 'Query 模式',
+      sql: 'SQL 模式',
+    },
+    sqlVizType: {
+      table: '表格',
+      timeseries: '时序图',
+    },
   },
 };
 export default zh_CN;

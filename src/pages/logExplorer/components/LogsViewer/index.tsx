@@ -62,6 +62,8 @@ interface Props {
   colWidths?: { [key: string]: number };
   tableColumnsWidthCacheKey?: string;
   showPageLoadMode?: boolean;
+  showLogMode?: boolean;
+  addonBefore?: React.ReactNode;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -116,6 +118,8 @@ export default function LogsViewer(props: Props) {
     colWidths,
     tableColumnsWidthCacheKey,
     showPageLoadMode,
+    showLogMode = true,
+    addonBefore,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -199,27 +203,30 @@ export default function LogsViewer(props: Props) {
         <FullscreenButton.Provider>
           <div className='flex justify-between pb-2'>
             <Space>
-              <Radio.Group
-                size='small'
-                optionType='button'
-                buttonStyle='solid'
-                options={[
-                  {
-                    label: t('logs.settings.mode.origin'),
-                    value: 'origin',
-                  },
-                  {
-                    label: t('logs.settings.mode.table'),
-                    value: 'table',
-                  },
-                ]}
-                value={options.logMode}
-                onChange={(e) => {
-                  updateOptions({
-                    logMode: e.target.value,
-                  });
-                }}
-              />
+              {addonBefore}
+              {showLogMode && (
+                <Radio.Group
+                  size='small'
+                  optionType='button'
+                  buttonStyle='solid'
+                  options={[
+                    {
+                      label: t('logs.settings.mode.origin'),
+                      value: 'origin',
+                    },
+                    {
+                      label: t('logs.settings.mode.table'),
+                      value: 'table',
+                    },
+                  ]}
+                  value={options.logMode}
+                  onChange={(e) => {
+                    updateOptions({
+                      logMode: e.target.value,
+                    });
+                  }}
+                />
+              )}
               <OriginSettings
                 ref={originSettingsRef}
                 showDateField={showDateField}

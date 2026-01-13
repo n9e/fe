@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Form, Segmented } from 'antd';
+import { Form } from 'antd';
 import { Resizable } from 're-resizable';
 import moment from 'moment';
 
@@ -20,10 +20,9 @@ import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
 import { Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
-import QueryModeQuerySidebar from './QueryMode/Sidebar';
-import SQLModeQuerySidebar from './SQLMode/Sidebar';
-import QueryModeMain from './QueryMode/Main';
-import SQLModeMain from './SQLMode/Main';
+
+import SideBarNav from './SideBarNav';
+import Main from './Main';
 
 import './style.less';
 
@@ -31,22 +30,19 @@ interface Props {
   tabKey: string;
   disabled?: boolean;
   defaultFormValuesControl?: DefaultFormValuesControl;
-  onAdd: (queryValues?: { [index: string]: any }) => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
-  const { tabKey, disabled, defaultFormValuesControl, onAdd } = props;
+  const { tabKey, disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
-  const mode = Form.useWatch(['query', 'mode']);
   const stackByField = Form.useWatch(['query', 'stackByField']);
   const defaultSearchField = Form.useWatch(['query', 'defaultSearchField']);
 
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem(SIDEBAR_CACHE_KEY) || 200));
-  const [queryLogsOrganizeFields, setQueryLogsOrganizeFields] = useState<string[]>([]);
-  const [sqlLogsOrganizeFields, setSqlLogsOrganizeFields] = useState<string[]>([]);
+  const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
 
   const executeQuery = () => {
@@ -62,11 +58,11 @@ export default function index(props: Props) {
 
       // 设置历史记录方法
       const queryValues = values.query;
-      if (queryValues.mode === 'query') {
+      if (queryValues.syntax === 'query') {
         if (queryValues.database && queryValues.table && queryValues.time_field) {
           setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
         }
-      } else if (queryValues.mode === 'sql') {
+      } else if (queryValues.syntax === 'sql') {
         if (queryValues.query) {
           setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
         }
@@ -94,27 +90,38 @@ export default function index(props: Props) {
     });
   };
 
+  const handleValueFilter = (params) => {
+    const values = form.getFieldsValue();
+    const query = values.query;
+    let queryStr = _.trim(_.split(query.query, '|')?.[0]);
+    if (queryStr === '*') {
+      queryStr = '';
+    }
+    if (params.operator === 'AND') {
+      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}:"${params.value}"`;
+    }
+    if (params.operator === 'NOT') {
+      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}:"${params.value}"`;
+    }
+    form.setFieldsValue({
+      query: {
+        query: queryStr,
+      },
+    });
+    executeQuery();
+  };
+
   useEffect(() => {
     if (defaultFormValuesControl?.isInited) {
       const datasourceValue = form.getFieldValue('datasourceValue');
       const queryValues = form.getFieldValue('query');
-      if (queryValues?.mode === 'query') {
-        setQueryLogsOrganizeFields(
-          getOrganizeFieldsFromLocalstorage({
-            datasourceValue,
-            mode: queryValues?.mode,
-            database: queryValues?.database,
-            table: queryValues?.table,
-          }),
-        );
-      } else if (queryValues?.mode === 'sql') {
-        setSqlLogsOrganizeFields(
-          getOrganizeFieldsFromLocalstorage({
-            datasourceValue,
-            mode: queryValues?.mode,
-          }),
-        );
-      }
+      setOrganizeFields(
+        getOrganizeFieldsFromLocalstorage({
+          datasourceValue,
+          database: queryValues?.database,
+          table: queryValues?.table,
+        }),
+      );
     }
   }, [defaultFormValuesControl?.isInited]);
 
@@ -206,7 +213,7 @@ export default function index(props: Props) {
                       query: {
                         ...filterValues.query,
                         range,
-                        mode: filterValues.query?.mode || 'query',
+                        syntax: filterValues.query?.syntax || 'query',
                       },
                     });
                     executeQuery();
@@ -263,116 +270,59 @@ export default function index(props: Props) {
                     });
                     form.setFieldsValue({
                       query: {
-                        mode: 'query',
+                        syntax: 'query',
                         range: logsDefaultRange,
                       },
                     });
                   }}
                 />
               </Form.Item>
-              <Form.Item name={['query', 'mode']} initialValue='query'>
-                <Segmented
-                  block
-                  options={[
-                    {
-                      label: t('query.mode.query'),
-                      value: 'query',
-                    },
-                    {
-                      label: t('query.mode.sql'),
-                      value: 'sql',
-                    },
-                  ]}
-                  onChange={() => {
-                    // 切换模式时，清空 query 内容
-                    form.setFieldsValue({
-                      query: {
-                        query: undefined,
-                      },
-                    });
-                  }}
-                />
-              </Form.Item>
             </div>
-            {mode === 'query' && (
-              <QueryModeQuerySidebar
-                disabled={disabled}
-                datasourceValue={datasourceValue}
-                executeQuery={executeQuery}
-                organizeFields={queryLogsOrganizeFields}
-                setOrganizeFields={(value, setLocalstorage = true) => {
-                  const queryValues = form.getFieldValue('query');
-                  setQueryLogsOrganizeFields(value);
-                  if (setLocalstorage) {
-                    setOrganizeFieldsToLocalstorage(
-                      {
-                        datasourceValue,
-                        mode: 'query',
-                        database: queryValues?.database,
-                        table: queryValues?.table,
-                      },
-                      value,
-                    );
-                  }
-                }}
-                onIndexDataChange={setIndexData}
-                onAdd={onAdd}
-                stackByField={stackByField}
-                setStackByField={handleSetStackByField}
-                defaultSearchField={defaultSearchField}
-                setDefaultSearchField={handleSetDefaultSearchField}
-              />
-            )}
-            {mode === 'sql' && <SQLModeQuerySidebar disabled={disabled} datasourceValue={datasourceValue} executeQuery={executeQuery} />}
-          </div>
-        </Resizable>
-        <div className='min-w-0 flex-1'>
-          {mode === 'query' && (
-            <QueryModeMain
-              tabKey={tabKey}
-              indexData={indexData}
-              organizeFields={queryLogsOrganizeFields}
-              setOrganizeFields={(value) => {
-                const queryValues = form.getFieldValue('query');
-                setQueryLogsOrganizeFields(value);
-                setOrganizeFieldsToLocalstorage(
-                  {
-                    datasourceValue,
-                    mode: 'query',
-                    database: queryValues?.database,
-                    table: queryValues?.table,
-                  },
-                  value,
-                );
-              }}
-              executeQuery={executeQuery}
-              onAdd={onAdd}
-              stackByField={stackByField}
-              setStackByField={handleSetStackByField}
-              defaultSearchField={defaultSearchField}
-              setDefaultSearchField={handleSetDefaultSearchField}
-            />
-          )}
-          {mode === 'sql' && (
-            <SQLModeMain
-              tabKey={tabKey}
+            <SideBarNav
+              disabled={disabled}
               datasourceValue={datasourceValue}
-              organizeFields={sqlLogsOrganizeFields}
+              executeQuery={executeQuery}
+              organizeFields={organizeFields} // 使用到了 query 的 organizeFields
               setOrganizeFields={(value, setLocalstorage = true) => {
-                setSqlLogsOrganizeFields(value);
+                const queryValues = form.getFieldValue('query');
+                // 初始化时从本地获取，query、sql 都有可能设置
+                setOrganizeFields(value);
+                // 字段列表选择 "显示字段" 时更新本地缓存，这里只更新 query 模式的，sql 模式是在右侧表格设置项里设置的
                 if (setLocalstorage) {
                   setOrganizeFieldsToLocalstorage(
                     {
                       datasourceValue,
-                      mode: 'sql',
+                      database: queryValues?.database,
+                      table: queryValues?.table,
                     },
                     value,
                   );
                 }
               }}
-              executeQuery={executeQuery}
+              onIndexDataChange={setIndexData}
+              handleValueFilter={handleValueFilter}
+              stackByField={stackByField}
+              setStackByField={handleSetStackByField}
+              defaultSearchField={defaultSearchField}
+              setDefaultSearchField={handleSetDefaultSearchField}
             />
-          )}
+          </div>
+        </Resizable>
+        <div className='min-w-0 flex-1'>
+          <Main
+            tabKey={tabKey}
+            indexData={indexData}
+            organizeFields={organizeFields}
+            setOrganizeFields={(value) => {
+              setOrganizeFields(value);
+            }}
+            executeQuery={executeQuery}
+            handleValueFilter={handleValueFilter}
+            stackByField={stackByField}
+            setStackByField={handleSetStackByField}
+            defaultSearchField={defaultSearchField}
+            setDefaultSearchField={handleSetDefaultSearchField}
+          />
         </div>
       </div>
     </div>

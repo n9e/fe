@@ -1,16 +1,12 @@
-import React, { useContext, useRef, useState, useEffect } from 'react';
-import { Form, Row, Col, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { Form, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { useRequest, useGetState } from 'ahooks';
 
-import { CommonStateContext } from '@/App';
-import { DatasourceCateEnum, IS_PLUS, SIZE } from '@/utils/constant';
-import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
-import DocumentDrawer from '@/components/DocumentDrawer';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
@@ -23,43 +19,38 @@ import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
 import { Field } from '../../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
-import QueryInput from '../../components/QueryInput';
-import MainMoreOperations from '../../components/MainMoreOperations';
-import { PinIcon, UnPinIcon } from '../Sidebar/FieldsSidebar/PinIcon';
-import { DefaultSearchIcon, UnDefaultSearchIcon } from '../Sidebar/FieldsSidebar/DefaultSearchIcon';
-import QueryInputAddonAfter from './QueryInputAddonAfter';
-import SQLFormatButton from './SQLFormatButton';
+import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
+import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
+import { HandleValueFilterParams } from '../../types';
 
 // @ts-ignore
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
-  tabKey: string;
+  tableSelector: {
+    antd: string;
+    rgd: string;
+  };
   indexData: Field[];
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
-  executeQuery: () => void;
-  onAdd: (queryValues?: { [index: string]: any }) => void;
+  handleValueFilter: HandleValueFilterParams;
+  setExecuteLoading: (loading: boolean) => void;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
   defaultSearchField?: string;
-  setDefaultSearchField: (field?: string) => void;
 }
 
 export default function index(props: Props) {
-  const { t, i18n } = useTranslation(NAME_SPACE);
-  const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
+  const { t } = useTranslation(NAME_SPACE);
 
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
 
-  const { tabKey, indexData, organizeFields, setOrganizeFields, executeQuery, onAdd, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
-
-  const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
-  const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
+  const { tableSelector, indexData, organizeFields, setOrganizeFields, handleValueFilter, setExecuteLoading, stackByField, setStackByField, defaultSearchField } = props;
 
   const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
@@ -86,27 +77,6 @@ export default function index(props: Props) {
         refreshFlag: _.uniqueId('refreshFlag_'),
       });
     }
-  };
-
-  const handleValueFilter = (params) => {
-    const values = form.getFieldsValue();
-    const query = values.query;
-    let queryStr = _.trim(_.split(query.query, '|')?.[0]);
-    if (queryStr === '*') {
-      queryStr = '';
-    }
-    if (params.operator === 'AND') {
-      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}:"${params.value}"`;
-    }
-    if (params.operator === 'NOT') {
-      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}:"${params.value}"`;
-    }
-    form.setFieldsValue({
-      query: {
-        query: queryStr,
-      },
-    });
-    executeQuery();
   };
 
   // 用于显示展示的时间范围
@@ -182,13 +152,7 @@ export default function index(props: Props) {
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
-              const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
-              const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
-              if (antdTableEleNodes) {
-                antdTableEleNodes?.scrollTo(0, 0);
-              } else if (rgdTableEleNodes) {
-                rgdTableEleNodes?.scrollTo(0, 0);
-              }
+              scrollToTop(tableSelector.antd, tableSelector.rgd);
             }
             appendRef.current = false;
             return {
@@ -322,105 +286,12 @@ export default function index(props: Props) {
     };
   }, [JSON.stringify(queryValues?.range)]);
 
+  useEffect(() => {
+    setExecuteLoading(loading || histogramLoading);
+  }, [loading, histogramLoading]);
+
   return (
-    <div className='flex flex-col h-full'>
-      <Row gutter={SIZE} className='flex-shrink-0'>
-        <Col flex='auto'>
-          <InputGroupWithFormItem
-            label={
-              <Space>
-                {t(`${logExplorerNS}:query`)}
-                <InfoCircleOutlined
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                      darkMode,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
-                    });
-                  }}
-                />
-              </Space>
-            }
-            addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
-          >
-            <div className='relative'>
-              <Form.Item name={['query', 'query']}>
-                <QueryInput
-                  onEnterPress={() => {
-                    executeQuery();
-                  }}
-                  enableAddonBefore={defaultSearchField !== undefined}
-                />
-              </Form.Item>
-              {defaultSearchField && (
-                <Popover
-                  content={
-                    <Space>
-                      <span>{t('query.default_search_by_tip')} :</span>
-                      <span>{defaultSearchField}</span>
-                      <Tooltip title={t('query.default_search_tip_2')}>
-                        <Button
-                          icon={<UnDefaultSearchIcon />}
-                          size='small'
-                          type='text'
-                          onClick={() => {
-                            setDefaultSearchField?.(undefined);
-                          }}
-                        />
-                      </Tooltip>
-                    </Space>
-                  }
-                >
-                  <Button
-                    className='absolute top-[4px] left-[4px] z-10'
-                    size='small'
-                    type='text'
-                    icon={
-                      <DefaultSearchIcon
-                        className='text-[12px]'
-                        style={{
-                          color: 'var(--fc-primary-color)',
-                        }}
-                      />
-                    }
-                  />
-                </Popover>
-              )}
-            </div>
-          </InputGroupWithFormItem>
-        </Col>
-        <Col flex='none'>
-          <SQLFormatButton
-            rangeRef={rangeRef}
-            defaultSearchField={defaultSearchField}
-            onClick={(values) => {
-              onAdd({
-                datasourceCate: DatasourceCateEnum.doris,
-                datasourceValue,
-                query: {
-                  mode: 'sql',
-                  ...values,
-                },
-              });
-            }}
-          />
-        </Col>
-        <Col flex='none'>
-          <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>
-            <TimeRangePicker onChange={executeQuery} />
-          </Form.Item>
-        </Col>
-        <Col flex='none'>
-          <Button type='primary' onClick={executeQuery} loading={loading || histogramLoading}>
-            {t(`${logExplorerNS}:execute`)}
-          </Button>
-        </Col>
-        <Col flex='none'>
-          <MainMoreOperations />
-        </Col>
-      </Row>
+    <>
       {refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
@@ -578,14 +449,7 @@ export default function index(props: Props) {
               }}
               onScrollCapture={() => {
                 if (loading || pageLoadMode !== 'infiniteScroll') return;
-                const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
-                const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
-                let isAtBottom = false;
-                if (antdTableEleNodes) {
-                  isAtBottom = antdTableEleNodes && antdTableEleNodes?.scrollHeight - (Math.round(antdTableEleNodes?.scrollTop) + antdTableEleNodes?.clientHeight) <= 1;
-                } else if (rgdTableEleNodes) {
-                  isAtBottom = rgdTableEleNodes && rgdTableEleNodes?.scrollHeight - (Math.round(rgdTableEleNodes?.scrollTop) + rgdTableEleNodes?.clientHeight) <= 1;
-                }
+                const isAtBottom = getIsAtBottom(tableSelector.antd, tableSelector.rgd);
                 if (isAtBottom) {
                   // 滚动到底后加载下一页
                   const currentServiceParams = getServiceParams();
@@ -656,6 +520,6 @@ export default function index(props: Props) {
           />
         </div>
       )}
-    </div>
+    </>
   );
 }

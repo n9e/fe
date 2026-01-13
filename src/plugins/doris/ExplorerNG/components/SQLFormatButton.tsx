@@ -12,8 +12,8 @@ import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
 import { copy2ClipBoard } from '@/utils';
 
-import { NAME_SPACE } from '../../../constants';
-import { getDorisSQLsPreview } from '../../../services';
+import { NAME_SPACE } from '../../constants';
+import { getDorisSQLsPreview } from '../../services';
 
 interface SQLFormatParams {
   rangeRef: React.MutableRefObject<
@@ -94,8 +94,9 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                 onClick={() => {
                   setModalVisible(false);
                   onClick({
-                    submode: 'raw',
-                    query: data?.origin,
+                    syntax: 'sql',
+                    sqlVizType: 'table',
+                    sql: data?.origin,
                   });
                 }}
               >
@@ -131,11 +132,12 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                 onClick={() => {
                   setModalVisible(false);
                   onClick({
-                    submode: 'timeSeries',
-                    query: data?.timeseries?.count?.sql,
+                    syntax: 'sql',
+                    sqlVizType: 'timeseries',
+                    sql: data?.timeseries?.count?.sql,
                     keys: {
-                      valueKey: data?.timeseries?.count?.value_key,
-                      labelKey: data?.timeseries?.count?.label_key,
+                      valueKey: data?.timeseries?.count?.value_key ?? [],
+                      labelKey: data?.timeseries?.count?.label_key ?? [],
                     },
                   });
                 }}
@@ -172,8 +174,9 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                 onClick={() => {
                   setModalVisible(false);
                   onClick({
-                    submode: 'raw',
-                    query: data?.table?.sql,
+                    syntax: 'sql',
+                    sqlVizType: 'table',
+                    sql: data?.table?.sql,
                   });
                 }}
               >
