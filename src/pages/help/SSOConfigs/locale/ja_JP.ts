@@ -5,6 +5,12 @@ const ja_JP = {
   OIDC: 'OIDC',
   OAuth2: 'OAuth2',
   dingtalk: 'DingTalk',
+  feishu_setting: {
+    app_id_tip:
+      'フィシュオープンプラットフォームアプリケーションの一意の識別子。アプリケーションを作成すると、システムによって自動的に生成され、ユーザーは変更できません。アプリケーションの<1>開発者バックエンド</1>の証明書と基本情報ページでapp_idを確認できます',
+    app_secret_tip: 'アプリケーションのシークレット。アプリケーションを作成すると、システムによって自動的に生成されます',
+    cover_attributes_tip: 'ログインするたびに、ユーザー情報が変更された場合、フィシュのユーザー情報でNightingaleのユーザー情報（電話番号、メール）を上書きします',
+  },
   dingtalk_setting: {
     enable: '有効化',
     display_name: '表示名',

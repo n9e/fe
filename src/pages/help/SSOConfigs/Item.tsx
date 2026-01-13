@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Space, Form, message, Switch, Input, Row, Col, Select } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { EditorView } from '@codemirror/view';
 
 import { SIZE } from '@/utils/constant';
@@ -54,7 +54,96 @@ export default function Item(props: Props) {
 
   return (
     <Form form={form} layout='vertical'>
-      {item.name === 'dingtalk' ? (
+      {item.name === 'feishu' ? (
+        <>
+          <Form.Item name={['setting', 'redirect_url']} initialValue={`${window.location.origin}/callback/feishu`}>
+            <Input />
+          </Form.Item>
+          <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
+            <Switch size='small' />
+          </Form.Item>
+          <Form.Item label={t('dingtalk_setting.display_name')} name={['setting', 'display_name']} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label={'APP ID'}
+            name={['setting', 'app_id']}
+            rules={[{ required: true }]}
+            tooltip={<Trans ns='SSOConfigs' i18nKey='feishu_setting.app_id_tip' components={{ 1: <a href='https://open.feishu.cn/app' target='_blank' /> }} />}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label={'APP Secret'} name={['setting', 'app_secret']} rules={[{ required: true }]} tooltip={t('feishu_setting.app_secret_tip')}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label={t('dingtalk_setting.cover_attributes')}
+            tooltip={t('feishu_setting.cover_attributes_tip')}
+            name={['setting', 'cover_attributes']}
+            valuePropName='checked'
+            initialValue={true}
+          >
+            <Switch size='small' />
+          </Form.Item>
+          <Row gutter={SIZE}>
+            <Col span={12}>
+              <Form.Item label={t('dingtalk_setting.username_field')} name={['setting', 'username_field']} rules={[{ required: true }]} initialValue='email'>
+                <Select
+                  options={[
+                    {
+                      label: t('dingtalk_setting.username_field_map.email'),
+                      value: 'email',
+                    },
+                    {
+                      label: t('dingtalk_setting.username_field_map.phone'),
+                      value: 'phone',
+                    },
+                    {
+                      label: t('dingtalk_setting.username_field_map.name'),
+                      value: 'name',
+                    },
+                  ]}
+                  optionFilterProp='label'
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label={t('dingtalk_setting.default_roles')} name={['setting', 'default_roles']} rules={[{ required: true }]}>
+                <Select
+                  mode='multiple'
+                  options={_.map(roles, (item) => {
+                    return { label: item, value: item };
+                  })}
+                  optionFilterProp='label'
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <div className='mb-4'>
+            <Space className='cursor-pointer' onClick={() => setAdvancedSettingsVisible(!advancedSettingsVisible)}>
+              {t('common:advanced_settings')}
+              {advancedSettingsVisible ? <DownOutlined /> : <RightOutlined />}
+            </Space>
+          </div>
+          <div
+            style={{
+              display: advancedSettingsVisible ? 'block' : 'none',
+            }}
+          >
+            <Form.Item label={t('dingtalk_setting.auth_url')} name={['setting', 'auth_url']} initialValue={'https://accounts.feishu.cn/open-apis/authen/v1/authorize'}>
+              <Input placeholder='https://accounts.feishu.cn/open-apis/authen/v1/authorize' />
+            </Form.Item>
+            <Form.Item label='Endpoint' name={['setting', 'feishu_endpoint']} initialValue={'https://open.feishu.cn'}>
+              <Input placeholder='https://open.feishu.cn' />
+            </Form.Item>
+            <Form.Item label={t('dingtalk_setting.proxy')} name={['setting', 'proxy']}>
+              <Input />
+            </Form.Item>
+          </div>
+        </>
+      ) : item.name === 'dingtalk' ? (
         <>
           <Form.Item name={['setting', 'redirect_url']} hidden initialValue={`${window.location.origin}/callback/dingtalk`}>
             <div />

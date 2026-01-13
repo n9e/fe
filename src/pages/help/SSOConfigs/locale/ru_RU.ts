@@ -5,6 +5,13 @@ const ru_RU = {
   OIDC: 'OIDC',
   OAuth2: 'OAuth2',
   dingtalk: 'DingTalk',
+  feishu_setting: {
+    app_id_tip:
+      'Feishu Open Platform application unique identifier, generated automatically when the application is created, and users cannot modify it themselves. You can view the app_id in the Credentials and Basic Information page of the <1>Developer Backend</1>',
+    app_secret_tip: 'Application secret. Generated automatically when the application is created',
+    cover_attributes_tip:
+      'After each login, if user information has changed, the user information from Feishu will overwrite the user information in Nightingale (phone number, email)',
+  },
   dingtalk_setting: {
     enable: 'Включить',
     display_name: 'Отображаемое имя',
