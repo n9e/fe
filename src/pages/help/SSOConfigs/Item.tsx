@@ -13,12 +13,13 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import { SSOConfigType } from './types';
 import { putSSOConfig } from './services';
 
-const documentMap = {
+export const documentMap = {
   OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/oauth2/',
   LDAP: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/ldap/',
   CAS: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/cas/',
   OIDC: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/oidc/',
   dingtalk: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/dingtalk',
+  feishu: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/feishu',
 };
 
 interface Props {
@@ -56,7 +57,7 @@ export default function Item(props: Props) {
     <Form form={form} layout='vertical'>
       {item.name === 'feishu' ? (
         <>
-          <Form.Item name={['setting', 'redirect_url']} initialValue={`${window.location.origin}/callback/feishu`}>
+          <Form.Item name={['setting', 'redirect_url']} hidden initialValue={`${window.location.origin}/callback/feishu`}>
             <Input />
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
