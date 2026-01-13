@@ -16,8 +16,10 @@ const ja_JP = {
       raw: 'ログ原文',
       timeSeries: '時系列',
     },
-    query_tip:
-      'SQL例：最近5分間のログ行数をクエリするには、SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)を使用します。<br />詳細なSQLモードの説明については、<a>Doris SQLモードの説明</a>を参照してください。',
+    query_tip: `SQLの例：<br />
+    1. 過去5分間のログ行数をクエリする SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. 選択した期間のログ行数をクエリする SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    SQLモードの詳細については、<a>Doris SQLモード</a>を参照してください`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'クエリ',
     database: 'データベース',
