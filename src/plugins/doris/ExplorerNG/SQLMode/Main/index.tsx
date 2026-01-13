@@ -87,7 +87,7 @@ export default function index(props: Props) {
           >
             <Form.Item name={['query', 'query']}>
               <QueryInput
-                onChange={() => {
+                onEnterPress={() => {
                   handleExecuteQuery();
                 }}
                 placeholder={

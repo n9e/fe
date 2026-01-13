@@ -348,7 +348,7 @@ export default function index(props: Props) {
             <div className='relative'>
               <Form.Item name={['query', 'query']}>
                 <QueryInput
-                  onChange={() => {
+                  onEnterPress={() => {
                     executeQuery();
                   }}
                   enableAddonBefore={defaultSearchField !== undefined}
