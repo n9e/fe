@@ -32,7 +32,6 @@ export const NG_QUERY_CACHE_PICK_KEYS = ['database', 'table', 'time_field', 'que
 export const NG_SQL_CACHE_KEY = 'ng-doris-sql-history-records';
 
 export const QUERY_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'doris-query-logs-organize-fields';
-export const SQL_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'doris-sql-logs-organize-fields';
 
 export const PIN_INDEX_CACHE_KEY = 'doris_query_logs_pin_index';
 export const DEFAULT_SEARCH_INDEX_CACHE_KEY = 'doris_query_logs_default_search_index';

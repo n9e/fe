@@ -9,8 +9,8 @@ import { parseRange } from '@/components/TimeRangePicker';
 import FieldsList, { Field } from '@/pages/logExplorer/components/FieldsList';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
-import { getDorisLogsQuery, getDorisSQLsPreview } from '../../../../services';
-import { NAME_SPACE, TYPE_MAP } from '../../../../constants';
+import { getDorisLogsQuery, getDorisSQLsPreview } from '../../../services';
+import { NAME_SPACE, TYPE_MAP } from '../../../constants';
 import { PinIcon, UnPinIcon } from './PinIcon';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from './DefaultSearchIcon';
 
@@ -20,7 +20,7 @@ interface IProps {
   data: Field[];
   loading: boolean;
   onValueFilter: (parmas: { key: string; value: any; operator: 'AND' | 'NOT' }) => void;
-  onAdd: (queryValues?: { [index: string]: any }) => void;
+  executeQuery: () => void;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
@@ -30,7 +30,8 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, onAdd, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
 
@@ -245,33 +246,29 @@ export default function index(props: IProps) {
           }).then((res) => {
             if (type === 'table') {
               const sqlPreviewData = res.table;
-              onAdd({
-                datasourceCate: DatasourceCateEnum.doris,
-                datasourceValue,
+              form.setFieldsValue({
                 query: {
-                  mode: 'sql',
-                  subMode: 'raw',
-                  query: sqlPreviewData.sql,
-                  range: queryValues.range,
+                  syntax: 'sql',
+                  sqlVizType: 'table',
+                  sql: sqlPreviewData.sql,
                 },
               });
+              executeQuery();
             } else if (type === 'timeseries') {
               let sqlPreviewData = res.timeseries?.[options.func];
               if (sqlPreviewData) {
-                onAdd({
-                  datasourceCate: DatasourceCateEnum.doris,
-                  datasourceValue,
+                form.setFieldsValue({
                   query: {
-                    mode: 'sql',
-                    submode: 'timeSeries',
-                    query: sqlPreviewData.sql,
-                    range: queryValues.range,
+                    syntax: 'sql',
+                    sqlVizType: 'timeseries',
+                    sql: sqlPreviewData.sql,
                     keys: {
-                      valueKey: sqlPreviewData.value_key,
-                      labelKey: sqlPreviewData.label_key,
+                      valueKey: sqlPreviewData.value_key ?? [],
+                      labelKey: sqlPreviewData.label_key ?? [],
                     },
                   },
                 });
+                executeQuery();
               } else {
                 message.error(t('query.generate_sql_failed'));
               }

@@ -13,12 +13,11 @@ interface Props {
   tabKey: string;
   tabIndex?: number;
   defaultFormValuesControl?: DefaultFormValuesControl;
-  onAdd: (queryValues?: { [index: string]: any }) => void;
 }
 
 export default function Explorer(props: Props) {
   const location = useLocation();
-  const { active, tabKey, defaultFormValuesControl, onAdd } = props;
+  const { active, tabKey, defaultFormValuesControl } = props;
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
 
@@ -47,7 +46,7 @@ export default function Explorer(props: Props) {
           <Form.Item name='datasourceValue' hidden>
             <div />
           </Form.Item>
-          <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} onAdd={onAdd} />
+          <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} />
         </Form>
       </div>
     </div>
