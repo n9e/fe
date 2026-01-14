@@ -169,6 +169,7 @@ export default function index(props: Props) {
                   to: undefined,
                 };
                 form.setFieldsValue({
+                  refreshFlag: undefined,
                   query: values,
                 });
                 executeQuery();

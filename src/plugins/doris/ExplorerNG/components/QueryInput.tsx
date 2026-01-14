@@ -15,14 +15,15 @@ export default function QueryInput(props: Props) {
   const [currentValue, setCurrentValue] = useState(props.value);
 
   const handleKeyDown = (e) => {
-    // 按下 Enter 键且未按住 Shift 键
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault(); // 阻止默认换行行为
       if (props.onEnterPress) {
+        // 回车时更新 value
+        props.onChange && props.onChange(currentValue);
+        // 调用回车事件
         props.onEnterPress(currentValue);
       }
     }
-    // 按下 Enter 键且按住 Shift 键：不阻止默认行为，允许换行
   };
 
   useEffect(() => {

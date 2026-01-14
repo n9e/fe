@@ -12,14 +12,14 @@ interface Props {
   page: string;
   modalStat: ModalStat;
   setModalState: React.Dispatch<React.SetStateAction<ModalStat>>;
-  getFilterValuesJSONString: () => string;
+  getFilterValues: () => any;
   run: () => void;
   setSelected: React.Dispatch<React.SetStateAction<number | undefined>>;
 }
 
 export default function FormModal(props: Props) {
   const { t } = useTranslation('viewSelect');
-  const { page, modalStat, setModalState, getFilterValuesJSONString, run, setSelected } = props;
+  const { page, modalStat, setModalState, getFilterValues, run, setSelected } = props;
   const [form] = Form.useForm();
   const publicCate = Form.useWatch('public_cate', form);
   const [teamList, setTeamList] = React.useState<{ id: number; name: string }[]>([]);
@@ -49,10 +49,10 @@ export default function FormModal(props: Props) {
       onOk={() => {
         form.validateFields().then((values) => {
           if (modalStat.action === 'save_new') {
-            const filterValuesJSONString = getFilterValuesJSONString();
+            const filterValues = getFilterValues();
             postView({
               ...values,
-              filter: filterValuesJSONString,
+              filter: JSON.stringify(filterValues),
             }).then((newId) => {
               message.success(t('common:success.add'));
               run();
@@ -64,11 +64,11 @@ export default function FormModal(props: Props) {
               setSelected(newId);
             });
           } else if (modalStat.action === 'edit') {
-            const filterValuesJSONString = getFilterValuesJSONString();
+            const filterValues = getFilterValues();
             if (modalStat.values) {
               updateView(modalStat.values.id, {
                 ...values,
-                filter: filterValuesJSONString,
+                filter: JSON.stringify(filterValues),
               }).then(() => {
                 message.success(t('common:success.edit'));
                 run();
