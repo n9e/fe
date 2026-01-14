@@ -31,10 +31,10 @@ export default function LegendTable(props: Props) {
       width: '100%',
       render: (text, record: any) => {
         return (
-          <div className='renderer-timeseries-ng-legend-table-name-column'>
-            <div className='renderer-timeseries-ng-legend-color-symbol' style={{ backgroundColor: record.color }} />
+          <div className='w-full flex items-center gap-2 whitespace-nowrap'>
+            <div className='w-[14px] h-[4px] rounded-[10px] inline-block flex-shrink-0' style={{ backgroundColor: record.color }} />
             <NameWithTooltip record={record}>
-              <div className='renderer-timeseries-ng-legend-table-name-content'>
+              <div className='whitespace-nowrap bg-transparent border-0 text-inherit padding-0 max-w-[600px] text-ellipsis overflow-hidden select-text'>
                 {record.offset && record.offset !== 'current' ? <span style={{ paddingRight: 4 }}>offfset {record.offset}</span> : ''}
                 <span>{text}</span>
               </div>
@@ -62,13 +62,7 @@ export default function LegendTable(props: Props) {
   });
 
   return (
-    <div
-      style={{
-        minWidth: 0,
-        height: '100%',
-        overflow: 'auto',
-      }}
-    >
+    <div className='min-w-0 h-full overflow-auto'>
       <Table
         className='mt-2 renderer-timeseries-ng-legend-table'
         size='small'
@@ -77,7 +71,7 @@ export default function LegendTable(props: Props) {
         columns={columns}
         dataSource={data}
         rowClassName={(record) => {
-          return !record.show ? 'renderer-timeseries-ng-legend-table-row disabled' : 'renderer-timeseries-ng-legend-table-row';
+          return !record.show ? 'cursor-pointer text-soft' : 'cursor-pointer';
         }}
         onRow={(record) => {
           return {

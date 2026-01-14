@@ -8,20 +8,22 @@ interface Props {
   placeholder?: string;
   value?: string;
   onChange?: (value?: string) => void;
+  onEnterPress?: (value?: string) => void;
 }
 
 export default function QueryInput(props: Props) {
   const [currentValue, setCurrentValue] = useState(props.value);
 
   const handleKeyDown = (e) => {
-    // 按下 Enter 键且未按住 Shift 键
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault(); // 阻止默认换行行为
-      if (props.onChange) {
-        props.onChange(currentValue);
+      if (props.onEnterPress) {
+        // 回车时更新 value
+        props.onChange && props.onChange(currentValue);
+        // 调用回车事件
+        props.onEnterPress(currentValue);
       }
     }
-    // 按下 Enter 键且按住 Shift 键：不阻止默认行为，允许换行
   };
 
   useEffect(() => {
@@ -41,14 +43,11 @@ export default function QueryInput(props: Props) {
       onChange={(e) => {
         setCurrentValue(e.target.value);
       }}
-      // 关闭失去焦点更新功能，改为仅在回车时更新
-      // onBlur={() => {
-      //   if (currentValue !== props.value) {
-      //     setTimeout(() => {
-      //       props.onChange && props.onChange(currentValue);
-      //     }, 100);
-      //   }
-      // }}
+      onBlur={() => {
+        if (currentValue !== props.value) {
+          props.onChange && props.onChange(currentValue);
+        }
+      }}
       onKeyDown={handleKeyDown}
     />
   );

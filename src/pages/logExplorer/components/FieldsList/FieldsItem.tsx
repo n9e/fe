@@ -129,7 +129,7 @@ export default function FieldsItem(props: Props) {
                 <Space>
                   <QuickViewPopover
                     options={{
-                      func: 'top5',
+                      func: 'count',
                       group_by: field.field,
                       field: field.field,
                       ref: 'top5',
@@ -169,7 +169,7 @@ export default function FieldsItem(props: Props) {
                         </Tooltip>
                         <QuickViewPopover
                           options={{
-                            func: 'top5',
+                            func: 'count',
                             field: field.field,
                             appendQuery: `${field.field}='${fieldValue}'`,
                           }}
