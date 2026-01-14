@@ -313,23 +313,37 @@ export default function TimeseriesCpt(props: Props) {
           </Form.Item>
         </Space>
       </div>
-      <div ref={eleRef} className='flex-shrink-0 h-[200px] relative'>
+      <>
         {!_.isEmpty(data.frames) ? (
-          <div className='n9e-antd-table-height-full'>
-            <Spin spinning={loading}>
-              {eleSize?.width && eleSize?.height && (
-                <Graph
-                  width={eleSize.width}
-                  height={eleSize.height}
-                  frames={data.frames}
-                  baseSeries={seriesData}
-                  showResetZoomBtn={showResetZoomBtn}
-                  unit={unit}
-                  setShowResetZoomBtn={setShowResetZoomBtn}
-                />
-              )}
-            </Spin>
-          </div>
+          <>
+            <div ref={eleRef} className='flex-shrink-0 h-[200px] relative'>
+              <div className='n9e-antd-table-height-full'>
+                <Spin spinning={loading}>
+                  {eleSize?.width && eleSize?.height && (
+                    <Graph
+                      width={eleSize.width}
+                      height={eleSize.height}
+                      frames={data.frames}
+                      baseSeries={seriesData}
+                      showResetZoomBtn={showResetZoomBtn}
+                      unit={unit}
+                      setShowResetZoomBtn={setShowResetZoomBtn}
+                    />
+                  )}
+                </Spin>
+              </div>
+            </div>
+            <div className='flex-1 min-h-0 renderer-timeseries-ng-legend-container'>
+              <LegendTable
+                panel={{ options: {} } as any}
+                data={legendData}
+                legendColumns={['max', 'min', 'avg', 'sum', 'last']}
+                onRowClick={(record) => {
+                  setActiveLegend(activeLegend !== record.id ? record.id : '');
+                }}
+              />
+            </div>
+          </>
         ) : loading ? (
           <div className='flex justify-center'>
             <Empty
@@ -353,17 +367,7 @@ export default function TimeseriesCpt(props: Props) {
             />
           </div>
         )}
-      </div>
-      <div className='flex-1 min-h-0 renderer-timeseries-ng-legend-container'>
-        <LegendTable
-          panel={{ options: {} } as any}
-          data={legendData}
-          legendColumns={['max', 'min', 'avg', 'sum', 'last']}
-          onRowClick={(record) => {
-            setActiveLegend(activeLegend !== record.id ? record.id : '');
-          }}
-        />
-      </div>
+      </>
     </>
   );
 }

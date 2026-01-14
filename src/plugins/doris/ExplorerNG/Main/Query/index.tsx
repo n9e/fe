@@ -32,6 +32,17 @@ interface Props {
     rgd: string;
   };
   indexData: Field[];
+  rangeRef: React.MutableRefObject<
+    | {
+        from: number;
+        to: number;
+      }
+    | undefined
+  >;
+  snapRangeRef: React.MutableRefObject<{
+    from?: number;
+    to?: number;
+  }>;
   organizeFields: string[];
   setOrganizeFields: (value: string[]) => void;
   handleValueFilter: HandleValueFilterParams;
@@ -50,7 +61,19 @@ export default function index(props: Props) {
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
 
-  const { tableSelector, indexData, organizeFields, setOrganizeFields, handleValueFilter, setExecuteLoading, stackByField, setStackByField, defaultSearchField } = props;
+  const {
+    tableSelector,
+    indexData,
+    rangeRef,
+    snapRangeRef,
+    organizeFields,
+    setOrganizeFields,
+    handleValueFilter,
+    setExecuteLoading,
+    stackByField,
+    setStackByField,
+    defaultSearchField,
+  } = props;
 
   const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
@@ -79,19 +102,6 @@ export default function index(props: Props) {
     }
   };
 
-  // 用于显示展示的时间范围
-  const rangeRef = useRef<{
-    from: number;
-    to: number;
-  }>();
-  // 点击直方图某个柱子时，设置的时间范围
-  const snapRangeRef = useRef<{
-    from?: number;
-    to?: number;
-  }>({
-    from: undefined,
-    to: undefined,
-  });
   // 分页时的时间范围不变
   const fixedRangeRef = useRef<boolean>(false);
   const loadTimeRef = useRef<number | null>(null);
@@ -278,13 +288,6 @@ export default function index(props: Props) {
     },
     refreshFlag,
   );
-
-  useEffect(() => {
-    snapRangeRef.current = {
-      from: undefined,
-      to: undefined,
-    };
-  }, [JSON.stringify(queryValues?.range)]);
 
   useEffect(() => {
     setExecuteLoading(loading || histogramLoading);

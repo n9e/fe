@@ -171,7 +171,9 @@ export default function index(props: Props) {
               dateFields={_.filter(indexData, (item) => {
                 return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
               })}
-              onChange={executeQuery}
+              onChange={() => {
+                executeQuery();
+              }}
             />
           </Form.Item>
         </div>
