@@ -64,8 +64,9 @@ export default function QueryInputAddonAfter(props: Props) {
         datasourceValue={datasourceValue}
         onSelect={(query) => {
           form.setFieldsValue({
+            refreshFlag: undefined,
             query: {
-              query,
+              sql: query,
             },
           });
           executeQuery();

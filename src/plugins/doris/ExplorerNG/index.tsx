@@ -77,8 +77,8 @@ export default function index(props: Props) {
             setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
           }
         } else if (queryValues.syntax === 'sql') {
-          if (queryValues.query) {
-            setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
+          if (queryValues.sql) {
+            setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.sql);
           }
         }
 

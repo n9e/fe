@@ -13,7 +13,7 @@ import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/ut
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 
-import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../../constants';
+import { NAME_SPACE, NG_SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../../constants';
 import { logQuery } from '../../../services';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
@@ -42,7 +42,7 @@ export default function Table(props: IProps) {
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch(['query']);
   const [options, setOptions] = useState(
-    getOptionsFromLocalstorage(SQL_LOGS_OPTIONS_CACHE_KEY, {
+    getOptionsFromLocalstorage(NG_SQL_LOGS_OPTIONS_CACHE_KEY, {
       logMode: 'table',
     }),
   );
@@ -67,7 +67,7 @@ export default function Table(props: IProps) {
       ...newOptions,
     };
     setOptions(mergedOptions);
-    setOptionsToLocalstorage(SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+    setOptionsToLocalstorage(NG_SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
     if (reload) {
       setServiceParams({
         current: 1,
