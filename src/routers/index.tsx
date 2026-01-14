@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect, useContext } from 'react';
-import { Switch, Route, useLocation, Redirect, useHistory } from 'react-router-dom';
+import { Switch, Route, useLocation, Redirect, useHistory, matchPath } from 'react-router-dom';
 import querystring from 'query-string';
 import _ from 'lodash';
 import { getMenuPerm } from '@/services/common';
@@ -77,6 +77,7 @@ import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
 import plusLoader from 'plus:/utils/loader';
 // @ts-ignore
 import useIsPlus from 'plus:/components/useIsPlus';
+import { spaceIdRoutes } from './config';
 
 const Packages = dynamicPackages();
 let lazyRoutes = Packages.reduce((result: any, module: Entry) => {
@@ -134,6 +135,15 @@ export default function Content() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (import.meta.env.VITE_IS_ENT === 'true') {
+      const isMatch = spaceIdRoutes.find((route) => matchPath(location.pathname, { path: route, exact: true }));
+      if (isMatch) {
+        // urlAddSpaceId(history);
+      }
+    }
+  }, [location.pathname]);
 
   return (
     <div className='content'>
