@@ -5,6 +5,7 @@ const en_US = {
   OIDC: 'OIDC',
   OAuth2: 'OAuth2',
   dingtalk: 'DingTalk',
+  callback_url: 'Callback URL',
   feishu_setting: {
     app_id_tip:
       'Feishu Open Platform application unique identifier, generated automatically when the application is created, and users cannot modify it themselves. You can view the app_id in the Credentials and Basic Information page of the <1>Developer Backend</1>',
