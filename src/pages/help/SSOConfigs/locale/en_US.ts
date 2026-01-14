@@ -5,6 +5,7 @@ const en_US = {
   OIDC: 'OIDC',
   OAuth2: 'OAuth2',
   dingtalk: 'DingTalk',
+  feishu: 'Feishu',
   callback_url: 'Callback URL',
   feishu_setting: {
     app_id_tip:
