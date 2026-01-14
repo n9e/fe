@@ -181,7 +181,7 @@ export default function index(props: Props) {
                   }>
                     disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
                     page={location.pathname}
-                    getFilterValuesJSONString={() => {
+                    getFilterValues={() => {
                       const formValues = form.getFieldsValue();
                       let range = formValues.query?.range;
                       if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
@@ -198,7 +198,7 @@ export default function index(props: Props) {
                           range,
                         },
                       };
-                      return JSON.stringify(filterValues);
+                      return filterValues;
                     }}
                     renderOptionExtra={(filterValues) => {
                       const { datasourceCate, datasourceValue } = filterValues;
