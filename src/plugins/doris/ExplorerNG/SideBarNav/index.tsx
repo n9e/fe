@@ -48,6 +48,7 @@ export default function index(props: Props) {
   } = props;
 
   const form = Form.useFormInstance();
+  const syntax = Form.useWatch(['query', 'syntax']);
   const navMode = Form.useWatch(['query', 'navMode']);
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
@@ -131,7 +132,7 @@ export default function index(props: Props) {
         }}
       >
         <div className='flex-shrink-0'>
-          <Form.Item name={['query', 'database']} rules={[{ required: true, message: t('query.database_msg') }]}>
+          <Form.Item name={['query', 'database']} rules={[{ required: syntax === 'query', message: t('query.database_msg') }]}>
             <DatabaseSelect
               disabled={disabled}
               datasourceValue={datasourceValue}
@@ -149,7 +150,7 @@ export default function index(props: Props) {
               }}
             />
           </Form.Item>
-          <Form.Item name={['query', 'table']} rules={[{ required: true, message: t('query.table_msg') }]}>
+          <Form.Item name={['query', 'table']} rules={[{ required: syntax === 'query', message: t('query.table_msg') }]}>
             <TableSelect
               datasourceValue={datasourceValue}
               database={database}
@@ -166,7 +167,7 @@ export default function index(props: Props) {
               }}
             />
           </Form.Item>
-          <Form.Item name={['query', 'time_field']} rules={[{ required: true, message: t('query.time_field_msg') }]}>
+          <Form.Item name={['query', 'time_field']} rules={[{ required: syntax === 'query', message: t('query.time_field_msg') }]}>
             <DateFieldSelect
               dateFields={_.filter(indexData, (item) => {
                 return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
