@@ -205,7 +205,7 @@ const zh_CN = {
     query_limit: '返回条数限制',
   },
   event_recover: {
-    help: '帮助文档',
+    help: '告警自愈事件处理器，用于在告警触发时，在机器上执行 shell 脚本，可用于获取相关告警信息或执行自愈任务。<a>使用文档</a>',
     title: '告警自愈',
     create_btn: '创建自愈模板',
     tpl_id: '自愈模板',
