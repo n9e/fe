@@ -154,7 +154,7 @@ export default function Query(props: Props) {
           </Input.Group>
         </Col>
       </Row>
-      <AdvancedSettings prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} showOffset span={6} />
+      <AdvancedSettings prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} showOffset span={6} expanded />
       <CloseCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
       <Form.Item shouldUpdate noStyle>
         {({ getFieldValue }) => {
