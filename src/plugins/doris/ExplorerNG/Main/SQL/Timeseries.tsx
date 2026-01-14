@@ -236,6 +236,15 @@ export default function TimeseriesCpt(props: Props) {
     });
   }, [dataRefresh, activeLegend, JSON.stringify(seriesData), unit]);
 
+  // useEffect(() => {
+  //   if (refreshFlag === undefined) {
+  //     setData({
+  //       frames: [],
+  //       baseSeries: [],
+  //     });
+  //   }
+  // }, [refreshFlag]);
+
   return (
     <>
       <div className='flex-shrink-0'>

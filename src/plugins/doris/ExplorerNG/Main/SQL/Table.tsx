@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, Space, Pagination, Radio } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -157,6 +157,15 @@ export default function Table(props: IProps) {
   >(service, {
     refreshDeps: [refreshFlag],
   });
+
+  // useEffect(() => {
+  //   if (refreshFlag === undefined) {
+  //     setLogs({
+  //       data: [],
+  //       hash: _.uniqueId('logs_'),
+  //     });
+  //   }
+  // }, [refreshFlag]);
 
   return (
     <div className='h-full min-h-0'>
