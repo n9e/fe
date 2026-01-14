@@ -72,11 +72,10 @@ function Graph(props: {
       series: seriesBuider({
         baseSeries,
         colors: hexPalette,
-        width: 1,
-        pathsType: 'linear',
-        points: { show: true },
+        width: 2,
+        pathsType: 'spline',
+        points: { show: false },
         fillOpacity: 0,
-        spanGaps: true,
       }),
       axes: [
         axisBuilder({

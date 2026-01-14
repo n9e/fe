@@ -55,7 +55,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
            * 设置 filterValues.query.navMode 值为 fields
            * 如果 filterValues.query.syntax 值为 sql，设置 filterValues.query.sql = filterValues.query.query, 删除 filterValues.query.query
            */
-          if (item.page === '/log/explorer-ng' && filterValues.datasourceCate === 'doris') {
+          if ((item.page === '/log/explorer-ng' || item.page === '/log/explorer') && filterValues.datasourceCate === 'doris') {
             if (filterValues.query) {
               if (filterValues.query.mode) {
                 filterValues.query.syntax = filterValues.query.mode;
