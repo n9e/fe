@@ -113,7 +113,14 @@ export default function Query(props: Props) {
               trigger='onChange'
               rules={[{ required: true, message: t('datasource:query.query_required') }]}
             >
-              <Input placeholder={t('query.query_placeholder')} disabled={disabled}></Input>
+              <Input.TextArea
+                autoSize={{
+                  minRows: 1,
+                  maxRows: 10,
+                }}
+                placeholder={t('query.query_placeholder')}
+                disabled={disabled}
+              />
             </Form.Item>
           </InputGroupWithFormItem>
         </Col>

@@ -125,6 +125,10 @@ export default function Table(props: IProps) {
         })
         .catch(() => {
           loadTimeRef.current = null;
+          setLogs({
+            data: [],
+            hash: _.uniqueId('logs_'),
+          });
           return {
             list: [],
             total: 0,
