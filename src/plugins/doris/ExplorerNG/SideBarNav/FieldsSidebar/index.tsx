@@ -247,6 +247,7 @@ export default function index(props: IProps) {
             if (type === 'table') {
               const sqlPreviewData = res.table;
               form.setFieldsValue({
+                refreshFlag: undefined,
                 query: {
                   syntax: 'sql',
                   sqlVizType: 'table',
@@ -258,6 +259,7 @@ export default function index(props: IProps) {
               let sqlPreviewData = res.timeseries?.[options.func];
               if (sqlPreviewData) {
                 form.setFieldsValue({
+                  refreshFlag: undefined,
                   query: {
                     syntax: 'sql',
                     sqlVizType: 'timeseries',
