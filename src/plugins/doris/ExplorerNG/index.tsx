@@ -287,6 +287,7 @@ export default function index(props: Props) {
                         query: undefined,
                       });
                       form.setFieldsValue({
+                        refreshFlag: undefined,
                         query: {
                           navMode: queryValues.navMode,
                           syntax: queryValues.syntax,
