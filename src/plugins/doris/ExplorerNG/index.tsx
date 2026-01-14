@@ -119,7 +119,9 @@ export default function index(props: Props) {
       queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}:"${params.value}"`;
     }
     form.setFieldsValue({
+      refreshFlag: undefined,
       query: {
+        syntax: 'query',
         query: queryStr,
       },
     });
