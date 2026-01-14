@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Space, Form, message, Switch, Input, Row, Col, Select } from 'antd';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { EditorView } from '@codemirror/view';
+import { copy2ClipBoard } from '@/utils';
 
 import { SIZE } from '@/utils/constant';
 import { getRoles } from '@/services/manage';
@@ -57,8 +58,10 @@ export default function Item(props: Props) {
     <Form form={form} layout='vertical'>
       {item.name === 'feishu' ? (
         <>
-          <Form.Item name={['setting', 'redirect_url']} hidden initialValue={`${window.location.origin}/callback/feishu`}>
-            <Input />
+          <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}/callback/feishu`}>
+            <Space size={'small'}>
+              {`${window.location.origin}/callback/feishu`} <CopyOutlined onClick={() => copy2ClipBoard(`${window.location.origin}/callback/feishu`)} />
+            </Space>
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
             <Switch size='small' />
@@ -146,8 +149,10 @@ export default function Item(props: Props) {
         </>
       ) : item.name === 'dingtalk' ? (
         <>
-          <Form.Item name={['setting', 'redirect_url']} hidden initialValue={`${window.location.origin}/callback/dingtalk`}>
-            <div />
+          <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}/callback/dingtalk`}>
+            <Space size={'small'}>
+              {`${window.location.origin}/callback/dingtalk`} <CopyOutlined onClick={() => copy2ClipBoard(`${window.location.origin}/callback/dingtalk`)} />
+            </Space>
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
             <Switch size='small' />
