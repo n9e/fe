@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { Form, Row, Col, Button, Space, Tooltip, Popover, Segmented } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -49,13 +49,21 @@ export default function index(props: Props) {
   const navMode = Form.useWatch(['query', 'navMode']);
   const syntax = Form.useWatch(['query', 'syntax']);
 
-  const [executeLoading, setExecuteLoading] = React.useState(false);
+  const [executeLoading, setExecuteLoading] = useState(false);
 
   // 用于显示展示的时间范围
   const rangeRef = useRef<{
     from: number;
     to: number;
   }>();
+  // 点击直方图某个柱子时，设置的时间范围
+  const snapRangeRef = useRef<{
+    from?: number;
+    to?: number;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
 
   return (
     <div className='flex flex-col h-full'>
@@ -104,6 +112,10 @@ export default function index(props: Props) {
               <Form.Item name={['query', syntax]}>
                 <QueryInput
                   onEnterPress={() => {
+                    snapRangeRef.current = {
+                      from: undefined,
+                      to: undefined,
+                    };
                     executeQuery();
                   }}
                   enableAddonBefore={syntax === 'query' && defaultSearchField !== undefined}
@@ -152,6 +164,10 @@ export default function index(props: Props) {
               rangeRef={rangeRef}
               defaultSearchField={defaultSearchField}
               onClick={(values) => {
+                snapRangeRef.current = {
+                  from: undefined,
+                  to: undefined,
+                };
                 form.setFieldsValue({
                   query: values,
                 });
@@ -162,11 +178,29 @@ export default function index(props: Props) {
         )}
         <Col flex='none'>
           <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>
-            <TimeRangePicker onChange={executeQuery} />
+            <TimeRangePicker
+              onChange={() => {
+                snapRangeRef.current = {
+                  from: undefined,
+                  to: undefined,
+                };
+                executeQuery();
+              }}
+            />
           </Form.Item>
         </Col>
         <Col flex='none'>
-          <Button type='primary' onClick={executeQuery} loading={executeLoading}>
+          <Button
+            type='primary'
+            onClick={() => {
+              snapRangeRef.current = {
+                from: undefined,
+                to: undefined,
+              };
+              executeQuery();
+            }}
+            loading={executeLoading}
+          >
             {t(`${logExplorerNS}:execute`)}
           </Button>
         </Col>
@@ -181,6 +215,8 @@ export default function index(props: Props) {
             rgd: logsRgdTableSelector,
           }}
           indexData={indexData}
+          rangeRef={rangeRef}
+          snapRangeRef={snapRangeRef}
           organizeFields={organizeFields}
           setOrganizeFields={setOrganizeFields}
           handleValueFilter={handleValueFilter}
