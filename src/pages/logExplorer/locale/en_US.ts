@@ -1,6 +1,7 @@
 const en_US = {
   title: 'Log Explorer',
   query: 'Query Conditions',
+  query_is_required: 'Query conditions cannot be empty',
   execute: 'Query',
   before_query: 'Please click <b>Query</b> to display data',
   loading: 'Loading data ...',

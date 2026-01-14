@@ -1,6 +1,7 @@
 const zh_HK = {
   title: '日誌檢索',
   query: '查詢條件',
+  query_is_required: '查詢條件不能為空',
   execute: '查詢',
   before_query: '請點擊 <b>查詢</b>，展示數據',
   loading: '數據加載中 ...',

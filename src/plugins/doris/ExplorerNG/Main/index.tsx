@@ -109,7 +109,7 @@ export default function index(props: Props) {
             addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
           >
             <div className='relative'>
-              <Form.Item name={['query', syntax]}>
+              <Form.Item name={['query', syntax]} rules={[{ required: syntax === 'sql', message: t(`${logExplorerNS}:query_is_required`) }]}>
                 <QueryInput
                   onEnterPress={() => {
                     snapRangeRef.current = {
