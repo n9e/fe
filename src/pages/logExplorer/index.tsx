@@ -11,13 +11,11 @@ import { DEFAULT_DATASOURCE_CATE } from './constants';
 import { getLocalItems, setLocalItems } from './utils/getLocalItems';
 import { getLocalActiveKey } from './utils/getLocalActiveKey';
 import getDefaultDatasourceCate from './utils/getDefaultDatasourceCate';
-import getUUID from './utils/getUUID';
-import { setLocalActiveKey } from './utils/getLocalActiveKey';
 import Header from './Header';
 import Explorer from './Explorer';
 
 export default function index() {
-  const { datasourceList, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
   const location = useLocation();
   const history = useHistory();
   const params = queryString.parse(location.search) as { [index: string]: string | null };
@@ -87,30 +85,6 @@ export default function index() {
                     setLocalItems(newItems);
                     setItems(newItems);
                   },
-                }}
-                onAdd={(formValues = {}) => {
-                  const newActiveKey = getUUID();
-                  const newItems = [
-                    ...items,
-                    {
-                      key: newActiveKey,
-                      isInited: false,
-                      formValues: {
-                        datasourceCate: defaultDatasourceCate,
-                        datasourceValue: defaultDatasourceValue,
-                        refreshFlag: _.uniqueId('refreshFlag_'), // 新增时默认执行查询
-                        ...formValues,
-                        query: {
-                          range: logsDefaultRange,
-                          ...formValues.query,
-                        },
-                      },
-                    },
-                  ];
-                  setItems(newItems);
-                  setLocalItems(newItems);
-                  setActiveKey(newActiveKey);
-                  setLocalActiveKey(newActiveKey);
                 }}
               />
             </div>
