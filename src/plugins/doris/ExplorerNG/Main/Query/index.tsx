@@ -420,11 +420,11 @@ export default function index(props: Props) {
                   to: undefined,
                 };
                 form.setFieldsValue({
+                  refreshFlag: _.uniqueId('refreshFlag_'),
                   query: {
                     ...query,
                     range,
                   },
-                  refreshFlag: _.uniqueId('refreshFlag_'),
                 });
               }}
               onLogRequestParamsChange={(params) => {
