@@ -230,6 +230,7 @@ GROUP BY time`,
                       _.set(query, 'keys.valueKey', ['cnt']);
                     }
                     form.setFieldsValue({
+                      refreshFlag: undefined,
                       query,
                     });
                     executeQuery();
@@ -250,6 +251,7 @@ GROUP BY time`,
                       _.set(query, 'keys.valueKey', ['cnt']);
                     }
                     form.setFieldsValue({
+                      refreshFlag: undefined,
                       query,
                     });
                     executeQuery();

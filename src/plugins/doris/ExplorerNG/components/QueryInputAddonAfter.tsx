@@ -33,7 +33,7 @@ export default function QueryInputAddonAfter(props: Props) {
               className='flex flex-wrap items-center gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
               key={JSON.stringify(item)}
               onClick={() => {
-                form.setFieldsValue({ query: item });
+                form.setFieldsValue({ refreshFlag: undefined, query: item });
                 executeQuery();
                 setVisible(false);
               }}

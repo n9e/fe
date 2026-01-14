@@ -49,41 +49,44 @@ export default function index(props: Props) {
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
 
   const executeQuery = (force = false) => {
-    form.validateFields().then((values) => {
-      const queryValues = values.query;
+    // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
+    setTimeout(() => {
+      form.validateFields().then((values) => {
+        const queryValues = values.query;
 
-      // 如果是 sql 模式 sql值 里未包含关键字：$__time 或 $__unixEpoch，触发查询时阻断弹窗
-      const sqlValue = queryValues.sql || '';
-      // typeof force === 'boolean' 是为了防止非布尔值传入时报错
-      if (typeof force === 'boolean' && !force && queryValues.syntax === 'sql' && !sqlValue.includes('$__time') && !sqlValue.includes('$__unixEpoch')) {
-        setQueryWarnModalVisible(true);
-        return;
-      }
+        // 如果是 sql 模式 sql值 里未包含关键字：$__time 或 $__unixEpoch，触发查询时阻断弹窗
+        const sqlValue = queryValues.sql || '';
+        // typeof force === 'boolean' 是为了防止非布尔值传入时报错
+        if (typeof force === 'boolean' && !force && queryValues.syntax === 'sql' && !sqlValue.includes('$__time') && !sqlValue.includes('$__unixEpoch')) {
+          setQueryWarnModalVisible(true);
+          return;
+        }
 
-      // 设置 tabs 缓存值
-      if (defaultFormValuesControl?.setDefaultFormValues) {
-        defaultFormValuesControl.setDefaultFormValues({
-          datasourceCate: DatasourceCateEnum.doris,
-          datasourceValue: values.datasourceValue,
-          query: values.query,
+        // 设置 tabs 缓存值
+        if (defaultFormValuesControl?.setDefaultFormValues) {
+          defaultFormValuesControl.setDefaultFormValues({
+            datasourceCate: DatasourceCateEnum.doris,
+            datasourceValue: values.datasourceValue,
+            query: values.query,
+          });
+        }
+
+        // 设置历史记录方法
+        if (queryValues.syntax === 'query') {
+          if (queryValues.database && queryValues.table && queryValues.time_field) {
+            setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
+          }
+        } else if (queryValues.syntax === 'sql') {
+          if (queryValues.query) {
+            setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
+          }
+        }
+
+        form.setFieldsValue({
+          refreshFlag: _.uniqueId('refreshFlag_'),
         });
-      }
-
-      // 设置历史记录方法
-      if (queryValues.syntax === 'query') {
-        if (queryValues.database && queryValues.table && queryValues.time_field) {
-          setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
-        }
-      } else if (queryValues.syntax === 'sql') {
-        if (queryValues.query) {
-          setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.query);
-        }
-      }
-
-      form.setFieldsValue({
-        refreshFlag: _.uniqueId('refreshFlag_'),
       });
-    });
+    }, 0);
   };
 
   const handleSetStackByField = (index) => {
