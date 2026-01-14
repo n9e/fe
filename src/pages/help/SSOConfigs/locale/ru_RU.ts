@@ -5,6 +5,7 @@ const ru_RU = {
   OIDC: 'OIDC',
   OAuth2: 'OAuth2',
   dingtalk: 'DingTalk',
+  feishu: 'Feishu',
   callback_url: 'URL обратного вызова',
   feishu_setting: {
     app_id_tip:

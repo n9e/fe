@@ -5,6 +5,7 @@ const ja_JP = {
   OIDC: 'OIDC',
   OAuth2: 'OAuth2',
   dingtalk: 'DingTalk',
+  feishu: 'Feishu',
   callback_url: 'コールバックURL',
   feishu_setting: {
     app_id_tip:
