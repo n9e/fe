@@ -332,8 +332,8 @@ export default function TimeseriesCpt(props: Props) {
       </div>
       <>
         {!_.isEmpty(data.frames) ? (
-          <>
-            <div ref={eleRef} className='flex-shrink-0 h-[200px] relative'>
+          <div className='best-looking-scroll'>
+            <div ref={eleRef} className='min-h-[500px] relative'>
               <div className='n9e-antd-table-height-full'>
                 <Spin spinning={loading}>
                   {eleSize?.width && eleSize?.height && (
@@ -360,7 +360,7 @@ export default function TimeseriesCpt(props: Props) {
                 }}
               />
             </div>
-          </>
+          </div>
         ) : loading ? (
           <div className='flex justify-center'>
             <Empty
