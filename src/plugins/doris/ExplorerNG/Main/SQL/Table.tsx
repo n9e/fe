@@ -197,7 +197,7 @@ export default function Table(props: IProps) {
                 },
               ]}
               optionType='button'
-              buttonStyle='solid'
+              size='small'
               value={sqlVizType}
               onChange={(e) => {
                 form.setFields([
