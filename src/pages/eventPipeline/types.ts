@@ -19,6 +19,9 @@ export type BaseItem = {
     func: string;
     value: string;
   }[];
+  use_case: string;
+  trigger_mode: string;
+  disabled: boolean;
 };
 
 export type RelabelItem = BaseItem & {

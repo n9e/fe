@@ -99,10 +99,10 @@ export default function ItemDetaildrawer(props: Props) {
                         {node.message && <div className='mb-2 text-main'>{node.message}</div>}
                       </div>
                       <div>
-                        <Space>
+                        <Space className='text-soft'>
                           {moment.unix(node.started_at).format('HH:mm:ss')}
                           <span>-</span>
-                          {node.finished_at ? moment.unix(node.finished_at).format('HH:mm:ss') : 'N/A'}
+                          <span>{node.finished_at ? moment.unix(node.finished_at).format('HH:mm:ss') : 'N/A'}</span>
                         </Space>
                       </div>
                     </div>
