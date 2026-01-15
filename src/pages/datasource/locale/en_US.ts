@@ -113,5 +113,11 @@ const en_US = {
     title: 'Label Enrichment',
   },
   endpoint_title: 'Service Entry',
+  mtls: {
+    ca_cert: 'CA Certificate',
+    server_name: 'Server Name',
+    client_cert: 'Client Certificate',
+    client_key: 'Client Key',
+  },
 };
 export default en_US;
