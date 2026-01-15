@@ -11,7 +11,7 @@ import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
 import { NS } from '../../constants';
 import { getExecutions } from '../../services';
 import formatMsToHuman from '../../utils/formatMsToHuman';
-import ItemDetaildrawer from './ItemDetaildrawer';
+import ItemDetailDrawer from './ItemDetailDrawer';
 
 const format = 'YYYY-MM-DD HH:mm:ss';
 const defaultPageSize = 10;
@@ -187,7 +187,7 @@ export default function index() {
           />
         </div>
       </PageLayout>
-      <ItemDetaildrawer id={itemDetailDrawerState.id} visible={itemDetailDrawerState.visible} onClose={() => setItemDetailDrawerState({ id: null, visible: false })} />
+      <ItemDetailDrawer id={itemDetailDrawerState.id} visible={itemDetailDrawerState.visible} onClose={() => setItemDetailDrawerState({ id: null, visible: false })} />
     </>
   );
 }
