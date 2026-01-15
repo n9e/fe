@@ -14,13 +14,15 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu, Tag } from 'antd';
 import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
+
+import { CommonStateContext } from '@/App';
 import Markdown from '@/components/Markdown';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
@@ -30,16 +32,20 @@ import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/Uni
 import { getMenuPerm } from '@/services/common';
 import Collapse from '@/pages/monitor/object/metricViews/components/Collapse';
 import { getComponents, Component } from '@/pages/builtInComponents/services';
+import { getDefaultDatasourceValue } from '@/utils';
+
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import FormDrawer from './components/FormDrawer';
 import Export from './components/Export';
 import Import from './components/Import';
 import Filters, { filtersToStr } from './components/Filters';
+import NewMetricExplorerDrawer from './components/NewMetricExplorerDrawer';
 import ExplorerDrawer from './ExplorerDrawer';
 
 export default function index() {
   const { t, i18n } = useTranslation('metricsBuiltin');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'metricsBuiltin-pagesize' });
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
   const [selectedRows, setSelectedRows] = useState<Record[]>([]);
@@ -68,6 +74,15 @@ export default function index() {
     mode?: 'add' | 'edit' | 'clone';
     initialValues?: Record;
   }>();
+  const [newMetricExplorerDrawerState, setNewMetricExplorerDrawerState] = useState<{
+    visible: boolean;
+    metric?: string;
+    datasourceValue?: number;
+  }>({
+    visible: false,
+    datasourceValue: getDefaultDatasourceValue('prometheus', groupedDatasourceList),
+  });
+
   const filtersRef = useRef<any>(null);
   const { tableProps, run: fetchData } = useAntdTable(
     ({
@@ -105,6 +120,35 @@ export default function index() {
     {
       title: t('collector'),
       dataIndex: 'collector',
+    },
+    {
+      title: t('expression_type'),
+      dataIndex: 'expression_type',
+      render: (val) => {
+        if (val === 'metric_name') {
+          return t('expression_type_metric_name');
+        }
+        if (val === 'promql') {
+          return t('expression_type_promql');
+        }
+        return val;
+      },
+    },
+    {
+      title: t('metric_type'),
+      dataIndex: 'metric_type',
+      render: (val) => {
+        if (val === 'gauge') {
+          return t('metric_type_gauge');
+        }
+        if (val === 'counter') {
+          return t('metric_type_counter');
+        }
+        if (val === 'histogram') {
+          return t('metric_type_histogram');
+        }
+        return val;
+      },
     },
     {
       title: t('name'),
@@ -180,6 +224,19 @@ export default function index() {
             </div>
           );
         });
+      },
+    },
+    {
+      title: t('extra_fields'),
+      dataIndex: 'extra_fields',
+      render: (val) => {
+        return (
+          <Space wrap size={[0, 2]}>
+            {_.map(val, (item) => {
+              return <Tag key={item.name}>{`${item.name}: ${item.value}`}</Tag>;
+            })}
+          </Space>
+        );
       },
     },
     {
@@ -271,6 +328,23 @@ export default function index() {
                     </Button>
                   </Menu.Item>
                 )}
+                {record.expression_type === 'metric_name' && (
+                  <Menu.Item>
+                    <a
+                      onClick={() => {
+                        setNewMetricExplorerDrawerState((prev) => {
+                          return {
+                            ...prev,
+                            visible: true,
+                            metric: `tlast_over_time(${record.expression}[7d:1m])`,
+                          };
+                        });
+                      }}
+                    >
+                      {t('laset_over_time')}
+                    </a>
+                  </Menu.Item>
+                )}
               </Menu>
             }
           >
@@ -330,250 +404,265 @@ export default function index() {
   }, [filter.typ]);
 
   return (
-    <PageLayout title={t('title')} icon={<SettingOutlined />}>
-      <div className='built-in-metrics-container'>
-        <Collapse collapseLocalStorageKey='built-in-metrics-filters-collapse' widthLocalStorageKey='built-in-metrics-filters-width' defaultWidth={240} tooltip={t('filter.title')}>
-          <div className='fc-border p-4 built-in-metrics-filter'>
-            <Filters ref={filtersRef} />
-          </div>
-        </Collapse>
-        <div className='fc-border p-4 built-in-metrics-main'>
-          <div
-            className='mb-2'
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
+    <>
+      <PageLayout title={t('title')} icon={<SettingOutlined />}>
+        <div className='built-in-metrics-container'>
+          <Collapse
+            collapseLocalStorageKey='built-in-metrics-filters-collapse'
+            widthLocalStorageKey='built-in-metrics-filters-width'
+            defaultWidth={240}
+            tooltip={t('filter.title')}
           >
-            <Space>
-              <RefreshIcon
-                onClick={() => {
-                  fetchData({ current: tableProps.pagination.current, pageSize: pagination.pageSize });
-                }}
-              />
-              <Select
-                value={filter.typ}
-                onChange={(val) => {
-                  const newFilter = { ...filter, typ: val, collector: undefined };
-                  setFilter(newFilter);
-                  window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
-                }}
-                options={_.map(typesList, (item) => {
-                  return {
-                    label: (
-                      <Space>
-                        <img src={_.find(typsMeta, (meta) => meta.ident === item)?.logo || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
-                        {item}
-                      </Space>
-                    ),
-                    cleanLabel: item,
-                    value: item,
-                  };
-                })}
-                showSearch
-                optionFilterProp='cleanLabel'
-                placeholder={t('typ')}
-                style={{ width: 140 }}
-                allowClear
-                dropdownMatchSelectWidth={false}
-                optionLabelProp='cleanLabel'
-              />
-              <Select
-                value={filter.collector}
-                onChange={(val) => {
-                  const newFilter = { ...filter, collector: val };
-                  setFilter(newFilter);
-                  window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
-                }}
-                options={_.map(collectorsList, (item) => {
-                  return {
-                    label: item,
-                    value: item,
-                  };
-                })}
-                showSearch
-                optionFilterProp='label'
-                placeholder={t('collector')}
-                style={{ width: 140 }}
-                allowClear
-                dropdownMatchSelectWidth={false}
-              />
-              <Select
-                value={filter.unit}
-                onChange={(val) => {
-                  const newFilter = { ...filter, unit: val };
-                  setFilter(newFilter);
-                  window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
-                }}
-                options={buildUnitOptions()}
-                showSearch
-                optionFilterProp='cleanLabel'
-                placeholder={t('unit')}
-                style={{ width: 140 }}
-                allowClear
-                dropdownMatchSelectWidth={false}
-                optionLabelProp='cleanLabel'
-                mode='multiple'
-                maxTagCount='responsive'
-              />
-              <Input
-                placeholder={t('common:search_placeholder')}
-                style={{ width: 200 }}
-                value={queryValue}
-                onChange={(e) => {
-                  setQueryValue(e.target.value);
-                  queryChange(e.target.value);
-                }}
-                prefix={<SearchOutlined />}
-              />
-            </Space>
-            <Space>
-              {actionAuth.add && (
-                <Button
-                  type='primary'
+            <div className='fc-border p-4 built-in-metrics-filter'>
+              <Filters ref={filtersRef} />
+            </div>
+          </Collapse>
+          <div className='fc-border p-4 built-in-metrics-main'>
+            <div
+              className='mb-2'
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Space>
+                <RefreshIcon
                   onClick={() => {
-                    setFormDrawerData({
-                      open: true,
-                      mode: 'add',
-                      title: t('add_btn'),
-                    });
+                    fetchData({ current: tableProps.pagination.current, pageSize: pagination.pageSize });
                   }}
-                >
-                  {t('add_btn')}
-                </Button>
-              )}
-              {(actionAuth.add || actionAuth.delete) && (
-                <Dropdown
-                  overlay={
-                    <ul className='ant-dropdown-menu'>
-                      {actionAuth.add && (
-                        <li
-                          className='ant-dropdown-menu-item'
-                          onClick={() => {
-                            Import({
-                              onOk: () => {
-                                setRefreshFlag(_.uniqueId('refreshFlag_'));
-                              },
-                            });
-                          }}
-                        >
-                          <span>{t('batch.import.title')}</span>
-                        </li>
-                      )}
-                      {actionAuth.add && (
-                        <li
-                          className='ant-dropdown-menu-item'
-                          onClick={() => {
-                            if (selectedRows.length) {
-                              Export({
-                                data: JSON.stringify(
-                                  _.map(selectedRows, (item) => {
-                                    return _.omit(item, ['id', 'created_at', 'created_by', 'updated_at', 'updated_by']);
-                                  }),
-                                  null,
-                                  2,
-                                ),
-                              });
-                            } else {
-                              message.warning(t('batch.not_select'));
-                            }
-                          }}
-                        >
-                          <span>{t('batch.export.title')}</span>
-                        </li>
-                      )}
-                      {actionAuth.delete && (
-                        <li
-                          className='ant-dropdown-menu-item'
-                          onClick={() => {
-                            if (selectedRows.length) {
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk() {
-                                  deleteMetrics(_.map(selectedRows, (item) => item.id)).then(() => {
-                                    message.success(t('common:success.delete'));
-                                    setRefreshFlag(_.uniqueId('refreshFlag_'));
-                                  });
+                />
+                <Select
+                  value={filter.typ}
+                  onChange={(val) => {
+                    const newFilter = { ...filter, typ: val, collector: undefined };
+                    setFilter(newFilter);
+                    window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
+                  }}
+                  options={_.map(typesList, (item) => {
+                    return {
+                      label: (
+                        <Space>
+                          <img src={_.find(typsMeta, (meta) => meta.ident === item)?.logo || '/image/default.png'} alt={item} style={{ width: 16, height: 16 }} />
+                          {item}
+                        </Space>
+                      ),
+                      cleanLabel: item,
+                      value: item,
+                    };
+                  })}
+                  showSearch
+                  optionFilterProp='cleanLabel'
+                  placeholder={t('typ')}
+                  style={{ width: 140 }}
+                  allowClear
+                  dropdownMatchSelectWidth={false}
+                  optionLabelProp='cleanLabel'
+                />
+                <Select
+                  value={filter.collector}
+                  onChange={(val) => {
+                    const newFilter = { ...filter, collector: val };
+                    setFilter(newFilter);
+                    window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
+                  }}
+                  options={_.map(collectorsList, (item) => {
+                    return {
+                      label: item,
+                      value: item,
+                    };
+                  })}
+                  showSearch
+                  optionFilterProp='label'
+                  placeholder={t('collector')}
+                  style={{ width: 140 }}
+                  allowClear
+                  dropdownMatchSelectWidth={false}
+                />
+                <Select
+                  value={filter.unit}
+                  onChange={(val) => {
+                    const newFilter = { ...filter, unit: val };
+                    setFilter(newFilter);
+                    window.localStorage.setItem('metricsBuiltin-filter', JSON.stringify(newFilter));
+                  }}
+                  options={buildUnitOptions()}
+                  showSearch
+                  optionFilterProp='cleanLabel'
+                  placeholder={t('unit')}
+                  style={{ width: 140 }}
+                  allowClear
+                  dropdownMatchSelectWidth={false}
+                  optionLabelProp='cleanLabel'
+                  mode='multiple'
+                  maxTagCount='responsive'
+                />
+                <Input
+                  placeholder={t('common:search_placeholder')}
+                  style={{ width: 200 }}
+                  value={queryValue}
+                  onChange={(e) => {
+                    setQueryValue(e.target.value);
+                    queryChange(e.target.value);
+                  }}
+                  prefix={<SearchOutlined />}
+                />
+              </Space>
+              <Space>
+                {actionAuth.add && (
+                  <Button
+                    type='primary'
+                    onClick={() => {
+                      setFormDrawerData({
+                        open: true,
+                        mode: 'add',
+                        title: t('add_btn'),
+                      });
+                    }}
+                  >
+                    {t('add_btn')}
+                  </Button>
+                )}
+                {(actionAuth.add || actionAuth.delete) && (
+                  <Dropdown
+                    overlay={
+                      <ul className='ant-dropdown-menu'>
+                        {actionAuth.add && (
+                          <li
+                            className='ant-dropdown-menu-item'
+                            onClick={() => {
+                              Import({
+                                onOk: () => {
+                                  setRefreshFlag(_.uniqueId('refreshFlag_'));
                                 },
                               });
-                            } else {
-                              message.warning(t('batch.not_select'));
-                            }
-                          }}
-                        >
-                          <span>{t('common:btn.batch_delete')}</span>
-                        </li>
-                      )}
-                    </ul>
-                  }
-                  trigger={['click']}
-                >
-                  <Button onClick={(e) => e.stopPropagation()}>
-                    {t('common:btn.more')}
-                    <DownOutlined
-                      style={{
-                        marginLeft: 2,
-                      }}
-                    />
-                  </Button>
-                </Dropdown>
-              )}
-              <Button
-                onClick={() => {
-                  OrganizeColumns({
-                    i18nNs: 'metricsBuiltin',
-                    value: columnsConfigs,
-                    onChange: (val) => {
-                      setColumnsConfigs(val);
-                      setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                    },
-                  });
-                }}
-                icon={<EyeOutlined />}
-              />
-            </Space>
+                            }}
+                          >
+                            <span>{t('batch.import.title')}</span>
+                          </li>
+                        )}
+                        {actionAuth.add && (
+                          <li
+                            className='ant-dropdown-menu-item'
+                            onClick={() => {
+                              if (selectedRows.length) {
+                                Export({
+                                  data: JSON.stringify(
+                                    _.map(selectedRows, (item) => {
+                                      return _.omit(item, ['id', 'created_at', 'created_by', 'updated_at', 'updated_by']);
+                                    }),
+                                    null,
+                                    2,
+                                  ),
+                                });
+                              } else {
+                                message.warning(t('batch.not_select'));
+                              }
+                            }}
+                          >
+                            <span>{t('batch.export.title')}</span>
+                          </li>
+                        )}
+                        {actionAuth.delete && (
+                          <li
+                            className='ant-dropdown-menu-item'
+                            onClick={() => {
+                              if (selectedRows.length) {
+                                Modal.confirm({
+                                  title: t('common:confirm.delete'),
+                                  onOk() {
+                                    deleteMetrics(_.map(selectedRows, (item) => item.id)).then(() => {
+                                      message.success(t('common:success.delete'));
+                                      setRefreshFlag(_.uniqueId('refreshFlag_'));
+                                    });
+                                  },
+                                });
+                              } else {
+                                message.warning(t('batch.not_select'));
+                              }
+                            }}
+                          >
+                            <span>{t('common:btn.batch_delete')}</span>
+                          </li>
+                        )}
+                      </ul>
+                    }
+                    trigger={['click']}
+                  >
+                    <Button onClick={(e) => e.stopPropagation()}>
+                      {t('common:btn.more')}
+                      <DownOutlined
+                        style={{
+                          marginLeft: 2,
+                        }}
+                      />
+                    </Button>
+                  </Dropdown>
+                )}
+                <Button
+                  onClick={() => {
+                    OrganizeColumns({
+                      i18nNs: 'metricsBuiltin',
+                      value: columnsConfigs,
+                      onChange: (val) => {
+                        setColumnsConfigs(val);
+                        setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                      },
+                    });
+                  }}
+                  icon={<EyeOutlined />}
+                />
+              </Space>
+            </div>
+            <Table
+              className='mt-2'
+              size='small'
+              rowKey='id'
+              {...tableProps}
+              columns={ajustColumns(columns, columnsConfigs)}
+              pagination={{
+                ...pagination,
+                ...tableProps.pagination,
+              }}
+              rowSelection={{
+                selectedRowKeys: _.map(selectedRows, (item) => item.id),
+                onChange: (_selectedRowKeys: React.Key[], selectedRows: Record[]) => {
+                  setSelectedRows(selectedRows);
+                },
+              }}
+            />
           </div>
-          <Table
-            className='mt-2'
-            size='small'
-            rowKey='id'
-            {...tableProps}
-            columns={ajustColumns(columns, columnsConfigs)}
-            pagination={{
-              ...pagination,
-              ...tableProps.pagination,
-            }}
-            rowSelection={{
-              selectedRowKeys: _.map(selectedRows, (item) => item.id),
-              onChange: (_selectedRowKeys: React.Key[], selectedRows: Record[]) => {
-                setSelectedRows(selectedRows);
-              },
-            }}
-          />
         </div>
-      </div>
-      <ExplorerDrawer
-        visible={explorerDrawerVisible}
+        <ExplorerDrawer
+          visible={explorerDrawerVisible}
+          onClose={() => {
+            setExplorerDrawerVisible(false);
+            setExplorerDrawerData(undefined);
+          }}
+          data={explorerDrawerData}
+        />
+        <FormDrawer
+          open={formDrawerData?.open}
+          onOpenChange={(open) => {
+            setFormDrawerData({ ...(formDrawerData || {}), open });
+          }}
+          mode={formDrawerData?.mode}
+          initialValues={formDrawerData?.initialValues}
+          title={formDrawerData?.title}
+          typesList={typesList}
+          collectorsList={collectorsList}
+          onOk={() => {
+            setRefreshFlag(_.uniqueId('refreshFlag_'));
+          }}
+        />
+      </PageLayout>
+      <NewMetricExplorerDrawer
+        visible={newMetricExplorerDrawerState.visible}
         onClose={() => {
-          setExplorerDrawerVisible(false);
-          setExplorerDrawerData(undefined);
+          setNewMetricExplorerDrawerState({ visible: false, metric: undefined, datasourceValue: undefined });
         }}
-        data={explorerDrawerData}
+        datasourceValue={newMetricExplorerDrawerState.datasourceValue}
+        promql={newMetricExplorerDrawerState.metric}
       />
-      <FormDrawer
-        open={formDrawerData?.open}
-        onOpenChange={(open) => {
-          setFormDrawerData({ ...(formDrawerData || {}), open });
-        }}
-        mode={formDrawerData?.mode}
-        initialValues={formDrawerData?.initialValues}
-        title={formDrawerData?.title}
-        typesList={typesList}
-        collectorsList={collectorsList}
-        onOk={() => {
-          setRefreshFlag(_.uniqueId('refreshFlag_'));
-        }}
-      />
-    </PageLayout>
+    </>
   );
 }
