@@ -59,7 +59,14 @@ export default function ItemDetaildrawer(props: Props) {
           />
         </div>
         <Descriptions className='mb-4' title={t('executions.detail_basic_info')} bordered column={2}>
-          <Descriptions.Item label={t('executions.pipeline_name')}>{data?.pipeline_name}</Descriptions.Item>
+          <Descriptions.Item
+            labelStyle={{
+              whiteSpace: 'nowrap',
+            }}
+            label={t('executions.pipeline_name')}
+          >
+            {data?.pipeline_name}
+          </Descriptions.Item>
           <Descriptions.Item label={t('executions.id')}>{data?.id}</Descriptions.Item>
           <Descriptions.Item label={t('executions.mode')}>
             <Tag color='green'>{t(`trigger_mode.${data?.mode}`)}</Tag>

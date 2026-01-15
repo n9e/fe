@@ -26,6 +26,14 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'expression_type',
+    visible: false,
+  },
+  {
+    name: 'metric_type',
+    visible: false,
+  },
+  {
     name: 'name',
     visible: true,
   },
@@ -36,6 +44,10 @@ export const defaultColumnsConfigs = [
   {
     name: 'expression',
     visible: true,
+  },
+  {
+    name: 'extra_fields',
+    visible: false,
   },
   {
     name: 'note',

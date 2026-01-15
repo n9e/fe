@@ -17,8 +17,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Col, Drawer, Form, Input, Row, Space, Button, AutoComplete, Card, message } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { Col, Drawer, Form, Input, Row, Space, Button, AutoComplete, Card, message, Select } from 'antd';
+import { CloseOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { LANGUAGE_MAP, SIZE } from '@/utils/constant';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
@@ -44,6 +44,7 @@ export default function index(props: Props) {
   const [typsMeta, setTypsMeta] = useState<Component[]>([]);
   const [form] = Form.useForm();
   const translation = Form.useWatch('translation', form);
+  const expression_type = Form.useWatch('expression_type', form);
   const otherLangs = _.filter(Object.keys(LANGUAGE_MAP), (lang) => {
     return !_.find(translation, (item) => item.lang === lang);
   });
@@ -187,6 +188,61 @@ export default function index(props: Props) {
               />
             </Form.Item>
           </Col>
+          <Col span={expression_type === 'metric_name' ? 12 : 24}>
+            <Form.Item
+              label={t('expression_type')}
+              name='expression_type'
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              initialValue='metric_name'
+            >
+              <Select
+                options={[
+                  {
+                    label: t('expression_type_metric_name'),
+                    value: 'metric_name',
+                  },
+                  {
+                    label: t('expression_type_promql'),
+                    value: 'promql',
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label={t('metric_type')}
+              name='metric_type'
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              initialValue='gauge'
+              hidden={expression_type !== 'metric_name'}
+            >
+              <Select
+                options={[
+                  {
+                    label: t('metric_type_gauge'),
+                    value: 'gauge',
+                  },
+                  {
+                    label: t('metric_type_counter'),
+                    value: 'counter',
+                  },
+                  {
+                    label: t('metric_type_histogram'),
+                    value: 'histogram',
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
         </Row>
         <Form.Item
           label={t('expression')}
@@ -202,6 +258,51 @@ export default function index(props: Props) {
         <Form.Item label={t('unit')} name='unit' tooltip={t('unit_tip')}>
           <UnitPicker allowClear showSearch />
         </Form.Item>
+        <Form.List name='extra_fields'>
+          {(fields, { add, remove }, { errors }) => (
+            <Space direction='vertical' size={SIZE * 2} className='w-full mb-4'>
+              <div>
+                <Space size={0}>
+                  {t('extra_fields')}
+                  <Button
+                    type='text'
+                    size='small'
+                    icon={<PlusCircleOutlined />}
+                    onClick={() => {
+                      add();
+                    }}
+                  />
+                </Space>
+              </div>
+              {fields.map(({ key, name, ...restField }) => {
+                return (
+                  <div key={key} className='p-4 relative border border-card-border rounded-sm'>
+                    <Form.Item {...restField} name={[name, 'name']} label={t('extra_fields_name')} rules={[{ required: true }]}>
+                      <Input />
+                    </Form.Item>
+                    <Form.Item {...restField} name={[name, 'value']} label={t('extra_fields_value')}>
+                      <Input.TextArea
+                        autoSize={{
+                          minRows: 2,
+                        }}
+                      />
+                    </Form.Item>
+                    <Button
+                      className='absolute top-1 right-1'
+                      type='text'
+                      size='small'
+                      icon={<CloseOutlined />}
+                      onClick={() => {
+                        remove(name);
+                      }}
+                    />
+                  </div>
+                );
+              })}
+              <Form.ErrorList errors={errors} />
+            </Space>
+          )}
+        </Form.List>
         <Form.List
           name='translation'
           initialValue={[
