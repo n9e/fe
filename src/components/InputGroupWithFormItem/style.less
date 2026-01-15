@@ -1,5 +1,6 @@
 .ant-input-group.ant-input-group-compact.input-group-with-form-item {
   display: flex !important;
+
   .input-group-with-form-item-label {
     height: 32px;
     line-height: 30px;
@@ -7,24 +8,46 @@
     max-width: 50%;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &-small {
+      height: 24px;
+      line-height: 22px;
+    }
   }
+
   .input-group-with-form-item-content {
     width: 100%;
     min-width: 0;
     flex-shrink: 1;
+
+    &-small {
+      .ant-form-item-control-input {
+        min-height: 24px;
+      }
+    }
   }
-  .ant-input-group-addon:last-child  {
+
+  .ant-input-group-addon:last-child {
     border-left: 1px solid var(--fc-border-color);
     width: max-content;
     max-width: unset;
     height: 32px;
     line-height: 32px;
+    padding: 0 9px;
   }
+
   // 2024-11-20 对 focused 和 hover 状态下的 select 组件进行 z-index 修正防止被后面 addonAfter 内容遮挡
   .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) {
     z-index: 1;
   }
+
   .ant-select:not(.ant-select-disabled):hover {
     z-index: 1;
+  }
+}
+
+.input-group-with-form-item-content-small {
+  .ant-form-item-control-input {
+    min-height: 24px;
   }
 }

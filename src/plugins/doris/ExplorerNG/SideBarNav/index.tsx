@@ -69,7 +69,6 @@ export default function index(props: Props) {
                   time_field: firstDateField,
                 },
               });
-              executeQuery();
             }
           }
           onIndexDataChange(res);

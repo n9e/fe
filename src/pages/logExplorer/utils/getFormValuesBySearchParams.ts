@@ -35,8 +35,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const stackByField = _.get(params, 'stackByField');
       const defaultSearchField = _.get(params, 'defaultSearchField');
       const sql = _.get(params, 'sql');
-      const labelKey = _.get(params, 'labelKey');
-      const valueKey = _.get(params, 'valueKey');
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
 
       return {
         ...formValues,
@@ -53,8 +53,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           query,
           sql,
           keys: {
-            labelKey,
-            valueKey,
+            labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+            valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
           },
         },
       };

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Form, Space, Pagination, Radio } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -13,7 +13,7 @@ import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/ut
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 
-import { NAME_SPACE, SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../../constants';
+import { NAME_SPACE, NG_SQL_LOGS_OPTIONS_CACHE_KEY, SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE } from '../../../constants';
 import { logQuery } from '../../../services';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
@@ -42,7 +42,7 @@ export default function Table(props: IProps) {
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch(['query']);
   const [options, setOptions] = useState(
-    getOptionsFromLocalstorage(SQL_LOGS_OPTIONS_CACHE_KEY, {
+    getOptionsFromLocalstorage(NG_SQL_LOGS_OPTIONS_CACHE_KEY, {
       logMode: 'table',
     }),
   );
@@ -67,7 +67,7 @@ export default function Table(props: IProps) {
       ...newOptions,
     };
     setOptions(mergedOptions);
-    setOptionsToLocalstorage(SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+    setOptionsToLocalstorage(NG_SQL_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
     if (reload) {
       setServiceParams({
         current: 1,
@@ -125,6 +125,10 @@ export default function Table(props: IProps) {
         })
         .catch(() => {
           loadTimeRef.current = null;
+          setLogs({
+            data: [],
+            hash: _.uniqueId('logs_'),
+          });
           return {
             list: [],
             total: 0,
@@ -153,6 +157,15 @@ export default function Table(props: IProps) {
   >(service, {
     refreshDeps: [refreshFlag],
   });
+
+  // useEffect(() => {
+  //   if (refreshFlag === undefined) {
+  //     setLogs({
+  //       data: [],
+  //       hash: _.uniqueId('logs_'),
+  //     });
+  //   }
+  // }, [refreshFlag]);
 
   return (
     <div className='h-full min-h-0'>
@@ -184,7 +197,7 @@ export default function Table(props: IProps) {
                 },
               ]}
               optionType='button'
-              buttonStyle='solid'
+              size='small'
               value={sqlVizType}
               onChange={(e) => {
                 form.setFields([

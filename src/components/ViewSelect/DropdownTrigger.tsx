@@ -29,7 +29,7 @@ export default function DropdownTrigger<FilterValues>(props: Props<FilterValues>
 
   return (
     <Badge dot={showDot} {..._.omit(props, ['filterValues', 'oldFilterValues', 'adjustOldFilterValues'])}>
-      <Button disabled={disabled} icon={<MoreOutlined className='w-[32px]' />} />
+      <Button disabled={disabled} icon={<MoreOutlined className='w-[32px]' />} style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }} />
     </Badge>
   );
 }

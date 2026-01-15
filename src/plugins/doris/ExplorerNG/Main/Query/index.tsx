@@ -14,7 +14,7 @@ import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
-import { NAME_SPACE, QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
+import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
 import { Field } from '../../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -75,7 +75,7 @@ export default function index(props: Props) {
     defaultSearchField,
   } = props;
 
-  const [options, setOptions] = useState(getOptionsFromLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY));
+  const [options, setOptions] = useState(getOptionsFromLocalstorage(NG_QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
   const [serviceParams, setServiceParams, getServiceParams] = useGetState({
@@ -90,7 +90,7 @@ export default function index(props: Props) {
       ...newOptions,
     };
     setOptions(mergedOptions);
-    setOptionsToLocalstorage(QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+    setOptionsToLocalstorage(NG_QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
     if (reload) {
       setServiceParams({
         ...serviceParams,
@@ -420,11 +420,11 @@ export default function index(props: Props) {
                   to: undefined,
                 };
                 form.setFieldsValue({
+                  refreshFlag: _.uniqueId('refreshFlag_'),
                   query: {
                     ...query,
                     range,
                   },
-                  refreshFlag: _.uniqueId('refreshFlag_'),
                 });
               }}
               onLogRequestParamsChange={(params) => {

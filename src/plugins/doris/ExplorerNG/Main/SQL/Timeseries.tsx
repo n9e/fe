@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Spin, Empty, Form, Space, Radio, Tooltip, Button } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Spin, Empty, Form, Space, Radio, Tooltip, Button, Select, Input } from 'antd';
+import { QuestionCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AlignedData, Options } from 'uplot';
 import { useSize } from 'ahooks';
-
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { CommonStateContext } from '@/App';
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder } from '@/components/UPlotChart';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -17,7 +17,7 @@ import { hexPalette } from '@/pages/dashboard/config';
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from '@/pages/dashboard/Renderer/Renderer/TimeSeriesNG/utils/getDataFrameAndBaseSeries';
 import { LegendTable } from '@/pages/dashboard/Renderer/Renderer/TimeSeriesNG/components/Legend';
 import getLegendData from '@/pages/dashboard/Renderer/Renderer/TimeSeriesNG/utils/getLegendData';
-import OutlinedUnitPicker from '@/pages/dashboard/Components/UnitPicker/OutlinedUnitPicker';
+import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
 
 import { NAME_SPACE } from '../../../constants';
@@ -72,9 +72,9 @@ function Graph(props: {
       series: seriesBuider({
         baseSeries,
         colors: hexPalette,
-        width: 1,
-        pathsType: 'linear',
-        points: { show: true },
+        width: 2,
+        pathsType: 'spline',
+        points: { show: false },
         fillOpacity: 0,
         spanGaps: true,
       }),
@@ -236,11 +236,20 @@ export default function TimeseriesCpt(props: Props) {
     });
   }, [dataRefresh, activeLegend, JSON.stringify(seriesData), unit]);
 
+  // useEffect(() => {
+  //   if (refreshFlag === undefined) {
+  //     setData({
+  //       frames: [],
+  //       baseSeries: [],
+  //     });
+  //   }
+  // }, [refreshFlag]);
+
   return (
     <>
       <div className='flex-shrink-0'>
-        <Space wrap>
-          <Form.Item>
+        <Space wrap align='start'>
+          <Form.Item className='input-group-with-form-item-content-small'>
             <Radio.Group
               options={[
                 {
@@ -253,7 +262,7 @@ export default function TimeseriesCpt(props: Props) {
                 },
               ]}
               optionType='button'
-              buttonStyle='solid'
+              size='small'
               value={sqlVizType}
               onChange={(e) => {
                 form.setFields([
@@ -265,52 +274,60 @@ export default function TimeseriesCpt(props: Props) {
               }}
             />
           </Form.Item>
-          <Form.Item
-            name={['query', 'keys', 'valueKey']}
-            rules={[
-              {
-                required: true,
-                message: t('query.advancedSettings.valueKey_required'),
-              },
-            ]}
-          >
-            <OutlinedSelect
-              className='min-w-[120px]'
-              label={t('query.advancedSettings.valueKey')}
-              suffix={
+          <InputGroupWithFormItem
+            size='small'
+            label={
+              <Space>
+                {t('query.advancedSettings.valueKey')}
                 <Tooltip title={t('query.advancedSettings.valueKey_tip')}>
-                  <Button icon={<QuestionCircleOutlined />} />
+                  <InfoCircleOutlined />
                 </Tooltip>
-              }
-              mode='tags'
-              open={false}
-            />
-          </Form.Item>
-          <Form.Item name={['query', 'keys', 'labelKey']}>
-            <OutlinedSelect
-              className='min-w-[120px]'
-              label={t('query.advancedSettings.labelKey')}
-              suffix={
+              </Space>
+            }
+          >
+            <Form.Item
+              name={['query', 'keys', 'valueKey']}
+              rules={[
+                {
+                  required: true,
+                  message: t('query.advancedSettings.valueKey_required'),
+                },
+              ]}
+              style={{ margin: 0 }}
+            >
+              <Select className='min-w-[120px]' mode='tags' open={false} size='small' />
+            </Form.Item>
+          </InputGroupWithFormItem>
+          <InputGroupWithFormItem
+            size='small'
+            label={
+              <Space>
+                {t('query.advancedSettings.labelKey')}
                 <Tooltip title={t('query.advancedSettings.labelKey_tip')}>
-                  <Button icon={<QuestionCircleOutlined />} />
+                  <InfoCircleOutlined />
                 </Tooltip>
-              }
-              mode='tags'
-              open={false}
-            />
-          </Form.Item>
-          <Form.Item>
-            <OutlinedUnitPicker
-              dropdownMatchSelectWidth={false}
-              style={{
-                minWidth: 120,
-              }}
-              value={unit}
-              onChange={(val) => {
-                setUnit(val);
-              }}
-            />
-          </Form.Item>
+              </Space>
+            }
+          >
+            <Form.Item name={['query', 'keys', 'labelKey']} style={{ margin: 0 }}>
+              <Select className='min-w-[120px]' mode='tags' open={false} size='small' />
+            </Form.Item>
+          </InputGroupWithFormItem>
+          <InputGroupWithFormItem label={t('common:unit')} size='small'>
+            <Form.Item noStyle>
+              <UnitPicker
+                size='small'
+                dropdownMatchSelectWidth={false}
+                style={{
+                  minWidth: 120,
+                }}
+                value={unit}
+                onChange={(val) => {
+                  setUnit(val);
+                }}
+              />
+            </Form.Item>
+          </InputGroupWithFormItem>
         </Space>
       </div>
       <>

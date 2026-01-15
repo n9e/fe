@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider } from 'antd';
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
@@ -98,8 +98,37 @@ export default function FieldsItem(props: Props) {
           <Spin spinning={topNLoading}>
             <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />
             <div className='bg-fc-200 p-4'>
-              <Row>
-                {_.map(stats, (statValue, statName) => {
+              {stats?.unique_count !== undefined && stats?.exist_ratio !== undefined && (
+                <Row gutter={[16, 16]}>
+                  {['unique_count', 'exist_ratio'].map((statName) => {
+                    const statValue = stats?.[statName];
+                    if (statValue === undefined) return null;
+                    return (
+                      <QuickViewPopover
+                        key={statName}
+                        options={{
+                          func: statName,
+                          field: field.field,
+                        }}
+                        onStatisticClick={onStatisticClick}
+                        setTopNVisible={setTopNVisible}
+                      >
+                        <Col span={12} key={statName}>
+                          <Statistic
+                            className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer'
+                            title={t(`stats.${statName}`)}
+                            value={statValue}
+                            suffix={statName === 'exist_ratio' ? '%' : undefined}
+                          />
+                        </Col>
+                      </QuickViewPopover>
+                    );
+                  })}
+                </Row>
+              )}
+              {Object.keys(_.omit(stats, ['unique_count', 'exist_ratio'])).length > 0 && <Divider />}
+              <Row gutter={[16, 16]}>
+                {_.map(_.omit(stats, ['unique_count', 'exist_ratio']), (statValue, statName) => {
                   return (
                     <QuickViewPopover
                       key={statName}
@@ -110,13 +139,8 @@ export default function FieldsItem(props: Props) {
                       onStatisticClick={onStatisticClick}
                       setTopNVisible={setTopNVisible}
                     >
-                      <Col span={_.includes(['unique_count', 'exist_ratio'], statName) ? 12 : 8} key={statName}>
-                        <Statistic
-                          className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer'
-                          title={t(`stats.${statName}`)}
-                          value={statValue}
-                          suffix={statName === 'exist_ratio' ? '%' : undefined}
-                        />
+                      <Col span={8} key={statName}>
+                        <Statistic className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer' title={t(`stats.${statName}`)} value={statValue} />
                       </Col>
                     </QuickViewPopover>
                   );
