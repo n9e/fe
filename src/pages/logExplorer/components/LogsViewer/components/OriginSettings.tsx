@@ -69,7 +69,7 @@ export default forwardRef(function OriginSettings(
     <>
       <Space>
         {options.logMode === 'origin' && (
-          <div>
+          <div className='flex items-center gap-1'>
             {t('logs.settings.breakLine')}{' '}
             <Switch
               size='small'
@@ -82,7 +82,7 @@ export default forwardRef(function OriginSettings(
             />
           </div>
         )}
-        <div>
+        <div className='flex items-center gap-1'>
           {t('logs.settings.lines')}{' '}
           <Switch
             size='small'
@@ -95,7 +95,7 @@ export default forwardRef(function OriginSettings(
           />
         </div>
         {showDateField && (
-          <div>
+          <div className='flex items-center gap-1'>
             {t('logs.settings.time')}{' '}
             <Switch
               size='small'
