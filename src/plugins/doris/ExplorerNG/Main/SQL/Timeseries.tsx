@@ -152,6 +152,8 @@ export default function TimeseriesCpt(props: Props) {
   const { sqlVizType, width, setExecuteLoading } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
+  const labelKey = Form.useWatch(['query', 'keys', 'labelKey']);
+  const valueKey = Form.useWatch(['query', 'keys', 'valueKey']);
 
   const eleRef = useRef<HTMLDivElement>(null);
   const eleSize = useSize(eleRef);
@@ -215,7 +217,7 @@ export default function TimeseriesCpt(props: Props) {
           });
       });
     }
-  }, [refreshFlag]);
+  }, [refreshFlag, labelKey, valueKey]);
 
   const seriesData = useMemo(() => {
     return _.map(data.baseSeries, (subItem) => {
