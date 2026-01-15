@@ -1,5 +1,6 @@
 import React from 'react';
-import { FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons';
+import IconFont from '@/components/IconFont';
+import { Button } from 'antd';
 import './style.less';
 
 // 创建 Context
@@ -35,14 +36,15 @@ export default function FullscreenButton() {
   }, [viewModalVisible]);
 
   return (
-    <span
-      className='cursor-pointer'
+    <Button
+      size='small'
+      ghost
+      type='text'
       onClick={() => {
         setViewModalVisible(!viewModalVisible);
       }}
-    >
-      {!viewModalVisible ? <FullscreenOutlined /> : <FullscreenExitOutlined />}
-    </span>
+      icon={!viewModalVisible ? <IconFont type='icon-ArrowFullScreen' /> : <IconFont type='icon-ArrowOffScreen' />}
+    />
   );
 }
 

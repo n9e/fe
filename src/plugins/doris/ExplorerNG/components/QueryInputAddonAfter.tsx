@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form } from 'antd';
+import { Form, Button } from 'antd';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -52,7 +52,7 @@ export default function QueryInputAddonAfter(props: Props) {
         }}
         type='text'
       >
-        <FileSearchOutlined />
+        <Button size='small' ghost type='text' icon={<FileSearchOutlined />} />
       </ConditionHistoricalRecords>
     );
   }
@@ -73,7 +73,7 @@ export default function QueryInputAddonAfter(props: Props) {
         }}
         type='text'
       >
-        <FileSearchOutlined />
+        <Button size='small' ghost type='text' icon={<FileSearchOutlined />} />
       </HistoricalRecords>
     );
   }
