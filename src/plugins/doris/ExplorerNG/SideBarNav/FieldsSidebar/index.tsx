@@ -246,12 +246,17 @@ export default function index(props: IProps) {
           }).then((res) => {
             if (type === 'table') {
               const sqlPreviewData = res.table;
+              const sqlTimeSeriesData = res.timeseries?.[options.func];
               form.setFieldsValue({
                 refreshFlag: undefined,
                 query: {
                   syntax: 'sql',
                   sqlVizType: 'table',
                   sql: sqlPreviewData.sql,
+                  keys: {
+                    valueKey: sqlTimeSeriesData?.value_key ?? [],
+                    labelKey: sqlTimeSeriesData?.label_key ?? [],
+                  },
                 },
               });
               executeQuery();
