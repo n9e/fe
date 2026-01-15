@@ -19,6 +19,19 @@
 
 
   .rdg-header-row {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 35px;
+      background: var(--rdg-header-background-color);
+      pointer-events: none;
+    }
+
     .rdg-cell:first-child {
       border-right: none;
     }
