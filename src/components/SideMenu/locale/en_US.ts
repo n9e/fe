@@ -38,6 +38,7 @@ const en_US = {
     notification_templates: 'Templates',
     event_pipeline: 'Workflow',
     notification_settings: 'Notification',
+    event_pipeline_executions: 'Execution records',
     notification_tpls: 'Template',
     integrations: 'Integrations',
     data_source: 'Data sources',
