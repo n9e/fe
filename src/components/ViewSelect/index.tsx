@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, message, Tooltip } from 'antd';
 import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ import './style.less';
 interface Props<FilterValues> {
   disabled?: boolean;
   page: string;
-  getFilterValuesJSONString: () => string;
+  getFilterValues: () => FilterValues;
   renderOptionExtra: (filterValues: FilterValues) => React.ReactNode;
   onSelect?: (filterValues: FilterValues) => void;
 
@@ -25,9 +25,11 @@ interface Props<FilterValues> {
   placeholder?: string;
 }
 
+const VERSION = '1.0.0';
+
 export default function index<FilterValues>(props: Props<FilterValues>) {
   const { t } = useTranslation('viewSelect');
-  const { disabled, page, getFilterValuesJSONString, renderOptionExtra, onSelect, oldFilterValues, adjustOldFilterValues, placeholder } = props;
+  const { disabled, page, renderOptionExtra, onSelect, oldFilterValues, adjustOldFilterValues, placeholder } = props;
   const selectDropdownContainer = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [filters, setFilters] = useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
@@ -36,7 +38,53 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
   });
 
   const service = () => {
-    return getViews(page);
+    return getViews(page).then((res) => {
+      return _.map(res, (item) => {
+        let filterValues = {} as any;
+        try {
+          filterValues = JSON.parse(item.filter);
+        } catch (e) {
+          console.warn('parse filter error', e);
+        }
+        if (filterValues.__version__ === undefined) {
+          /**
+           * 迁移最初版本的视图数据
+           * filterValues.query.mode 改成 filterValues.query.syntax
+           * 如果 filterValues.query.submode 存在，filterValues.query.submode 改成 filterValues.query.sqlVizType
+           * filterValues.query.sqlVizType 的值， raw 改成 table，timeSeries 改成 timeseries
+           * 设置 filterValues.query.navMode 值为 fields
+           * 如果 filterValues.query.syntax 值为 sql，设置 filterValues.query.sql = filterValues.query.query, 删除 filterValues.query.query
+           */
+          if ((item.page === '/log/explorer-ng' || item.page === '/log/explorer') && filterValues.datasourceCate === 'doris') {
+            if (filterValues.query) {
+              if (filterValues.query.mode) {
+                filterValues.query.syntax = filterValues.query.mode;
+                delete filterValues.query.mode;
+              }
+              if (filterValues.query.submode) {
+                if (filterValues.query.submode === 'raw') {
+                  filterValues.query.sqlVizType = 'table';
+                } else if (filterValues.query.submode === 'timeSeries') {
+                  filterValues.query.sqlVizType = 'timeseries';
+                } else {
+                  filterValues.query.sqlVizType = 'table';
+                }
+                delete filterValues.query.submode;
+              }
+              filterValues.query.navMode = 'fields';
+              if (filterValues.query.syntax === 'sql') {
+                filterValues.query.sql = filterValues.query.query;
+                delete filterValues.query.query;
+              }
+            }
+          }
+        }
+        return {
+          ...item,
+          filter: JSON.stringify(_.omit(filterValues, '__version__')),
+        };
+      });
+    });
   };
   const {
     data: views,
@@ -72,6 +120,15 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
     }
     return {} as FilterValues;
   }, [selected, views]);
+
+  // getFilterValues 用于保存数据前，这里包装一层，添加 __version__ 字段
+  const getFilterValues = () => {
+    const filterValues = props.getFilterValues();
+    return {
+      ...filterValues,
+      __version__: VERSION,
+    };
+  };
 
   return (
     <Tooltip title={disabled ? t('tip') : undefined}>
@@ -233,7 +290,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                         </Space>
                       </Space>
                     </div>
-                    {renderOptionExtra(filterValues)}
+                    {renderOptionExtra(_.omit(filterValues, '__version__'))}
                   </div>
                 ),
                 labelName: item.name,
@@ -254,7 +311,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                     console.warn('parse filter error', e);
                   }
                 }
-                onSelect(filterValues);
+                onSelect(_.omit(filterValues, '__version__'));
               }
             }}
           />
@@ -325,10 +382,10 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                 } else if (key === 'save') {
                   const finded = _.find(views, { id: selected });
                   if (finded) {
-                    const filterValuesJSONString = getFilterValuesJSONString();
+                    const filterValues = getFilterValues();
                     updateView(finded.id, {
                       ...finded,
-                      filter: filterValuesJSONString,
+                      filter: JSON.stringify(filterValues),
                     }).then(() => {
                       message.success(t('common:success.save'));
                       run();
@@ -376,7 +433,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
           <DropdownTrigger disabled={disabled} filterValues={filterValues} oldFilterValues={oldFilterValues} adjustOldFilterValues={adjustOldFilterValues} />
         </Dropdown>
       </Input.Group>
-      <FormModal page={page} modalStat={modalStat} setModalState={setModalState} getFilterValuesJSONString={getFilterValuesJSONString} run={run} setSelected={setSelected} />
+      <FormModal page={page} modalStat={modalStat} setModalState={setModalState} getFilterValues={getFilterValues} run={run} setSelected={setSelected} />
     </Tooltip>
   );
 }

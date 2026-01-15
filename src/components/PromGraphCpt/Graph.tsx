@@ -130,7 +130,7 @@ export default function Graph(props: IProps) {
         sort: highLevelConfig.sharedSortDirection,
       },
       standardOptions: {
-        util: highLevelConfig.unit,
+        unit: highLevelConfig.unit,
       },
     },
   };

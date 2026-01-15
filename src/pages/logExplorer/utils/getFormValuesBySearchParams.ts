@@ -26,31 +26,35 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         : undefined;
 
     if (data_source_name === DatasourceCateEnum.doris) {
-      const mode = _.get(params, 'mode');
-      const submode = _.get(params, 'submode');
+      const navMode = _.get(params, 'navMode');
+      const syntax = _.get(params, 'syntax');
+      const sqlVizType = _.get(params, 'sqlVizType');
       const database = _.get(params, 'database');
       const table = _.get(params, 'table');
       const time_field = _.get(params, 'time_field');
       const stackByField = _.get(params, 'stackByField');
       const defaultSearchField = _.get(params, 'defaultSearchField');
-      const labelKey = _.get(params, 'labelKey');
-      const valueKey = _.get(params, 'valueKey');
+      const sql = _.get(params, 'sql');
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
 
       return {
         ...formValues,
         query: {
-          mode,
-          submode,
+          range,
+          navMode,
+          syntax,
+          sqlVizType,
           database,
           table,
           time_field,
           stackByField,
           defaultSearchField,
           query,
-          range,
+          sql,
           keys: {
-            labelKey,
-            valueKey,
+            labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+            valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
           },
         },
       };
@@ -83,14 +87,16 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.end = range.end;
   }
   if (data_source_name === DatasourceCateEnum.doris) {
-    query.mode = formValues.query?.mode;
-    query.submode = formValues.query?.submode;
+    query.navMode = formValues.query?.navMode;
+    query.syntax = formValues.query?.syntax;
+    query.sqlVizType = formValues.query?.sqlVizType;
     query.database = formValues.query?.database;
     query.table = formValues.query?.table;
     query.time_field = formValues.query?.time_field;
     query.stackByField = formValues.query?.stackByField;
     query.defaultSearchField = formValues.query?.defaultSearchField;
     query.query = formValues.query?.query;
+    query.sql = formValues.query?.sql;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     return queryString.stringify(query);

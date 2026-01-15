@@ -99,7 +99,7 @@ export const baseCates: Cate[] = [
     type: ['logging'],
     alertRule: true,
     dashboard: true,
-    dashboardVariable: false,
+    dashboardVariable: true,
     graphPro: true,
     alertPro: false,
     logo: '/image/logos/doris.png',

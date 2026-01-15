@@ -139,7 +139,7 @@ const Panel = (props: IProps) => {
               <ViewSelect<Query>
                 disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus], datasourceCate)}
                 page={location.pathname}
-                getFilterValuesJSONString={() => {
+                getFilterValues={() => {
                   const formValues = form.getFieldsValue();
                   if (datasourceCate === DatasourceCateEnum.prometheus) {
                     const filterValues = {
@@ -149,7 +149,7 @@ const Panel = (props: IProps) => {
                         query: promql || '',
                       },
                     };
-                    return JSON.stringify(filterValues);
+                    return filterValues;
                   } else {
                     let range = formValues.query?.range;
                     if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
@@ -166,7 +166,7 @@ const Panel = (props: IProps) => {
                         range,
                       },
                     };
-                    return JSON.stringify(filterValues);
+                    return filterValues;
                   }
                 }}
                 renderOptionExtra={(filterValues) => {
