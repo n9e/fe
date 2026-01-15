@@ -247,9 +247,9 @@ export default function TimeseriesCpt(props: Props) {
 
   return (
     <>
-      <div className='flex-shrink-0'>
+      <div className='flex-shrink-0 mb-[18px]'>
         <Space wrap align='start'>
-          <Form.Item className='input-group-with-form-item-content-small'>
+          <Form.Item className='input-group-with-form-item-content-small' style={{ margin: 0 }}>
             <Radio.Group
               options={[
                 {
@@ -295,7 +295,7 @@ export default function TimeseriesCpt(props: Props) {
               ]}
               style={{ margin: 0 }}
             >
-              <Select className='min-w-[120px]' mode='tags' open={false} size='small' />
+              <Select className='min-w-[120px] no-padding-small-multiple-select' mode='tags' open={false} size='small' />
             </Form.Item>
           </InputGroupWithFormItem>
           <InputGroupWithFormItem
@@ -310,7 +310,7 @@ export default function TimeseriesCpt(props: Props) {
             }
           >
             <Form.Item name={['query', 'keys', 'labelKey']} style={{ margin: 0 }}>
-              <Select className='min-w-[120px]' mode='tags' open={false} size='small' />
+              <Select className='min-w-[120px] no-padding-small-multiple-select' mode='tags' open={false} size='small' />
             </Form.Item>
           </InputGroupWithFormItem>
           <InputGroupWithFormItem label={t('common:unit')} size='small'>
@@ -333,7 +333,7 @@ export default function TimeseriesCpt(props: Props) {
       <>
         {!_.isEmpty(data.frames) ? (
           <div className='best-looking-scroll'>
-            <div ref={eleRef} className='min-h-[500px] relative'>
+            <div ref={eleRef} className='min-h-[480px] relative'>
               <div className='n9e-antd-table-height-full'>
                 <Spin spinning={loading}>
                   {eleSize?.width && eleSize?.height && (
