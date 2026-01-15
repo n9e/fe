@@ -290,7 +290,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                         </Space>
                       </Space>
                     </div>
-                    {renderOptionExtra(_.omit(filterValues, '__version__'))}
+                    {renderOptionExtra(_.omit(filterValues, '__version__') as FilterValues)}
                   </div>
                 ),
                 labelName: item.name,
@@ -311,7 +311,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
                     console.warn('parse filter error', e);
                   }
                 }
-                onSelect(_.omit(filterValues, '__version__'));
+                onSelect(_.omit(filterValues, '__version__') as FilterValues);
               }
             }}
           />

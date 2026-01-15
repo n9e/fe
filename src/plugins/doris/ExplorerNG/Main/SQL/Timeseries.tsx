@@ -194,6 +194,7 @@ export default function TimeseriesCpt(props: Props) {
             const series = _.map(res, (item) => {
               return {
                 id: _.uniqueId('series_'),
+                refId: _.uniqueId('refId_'),
                 name: getSerieName(item.metric),
                 metric: {},
                 data: item.values,
