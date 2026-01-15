@@ -1,6 +1,7 @@
 const ja_JP = {
   title: 'ログ検索',
   query: 'クエリ条件',
+  query_is_required: 'クエリ条件は空にできません',
   execute: '検索',
   before_query: '<b>検索</b>をクリックして、データを表示してください',
   loading: 'データ読み込み中 ...',

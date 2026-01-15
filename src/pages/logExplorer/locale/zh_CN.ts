@@ -1,6 +1,7 @@
 const zh_CN = {
   title: '日志检索',
   query: '查询条件',
+  query_is_required: '查询条件不能为空',
   execute: '查询',
   before_query: '请点击 <b>查询</b>，展示数据',
   loading: '数据加载中 ...',

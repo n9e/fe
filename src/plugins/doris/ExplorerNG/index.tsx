@@ -36,7 +36,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, datasourceCateOptions, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
   const { tabKey, disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -175,7 +175,7 @@ export default function index(props: Props) {
           >
             <div className='flex-shrink-0 h-full flex flex-col'>
               <div className='flex-shrink-0'>
-                <div className='mb-4'>
+                <Form.Item>
                   <ViewSelect<{
                     datasourceCate: string;
                     datasourceValue: number;
@@ -256,7 +256,7 @@ export default function index(props: Props) {
                     }}
                     placeholder={t(`${logExplorerNS}:view_placeholder`)}
                   />
-                </div>
+                </Form.Item>
                 <Form.Item
                   name='datasourceValue'
                   rules={[
@@ -280,16 +280,19 @@ export default function index(props: Props) {
                     }}
                     onChange={(datasourceValue, datasourceCate) => {
                       setDefaultDatasourceValue(datasourceCate, datasourceValue);
-                      // 先清空 query
+                      const queryValues = form.getFieldValue('query');
                       form.setFieldsValue({
                         datasourceCate,
                         datasourceValue,
                         query: undefined,
                       });
                       form.setFieldsValue({
+                        refreshFlag: undefined,
                         query: {
-                          syntax: 'query',
-                          range: logsDefaultRange,
+                          navMode: queryValues.navMode,
+                          syntax: queryValues.syntax,
+                          sqlVizType: queryValues.sqlVizType,
+                          range: queryValues.range,
                         },
                       });
                     }}
