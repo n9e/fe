@@ -58,6 +58,11 @@ export default function List() {
     featchData();
   }, []);
 
+  const disabledMap = {
+    false: <Tag color='green'>{t('disabled.false')}</Tag>,
+    true: <Tag color='red'>{t('disabled.true')}</Tag>,
+  };
+
   return (
     <>
       <div className='flex justify-between items-center pb-2'>
@@ -115,6 +120,31 @@ export default function List() {
           {
             title: t('common:table.note'),
             dataIndex: 'description',
+          },
+          {
+            title: t('use_case.label'),
+            dataIndex: 'use_case',
+            width: 100,
+            render: (value) => {
+              return <Tag>{t(`use_case.${value}`)}</Tag>;
+            },
+          },
+          {
+            title: t('trigger_mode.label'),
+            dataIndex: 'trigger_mode',
+            width: 100,
+            render: (value) => {
+              return <Tag>{t(`trigger_mode.${value}`)}</Tag>;
+            },
+          },
+          {
+            title: t('disabled.label'),
+            dataIndex: 'disabled',
+            key: 'disabled',
+            width: 100,
+            render: (value) => {
+              return disabledMap[value] || value;
+            },
           },
           {
             title: t('teams'),

@@ -3,9 +3,9 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-import { Item } from './types';
+import { Item, ExecutionItem } from './types';
 
-export type { Item };
+export type { Item, ExecutionItem };
 
 export const getList = function (): Promise<Item[]> {
   return request('/api/n9e/event-pipelines', {
@@ -80,3 +80,20 @@ export function getEventEnrichDataPreview(data: { cate: string; config: Record<s
     return res.dat;
   });
 }
+
+export const getExecutions = function (params): Promise<{
+  list: ExecutionItem[];
+  total: number;
+}> {
+  return request('/api/n9e/event-pipeline-executions', {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => res.dat);
+};
+
+export const getExecutionById = function (id: number): Promise<ExecutionItem> {
+  return request(`/api/n9e/event-pipeline-execution/${id}`, {
+    method: RequestMethod.Get,
+    params: { exec_id: id },
+  }).then((res) => res.dat);
+};
