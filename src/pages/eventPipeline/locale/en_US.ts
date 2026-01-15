@@ -185,5 +185,21 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     data_preview_no_eventid: 'Please select an alert event first',
     query_limit: 'Return limit',
   },
+  event_recover: {
+    help: 'Alert self-healing event processor. Used to execute shell scripts on machines when alerts are triggered, can be used to obtain relevant alert information or execute self-healing tasks。 <a>Documentation</a>',
+    title: 'Alert Self-healing',
+    create_btn: 'Create self-healing template',
+    tpl_id: 'Self-healing template',
+    tpl_id_required: 'Self-healing template cannot be empty',
+    host: 'Target machine',
+    host_placeholder: 'Can be left empty by default. If empty, the machine to be executed will be obtained from the ident label in the event',
+    args: 'Parameters',
+    args_tip: 'Parameters appended after the script, multiple parameters are separated by double comma,,, such as arg1,,arg2,,arg3',
+    save_result: 'Save execution result',
+    save_result_tip: 'Save the script execution result to the alert event',
+    timeout: 'Execution wait time',
+    timeout_tip: 'If the script cannot be completed within the wait time, the result will not be retrieved',
+    timeout_max_warning: 'Execution wait time cannot exceed 60 seconds',
+  },
 };
 export default en_US;
