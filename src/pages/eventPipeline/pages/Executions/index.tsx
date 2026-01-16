@@ -4,6 +4,8 @@ import { Input, Space, Select, Table, Tag } from 'antd';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
+import { useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 
 import PageLayout from '@/components/pageLayout';
 import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
@@ -18,6 +20,9 @@ const defaultPageSize = 10;
 
 export default function index() {
   const { t } = useTranslation(NS);
+  const search = useLocation().search;
+  const searchParams = queryString.parse(search);
+  const pipelineId = searchParams.pipeline_id ? _.toNumber(searchParams.pipeline_id) : undefined;
   const [filters, setFilters] = useState<{
     search?: string;
     mode?: string;
@@ -33,6 +38,7 @@ export default function index() {
       ...filters,
       p: current,
       limit: pageSize,
+      pipeline_id: pipelineId !== undefined && !_.isNaN(pipelineId) ? pipelineId : undefined,
     });
   };
 
