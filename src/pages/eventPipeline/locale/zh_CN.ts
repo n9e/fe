@@ -265,6 +265,7 @@ const zh_CN = {
     timeout: '等待执行时间',
     timeout_tip: '若脚本无法再等待时间内执行完，则不会等待结果获取',
     timeout_max_warning: '等待执行时间不能超过 60 秒',
+    select_host: '筛选机器',
   },
 };
 export default zh_CN;

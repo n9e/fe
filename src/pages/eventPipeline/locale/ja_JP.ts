@@ -247,6 +247,7 @@ const ja_JP = {
     timeout: '実行待機時間',
     timeout_tip: 'スクリプトが指定時間内に完了できない場合、結果は取得されません',
     timeout_max_warning: '実行待機時間は60秒を超えることはできません',
+    select_host: 'マシンを選択',
   },
 };
 
