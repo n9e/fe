@@ -112,23 +112,23 @@ export default function NotifyConfig(props: Props) {
           options={_.concat(
             [
               {
-                label: 'Relabel',
+                label: t('processor.options.relabel'),
                 value: 'relabel',
               },
               {
-                label: 'Callback',
+                label: t('processor.options.callback'),
                 value: 'callback',
               },
               {
-                label: 'Event Update',
+                label: t('processor.options.event_update'),
                 value: 'event_update',
               },
               {
-                label: 'Event Drop',
+                label: t('processor.options.event_drop'),
                 value: 'event_drop',
               },
               {
-                label: 'AI Summary',
+                label: t('processor.options.ai_summary'),
                 value: 'ai_summary',
               },
             ],
