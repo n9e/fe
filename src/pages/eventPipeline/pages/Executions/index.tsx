@@ -42,13 +42,13 @@ export default function index() {
   });
 
   const statusMap = {
-    running: <Tag color='purple' >{t('executions.status.running')}</Tag>,
+    running: <Tag color='purple'>{t('executions.status.running')}</Tag>,
     success: <Tag color='green'>{t('executions.status.success')}</Tag>,
     failed: <Tag color='red'>{t('executions.status.failed')}</Tag>,
   };
 
   const [itemDetailDrawerState, setItemDetailDrawerState] = useState<{
-    id: number | null;
+    id: string | null;
     visible: boolean;
   }>({
     id: null,

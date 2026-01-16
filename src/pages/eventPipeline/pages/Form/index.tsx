@@ -254,7 +254,7 @@ export default function index(props: Props) {
                 <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
               ) : (
                 <Link to={`/${NS}`}>
-                  <Button>{t('common:btn.cancel')}</Button>
+                  <Button>{t('common:btn.back')}</Button>
                 </Link>
               )}
             </Space>

@@ -91,7 +91,7 @@ export const getExecutions = function (params): Promise<{
   }).then((res) => res.dat);
 };
 
-export const getExecutionById = function (id: number): Promise<ExecutionItem> {
+export const getExecutionById = function (id: string): Promise<ExecutionItem> {
   return request(`/api/n9e/event-pipeline-execution/${id}`, {
     method: RequestMethod.Get,
     params: { exec_id: id },

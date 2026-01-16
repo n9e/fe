@@ -35,7 +35,7 @@ const zh_CN = {
   },
   inputs: {
     label: '前置输入',
-    help: '前置输入变量可在工作流处理器中通过 $inputs.变量名 引用',
+    help: '前置输入变量可在工作流处理器中通过 {{$inputs.变量名}} 引用',
     add_btn: '添加变量',
     key: '变量名',
     key_required: '变量名不能为空',

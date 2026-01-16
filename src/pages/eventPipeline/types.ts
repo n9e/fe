@@ -86,7 +86,7 @@ export type AISummaryItem = BaseItem & {
 export type Item = RelabelItem | LabelEnrichItem | CallbackItem | AISummaryItem;
 
 export type ExecutionItem = {
-  id: number;
+  id: string;
   pipeline_id: number;
   pipeline_name: string;
   event_id: number;

@@ -35,7 +35,7 @@ const zh_HK = {
   },
   inputs: {
     label: '前置輸入',
-    help: '前置輸入變量可在工作流處理器中通過 $inputs.變量名 引用',
+    help: '前置輸入變量可在工作流處理器中通過 {{$inputs.變量名}} 引用',
     add_btn: '添加變量',
     key: '變量名',
     key_required: '變量名不能為空',
