@@ -30,6 +30,7 @@ const ru_RU = {
     api: 'Триггер API',
   },
   disabled: {
+    form_label: 'Статус отключения',
     label: 'Статус',
     false: 'Включено',
     true: 'Отключено',

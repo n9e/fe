@@ -128,7 +128,7 @@ export default function index(props: Props) {
                 </Form.Item>
               </Col>
               <Col flex='none'>
-                <Form.Item label={t('disabled.label')} name='disabled' valuePropName='checked' initialValue={true}>
+                <Form.Item label={t('disabled.form_label')} name='disabled' valuePropName='checked' initialValue={false}>
                   <Switch size='small' />
                 </Form.Item>
               </Col>
