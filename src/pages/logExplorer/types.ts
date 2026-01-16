@@ -3,6 +3,7 @@ export interface Field {
   indexable: boolean;
   type: string;
   type2?: string;
+  delimiters?: string[];
 }
 export interface IndexDataItem {
   field: string;

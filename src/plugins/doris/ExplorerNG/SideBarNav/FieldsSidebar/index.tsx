@@ -9,6 +9,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import FieldsList, { Field } from '@/pages/logExplorer/components/FieldsList';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
+import { HandleValueFilterParams } from '../../types';
 import { getDorisLogsQuery, getDorisSQLsPreview } from '../../../services';
 import { NAME_SPACE, TYPE_MAP } from '../../../constants';
 import { PinIcon, UnPinIcon } from './PinIcon';
@@ -19,7 +20,7 @@ interface IProps {
   setOrganizeFields: (newOrganizeFields: string[]) => void;
   data: Field[];
   loading: boolean;
-  onValueFilter: (parmas: { key: string; value: any; operator: 'AND' | 'NOT' }) => void;
+  onValueFilter: HandleValueFilterParams;
   executeQuery: () => void;
 
   stackByField?: string;
@@ -55,6 +56,7 @@ export default function index(props: IProps) {
         onValueFilter={(params) => {
           onValueFilter({
             ...params,
+            assignmentOperator: '=',
             operator: params.operator === 'and' ? 'AND' : 'NOT',
           });
         }}
