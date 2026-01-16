@@ -244,6 +244,23 @@ const zh_HK = {
     data_preview_no_eventid: '請先選擇告警事件',
     query_limit: '返回條數限制',
   },
+  event_recover: {
+    help: '告警自癒事件處理器，用於在告警觸發時，在機器上執行 shell 腳本，可用於取得相關告警資訊或執行自癒任務。 <a>使用文檔</a>',
+    title: '告警自癒',
+    create_btn: '建立自癒範本',
+    tpl_id: '自癒範本',
+    tpl_id_required: '自癒範本不能為空',
+    host: '執行機器',
+    host_placeholder: '預設可留空，如果為空，會從事件中的 ident 標籤取得要執行的機器',
+    args: '參數',
+    args_tip: '附於腳本之後的參數，多個參數之間用雙逗號,,分隔，比如arg1,,arg2,,arg3',
+    save_result: '保存執行結果',
+    save_result_tip: '將腳本 執行結果保存到告警事件中',
+    timeout: '等待執行時間',
+    timeout_tip: '若腳本無法在等待時間內執行完，則不會等待結果取得',
+    timeout_max_warning: '等待執行時間不能超過 60 秒',
+    select_host: '篩選機器',
+  },
 };
 
 export default zh_HK;

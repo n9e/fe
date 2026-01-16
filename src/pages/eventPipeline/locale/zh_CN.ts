@@ -265,5 +265,22 @@ const zh_CN = {
     data_preview_no_eventid: '请先选择告警事件',
     query_limit: '返回条数限制',
   },
+  event_recover: {
+    help: '告警自愈事件处理器，用于在告警触发时，在机器上执行 shell 脚本，可用于获取相关告警信息或执行自愈任务。<a>使用文档</a>',
+    title: '告警自愈',
+    create_btn: '创建自愈模板',
+    tpl_id: '自愈模板',
+    tpl_id_required: '自愈模板不能为空',
+    host: '执行机器',
+    host_placeholder: '默认可留空，如果为空，会从事件中的 ident 标签获取要执行的机器',
+    args: '参数',
+    args_tip: '附于脚本之后的参数，多个参数之间用双逗号,,分隔，比如arg1,,arg2,,arg3',
+    save_result: '保存执行结果',
+    save_result_tip: '将脚本 执行结果保存到告警事件中',
+    timeout: '等待执行时间',
+    timeout_tip: '若脚本无法再等待时间内执行完，则不会等待结果获取',
+    timeout_max_warning: '等待执行时间不能超过 60 秒',
+    select_host: '筛选机器',
+  },
 };
 export default zh_CN;
