@@ -29,7 +29,7 @@ const zh_CN = {
     api: 'API 触发',
   },
   disabled: {
-    form_label: '禁用状态',
+    form_label: '启用',
     label: '状态',
     false: '已启用',
     true: '已禁用',

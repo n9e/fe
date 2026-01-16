@@ -128,7 +128,14 @@ export default function index(props: Props) {
                 </Form.Item>
               </Col>
               <Col flex='none'>
-                <Form.Item label={t('disabled.form_label')} name='disabled' valuePropName='checked' initialValue={false}>
+                <Form.Item
+                  label={t('disabled.form_label')}
+                  name='disabled'
+                  valuePropName='checked'
+                  initialValue={false}
+                  getValueFromEvent={(checked) => !checked}
+                  getValueProps={(disabled) => ({ checked: !disabled })}
+                >
                   <Switch size='small' />
                 </Form.Item>
               </Col>

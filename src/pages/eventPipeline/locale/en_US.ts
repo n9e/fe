@@ -30,7 +30,7 @@ const en_US = {
     api: 'API Trigger',
   },
   disabled: {
-    form_label: 'Disabled Status',
+    form_label: 'Enable',
     label: 'Status',
     false: 'Enabled',
     true: 'Disabled',

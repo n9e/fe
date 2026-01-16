@@ -29,7 +29,7 @@ const zh_HK = {
     api: 'API 觸發',
   },
   disabled: {
-    form_label: '禁用狀態',
+    form_label: '啟用',
     label: '狀態',
     false: '已啟用',
     true: '已禁用',
