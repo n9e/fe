@@ -2,6 +2,7 @@ const ja_JP = {
   title: 'ワークフロー',
   title_add: 'イベントパイプラインの追加',
   title_edit: 'イベントパイプラインの編集',
+  title_clone: 'イベントパイプラインのクローン',
   teams: '権限のあるチーム',
   teams_tip:
     'この設定を表示および変更できるチームメンバーを制限します。複数のチームを関連付けることができます<br />例：infra-teamに設定を付与すると、infra-teamのメンバーのみがこの設定にアクセスまたは調整できます。',
@@ -65,12 +66,31 @@ const ja_JP = {
     error_message: 'エラーメッセージ',
     node_results_parsed_title: 'ノード実行結果',
   },
+  test_modal: {
+    title: {
+      settings: 'アラームイベントを選択',
+      result: 'イベントプレビュー',
+    },
+  },
 
   processor: {
     title: 'プロセッサー',
     add_btn: 'プロセッサーを追加',
     typ: 'タイプ',
     help_btn: '使用説明',
+    options: {
+      relabel: 'イベントラベルの書き換え',
+      callback: 'コールバック',
+      event_update: 'イベント更新',
+      event_drop: 'イベント破棄',
+      ai_summary: 'AI要約',
+      label_enrich: 'イベントラベルの充実化',
+      script: 'スクリプト処理',
+      inhibit: 'イベント抑制',
+      inhibit_qd: 'クエリデータによるイベント抑制',
+      annotation_qd: 'クエリデータによる注釈の充実化',
+      event_recover: 'イベント回復',
+    },
   },
   label_enrich: {
     label_source_type: {
@@ -92,12 +112,6 @@ const ja_JP = {
       source_key_placeholder: 'マッピングのフィールド',
       rename_key: 'ラベルキーを変更',
       target_key_placeholder: 'ラベルキー',
-    },
-  },
-  test_modal: {
-    title: {
-      settings: 'アラームイベントを選択',
-      result: 'イベントプレビュー',
     },
   },
   callback: {

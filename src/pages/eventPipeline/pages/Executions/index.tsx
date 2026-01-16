@@ -24,11 +24,11 @@ export default function index() {
   const searchParams = queryString.parse(search);
   const pipelineId = searchParams.pipeline_id ? _.toNumber(searchParams.pipeline_id) : undefined;
   const [filters, setFilters] = useState<{
-    search?: string;
+    pipeline_name?: string;
     mode?: string;
     status?: string;
   }>({
-    search: undefined,
+    pipeline_name: undefined,
     mode: undefined,
     status: undefined,
   });
@@ -82,7 +82,11 @@ export default function index() {
                   }
                 }}
               />
-              <Input.Search placeholder={t('executions.search_placeholder')} value={filters.search} onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))} />
+              <Input.Search
+                placeholder={t('executions.search_placeholder')}
+                // value={filters.pipeline_name}
+                onSearch={(val) => setFilters((prev) => ({ ...prev, pipeline_name: val }))}
+              />
               <Select
                 allowClear
                 placeholder={t('trigger_mode.label')}

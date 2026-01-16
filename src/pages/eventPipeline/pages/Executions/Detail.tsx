@@ -96,8 +96,16 @@ export default function ItemDetaildrawer(props: Props) {
                 description={
                   <div className='mt-4'>
                     <div>
-                      {node.error && <div className='mb-2 text-error '>{node.error}</div>}
-                      {node.message && <div className='mb-2 text-main'>{node.message}</div>}
+                      {node.error && (
+                        <div className='mb-2 text-error '>
+                          <pre className='whitespace-pre-wrap'>{node.error}</pre>
+                        </div>
+                      )}
+                      {node.message && (
+                        <div className='mb-2 text-main'>
+                          <pre className='whitespace-pre-wrap'>{node.message}</pre>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <Space className='text-soft'>

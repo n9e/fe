@@ -8,16 +8,18 @@ import Form from './Form';
 import { normalizeFormValues } from '../utils/normalizeValues';
 
 interface Props {
+  initialValues?: any;
   onOk: () => void;
   onCancel: () => void;
 }
 
-export default function Add({ onOk, onCancel }: Props) {
+export default function Add({ initialValues, onOk, onCancel }: Props) {
   const { t } = useTranslation(NS);
 
   return (
     <>
       <Form
+        initialValues={initialValues}
         onOk={(values) => {
           postItem(normalizeFormValues(values)).then(() => {
             message.success(t('common:success.add'));
