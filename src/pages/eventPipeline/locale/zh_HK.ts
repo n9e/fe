@@ -198,6 +198,7 @@ const zh_HK = {
     timeout: '等待執行時間',
     timeout_tip: '若腳本無法在等待時間內執行完，則不會等待結果取得',
     timeout_max_warning: '等待執行時間不能超過 60 秒',
+    select_host: '篩選機器',
   },
 };
 

@@ -200,6 +200,7 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     timeout: 'Execution wait time',
     timeout_tip: 'If the script cannot be completed within the wait time, the result will not be retrieved',
     timeout_max_warning: 'Execution wait time cannot exceed 60 seconds',
+    select_host: 'Select target machine',
   },
 };
 export default en_US;
