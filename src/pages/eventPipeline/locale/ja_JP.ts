@@ -30,6 +30,7 @@ const ja_JP = {
     api: 'APIトリガー',
   },
   disabled: {
+    form_label: '無効ステータス',
     label: 'ステータス',
     false: '有効',
     true: '無効',
