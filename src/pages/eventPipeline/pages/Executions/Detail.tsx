@@ -81,6 +81,7 @@ export default function ItemDetaildrawer(props: Props) {
           {_.map(data?.node_results_parsed, (node) => {
             return (
               <Steps.Step
+                status='finish'
                 key={node.node_id}
                 icon={iconMap[node.status]}
                 title={
