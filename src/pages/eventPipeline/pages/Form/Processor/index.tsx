@@ -109,31 +109,12 @@ export default function NotifyConfig(props: Props) {
         }
       >
         <Select
-          options={_.concat(
-            [
-              {
-                label: t('processor.options.relabel'),
-                value: 'relabel',
-              },
-              {
-                label: t('processor.options.callback'),
-                value: 'callback',
-              },
-              {
-                label: t('processor.options.event_update'),
-                value: 'event_update',
-              },
-              {
-                label: t('processor.options.event_drop'),
-                value: 'event_drop',
-              },
-              {
-                label: t('processor.options.ai_summary'),
-                value: 'ai_summary',
-              },
-            ],
-            IS_PLUS ? PlusOptions : [],
-          )}
+          options={_.map(_.concat(['relabel', 'callback', 'event_update', 'event_drop', 'ai_summary'], IS_PLUS ? PlusOptions : []), (item) => {
+            return {
+              label: t(`processor.options.${item}`),
+              value: item,
+            };
+          })}
           onChange={(newTyp) => {
             const newConfig = _.cloneDeep(DEFAULT_PROCESSOR_CONFIG_MAP[newTyp]);
             const formValues = _.cloneDeep(form.getFieldsValue());
