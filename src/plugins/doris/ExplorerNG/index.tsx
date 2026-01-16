@@ -18,6 +18,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import { ENABLED_VIEW_CATES, NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import { DefaultFormValuesControl } from '@/pages/logExplorer/types';
 import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
+import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 
 import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
 import { Field } from '../types';
@@ -105,7 +106,8 @@ export default function index(props: Props) {
     });
   };
 
-  const handleValueFilter = (params) => {
+  const handleValueFilter = (params: OnValueFilterParams) => {
+    const assignmentOperator = params.assignmentOperator || ':';
     const values = form.getFieldsValue();
     const query = values.query;
     let queryStr = _.trim(_.split(query.query, '|')?.[0]);
@@ -113,10 +115,10 @@ export default function index(props: Props) {
       queryStr = '';
     }
     if (params.operator === 'AND') {
-      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}:"${params.value}"`;
+      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${params.value}"`;
     }
     if (params.operator === 'NOT') {
-      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}:"${params.value}"`;
+      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${params.value}"`;
     }
     form.setFieldsValue({
       refreshFlag: undefined,

@@ -9,6 +9,7 @@ import Meta from '@/components/Meta';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
 import { getDorisIndex, Field } from '../../services';
+import { HandleValueFilterParams } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import DatabaseSelect from './DatabaseSelect';
 import TableSelect from './TableSelect';
@@ -22,7 +23,7 @@ interface Props {
   organizeFields: string[];
   setOrganizeFields: (organizeFields: string[], setLocalstorage?: boolean) => void;
   onIndexDataChange: (data: Field[]) => void;
-  handleValueFilter: (params: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  handleValueFilter: HandleValueFilterParams;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;

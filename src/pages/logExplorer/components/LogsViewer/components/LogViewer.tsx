@@ -17,7 +17,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE } from '../../../constants';
 import { OnValueFilterParams } from '../types';
 import { LogsViewerStateContext } from '../index';
-import FieldValueWithFilter from './FieldValueWithFilter';
+import LogFieldValue from './LogFieldValue';
 import HighLightJSON from './HighLightJSON';
 
 interface Props {
@@ -95,7 +95,7 @@ export default function LogView(props: Props) {
               dataIndex: 'value',
               key: 'value',
               render: (val, record) => {
-                return <FieldValueWithFilter enableTooltip name={record.field} value={val} onValueFilter={onValueFilter} rawValue={rawValue} fieldValueClassName='truncate' />;
+                return <LogFieldValue enableTooltip name={record.field} value={val} onTokenClick={onValueFilter} rawValue={rawValue} fieldValueClassName='truncate' />;
               },
             },
           ]}
