@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Form, Input, Card, Space, Row, Col, Select, Switch, Button, Affix } from 'antd';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
+import { CommonStateContext } from '@/App';
 import { getTeamInfoList } from '@/services/manage';
 import { SIZE, IS_ENT } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
@@ -25,11 +26,13 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NS);
+  const { profile } = useContext(CommonStateContext);
   const { disabled, initialValues, onOk, onCancel } = props;
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const formValues = Form.useWatch([], form);
   const filter_enable = Form.useWatch(['filter_enable'], form);
+  const use_case = Form.useWatch(['use_case'], form);
 
   useEffect(() => {
     form.setFieldsValue(initialValues ?? DEFAULT_VALUES);
@@ -88,7 +91,7 @@ export default function index(props: Props) {
             <Form.Item label={t('use_case.label')} name='use_case' rules={[{ required: true }]} initialValue='event_pipeline'>
               <Select
                 options={
-                  IS_ENT
+                  IS_ENT && !!profile.admin
                     ? [
                         {
                           label: t('use_case.firemap'),
@@ -106,6 +109,13 @@ export default function index(props: Props) {
                         },
                       ]
                 }
+                onChange={(val) => {
+                  if (val === 'firemap') {
+                    form.setFieldsValue({
+                      trigger_mode: 'api',
+                    });
+                  }
+                }}
               />
             </Form.Item>
           </Col>
@@ -114,16 +124,25 @@ export default function index(props: Props) {
               <Col flex='auto'>
                 <Form.Item label={t('trigger_mode.label')} name='trigger_mode' rules={[{ required: true }]} initialValue='event'>
                   <Select
-                    options={[
-                      {
-                        label: t('trigger_mode.event'),
-                        value: 'event',
-                      },
-                      {
-                        label: t('trigger_mode.api'),
-                        value: 'api',
-                      },
-                    ]}
+                    options={
+                      use_case === 'firemap'
+                        ? [
+                            {
+                              label: t('trigger_mode.api'),
+                              value: 'api',
+                            },
+                          ]
+                        : [
+                            {
+                              label: t('trigger_mode.event'),
+                              value: 'event',
+                            },
+                            {
+                              label: t('trigger_mode.api'),
+                              value: 'api',
+                            },
+                          ]
+                    }
                   />
                 </Form.Item>
               </Col>

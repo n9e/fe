@@ -10,6 +10,7 @@ import { NS } from '../constants';
 import { Item, getList, deleteItems } from '../services';
 import Add from './Add';
 import Edit from './Edit';
+import { Link } from 'react-router-dom';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -42,8 +43,9 @@ export default function List() {
 
   const [eventPipelineDrawerState, setEventPipelineDrawerState] = useState<{
     visible: boolean;
-    action: 'add' | 'edit';
+    action: 'add' | 'edit' | 'clone';
     id?: number;
+    data?: any;
   }>({
     visible: false,
     action: 'add',
@@ -229,6 +231,17 @@ export default function List() {
                     onClick={() => {
                       setEventPipelineDrawerState({
                         visible: true,
+                        action: 'clone',
+                        data: _.omit(item, 'id'),
+                      });
+                    }}
+                  >
+                    {t('common:btn.clone')}
+                  </a>
+                  <a
+                    onClick={() => {
+                      setEventPipelineDrawerState({
+                        visible: true,
                         action: 'edit',
                         id: item.id,
                       });
@@ -256,6 +269,7 @@ export default function List() {
                   >
                     {t('common:btn.delete')}
                   </Button>
+                  <Link to={`/event-pipelines-executions?pipeline_id=${item.id}`}>{t('executions.title')}</Link>
                 </Space>
               );
             },
@@ -309,6 +323,18 @@ export default function List() {
         {eventPipelineDrawerState.action === 'edit' && eventPipelineDrawerState?.id && (
           <Edit
             id={eventPipelineDrawerState.id}
+            onOk={() => {
+              resetEventPipelineDrawerState();
+              featchData();
+            }}
+            onCancel={() => {
+              resetEventPipelineDrawerState();
+            }}
+          />
+        )}
+        {eventPipelineDrawerState.action === 'clone' && eventPipelineDrawerState?.data && (
+          <Add
+            initialValues={eventPipelineDrawerState.data}
             onOk={() => {
               resetEventPipelineDrawerState();
               featchData();

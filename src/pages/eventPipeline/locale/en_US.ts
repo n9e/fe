@@ -2,6 +2,7 @@ const en_US = {
   title: 'Workflow',
   title_add: 'Add workflow',
   title_edit: 'Edit workflow',
+  title_clone: 'Clone workflow',
   teams: 'Authorized teams',
   teams_tip:
     'Limit which team members can view and modify this configuration. Multiple teams can be associated<br />For example: If the configuration is authorized to the infra-team, only members of the infra-team can access or adjust this configuration.',
@@ -65,12 +66,31 @@ const en_US = {
     error_message: 'Error Message',
     node_results_parsed_title: 'Node Execution Results',
   },
+  test_modal: {
+    title: {
+      settings: 'Select event',
+      result: 'Event preview',
+    },
+  },
 
   processor: {
     title: 'Processor',
     add_btn: 'Add processor',
     typ: 'Type',
     help_btn: 'Help',
+    options: {
+      relabel: 'Event label',
+      callback: 'Callback',
+      event_update: 'Event update',
+      event_drop: 'Event drop',
+      ai_summary: 'AI summary',
+      label_enrich: 'Event label enrich',
+      script: 'Run script',
+      inhibit: 'Event inhibit',
+      inhibit_qd: 'Event inhibit by query data',
+      annotation_qd: 'Annotation enrich by query data',
+      event_recover: 'Event recover',
+    },
   },
   label_enrich: {
     label_source_type: {
@@ -92,12 +112,6 @@ const en_US = {
       source_key_placeholder: 'Field in the mapping',
       rename_key: 'Rename label Key',
       target_key_placeholder: 'Label Key',
-    },
-  },
-  test_modal: {
-    title: {
-      settings: 'Select event',
-      result: 'Event preview',
     },
   },
   callback: {

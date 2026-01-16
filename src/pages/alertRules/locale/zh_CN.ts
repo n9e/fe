@@ -338,7 +338,7 @@ const zh_CN = {
     select_tip: '克隆查询条件（留空表示直接创建，不克隆）',
   },
   pipeline_configuration: {
-    title: '事件处理',
+    title: '事件处理流水线',
     name_placeholder: '请选择事件处理流水线',
     add_btn: '添加事件处理流水线',
   },

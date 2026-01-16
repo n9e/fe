@@ -2,6 +2,7 @@ const zh_CN = {
   title: '工作流',
   title_add: '新增事件工作流',
   title_edit: '编辑事件工作流',
+  title_clone: '克隆事件工作流',
   teams: '授权团队',
   teams_tip: '限定哪些团队成员可以查看和修改此配置，可以关联多个团队<br />例如：将配置授权给 infra-team，则只有 infra-team 团队下的成员可以访问或调整本配置。',
   basic_configuration: '基本配置',
@@ -64,12 +65,31 @@ const zh_CN = {
     error_message: '错误信息',
     node_results_parsed_title: '节点执行结果',
   },
+  test_modal: {
+    title: {
+      settings: '选择告警事件',
+      result: '事件预览',
+    },
+  },
 
   processor: {
     title: '处理器',
     add_btn: '添加处理器',
     typ: '类型',
     help_btn: '使用说明',
+    options: {
+      relabel: '事件标签重写',
+      callback: '回调',
+      event_update: '事件更新',
+      event_drop: '事件丢弃',
+      ai_summary: 'AI 摘要',
+      label_enrich: '事件标签丰富',
+      script: '脚本处理',
+      inhibit: '事件抑制',
+      inhibit_qd: '查询数据抑制事件',
+      annotation_qd: '事件附加信息丰富',
+      event_recover: '故障自愈',
+    },
   },
   label_enrich: {
     label_source_type: {
@@ -91,12 +111,6 @@ const zh_CN = {
       source_key_placeholder: '词表中的字段',
       rename_key: '重命名标签 Key',
       target_key_placeholder: '标签 Key',
-    },
-  },
-  test_modal: {
-    title: {
-      settings: '选择告警事件',
-      result: '事件预览',
     },
   },
   callback: {
