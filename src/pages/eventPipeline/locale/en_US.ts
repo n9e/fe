@@ -36,7 +36,7 @@ const en_US = {
   },
   inputs: {
     label: 'Inputs',
-    help: 'Input variables can be referenced in workflow processors via $inputs.variable_name',
+    help: 'Input variables can be referenced in workflow processors via {{$inputs.variable_name}}',
     add_btn: 'Add Variable',
     key: 'Variable Name',
     key_required: 'Variable name cannot be empty',

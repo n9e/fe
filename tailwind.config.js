@@ -57,6 +57,7 @@ module.exports = {
         // use for border
         'primary-light': '#DAC7FF',
         ant: '#D9D9D9',
+        'card-border': 'var(--fc-card-border)',
       },
       backgroundImage: {
         'gradient-offer': 'linear-gradient(28deg, #7438d0 0%, #6437d0 36%, #6437ce 57%, #5148ce 100%)',
