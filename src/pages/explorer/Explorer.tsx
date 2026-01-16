@@ -34,7 +34,7 @@ import { CommonStateContext } from '@/App';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
-import ViewSelect from '@/components/ViewSelect';
+// import ViewSelect from '@/components/ViewSelect';
 
 import { useGlobalState } from './globalState';
 import Prometheus from './Prometheus';
@@ -135,7 +135,7 @@ const Panel = (props: IProps) => {
       >
         <div className='explorer-content'>
           <Row gutter={8}>
-            <Col flex='none'>
+            {/* <Col flex='none'>
               <ViewSelect<Query>
                 disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus], datasourceCate)}
                 page={location.pathname}
@@ -251,7 +251,7 @@ const Panel = (props: IProps) => {
                   return {};
                 }}
               />
-            </Col>
+            </Col> */}
             <Col flex='none'>
               <>
                 <Form.Item name='datasourceCate' hidden>
