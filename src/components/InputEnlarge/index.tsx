@@ -14,7 +14,9 @@ export default function InputEnlarge({
   linkBuilder,
   ...props
 }: InputProps & { linkBuilder?: { variables?: string[]; extracts?: ILogExtract[]; mappingParamsArr?: ILogMappingParams[]; rawData?: object } }) {
-  const { darkMode } = useContext(CommonStateContext);
+  const { darkMode: appDarkMode } = useContext(CommonStateContext);
+  // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底；无痕第一次登录时 兜不住，再拿body上的classname来兜底一下
+  const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const [visible, setVisible] = useState(false);
   const [linkBuilderVisible, setLinkBuilderVisible] = useState(false);
   const vars = [
