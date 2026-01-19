@@ -271,6 +271,7 @@ export function getDorisSQLsPreview(data: {
 
       func: string; // 'unique_count' | 'ratio' | 'max' | 'min' | 'avg' 等
       field?: string; // func 作用的字段
+      field_filter?: string; // 选择 topn 项时带上的过滤条件
       ref?: string; // topn，只用于 ration 查询范围
     },
   ];
