@@ -32,9 +32,9 @@ interface Props {
     options: {
       func: string;
       field?: string;
+      field_filter?: string; // field value
       ref?: string;
       group_by?: string;
-      appendQuery?: string;
     },
   ) => void;
 }
@@ -195,7 +195,7 @@ export default function FieldsItem(props: Props) {
                           options={{
                             func: 'count',
                             field: field.field,
-                            appendQuery: `${field.field}='${fieldValue}'`,
+                            field_filter: fieldValue,
                           }}
                           onStatisticClick={onStatisticClick}
                           setTopNVisible={setTopNVisible}
@@ -211,7 +211,7 @@ export default function FieldsItem(props: Props) {
                           options={{
                             func: 'ratio',
                             field: field.field,
-                            appendQuery: `${field.field}='${fieldValue}'`,
+                            field_filter: fieldValue,
                           }}
                           onStatisticClick={onStatisticClick}
                           setTopNVisible={setTopNVisible}
