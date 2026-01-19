@@ -16,8 +16,10 @@ const ru_RU = {
       raw: 'Исходный текст журнала',
       timeSeries: 'Временная диаграмма',
     },
-    query_tip:
-      'SQL пример: Запрос количества строк журнала за последние 5 минут SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />Для получения дополнительных инструкций по режиму SQL, пожалуйста, обратитесь к <a>Инструкциям по режиму SQL Doris</a>',
+    query_tip: `Примеры SQL:<br />
+    1. Запрос количества строк журнала за последние 5 минут SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. Запрос количества строк журнала за выбранный интервал времени SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    Дополнительную информацию о режиме SQL см. в разделе <a>Режим Doris SQL</a>`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Запрос',
     database: 'База данных',
@@ -61,7 +63,16 @@ const ru_RU = {
     stack_tip_pin: 'Включить гистограмму с накоплением',
     stack_tip_unpin: 'Отключить гистограмму с накоплением',
     stack_group_by_tip: 'Отображение накопленной диаграммы тенденций по значению этого поля',
-    sql_format: 'Формат SQL',
+    sql_format: {
+      title: 'SQL предварительный просмотр',
+      tip: 'Максимальные, минимальные, процентильные и другие сложные SQL-поля можно просмотреть, щелкнув список полей слева.',
+      origin: 'Просмотреть исходные журналы',
+      origin_tip: 'Для режима Log Explorer - Raw',
+      timeseries: 'Просмотреть временные ряды',
+      timeseries_tip: 'Для режима Log Explorer - Time Series или для построения временных диаграмм на основе данных Doris в панелях мониторинга',
+      table: 'Просмотреть статистику',
+      table_tip: 'Используется для создания правил оповещения Doris, правил записи, создания индикаторов Polaris и т. д.',
+    },
     defaultSearchField: 'Поле поиска по умолчанию',
     default_search_tip_1: 'Установить в качестве поля поиска по умолчанию',
     default_search_tip_2: 'Отменить поле поиска по умолчанию',

@@ -5,6 +5,13 @@ const zh_HK = {
   OIDC: 'OIDC',
   OAuth2: 'OAuth2',
   dingtalk: '釘釘',
+  feishu: '飛書',
+  callback_url: '回調地址',
+  feishu_setting: {
+    app_id_tip: '飛書開放平台應用唯一識別碼, 在創建應用時，由系統自動生成，用戶不能自行修改。可以在<1>開發者後台</1>的憑證與基本信息頁面查看app_id',
+    app_secret_tip: '應用密碼。在創建應用時，由系統自動生成',
+    cover_attributes_tip: '每次登入後，如果用戶信息有變化，會使用飛書中用戶的信息覆蓋夜鶯中用戶的信息(手機號、郵箱)',
+  },
   dingtalk_setting: {
     enable: '啟用',
     display_name: '顯示名稱',

@@ -16,8 +16,10 @@ const en_US = {
       raw: 'Raw',
       timeSeries: 'TimeSeries',
     },
-    query_tip:
-      'SQL example: Query the number of log lines in the last 5 minutes SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />For more SQL mode instructions, please refer to <a>Doris SQL Mode Instructions</a>',
+    query_tip: `SQL Examples:<br />
+    1. Query the number of log rows in the last 5 minutes SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. Query the number of log rows in the selected time interval SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    For more information about SQL mode, please refer to <a>Doris SQL Mode</a>`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',
@@ -59,7 +61,16 @@ const en_US = {
     stack_tip_pin: 'Enable stacked chart',
     stack_tip_unpin: 'Disable stacked chart',
     stack_group_by_tip: 'Display stacked trend chart by this field value',
-    sql_format: 'SQL Format',
+    sql_format: {
+      title: 'SQL Preview',
+      tip: 'Maximum, minimum, percentile, and other complex SQL fields can be viewed by clicking on the field list on the left.',
+      origin: 'View Raw Logs',
+      origin_tip: 'Can be copied to the Table Structure View -> Table mode to view the data',
+      timeseries: 'View Time Series',
+      timeseries_tip: 'Can be copied to the Table Structure View -> Time Series mode to view the data, or used to plot time series charts in dashboards based on Doris data.',
+      table: 'View Statistics',
+      table_tip: 'Can be used to create Doris alert rules, record rules, and create Polaris metrics.',
+    },
     defaultSearchField: 'Default Search Field',
     default_search_tip_1: 'Set as default search field',
     default_search_tip_2: 'Cancel default search field',

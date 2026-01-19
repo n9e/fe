@@ -9,6 +9,7 @@ import { DefaultFormValuesControl } from './types';
 import PlusLogExplorer from 'plus:/parcels/LogExplorer';
 
 interface Props {
+  active: boolean;
   tabKey: string;
   tabIndex?: number;
   defaultFormValuesControl?: DefaultFormValuesControl;
@@ -16,20 +17,24 @@ interface Props {
 
 export default function Explorer(props: Props) {
   const location = useLocation();
-  const { tabKey, defaultFormValuesControl } = props;
+  const { active, tabKey, defaultFormValuesControl } = props;
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
 
   useEffect(() => {
-    if (defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
+    if (active && defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
       const searchParams = new URLSearchParams(location.search);
       defaultFormValuesControl.setIsInited();
       form.setFieldsValue({
         ...defaultFormValuesControl.defaultFormValues,
-        refreshFlag: searchParams.get('__execute__') ? _.uniqueId('refreshFlag_') : undefined,
+        refreshFlag: defaultFormValuesControl.defaultFormValues?.refreshFlag
+          ? defaultFormValuesControl.defaultFormValues?.refreshFlag
+          : searchParams.get('__execute__')
+          ? _.uniqueId('refreshFlag_')
+          : undefined,
       });
     }
-  }, []);
+  }, [active]);
 
   return (
     <div className={`h-full explorer-container-${tabKey}`}>

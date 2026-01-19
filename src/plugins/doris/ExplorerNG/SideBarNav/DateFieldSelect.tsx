@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { OutlinedSelect } from '@/components/OutlinedSelect';
 
-import { NAME_SPACE } from '../../../constants';
-import { Field } from '../../../services';
+import { NAME_SPACE } from '../../constants';
+import { Field } from '../../services';
 
 interface Props {
   dateFields: Field[];

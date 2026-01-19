@@ -173,7 +173,6 @@ function LogsViewer(props: Props) {
               <Radio.Group
                 size='small'
                 optionType='button'
-                buttonStyle='solid'
                 options={[
                   {
                     label: t('logs.settings.mode.origin'),

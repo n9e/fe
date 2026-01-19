@@ -30,6 +30,7 @@ import {
   getRedirectURLOAuth,
   getRedirectURLCustom,
   getRedirectURLDingtalk,
+  getRedirectURLFeishu,
   authLogin,
   getRSAConfig,
 } from '@/services/login';
@@ -58,6 +59,7 @@ export interface DisplayName {
   oauth: string;
   custom?: string;
   dingTalk?: string;
+  feishu?: string;
 }
 
 export default function Login() {
@@ -72,6 +74,7 @@ export default function Login() {
     oauth: 'OAuth',
     custom: 'Custom',
     dingTalk: 'dingTalk',
+    feishu: 'Feishu',
   });
   const [showcaptcha, setShowcaptcha] = useState(false);
   const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
@@ -98,6 +101,7 @@ export default function Login() {
           oauth: res.dat.oauthDisplayName,
           custom: res.dat.customDisplayName,
           dingTalk: res.dat.dingTalkDisplayName,
+          feishu: res.dat.feishuDisplayName,
         });
       }
     });
@@ -294,6 +298,21 @@ export default function Login() {
                       }}
                     >
                       {displayName.dingTalk}
+                    </a>
+                  )}
+                  {displayName.feishu && (
+                    <a
+                      onClick={() => {
+                        getRedirectURLFeishu(redirect).then((res) => {
+                          if (res.dat) {
+                            window.location.href = res.dat;
+                          } else {
+                            message.warning('没有配置 feishu 登录地址！');
+                          }
+                        });
+                      }}
+                    >
+                      {displayName.feishu}
                     </a>
                   )}
                 </Space>

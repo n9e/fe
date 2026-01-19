@@ -6,8 +6,8 @@ import { Space, Tooltip } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { Field } from '../../../types';
-import FieldValueWithFilter from '../components/FieldValueWithFilter';
-import { OptionsType } from '../types';
+import LogFieldValue from '../components/LogFieldValue';
+import { OptionsType, OnValueFilterParams } from '../types';
 import toString from './toString';
 
 export default function getColumnsFromFields(params: {
@@ -16,7 +16,7 @@ export default function getColumnsFromFields(params: {
   fields: string[];
   timeField?: string;
   options?: OptionsType;
-  onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  onValueFilter?: (parmas: OnValueFilterParams) => void;
   data?: any[];
   tableColumnsWidthCacheKey?: string;
   onOpenOrganizeFieldsModal?: () => void;
@@ -84,7 +84,7 @@ export default function getColumnsFromFields(params: {
         return (
           <div className='max-h-[140px]'>
             {onValueFilter ? (
-              <FieldValueWithFilter enableTooltip name={item} value={toString(record[item])} onValueFilter={onValueFilter} rawValue={record} />
+              <LogFieldValue enableTooltip name={item} value={toString(record[item])} onTokenClick={onValueFilter} rawValue={record} />
             ) : (
               <Tooltip placement='topLeft' overlayClassName='ant-tooltip-max-width-600' title={toString(record[item])}>
                 {toString(record[item])}

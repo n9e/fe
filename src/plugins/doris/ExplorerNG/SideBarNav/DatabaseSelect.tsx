@@ -5,36 +5,39 @@ import { useTranslation } from 'react-i18next';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { OutlinedSelect } from '@/components/OutlinedSelect';
 
-import { NAME_SPACE } from '../../../constants';
-import { getDorisTables } from '../../../services';
+import { NAME_SPACE } from '../../constants';
+import { getDorisDatabases } from '../../services';
 
 interface Props {
   datasourceValue: number;
-  database?: string;
   value?: string;
   onChange?: (value: string) => void;
   disabled?: boolean;
 }
 
-export default function TableSelect(props: Props) {
+export default function DatabaseSelect(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceValue, database, value, onChange, disabled } = props;
-  const [tables, setTables] = useState<string[]>([]);
+  const { datasourceValue, value, onChange, disabled } = props;
+  const [databases, setDatabases] = useState<string[]>([]);
 
   useEffect(() => {
-    if (datasourceValue && database) {
-      getDorisTables({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, query: [database] }).then((res) => {
-        setTables(res);
-      });
+    if (datasourceValue) {
+      getDorisDatabases({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue })
+        .then((res) => {
+          setDatabases(res);
+        })
+        .catch(() => {
+          setDatabases([]);
+        });
     }
-  }, [datasourceValue, database]);
+  }, [datasourceValue]);
 
   return (
     <OutlinedSelect
-      label={t('query.table')}
+      label={t('query.database')}
       showSearch
       optionFilterProp='label'
-      options={_.map(tables, (item) => {
+      options={_.map(databases, (item) => {
         return { label: item, value: item };
       })}
       value={value}

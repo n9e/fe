@@ -132,7 +132,7 @@ function Table(props: Props) {
       <Drawer
         title={t('log_viewer_drawer_title')}
         placement='right'
-        width='80%'
+        width='55%'
         onClose={() => {
           setLogViewerDrawerState({ visible: false, value: null });
         }}

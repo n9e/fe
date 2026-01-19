@@ -1,54 +1,50 @@
-/**
- * 带添加检索条件功能的字段值展示组件
- */
-
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
+import { Popover, Space, Tooltip } from 'antd';
+import { MinusCircleOutlined, PlusCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Space, Popover, Tooltip } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, CopyOutlined } from '@ant-design/icons';
+import moment from 'moment';
 
 import { copy2ClipBoard } from '@/utils';
-import { parseRange } from '@/components/TimeRangePicker';
 import IconFont from '@/components/IconFont';
+import { Link, handleNav } from '@/pages/explorer/components/Links';
+import { parseRange } from '@/components/TimeRangePicker';
 
-import { NAME_SPACE } from '../../../constants';
-import { Field } from '../../../types';
-import { Link, handleNav } from '../../../components/Links';
-import { LogsViewerStateContext } from '../index';
+import { toString } from './util';
+import { LogsViewerStateContext } from '../../index';
+import { Field } from '../../../../types';
+import { NAME_SPACE } from '../../../../constants';
+import { OnValueFilterParams } from '../../types';
 
-interface RenderValueProps {
+interface Props {
+  segmented: boolean;
+  indexName?: string; // 用于 SLS 添加检索条件时的 key
+  parentKey?: string; // 嵌套json渲染时可以传入，目前仅用在下钻的字段名判断中。目前仅在 sls 中使用
   name: string;
   value: string;
-  onValueFilter?: (parmas: { key: string; value: string; operator: 'AND' | 'NOT'; indexName: string }) => void;
+  fieldValue: string;
+  onTokenClick?: (parmas: OnValueFilterParams) => void;
   rawValue?: { [key: string]: any };
   enableTooltip?: boolean;
   fieldValueClassName?: string;
 }
 
-export default function FieldValueWithFilter({ name, value, onValueFilter, rawValue, enableTooltip, fieldValueClassName }: RenderValueProps) {
+export default function Token(props: Props) {
   const { indexData, getAddToQueryInfo } = useContext(LogsViewerStateContext);
 
   if (getAddToQueryInfo && (!indexData || _.isEmpty(indexData))) return null;
-  return (
-    <FieldValueWithFilterContext
-      name={name}
-      value={value}
-      onValueFilter={onValueFilter}
-      rawValue={rawValue}
-      indexData={indexData || []}
-      enableTooltip={enableTooltip}
-      fieldValueClassName={fieldValueClassName}
-    />
-  );
+  return <TokenWithContext {...props} indexData={indexData || []} />;
 }
 
-function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, indexData, enableTooltip, fieldValueClassName = '' }: RenderValueProps & { indexData: Field[] }) {
+function TokenWithContext(props: Props & { indexData: Field[] }) {
   const { t } = useTranslation(NAME_SPACE);
   const { fieldConfig, range, getAddToQueryInfo } = useContext(LogsViewerStateContext);
+
+  const { segmented, indexName, parentKey, name, value, fieldValue, onTokenClick, rawValue, enableTooltip, fieldValueClassName, indexData } = props;
+
   const [popoverVisible, setPopoverVisible] = useState(false);
-  const relatedLinks = fieldConfig?.linkArr?.filter((item) => item.field === name);
+  const relatedLinks = fieldConfig?.linkArr?.filter((item) => (parentKey ? item.field === parentKey : item.field === name));
+
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
   let end = parsedRange ? moment(parsedRange.end).unix() : 0;
@@ -64,10 +60,9 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
 
   return (
     <Popover
-      placement='bottomLeft'
       visible={popoverVisible}
       onVisibleChange={(visible) => {
-        if (onValueFilter) {
+        if (onTokenClick) {
           setPopoverVisible(visible);
         }
       }}
@@ -79,7 +74,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
             className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
             onClick={() => {
               setPopoverVisible(false);
-              copy2ClipBoard(`${name}:${value}`);
+              copy2ClipBoard(`${name}:${fieldValue}`);
             }}
           >
             <Space>
@@ -89,13 +84,58 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
           </li>
           {indexInfo.isIndex && (
             <>
+              {segmented && (
+                <>
+                  <li
+                    className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                    onClick={() => {
+                      setPopoverVisible(false);
+                      onTokenClick?.({
+                        key: indexName ?? name,
+                        value,
+                        assignmentOperator: ':',
+                        operator: 'AND',
+                        indexName: indexInfo.indexName,
+                      });
+                    }}
+                  >
+                    <Space>
+                      <PlusCircleOutlined />
+                      {t('logs.filterAnd', {
+                        token: toString(value),
+                      })}
+                    </Space>
+                  </li>
+                  <li
+                    className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                    onClick={() => {
+                      setPopoverVisible(false);
+                      onTokenClick?.({
+                        key: indexName ?? name,
+                        value,
+                        assignmentOperator: ':',
+                        operator: 'NOT',
+                        indexName: indexInfo.indexName,
+                      });
+                    }}
+                  >
+                    <Space>
+                      <MinusCircleOutlined />
+                      {t('logs.filterNot', {
+                        token: toString(value),
+                      })}
+                    </Space>
+                  </li>
+                </>
+              )}
               <li
                 className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                 onClick={() => {
                   setPopoverVisible(false);
-                  onValueFilter?.({
-                    key: name,
-                    value,
+                  onTokenClick?.({
+                    key: indexName ?? name,
+                    value: fieldValue,
+                    assignmentOperator: '=',
                     operator: 'AND',
                     indexName: indexInfo.indexName,
                   });
@@ -103,16 +143,17 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
               >
                 <Space>
                   <PlusCircleOutlined />
-                  {t('logs.filterAnd')}
+                  {t('logs.filterAllAnd')}
                 </Space>
               </li>
               <li
                 className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                 onClick={() => {
                   setPopoverVisible(false);
-                  onValueFilter?.({
-                    key: name,
-                    value,
+                  onTokenClick?.({
+                    key: indexName ?? name,
+                    value: fieldValue,
+                    assignmentOperator: '=',
                     operator: 'NOT',
                     indexName: indexInfo.indexName,
                   });
@@ -120,7 +161,7 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
               >
                 <Space>
                   <MinusCircleOutlined />
-                  {t('logs.filterNot')}
+                  {t('logs.filterAllNot')}
                 </Space>
               </li>
             </>
@@ -130,7 +171,6 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
           {relatedLinks?.map((i) => {
             return (
               <li
-                key={i}
                 className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                 style={{ textDecoration: 'underline' }}
                 onClick={() => {
@@ -167,17 +207,17 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
       >
         {relatedLinks && relatedLinks.length > 0 ? (
           <Link
-            text={value}
+            text={toString(value)}
             linkContext={{
               rawValue: rawValue!,
               name,
               fieldConfig,
               range,
+              parentKey,
             }}
-            inTable
           />
         ) : (
-          <div className={`explorer-origin-field-val ${fieldValueClassName}`}>{value}</div>
+          <div className={`inline text-hint m-0 p-0 cursor-pointer hover:underline ${fieldValueClassName ?? ''}`}>{toString(value)}</div>
         )}
       </Tooltip>
     </Popover>
