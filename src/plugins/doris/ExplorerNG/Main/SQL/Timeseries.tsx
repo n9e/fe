@@ -196,6 +196,7 @@ export default function TimeseriesCpt(props: Props) {
             const series = _.map(res, (item) => {
               return {
                 id: _.uniqueId('series_'),
+                refId: item.refId,
                 name: getSerieName(item.metric),
                 metric: {},
                 data: item.values,

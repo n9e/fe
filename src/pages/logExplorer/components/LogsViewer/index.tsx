@@ -13,7 +13,7 @@ import HistogramChart from './components/HistogramChart';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
-import { OptionsType } from './types';
+import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
 import classNames from 'classnames';
@@ -41,7 +41,7 @@ interface Props {
   /** 配置项变更回调 */
   onOptionsChange?: (options: OptionsType, reload?: boolean) => void;
   /** 添加过滤条件回调 */
-  onAddToQuery?: (condition: { key: string; value: string; operator: 'AND' | 'NOT' }) => void;
+  onAddToQuery?: (condition: OnValueFilterParams) => void;
   /** 时间范围变更回调 */
   onRangeChange?: (range: { start: Moment; end: Moment }) => void;
   /** 更新日志请求参数回调 */

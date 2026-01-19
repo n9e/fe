@@ -12,5 +12,7 @@ export interface OptionsType {
 export interface OnValueFilterParams {
   key: string;
   value: string;
+  assignmentOperator?: ':' | '=';
   operator: 'AND' | 'NOT';
+  indexName?: string;
 }
