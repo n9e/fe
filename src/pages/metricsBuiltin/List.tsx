@@ -649,7 +649,6 @@ export default function index() {
           initialValues={formDrawerData?.initialValues}
           title={formDrawerData?.title}
           typesList={typesList}
-          collectorsList={collectorsList}
           onOk={() => {
             setRefreshFlag(_.uniqueId('refreshFlag_'));
           }}
