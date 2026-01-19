@@ -87,6 +87,18 @@ const ja_JP = {
     duration: '所要時間',
     count: '件数',
     click_doc: 'クリックして<a>クエリ条件</a>のドキュメントを表示',
+    navMode: {
+      fields: 'フィールドビュー',
+      schema: 'スキーマビュー',
+    },
+    syntax: {
+      query: 'Query モード',
+      sql: 'SQL モード',
+    },
+    sqlVizType: {
+      table: 'テーブル',
+      timeseries: '時系列',
+    },
   },
 };
 
