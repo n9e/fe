@@ -109,5 +109,11 @@ const zh_CN = {
     title: '标签丰富',
   },
   endpoint_title: '服务入口',
+  mtls: {
+    ca_cert: 'CA 证书',
+    server_name: '服务器名称',
+    client_cert: '客户端证书',
+    client_key: '客户端密钥',
+  },
 };
 export default zh_CN;
