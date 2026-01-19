@@ -71,6 +71,12 @@ const zh_CN = {
       result: '事件预览',
     },
   },
+  batch: {
+    not_select: '请先选择要操作的工作流',
+    export: {
+      title: '批量导出',
+    },
+  },
 
   processor: {
     title: '处理器',

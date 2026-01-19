@@ -72,6 +72,12 @@ const en_US = {
       result: 'Event preview',
     },
   },
+  batch: {
+    not_select: 'Please select workflows to operate',
+    export: {
+      title: 'Batch Export',
+    },
+  },
 
   processor: {
     title: 'Processor',
