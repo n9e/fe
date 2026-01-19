@@ -96,6 +96,7 @@ const ja_JP = {
     step_tip: 'グラフの時間間隔、単位は秒',
     query_label: 'クエリ条件',
     trigger_label: 'アラート条件',
+    current_anomaly_time: '今回の異常時間',
   },
 
   sharing_link: {
