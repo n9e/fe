@@ -4,13 +4,15 @@ import { Space, Table, Button, Tag, Input, Modal, Drawer, Select } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
+
 import usePagination from '@/components/usePagination';
 
-import { NS } from '../constants';
-import { Item, getList, deleteItems } from '../services';
-import Add from './Add';
-import Edit from './Edit';
-import { Link } from 'react-router-dom';
+import { NS } from '../../constants';
+import { Item, getList, deleteItems } from '../../services';
+import Add from '../Add';
+import Edit from '../Edit';
+import MoreOperations from './MoreOperations';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -27,6 +29,7 @@ export default function List() {
     list: [],
     loading: false,
   });
+  const [selectedRows, setSelectedRows] = useState<Item[]>([]);
 
   const pagination = usePagination({ PAGESIZE_KEY: 'event-pipelines-pagesize' });
 
@@ -147,6 +150,7 @@ export default function List() {
           >
             {t('common:btn.add')}
           </Button>
+          <MoreOperations selectedRows={selectedRows} />
         </Space>
       </div>
       <Table
@@ -301,6 +305,12 @@ export default function List() {
         })}
         loading={data.loading}
         pagination={pagination}
+        rowSelection={{
+          selectedRowKeys: selectedRows.map((item) => item.id),
+          onChange: (_selectedRowKeys: React.Key[], selectedRows: Item[]) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
       />
       <Drawer
         title={t(`${NS}:title_${eventPipelineDrawerState.action}`)}

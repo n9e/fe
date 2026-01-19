@@ -72,6 +72,12 @@ const ja_JP = {
       result: 'イベントプレビュー',
     },
   },
+  batch: {
+    not_select: '操作するワークフローを選択してください',
+    export: {
+      title: '一括エクスポート',
+    },
+  },
 
   processor: {
     title: 'プロセッサー',
