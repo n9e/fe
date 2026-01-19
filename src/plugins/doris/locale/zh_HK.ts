@@ -82,6 +82,18 @@ const zh_HK = {
     duration: '耗時',
     count: '條數',
     click_doc: '點擊查看 <a>查詢條件</a> 文檔',
+    navMode: {
+      fields: '字段視圖',
+      schema: '表結構視圖',
+    },
+    syntax: {
+      query: 'Query 模式',
+      sql: 'SQL 模式',
+    },
+    sqlVizType: {
+      table: '表格',
+      timeseries: '時序圖',
+    },
   },
 };
 

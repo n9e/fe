@@ -87,6 +87,18 @@ const en_US = {
     duration: 'Duration',
     count: 'Count',
     click_doc: 'Click to view <a>Query Condition</a> documentation',
+    navMode: {
+      fields: 'Fields',
+      schema: 'Schema',
+    },
+    syntax: {
+      query: 'Query Mode',
+      sql: 'SQL Mode',
+    },
+    sqlVizType: {
+      table: 'Table',
+      timeseries: 'Time Series',
+    },
   },
 };
 export default en_US;
