@@ -26,16 +26,14 @@ function bytesToSize(bytes, precision) {
 }
 
 function RenderInterfaces({ value }) {
+  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('targets');
   const [expand, setExpand] = useState(false);
 
   return (
     <div>
       <div
-        style={{
-          cursor: 'pointer',
-          color: 'rgba(28, 43, 52, .68)',
-        }}
+        className='cursor-pointer text-hint'
         onClick={() => {
           setExpand(!expand);
         }}
@@ -61,7 +59,7 @@ function RenderInterfaces({ value }) {
                     <div className='target-information-interface-item-value'>
                       <Tooltip title={t('meta_value_click_to_copy')} placement='right'>
                         <Tag
-                          color='#f4f4f5'
+                          color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
                           onClick={() => {
                             copyToClipBoard(v);
                           }}
