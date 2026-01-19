@@ -11,7 +11,7 @@ interface Props {
     field?: string;
     ref?: string;
     group_by?: string;
-    appendQuery?: string;
+    field_filter?: string;
   };
   onStatisticClick?: (
     type: string,
@@ -20,7 +20,7 @@ interface Props {
       field?: string;
       ref?: string;
       group_by?: string;
-      appendQuery?: string;
+      field_filter?: string;
     },
   ) => void;
   setTopNVisible: (visible: boolean) => void;

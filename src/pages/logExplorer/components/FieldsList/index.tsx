@@ -37,7 +37,7 @@ interface Props {
       field?: string;
       ref?: string;
       group_by?: string;
-      appendQuery?: string;
+      field_filter?: string;
     },
   ) => void;
 }
