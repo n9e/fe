@@ -90,6 +90,18 @@ const ru_RU = {
     duration: 'Продолжительность',
     count: 'Количество',
     click_doc: 'Щелкните, чтобы просмотреть документацию по <a>условию запроса</a>',
+    navMode: {
+      fields: 'Просмотр полей',
+      schema: 'Просмотр схемы',
+    },
+    syntax: {
+      query: 'Режим запроса',
+      sql: 'Режим SQL',
+    },
+    sqlVizType: {
+      table: 'Таблица',
+      timeseries: 'Временные ряды',
+    },
   },
 };
 export default ru_RU;
