@@ -24,7 +24,7 @@ import { LANGUAGE_MAP, SIZE } from '@/utils/constant';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import { getComponents, Component } from '@/pages/builtInComponents/services';
 
-import { postMetrics, putMetric } from '../../services';
+import { postMetrics, putMetric, getCollectors } from '../../services';
 import LangSelectPopver from './LangSelectPopver';
 
 interface Props {
@@ -33,16 +33,17 @@ interface Props {
   mode?: 'add' | 'edit' | 'clone';
   title?: string;
   typesList: string[];
-  collectorsList: string[];
   initialValues?: any;
   onOk: () => void;
 }
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation('metricsBuiltin');
-  const { open, onOpenChange, mode, title, typesList, collectorsList, initialValues, onOk } = props;
+  const { open, onOpenChange, mode, title, typesList, initialValues, onOk } = props;
   const [typsMeta, setTypsMeta] = useState<Component[]>([]);
+  const [collectorsList, setCollectorsList] = useState<string[]>([]);
   const [form] = Form.useForm();
+  const typ = Form.useWatch('typ', form);
   const translation = Form.useWatch('translation', form);
   const expression_type = Form.useWatch('expression_type', form);
   const otherLangs = _.filter(Object.keys(LANGUAGE_MAP), (lang) => {
@@ -56,6 +57,14 @@ export default function index(props: Props) {
       setTypsMeta(res);
     });
   }, []);
+
+  useEffect(() => {
+    getCollectors({
+      typ,
+    }).then((res) => {
+      setCollectorsList(res);
+    });
+  }, [typ]);
 
   useEffect(() => {
     form.setFieldsValue(initialValues);
