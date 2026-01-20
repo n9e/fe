@@ -105,6 +105,7 @@ export default function NewMetricExplorerDrawer(props: Props) {
                 promQL={promql}
                 showGlobalMetrics={false}
                 showBuilder={false}
+                defaultUnit='datetimeSeconds'
               />
             </div>
           </div>
