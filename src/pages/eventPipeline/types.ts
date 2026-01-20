@@ -19,6 +19,9 @@ export type BaseItem = {
     func: string;
     value: string;
   }[];
+  use_case: string;
+  trigger_mode: string;
+  disabled: boolean;
 };
 
 export type RelabelItem = BaseItem & {
@@ -81,3 +84,31 @@ export type AISummaryItem = BaseItem & {
 };
 
 export type Item = RelabelItem | LabelEnrichItem | CallbackItem | AISummaryItem;
+
+export type ExecutionItem = {
+  id: string;
+  pipeline_id: number;
+  pipeline_name: string;
+  event_id: number;
+  mode: 'event' | 'api';
+  status: 'running' | 'success' | 'failed';
+  node_results: string;
+  error_message: string;
+  error_node: string;
+  created_at: number;
+  finished_at: number;
+  duration_ms: number;
+  trigger_by: string;
+  inputs_snapshot: string;
+  node_results_parsed: {
+    node_id: string;
+    node_name: string;
+    node_type: string;
+    status: string;
+    message: string;
+    error: string;
+    started_at: number;
+    finished_at: number;
+    duration_ms: number;
+  }[];
+};

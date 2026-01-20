@@ -2,6 +2,7 @@ const en_US = {
   title: 'Workflow',
   title_add: 'Add workflow',
   title_edit: 'Edit workflow',
+  title_clone: 'Clone workflow',
   teams: 'Authorized teams',
   teams_tip:
     'Limit which team members can view and modify this configuration. Multiple teams can be associated<br />For example: If the configuration is authorized to the infra-team, only members of the infra-team can access or adjust this configuration.',
@@ -19,11 +20,83 @@ const en_US = {
     cluster: 'Data source',
     is_recovered: 'Is recovered?',
   },
+  use_case: {
+    label: 'Use Case',
+    firemap: 'Fire Map',
+    event_pipeline: 'Event Pipeline',
+  },
+  trigger_mode: {
+    label: 'Trigger Mode',
+    event: 'Event Trigger',
+    api: 'API Trigger',
+  },
+  disabled: {
+    form_label: 'Enable',
+    label: 'Status',
+    false: 'Enabled',
+    true: 'Disabled',
+  },
+  inputs: {
+    label: 'Inputs',
+    help: 'Input variables can be referenced in workflow processors via {{$inputs.variable_name}}',
+    add_btn: 'Add Variable',
+    key: 'Variable Name',
+    key_required: 'Variable name cannot be empty',
+    value: 'Default Value',
+    description: 'Description',
+  },
+  executions: {
+    title: 'Execution History',
+    search_placeholder: 'Enter search keyword',
+    status: {
+      label: 'Status',
+      running: 'Running',
+      success: 'Success',
+      failed: 'Failed',
+    },
+    id: 'Execution ID',
+    pipeline_name: 'Workflow Name',
+    mode: 'Trigger Mode',
+    created_at: 'Start Time',
+    finished_at: 'End Time',
+    duration_ms: 'Duration (ms)',
+    trigger_by: 'Triggered By',
+    detail_title: 'Execution Details',
+    detail_basic_info: 'Basic Information',
+    error_message: 'Error Message',
+    node_results_parsed_title: 'Node Execution Results',
+  },
+  test_modal: {
+    title: {
+      settings: 'Select event',
+      result: 'Event preview',
+    },
+  },
+  batch: {
+    not_select: 'Please select workflows to operate',
+    export: {
+      title: 'Batch Export',
+    },
+  },
+
   processor: {
     title: 'Processor',
     add_btn: 'Add processor',
     typ: 'Type',
     help_btn: 'Help',
+    options: {
+      relabel: 'Event label',
+      callback: 'Callback',
+      event_update: 'Event update',
+      event_drop: 'Event drop',
+      ai_summary: 'AI summary',
+      label_enrich: 'Event label enrich',
+      script: 'Run script',
+      inhibit: 'Event inhibit',
+      inhibit_qd: 'Event inhibit by query data',
+      annotation_qd: 'Annotation enrich by query data',
+      event_recover: 'Event recover',
+    },
   },
   label_enrich: {
     label_source_type: {
@@ -45,12 +118,6 @@ const en_US = {
       source_key_placeholder: 'Field in the mapping',
       rename_key: 'Rename label Key',
       target_key_placeholder: 'Label Key',
-    },
-  },
-  test_modal: {
-    title: {
-      settings: 'Select event',
-      result: 'Event preview',
     },
   },
   callback: {
@@ -184,6 +251,23 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     data_preview_query: 'Query Statement',
     data_preview_no_eventid: 'Please select an alert event first',
     query_limit: 'Return limit',
+  },
+  event_recover: {
+    help: 'Alert self-healing event processor. Used to execute shell scripts on machines when alerts are triggered, can be used to obtain relevant alert information or execute self-healing tasks。 <a>Documentation</a>',
+    title: 'Alert Self-healing',
+    create_btn: 'Create self-healing template',
+    tpl_id: 'Self-healing template',
+    tpl_id_required: 'Self-healing template cannot be empty',
+    host: 'Target machine',
+    host_placeholder: 'Can be left empty by default. If empty, the machine to be executed will be obtained from the ident label in the event',
+    args: 'Parameters',
+    args_tip: 'Parameters appended after the script, multiple parameters are separated by double comma,,, such as arg1,,arg2,,arg3',
+    save_result: 'Save execution result',
+    save_result_tip: 'Save the script execution result to the alert event',
+    timeout: 'Execution wait time',
+    timeout_tip: 'If the script cannot be completed within the wait time, the result will not be retrieved',
+    timeout_max_warning: 'Execution wait time cannot exceed 60 seconds',
+    select_host: 'Select target machine',
   },
 };
 export default en_US;

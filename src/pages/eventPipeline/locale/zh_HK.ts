@@ -2,6 +2,7 @@ const zh_HK = {
   title: '工作流',
   title_add: '新增事件工作流',
   title_edit: '編輯事件工作流',
+  title_clone: '克隆事件工作流',
   teams: '授權團隊',
   teams_tip: '限定哪些團隊成員可以查看和修改此配置，可以關聯多個團隊<br />例如：將配置授權給 infra-team，則只有 infra-team 團隊下的成員可以訪問或調整本配置。',
   basic_configuration: '基本配置',
@@ -18,11 +19,83 @@ const zh_HK = {
     cluster: '數據源',
     is_recovered: '是恢復事件？',
   },
+  use_case: {
+    label: '用途',
+    firemap: '滅火圖',
+    event_pipeline: '事件處理',
+  },
+  trigger_mode: {
+    label: '觸發模式',
+    event: '事件觸發',
+    api: 'API 觸發',
+  },
+  disabled: {
+    form_label: '啟用',
+    label: '狀態',
+    false: '已啟用',
+    true: '已禁用',
+  },
+  inputs: {
+    label: '前置輸入',
+    help: '前置輸入變量可在工作流處理器中通過 {{$inputs.變量名}} 引用',
+    add_btn: '添加變量',
+    key: '變量名',
+    key_required: '變量名不能為空',
+    value: '變量默認值',
+    description: '變量描述',
+  },
+  executions: {
+    title: '執行記錄',
+    search_placeholder: '請輸入搜索關鍵字',
+    status: {
+      label: '狀態',
+      running: '執行中',
+      success: '成功',
+      failed: '失敗',
+    },
+    id: '執行 ID',
+    pipeline_name: '工作流名稱',
+    mode: '觸發模式',
+    created_at: '開始時間',
+    finished_at: '結束時間',
+    duration_ms: '執行耗時',
+    trigger_by: '觸發者',
+    detail_title: '執行詳情',
+    detail_basic_info: '基本信息',
+    error_message: '錯誤信息',
+    node_results_parsed_title: '節點執行結果',
+  },
+  test_modal: {
+    title: {
+      settings: '選擇告警事件',
+      result: '事件預覽',
+    },
+  },
+  batch: {
+    not_select: '請先選擇要操作的工作流',
+    export: {
+      title: '批量導出',
+    },
+  },
+
   processor: {
     title: '處理器',
     add_btn: '添加處理器',
     typ: '類型',
     help_btn: '使用說明',
+    options: {
+      relabel: '事件標籤重寫',
+      callback: '回調',
+      event_update: '事件更新',
+      event_drop: '事件丟棄',
+      ai_summary: 'AI 摘要',
+      label_enrich: '事件標籤豐富',
+      script: '腳本處理',
+      inhibit: '事件抑制',
+      inhibit_qd: '查詢數據抑制事件',
+      annotation_qd: '事件附加信息豐富',
+      event_recover: '故障自愈',
+    },
   },
   label_enrich: {
     label_source_type: {
@@ -44,12 +117,6 @@ const zh_HK = {
       source_key_placeholder: '詞表中的字段',
       rename_key: '重命名標籤 Key',
       target_key_placeholder: '標籤 Key',
-    },
-  },
-  test_modal: {
-    title: {
-      settings: '選擇告警事件',
-      result: '事件預覽',
     },
   },
   callback: {
@@ -182,6 +249,23 @@ const zh_HK = {
     data_preview_query: '查詢語句',
     data_preview_no_eventid: '請先選擇告警事件',
     query_limit: '返回條數限制',
+  },
+  event_recover: {
+    help: '告警自癒事件處理器，用於在告警觸發時，在機器上執行 shell 腳本，可用於取得相關告警資訊或執行自癒任務。 <a>使用文檔</a>',
+    title: '告警自癒',
+    create_btn: '建立自癒範本',
+    tpl_id: '自癒範本',
+    tpl_id_required: '自癒範本不能為空',
+    host: '執行機器',
+    host_placeholder: '預設可留空，如果為空，會從事件中的 ident 標籤取得要執行的機器',
+    args: '參數',
+    args_tip: '附於腳本之後的參數，多個參數之間用雙逗號,,分隔，比如arg1,,arg2,,arg3',
+    save_result: '保存執行結果',
+    save_result_tip: '將腳本 執行結果保存到告警事件中',
+    timeout: '等待執行時間',
+    timeout_tip: '若腳本無法在等待時間內執行完，則不會等待結果取得',
+    timeout_max_warning: '等待執行時間不能超過 60 秒',
+    select_host: '篩選機器',
   },
 };
 

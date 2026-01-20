@@ -10,8 +10,8 @@ import { normalizeFormValues, normalizeInitialValues } from '../utils/normalizeV
 
 interface Props {
   id: number;
-  onOk: () => void;
-  onCancel: () => void;
+  onOk?: () => void;
+  onCancel?: () => void;
 }
 
 export default function Edit({ id, onOk, onCancel }: Props) {
@@ -34,7 +34,7 @@ export default function Edit({ id, onOk, onCancel }: Props) {
           onOk={(values) => {
             putItem(normalizeFormValues(values)).then(() => {
               message.success(t('common:success.add'));
-              onOk();
+              onOk?.();
             });
           }}
           onCancel={onCancel}
