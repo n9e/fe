@@ -109,7 +109,7 @@ export default function NotifyConfig(props: Props) {
         }
       >
         <Select
-          options={_.map(_.concat(['relabel', 'callback', 'event_update', 'event_drop', 'ai_summary'], IS_PLUS ? PlusOptions : []), (item) => {
+          options={_.map(_.concat(['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary'], IS_PLUS ? PlusOptions : []), (item) => {
             return {
               label: t(`processor.options.${item}`),
               value: item,
