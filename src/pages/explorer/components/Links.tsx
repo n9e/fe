@@ -6,6 +6,14 @@ import moment from 'moment';
 import { basePrefix } from '@/App';
 import { ILogExtract, ILogURL, ILogMappingParams, LinkContext } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+// Doris 内置保留变量，不需要替换
+const dorisBuiltInVar = [
+  '__timeFilter', '__timeFrom', '__timeTo',
+  '__unixEpochFilter', '__unixEpochFrom', '__unixEpochTo',
+  '__unixEpochNanoFilter', '__unixEpochNanoFrom', '__unixEpochNanoTo',
+  '__timeGroup', '__interval', '__interval_ms'
+];
+
 export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]): string {
   const param = new URLSearchParams(link);
   let reallink = link;
@@ -59,8 +67,13 @@ export function replaceVarAndGenerateLink(link: string, rawValue: object, regExt
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
+
   const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
+    // 如果是保留字，不替换，返回原始匹配
+    if (dorisBuiltInVar.some(item => b.includes(item))) {
+      return a;
+    }
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
@@ -175,6 +188,10 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
   // 第二次替换：$fieldName 格式，到 & 或结尾为止
   const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
+    // 如果是保留字，不替换，返回原始匹配
+    if (dorisBuiltInVar.some(item => b.includes(item))) {
+      return a;
+    }
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });

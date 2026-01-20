@@ -76,7 +76,7 @@ export function mappingsToFullFields(
   _.forEach(mappings, (item: any) => {
     function loop(mappings, prefix = '') {
       // mappings?.doc?.properties 为了兼容 6.x 版本接口
-      _.forEach(mappings?.doc?.properties || mappings?.properties, (item, key) => {
+      _.forEach(mappings?.doc?.properties ?? mappings?._doc?.properties ?? mappings?.properties, (item, key) => {
         if (item.type) {
           if (options.includeSubFields && item.type === 'text' && item.fields) {
             fields.push({

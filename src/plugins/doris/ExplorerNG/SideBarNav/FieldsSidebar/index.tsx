@@ -224,7 +224,6 @@ export default function index(props: IProps) {
         }}
         onStatisticClick={(type, options) => {
           const range = parseRange(queryValues.range);
-          const queryStr = queryValues.query || '';
 
           getDorisSQLsPreview({
             cate: DatasourceCateEnum.doris,
@@ -237,10 +236,11 @@ export default function index(props: IProps) {
                 default_field: defaultSearchField,
                 from: moment(range.start).unix(),
                 to: moment(range.end).unix(),
+                query: queryValues.query,
 
-                query: options.appendQuery ? `${queryStr ? `${queryStr} AND ` : ''}${options.appendQuery}` : queryStr,
                 field: options.field,
                 func: options.func,
+                field_filter: options.field_filter,
                 ref: options.ref,
                 group_by: options.group_by,
               },

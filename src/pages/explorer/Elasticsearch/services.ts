@@ -190,7 +190,7 @@ export function getLogsQuery(datasourceValue: number, requestBody: any, requestI
       const dat = _.get(res, 'responses[0].hits');
       const { docs } = flattenHits(dat.hits);
       return {
-        total: dat.total.value,
+        total: dat.total.value ?? dat.total,
         list: docs,
       };
     })
