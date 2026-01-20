@@ -195,7 +195,8 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
-  window.open(basePrefix + reallink.replace(unReplaceKeyRegNew, ''), '_blank');
+  window.open(basePrefix + reallink, '_blank');
+  // window.open(basePrefix + reallink.replace(unReplaceKeyRegNew, ''), '_blank');
 };
 
 interface IProps {
