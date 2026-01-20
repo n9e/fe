@@ -22,6 +22,7 @@ export default function NewMetricExplorerDrawer(props: Props) {
   const { promql, visible, onClose } = props;
   const [form] = Form.useForm();
   const headerExtraRef = useRef<HTMLDivElement>(null);
+  const datasourceCate = Form.useWatch('datasourceCate', form);
   const datasourceValue = Form.useWatch('datasourceValue', form);
 
   useEffect(() => {
@@ -53,44 +54,33 @@ export default function NewMetricExplorerDrawer(props: Props) {
                 </InputGroupWithFormItem>
               </Col>
               <Col>
-                <Form.Item shouldUpdate={(prev, curr) => prev.datasourceCate !== curr.datasourceCate} noStyle>
-                  {({ getFieldValue }) => {
-                    const cate = getFieldValue('datasourceCate');
-                    return (
-                      <EmptyDatasourcePopover datasourceCate={cate} datasourceList={groupedDatasourceList[cate]}>
-                        <Input.Group compact>
-                          <span className='ant-input-group-addon w-max height-[32px] leading-[32px]'>{t('common:datasource.id')}</span>
-
-                          <Form.Item
-                            name='datasourceValue'
-                            rules={[
-                              {
-                                required: true,
-                                message: t('common:datasource.id_required'),
-                              },
-                            ]}
-                          >
-                            <Select
-                              style={{ minWidth: 70 }}
-                              dropdownMatchSelectWidth={false}
-                              onChange={(val: string) => {
-                                setDefaultDatasourceValue(cate, val);
-                              }}
-                              showSearch
-                              optionFilterProp='children'
-                            >
-                              {_.map(groupedDatasourceList[cate], (item) => (
-                                <Select.Option value={item.id} key={item.id}>
-                                  {item.name}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                        </Input.Group>
-                      </EmptyDatasourcePopover>
-                    );
-                  }}
-                </Form.Item>
+                <InputGroupWithFormItem label={t('common:datasource.id')}>
+                  <Form.Item
+                    name='datasourceValue'
+                    rules={[
+                      {
+                        required: true,
+                        message: t('common:datasource.id_required'),
+                      },
+                    ]}
+                  >
+                    <Select
+                      style={{ minWidth: 70 }}
+                      dropdownMatchSelectWidth={false}
+                      onChange={(val: string) => {
+                        setDefaultDatasourceValue(datasourceCate, val);
+                      }}
+                      showSearch
+                      optionFilterProp='children'
+                    >
+                      {_.map(groupedDatasourceList[datasourceCate], (item) => (
+                        <Select.Option value={item.id} key={item.id}>
+                          {item.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </InputGroupWithFormItem>
               </Col>
               <Col flex={'1'}>
                 <div ref={headerExtraRef} />
