@@ -59,8 +59,19 @@ export function replaceVarAndGenerateLink(link: string, rawValue: object, regExt
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
+  // Doris 内置保留变量，不需要替换
+  const dorisBuiltInVar = [
+    '__timeFilter', '__timeFrom', '__timeTo',
+    '__unixEpochFilter', '__unixEpochFrom', '__unixEpochTo',
+    '__unixEpochNanoFilter', '__unixEpochNanoFrom', '__unixEpochNanoTo',
+    '__timeGroup', '__interval', '__interval_ms'
+  ];
   const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
+    // 如果是保留字，不替换，返回原始匹配
+    if (dorisBuiltInVar.includes(b)) {
+      return a;
+    }
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
