@@ -78,7 +78,12 @@ export default function index(props: Props) {
   const [options, setOptions] = useState(getOptionsFromLocalstorage(NG_QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
   const appendRef = useRef<boolean>(false); // 是否是滚动加载更多日志
-  const [serviceParams, setServiceParams, getServiceParams] = useGetState({
+  const [serviceParams, setServiceParams, getServiceParams] = useGetState<{
+    current: number;
+    pageSize: number;
+    reverse: boolean;
+    refreshFlag: string | undefined;
+  }>({
     current: 1,
     pageSize: DEFAULT_LOGS_PAGE_SIZE,
     reverse: true,
