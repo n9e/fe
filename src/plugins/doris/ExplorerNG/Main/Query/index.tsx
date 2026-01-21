@@ -16,12 +16,13 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
-import { Field } from '../../../types';
+import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
 import { HandleValueFilterParams } from '../../types';
+import QueryBuilderFilters from './QueryBuilderFilters';
 
 // @ts-ignore
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
@@ -47,6 +48,7 @@ interface Props {
   setOrganizeFields: (value: string[]) => void;
   handleValueFilter: HandleValueFilterParams;
   setExecuteLoading: (loading: boolean) => void;
+  executeQuery: () => void;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
@@ -70,6 +72,7 @@ export default function index(props: Props) {
     setOrganizeFields,
     handleValueFilter,
     setExecuteLoading,
+    executeQuery,
     stackByField,
     setStackByField,
     defaultSearchField,
@@ -100,9 +103,6 @@ export default function index(props: Props) {
       setServiceParams({
         ...serviceParams,
         pageSize: DEFAULT_LOGS_PAGE_SIZE,
-      });
-      form.setFieldsValue({
-        refreshFlag: _.uniqueId('refreshFlag_'),
       });
     }
   };
@@ -136,6 +136,7 @@ export default function index(props: Props) {
             table: queryValues.table,
             time_field: queryValues.time_field,
             query: queryValues.query,
+            query_builder_filter: queryValues.query_builder_filter,
             from: timeParams.from,
             to: timeParams.to,
             lines: serviceParams.pageSize,
@@ -228,6 +229,7 @@ export default function index(props: Props) {
             from: moment(range.start).unix(),
             to: moment(range.end).unix(),
             query: queryValues.query,
+            query_builder_filter: queryValues.query_builder_filter,
             group_by: stackByField,
             default_field: defaultSearchField,
           },
@@ -300,6 +302,7 @@ export default function index(props: Props) {
 
   return (
     <>
+      <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
       {refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
@@ -425,12 +428,12 @@ export default function index(props: Props) {
                   to: undefined,
                 };
                 form.setFieldsValue({
-                  refreshFlag: _.uniqueId('refreshFlag_'),
                   query: {
                     ...query,
                     range,
                   },
                 });
+                executeQuery();
               }}
               onLogRequestParamsChange={(params) => {
                 // 这里只更新 serviceParams 从而只刷新日志数据，不刷新直方图
@@ -513,9 +516,7 @@ export default function index(props: Props) {
                   b: (
                     <a
                       onClick={() => {
-                        form.setFieldsValue({
-                          refreshFlag: _.uniqueId('refreshFlag_'),
-                        });
+                        executeQuery();
                       }}
                     />
                   ),

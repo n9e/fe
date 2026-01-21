@@ -1,26 +1,24 @@
 import React, { useState, useContext, useRef } from 'react';
-import { Form, Row, Col, Button, Space, Tooltip, Popover, Segmented } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Row, Col, Button, Segmented } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import classNames from 'classnames';
 
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
-import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
-import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../../constants';
-import { Field } from '../../types';
-import QueryInput from '../components/QueryInput';
+import { Field } from '../types';
 import MainMoreOperations from '../components/MainMoreOperations';
-import { DefaultSearchIcon, UnDefaultSearchIcon } from '../SideBarNav/FieldsSidebar/DefaultSearchIcon';
-import QueryInputAddonAfter from '../components/QueryInputAddonAfter';
 import SQLFormatButton from '../components/SQLFormatButton';
 import { HandleValueFilterParams } from '../types';
 import QueryMain from './Query';
 import SQLMain from './SQL';
+import SQLQueryInput from './SQL/QueryInput';
+import QueryQueryInput from './Query/QueryInput';
+import QueryBuilder from './SQL/QueryBuilder';
 
 interface Props {
   tabKey: string;
@@ -38,8 +36,8 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t, i18n } = useTranslation(NAME_SPACE);
-  const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
+  const { t } = useTranslation(NAME_SPACE);
+  const { logsDefaultRange } = useContext(CommonStateContext);
 
   const { tabKey, indexData, organizeFields, setOrganizeFields, executeQuery, handleValueFilter, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
@@ -50,6 +48,7 @@ export default function index(props: Props) {
   const syntax = Form.useWatch(['query', 'syntax']);
 
   const [executeLoading, setExecuteLoading] = useState(false);
+  const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
 
   // 用于显示展示的时间范围
   const rangeRef = useRef<{
@@ -69,7 +68,7 @@ export default function index(props: Props) {
     <div className='flex flex-col h-full'>
       <Row gutter={SIZE} className='flex-shrink-0'>
         <Col flex='none'>
-          <Form.Item name={['query', 'syntax']} initialValue='query'>
+          <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>
             <Segmented
               options={
                 navMode === 'fields'
@@ -89,74 +88,25 @@ export default function index(props: Props) {
           </Form.Item>
         </Col>
         <Col flex='auto'>
-          <InputGroupWithFormItem
-            label={
-              <Space>
-                {t(`${logExplorerNS}:query`)}
-                <InfoCircleOutlined
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                      darkMode,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
-                    });
-                  }}
-                />
-              </Space>
-            }
-            addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
-          >
-            <div className='relative'>
-              <Form.Item name={['query', syntax]} rules={[{ required: syntax === 'sql', message: t(`${logExplorerNS}:query_is_required`) }]}>
-                <QueryInput
-                  onEnterPress={() => {
-                    snapRangeRef.current = {
-                      from: undefined,
-                      to: undefined,
-                    };
-                    executeQuery();
-                  }}
-                  enableAddonBefore={syntax === 'query' && defaultSearchField !== undefined}
-                />
-              </Form.Item>
-              {syntax === 'query' && defaultSearchField && (
-                <Popover
-                  content={
-                    <Space>
-                      <span>{t('query.default_search_by_tip')} :</span>
-                      <span>{defaultSearchField}</span>
-                      <Tooltip title={t('query.default_search_tip_2')}>
-                        <Button
-                          icon={<UnDefaultSearchIcon />}
-                          size='small'
-                          type='text'
-                          onClick={() => {
-                            setDefaultSearchField?.(undefined);
-                          }}
-                        />
-                      </Tooltip>
-                    </Space>
-                  }
-                >
-                  <Button
-                    className='absolute top-[4px] left-[4px] z-10'
-                    size='small'
-                    type='text'
-                    icon={
-                      <DefaultSearchIcon
-                        className='text-[12px]'
-                        style={{
-                          color: 'var(--fc-primary-color)',
-                        }}
-                      />
-                    }
-                  />
-                </Popover>
-              )}
+          {syntax === 'query' && (
+            <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
+          )}
+          {syntax === 'sql' && (
+            <div
+              className={classNames({
+                'mb-[18px]': !queryBuilderVisible,
+              })}
+            >
+              <SQLQueryInput
+                snapRangeRef={snapRangeRef}
+                executeQuery={executeQuery}
+                queryBuilderVisible={queryBuilderVisible}
+                onLableClick={() => {
+                  setQueryBuilderVisible(true);
+                }}
+              />
             </div>
-          </InputGroupWithFormItem>
+          )}
         </Col>
         {syntax === 'query' && (
           <Col flex='none'>
@@ -178,7 +128,7 @@ export default function index(props: Props) {
           </Col>
         )}
         <Col flex='none'>
-          <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>
+          <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
             <TimeRangePicker
               onChange={() => {
                 snapRangeRef.current = {
@@ -221,6 +171,7 @@ export default function index(props: Props) {
           organizeFields={organizeFields}
           setOrganizeFields={setOrganizeFields}
           handleValueFilter={handleValueFilter}
+          executeQuery={executeQuery}
           setExecuteLoading={setExecuteLoading}
           stackByField={stackByField}
           setStackByField={setStackByField}
@@ -228,13 +179,16 @@ export default function index(props: Props) {
         />
       )}
       {syntax === 'sql' && (
-        <SQLMain
-          tableSelector={{
-            antd: logsAntdTableSelector,
-            rgd: logsRgdTableSelector,
-          }}
-          setExecuteLoading={setExecuteLoading}
-        />
+        <>
+          <QueryBuilder snapRangeRef={snapRangeRef} executeQuery={executeQuery} visible={queryBuilderVisible} onClose={() => setQueryBuilderVisible(false)} />
+          <SQLMain
+            tableSelector={{
+              antd: logsAntdTableSelector,
+              rgd: logsRgdTableSelector,
+            }}
+            setExecuteLoading={setExecuteLoading}
+          />
+        </>
       )}
     </div>
   );

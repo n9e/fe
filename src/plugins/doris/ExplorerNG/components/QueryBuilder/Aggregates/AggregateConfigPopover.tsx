@@ -1,0 +1,209 @@
+import React, { useState } from 'react';
+import { Popover, Row, Col, Form, Select, InputNumber, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+
+import { SIZE } from '@/utils/constant';
+
+import { AggregateConfig, Field } from '../../../types';
+import { NAME_SPACE } from '../../../../constants';
+
+import { AGGREGATE_FUNCTION_TYPE_MAP } from '../constants';
+
+interface Props {
+  indexData: Field[];
+  children: React.ReactNode;
+
+  data?: AggregateConfig;
+  onChange?: (data: AggregateConfig) => void;
+  onAdd?: (data: AggregateConfig) => void;
+}
+
+export default function ParamsPopover(props: Props) {
+  const { t } = useTranslation(NAME_SPACE);
+  const { indexData, children, data, onChange, onAdd } = props;
+
+  const [visible, setVisible] = useState<boolean>();
+
+  const [form] = Form.useForm();
+  const func = Form.useWatch('func', form);
+
+  return (
+    <Popover
+      trigger='click'
+      placement='bottom'
+      visible={visible}
+      onVisibleChange={(v) => {
+        setVisible(v);
+        // popover 关闭时，获取表单数据并传递给父组件
+        if (v === false) {
+          form.validateFields().then((values) => {
+            if (data) {
+              onChange?.(values as AggregateConfig);
+            } else {
+              form.resetFields(); // 新增筛选器时，重置表单
+              onAdd?.(values as AggregateConfig);
+            }
+          });
+        } else if (v === true) {
+          // popover 打开时，初始化表单数据
+          if (data) {
+            form.setFieldsValue(data);
+          }
+        }
+      }}
+      content={
+        <div className='w-[400px]'>
+          <Form form={form}>
+            <Row gutter={SIZE}>
+              <Col span={12}>
+                <Form.Item
+                  name='func'
+                  rules={[
+                    {
+                      required: true,
+                      message: t('builder.aggregates.func_placeholder'),
+                    },
+                  ]}
+                  initialValue='COUNT'
+                >
+                  <Select
+                    placeholder={t('builder.aggregates.func_placeholder')}
+                    options={_.map(_.keys(AGGREGATE_FUNCTION_TYPE_MAP), (item) => {
+                      return {
+                        label: item,
+                        value: item,
+                      };
+                    })}
+                    showSearch
+                    optionFilterProp='label'
+                    dropdownMatchSelectWidth={false}
+                    onChange={() => {
+                      form.setFieldsValue({
+                        field: undefined,
+                        percentile: undefined,
+                        precision: undefined,
+                        alias: undefined,
+                      });
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name='field'
+                  rules={[
+                    {
+                      required: true,
+                      message: t('builder.aggregates.field_placeholder'),
+                    },
+                  ]}
+                >
+                  <Select
+                    placeholder={t('builder.aggregates.field_placeholder')}
+                    options={_.map(
+                      _.filter(indexData, (item) => {
+                        if (func) {
+                          const validTypes = AGGREGATE_FUNCTION_TYPE_MAP[func as keyof typeof AGGREGATE_FUNCTION_TYPE_MAP];
+                          return _.includes(validTypes, item.normalized_type);
+                        }
+                        return true;
+                      }),
+                      (item) => {
+                        return {
+                          label: item.field,
+                          value: item.field,
+                        };
+                      },
+                    )}
+                    showSearch
+                    optionFilterProp='label'
+                    dropdownMatchSelectWidth={false}
+                    onChange={() => {
+                      form.setFieldsValue({
+                        percentile: undefined,
+                        precision: undefined,
+                        alias: undefined,
+                      });
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              {func === 'PERCENTILE' && (
+                <>
+                  <Col span={12}>
+                    <Form.Item
+                      name='percentile'
+                      rules={[
+                        {
+                          required: true,
+                          message: t('builder.aggregates.percentile_placeholder'),
+                        },
+                      ]}
+                      initialValue={95}
+                    >
+                      <InputNumber className='w-full' placeholder={t('builder.aggregates.percentile_placeholder')} min={1} max={100} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name='precision'
+                      rules={[
+                        {
+                          required: true,
+                          message: t('builder.aggregates.precision_placeholder'),
+                        },
+                      ]}
+                      initialValue={2}
+                    >
+                      <InputNumber className='w-full' placeholder={t('builder.aggregates.precision_placeholder')} min={1} />
+                    </Form.Item>
+                  </Col>
+                </>
+              )}
+              {func === 'EXIST_RATIO' && (
+                <Col span={24}>
+                  <Form.Item
+                    name='precision'
+                    rules={[
+                      {
+                        required: true,
+                        message: t('builder.aggregates.precision_placeholder'),
+                      },
+                    ]}
+                    initialValue={2}
+                  >
+                    <InputNumber className='w-full' placeholder={t('builder.aggregates.precision_placeholder')} min={1} />
+                  </Form.Item>
+                </Col>
+              )}
+              {func === 'TOPN' && (
+                <Col span={24}>
+                  <Form.Item
+                    name='n'
+                    rules={[
+                      {
+                        required: true,
+                        message: t('builder.aggregates.n_placeholder'),
+                      },
+                    ]}
+                    initialValue={5}
+                  >
+                    <InputNumber className='w-full' placeholder={t('builder.aggregates.n_placeholder')} min={1} />
+                  </Form.Item>
+                </Col>
+              )}
+              <Col span={24}>
+                <Form.Item name='alias' noStyle>
+                  <Input placeholder={t('builder.aggregates.alias_placeholder')} />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+      }
+    >
+      <div>{children}</div>
+    </Popover>
+  );
+}

@@ -21,7 +21,7 @@ import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 
 import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
-import { Field } from '../types';
+import { Field } from './types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
 
 import SideBarNav from './SideBarNav';
