@@ -362,7 +362,7 @@ export default function index(props: Props) {
                         </>
                       )}
                       {toggleNode}
-                      {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+                      {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'query', total: data?.total }} />}
                     </Space>
                   );
                 }
