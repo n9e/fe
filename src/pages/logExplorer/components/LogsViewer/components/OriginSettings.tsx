@@ -6,7 +6,7 @@
 import React from 'react';
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Space, Switch, Dropdown, Menu, Modal, Form, Radio, InputNumber, Tooltip } from 'antd';
+import { Space, Switch, Dropdown, Menu, Modal, Form, Radio, InputNumber, Tooltip, Button } from 'antd';
 import _ from 'lodash';
 import { SettingOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
@@ -69,7 +69,7 @@ export default forwardRef(function OriginSettings(
     <>
       <Space>
         {options.logMode === 'origin' && (
-          <div>
+          <div className='flex items-center gap-1'>
             {t('logs.settings.breakLine')}{' '}
             <Switch
               size='small'
@@ -82,7 +82,7 @@ export default forwardRef(function OriginSettings(
             />
           </div>
         )}
-        <div>
+        <div className='flex items-center gap-1'>
           {t('logs.settings.lines')}{' '}
           <Switch
             size='small'
@@ -95,7 +95,7 @@ export default forwardRef(function OriginSettings(
           />
         </div>
         {showDateField && (
-          <div>
+          <div className='flex items-center gap-1'>
             {t('logs.settings.time')}{' '}
             <Switch
               size='small'
@@ -159,7 +159,7 @@ export default forwardRef(function OriginSettings(
           }
           trigger={['click']}
         >
-          <SettingOutlined />
+          <Button size='small' ghost type='text' icon={<SettingOutlined />} />
         </Dropdown>
         {!_.isEmpty(organizeFields) && (
           <Tooltip title={`当前只显示字段 ${_.join(organizeFields, '、')}，可点击设置图标设置显示所有字段`}>

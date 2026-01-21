@@ -10,7 +10,7 @@ import { Props } from './types';
 
 export default function Constant(props: Props) {
   const { item, variableValueFixed, onChange, value } = props;
-  const { name, label } = item;
+  const { name, label, definition } = item;
   const latestItemRef = React.useRef<IVariable>(item);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function Constant(props: Props) {
   return (
     <div>
       <InputGroupWithFormItem label={label || name}>
-        <Input disabled value={value} />
+        <Input disabled value={definition} />
       </InputGroupWithFormItem>
     </div>
   );

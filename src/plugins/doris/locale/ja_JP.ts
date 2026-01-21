@@ -16,8 +16,10 @@ const ja_JP = {
       raw: 'ログ原文',
       timeSeries: '時系列',
     },
-    query_tip:
-      'SQL例：最近5分間のログ行数をクエリするには、SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)を使用します。<br />詳細なSQLモードの説明については、<a>Doris SQLモードの説明</a>を参照してください。',
+    query_tip: `SQLの例：<br />
+    1. 過去5分間のログ行数をクエリする SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. 選択した期間のログ行数をクエリする SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    SQLモードの詳細については、<a>Doris SQLモード</a>を参照してください`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'クエリ',
     database: 'データベース',
@@ -59,7 +61,16 @@ const ja_JP = {
     stack_tip_pin: '積み上げグラフを有効にする',
     stack_tip_unpin: '積み上げグラフを無効にする',
     stack_group_by_tip: 'このフィールド値で積み上げ傾向グラフを表示する',
-    sql_format: 'SQLフォーマット',
+    sql_format: {
+      title: 'SQLプレビュー',
+      tip: 'フィールドの最大値、最小値、パーセンタイルなどの複雑なSQLは、左側のフィールドリストをクリックして表示できます。',
+      origin: 'ログ原文を表示',
+      origin_tip: 'ログエクスプローラー-ログ原文モード用',
+      timeseries: '時系列を表示',
+      timeseries_tip: 'ログエクスプローラー-時系列モード用、またはダッシュボードでDorisデータに基づいて時系列チャートを描画するために使用されます',
+      table: '統計値を表示',
+      table_tip: 'Dorisのアラートルール、レコードルール、ポラリス指標の作成などに使用されます',
+    },
     defaultSearchField: 'デフォルトの検索フィールド',
     default_search_tip_1: 'デフォルトの検索フィールドとして設定',
     default_search_tip_2: 'デフォルトの検索フィールドをキャンセル',
@@ -76,6 +87,18 @@ const ja_JP = {
     duration: '所要時間',
     count: '件数',
     click_doc: 'クリックして<a>クエリ条件</a>のドキュメントを表示',
+    navMode: {
+      fields: 'フィールドビュー',
+      schema: 'スキーマビュー',
+    },
+    syntax: {
+      query: 'Query モード',
+      sql: 'SQL モード',
+    },
+    sqlVizType: {
+      table: 'テーブル',
+      timeseries: '時系列',
+    },
   },
 };
 

@@ -7,7 +7,7 @@ import PageLayout from '@/components/pageLayout';
 
 import { getSSOConfigs } from './services';
 import { SSOConfigType } from './types';
-import Item from './Item';
+import Item, { documentMap } from './Item';
 import './locale';
 
 //@ts-ignore
@@ -26,7 +26,7 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/sso/'>
+    <PageLayout title={t('title')} doc={activeKey ? documentMap[activeKey] : 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/sso/'}>
       <main className='p-4'>
         <Global SSOConfigs={data} />
         <Card

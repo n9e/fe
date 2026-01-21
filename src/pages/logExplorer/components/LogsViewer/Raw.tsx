@@ -4,13 +4,13 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, Drawer, Empty } from 'antd';
-import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 
 import { NAME_SPACE } from '../../constants';
 import { OnValueFilterParams } from './types';
 import LogViewer from './components/LogViewer';
-import FieldValueWithFilter from './components/FieldValueWithFilter';
 import TextSearchIcon from './components/TextSearchIcon';
+import LogFieldValue from './components/LogFieldValue';
 
 const explorerOriginInlineCellClassName = 'inline-block mr-1';
 const explorerOriginBreakCellClassName = 'break-all block mr-1';
@@ -48,38 +48,7 @@ interface RenderValueProps {
 function RenderValue({ name, value, onValueFilter }: RenderValueProps) {
   const { rawValue } = useContext(DataContext);
 
-  // TODO: 暂时关闭根据换行符展开功能，这块现在展示效果不是很好，后续再优化
-  // if (typeof value === 'string' && value.indexOf('\n') > -1) {
-  //   const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
-  //   return (
-  //     <div className={explorerOrigiFieldValClassName}>
-  //       {_.map(lines, (v, idx) => {
-  //         return (
-  //           <div key={idx}>
-  //             {v}
-  //             {idx === lines.length - 1 && (
-  //               <a
-  //                 onClick={() => {
-  //                   setExpand(!expand);
-  //                 }}
-  //                 style={{
-  //                   marginLeft: 8,
-  //                 }}
-  //               >
-  //                 {expand ? t('logs.collapse') : t('logs.expand')}
-  //                 {expand ? <LeftOutlined /> : <RightOutlined />}
-  //               </a>
-  //             )}
-
-  //             <br />
-  //           </div>
-  //         );
-  //       })}
-  //     </div>
-  //   );
-  // }
-
-  return <FieldValueWithFilter name={name} value={value} onValueFilter={onValueFilter} rawValue={rawValue} />;
+  return <LogFieldValue name={name} value={value} onTokenClick={onValueFilter} rawValue={rawValue} />;
 }
 
 function RenderSubJSON({
@@ -308,7 +277,7 @@ function Raw(props: Props) {
       <Drawer
         title={t('log_viewer_drawer_title')}
         placement='right'
-        width='80%'
+        width='55%'
         onClose={() => {
           setLogViewerDrawerState({ visible: false, value: null });
         }}

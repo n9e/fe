@@ -15,8 +15,10 @@ const zh_CN = {
       raw: '日志原文',
       timeSeries: '时序图',
     },
-    query_tip:
-      'SQL样例：查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) <br />更多SQL模式说明，请参考 <a>Doris SQL模式说明</a>',
+    query_tip: `SQL样例：<br />
+    1. 查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
+    2. 查询所选时间区间的日志行数 SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
+    更多SQL模式说明，请参考 <a>Doris SQL模式说明</a>`,
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查询',
     database: '数据库',
@@ -57,7 +59,16 @@ const zh_CN = {
     stack_tip_pin: '开启堆叠图',
     stack_tip_unpin: '关闭堆叠图',
     stack_group_by_tip: '以此字段值展示堆叠趋势图',
-    sql_format: 'SQL预览',
+    sql_format: {
+      title: 'SQL预览',
+      tip: '字段最大值、最小值、分位值等复杂 SQL ，可在左侧字段列表上点击查看。',
+      origin: '查看日志原文',
+      origin_tip: '可复制到 表结构视图 -> 表格 模式下查看数据',
+      timeseries: '查看时序图',
+      timeseries_tip: '可复制到 表结构视图 -> 时序图 模式下查看数据，或者用于仪表盘中基于 Doris 数据绘制时序图。',
+      table: '查看统计值',
+      table_tip: '可用于创建 Doris 的告警规则、记录规则、创建北极星指标。',
+    },
     defaultSearchField: '默认检索字段',
     default_search_tip_1: '设置为默认检索字段',
     default_search_tip_2: '取消默认检索字段',
@@ -71,6 +82,18 @@ const zh_CN = {
     duration: '耗时',
     count: '条数',
     click_doc: '点击查看 <a>查询条件</a> 文档',
+    navMode: {
+      fields: '字段视图',
+      schema: '表结构视图',
+    },
+    syntax: {
+      query: 'Query 模式',
+      sql: 'SQL 模式',
+    },
+    sqlVizType: {
+      table: '表格',
+      timeseries: '时序图',
+    },
   },
 };
 export default zh_CN;

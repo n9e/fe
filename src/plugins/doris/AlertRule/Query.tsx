@@ -113,7 +113,14 @@ export default function Query(props: Props) {
               trigger='onChange'
               rules={[{ required: true, message: t('datasource:query.query_required') }]}
             >
-              <Input placeholder={t('query.query_placeholder')} disabled={disabled}></Input>
+              <Input.TextArea
+                autoSize={{
+                  minRows: 1,
+                  maxRows: 10,
+                }}
+                placeholder={t('query.query_placeholder')}
+                disabled={disabled}
+              />
             </Form.Item>
           </InputGroupWithFormItem>
         </Col>
@@ -154,7 +161,7 @@ export default function Query(props: Props) {
           </Input.Group>
         </Col>
       </Row>
-      <AdvancedSettings prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} showOffset span={6} />
+      <AdvancedSettings prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} showOffset span={6} expanded />
       <CloseCircleOutlined className='alert-rule-trigger-remove' onClick={() => remove(field.name)} />
       <Form.Item shouldUpdate noStyle>
         {({ getFieldValue }) => {

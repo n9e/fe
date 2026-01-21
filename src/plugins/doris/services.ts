@@ -254,3 +254,42 @@ export function getDorisSQLFormat(data: {
     data,
   }).then((res) => res.dat);
 }
+
+export function getDorisSQLsPreview(data: {
+  cate: string;
+  datasource_id: number;
+  query: [
+    {
+      database: string;
+      table: string;
+      time_field: string;
+      query: string;
+      from: number;
+      to: number;
+      default_field?: string;
+      group_by?: string; // topn 变化趋势
+
+      func: string; // 'unique_count' | 'ratio' | 'max' | 'min' | 'avg' 等
+      field?: string; // func 作用的字段
+      field_filter?: string; // 选择 topn 项时带上的过滤条件
+      ref?: string; // topn，只用于 ration 查询范围
+    },
+  ];
+}): Promise<{
+  origin: string;
+  table: {
+    sql: string;
+  };
+  timeseries: {
+    [func: string]: {
+      sql: string;
+      value_key: string[];
+      label_key?: string[];
+    };
+  };
+}> {
+  return request('/api/n9e-plus/doris-sqls-preview', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+}

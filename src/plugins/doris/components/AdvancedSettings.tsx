@@ -26,19 +26,22 @@ function AdvancedSettings(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { span = 6, prefixField = {}, prefixName = [], disabled, expandTriggerVisible = true, onChange, options = [], showUnit, showOffset } = props;
   const [open, setOpen] = useState(!!props.expanded);
+  const [valueKeyIsEmpty, setValueKeyIsEmpty] = useState(false);
 
   return (
     <div>
       {expandTriggerVisible && (
-        <div style={{ marginBottom: 8 }}>
-          <span
+        <div className='mb-2'>
+          <Space
+            className='cursor-pointer'
             onClick={() => {
               setOpen(!open);
             }}
-            style={{ cursor: 'pointer' }}
           >
-            {open ? <DownOutlined /> : <RightOutlined />} {t('query.advancedSettings.title')}
-          </span>
+            {open ? <DownOutlined /> : <RightOutlined />}
+            {t('query.advancedSettings.title')}
+            {!open && valueKeyIsEmpty && <div className='ant-form-item-explain-error'>{t('query.advancedSettings.valueKey_required')}</div>}
+          </Space>
         </div>
       )}
       <div style={{ display: open ? 'block' : 'none' }}>
@@ -60,10 +63,15 @@ function AdvancedSettings(props: IProps) {
                   name={[...prefixName, 'keys', 'valueKey']}
                   style={{ width: '100%' }}
                   rules={[
-                    {
-                      required: true,
-                      message: t('query.advancedSettings.valueKey_required'),
-                    },
+                    () => ({
+                      validator(_, value) {
+                        setValueKeyIsEmpty(!value);
+                        if (!value) {
+                          return Promise.reject(new Error(t('query.advancedSettings.valueKey_required')));
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
                   ]}
                 >
                   <Select

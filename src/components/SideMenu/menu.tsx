@@ -83,8 +83,13 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
           ],
         },
         {
-          key: '/event-pipelines',
+          key: 'event-pipelines',
           label: 'menu.event_pipeline',
+          type: 'tabs',
+          children: [
+            { key: '/event-pipelines', label: 'menu.event_pipeline' },
+            { key: '/event-pipelines-executions', label: 'menu.event_pipeline_executions' },
+          ],
         },
       ],
     },

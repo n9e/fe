@@ -37,6 +37,7 @@ const en_US = {
     notification_channels: 'Media types',
     notification_templates: 'Message templates',
     event_pipeline: 'Workflow',
+    event_pipeline_executions: 'Execution records',
     notification_settings: 'Notification settings',
     notification_tpls: 'Template',
     integrations: 'Integrations',

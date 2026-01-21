@@ -9,7 +9,7 @@ interface Options {
   pageLoadMode?: 'pagination' | 'infiniteScroll'; // 默认 pagination
 }
 
-export function getOptionsFromLocalstorage(logsOptionsCacheKey: string): Options {
+export function getOptionsFromLocalstorage(logsOptionsCacheKey: string, options?: Partial<Options>): Options {
   const defaultOptions: Options = {
     logMode: 'origin',
     lineBreak: 'false',
@@ -17,12 +17,13 @@ export function getOptionsFromLocalstorage(logsOptionsCacheKey: string): Options
     lines: 'true',
     time: 'true',
     pageLoadMode: 'pagination',
+    ...options,
   };
-  const options = localStorage.getItem(`${logsOptionsCacheKey}@options`);
+  const optionsLocalStorage = localStorage.getItem(`${logsOptionsCacheKey}@options`);
 
-  if (options) {
+  if (optionsLocalStorage) {
     try {
-      return JSON.parse(options);
+      return JSON.parse(optionsLocalStorage);
     } catch (e) {
       return defaultOptions;
     }

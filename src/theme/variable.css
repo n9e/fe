@@ -65,6 +65,7 @@
   --fc-border-base: var(--fc-fill-5);
   --fc-antd-border-color: #d9d9d9; /* 用于 跟antd button 连结的边框 */
   --fc-background-color-light: rgba(250, 250, 250, 1);
+  --fc-card-border: #f0f0f0;
   
   
 
@@ -192,6 +193,7 @@
   --fc-border-base: var(--fc-fill-5);
   --fc-antd-border-color: #ccccdc33;
   --fc-background-color-light: rgba(255, 255, 255, 0.04);
+  --fc-card-border: #393c4d;
 
   /* 需特殊处理额外加的变量 */
   --fc-variable-fill-1: var(--fc-fill-3);

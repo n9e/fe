@@ -9,6 +9,8 @@ import FieldsItem from './FieldsItem';
 import { TYPE_MAP } from './constants';
 import { Field, StatsResult } from './types';
 
+import './style.less';
+
 export type { Field } from './types';
 
 interface Props {
@@ -28,6 +30,16 @@ interface Props {
     setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
   }) => React.ReactNode;
   renderFieldNameExtra?: (field: Field) => React.ReactNode;
+  onStatisticClick?: (
+    type: string,
+    options: {
+      func: string;
+      field?: string;
+      ref?: string;
+      group_by?: string;
+      field_filter?: string;
+    },
+  ) => void;
 }
 
 export default function index(props: Props) {
@@ -43,6 +55,7 @@ export default function index(props: Props) {
     loading,
     renderStatsPopoverTitleExtra,
     renderFieldNameExtra,
+    onStatisticClick,
   } = props;
   const [fieldsSearch, setFieldsSearch] = useState('');
   const [showFieldsCollapsed, setShowFieldsCollapsed] = useState(false);
@@ -97,6 +110,7 @@ export default function index(props: Props) {
                         enableStats={enableStats}
                         renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                         renderFieldNameExtra={renderFieldNameExtra}
+                        onStatisticClick={onStatisticClick}
                       />
                     );
                   },
@@ -135,6 +149,7 @@ export default function index(props: Props) {
                       enableStats={enableStats}
                       renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                       renderFieldNameExtra={renderFieldNameExtra}
+                      onStatisticClick={onStatisticClick}
                     />
                   );
                 },
