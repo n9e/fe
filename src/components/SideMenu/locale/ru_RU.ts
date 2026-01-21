@@ -56,6 +56,9 @@ const ru_RU = {
     audit_log: 'Журнал аудита',
     alert_servers: 'Система оповещений',
     about: 'О продукте',
+    trace: 'Трассировка',
+    trace_explorer: 'Обозреватель трассировки',
+    trace_dependencies: 'Анализ топологии',
   },
 };
 

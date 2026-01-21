@@ -56,6 +56,9 @@ const ja_JP = {
     audit_log: '監査ログ',
     alert_servers: 'アラートエンジン',
     about: '製品について',
+    trace: 'トレース',
+    trace_explorer: 'トレースエクスプローラー',
+    trace_dependencies: 'トレース依存関係',
   },
 };
 

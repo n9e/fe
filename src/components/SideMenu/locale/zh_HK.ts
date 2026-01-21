@@ -56,6 +56,9 @@ const zh_HK = {
     audit_log: '審計日誌',
     alert_servers: '告警引擎',
     about: '關於產品',
+    trace: '鏈路追蹤',
+    trace_explorer: '即時查詢',
+    trace_dependencies: '拓撲分析',
   },
 };
 

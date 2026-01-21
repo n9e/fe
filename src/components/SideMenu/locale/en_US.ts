@@ -57,6 +57,9 @@ const en_US = {
     audit_log: 'Audit log',
     alert_servers: 'Alerting engines',
     about: 'About',
+    trace: 'Trace',
+    trace_explorer: 'Trace explorer',
+    trace_dependencies: 'Trace dependencies',
   },
 };
 export default en_US;
