@@ -250,7 +250,7 @@ export default function Table(props: IProps) {
                       );
                     }}
                   />
-                  {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+                  {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />}
                 </Space>
               ) : (
                 <Space size={4}>
