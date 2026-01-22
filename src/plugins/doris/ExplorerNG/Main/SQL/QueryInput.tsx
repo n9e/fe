@@ -37,6 +37,7 @@ export default function QueryInputCpt(props: Props) {
     <InputGroupWithFormItem
       className={classNames({
         'doris-sql-input-container-with-builder': queryBuilderVisible,
+        'doris-sql-input-container-with-builder-unpinned': !queryBuilderPinned && queryBuilderVisible,
       })}
       label={
         <Space

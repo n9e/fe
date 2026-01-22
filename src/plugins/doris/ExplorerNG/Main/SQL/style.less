@@ -1,6 +1,6 @@
 .doris-sql-input-container-with-builder {
   .input-group-with-form-item-label {
-    border: 1px solid var(--fc-fill-primary) !important;
+    border: 1px solid var(--fc-antd-border-color) !important;
     position: relative !important;
     z-index: 3 !important; // 大于 query builder 的 z-index: 2
     border-radius: 2px !important;
@@ -16,6 +16,17 @@
       bottom: -6px;
       left: -1px;
       background-color: var(--fc-fill-2);
+      border-left: 1px solid var(--fc-antd-border-color);
+      border-right: 1px solid var(--fc-antd-border-color);
+    }
+  }
+}
+
+.doris-sql-input-container-with-builder-unpinned {
+  .input-group-with-form-item-label {
+    border: 1px solid var(--fc-fill-primary) !important;
+
+    &::after {
       border-left: 1px solid var(--fc-fill-primary);
       border-right: 1px solid var(--fc-fill-primary);
     }
