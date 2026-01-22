@@ -15,11 +15,12 @@ interface Props {
   onChange?: (value: string) => void;
   disabled?: boolean;
   className?: string;
+  getPopupContainer?: () => HTMLElement;
 }
 
 export default function TableSelect(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceValue, database, value, onChange, disabled, className } = props;
+  const { datasourceValue, database, value, onChange, disabled, className, getPopupContainer } = props;
   const [tables, setTables] = useState<string[]>([]);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function TableSelect(props: Props) {
 
   return (
     <OutlinedSelect
+      getPopupContainer={getPopupContainer}
       className={className}
       label={t('query.table')}
       showSearch

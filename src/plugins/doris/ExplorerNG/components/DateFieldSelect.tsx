@@ -14,14 +14,16 @@ interface Props {
   onChange?: (value: string) => void;
   disabled?: boolean;
   className?: string;
+  getPopupContainer?: () => HTMLElement;
 }
 
 export default function DateFieldSelect(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { dateFields, value, onChange, disabled, className } = props;
+  const { dateFields, value, onChange, disabled, className, getPopupContainer } = props;
 
   return (
     <OutlinedSelect
+      getPopupContainer={getPopupContainer}
       label={t('query.time_field')}
       className={classNames('min-w-[100px]', className)}
       showSearch

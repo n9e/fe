@@ -115,17 +115,33 @@ export default function index(props: Props) {
         </Col>
         <Col flex='none'>
           <Form.Item name='database' noStyle>
-            <DatabaseSelect className='w-[160px]' datasourceValue={datasourceValue} />
+            <DatabaseSelect
+              getPopupContainer={() => {
+                return eleRef?.current!;
+              }}
+              className='w-[160px]'
+              datasourceValue={datasourceValue}
+            />
           </Form.Item>
         </Col>
         <Col flex='none'>
           <Form.Item name='table' noStyle>
-            <TableSelect className='w-[160px]' datasourceValue={datasourceValue} database={database} />
+            <TableSelect
+              getPopupContainer={() => {
+                return eleRef?.current!;
+              }}
+              className='w-[160px]'
+              datasourceValue={datasourceValue}
+              database={database}
+            />
           </Form.Item>
         </Col>
         <Col flex='none'>
           <Form.Item name='time_field' noStyle>
             <DateFieldSelect
+              getPopupContainer={() => {
+                return eleRef?.current!;
+              }}
               className='w-[160px]'
               dateFields={_.filter(indexData, (item) => {
                 return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
