@@ -14,11 +14,12 @@ interface Props {
   onChange?: (value: string) => void;
   disabled?: boolean;
   className?: string;
+  getPopupContainer?: () => HTMLElement;
 }
 
 export default function DatabaseSelect(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceValue, value, onChange, disabled, className } = props;
+  const { datasourceValue, value, onChange, disabled, className, getPopupContainer } = props;
   const [databases, setDatabases] = useState<string[]>([]);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function DatabaseSelect(props: Props) {
 
   return (
     <OutlinedSelect
+      getPopupContainer={getPopupContainer}
       className={className}
       label={t('query.database')}
       showSearch
