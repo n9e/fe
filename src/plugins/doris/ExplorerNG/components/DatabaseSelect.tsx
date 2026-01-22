@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { Select } from 'antd';
 
 import { DatasourceCateEnum } from '@/utils/constant';
-import { OutlinedSelect } from '@/components/OutlinedSelect';
 
 import { NAME_SPACE } from '../../constants';
 import { getDorisDatabases } from '../../services';
@@ -35,10 +35,10 @@ export default function DatabaseSelect(props: Props) {
   }, [datasourceValue]);
 
   return (
-    <OutlinedSelect
+    <Select
+      size='small'
       getPopupContainer={getPopupContainer}
       className={className}
-      label={t('query.database')}
       showSearch
       optionFilterProp='label'
       options={_.map(databases, (item) => {

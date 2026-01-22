@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useImperativeHandle, forwardRef } from 'react';
 import { Space, Form } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -25,13 +25,21 @@ interface Props {
   onLableClick: () => void;
 }
 
-export default function QueryInputCpt(props: Props) {
+export default forwardRef(function QueryInputCpt(props: Props, ref) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
 
   const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick } = props;
 
   const [focused, setFocused] = React.useState(false);
+
+  const inputRef = React.useRef<any>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current?.focus();
+    },
+  }));
 
   return (
     <InputGroupWithFormItem
@@ -84,6 +92,7 @@ export default function QueryInputCpt(props: Props) {
         >
           <Form.Item name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
             <QueryInput
+              inputRef={inputRef}
               onEnterPress={() => {
                 snapRangeRef.current = {
                   from: undefined,
@@ -103,4 +112,4 @@ export default function QueryInputCpt(props: Props) {
       </div>
     </InputGroupWithFormItem>
   );
-}
+});

@@ -70,7 +70,7 @@ export default function ConfigPopover(props: Props) {
       placement='bottom'
       visible={visible}
       onVisibleChange={(v) => {
-        ignoreNextOutsideClick();
+        ignoreNextOutsideClick?.();
         setVisible(v);
         // popover 关闭时，获取表单数据并传递给父组件
         if (v === false) {

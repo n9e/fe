@@ -26,11 +26,13 @@ interface Props {
   onClose: () => void;
   queryBuilderPinned: boolean;
   setQueryBuilderPinned: (pinned: boolean) => void;
+  onExecute: () => void;
+  onPreviewSQL: () => void;
 }
 
 export default function QueryBuilderCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { snapRangeRef, executeQuery, visible, onClose, queryBuilderPinned, setQueryBuilderPinned } = props;
+  const { snapRangeRef, executeQuery, visible, onClose, queryBuilderPinned, setQueryBuilderPinned, onExecute, onPreviewSQL } = props;
 
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
@@ -72,90 +74,47 @@ export default function QueryBuilderCpt(props: Props) {
           explorerForm={form}
           datasourceValue={datasourceValue}
           visible={visible}
-          onExecute={(values) => {
-            const range = form.getFieldValue(['query', 'range']);
-            if (!range) return;
-            const parsedRange = parseRange(range);
-            buildSql({
-              cate: DatasourceCateEnum.doris,
-              datasource_id: datasourceValue,
-              query: [
-                {
-                  database: values.database,
-                  table: values.table,
-                  time_field: values.time_field,
-                  from: moment(parsedRange.start).unix(),
-                  to: moment(parsedRange.end).unix(),
-                  filters: values.filters,
-                  aggregates: values.aggregates,
-                  group_by: values.group_by,
-                  order_by: values.order_by,
-                  mode: values.mode,
-                  limit: values.limit,
-                },
-              ],
-            }).then((res) => {
-              onClose();
+          onExecute={(res) => {
+            onClose();
 
-              const queryValues = form.getFieldValue('query') || {};
-              form.setFieldsValue({
-                refreshFlag: undefined,
-                query: {
-                  ...queryValues,
-                  sql: res.sql,
-                  sqlVizType: res.mode,
-                  keys: {
-                    valueKey: res.value_key,
-                    labelKey: res.label_key,
-                  },
+            const queryValues = form.getFieldValue('query') || {};
+            form.setFieldsValue({
+              refreshFlag: undefined,
+              query: {
+                ...queryValues,
+                sql: res.sql,
+                sqlVizType: res.mode,
+                keys: {
+                  valueKey: res.value_key,
+                  labelKey: res.label_key,
                 },
-              });
-              snapRangeRef.current = {
-                from: undefined,
-                to: undefined,
-              };
-              executeQuery();
+              },
             });
+
+            onExecute();
+            snapRangeRef.current = {
+              from: undefined,
+              to: undefined,
+            };
+            executeQuery();
           }}
-          onPreviewSQL={(values) => {
-            const range = form.getFieldValue(['query', 'range']);
-            if (!range) return;
-            const parsedRange = parseRange(range);
-            buildSql({
-              cate: DatasourceCateEnum.doris,
-              datasource_id: datasourceValue,
-              query: [
-                {
-                  database: values.database,
-                  table: values.table,
-                  time_field: values.time_field,
-                  from: moment(parsedRange.start).unix(),
-                  to: moment(parsedRange.end).unix(),
-                  filters: values.filters,
-                  aggregates: values.aggregates,
-                  group_by: values.group_by,
-                  order_by: values.order_by,
-                  mode: values.mode,
-                  limit: values.limit,
-                },
-              ],
-            }).then((res) => {
-              onClose();
+          onPreviewSQL={(res) => {
+            onClose();
 
-              const queryValues = form.getFieldValue('query') || {};
-              form.setFieldsValue({
-                refreshFlag: undefined,
-                query: {
-                  ...queryValues,
-                  sql: res.sql,
-                  sqlVizType: res.mode,
-                  keys: {
-                    valueKey: res.value_key,
-                    labelKey: res.label_key,
-                  },
+            const queryValues = form.getFieldValue('query') || {};
+            form.setFieldsValue({
+              query: {
+                ...queryValues,
+                sql: res.sql,
+                sqlVizType: res.mode,
+                keys: {
+                  valueKey: res.value_key,
+                  labelKey: res.label_key,
                 },
-              });
+              },
             });
+
+            onPreviewSQL();
           }}
         />
         <Button

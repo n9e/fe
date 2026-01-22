@@ -1,6 +1,6 @@
 import React from 'react';
 import { Space, Button } from 'antd';
-import { PlusOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -10,6 +10,7 @@ import { Field, OrderByConfig } from '../../../types';
 import { NAME_SPACE } from '../../../../constants';
 
 import ConfigPopover from './ConfigPopover';
+import Describe from '../Describe';
 
 interface Props {
   eleRef: React.RefObject<HTMLDivElement>;
@@ -39,18 +40,17 @@ export default function Aggregates(props: Props) {
               onChange?.(_.map(value, (v, i) => (i === index ? values : v)));
             }}
           >
-            <div className='bg-fc-150 hover:bg-fc-200 min-h-[24px] px-[7px] py-[1.6px] rounded-xs wrap-break-word whitespace-normal cursor-pointer'>
+            <Describe
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange?.(_.filter(value, (_, i) => i !== index));
+              }}
+            >
               <Space className='text-hint'>
                 <span>{item.field}</span>
-                <strong>{t(`builder.order_by.${item.direction}`)}</strong>
-                <CloseCircleFilled
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChange?.(_.filter(value, (_, i) => i !== index));
-                  }}
-                />
+                <strong className='text-main bg-fc-200 px-1'>{t(`builder.order_by.${item.direction}`)}</strong>
               </Space>
-            </div>
+            </Describe>
           </ConfigPopover>
         );
       })}
@@ -62,7 +62,7 @@ export default function Aggregates(props: Props) {
           onChange?.([...(value || []), values]);
         }}
       >
-        <Button type='text' icon={<PlusOutlined />} className='bg-fc-150 hover:bg-fc-200'>
+        <Button size='small' type='text' icon={<PlusOutlined />} className='hover:bg-fc-150'>
           {t('builder.order_by.add')}
         </Button>
       </ConfigPopover>

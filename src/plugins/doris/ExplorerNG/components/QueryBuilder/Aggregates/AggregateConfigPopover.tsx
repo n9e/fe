@@ -88,11 +88,16 @@ export default function ParamsPopover(props: Props) {
                     showSearch
                     optionFilterProp='label'
                     dropdownMatchSelectWidth={false}
-                    onChange={() => {
-                      form.setFieldsValue({
-                        field: undefined,
-                        alias: undefined,
-                      });
+                    onChange={(val) => {
+                      const validTypes = AGGREGATE_FUNCTION_TYPE_MAP[val as keyof typeof AGGREGATE_FUNCTION_TYPE_MAP];
+                      const currentField = form.getFieldValue('field');
+                      const fieldItem = _.find(indexData, { field: currentField });
+                      if (!currentField || !fieldItem || !_.includes(validTypes, fieldItem.normalized_type)) {
+                        form.setFieldsValue({
+                          field: undefined,
+                          alias: undefined,
+                        });
+                      }
                     }}
                   />
                 </Form.Item>

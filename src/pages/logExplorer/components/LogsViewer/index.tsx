@@ -53,7 +53,7 @@ interface Props {
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   filterFields?: (fieldKeys: string[]) => string[];
   organizeFields?: string[];
-  setOrganizeFields?: (value: string[]) => void;
+  setOrganizeFields?: (value?: string[]) => void;
   histogramAddonBeforeRender?: React.ReactNode;
   renderHistogramAddonAfterRender?: (toggleNode: React.ReactNode) => React.ReactNode;
   optionsExtraRender?: React.ReactNode;

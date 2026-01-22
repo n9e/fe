@@ -2,8 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-
-import { OutlinedSelect } from '@/components/OutlinedSelect';
+import { Select } from 'antd';
 
 import { NAME_SPACE } from '../../constants';
 import { Field } from '../../services';
@@ -22,9 +21,9 @@ export default function DateFieldSelect(props: Props) {
   const { dateFields, value, onChange, disabled, className, getPopupContainer } = props;
 
   return (
-    <OutlinedSelect
+    <Select
+      size='small'
       getPopupContainer={getPopupContainer}
-      label={t('query.time_field')}
       className={classNames('min-w-[100px]', className)}
       showSearch
       optionFilterProp='label'

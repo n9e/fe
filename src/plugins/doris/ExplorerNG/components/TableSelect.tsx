@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { Select } from 'antd';
 
 import { DatasourceCateEnum } from '@/utils/constant';
-import { OutlinedSelect } from '@/components/OutlinedSelect';
 
 import { NAME_SPACE } from '../../constants';
 import { getDorisTables } from '../../services';
@@ -32,10 +32,10 @@ export default function TableSelect(props: Props) {
   }, [datasourceValue, database]);
 
   return (
-    <OutlinedSelect
+    <Select
+      size='small'
       getPopupContainer={getPopupContainer}
       className={className}
-      label={t('query.table')}
       showSearch
       optionFilterProp='label'
       options={_.map(tables, (item) => {
