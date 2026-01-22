@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Popover, Row, Col, Form, Select, Alert } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -13,6 +13,7 @@ import { getFiledSample } from '../../../../services';
 import { LIKE_OPERATORS } from '../constants';
 import getDefaultOperatorByType from '../utils/getDefaultOperatorByType';
 import getOperatorsByTypeIndex from '../utils/getOperatorsByTypeIndex';
+import CommonStateContext from '../commonStateContext';
 
 import FilterConfigValue from './FilterConfigValue';
 
@@ -29,6 +30,7 @@ interface Props {
 
 export default function ConfigPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
+  const { ignoreNextOutsideClick } = useContext(CommonStateContext);
   const { eleRef, indexData, fieldSampleParams, children, data, onChange, onAdd } = props;
 
   const [visible, setVisible] = useState<boolean>();
@@ -68,6 +70,7 @@ export default function ConfigPopover(props: Props) {
       placement='bottom'
       visible={visible}
       onVisibleChange={(v) => {
+        ignoreNextOutsideClick();
         setVisible(v);
         // popover 关闭时，获取表单数据并传递给父组件
         if (v === false) {

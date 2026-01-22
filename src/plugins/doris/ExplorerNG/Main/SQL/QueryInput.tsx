@@ -74,7 +74,7 @@ export default function QueryInputCpt(props: Props) {
             absolute: queryBuilderPinned,
           })}
         >
-          <Form.Item noStyle name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
+          <Form.Item name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
             <QueryInput
               onEnterPress={() => {
                 snapRangeRef.current = {

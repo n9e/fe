@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Popover, Row, Col, Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -7,6 +7,7 @@ import { SIZE } from '@/utils/constant';
 
 import { OrderByConfig, Field } from '../../../types';
 import { NAME_SPACE } from '../../../../constants';
+import CommonStateContext from '../commonStateContext';
 
 interface Props {
   eleRef: React.RefObject<HTMLDivElement>;
@@ -20,12 +21,12 @@ interface Props {
 
 export default function ConfigPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
+  const { ignoreNextOutsideClick } = useContext(CommonStateContext);
   const { eleRef, indexData, children, data, onChange, onAdd } = props;
 
   const [visible, setVisible] = useState<boolean>();
 
   const [form] = Form.useForm();
-  const func = Form.useWatch('func', form);
 
   return (
     <Popover
@@ -36,6 +37,7 @@ export default function ConfigPopover(props: Props) {
       placement='bottom'
       visible={visible}
       onVisibleChange={(v) => {
+        ignoreNextOutsideClick();
         setVisible(v);
         // popover 关闭时，获取表单数据并传递给父组件
         if (v === false) {
