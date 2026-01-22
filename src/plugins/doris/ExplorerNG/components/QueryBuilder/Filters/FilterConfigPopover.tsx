@@ -163,9 +163,9 @@ export default function ConfigPopover(props: Props) {
                   />
                 </Form.Item>
               </Col>
-              {_.includes(LIKE_OPERATORS, operator) && fieldData?.index?.index_type === 'NGRAM_BF' && (
+              {_.includes(LIKE_OPERATORS, operator) && fieldData?.index?.index_type !== 'NGRAM_BF' && (
                 <Col span={24}>
-                  <Alert type='info' showIcon message={t('builder.filters.tip_1')} />
+                  <Alert type='info' showIcon message={t('builder.filters.tip_1')} className='mb-4' />
                 </Col>
               )}
               <FilterConfigValue eleRef={eleRef} operator={operator} fieldSample={fieldSample} />

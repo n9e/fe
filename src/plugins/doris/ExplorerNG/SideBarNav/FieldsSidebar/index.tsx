@@ -239,6 +239,7 @@ export default function index(props: IProps) {
                 to: moment(range.end).unix(),
 
                 query: options.appendQuery ? `${queryStr ? `${queryStr} AND ` : ''}${options.appendQuery}` : queryStr,
+                query_builder_filter: queryValues.query_builder_filter,
                 field: options.field,
                 func: options.func,
                 ref: options.ref,

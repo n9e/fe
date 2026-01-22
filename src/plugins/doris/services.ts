@@ -196,6 +196,7 @@ export function getDorisSQLFormat(data: {
       table: string;
       time_field: string;
       query: string;
+      query_builder_filter?: FilterConfig[];
       from: number;
       to: number;
       lines: number;
@@ -220,6 +221,7 @@ export function getDorisSQLsPreview(data: {
       table: string;
       time_field: string;
       query: string;
+      query_builder_filter?: FilterConfig[];
       from: number;
       to: number;
       default_field?: string;
