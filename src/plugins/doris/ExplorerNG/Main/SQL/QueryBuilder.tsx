@@ -38,7 +38,7 @@ export default function QueryBuilderCpt(props: Props) {
   const eleRef = React.useRef<HTMLDivElement>(null);
   const skipOutsideClickRef = React.useRef(false);
 
-  useOnClickOutside(eleRef, () => {
+  useOnClickOutside(eleRef, (e) => {
     if (skipOutsideClickRef.current) {
       skipOutsideClickRef.current = false;
       return;

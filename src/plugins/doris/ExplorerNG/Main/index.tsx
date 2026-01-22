@@ -2,14 +2,13 @@ import React, { useState, useContext, useRef } from 'react';
 import { Form, Row, Col, Button, Segmented } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import classNames from 'classnames';
 
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, QUERY_BUILDER_PINNED_CACHE_KEY } from '../../constants';
 import { Field } from '../types';
 import MainMoreOperations from '../components/MainMoreOperations';
 import SQLFormatButton from '../components/SQLFormatButton';
@@ -35,6 +34,8 @@ interface Props {
   setDefaultSearchField: (field?: string) => void;
 }
 
+const queryBuilderPinnedCache = window.localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY);
+
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);
@@ -48,7 +49,7 @@ export default function index(props: Props) {
   const syntax = Form.useWatch(['query', 'syntax']);
 
   const [executeLoading, setExecuteLoading] = useState(false);
-  const [queryBuilderPinned, setQueryBuilderPinned] = useState(true); // 是否固定显示
+  const [queryBuilderPinned, setQueryBuilderPinned] = useState(queryBuilderPinnedCache ? queryBuilderPinnedCache === 'true' : true); // 是否固定显示
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false); // 不固定时，控制显示隐藏
 
   // 用于显示展示的时间范围
@@ -100,7 +101,7 @@ export default function index(props: Props) {
                 queryBuilderPinned={queryBuilderPinned}
                 queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
                 onLableClick={() => {
-                  setQueryBuilderVisible(true);
+                  setQueryBuilderVisible(!queryBuilderVisible);
                 }}
               />
             )}
@@ -167,7 +168,10 @@ export default function index(props: Props) {
               }
             }}
             queryBuilderPinned={queryBuilderPinned}
-            setQueryBuilderPinned={setQueryBuilderPinned}
+            setQueryBuilderPinned={(pinned) => {
+              setQueryBuilderPinned(pinned);
+              window.localStorage.setItem(QUERY_BUILDER_PINNED_CACHE_KEY, pinned ? 'true' : 'false');
+            }}
           />
         )}
       </div>

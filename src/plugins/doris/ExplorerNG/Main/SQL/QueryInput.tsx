@@ -42,6 +42,14 @@ export default function QueryInputCpt(props: Props) {
       label={
         <Space
           className='cursor-pointer'
+          onMouseDown={(e) => {
+            // Prevent outside click handler from firing before label click
+            e.stopPropagation();
+          }}
+          onTouchStart={(e) => {
+            // Prevent outside click handler from firing on touch
+            e.stopPropagation();
+          }}
           onClick={(e) => {
             e.stopPropagation();
             onLableClick();

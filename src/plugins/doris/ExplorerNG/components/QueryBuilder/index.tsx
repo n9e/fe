@@ -193,7 +193,7 @@ export default function index(props: Props) {
             </Form.Item>
             <Form.Item name='group_by' noStyle>
               <OutlinedSelect
-                className='w-[160px]'
+                className='min-w-[160px]'
                 label={t('builder.group_by')}
                 options={_.map(indexData, (item) => {
                   return { label: item.field, value: item.field };
