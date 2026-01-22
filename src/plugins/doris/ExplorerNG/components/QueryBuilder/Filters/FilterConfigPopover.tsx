@@ -75,6 +75,10 @@ export default function ConfigPopover(props: Props) {
         // popover 关闭时，获取表单数据并传递给父组件
         if (v === false) {
           form.validateFields().then((values) => {
+            // 如果是 LIKE 操作符，处理 value 值，添加 % 通配符
+            if (_.includes(LIKE_OPERATORS, values.operator) && values.value && !_.startsWith(values.value, '%') && !_.endsWith(values.value, '%')) {
+              values.value = `%${values.value}%`;
+            }
             if (data) {
               onChange?.(values as FilterConfig);
             } else {
