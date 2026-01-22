@@ -119,7 +119,7 @@ export default function ParamsPopover(props: Props) {
                     placeholder={t('builder.aggregates.field_placeholder')}
                     options={_.map(
                       _.concat(
-                        func === 'COUNT' ? [{ field: '＊' } as any] : [],
+                        func === 'COUNT' ? [{ field: '*' } as any] : [],
                         _.filter(indexData, (item) => {
                           if (func) {
                             const validTypes = AGGREGATE_FUNCTION_TYPE_MAP[func as keyof typeof AGGREGATE_FUNCTION_TYPE_MAP];
