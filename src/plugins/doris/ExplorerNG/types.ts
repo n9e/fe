@@ -41,6 +41,9 @@ export interface FieldSampleParams {
   database: string;
   table: string;
   time_field: string;
+  query?: string;
+  default_field?: string;
+  filters: FilterConfig[];
   from: number;
   to: number;
   limit: number;

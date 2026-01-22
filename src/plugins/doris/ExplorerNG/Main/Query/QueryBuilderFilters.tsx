@@ -42,9 +42,21 @@ export default function QueryBuilderFiltersCpt(props: Props) {
       from: moment(range.start).unix(),
       to: moment(range.end).unix(),
       limit: 10,
-      // query: queryValues.query, // 这里需要传递 queryValues.query 吗？
+      query: queryValues.query,
+      default_field: queryValues.defaultSearchField,
+      filters: queryValues?.query_builder_filter,
     };
-  }, [datasourceCate, datasourceValue, queryValues?.database, queryValues?.table, queryValues?.time_field, JSON.stringify(queryValues?.range)]);
+  }, [
+    datasourceCate,
+    datasourceValue,
+    queryValues?.database,
+    queryValues?.table,
+    queryValues?.time_field,
+    queryValues?.query,
+    queryValues?.defaultSearchField,
+    JSON.stringify(queryValues?.query_builder_filter),
+    JSON.stringify(queryValues?.range),
+  ]);
 
   const validIndexData = useMemo(() => {
     return _.filter(indexData, (item) => {

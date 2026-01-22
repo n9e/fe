@@ -40,6 +40,7 @@ export default function index(props: Props) {
   const database = Form.useWatch(['database'], form);
   const table = Form.useWatch(['table'], form);
   const time_field = Form.useWatch(['time_field'], form);
+  const filters = Form.useWatch(['filters'], form);
 
   const [buildSqlFailed, setBuildSqlFailed] = useState(false);
 
@@ -53,11 +54,12 @@ export default function index(props: Props) {
       database,
       table,
       time_field,
+      filters,
       from: moment(parsedRange.start).unix(),
       to: moment(parsedRange.end).unix(),
       limit: 10,
     };
-  }, [datasourceValue, database, table, time_field]);
+  }, [datasourceValue, database, table, time_field, JSON.stringify(filters)]);
 
   const indexDataService = () => {
     if (datasourceValue && database && table) {
@@ -139,8 +141,8 @@ export default function index(props: Props) {
           </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
-          <Form.Item name='table' noStyle>
-            <InputGroupWithFormItem label={t('query.table')} size='small'>
+          <InputGroupWithFormItem label={t('query.table')} size='small'>
+            <Form.Item name='table' noStyle>
               <TableSelect
                 getPopupContainer={() => {
                   return eleRef?.current!;
@@ -158,8 +160,8 @@ export default function index(props: Props) {
                   });
                 }}
               />
-            </InputGroupWithFormItem>
-          </Form.Item>
+            </Form.Item>
+          </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
           <InputGroupWithFormItem label={t('query.time_field')} size='small'>
