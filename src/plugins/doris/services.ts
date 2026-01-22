@@ -285,8 +285,8 @@ export function buildSql(data: {
 }): Promise<{
   sql: string;
   mode: string;
-  value_keys: string[];
-  label_keys: string[];
+  value_key: string[];
+  label_key: string[];
 }> {
   return request('/api/n9e-plus/doris-query-builder', {
     method: RequestMethod.Post,

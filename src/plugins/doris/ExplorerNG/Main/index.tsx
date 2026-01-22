@@ -94,21 +94,15 @@ export default function index(props: Props) {
               <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
             )}
             {syntax === 'sql' && (
-              <div
-                className={classNames({
-                  'mb-[18px]': !queryBuilderPinned ? !queryBuilderVisible : false,
-                })}
-              >
-                <SQLQueryInput
-                  snapRangeRef={snapRangeRef}
-                  executeQuery={executeQuery}
-                  queryBuilderPinned={queryBuilderPinned}
-                  queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
-                  onLableClick={() => {
-                    setQueryBuilderVisible(true);
-                  }}
-                />
-              </div>
+              <SQLQueryInput
+                snapRangeRef={snapRangeRef}
+                executeQuery={executeQuery}
+                queryBuilderPinned={queryBuilderPinned}
+                queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
+                onLableClick={() => {
+                  setQueryBuilderVisible(true);
+                }}
+              />
             )}
           </Col>
           {syntax === 'query' && (
