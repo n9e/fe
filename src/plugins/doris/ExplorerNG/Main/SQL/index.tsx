@@ -5,6 +5,8 @@ import { useSize } from 'ahooks';
 import Table from './Table';
 import Timeseries from './Timeseries';
 
+import './style.less';
+
 interface Props {
   tableSelector: {
     antd: string;

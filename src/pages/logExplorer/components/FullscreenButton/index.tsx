@@ -38,7 +38,6 @@ export default function FullscreenButton() {
   return (
     <Button
       size='small'
-      ghost
       type='text'
       onClick={() => {
         setViewModalVisible(!viewModalVisible);
