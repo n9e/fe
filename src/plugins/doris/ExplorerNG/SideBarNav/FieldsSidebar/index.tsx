@@ -76,6 +76,7 @@ export default function index(props: IProps) {
                   table: queryValues.table,
                   time_field: queryValues.time_field,
                   query: queryValues.query,
+                  query_builder_filter: queryValues.query_builder_filter,
                   from: moment(range.start).unix(),
                   to: moment(range.end).unix(),
                   field: record.field,

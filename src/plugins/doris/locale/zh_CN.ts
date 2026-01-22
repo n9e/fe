@@ -125,6 +125,17 @@ const zh_CN = {
       precision_placeholder: '请输入精度',
       alias: '别名',
       alias_placeholder: '请输入别名',
+      options: {
+        COUNT: '日志数',
+        AVG: '平均值',
+        SUM: '总和',
+        MIN: '最小值',
+        MAX: '最大值',
+        PERCENTILE: '分位值',
+        UNIQUE_COUNT: '唯一值个数',
+        EXIST_RATIO: '资源存在的日志比例',
+        TOPN: '前 N 值',
+      },
     },
     display_label: '展示',
     mode: {

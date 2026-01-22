@@ -36,6 +36,7 @@ export default function QueryBuilderCpt(props: Props) {
 
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
+  const sql = Form.useWatch(['query', 'sql']);
 
   const eleRef = React.useRef<HTMLDivElement>(null);
   const skipOutsideClickRef = React.useRef(false);
@@ -62,6 +63,7 @@ export default function QueryBuilderCpt(props: Props) {
           absolute: !queryBuilderPinned,
           'top-[32px]': !queryBuilderPinned,
           'border-primary': !queryBuilderPinned,
+          'shadow-lg': !queryBuilderPinned,
           relative: queryBuilderPinned,
         })}
         style={{
@@ -73,6 +75,7 @@ export default function QueryBuilderCpt(props: Props) {
           eleRef={eleRef}
           explorerForm={form}
           datasourceValue={datasourceValue}
+          sqlValue={sql}
           visible={visible}
           onExecute={(res) => {
             onClose();
