@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Popover, Row, Col, Form, Select, InputNumber, Input } from 'antd';
+import { Popover, Row, Col, Form, Select, InputNumber, Input, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -81,7 +81,7 @@ export default function ParamsPopover(props: Props) {
                     placeholder={t('builder.aggregates.func_placeholder')}
                     options={_.map(_.keys(AGGREGATE_FUNCTION_TYPE_MAP), (item) => {
                       return {
-                        label: item,
+                        label: item + ' ' + t(`builder.aggregates.options.${item}`),
                         value: item,
                       };
                     })}
@@ -118,13 +118,16 @@ export default function ParamsPopover(props: Props) {
                     }}
                     placeholder={t('builder.aggregates.field_placeholder')}
                     options={_.map(
-                      _.filter(indexData, (item) => {
-                        if (func) {
-                          const validTypes = AGGREGATE_FUNCTION_TYPE_MAP[func as keyof typeof AGGREGATE_FUNCTION_TYPE_MAP];
-                          return _.includes(validTypes, item.normalized_type);
-                        }
-                        return true;
-                      }),
+                      _.concat(
+                        func === 'COUNT' ? [{ field: '＊' } as any] : [],
+                        _.filter(indexData, (item) => {
+                          if (func) {
+                            const validTypes = AGGREGATE_FUNCTION_TYPE_MAP[func as keyof typeof AGGREGATE_FUNCTION_TYPE_MAP];
+                            return _.includes(validTypes, item.normalized_type);
+                          }
+                          return true;
+                        }),
+                      ),
                       (item) => {
                         return {
                           label: item.field,

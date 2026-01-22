@@ -26,6 +26,7 @@ interface Props {
   eleRef: React.RefObject<HTMLDivElement>;
   explorerForm: FormInstance;
   datasourceValue: number;
+  sqlValue: string;
   visible: boolean;
   onExecute: (values) => void;
   onPreviewSQL: (values) => void;
@@ -34,7 +35,7 @@ interface Props {
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
 
-  const { eleRef, explorerForm, datasourceValue, visible, onExecute, onPreviewSQL } = props;
+  const { eleRef, explorerForm, datasourceValue, sqlValue, visible, onExecute, onPreviewSQL } = props;
 
   const [form] = Form.useForm();
   const database = Form.useWatch(['database'], form);
@@ -43,6 +44,11 @@ export default function index(props: Props) {
   const filters = Form.useWatch(['filters'], form);
 
   const [buildSqlFailed, setBuildSqlFailed] = useState(false);
+  // const [databaseTableTimeFieldInvalid, setDatabaseTableTimeFieldInvalid] = useState({
+  //   database: false,
+  //   table: false,
+  //   time_field: false,
+  // });
 
   const fieldSampleParams = useMemo(() => {
     const range = explorerForm.getFieldValue(['query', 'range']);
@@ -112,14 +118,28 @@ export default function index(props: Props) {
   }, [visible]);
 
   return (
-    <Form form={form}>
-      <Row gutter={SIZE} align='middle' className='mb-2'>
+    <Form form={form} layout='vertical'>
+      <Row gutter={SIZE} align='top' className='mb-2'>
         <Col flex='none'>
-          <div className='w-[50px]'>{t('builder.database_table.label')}</div>
+          <div className='w-[50px] h-[24px] flex items-center'>{t('builder.database_table.label')}</div>
         </Col>
         <Col flex='none'>
           <InputGroupWithFormItem label={t('query.database')} size='small'>
-            <Form.Item name='database' noStyle>
+            <Form.Item
+              className='mb-0'
+              name='database'
+              rules={[
+                ({}) => ({
+                  validator(_, value) {
+                    // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, database: !value }));
+                    if (!value) {
+                      return Promise.reject(new Error(t('query.database_msg')));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
+            >
               <DatabaseSelect
                 getPopupContainer={() => {
                   return eleRef?.current!;
@@ -142,7 +162,21 @@ export default function index(props: Props) {
         </Col>
         <Col flex='none'>
           <InputGroupWithFormItem label={t('query.table')} size='small'>
-            <Form.Item name='table' noStyle>
+            <Form.Item
+              className='mb-0'
+              name='table'
+              rules={[
+                ({}) => ({
+                  validator(_, value) {
+                    // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, table: !value }));
+                    if (!value) {
+                      return Promise.reject(new Error(t('query.table_msg')));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
+            >
               <TableSelect
                 getPopupContainer={() => {
                   return eleRef?.current!;
@@ -165,7 +199,21 @@ export default function index(props: Props) {
         </Col>
         <Col flex='none'>
           <InputGroupWithFormItem label={t('query.time_field')} size='small'>
-            <Form.Item name='time_field' noStyle>
+            <Form.Item
+              className='mb-0'
+              name='time_field'
+              rules={[
+                ({}) => ({
+                  validator(_, value) {
+                    // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, time_field: !value }));
+                    if (!value) {
+                      return Promise.reject(new Error(t('query.time_field_msg')));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
+            >
               <DateFieldSelect
                 getPopupContainer={() => {
                   return eleRef?.current!;
@@ -212,7 +260,7 @@ export default function index(props: Props) {
         </Col>
         <Col flex='auto'>
           <Space size={SIZE}>
-            <Form.Item name='mode' noStyle>
+            <Form.Item name='mode' noStyle initialValue='table'>
               <Segmented
                 size='small'
                 options={[
@@ -237,8 +285,8 @@ export default function index(props: Props) {
               </Form.Item>
             </InputGroupWithFormItem>
             <InputGroupWithFormItem size='small' label={t('builder.limit')}>
-              <Form.Item name='limit' noStyle initialValue={100}>
-                <InputNumber size='small' className='w-[80px]' min={1} />
+              <Form.Item name='limit' noStyle>
+                <InputNumber size='small' className='w-[80px]' min={1} max={10000000} />
               </Form.Item>
             </InputGroupWithFormItem>
           </Space>
@@ -255,7 +303,7 @@ export default function index(props: Props) {
         </Col>
       </Row>
       <Space size={SIZE}>
-        <Tooltip title={t('builder.btn_tip')}>
+        <Tooltip title={sqlValue ? t('builder.btn_tip') : undefined}>
           <Button
             size='small'
             type='primary'
@@ -297,7 +345,7 @@ export default function index(props: Props) {
             {t('builder.excute')}
           </Button>
         </Tooltip>
-        <Tooltip title={t('builder.btn_tip')}>
+        <Tooltip title={sqlValue ? t('builder.btn_tip') : undefined}>
           <Button
             size='small'
             onClick={() => {
