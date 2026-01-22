@@ -24,7 +24,7 @@ export interface OrderByConfig {
 }
 
 export interface Field extends BaseField {
-  normalized_type: string;
+  normalized_type?: string;
   index?: {
     index_name: string;
     index_type: 'NGRAM_BF' | 'INVERTED'; // NGRAM_BF 代表字段上有 NGram BloomFilter 索引; INVERTED 代表字段上有倒排索引
