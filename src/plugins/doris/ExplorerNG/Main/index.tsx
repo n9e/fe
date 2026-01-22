@@ -48,8 +48,8 @@ export default function index(props: Props) {
   const syntax = Form.useWatch(['query', 'syntax']);
 
   const [executeLoading, setExecuteLoading] = useState(false);
-  const [queryBuilderPinned, setQueryBuilderPinned] = useState(false); // 是否固定显示
-  const [queryBuilderVisible, setQueryBuilderVisible] = useState(true); // 不固定时，控制显示隐藏
+  const [queryBuilderPinned, setQueryBuilderPinned] = useState(true); // 是否固定显示
+  const [queryBuilderVisible, setQueryBuilderVisible] = useState(false); // 不固定时，控制显示隐藏
 
   // 用于显示展示的时间范围
   const rangeRef = useRef<{
