@@ -3,6 +3,7 @@ import { Input } from 'antd';
 import classNames from 'classnames';
 
 interface Props {
+  inputRef?: React.Ref<any>;
   disabled?: boolean;
   enableAddonBefore?: boolean;
   placeholder?: string;
@@ -35,6 +36,7 @@ export default function QueryInput(props: Props) {
   return (
     <Input.TextArea
       key={!props.value ? props.placeholder : undefined} // reset when placeholder changes
+      ref={props.inputRef}
       className={classNames('doris-log-explorer-query-input', {
         'pl-[32px]': props.enableAddonBefore,
       })}

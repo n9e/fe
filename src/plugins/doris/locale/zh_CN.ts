@@ -106,7 +106,7 @@ const zh_CN = {
     filters: {
       label: '筛选',
       label_tip: '所有筛选条件的关系为且。',
-      add: '添加筛选',
+      add: '添加',
       field_placeholder: '请选择字段',
       operator_placeholder: '请选择操作符',
       value_placeholder: '请选择值',
@@ -114,7 +114,7 @@ const zh_CN = {
     },
     aggregates: {
       label: '聚合',
-      add: '添加聚合',
+      add: '添加',
       func: '聚合函数',
       func_placeholder: '请选择聚合函数',
       field: '字段',
@@ -134,7 +134,7 @@ const zh_CN = {
     group_by: '分组',
     order_by: {
       label: '排序',
-      add: '添加排序',
+      add: '添加',
       field: '字段',
       field_placeholder: '请选择字段',
       direction: '排序方向',
@@ -145,6 +145,8 @@ const zh_CN = {
     limit: '数量限制',
     excute: '查询',
     preview_sql: '预览 SQL',
+    btn_tip: '点击后，SQL 输入框的内容将被覆盖',
+    btn_failed_tip: '转换失败，请重试，或修改表单',
   },
 };
 export default zh_CN;

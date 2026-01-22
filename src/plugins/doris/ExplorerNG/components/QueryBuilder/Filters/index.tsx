@@ -1,6 +1,6 @@
 import React from 'react';
 import { Space, Button } from 'antd';
-import { PlusOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -10,6 +10,7 @@ import { Field, FilterConfig, FieldSampleParams } from '../../../types';
 import { NAME_SPACE } from '../../../../constants';
 
 import describeFieldValue from '../utils/describeFieldValue';
+import Describe from '../Describe';
 import ConfigPopover from './FilterConfigPopover';
 
 interface Props {
@@ -43,7 +44,12 @@ export default function Filters(props: Props) {
               onChange?.(_.map(value, (v, i) => (i === index ? values : v)));
             }}
           >
-            <div className='bg-fc-150 hover:bg-fc-200 min-h-[24px] px-[7px] py-[1.6px] rounded-xs wrap-break-word whitespace-normal cursor-pointer'>
+            <Describe
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange?.(_.filter(value, (_, i) => i !== index));
+              }}
+            >
               <Space className='text-hint'>
                 <span>{item.field}</span>
                 <span
@@ -51,14 +57,8 @@ export default function Filters(props: Props) {
                     __html: describeFieldValue(item.operator, item.value),
                   }}
                 />
-                <CloseCircleFilled
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChange?.(_.filter(value, (_, i) => i !== index));
-                  }}
-                />
               </Space>
-            </div>
+            </Describe>
           </ConfigPopover>
         );
       })}
@@ -71,7 +71,7 @@ export default function Filters(props: Props) {
           onChange?.([...(value || []), values]);
         }}
       >
-        <Button size={size} type='text' icon={<PlusOutlined />} className='bg-fc-150 hover:bg-fc-200'>
+        <Button size={size} type='text' icon={<PlusOutlined />} className='hover:bg-fc-150'>
           {t('builder.filters.add')}
         </Button>
       </ConfigPopover>

@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
-import { Form, Row, Col, Space, Tooltip, Segmented, Button } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Form, Row, Col, Space, Tooltip, Segmented, Button, Select, InputNumber } from 'antd';
 import { FormInstance } from 'antd/es/form';
-import { InfoCircleOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
@@ -9,12 +9,11 @@ import { useRequest } from 'ahooks';
 
 import { SIZE, DatasourceCateEnum } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
-import { OutlinedSelect } from '@/components/OutlinedSelect';
-import OutlinedInputNumber from '@/components/OutlinedInputNumber';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 
 import { Field, FieldSampleParams } from '../../types';
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
-import { getDorisIndex } from '../../../services';
+import { getDorisIndex, buildSql } from '../../../services';
 import DatabaseSelect from '../DatabaseSelect';
 import TableSelect from '../TableSelect';
 import DateFieldSelect from '../DateFieldSelect';
@@ -41,6 +40,9 @@ export default function index(props: Props) {
   const database = Form.useWatch(['database'], form);
   const table = Form.useWatch(['table'], form);
   const time_field = Form.useWatch(['time_field'], form);
+
+  const [buildSqlFailed, setBuildSqlFailed] = useState(false);
+
   const fieldSampleParams = useMemo(() => {
     const range = explorerForm.getFieldValue(['query', 'range']);
     if (!database || !table || !time_field || !range) return {} as FieldSampleParams;
@@ -114,40 +116,65 @@ export default function index(props: Props) {
           <div className='w-[50px]'>{t('builder.database_table.label')}</div>
         </Col>
         <Col flex='none'>
-          <Form.Item name='database' noStyle>
-            <DatabaseSelect
-              getPopupContainer={() => {
-                return eleRef?.current!;
-              }}
-              className='w-[160px]'
-              datasourceValue={datasourceValue}
-            />
-          </Form.Item>
+          <InputGroupWithFormItem label={t('query.database')} size='small'>
+            <Form.Item name='database' noStyle>
+              <DatabaseSelect
+                getPopupContainer={() => {
+                  return eleRef?.current!;
+                }}
+                className='w-[160px]'
+                datasourceValue={datasourceValue}
+                onChange={() => {
+                  form.setFieldsValue({
+                    table: undefined,
+                    time_field: undefined,
+                    filters: undefined,
+                    aggregates: undefined,
+                    group_by: undefined,
+                    order_by: undefined,
+                  });
+                }}
+              />
+            </Form.Item>
+          </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
           <Form.Item name='table' noStyle>
-            <TableSelect
-              getPopupContainer={() => {
-                return eleRef?.current!;
-              }}
-              className='w-[160px]'
-              datasourceValue={datasourceValue}
-              database={database}
-            />
+            <InputGroupWithFormItem label={t('query.table')} size='small'>
+              <TableSelect
+                getPopupContainer={() => {
+                  return eleRef?.current!;
+                }}
+                className='w-[160px]'
+                datasourceValue={datasourceValue}
+                database={database}
+                onChange={() => {
+                  form.setFieldsValue({
+                    time_field: undefined,
+                    filters: undefined,
+                    aggregates: undefined,
+                    group_by: undefined,
+                    order_by: undefined,
+                  });
+                }}
+              />
+            </InputGroupWithFormItem>
           </Form.Item>
         </Col>
         <Col flex='none'>
-          <Form.Item name='time_field' noStyle>
-            <DateFieldSelect
-              getPopupContainer={() => {
-                return eleRef?.current!;
-              }}
-              className='w-[160px]'
-              dateFields={_.filter(indexData, (item) => {
-                return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
-              })}
-            />
-          </Form.Item>
+          <InputGroupWithFormItem label={t('query.time_field')} size='small'>
+            <Form.Item name='time_field' noStyle>
+              <DateFieldSelect
+                getPopupContainer={() => {
+                  return eleRef?.current!;
+                }}
+                className='w-[160px]'
+                dateFields={_.filter(indexData, (item) => {
+                  return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
+                })}
+              />
+            </Form.Item>
+          </InputGroupWithFormItem>
         </Col>
       </Row>
       <Row gutter={SIZE} align='middle' className='mb-2'>
@@ -163,7 +190,7 @@ export default function index(props: Props) {
         </Col>
         <Col flex='auto'>
           <Form.Item name='filters' noStyle>
-            <Filters eleRef={eleRef} indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
+            <Filters eleRef={eleRef} size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
           </Form.Item>
         </Col>
       </Row>
@@ -185,28 +212,33 @@ export default function index(props: Props) {
           <Space size={SIZE}>
             <Form.Item name='mode' noStyle>
               <Segmented
+                size='small'
                 options={[
                   { label: t('builder.mode.table'), value: 'table' },
                   { label: t('builder.mode.timeseries'), value: 'timeseries' },
                 ]}
               />
             </Form.Item>
-            <Form.Item name='group_by' noStyle>
-              <OutlinedSelect
-                className='min-w-[160px]'
-                label={t('builder.group_by')}
-                options={_.map(indexData, (item) => {
-                  return { label: item.field, value: item.field };
-                })}
-                mode='multiple'
-                showSearch
-                optionFilterProp='label'
-                dropdownMatchSelectWidth={false}
-              />
-            </Form.Item>
-            <Form.Item name='limit' noStyle initialValue={100}>
-              <OutlinedInputNumber className='w-[80px]' label={t('builder.order_by.label')} min={1} />
-            </Form.Item>
+            <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
+              <Form.Item name='group_by' noStyle>
+                <Select
+                  size='small'
+                  className='min-w-[160px]'
+                  options={_.map(indexData, (item) => {
+                    return { label: item.field, value: item.field };
+                  })}
+                  mode='multiple'
+                  showSearch
+                  optionFilterProp='label'
+                  dropdownMatchSelectWidth={false}
+                />
+              </Form.Item>
+            </InputGroupWithFormItem>
+            <InputGroupWithFormItem size='small' label={t('builder.limit')}>
+              <Form.Item name='limit' noStyle initialValue={100}>
+                <InputNumber size='small' className='w-[80px]' min={1} />
+              </Form.Item>
+            </InputGroupWithFormItem>
           </Space>
         </Col>
       </Row>
@@ -221,25 +253,88 @@ export default function index(props: Props) {
         </Col>
       </Row>
       <Space size={SIZE}>
-        <Button
-          icon={<CaretRightOutlined />}
-          onClick={() => {
-            form.validateFields().then((values) => {
-              onExecute(values);
-            });
-          }}
-        >
-          {t('builder.excute')}
-        </Button>
-        <Button
-          onClick={() => {
-            form.validateFields().then((values) => {
-              onPreviewSQL(values);
-            });
-          }}
-        >
-          {t('builder.preview_sql')}
-        </Button>
+        <Tooltip title={t('builder.btn_tip')}>
+          <Button
+            size='small'
+            type='primary'
+            icon={<SearchOutlined />}
+            onClick={() => {
+              form.validateFields().then((values) => {
+                const range = explorerForm.getFieldValue(['query', 'range']);
+                if (!range) return;
+                const parsedRange = parseRange(range);
+                buildSql({
+                  cate: DatasourceCateEnum.doris,
+                  datasource_id: datasourceValue,
+                  query: [
+                    {
+                      database: values.database,
+                      table: values.table,
+                      time_field: values.time_field,
+                      from: moment(parsedRange.start).unix(),
+                      to: moment(parsedRange.end).unix(),
+                      filters: values.filters,
+                      aggregates: values.aggregates,
+                      group_by: values.group_by,
+                      order_by: values.order_by,
+                      mode: values.mode,
+                      limit: values.limit,
+                    },
+                  ],
+                })
+                  .then((res) => {
+                    setBuildSqlFailed(false);
+                    onExecute(res);
+                  })
+                  .catch(() => {
+                    setBuildSqlFailed(true);
+                  });
+              });
+            }}
+          >
+            {t('builder.excute')}
+          </Button>
+        </Tooltip>
+        <Tooltip title={t('builder.btn_tip')}>
+          <Button
+            size='small'
+            onClick={() => {
+              form.validateFields().then((values) => {
+                const range = explorerForm.getFieldValue(['query', 'range']);
+                if (!range) return;
+                const parsedRange = parseRange(range);
+                buildSql({
+                  cate: DatasourceCateEnum.doris,
+                  datasource_id: datasourceValue,
+                  query: [
+                    {
+                      database: values.database,
+                      table: values.table,
+                      time_field: values.time_field,
+                      from: moment(parsedRange.start).unix(),
+                      to: moment(parsedRange.end).unix(),
+                      filters: values.filters,
+                      aggregates: values.aggregates,
+                      group_by: values.group_by,
+                      order_by: values.order_by,
+                      mode: values.mode,
+                      limit: values.limit,
+                    },
+                  ],
+                })
+                  .then((res) => {
+                    setBuildSqlFailed(false);
+                    onPreviewSQL(res);
+                  })
+                  .catch(() => {
+                    setBuildSqlFailed(true);
+                  });
+              });
+            }}
+          >
+            {t('builder.preview_sql')}
+          </Button>
+        </Tooltip>
       </Space>
     </Form>
   );

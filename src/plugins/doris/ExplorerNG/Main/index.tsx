@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef } from 'react';
-import { Form, Row, Col, Button, Segmented } from 'antd';
+import { Form, Row, Col, Button, Segmented, Badge } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -51,6 +51,9 @@ export default function index(props: Props) {
   const [executeLoading, setExecuteLoading] = useState(false);
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(queryBuilderPinnedCache ? queryBuilderPinnedCache === 'true' : true); // 是否固定显示
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false); // 不固定时，控制显示隐藏
+  const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+
+  const queryInputRef = useRef<any>(null);
 
   // 用于显示展示的时间范围
   const rangeRef = useRef<{
@@ -96,6 +99,7 @@ export default function index(props: Props) {
             )}
             {syntax === 'sql' && (
               <SQLQueryInput
+                ref={queryInputRef}
                 snapRangeRef={snapRangeRef}
                 executeQuery={executeQuery}
                 queryBuilderPinned={queryBuilderPinned}
@@ -139,19 +143,22 @@ export default function index(props: Props) {
             </Form.Item>
           </Col>
           <Col flex='none'>
-            <Button
-              type='primary'
-              onClick={() => {
-                snapRangeRef.current = {
-                  from: undefined,
-                  to: undefined,
-                };
-                executeQuery();
-              }}
-              loading={executeLoading}
-            >
-              {t(`${logExplorerNS}:execute`)}
-            </Button>
+            <Badge dot={isContentChangedDotVisible}>
+              <Button
+                type='primary'
+                onClick={() => {
+                  setIsContentChangedDotVisible(false);
+                  snapRangeRef.current = {
+                    from: undefined,
+                    to: undefined,
+                  };
+                  executeQuery();
+                }}
+                loading={executeLoading}
+              >
+                {t(`${logExplorerNS}:execute`)}
+              </Button>
+            </Badge>
           </Col>
           <Col flex='none'>
             <MainMoreOperations />
@@ -171,6 +178,13 @@ export default function index(props: Props) {
             setQueryBuilderPinned={(pinned) => {
               setQueryBuilderPinned(pinned);
               window.localStorage.setItem(QUERY_BUILDER_PINNED_CACHE_KEY, pinned ? 'true' : 'false');
+            }}
+            onExecute={() => {
+              setIsContentChangedDotVisible(false);
+            }}
+            onPreviewSQL={() => {
+              queryInputRef.current?.focus();
+              setIsContentChangedDotVisible(true);
             }}
           />
         )}
@@ -201,6 +215,7 @@ export default function index(props: Props) {
             rgd: logsRgdTableSelector,
           }}
           setExecuteLoading={setExecuteLoading}
+          executeQuery={executeQuery}
         />
       )}
     </div>

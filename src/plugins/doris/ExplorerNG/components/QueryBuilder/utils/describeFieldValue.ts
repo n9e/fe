@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { IN_OPERATORS, NULL_OPERATORS, BETWEEN_OPERATORS } from '../constants';
 
 export default function describeFieldValue(operator: string, value?: string | number | Array<string | number>): string {
-  const operatorStr = `<strong class="text-main">${operator}</strong>`;
+  const operatorStr = `<strong class="text-main bg-fc-200 px-1">${operator}</strong>`;
 
   if (_.includes(IN_OPERATORS, operator)) {
     if (Array.isArray(value)) {
