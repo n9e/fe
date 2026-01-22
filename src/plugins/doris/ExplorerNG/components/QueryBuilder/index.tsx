@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { Form, Row, Col, Space, Tooltip, Segmented, Button } from 'antd';
+import { FormInstance } from 'antd/es/form';
 import { InfoCircleOutlined, CaretRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -7,7 +8,7 @@ import _ from 'lodash';
 import { useRequest } from 'ahooks';
 
 import { SIZE, DatasourceCateEnum } from '@/utils/constant';
-import { parseRange, IRawTimeRange } from '@/components/TimeRangePicker';
+import { parseRange } from '@/components/TimeRangePicker';
 import { OutlinedSelect } from '@/components/OutlinedSelect';
 import OutlinedInputNumber from '@/components/OutlinedInputNumber';
 
@@ -20,17 +21,13 @@ import DateFieldSelect from '../DateFieldSelect';
 
 import Filters from './Filters';
 import Aggregates from './Aggregates';
+import OrderBy from './OrderBy';
 
 interface Props {
   eleRef: React.RefObject<HTMLDivElement>;
+  explorerForm: FormInstance;
   datasourceValue: number;
-  range: IRawTimeRange;
   visible: boolean;
-  defaultValues: {
-    database?: string;
-    table?: string;
-    time_field?: string;
-  };
   onExecute: (values) => void;
   onPreviewSQL: (values) => void;
 }
@@ -38,13 +35,14 @@ interface Props {
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
 
-  const { eleRef, datasourceValue, range, visible, defaultValues, onExecute, onPreviewSQL } = props;
+  const { eleRef, explorerForm, datasourceValue, visible, onExecute, onPreviewSQL } = props;
 
   const [form] = Form.useForm();
   const database = Form.useWatch(['database'], form);
   const table = Form.useWatch(['table'], form);
   const time_field = Form.useWatch(['time_field'], form);
   const fieldSampleParams = useMemo(() => {
+    const range = explorerForm.getFieldValue(['query', 'range']);
     if (!database || !table || !time_field || !range) return {} as FieldSampleParams;
     const parsedRange = parseRange(range);
     return {
@@ -57,7 +55,7 @@ export default function index(props: Props) {
       to: moment(parsedRange.end).unix(),
       limit: 10,
     };
-  }, [datasourceValue, database, table, time_field, JSON.stringify(range)]);
+  }, [datasourceValue, database, table, time_field]);
 
   const indexDataService = () => {
     if (datasourceValue && database && table) {
@@ -96,13 +94,15 @@ export default function index(props: Props) {
 
   useEffect(() => {
     if (visible) {
+      const explorerQueryValues = explorerForm.getFieldValue('query') || {};
       const database = form.getFieldValue('database');
       const table = form.getFieldValue('table');
       const time_field = form.getFieldValue('time_field');
+
       form.setFieldsValue({
-        database: database || defaultValues.database || undefined,
-        table: table || defaultValues.table || undefined,
-        time_field: time_field || defaultValues.time_field || undefined,
+        database: database || explorerQueryValues.database || undefined,
+        table: table || explorerQueryValues.table || undefined,
+        time_field: time_field || explorerQueryValues.time_field || undefined,
       });
     }
   }, [visible]);
@@ -157,11 +157,11 @@ export default function index(props: Props) {
         </Col>
         <Col flex='auto'>
           <Form.Item name='aggregates' noStyle>
-            <Aggregates indexData={validIndexData} />
+            <Aggregates eleRef={eleRef} indexData={validIndexData} />
           </Form.Item>
         </Col>
       </Row>
-      <Row gutter={SIZE} align='middle' className='mb-4'>
+      <Row gutter={SIZE} align='middle' className='mb-2'>
         <Col flex='none'>
           <div className='w-[50px]'>{t('builder.display_label')}</div>
         </Col>
@@ -188,30 +188,20 @@ export default function index(props: Props) {
                 dropdownMatchSelectWidth={false}
               />
             </Form.Item>
-            <Form.Item name={['order_by', 'field']} noStyle>
-              <OutlinedSelect
-                className='w-[160px]'
-                label={t('builder.order_by.label')}
-                options={_.map(indexData, (item) => {
-                  return { label: item.field, value: item.field };
-                })}
-                showSearch
-                optionFilterProp='label'
-                dropdownMatchSelectWidth={false}
-              />
-            </Form.Item>
-            <Form.Item name={['order_by', 'direction']} noStyle initialValue='desc'>
-              <Segmented
-                options={[
-                  { label: t('builder.order_by.asc'), value: 'asc' },
-                  { label: t('builder.order_by.desc'), value: 'desc' },
-                ]}
-              />
-            </Form.Item>
             <Form.Item name='limit' noStyle initialValue={100}>
               <OutlinedInputNumber className='w-[80px]' label={t('builder.order_by.label')} min={1} />
             </Form.Item>
           </Space>
+        </Col>
+      </Row>
+      <Row gutter={SIZE} align='middle' className='mb-4'>
+        <Col flex='none'>
+          <div className='w-[50px]'>{t('builder.order_by.label')}</div>
+        </Col>
+        <Col flex='auto'>
+          <Form.Item name='order_by' noStyle>
+            <OrderBy eleRef={eleRef} indexData={validIndexData} />
+          </Form.Item>
         </Col>
       </Row>
       <Space size={SIZE}>
@@ -228,7 +218,7 @@ export default function index(props: Props) {
         <Button
           onClick={() => {
             form.validateFields().then((values) => {
-              onExecute(values);
+              onPreviewSQL(values);
             });
           }}
         >

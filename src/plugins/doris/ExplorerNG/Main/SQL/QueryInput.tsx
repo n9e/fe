@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Space, Form } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -11,7 +12,6 @@ import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import { NAME_SPACE } from '../../../constants';
 import QueryInput from '../../components/QueryInput';
 import QueryInputAddonAfter from '../../components/QueryInputAddonAfter';
-import classNames from 'classnames';
 
 interface Props {
   snapRangeRef: React.MutableRefObject<{
@@ -20,6 +20,7 @@ interface Props {
   }>;
   executeQuery: () => void;
 
+  queryBuilderPinned: boolean;
   queryBuilderVisible: boolean;
   onLableClick: () => void;
 }
@@ -28,7 +29,9 @@ export default function QueryInputCpt(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
 
-  const { snapRangeRef, executeQuery, queryBuilderVisible, onLableClick } = props;
+  const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick } = props;
+
+  const [focused, setFocused] = React.useState(false);
 
   return (
     <InputGroupWithFormItem
@@ -60,18 +63,34 @@ export default function QueryInputCpt(props: Props) {
       }
       addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
     >
-      <div className='relative'>
-        <Form.Item noStyle name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
-          <QueryInput
-            onEnterPress={() => {
-              snapRangeRef.current = {
-                from: undefined,
-                to: undefined,
-              };
-              executeQuery();
-            }}
-          />
-        </Form.Item>
+      <div
+        className={classNames('relative w-full hover:z-10', {
+          'z-10': focused,
+        })}
+      >
+        <div
+          className={classNames('w-full', {
+            absolute: queryBuilderPinned,
+          })}
+        >
+          <Form.Item noStyle name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
+            <QueryInput
+              onEnterPress={() => {
+                snapRangeRef.current = {
+                  from: undefined,
+                  to: undefined,
+                };
+                executeQuery();
+              }}
+              onFocus={() => {
+                setFocused(true);
+              }}
+              onBlur={() => {
+                setFocused(false);
+              }}
+            />
+          </Form.Item>
+        </div>
       </div>
     </InputGroupWithFormItem>
   );

@@ -6,38 +6,34 @@ import _ from 'lodash';
 
 import { SIZE } from '@/utils/constant';
 
-import { Field, FilterConfig, FieldSampleParams } from '../../../types';
+import { Field, OrderByConfig } from '../../../types';
 import { NAME_SPACE } from '../../../../constants';
 
-import describeFieldValue from '../utils/describeFieldValue';
-import ConfigPopover from './FilterConfigPopover';
+import ConfigPopover from './ConfigPopover';
 
 interface Props {
   eleRef: React.RefObject<HTMLDivElement>;
-  size?: 'small' | 'middle' | 'large';
   indexData: Field[];
-  fieldSampleParams: FieldSampleParams;
 
-  value?: FilterConfig[];
-  onChange?: (values: FilterConfig[]) => void;
+  value?: OrderByConfig[];
+  onChange?: (values: OrderByConfig[]) => void;
 }
 
-export default function Filters(props: Props) {
+export default function Aggregates(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { eleRef, size = 'middle', indexData, fieldSampleParams, value, onChange } = props;
+  const { eleRef, indexData, value, onChange } = props;
 
   return (
     <Space size={SIZE} wrap>
       {_.map(value, (item, index) => {
-        if (!item.field || !item.operator) {
+        if (!item.field || !item.direction) {
           return null;
         }
         return (
           <ConfigPopover
-            key={`${item.field}-${item.operator}-${item.value}`}
+            key={`${item.field}-${item.direction}`}
             eleRef={eleRef}
             indexData={indexData}
-            fieldSampleParams={fieldSampleParams}
             data={item}
             onChange={(values) => {
               onChange?.(_.map(value, (v, i) => (i === index ? values : v)));
@@ -46,11 +42,7 @@ export default function Filters(props: Props) {
             <div className='bg-fc-150 hover:bg-fc-200 min-h-[24px] px-[7px] py-[1.6px] rounded-xs wrap-break-word whitespace-normal cursor-pointer'>
               <Space className='text-hint'>
                 <span>{item.field}</span>
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: describeFieldValue(item.operator, item.value),
-                  }}
-                />
+                <strong>{t(`builder.order_by.${item.direction}`)}</strong>
                 <CloseCircleFilled
                   onClick={(e) => {
                     e.stopPropagation();
@@ -66,13 +58,12 @@ export default function Filters(props: Props) {
       <ConfigPopover
         eleRef={eleRef}
         indexData={indexData}
-        fieldSampleParams={fieldSampleParams}
         onAdd={(values) => {
           onChange?.([...(value || []), values]);
         }}
       >
-        <Button size={size} type='text' icon={<PlusOutlined />} className='bg-fc-150 hover:bg-fc-200'>
-          {t('builder.filters.add')}
+        <Button type='text' icon={<PlusOutlined />} className='bg-fc-150 hover:bg-fc-200'>
+          {t('builder.order_by.add')}
         </Button>
       </ConfigPopover>
     </Space>

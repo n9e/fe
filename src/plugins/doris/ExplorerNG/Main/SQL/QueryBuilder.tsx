@@ -1,12 +1,16 @@
 import React from 'react';
 import _ from 'lodash';
-import { Form } from 'antd';
+import { Button, Form } from 'antd';
+import { PushpinOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import { parseRange } from '@/components/TimeRangePicker';
 
+import { NAME_SPACE } from '../../../constants';
 import { buildSql } from '../../../services';
 import QueryBuilder from '../../components/QueryBuilder';
 
@@ -19,17 +23,16 @@ interface Props {
 
   visible: boolean;
   onClose: () => void;
+  queryBuilderPinned: boolean;
+  setQueryBuilderPinned: (pinned: boolean) => void;
 }
 
 export default function QueryBuilderCpt(props: Props) {
-  const { snapRangeRef, executeQuery, visible, onClose } = props;
+  const { t } = useTranslation(NAME_SPACE);
+  const { snapRangeRef, executeQuery, visible, onClose, queryBuilderPinned, setQueryBuilderPinned } = props;
 
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
-  const database = Form.useWatch(['query', 'database']);
-  const table = Form.useWatch(['query', 'table']);
-  const time_field = Form.useWatch(['query', 'time_field']);
-  const range = Form.useWatch(['query', 'range']);
 
   const eleRef = React.useRef<HTMLDivElement>(null);
 
@@ -40,22 +43,23 @@ export default function QueryBuilderCpt(props: Props) {
   return (
     <div
       ref={eleRef}
-      className='w-full border border-primary rounded-sm mb-2 mt-1 p-4'
+      className={classNames('w-full border border-primary rounded-sm mb-2 mt-1 p-4 bg-fc-100 left-0', {
+        absolute: !queryBuilderPinned,
+        'top-[32px]': !queryBuilderPinned,
+        relative: queryBuilderPinned,
+      })}
       style={{
+        zIndex: 2,
         display: visible ? 'block' : 'none',
       }}
     >
       <QueryBuilder
         eleRef={eleRef}
+        explorerForm={form}
         datasourceValue={datasourceValue}
-        range={range}
         visible={visible}
-        defaultValues={{
-          database,
-          table,
-          time_field,
-        }}
         onExecute={(values) => {
+          const range = form.getFieldValue(['query', 'range']);
           if (!range) return;
           const parsedRange = parseRange(range);
           buildSql({
@@ -81,9 +85,11 @@ export default function QueryBuilderCpt(props: Props) {
 
             const queryValues = form.getFieldValue('query') || {};
             form.setFieldsValue({
+              refreshFlag: undefined,
               query: {
                 ...queryValues,
                 sql: res.sql,
+                sqlVizType: res.mode,
                 value_keys: res.value_keys,
                 label_keys: res.label_keys,
               },
@@ -96,6 +102,7 @@ export default function QueryBuilderCpt(props: Props) {
           });
         }}
         onPreviewSQL={(values) => {
+          const range = form.getFieldValue(['query', 'range']);
           if (!range) return;
           const parsedRange = parseRange(range);
           buildSql({
@@ -117,13 +124,16 @@ export default function QueryBuilderCpt(props: Props) {
               },
             ],
           }).then((res) => {
+            console.log('preview sql: ', res);
             onClose();
 
             const queryValues = form.getFieldValue('query') || {};
             form.setFieldsValue({
+              refreshFlag: undefined,
               query: {
                 ...queryValues,
                 sql: res.sql,
+                sqlVizType: res.mode,
                 value_keys: res.value_keys,
                 label_keys: res.label_keys,
               },
@@ -131,6 +141,16 @@ export default function QueryBuilderCpt(props: Props) {
           });
         }}
       />
+      <Button
+        className='absolute top-2 right-2'
+        type='text'
+        icon={<PushpinOutlined />}
+        onClick={() => {
+          setQueryBuilderPinned(!queryBuilderPinned);
+        }}
+      >
+        {queryBuilderPinned ? t('builder.to_unpinned_btn') : t('builder.to_pinned_btn')}
+      </Button>
     </div>
   );
 }

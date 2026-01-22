@@ -96,6 +96,8 @@ const zh_CN = {
     },
   },
   builder: {
+    to_pinned_btn: '固定',
+    to_unpinned_btn: '取消固定',
     database_table: {
       label: '库表',
       database: '数据库',
@@ -132,6 +134,11 @@ const zh_CN = {
     group_by: '分组',
     order_by: {
       label: '排序',
+      add: '添加排序',
+      field: '字段',
+      field_placeholder: '请选择字段',
+      direction: '排序方向',
+      direction_placeholder: '请选择排序方向',
       asc: '升序',
       desc: '降序',
     },

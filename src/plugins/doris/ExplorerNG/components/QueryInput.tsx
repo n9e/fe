@@ -9,6 +9,8 @@ interface Props {
   value?: string;
   onChange?: (value?: string) => void;
   onEnterPress?: (value?: string) => void;
+  onBlur?: () => void;
+  onFocus?: () => void;
 }
 
 export default function QueryInput(props: Props) {
@@ -44,11 +46,15 @@ export default function QueryInput(props: Props) {
         setCurrentValue(e.target.value);
       }}
       onBlur={() => {
+        props.onBlur && props.onBlur();
         if (currentValue !== props.value) {
           props.onChange && props.onChange(currentValue);
         }
       }}
       onKeyDown={handleKeyDown}
+      onFocus={() => {
+        props.onFocus && props.onFocus();
+      }}
     />
   );
 }

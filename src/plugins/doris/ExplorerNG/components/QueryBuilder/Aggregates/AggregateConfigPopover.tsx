@@ -11,6 +11,7 @@ import { NAME_SPACE } from '../../../../constants';
 import { AGGREGATE_FUNCTION_TYPE_MAP } from '../constants';
 
 interface Props {
+  eleRef: React.RefObject<HTMLDivElement>;
   indexData: Field[];
   children: React.ReactNode;
 
@@ -21,7 +22,7 @@ interface Props {
 
 export default function ParamsPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { indexData, children, data, onChange, onAdd } = props;
+  const { eleRef, indexData, children, data, onChange, onAdd } = props;
 
   const [visible, setVisible] = useState<boolean>();
 
@@ -30,6 +31,9 @@ export default function ParamsPopover(props: Props) {
 
   return (
     <Popover
+      getPopupContainer={() => {
+        return eleRef?.current!;
+      }}
       trigger='click'
       placement='bottom'
       visible={visible}
@@ -54,7 +58,7 @@ export default function ParamsPopover(props: Props) {
       }}
       content={
         <div className='w-[400px]'>
-          <Form form={form}>
+          <Form form={form} layout='vertical'>
             <Row gutter={SIZE}>
               <Col span={12}>
                 <Form.Item
@@ -68,6 +72,9 @@ export default function ParamsPopover(props: Props) {
                   initialValue='COUNT'
                 >
                   <Select
+                    getPopupContainer={() => {
+                      return eleRef?.current!;
+                    }}
                     placeholder={t('builder.aggregates.func_placeholder')}
                     options={_.map(_.keys(AGGREGATE_FUNCTION_TYPE_MAP), (item) => {
                       return {
@@ -81,8 +88,6 @@ export default function ParamsPopover(props: Props) {
                     onChange={() => {
                       form.setFieldsValue({
                         field: undefined,
-                        percentile: undefined,
-                        precision: undefined,
                         alias: undefined,
                       });
                     }}
@@ -100,6 +105,9 @@ export default function ParamsPopover(props: Props) {
                   ]}
                 >
                   <Select
+                    getPopupContainer={() => {
+                      return eleRef?.current!;
+                    }}
                     placeholder={t('builder.aggregates.field_placeholder')}
                     options={_.map(
                       _.filter(indexData, (item) => {
@@ -121,8 +129,6 @@ export default function ParamsPopover(props: Props) {
                     dropdownMatchSelectWidth={false}
                     onChange={() => {
                       form.setFieldsValue({
-                        percentile: undefined,
-                        precision: undefined,
                         alias: undefined,
                       });
                     }}

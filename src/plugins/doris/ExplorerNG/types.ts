@@ -18,6 +18,11 @@ export interface AggregateConfig {
   alias?: string;
 }
 
+export interface OrderByConfig {
+  field?: string;
+  direction?: 'asc' | 'desc';
+}
+
 export interface Field extends BaseField {
   normalized_type: string;
   index?: {

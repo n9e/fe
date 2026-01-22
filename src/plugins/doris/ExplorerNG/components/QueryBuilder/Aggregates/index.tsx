@@ -9,9 +9,10 @@ import { SIZE } from '@/utils/constant';
 import { Field, AggregateConfig } from '../../../types';
 import { NAME_SPACE } from '../../../../constants';
 
-import ParamsPopover from './AggregateConfigPopover';
+import ConfigPopover from './AggregateConfigPopover';
 
 interface Props {
+  eleRef: React.RefObject<HTMLDivElement>;
   indexData: Field[];
 
   value?: AggregateConfig[];
@@ -20,7 +21,7 @@ interface Props {
 
 export default function Aggregates(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { indexData, value, onChange } = props;
+  const { eleRef, indexData, value, onChange } = props;
 
   return (
     <Space size={SIZE} wrap>
@@ -29,8 +30,9 @@ export default function Aggregates(props: Props) {
           return null;
         }
         return (
-          <ParamsPopover
+          <ConfigPopover
             key={`${item.field}-${item.func}-${item.alias}`}
+            eleRef={eleRef}
             indexData={indexData}
             data={item}
             onChange={(values) => {
@@ -56,21 +58,21 @@ export default function Aggregates(props: Props) {
                 />
               </Space>
             </div>
-          </ParamsPopover>
+          </ConfigPopover>
         );
       })}
 
-      <ParamsPopover
+      <ConfigPopover
+        eleRef={eleRef}
         indexData={indexData}
         onAdd={(values) => {
-          console.log('add values', values);
           onChange?.([...(value || []), values]);
         }}
       >
         <Button type='text' icon={<PlusOutlined />} className='bg-fc-150 hover:bg-fc-200'>
           {t('builder.aggregates.add')}
         </Button>
-      </ParamsPopover>
+      </ConfigPopover>
     </Space>
   );
 }

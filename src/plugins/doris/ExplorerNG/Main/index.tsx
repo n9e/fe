@@ -48,7 +48,8 @@ export default function index(props: Props) {
   const syntax = Form.useWatch(['query', 'syntax']);
 
   const [executeLoading, setExecuteLoading] = useState(false);
-  const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
+  const [queryBuilderPinned, setQueryBuilderPinned] = useState(false); // 是否固定显示
+  const [queryBuilderVisible, setQueryBuilderVisible] = useState(true); // 不固定时，控制显示隐藏
 
   // 用于显示展示的时间范围
   const rangeRef = useRef<{
@@ -66,99 +67,116 @@ export default function index(props: Props) {
 
   return (
     <div className='flex flex-col h-full'>
-      <Row gutter={SIZE} className='flex-shrink-0'>
-        <Col flex='none'>
-          <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>
-            <Segmented
-              options={
-                navMode === 'fields'
-                  ? [
-                      {
-                        label: t('query.syntax.query'),
-                        value: 'query',
-                      },
-                      {
-                        label: t('query.syntax.sql'),
-                        value: 'sql',
-                      },
-                    ]
-                  : [{ label: t('query.syntax.sql'), value: 'sql' }]
-              }
-            />
-          </Form.Item>
-        </Col>
-        <Col flex='auto'>
+      <div className='flex-shrink-0 relative'>
+        <Row gutter={SIZE}>
+          <Col flex='none'>
+            <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>
+              <Segmented
+                options={
+                  navMode === 'fields'
+                    ? [
+                        {
+                          label: t('query.syntax.query'),
+                          value: 'query',
+                        },
+                        {
+                          label: t('query.syntax.sql'),
+                          value: 'sql',
+                        },
+                      ]
+                    : [{ label: t('query.syntax.sql'), value: 'sql' }]
+                }
+              />
+            </Form.Item>
+          </Col>
+          <Col flex='auto'>
+            {syntax === 'query' && (
+              <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
+            )}
+            {syntax === 'sql' && (
+              <div
+                className={classNames({
+                  'mb-[18px]': !queryBuilderPinned ? !queryBuilderVisible : false,
+                })}
+              >
+                <SQLQueryInput
+                  snapRangeRef={snapRangeRef}
+                  executeQuery={executeQuery}
+                  queryBuilderPinned={queryBuilderPinned}
+                  queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
+                  onLableClick={() => {
+                    setQueryBuilderVisible(true);
+                  }}
+                />
+              </div>
+            )}
+          </Col>
           {syntax === 'query' && (
-            <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
-          )}
-          {syntax === 'sql' && (
-            <div
-              className={classNames({
-                'mb-[18px]': !queryBuilderVisible,
-              })}
-            >
-              <SQLQueryInput
-                snapRangeRef={snapRangeRef}
-                executeQuery={executeQuery}
-                queryBuilderVisible={queryBuilderVisible}
-                onLableClick={() => {
-                  setQueryBuilderVisible(true);
+            <Col flex='none'>
+              <SQLFormatButton
+                rangeRef={rangeRef}
+                defaultSearchField={defaultSearchField}
+                onClick={(values) => {
+                  snapRangeRef.current = {
+                    from: undefined,
+                    to: undefined,
+                  };
+                  form.setFieldsValue({
+                    refreshFlag: undefined,
+                    query: values,
+                  });
+                  executeQuery();
                 }}
               />
-            </div>
+            </Col>
           )}
-        </Col>
-        {syntax === 'query' && (
           <Col flex='none'>
-            <SQLFormatButton
-              rangeRef={rangeRef}
-              defaultSearchField={defaultSearchField}
-              onClick={(values) => {
-                snapRangeRef.current = {
-                  from: undefined,
-                  to: undefined,
-                };
-                form.setFieldsValue({
-                  refreshFlag: undefined,
-                  query: values,
-                });
-                executeQuery();
-              }}
-            />
+            <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
+              <TimeRangePicker
+                onChange={() => {
+                  snapRangeRef.current = {
+                    from: undefined,
+                    to: undefined,
+                  };
+                  executeQuery();
+                }}
+              />
+            </Form.Item>
           </Col>
-        )}
-        <Col flex='none'>
-          <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
-            <TimeRangePicker
-              onChange={() => {
+          <Col flex='none'>
+            <Button
+              type='primary'
+              onClick={() => {
                 snapRangeRef.current = {
                   from: undefined,
                   to: undefined,
                 };
                 executeQuery();
               }}
-            />
-          </Form.Item>
-        </Col>
-        <Col flex='none'>
-          <Button
-            type='primary'
-            onClick={() => {
-              snapRangeRef.current = {
-                from: undefined,
-                to: undefined,
-              };
-              executeQuery();
+              loading={executeLoading}
+            >
+              {t(`${logExplorerNS}:execute`)}
+            </Button>
+          </Col>
+          <Col flex='none'>
+            <MainMoreOperations />
+          </Col>
+        </Row>
+        {syntax === 'sql' && (
+          <QueryBuilder
+            snapRangeRef={snapRangeRef}
+            executeQuery={executeQuery}
+            visible={!queryBuilderPinned ? queryBuilderVisible : true}
+            onClose={() => {
+              if (!queryBuilderPinned) {
+                setQueryBuilderVisible(false);
+              }
             }}
-            loading={executeLoading}
-          >
-            {t(`${logExplorerNS}:execute`)}
-          </Button>
-        </Col>
-        <Col flex='none'>
-          <MainMoreOperations />
-        </Col>
-      </Row>
+            queryBuilderPinned={queryBuilderPinned}
+            setQueryBuilderPinned={setQueryBuilderPinned}
+          />
+        )}
+      </div>
       {syntax === 'query' && (
         <QueryMain
           tableSelector={{
@@ -179,16 +197,13 @@ export default function index(props: Props) {
         />
       )}
       {syntax === 'sql' && (
-        <>
-          <QueryBuilder snapRangeRef={snapRangeRef} executeQuery={executeQuery} visible={queryBuilderVisible} onClose={() => setQueryBuilderVisible(false)} />
-          <SQLMain
-            tableSelector={{
-              antd: logsAntdTableSelector,
-              rgd: logsRgdTableSelector,
-            }}
-            setExecuteLoading={setExecuteLoading}
-          />
-        </>
+        <SQLMain
+          tableSelector={{
+            antd: logsAntdTableSelector,
+            rgd: logsRgdTableSelector,
+          }}
+          setExecuteLoading={setExecuteLoading}
+        />
       )}
     </div>
   );

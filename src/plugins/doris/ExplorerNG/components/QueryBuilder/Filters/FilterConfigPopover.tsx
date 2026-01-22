@@ -27,7 +27,7 @@ interface Props {
   onAdd?: (data: FilterConfig) => void;
 }
 
-export default function ParamsPopover(props: Props) {
+export default function ConfigPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { eleRef, indexData, fieldSampleParams, children, data, onChange, onAdd } = props;
 
