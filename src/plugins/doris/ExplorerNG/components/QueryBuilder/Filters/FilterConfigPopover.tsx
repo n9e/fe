@@ -103,6 +103,7 @@ export default function ConfigPopover(props: Props) {
             <Row gutter={SIZE}>
               <Col span={12}>
                 <Form.Item
+                  label={t('builder.filters.field')}
                   name='field'
                   rules={[
                     {
@@ -140,6 +141,7 @@ export default function ConfigPopover(props: Props) {
               </Col>
               <Col span={12}>
                 <Form.Item
+                  label={t('builder.filters.operator')}
                   name='operator'
                   rules={[
                     {

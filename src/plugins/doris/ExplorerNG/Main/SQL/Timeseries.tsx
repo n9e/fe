@@ -218,7 +218,7 @@ export default function TimeseriesCpt(props: Props) {
           });
       });
     }
-  }, [refreshFlag, labelKey, valueKey]);
+  }, [refreshFlag]);
 
   const seriesData = useMemo(() => {
     return _.map(data.baseSeries, (subItem) => {

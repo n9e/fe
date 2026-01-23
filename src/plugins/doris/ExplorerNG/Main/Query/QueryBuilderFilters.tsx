@@ -31,7 +31,7 @@ export default function QueryBuilderFiltersCpt(props: Props) {
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
   const fieldSampleParams = useMemo(() => {
-    if (!queryValues) return {} as FieldSampleParams;
+    if (!queryValues || !queryValues.range) return {} as FieldSampleParams;
     const range = parseRange(queryValues.range);
     return {
       cate: datasourceCate,
