@@ -8,8 +8,8 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import Meta from '@/components/Meta';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
-import { getDorisIndex, Field } from '../../services';
-import { HandleValueFilterParams } from '../types';
+import { getDorisIndex } from '../../services';
+import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import DatabaseSelect from './DatabaseSelect';
 import TableSelect from './TableSelect';

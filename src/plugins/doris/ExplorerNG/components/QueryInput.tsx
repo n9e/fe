@@ -3,12 +3,15 @@ import { Input } from 'antd';
 import classNames from 'classnames';
 
 interface Props {
+  inputRef?: React.Ref<any>;
   disabled?: boolean;
   enableAddonBefore?: boolean;
   placeholder?: string;
   value?: string;
   onChange?: (value?: string) => void;
   onEnterPress?: (value?: string) => void;
+  onBlur?: () => void;
+  onFocus?: () => void;
 }
 
 export default function QueryInput(props: Props) {
@@ -33,6 +36,7 @@ export default function QueryInput(props: Props) {
   return (
     <Input.TextArea
       key={!props.value ? props.placeholder : undefined} // reset when placeholder changes
+      ref={props.inputRef}
       className={classNames('doris-log-explorer-query-input', {
         'pl-[32px]': props.enableAddonBefore,
       })}
@@ -44,11 +48,15 @@ export default function QueryInput(props: Props) {
         setCurrentValue(e.target.value);
       }}
       onBlur={() => {
+        props.onBlur && props.onBlur();
         if (currentValue !== props.value) {
           props.onChange && props.onChange(currentValue);
         }
       }}
       onKeyDown={handleKeyDown}
+      onFocus={() => {
+        props.onFocus && props.onFocus();
+      }}
     />
   );
 }

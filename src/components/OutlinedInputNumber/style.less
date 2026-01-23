@@ -1,0 +1,86 @@
+// OutlinedInputNumber 组件样式
+// 使用 CSS 变量实现主题自动适配 (亮色/暗色/金色主题)
+
+.outlined-inputnumber-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  // 浮动标签
+  .outlined-inputnumber-label {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--fc-fill-2); // 使用主题背景色
+    color: var(--fc-text-placeholder); // 使用占位符文本色
+    padding: 0 4px;
+    font-size: 12px;
+    line-height: 1.5715;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    pointer-events: none; // 防止阻挡 InputNumber 点击
+    z-index: 2;
+    white-space: nowrap;
+
+    // 浮动状态 (有值或聚焦时)
+    &.floating {
+      top: -5px;
+      left: 5px;
+      transform: none;
+      font-size: 11px;
+      line-height: 1;
+      color: var(--fc-text-2);
+    }
+
+    // 必填标记
+    .outlined-inputnumber-required {
+      color: var(--fc-red-5-color);
+      margin-left: 2px;
+    }
+  }
+
+  // InputNumber 组件样式覆盖
+  .outlined-inputnumber {
+    width: 100%;
+    z-index: 1;
+
+    &-content {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    &-suffix {
+      margin-left: -1px;
+
+      .ant-btn {
+        border-color: var(--fc-border-color);
+      }
+    }
+
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  // 小尺寸适配
+  &:has(.outlined-inputnumber.ant-input-number-sm) .outlined-inputnumber-label {
+    font-size: 12px;
+    left: 7px;
+
+    &.floating {
+      top: -5px;
+      left: 3px;
+      font-size: 10px;
+    }
+  }
+
+  // 大尺寸适配
+  &:has(.outlined-inputnumber.ant-input-number-lg) .outlined-inputnumber-label {
+    font-size: 16px;
+    left: 11px;
+
+    &.floating {
+      top: -5px;
+      left: 6px;
+      font-size: 11px;
+    }
+  }
+}
