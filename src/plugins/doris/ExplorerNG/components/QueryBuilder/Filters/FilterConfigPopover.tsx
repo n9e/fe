@@ -52,6 +52,7 @@ export default function ConfigPopover(props: Props) {
     () => {
       return getFiledSample({
         ...fieldSampleParams,
+        filters: _.filter(fieldSampleParams.filters, (item) => item.field !== field),
         field,
       });
     },
