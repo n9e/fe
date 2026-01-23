@@ -166,8 +166,6 @@ export default function index(props: Props) {
         </Row>
         {syntax === 'sql' && (
           <QueryBuilder
-            snapRangeRef={snapRangeRef}
-            executeQuery={executeQuery}
             visible={!queryBuilderPinned ? queryBuilderVisible : true}
             onClose={() => {
               if (!queryBuilderPinned) {
