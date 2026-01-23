@@ -62,6 +62,7 @@ export default function ConfigPopover(props: Props) {
             <Row gutter={SIZE}>
               <Col span={16}>
                 <Form.Item
+                  label={t('builder.order_by.field')}
                   name='field'
                   rules={[
                     {
@@ -89,6 +90,7 @@ export default function ConfigPopover(props: Props) {
               </Col>
               <Col span={8}>
                 <Form.Item
+                  label={t('builder.order_by.direction')}
                   name='direction'
                   rules={[
                     {

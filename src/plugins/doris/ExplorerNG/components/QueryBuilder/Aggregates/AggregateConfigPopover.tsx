@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Popover, Row, Col, Form, Select, InputNumber, Input, Space } from 'antd';
+import { Popover, Row, Col, Form, Select, InputNumber, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -65,6 +65,7 @@ export default function ParamsPopover(props: Props) {
             <Row gutter={SIZE}>
               <Col span={12}>
                 <Form.Item
+                  label={t('builder.aggregates.func')}
                   name='func'
                   rules={[
                     {
@@ -104,6 +105,7 @@ export default function ParamsPopover(props: Props) {
               </Col>
               <Col span={12}>
                 <Form.Item
+                  label={t('builder.aggregates.field')}
                   name='field'
                   rules={[
                     {
@@ -150,6 +152,7 @@ export default function ParamsPopover(props: Props) {
                 <>
                   <Col span={12}>
                     <Form.Item
+                      label={t('builder.aggregates.percentile')}
                       name='percentile'
                       rules={[
                         {
@@ -164,6 +167,7 @@ export default function ParamsPopover(props: Props) {
                   </Col>
                   <Col span={12}>
                     <Form.Item
+                      label={t('builder.aggregates.precision')}
                       name='precision'
                       rules={[
                         {
@@ -181,6 +185,7 @@ export default function ParamsPopover(props: Props) {
               {func === 'EXIST_RATIO' && (
                 <Col span={24}>
                   <Form.Item
+                    label={t('builder.aggregates.precision')}
                     name='precision'
                     rules={[
                       {
@@ -197,6 +202,7 @@ export default function ParamsPopover(props: Props) {
               {func === 'TOPN' && (
                 <Col span={24}>
                   <Form.Item
+                    label={t('builder.aggregates.n')}
                     name='n'
                     rules={[
                       {
@@ -211,7 +217,7 @@ export default function ParamsPopover(props: Props) {
                 </Col>
               )}
               <Col span={24}>
-                <Form.Item name='alias' noStyle>
+                <Form.Item label={t('builder.aggregates.alias')} name='alias'>
                   <Input placeholder={t('builder.aggregates.alias_placeholder')} />
                 </Form.Item>
               </Col>

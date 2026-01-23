@@ -24,6 +24,7 @@ export default function FilterConfigValue(props: Props) {
     return (
       <Col span={24}>
         <Form.Item
+          label={t('builder.filters.value')}
           name='value'
           rules={[
             {

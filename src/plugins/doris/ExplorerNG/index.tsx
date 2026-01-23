@@ -233,6 +233,7 @@ export default function index(props: Props) {
                         query: {
                           ...filterValues.query,
                           range,
+                          navMode: filterValues.query?.navMode || 'fields',
                           syntax: filterValues.query?.syntax || 'query',
                         },
                       });
