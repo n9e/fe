@@ -21,6 +21,7 @@ import QueryBuilder from './SQL/QueryBuilder';
 
 interface Props {
   tabKey: string;
+  datasourceValue?: number;
   indexData: Field[];
 
   organizeFields: string[];
@@ -40,7 +41,19 @@ export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);
 
-  const { tabKey, indexData, organizeFields, setOrganizeFields, executeQuery, handleValueFilter, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const {
+    tabKey,
+    datasourceValue,
+    indexData,
+    organizeFields,
+    setOrganizeFields,
+    executeQuery,
+    handleValueFilter,
+    stackByField,
+    setStackByField,
+    defaultSearchField,
+    setDefaultSearchField,
+  } = props;
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
@@ -166,6 +179,7 @@ export default function index(props: Props) {
         </Row>
         {syntax === 'sql' && (
           <QueryBuilder
+            key={datasourceValue} // 切换数据源时，重置 QueryBuilder 组件
             visible={!queryBuilderPinned ? queryBuilderVisible : true}
             onClose={() => {
               if (!queryBuilderPinned) {

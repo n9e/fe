@@ -335,6 +335,7 @@ export default function index(props: Props) {
           <div className='min-w-0 flex-1'>
             <Main
               tabKey={tabKey}
+              datasourceValue={datasourceValue}
               indexData={indexData}
               organizeFields={organizeFields}
               setOrganizeFields={(value) => {
