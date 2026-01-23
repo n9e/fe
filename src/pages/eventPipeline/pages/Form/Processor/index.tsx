@@ -132,7 +132,7 @@ export default function NotifyConfig(props: Props) {
                 value: 'ai_summary',
               },
             ],
-            IS_PLUS ? PlusOptions : [],
+            IS_PLUS ? (PlusOptions as any[]) : [],
           )}
           onChange={(newTyp) => {
             const newConfig = _.cloneDeep(DEFAULT_PROCESSOR_CONFIG_MAP[newTyp]);
