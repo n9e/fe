@@ -200,7 +200,9 @@ export default function FieldsItem(props: Props) {
                           onStatisticClick={onStatisticClick}
                           setTopNVisible={setTopNVisible}
                         >
-                          <a>{item.count}</a>
+                          <Button type='link' size='small' className='p-0' disabled={emptyValueNotSupported}>
+                            {item.count}
+                          </Button>
                         </QuickViewPopover>
                       </div>
                       <div className='flex justify-between'>
@@ -216,7 +218,9 @@ export default function FieldsItem(props: Props) {
                           onStatisticClick={onStatisticClick}
                           setTopNVisible={setTopNVisible}
                         >
-                          <a>{percent}%</a>
+                          <Button type='link' size='small' className='p-0' disabled={emptyValueNotSupported}>
+                            {percent}%
+                          </Button>
                         </QuickViewPopover>
                       </div>
                     </div>

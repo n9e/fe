@@ -159,7 +159,7 @@ export default forwardRef(function OriginSettings(
           }
           trigger={['click']}
         >
-          <Button size='small' ghost type='text' icon={<SettingOutlined />} />
+          <Button size='small' type='text' icon={<SettingOutlined />} />
         </Dropdown>
         {!_.isEmpty(organizeFields) && (
           <Tooltip title={`当前只显示字段 ${_.join(organizeFields, '、')}，可点击设置图标设置显示所有字段`}>
