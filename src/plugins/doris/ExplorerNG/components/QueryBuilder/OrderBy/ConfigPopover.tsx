@@ -5,13 +5,15 @@ import _ from 'lodash';
 
 import { SIZE } from '@/utils/constant';
 
-import { OrderByConfig, Field } from '../../../types';
+import { OrderByConfig, Field, AggregateConfig } from '../../../types';
 import { NAME_SPACE } from '../../../../constants';
 import CommonStateContext from '../commonStateContext';
+import getAliasListByAggregates from '../utils/getAliasListByAggregates';
 
 interface Props {
   eleRef: React.RefObject<HTMLDivElement>;
   indexData: Field[];
+  aggregates: AggregateConfig[];
   children: React.ReactNode;
 
   data?: OrderByConfig;
@@ -22,11 +24,13 @@ interface Props {
 export default function ConfigPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { ignoreNextOutsideClick } = useContext(CommonStateContext);
-  const { eleRef, indexData, children, data, onChange, onAdd } = props;
+  const { eleRef, indexData, aggregates, children, data, onChange, onAdd } = props;
 
   const [visible, setVisible] = useState<boolean>();
 
   const [form] = Form.useForm();
+
+  const aliasList = getAliasListByAggregates(aggregates);
 
   return (
     <Popover
@@ -76,12 +80,20 @@ export default function ConfigPopover(props: Props) {
                       return eleRef?.current!;
                     }}
                     placeholder={t('builder.order_by.field_placeholder')}
-                    options={_.map(indexData, (item) => {
-                      return {
-                        label: item.field,
-                        value: item.field,
-                      };
-                    })}
+                    options={_.concat(
+                      _.map(aliasList, (item) => {
+                        return {
+                          label: item,
+                          value: item,
+                        };
+                      }),
+                      _.map(indexData, (item) => {
+                        return {
+                          label: item.field,
+                          value: item.field,
+                        };
+                      }),
+                    )}
                     showSearch
                     optionFilterProp='label'
                     dropdownMatchSelectWidth={false}

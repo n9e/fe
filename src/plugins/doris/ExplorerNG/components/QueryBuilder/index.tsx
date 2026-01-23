@@ -42,6 +42,7 @@ export default function index(props: Props) {
   const table = Form.useWatch(['table'], form);
   const time_field = Form.useWatch(['time_field'], form);
   const filters = Form.useWatch(['filters'], form);
+  const aggregates = Form.useWatch(['aggregates'], form);
 
   const [buildSqlFailed, setBuildSqlFailed] = useState(false);
   // const [databaseTableTimeFieldInvalid, setDatabaseTableTimeFieldInvalid] = useState({
@@ -298,7 +299,7 @@ export default function index(props: Props) {
         </Col>
         <Col flex='auto'>
           <Form.Item name='order_by' noStyle>
-            <OrderBy eleRef={eleRef} indexData={validIndexData} />
+            <OrderBy eleRef={eleRef} indexData={validIndexData} aggregates={aggregates} />
           </Form.Item>
         </Col>
       </Row>
