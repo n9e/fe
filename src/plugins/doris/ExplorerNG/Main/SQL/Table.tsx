@@ -262,6 +262,7 @@ export default function Table(props: IProps) {
                     <Space size={4}>
                       <span>{t('query.count')} :</span>
                       <span>{data?.total}</span>
+                      {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />}
                     </Space>
                   )}
                 </Space>
