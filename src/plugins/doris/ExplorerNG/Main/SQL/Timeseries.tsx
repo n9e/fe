@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Spin, Empty, Form, Space, Radio, Tooltip, Button, Select, Input } from 'antd';
-import { QuestionCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Spin, Empty, Form, Space, Radio, Tooltip, Select } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AlignedData, Options } from 'uplot';
 import { useSize } from 'ahooks';
+
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { CommonStateContext } from '@/App';
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder } from '@/components/UPlotChart';
 import { parseRange } from '@/components/TimeRangePicker';
-import { OutlinedSelect } from '@/components/OutlinedSelect';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import { hexPalette } from '@/pages/dashboard/config';
@@ -218,7 +218,7 @@ export default function TimeseriesCpt(props: Props) {
           });
       });
     }
-  }, [refreshFlag, labelKey, valueKey]);
+  }, [refreshFlag]);
 
   const seriesData = useMemo(() => {
     return _.map(data.baseSeries, (subItem) => {
@@ -335,8 +335,8 @@ export default function TimeseriesCpt(props: Props) {
       </div>
       <>
         {!_.isEmpty(data.frames) ? (
-          <div className='best-looking-scroll'>
-            <div ref={eleRef} className='min-h-[480px] relative'>
+          <div className='min-h-0 best-looking-scroll'>
+            <div ref={eleRef} className='min-h-[422px] relative'>
               <div className='n9e-antd-table-height-full'>
                 <Spin spinning={loading}>
                   {eleSize?.width && eleSize?.height && (

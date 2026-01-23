@@ -171,6 +171,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
           {relatedLinks?.map((i) => {
             return (
               <li
+                key={i}
                 className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                 style={{ textDecoration: 'underline' }}
                 onClick={() => {
