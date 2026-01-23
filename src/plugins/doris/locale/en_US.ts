@@ -104,9 +104,9 @@ const en_US = {
     to_pinned_btn: 'Pin',
     to_unpinned_btn: 'Unpin',
     database_table: {
-      label: 'Database/Table',
-      database: 'Database',
-      table: 'Table',
+      label: 'Database',
+      database: 'DBName',
+      table: 'TableName',
     },
     filters: {
       label: 'Filters',
