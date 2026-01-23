@@ -37,7 +37,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { datasourceList, datasourceCateOptions, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, datasourceCateOptions, groupedDatasourceList, darkMode, logsDefaultRange } = useContext(CommonStateContext);
   const { tabKey, disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -232,7 +232,7 @@ export default function index(props: Props) {
                         ...filterValues,
                         query: {
                           ...filterValues.query,
-                          range,
+                          range: range ?? logsDefaultRange,
                           navMode: filterValues.query?.navMode || 'fields',
                           syntax: filterValues.query?.syntax || 'query',
                         },
@@ -338,7 +338,16 @@ export default function index(props: Props) {
               indexData={indexData}
               organizeFields={organizeFields}
               setOrganizeFields={(value) => {
+                const queryValues = form.getFieldValue('query');
                 setOrganizeFields(value);
+                setOrganizeFieldsToLocalstorage(
+                  {
+                    datasourceValue,
+                    database: queryValues?.database,
+                    table: queryValues?.table,
+                  },
+                  value,
+                );
               }}
               executeQuery={executeQuery}
               handleValueFilter={handleValueFilter}

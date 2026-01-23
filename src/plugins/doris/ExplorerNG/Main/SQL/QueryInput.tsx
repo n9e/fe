@@ -1,12 +1,10 @@
-import React, { useContext, useImperativeHandle, forwardRef } from 'react';
+import React, { useImperativeHandle, forwardRef } from 'react';
 import { Space, Form } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { FilterOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
-import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../../../constants';
@@ -26,8 +24,7 @@ interface Props {
 }
 
 export default forwardRef(function QueryInputCpt(props: Props, ref) {
-  const { t, i18n } = useTranslation(NAME_SPACE);
-  const { darkMode } = useContext(CommonStateContext);
+  const { t } = useTranslation(NAME_SPACE);
 
   const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick } = props;
 
@@ -64,18 +61,7 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
           }}
         >
           {t(`${logExplorerNS}:query`)}
-          <InfoCircleOutlined
-            onClick={(e) => {
-              e.stopPropagation();
-              DocumentDrawer({
-                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                darkMode,
-                title: t('common:document_link'),
-                type: 'iframe',
-                documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
-              });
-            }}
-          />
+          <FilterOutlined />
         </Space>
       }
       addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}

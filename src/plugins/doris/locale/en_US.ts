@@ -137,6 +137,7 @@ const en_US = {
       alias_placeholder: 'Please enter an alias',
       options: {
         COUNT: 'Log count',
+        CPS: 'Counts per second',
         AVG: 'Average',
         SUM: 'Sum',
         MIN: 'Min',

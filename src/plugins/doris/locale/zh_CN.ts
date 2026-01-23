@@ -132,6 +132,7 @@ const zh_CN = {
       alias_placeholder: '请输入别名',
       options: {
         COUNT: '日志数',
+        CPS: '每秒计数',
         AVG: '平均值',
         SUM: '总和',
         MIN: '最小值',

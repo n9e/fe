@@ -132,6 +132,7 @@ const zh_HK = {
       alias_placeholder: '請輸入別名',
       options: {
         COUNT: '日誌數',
+        CPS: '每秒計數',
         AVG: '平均值',
         SUM: '總和',
         MIN: '最小值',

@@ -336,7 +336,7 @@ export default function TimeseriesCpt(props: Props) {
       <>
         {!_.isEmpty(data.frames) ? (
           <div className='min-h-0 best-looking-scroll'>
-            <div ref={eleRef} className='min-h-[300px] relative'>
+            <div ref={eleRef} className='min-h-[422px] relative'>
               <div className='n9e-antd-table-height-full'>
                 <Spin spinning={loading}>
                   {eleSize?.width && eleSize?.height && (

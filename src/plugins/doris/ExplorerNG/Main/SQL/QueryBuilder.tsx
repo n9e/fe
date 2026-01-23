@@ -1,17 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
-import { Button, Form } from 'antd';
+import { Button, Form, Space } from 'antd';
 import { PushpinOutlined } from '@ant-design/icons';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
-import { DatasourceCateEnum } from '@/utils/constant';
 import useOnClickOutside from '@/components/useOnClickOutside';
-import { parseRange } from '@/components/TimeRangePicker';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NAME_SPACE } from '../../../constants';
-import { buildSql } from '../../../services';
 import QueryBuilder from '../../components/QueryBuilder';
 import CommonStateContext from '../../components/QueryBuilder/commonStateContext';
 
@@ -31,7 +28,7 @@ interface Props {
 }
 
 export default function QueryBuilderCpt(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
   const { snapRangeRef, executeQuery, visible, onClose, queryBuilderPinned, setQueryBuilderPinned, onExecute, onPreviewSQL } = props;
 
   const form = Form.useFormInstance();
@@ -120,16 +117,33 @@ export default function QueryBuilderCpt(props: Props) {
             onPreviewSQL();
           }}
         />
-        <Button
-          className='absolute top-2 right-2'
-          type='text'
-          icon={<PushpinOutlined />}
-          onClick={() => {
-            setQueryBuilderPinned(!queryBuilderPinned);
-          }}
-        >
-          {queryBuilderPinned ? t('builder.to_unpinned_btn') : t('builder.to_pinned_btn')}
-        </Button>
+        <div className='absolute top-2 right-2'>
+          <Space size={0}>
+            <Button
+              type='link'
+              onClick={(e) => {
+                e.stopPropagation();
+                DocumentDrawer({
+                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                  title: t('common:document_title'),
+                  type: 'iframe',
+                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
+                });
+              }}
+            >
+              {t('common:document_title')}
+            </Button>
+            <Button
+              type='text'
+              icon={<PushpinOutlined />}
+              onClick={() => {
+                setQueryBuilderPinned(!queryBuilderPinned);
+              }}
+            >
+              {queryBuilderPinned ? t('builder.to_unpinned_btn') : t('builder.to_pinned_btn')}
+            </Button>
+          </Space>
+        </div>
       </div>
     </CommonStateContext.Provider>
   );
