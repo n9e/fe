@@ -13,12 +13,6 @@ import QueryBuilder from '../../components/QueryBuilder';
 import CommonStateContext from '../../components/QueryBuilder/commonStateContext';
 
 interface Props {
-  snapRangeRef: React.MutableRefObject<{
-    from?: number;
-    to?: number;
-  }>;
-  executeQuery: () => void;
-
   visible: boolean;
   onClose: () => void;
   queryBuilderPinned: boolean;
@@ -29,7 +23,7 @@ interface Props {
 
 export default function QueryBuilderCpt(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { snapRangeRef, executeQuery, visible, onClose, queryBuilderPinned, setQueryBuilderPinned, onExecute, onPreviewSQL } = props;
+  const { visible, onClose, queryBuilderPinned, setQueryBuilderPinned, onExecute, onPreviewSQL } = props;
 
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
@@ -79,7 +73,7 @@ export default function QueryBuilderCpt(props: Props) {
 
             const queryValues = form.getFieldValue('query') || {};
             form.setFieldsValue({
-              refreshFlag: undefined,
+              refreshFlag: _.uniqueId('refreshFlag_'), // sql 直接更改 refreshFlag 触发查询即可
               query: {
                 ...queryValues,
                 sql: res.sql,
@@ -92,11 +86,6 @@ export default function QueryBuilderCpt(props: Props) {
             });
 
             onExecute();
-            snapRangeRef.current = {
-              from: undefined,
-              to: undefined,
-            };
-            executeQuery();
           }}
           onPreviewSQL={(res) => {
             onClose();
