@@ -44,11 +44,12 @@ export default function Table(props: IProps) {
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch(['query']);
 
-  const [options, setOptions] = useState(
-    getOptionsFromLocalstorage(NG_SQL_LOGS_OPTIONS_CACHE_KEY, {
+  const [options, setOptions] = useState({
+    ...getOptionsFromLocalstorage(NG_SQL_LOGS_OPTIONS_CACHE_KEY, {
       logMode: 'table',
     }),
-  );
+    time: 'false' as 'true' | 'false', // 强制关闭时间字段显示
+  });
   const pageLoadMode = options.pageLoadMode || 'pagination';
 
   const [organizeFields, setOrganizeFields] = useState<string[] | undefined>([]);
@@ -87,7 +88,7 @@ export default function Table(props: IProps) {
   const loadTimeRef = useRef<number | null>(null);
   const service = () => {
     const queryValues = form.getFieldValue('query');
-    if (datasourceValue && queryValues.sql) {
+    if (refreshFlag && datasourceValue && queryValues.sql) {
       setExecuteLoading(true);
       const range = parseRange(queryValues.range);
       const queryStart = Date.now();
