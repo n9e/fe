@@ -99,10 +99,13 @@ export default function index(props: Props) {
     };
     setOptions(mergedOptions);
     setOptionsToLocalstorage(NG_QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+    // 只有在修改了 pageLoadMode 时才重置分页参数
     if (reload) {
       setServiceParams({
         ...serviceParams,
         pageSize: DEFAULT_LOGS_PAGE_SIZE,
+        current: 1,
+        refreshFlag: _.uniqueId('refreshFlag_'), // 避免其他参数没变时不触发刷新
       });
     }
   };
