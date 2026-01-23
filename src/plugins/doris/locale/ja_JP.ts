@@ -137,6 +137,7 @@ const ja_JP = {
       alias_placeholder: '別名を入力してください',
       options: {
         COUNT: 'ログ数',
+        CPS: '毎秒カウント',
         AVG: '平均',
         SUM: '合計',
         MIN: '最小',

@@ -113,7 +113,7 @@ export default function index(props: Props) {
 
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
-    if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field) {
+    if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field && queryValues.range) {
       const range = parseRange(queryValues.range);
       let timeParams =
         fixedRangeRef.current === false
@@ -216,7 +216,7 @@ export default function index(props: Props) {
 
   const histogramService = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
-    if (refreshFlag && datasourceValue && queryValues && queryValues.database && queryValues.table && queryValues.time_field) {
+    if (refreshFlag && datasourceValue && queryValues && queryValues.database && queryValues.table && queryValues.time_field && queryValues.range) {
       const range = parseRange(queryValues.range);
       return getDorisHistogram({
         cate: DatasourceCateEnum.doris,
