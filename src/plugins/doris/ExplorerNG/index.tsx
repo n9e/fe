@@ -110,7 +110,7 @@ export default function index(props: Props) {
     const assignmentOperator = params.assignmentOperator || ':';
     const values = form.getFieldsValue();
     const query = values.query;
-    let queryStr = _.trim(_.split(query.query, '|')?.[0]);
+    let queryStr = _.trim(query.query);
     if (queryStr === '*') {
       queryStr = '';
     }
