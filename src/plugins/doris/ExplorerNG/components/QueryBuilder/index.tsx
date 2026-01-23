@@ -14,6 +14,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { Field, FieldSampleParams } from '../../types';
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
 import { getDorisIndex, buildSql } from '../../../services';
+import getMaxLabelWidth from '../QueryBuilder/utils/getMaxLabelWidth';
 import DatabaseSelect from '../DatabaseSelect';
 import TableSelect from '../TableSelect';
 import DateFieldSelect from '../DateFieldSelect';
@@ -33,7 +34,7 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
 
   const { eleRef, explorerForm, datasourceValue, sqlValue, visible, onExecute, onPreviewSQL } = props;
 
@@ -103,6 +104,16 @@ export default function index(props: Props) {
     });
   }, [indexData]);
 
+  const maxLabelWidth = useMemo(() => {
+    return getMaxLabelWidth([
+      t('builder.database_table.label'),
+      t('builder.filters.label'),
+      t('builder.aggregates.label'),
+      t('builder.display_label'),
+      t('builder.order_by.label'),
+    ]);
+  }, [i18n.language]);
+
   useEffect(() => {
     if (visible) {
       const explorerQueryValues = explorerForm.getFieldValue('query') || {};
@@ -122,10 +133,17 @@ export default function index(props: Props) {
     <Form form={form} layout='vertical'>
       <Row gutter={SIZE} align='top' className='mb-2'>
         <Col flex='none'>
-          <div className='w-[50px] h-[24px] flex items-center'>{t('builder.database_table.label')}</div>
+          <div
+            className='h-[24px] flex items-center'
+            style={{
+              width: maxLabelWidth,
+            }}
+          >
+            {t('builder.database_table.label')}
+          </div>
         </Col>
         <Col flex='none'>
-          <InputGroupWithFormItem label={t('query.database')} size='small'>
+          <InputGroupWithFormItem label={t('builder.database_table.database')} size='small'>
             <Form.Item
               className='mb-0'
               name='database'
@@ -162,7 +180,7 @@ export default function index(props: Props) {
           </InputGroupWithFormItem>
         </Col>
         <Col flex='none'>
-          <InputGroupWithFormItem label={t('query.table')} size='small'>
+          <InputGroupWithFormItem label={t('builder.database_table.table')} size='small'>
             <Form.Item
               className='mb-0'
               name='table'
@@ -230,7 +248,11 @@ export default function index(props: Props) {
       </Row>
       <Row gutter={SIZE} align='middle' className='mb-2'>
         <Col flex='none'>
-          <div className='w-[50px]'>
+          <div
+            style={{
+              width: maxLabelWidth,
+            }}
+          >
             <Tooltip title={t('builder.filters.label_tip')}>
               <Space size={SIZE / 2}>
                 <span>{t('builder.filters.label')}</span>
@@ -247,7 +269,13 @@ export default function index(props: Props) {
       </Row>
       <Row gutter={SIZE} align='middle' className='mb-2'>
         <Col flex='none'>
-          <div className='w-[50px]'>{t('builder.aggregates.label')}</div>
+          <div
+            style={{
+              width: maxLabelWidth,
+            }}
+          >
+            {t('builder.aggregates.label')}
+          </div>
         </Col>
         <Col flex='auto'>
           <Form.Item name='aggregates' noStyle>
@@ -257,7 +285,13 @@ export default function index(props: Props) {
       </Row>
       <Row gutter={SIZE} align='middle' className='mb-2'>
         <Col flex='none'>
-          <div className='w-[50px]'>{t('builder.display_label')}</div>
+          <div
+            style={{
+              width: maxLabelWidth,
+            }}
+          >
+            {t('builder.display_label')}
+          </div>
         </Col>
         <Col flex='auto'>
           <Space size={SIZE}>
@@ -295,7 +329,13 @@ export default function index(props: Props) {
       </Row>
       <Row gutter={SIZE} align='middle' className='mb-4'>
         <Col flex='none'>
-          <div className='w-[50px]'>{t('builder.order_by.label')}</div>
+          <div
+            style={{
+              width: maxLabelWidth,
+            }}
+          >
+            {t('builder.order_by.label')}
+          </div>
         </Col>
         <Col flex='auto'>
           <Form.Item name='order_by' noStyle>

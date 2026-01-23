@@ -85,7 +85,7 @@ export default function index(props: Props) {
   return (
     <div className='flex flex-col h-full'>
       <div className='flex-shrink-0 relative'>
-        <Row gutter={SIZE}>
+        <Row gutter={SIZE} wrap={false}>
           <Col flex='none'>
             <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>
               <Segmented
@@ -106,7 +106,7 @@ export default function index(props: Props) {
               />
             </Form.Item>
           </Col>
-          <Col flex='auto'>
+          <Col flex='auto' style={{ minWidth: 0 }}>
             {syntax === 'query' && (
               <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
             )}
