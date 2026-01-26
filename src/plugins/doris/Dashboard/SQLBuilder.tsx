@@ -6,13 +6,12 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { copy2ClipBoard } from '@/utils';
-import { DatasourceCateEnum } from '@/utils/constant';
 import DocumentDrawer from '@/components/DocumentDrawer';
-import LogQL from '@/components/LogQL';
 
 import { NAME_SPACE } from '../constants';
 import AdvancedSettings from '../components/AdvancedSettings';
 import LegendInput from '../components/LegendInput';
+import SQLInputWrap from './SQLInputWrap';
 
 interface Props {
   field: any;
@@ -100,13 +99,8 @@ export default function SQLBuilder(props: Props) {
         ]}
         style={{ flex: 1 }}
       >
-        <LogQL
+        <SQLInputWrap
           key={mode}
-          datasourceCate={DatasourceCateEnum.doris}
-          datasourceValue={datasourceValue}
-          query={{}}
-          historicalRecords={[]}
-          validateTrigger={[]}
           placeholder={
             mode === 'raw'
               ? 'SELECT count(*) as count FROM db_name.table_name WHERE $__timeFilter(timestamp)'

@@ -56,7 +56,7 @@ function Graph(props: {
         tooltipPlugin({
           id,
           mode: 'all',
-          sort: 'none',
+          sort: 'asc',
           pointValueformatter: (val) => {
             return valueFormatter(
               {
@@ -152,8 +152,6 @@ export default function TimeseriesCpt(props: Props) {
   const { sqlVizType, width, setExecuteLoading } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
-  const labelKey = Form.useWatch(['query', 'keys', 'labelKey']);
-  const valueKey = Form.useWatch(['query', 'keys', 'valueKey']);
 
   const eleRef = useRef<HTMLDivElement>(null);
   const eleSize = useSize(eleRef);
