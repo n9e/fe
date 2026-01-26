@@ -119,6 +119,12 @@ export default function index(props: Props) {
             </Form.Item>
           </Col>
           <Col flex='auto' style={{ minWidth: 0 }}>
+            <Form.Item name={['query', 'query']} hidden noStyle>
+              <div />
+            </Form.Item>
+            <Form.Item name={['query', 'sql']} hidden noStyle>
+              <div />
+            </Form.Item>
             {syntax === 'query' && (
               <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
             )}
