@@ -80,6 +80,7 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
         >
           <Form.Item name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
             <SqlMonacoEditor
+              className='bg-fc-100 z-0'
               maxHeight={200}
               theme={darkMode ? 'dark' : 'light'}
               enableAutocomplete={true}
