@@ -104,7 +104,7 @@ export default function index(props: Props) {
 
   return (
     <>
-      {/* <Form.Item name={['query', 'navMode']} initialValue='fields'>
+      <Form.Item name={['query', 'navMode']} initialValue='fields' hidden>
         <Segmented
           block
           options={[
@@ -126,7 +126,7 @@ export default function index(props: Props) {
             ]);
           }}
         />
-      </Form.Item> */}
+      </Form.Item>
       <div
         className='min-h-0 flex-1 h-full flex-col'
         style={{
