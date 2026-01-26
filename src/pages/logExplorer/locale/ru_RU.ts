@@ -25,6 +25,7 @@ const ru_RU = {
     median: 'Медиана',
     p95: 'Процентиль (P95)',
   },
+  field_popover_info_alert: 'Нажмите на значение, чтобы просмотреть статистические диаграммы и SQL',
   field_search_placeholder: 'Поиск полей',
   field_list: {
     show_fields: 'Показать поля',
