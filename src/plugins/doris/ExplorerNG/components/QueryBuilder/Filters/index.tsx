@@ -14,7 +14,6 @@ import Describe from '../Describe';
 import ConfigPopover from './FilterConfigPopover';
 
 interface Props {
-  eleRef: React.RefObject<HTMLDivElement>;
   size?: 'small' | 'middle' | 'large';
   indexData: Field[];
   fieldSampleParams: FieldSampleParams;
@@ -25,7 +24,7 @@ interface Props {
 
 export default function Filters(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { eleRef, size = 'middle', indexData, fieldSampleParams, value, onChange } = props;
+  const { size = 'middle', indexData, fieldSampleParams, value, onChange } = props;
 
   return (
     <Space size={[SIZE, SIZE / 2]} wrap>
@@ -35,11 +34,11 @@ export default function Filters(props: Props) {
         }
         return (
           <ConfigPopover
-            key={`${item.field}-${item.operator}-${item.value}`}
-            eleRef={eleRef}
+            key={`${item.field}-${item.operator}-${item.value}-${index}`}
             indexData={indexData}
             fieldSampleParams={fieldSampleParams}
             data={item}
+            index={index}
             onChange={(values) => {
               onChange?.(_.map(value, (v, i) => (i === index ? values : v)));
             }}
@@ -64,9 +63,9 @@ export default function Filters(props: Props) {
       })}
 
       <ConfigPopover
-        eleRef={eleRef}
         indexData={indexData}
         fieldSampleParams={fieldSampleParams}
+        index={value ? value.length : 0}
         onAdd={(values) => {
           onChange?.([...(value || []), values]);
         }}

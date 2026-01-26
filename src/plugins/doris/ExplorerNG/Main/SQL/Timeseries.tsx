@@ -29,6 +29,10 @@ interface Props {
   sqlVizType: string;
   width: number;
   setExecuteLoading: (loading: boolean) => void;
+  timeseriesKeys: {
+    value: string[];
+    label: string[];
+  };
 }
 
 function Graph(props: {
@@ -149,7 +153,7 @@ function Graph(props: {
 
 export default function TimeseriesCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { sqlVizType, width, setExecuteLoading } = props;
+  const { sqlVizType, width, setExecuteLoading, timeseriesKeys } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
 
@@ -296,7 +300,20 @@ export default function TimeseriesCpt(props: Props) {
               ]}
               style={{ margin: 0 }}
             >
-              <Select className='min-w-[120px] no-padding-small-multiple-select' mode='tags' open={false} size='small' />
+              <Select
+                className='min-w-[120px] no-padding-small-multiple-select'
+                mode='tags'
+                size='small'
+                // builder 生成的 sql 同时设置这里的 options
+                options={_.map(timeseriesKeys.value, (item) => {
+                  return { label: item, value: item };
+                })}
+                onChange={() => {
+                  form.setFieldsValue({
+                    refreshFlag: _.uniqueId('refreshFlag_'),
+                  });
+                }}
+              />
             </Form.Item>
           </InputGroupWithFormItem>
           <InputGroupWithFormItem
@@ -311,7 +328,20 @@ export default function TimeseriesCpt(props: Props) {
             }
           >
             <Form.Item name={['query', 'keys', 'labelKey']} style={{ margin: 0 }}>
-              <Select className='min-w-[120px] no-padding-small-multiple-select' mode='tags' open={false} size='small' />
+              <Select
+                className='min-w-[120px] no-padding-small-multiple-select'
+                mode='tags'
+                size='small'
+                // builder 生成的 sql 同时设置这里的 options
+                options={_.map(timeseriesKeys.label, (item) => {
+                  return { label: item, value: item };
+                })}
+                onChange={() => {
+                  form.setFieldsValue({
+                    refreshFlag: _.uniqueId('refreshFlag_'),
+                  });
+                }}
+              />
             </Form.Item>
           </InputGroupWithFormItem>
           <InputGroupWithFormItem label={t('common:unit')} size='small'>
