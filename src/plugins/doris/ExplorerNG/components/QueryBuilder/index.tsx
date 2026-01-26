@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Form, Row, Col, Space, Tooltip, Segmented, Button, Select, InputNumber } from 'antd';
+import { Form, Space, Tooltip, Segmented, Button, Select, InputNumber } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import { InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -131,128 +131,128 @@ export default function index(props: Props) {
 
   return (
     <Form form={form} layout='vertical'>
-      <Row gutter={SIZE} align='top' className='mb-2'>
-        <Col flex='none'>
-          <div
-            className='h-[24px] flex items-center'
-            style={{
-              width: maxLabelWidth,
-            }}
-          >
-            {t('builder.database_table.label')}
+      <div className='w-full table border-separate border-spacing-y-2'>
+        <div
+          className='table-column'
+          style={{
+            width: maxLabelWidth,
+          }}
+        />
+        <div className='table-column' />
+        <div className='table-row'>
+          <div className='table-cell align-top'>
+            <div className='h-[24px] flex items-center'>{t('builder.database_table.label')}</div>
           </div>
-        </Col>
-        <Col flex='none'>
-          <InputGroupWithFormItem label={t('builder.database_table.database')} size='small'>
-            <Form.Item
-              className='mb-0'
-              name='database'
-              rules={[
-                ({}) => ({
-                  validator(_, value) {
-                    // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, database: !value }));
-                    if (!value) {
-                      return Promise.reject(new Error(t('query.database_msg')));
-                    }
-                    return Promise.resolve();
-                  },
-                }),
-              ]}
+          <div className='table-cell'>
+            <Space
+              size={SIZE}
+              wrap
+              style={{
+                maxWidth: 'calc(100% - 200px)',
+              }}
             >
-              <DatabaseSelect
-                getPopupContainer={() => {
-                  return eleRef?.current!;
-                }}
-                className='w-[160px]'
-                datasourceValue={datasourceValue}
-                onChange={() => {
-                  form.setFieldsValue({
-                    table: undefined,
-                    time_field: undefined,
-                    filters: undefined,
-                    aggregates: undefined,
-                    group_by: undefined,
-                    order_by: undefined,
-                  });
-                }}
-              />
-            </Form.Item>
-          </InputGroupWithFormItem>
-        </Col>
-        <Col flex='none'>
-          <InputGroupWithFormItem label={t('builder.database_table.table')} size='small'>
-            <Form.Item
-              className='mb-0'
-              name='table'
-              rules={[
-                ({}) => ({
-                  validator(_, value) {
-                    // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, table: !value }));
-                    if (!value) {
-                      return Promise.reject(new Error(t('query.table_msg')));
-                    }
-                    return Promise.resolve();
-                  },
-                }),
-              ]}
-            >
-              <TableSelect
-                getPopupContainer={() => {
-                  return eleRef?.current!;
-                }}
-                className='w-[160px]'
-                datasourceValue={datasourceValue}
-                database={database}
-                onChange={() => {
-                  form.setFieldsValue({
-                    time_field: undefined,
-                    filters: undefined,
-                    aggregates: undefined,
-                    group_by: undefined,
-                    order_by: undefined,
-                  });
-                }}
-              />
-            </Form.Item>
-          </InputGroupWithFormItem>
-        </Col>
-        <Col flex='none'>
-          <InputGroupWithFormItem label={t('query.time_field')} size='small'>
-            <Form.Item
-              className='mb-0'
-              name='time_field'
-              rules={[
-                ({}) => ({
-                  validator(_, value) {
-                    // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, time_field: !value }));
-                    if (!value) {
-                      return Promise.reject(new Error(t('query.time_field_msg')));
-                    }
-                    return Promise.resolve();
-                  },
-                }),
-              ]}
-            >
-              <DateFieldSelect
-                getPopupContainer={() => {
-                  return eleRef?.current!;
-                }}
-                className='w-[160px]'
-                dateFields={_.filter(indexData, (item) => {
-                  return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
-                })}
-              />
-            </Form.Item>
-          </InputGroupWithFormItem>
-        </Col>
-      </Row>
-      <Row gutter={SIZE} align='middle' className='mb-2'>
-        <Col flex='none'>
-          <div
-            style={{
-              width: maxLabelWidth,
-            }}
-          >
+              <InputGroupWithFormItem label={t('builder.database_table.database')} size='small'>
+                <Form.Item
+                  className='mb-0'
+                  name='database'
+                  rules={[
+                    ({}) => ({
+                      validator(_, value) {
+                        // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, database: !value }));
+                        if (!value) {
+                          return Promise.reject(new Error(t('query.database_msg')));
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
+                  ]}
+                >
+                  <DatabaseSelect
+                    getPopupContainer={() => {
+                      return eleRef?.current!;
+                    }}
+                    className='w-[160px]'
+                    datasourceValue={datasourceValue}
+                    onChange={() => {
+                      form.setFieldsValue({
+                        table: undefined,
+                        time_field: undefined,
+                        filters: undefined,
+                        aggregates: undefined,
+                        group_by: undefined,
+                        order_by: undefined,
+                      });
+                    }}
+                  />
+                </Form.Item>
+              </InputGroupWithFormItem>
+              <InputGroupWithFormItem label={t('builder.database_table.table')} size='small'>
+                <Form.Item
+                  className='mb-0'
+                  name='table'
+                  rules={[
+                    ({}) => ({
+                      validator(_, value) {
+                        // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, table: !value }));
+                        if (!value) {
+                          return Promise.reject(new Error(t('query.table_msg')));
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
+                  ]}
+                >
+                  <TableSelect
+                    getPopupContainer={() => {
+                      return eleRef?.current!;
+                    }}
+                    className='w-[160px]'
+                    datasourceValue={datasourceValue}
+                    database={database}
+                    onChange={() => {
+                      form.setFieldsValue({
+                        time_field: undefined,
+                        filters: undefined,
+                        aggregates: undefined,
+                        group_by: undefined,
+                        order_by: undefined,
+                      });
+                    }}
+                  />
+                </Form.Item>
+              </InputGroupWithFormItem>
+              <InputGroupWithFormItem label={t('query.time_field')} size='small'>
+                <Form.Item
+                  className='mb-0'
+                  name='time_field'
+                  rules={[
+                    ({}) => ({
+                      validator(_, value) {
+                        // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, time_field: !value }));
+                        if (!value) {
+                          return Promise.reject(new Error(t('query.time_field_msg')));
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
+                  ]}
+                >
+                  <DateFieldSelect
+                    getPopupContainer={() => {
+                      return eleRef?.current!;
+                    }}
+                    className='w-[160px]'
+                    dateFields={_.filter(indexData, (item) => {
+                      return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
+                    })}
+                  />
+                </Form.Item>
+              </InputGroupWithFormItem>
+            </Space>
+          </div>
+        </div>
+        <div className='table-row'>
+          <div className='table-cell align-top'>
             <Tooltip title={t('builder.filters.label_tip')}>
               <Space size={SIZE / 2}>
                 <span>{t('builder.filters.label')}</span>
@@ -260,90 +260,72 @@ export default function index(props: Props) {
               </Space>
             </Tooltip>
           </div>
-        </Col>
-        <Col flex='auto'>
-          <Form.Item name='filters' noStyle>
-            <Filters eleRef={eleRef} size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row gutter={SIZE} align='middle' className='mb-2'>
-        <Col flex='none'>
-          <div
-            style={{
-              width: maxLabelWidth,
-            }}
-          >
-            {t('builder.aggregates.label')}
-          </div>
-        </Col>
-        <Col flex='auto'>
-          <Form.Item name='aggregates' noStyle>
-            <Aggregates eleRef={eleRef} indexData={validIndexData} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row gutter={SIZE} align='middle' className='mb-2'>
-        <Col flex='none'>
-          <div
-            style={{
-              width: maxLabelWidth,
-            }}
-          >
-            {t('builder.display_label')}
-          </div>
-        </Col>
-        <Col flex='auto'>
-          <Space size={SIZE}>
-            <Form.Item name='mode' noStyle initialValue='table'>
-              <Segmented
-                size='small'
-                options={[
-                  { label: t('builder.mode.table'), value: 'table' },
-                  { label: t('builder.mode.timeseries'), value: 'timeseries' },
-                ]}
-              />
+          <div className='table-cell'>
+            <Form.Item name='filters' noStyle>
+              <Filters eleRef={eleRef} size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
             </Form.Item>
-            <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
-              <Form.Item name='group_by' noStyle>
-                <Select
+          </div>
+        </div>
+        <div className='table-row'>
+          <div className='table-cell align-top'>
+            <div className='h-[24px] flex items-center'>{t('builder.aggregates.label')}</div>
+          </div>
+          <div className='table-cell'>
+            <Form.Item name='aggregates' noStyle>
+              <Aggregates eleRef={eleRef} indexData={validIndexData} />
+            </Form.Item>
+          </div>
+        </div>
+        <div className='table-row'>
+          <div className='table-cell align-top'>
+            <div className='h-[24px] flex items-center'>{t('builder.display_label')}</div>
+          </div>
+          <div className='table-cell'>
+            <Space size={SIZE} wrap>
+              <Form.Item name='mode' noStyle initialValue='table'>
+                <Segmented
                   size='small'
-                  className='min-w-[160px]'
-                  options={_.map(indexData, (item) => {
-                    return { label: item.field, value: item.field };
-                  })}
-                  mode='multiple'
-                  showSearch
-                  optionFilterProp='label'
-                  dropdownMatchSelectWidth={false}
+                  options={[
+                    { label: t('builder.mode.table'), value: 'table' },
+                    { label: t('builder.mode.timeseries'), value: 'timeseries' },
+                  ]}
                 />
               </Form.Item>
-            </InputGroupWithFormItem>
-            <InputGroupWithFormItem size='small' label={t('builder.limit')}>
-              <Form.Item name='limit' noStyle>
-                <InputNumber size='small' className='w-[80px]' min={1} max={10000000} />
-              </Form.Item>
-            </InputGroupWithFormItem>
-          </Space>
-        </Col>
-      </Row>
-      <Row gutter={SIZE} align='middle' className='mb-4'>
-        <Col flex='none'>
-          <div
-            style={{
-              width: maxLabelWidth,
-            }}
-          >
-            {t('builder.order_by.label')}
+              <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
+                <Form.Item name='group_by' noStyle>
+                  <Select
+                    size='small'
+                    className='min-w-[160px]'
+                    options={_.map(indexData, (item) => {
+                      return { label: item.field, value: item.field };
+                    })}
+                    mode='multiple'
+                    showSearch
+                    optionFilterProp='label'
+                    dropdownMatchSelectWidth={false}
+                  />
+                </Form.Item>
+              </InputGroupWithFormItem>
+              <InputGroupWithFormItem size='small' label={t('builder.limit')}>
+                <Form.Item name='limit' noStyle>
+                  <InputNumber size='small' className='w-[80px]' min={1} max={10000000} />
+                </Form.Item>
+              </InputGroupWithFormItem>
+            </Space>
           </div>
-        </Col>
-        <Col flex='auto'>
-          <Form.Item name='order_by' noStyle>
-            <OrderBy eleRef={eleRef} indexData={validIndexData} aggregates={aggregates} />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Space size={SIZE}>
+        </div>
+        <div className='table-row mb-4'>
+          <div className='table-cell align-top'>
+            <div className='h-[24px] flex items-center'>{t('builder.order_by.label')}</div>
+          </div>
+          <div className='table-cell'>
+            <Form.Item name='order_by' noStyle>
+              <OrderBy eleRef={eleRef} indexData={validIndexData} aggregates={aggregates} />
+            </Form.Item>
+          </div>
+        </div>
+      </div>
+      <Space size={SIZE} className='mt-2'>
         <Tooltip title={sqlValue ? t('builder.btn_tip') : undefined}>
           <Button
             size='small'

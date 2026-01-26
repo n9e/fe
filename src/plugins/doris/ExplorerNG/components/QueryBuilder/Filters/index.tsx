@@ -28,7 +28,7 @@ export default function Filters(props: Props) {
   const { eleRef, size = 'middle', indexData, fieldSampleParams, value, onChange } = props;
 
   return (
-    <Space size={SIZE} wrap>
+    <Space size={[SIZE, SIZE / 2]} wrap>
       {_.map(value, (item, index) => {
         if (!item.field || !item.operator) {
           return null;

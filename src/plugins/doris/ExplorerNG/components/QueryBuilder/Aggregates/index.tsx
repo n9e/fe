@@ -25,7 +25,7 @@ export default function Aggregates(props: Props) {
   const { eleRef, indexData, value, onChange } = props;
 
   return (
-    <Space size={SIZE} wrap>
+    <Space size={[SIZE, SIZE / 2]} wrap>
       {_.map(value, (item, index) => {
         if (!item.field || !item.func) {
           return null;
