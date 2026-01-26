@@ -58,7 +58,8 @@ export default function index(props: Props) {
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
   const form = Form.useFormInstance();
-  const navMode = Form.useWatch(['query', 'navMode']);
+  // const navMode = Form.useWatch(['query', 'navMode']);
+  const navMode = 'fields';
   const syntax = Form.useWatch(['query', 'syntax']);
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
