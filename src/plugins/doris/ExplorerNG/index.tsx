@@ -156,8 +156,9 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'defaultSearchField']} hidden>
           <div />
         </Form.Item>
-        <div className='h-full flex gap-4'>
+        <div className='h-full flex gap-2'>
           <Resizable
+            className='pr-2'
             size={{ width, height: '100%' }}
             enable={{
               right: true,
@@ -173,6 +174,19 @@ export default function index(props: Props) {
               setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
               }, 0);
+            }}
+            handleComponent={{
+              right: (
+                <div className='w-full h-full relative group'>
+                  <div
+                    className='h-full absolute left-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-200'
+                    style={{
+                      borderLeft: '2px solid var(--fc-fill-4)',
+                    }}
+                  />
+                  <div className='w-[6px] h-[60px] bg-fc-300 rounded-md absolute top-1/2 -translate-y-1/2 left-[2px] group-hover:bg-fc-400 group-hover:h-[100px] transition-all duration-200' />
+                </div>
+              ),
             }}
           >
             <div className='flex-shrink-0 h-full flex flex-col'>
