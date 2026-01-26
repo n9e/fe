@@ -132,9 +132,10 @@ export interface ICommonState {
 export const basePrefix = import.meta.env.VITE_PREFIX || '';
 
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
-const anonymousRoutes = [`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/chart`, `${basePrefix}/dashboards/share/`, `${basePrefix}/share/alert-his-events/`];
+const anonymousRoutes = [`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/share/alert-his-events/`];
+const anonymousRoutesNeedDataSource = [`${basePrefix}/chart`, `${basePrefix}/dashboards/share/`];
 // 判断是否是匿名访问的路由
-const anonymous = _.some(anonymousRoutes, (route) => location.pathname.startsWith(route));
+const anonymous = _.some(anonymousRoutes.concat(anonymousRoutesNeedDataSource), (route) => location.pathname.startsWith(route));
 // 初始化数据 context
 export const CommonStateContext = createContext({} as ICommonState);
 
@@ -293,7 +294,7 @@ function App() {
             };
           });
         } else {
-          const datasourceList = !_.some([`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/share/alert-his-events/`], (route) => location.pathname.startsWith(route))
+          const datasourceList = !_.some(anonymousRoutes, (route) => location.pathname.startsWith(route))
             ? await getDatasourceBriefList()
             : [];
           removePreloader();
