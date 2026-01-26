@@ -50,9 +50,11 @@ export default function index(props: Props) {
 
   const form = Form.useFormInstance();
   const syntax = Form.useWatch(['query', 'syntax']);
-  const navMode = Form.useWatch(['query', 'navMode']);
+  // const navMode = Form.useWatch(['query', 'navMode']);
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
+
+  const navMode = 'fields';
 
   const indexDataService = () => {
     if (datasourceValue && database && table) {
@@ -102,7 +104,7 @@ export default function index(props: Props) {
 
   return (
     <>
-      <Form.Item name={['query', 'navMode']} initialValue='fields'>
+      {/* <Form.Item name={['query', 'navMode']} initialValue='fields'>
         <Segmented
           block
           options={[
@@ -124,7 +126,7 @@ export default function index(props: Props) {
             ]);
           }}
         />
-      </Form.Item>
+      </Form.Item> */}
       <div
         className='min-h-0 flex-1 h-full flex-col'
         style={{
@@ -194,7 +196,7 @@ export default function index(props: Props) {
         </div>
       </div>
 
-      <div
+      {/* <div
         className='min-h-0 flex-1 h-full flex-col'
         style={{
           display: navMode === 'schema' ? 'flex' : 'none',
@@ -261,7 +263,7 @@ GROUP BY time`,
             />
           )}
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

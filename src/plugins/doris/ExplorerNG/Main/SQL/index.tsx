@@ -14,10 +14,14 @@ interface Props {
   };
   setExecuteLoading: (loading: boolean) => void;
   executeQuery: () => void;
+  timeseriesKeys: {
+    value: string[];
+    label: string[];
+  };
 }
 
 export default function index(props: Props) {
-  const { tableSelector, setExecuteLoading, executeQuery } = props;
+  const { tableSelector, setExecuteLoading, executeQuery, timeseriesKeys } = props;
 
   const sqlVizType = Form.useWatch(['query', 'sqlVizType']);
   const timeSeriesEleRef = useRef<HTMLDivElement>(null);
@@ -31,7 +35,7 @@ export default function index(props: Props) {
       {sqlVizType === 'table' && <Table tableSelector={tableSelector} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} executeQuery={executeQuery} />}
       {sqlVizType === 'timeseries' && (
         <div ref={timeSeriesEleRef} className='w-full h-full min-h-0 flex flex-col'>
-          {timeSeriesEleSize?.width && <Timeseries width={timeSeriesEleSize.width} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} />}
+          {timeSeriesEleSize?.width && <Timeseries width={timeSeriesEleSize.width} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} timeseriesKeys={timeseriesKeys} />}
         </div>
       )}
     </>

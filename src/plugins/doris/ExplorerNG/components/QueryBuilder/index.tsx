@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Form, Space, Tooltip, Segmented, Button, Select, InputNumber } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import { InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
@@ -24,10 +24,12 @@ import Aggregates from './Aggregates';
 import OrderBy from './OrderBy';
 
 interface Props {
-  eleRef: React.RefObject<HTMLDivElement>;
   explorerForm: FormInstance;
   datasourceValue: number;
-  sqlValue: string;
+  database?: string;
+  table?: string;
+  time_field?: string;
+  sqlValue?: string;
   visible: boolean;
   onExecute: (values) => void;
   onPreviewSQL: (values) => void;
@@ -36,21 +38,15 @@ interface Props {
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
 
-  const { eleRef, explorerForm, datasourceValue, sqlValue, visible, onExecute, onPreviewSQL } = props;
+  const { explorerForm, datasourceValue, database, table, time_field, sqlValue, visible, onExecute, onPreviewSQL } = props;
 
   const [form] = Form.useForm();
-  const database = Form.useWatch(['database'], form);
-  const table = Form.useWatch(['table'], form);
-  const time_field = Form.useWatch(['time_field'], form);
+  // const database = Form.useWatch(['database'], form);
+  // const table = Form.useWatch(['table'], form);
+  // const time_field = Form.useWatch(['time_field'], form);
   const filters = Form.useWatch(['filters'], form);
   const aggregates = Form.useWatch(['aggregates'], form);
-
-  const [buildSqlFailed, setBuildSqlFailed] = useState(false);
-  // const [databaseTableTimeFieldInvalid, setDatabaseTableTimeFieldInvalid] = useState({
-  //   database: false,
-  //   table: false,
-  //   time_field: false,
-  // });
+  const group_by = Form.useWatch(['group_by'], form);
 
   const fieldSampleParams = useMemo(() => {
     const range = explorerForm.getFieldValue(['query', 'range']);
@@ -139,7 +135,7 @@ export default function index(props: Props) {
           }}
         />
         <div className='table-column' />
-        <div className='table-row'>
+        {/* <div className='table-row'>
           <div className='table-cell align-top'>
             <div className='h-[24px] flex items-center'>{t('builder.database_table.label')}</div>
           </div>
@@ -156,22 +152,15 @@ export default function index(props: Props) {
                   className='mb-0'
                   name='database'
                   rules={[
-                    ({}) => ({
-                      validator(_, value) {
-                        // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, database: !value }));
-                        if (!value) {
-                          return Promise.reject(new Error(t('query.database_msg')));
-                        }
-                        return Promise.resolve();
-                      },
-                    }),
+                    {
+                      required: true,
+                      message: t('query.database_msg'),
+                    },
                   ]}
                 >
                   <DatabaseSelect
-                    getPopupContainer={() => {
-                      return eleRef?.current!;
-                    }}
                     className='w-[160px]'
+                    dropdownClassName='doris-query-builder-popup'
                     datasourceValue={datasourceValue}
                     onChange={() => {
                       form.setFieldsValue({
@@ -191,22 +180,15 @@ export default function index(props: Props) {
                   className='mb-0'
                   name='table'
                   rules={[
-                    ({}) => ({
-                      validator(_, value) {
-                        // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, table: !value }));
-                        if (!value) {
-                          return Promise.reject(new Error(t('query.table_msg')));
-                        }
-                        return Promise.resolve();
-                      },
-                    }),
+                    {
+                      required: true,
+                      message: t('query.table_msg'),
+                    },
                   ]}
                 >
                   <TableSelect
-                    getPopupContainer={() => {
-                      return eleRef?.current!;
-                    }}
                     className='w-[160px]'
+                    dropdownClassName='doris-query-builder-popup'
                     datasourceValue={datasourceValue}
                     database={database}
                     onChange={() => {
@@ -226,22 +208,15 @@ export default function index(props: Props) {
                   className='mb-0'
                   name='time_field'
                   rules={[
-                    ({}) => ({
-                      validator(_, value) {
-                        // setDatabaseTableTimeFieldInvalid((prev) => ({ ...prev, time_field: !value }));
-                        if (!value) {
-                          return Promise.reject(new Error(t('query.time_field_msg')));
-                        }
-                        return Promise.resolve();
-                      },
-                    }),
+                    {
+                      required: true,
+                      message: t('query.time_field_msg'),
+                    },
                   ]}
                 >
                   <DateFieldSelect
-                    getPopupContainer={() => {
-                      return eleRef?.current!;
-                    }}
                     className='w-[160px]'
+                    dropdownClassName='doris-query-builder-popup'
                     dateFields={_.filter(indexData, (item) => {
                       return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
                     })}
@@ -250,19 +225,21 @@ export default function index(props: Props) {
               </InputGroupWithFormItem>
             </Space>
           </div>
-        </div>
+        </div> */}
         <div className='table-row'>
           <div className='table-cell align-top'>
-            <Tooltip title={t('builder.filters.label_tip')}>
-              <Space size={SIZE / 2}>
-                <span>{t('builder.filters.label')}</span>
-                <InfoCircleOutlined />
-              </Space>
-            </Tooltip>
+            <div className='h-[24px] flex items-center'>
+              <Tooltip title={t('builder.filters.label_tip')}>
+                <Space size={SIZE / 2}>
+                  <span>{t('builder.filters.label')}</span>
+                  <InfoCircleOutlined />
+                </Space>
+              </Tooltip>
+            </div>
           </div>
           <div className='table-cell'>
             <Form.Item name='filters' noStyle>
-              <Filters eleRef={eleRef} size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
+              <Filters size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
             </Form.Item>
           </div>
         </div>
@@ -272,7 +249,7 @@ export default function index(props: Props) {
           </div>
           <div className='table-cell'>
             <Form.Item name='aggregates' noStyle>
-              <Aggregates eleRef={eleRef} indexData={validIndexData} />
+              <Aggregates indexData={validIndexData} />
             </Form.Item>
           </div>
         </div>
@@ -320,7 +297,7 @@ export default function index(props: Props) {
           </div>
           <div className='table-cell'>
             <Form.Item name='order_by' noStyle>
-              <OrderBy eleRef={eleRef} indexData={validIndexData} aggregates={aggregates} />
+              <OrderBy indexData={validIndexData} aggregates={aggregates} group_by={group_by} />
             </Form.Item>
           </div>
         </div>
@@ -334,16 +311,16 @@ export default function index(props: Props) {
             onClick={() => {
               form.validateFields().then((values) => {
                 const range = explorerForm.getFieldValue(['query', 'range']);
-                if (!range) return;
+                if (!range || !database || !table || !time_field) return;
                 const parsedRange = parseRange(range);
                 buildSql({
                   cate: DatasourceCateEnum.doris,
                   datasource_id: datasourceValue,
                   query: [
                     {
-                      database: values.database,
-                      table: values.table,
-                      time_field: values.time_field,
+                      database,
+                      table,
+                      time_field,
                       from: moment(parsedRange.start).unix(),
                       to: moment(parsedRange.end).unix(),
                       filters: values.filters,
@@ -354,14 +331,9 @@ export default function index(props: Props) {
                       limit: values.limit,
                     },
                   ],
-                })
-                  .then((res) => {
-                    setBuildSqlFailed(false);
-                    onExecute(res);
-                  })
-                  .catch(() => {
-                    setBuildSqlFailed(true);
-                  });
+                }).then((res) => {
+                  onExecute(res);
+                });
               });
             }}
           >
@@ -374,16 +346,16 @@ export default function index(props: Props) {
             onClick={() => {
               form.validateFields().then((values) => {
                 const range = explorerForm.getFieldValue(['query', 'range']);
-                if (!range) return;
+                if (!range || !database || !table || !time_field) return;
                 const parsedRange = parseRange(range);
                 buildSql({
                   cate: DatasourceCateEnum.doris,
                   datasource_id: datasourceValue,
                   query: [
                     {
-                      database: values.database,
-                      table: values.table,
-                      time_field: values.time_field,
+                      database,
+                      table,
+                      time_field,
                       from: moment(parsedRange.start).unix(),
                       to: moment(parsedRange.end).unix(),
                       filters: values.filters,
@@ -394,14 +366,9 @@ export default function index(props: Props) {
                       limit: values.limit,
                     },
                   ],
-                })
-                  .then((res) => {
-                    setBuildSqlFailed(false);
-                    onPreviewSQL(res);
-                  })
-                  .catch(() => {
-                    setBuildSqlFailed(true);
-                  });
+                }).then((res) => {
+                  onPreviewSQL(res);
+                });
               });
             }}
           >
