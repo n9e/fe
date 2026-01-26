@@ -306,7 +306,7 @@ export default function index(props: Props) {
                       form.setFieldsValue({
                         refreshFlag: undefined,
                         query: {
-                          navMode: queryValues.navMode,
+                          navMode: queryValues.navMode || 'fields',
                           syntax: queryValues.syntax,
                           sqlVizType: queryValues.sqlVizType,
                           range: queryValues.range,
