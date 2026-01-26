@@ -1,10 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Select } from 'antd';
 
-import { NAME_SPACE } from '../../constants';
 import { Field } from '../../services';
 
 interface Props {
@@ -13,18 +11,17 @@ interface Props {
   onChange?: (value: string) => void;
   disabled?: boolean;
   className?: string;
-  getPopupContainer?: () => HTMLElement;
+  dropdownClassName?: string;
 }
 
 export default function DateFieldSelect(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
-  const { dateFields, value, onChange, disabled, className, getPopupContainer } = props;
+  const { dateFields, value, onChange, disabled, className, dropdownClassName } = props;
 
   return (
     <Select
       size='small'
-      getPopupContainer={getPopupContainer}
       className={classNames('min-w-[100px]', className)}
+      dropdownClassName={dropdownClassName}
       showSearch
       optionFilterProp='label'
       options={_.map(dateFields, (item) => {

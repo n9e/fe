@@ -12,7 +12,6 @@ import { AGGREGATE_FUNCTION_TYPE_MAP } from '../constants';
 import CommonStateContext from '../commonStateContext';
 
 interface Props {
-  eleRef: React.RefObject<HTMLDivElement>;
   indexData: Field[];
   children: React.ReactNode;
 
@@ -24,7 +23,7 @@ interface Props {
 export default function ParamsPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { ignoreNextOutsideClick } = useContext(CommonStateContext);
-  const { eleRef, indexData, children, data, onChange, onAdd } = props;
+  const { indexData, children, data, onChange, onAdd } = props;
 
   const [visible, setVisible] = useState<boolean>();
 
@@ -33,9 +32,7 @@ export default function ParamsPopover(props: Props) {
 
   return (
     <Popover
-      getPopupContainer={() => {
-        return eleRef?.current!;
-      }}
+      overlayClassName='doris-query-builder-popup'
       trigger='click'
       placement='bottom'
       visible={visible}
@@ -76,9 +73,7 @@ export default function ParamsPopover(props: Props) {
                   initialValue='COUNT'
                 >
                   <Select
-                    getPopupContainer={() => {
-                      return eleRef?.current!;
-                    }}
+                    dropdownClassName='doris-query-builder-popup'
                     placeholder={t('builder.aggregates.func_placeholder')}
                     options={_.map(_.keys(AGGREGATE_FUNCTION_TYPE_MAP), (item) => {
                       return {
@@ -115,9 +110,7 @@ export default function ParamsPopover(props: Props) {
                   ]}
                 >
                   <Select
-                    getPopupContainer={() => {
-                      return eleRef?.current!;
-                    }}
+                    dropdownClassName='doris-query-builder-popup'
                     placeholder={t('builder.aggregates.field_placeholder')}
                     options={_.map(
                       _.concat(

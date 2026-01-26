@@ -12,33 +12,45 @@ import { NAME_SPACE } from '../../../constants';
 import QueryBuilder from '../../components/QueryBuilder';
 import CommonStateContext from '../../components/QueryBuilder/commonStateContext';
 
+type Keys = { value: string[]; label: string[] };
+
 interface Props {
+  datasourceValue?: number;
+  database?: string;
+  table?: string;
+  time_field?: string;
+  sql?: string;
+
   visible: boolean;
   onClose: () => void;
   queryBuilderPinned: boolean;
   setQueryBuilderPinned: (pinned: boolean) => void;
-  onExecute: () => void;
-  onPreviewSQL: () => void;
+  onExecute: (keys: Keys) => void;
+  onPreviewSQL: (keys: Keys) => void;
 }
 
 export default function QueryBuilderCpt(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { visible, onClose, queryBuilderPinned, setQueryBuilderPinned, onExecute, onPreviewSQL } = props;
+  const { datasourceValue, database, table, time_field, sql, visible, onClose, queryBuilderPinned, setQueryBuilderPinned, onExecute, onPreviewSQL } = props;
 
   const form = Form.useFormInstance();
-  const datasourceValue = Form.useWatch(['datasourceValue']);
-  const sql = Form.useWatch(['query', 'sql']);
 
   const eleRef = React.useRef<HTMLDivElement>(null);
   const skipOutsideClickRef = React.useRef(false);
 
   useOnClickOutside(eleRef, (e) => {
+    const target = (e as Event)?.target as HTMLElement | null;
+    if (target && typeof target.closest === 'function' && target.closest('.doris-query-builder-popup')) {
+      return;
+    }
     if (skipOutsideClickRef.current) {
       skipOutsideClickRef.current = false;
       return;
     }
     onClose();
   });
+
+  if (!datasourceValue) return null;
 
   return (
     <CommonStateContext.Provider
@@ -50,11 +62,10 @@ export default function QueryBuilderCpt(props: Props) {
     >
       <div
         ref={eleRef}
-        className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 p-4 bg-fc-100 left-0', {
+        className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
           absolute: !queryBuilderPinned,
           'top-[32px]': !queryBuilderPinned,
           'border-primary': !queryBuilderPinned,
-          'shadow-lg': !queryBuilderPinned,
           relative: queryBuilderPinned,
         })}
         style={{
@@ -63,9 +74,11 @@ export default function QueryBuilderCpt(props: Props) {
         }}
       >
         <QueryBuilder
-          eleRef={eleRef}
           explorerForm={form}
           datasourceValue={datasourceValue}
+          database={database}
+          table={table}
+          time_field={time_field}
           sqlValue={sql}
           visible={visible}
           onExecute={(res) => {
@@ -85,7 +98,10 @@ export default function QueryBuilderCpt(props: Props) {
               },
             });
 
-            onExecute();
+            onExecute({
+              value: res.value_key,
+              label: res.label_key,
+            });
           }}
           onPreviewSQL={(res) => {
             onClose();
@@ -103,7 +119,10 @@ export default function QueryBuilderCpt(props: Props) {
               },
             });
 
-            onPreviewSQL();
+            onPreviewSQL({
+              value: res.value_key,
+              label: res.label_key,
+            });
           }}
         />
         <div className='absolute top-2 right-2'>

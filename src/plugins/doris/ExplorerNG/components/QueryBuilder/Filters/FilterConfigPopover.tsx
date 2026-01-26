@@ -18,12 +18,13 @@ import CommonStateContext from '../commonStateContext';
 import FilterConfigValue from './FilterConfigValue';
 
 interface Props {
-  eleRef: React.RefObject<HTMLDivElement>;
   indexData: Field[];
   fieldSampleParams: FieldSampleParams;
   children: React.ReactNode;
 
   data?: FilterConfig;
+  // 当前筛选器在 filters 列表中的索引（用于级联：只使用前面的 filters 作为上下文）
+  index?: number;
   onChange?: (data: FilterConfig) => void;
   onAdd?: (data: FilterConfig) => void;
 }
@@ -31,7 +32,7 @@ interface Props {
 export default function ConfigPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { ignoreNextOutsideClick } = useContext(CommonStateContext);
-  const { eleRef, indexData, fieldSampleParams, children, data, onChange, onAdd } = props;
+  const { indexData, fieldSampleParams, children, data, onChange, onAdd } = props;
 
   const [visible, setVisible] = useState<boolean>();
 
@@ -50,9 +51,16 @@ export default function ConfigPopover(props: Props) {
 
   const { data: fieldSample } = useRequest(
     () => {
+      const sourceFilters = fieldSampleParams?.filters || [];
+      let filtersToUse = sourceFilters;
+      if (typeof props.index === 'number') {
+        // 级联：只使用当前位置之前的 filters 作为上下文（exclude current and later ones）
+        filtersToUse = _.slice(sourceFilters, 0, props.index);
+      }
+
       return getFiledSample({
         ...fieldSampleParams,
-        filters: _.filter(fieldSampleParams.filters, (item) => item.field !== field),
+        filters: filtersToUse,
         field,
       });
     },
@@ -64,9 +72,7 @@ export default function ConfigPopover(props: Props) {
 
   return (
     <Popover
-      getPopupContainer={() => {
-        return eleRef?.current!;
-      }}
+      overlayClassName='doris-query-builder-popup'
       trigger='click'
       placement='bottom'
       visible={visible}
@@ -114,9 +120,7 @@ export default function ConfigPopover(props: Props) {
                   ]}
                 >
                   <Select
-                    getPopupContainer={() => {
-                      return eleRef?.current!;
-                    }}
+                    dropdownClassName='doris-query-builder-popup'
                     placeholder={t('builder.filters.field_placeholder')}
                     options={_.map(indexData, (item) => {
                       return {
@@ -152,9 +156,7 @@ export default function ConfigPopover(props: Props) {
                   ]}
                 >
                   <Select
-                    getPopupContainer={() => {
-                      return eleRef?.current!;
-                    }}
+                    dropdownClassName='doris-query-builder-popup'
                     options={_.map(operators, (operator) => ({
                       label: operator,
                       value: operator,
@@ -175,7 +177,7 @@ export default function ConfigPopover(props: Props) {
                   <Alert type='info' showIcon message={t('builder.filters.tip_1')} className='mb-4' />
                 </Col>
               )}
-              <FilterConfigValue eleRef={eleRef} operator={operator} fieldSample={fieldSample} />
+              <FilterConfigValue operator={operator} fieldSample={fieldSample} />
             </Row>
           </Form>
         </div>
