@@ -37,6 +37,7 @@ const ru_RU = {
     notification_channels: 'Каналы уведомлений',
     notification_templates: 'Шаблоны уведомлений',
     event_pipeline: 'Рабочий процесс',
+    event_pipeline_executions: 'Записи выполнения',
     notification_settings: 'Настройка уведомлений',
     notification_tpls: 'Шаблоны',
     integrations: 'Интеграции',

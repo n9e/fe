@@ -52,7 +52,7 @@ export default function QueryInputAddonAfter(props: Props) {
         }}
         type='text'
       >
-        <Button size='small' ghost type='text' icon={<FileSearchOutlined />} />
+        <Button size='small' type='text' icon={<FileSearchOutlined />} />
       </ConditionHistoricalRecords>
     );
   }
@@ -73,7 +73,7 @@ export default function QueryInputAddonAfter(props: Props) {
         }}
         type='text'
       >
-        <Button size='small' ghost type='text' icon={<FileSearchOutlined />} />
+        <Button size='small' type='text' icon={<FileSearchOutlined />} />
       </HistoricalRecords>
     );
   }

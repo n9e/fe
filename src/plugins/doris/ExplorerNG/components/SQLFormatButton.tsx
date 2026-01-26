@@ -64,6 +64,7 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                   table: queryValues.table,
                   time_field: queryValues.time_field,
                   query: queryValues.query,
+                  query_builder_filter: queryValues.query_builder_filter,
                   from: timeParams.from,
                   to: timeParams.to,
                   default_field: defaultSearchField,

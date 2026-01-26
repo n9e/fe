@@ -342,9 +342,9 @@ const en_US = {
     select_tip: 'Clone query conditions (leave blank to create directly without cloning)',
   },
   pipeline_configuration: {
-    title: 'Event processing',
-    name_placeholder: 'Please select event processing workflow',
-    add_btn: 'Add event processing workflow',
+    title: 'Event workflow',
+    name_placeholder: 'Please select event workflow',
+    add_btn: 'Add event workflow',
   },
 };
 export default en_US;

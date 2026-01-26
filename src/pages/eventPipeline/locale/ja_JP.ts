@@ -2,6 +2,7 @@ const ja_JP = {
   title: 'ワークフロー',
   title_add: 'イベントパイプラインの追加',
   title_edit: 'イベントパイプラインの編集',
+  title_clone: 'イベントパイプラインのクローン',
   teams: '権限のあるチーム',
   teams_tip:
     'この設定を表示および変更できるチームメンバーを制限します。複数のチームを関連付けることができます<br />例：infra-teamに設定を付与すると、infra-teamのメンバーのみがこの設定にアクセスまたは調整できます。',
@@ -19,11 +20,83 @@ const ja_JP = {
     cluster: 'データソース',
     is_recovered: '回復イベントですか？',
   },
+  use_case: {
+    label: '用途',
+    firemap: 'ファイアマップ',
+    event_pipeline: 'イベント処理',
+  },
+  trigger_mode: {
+    label: 'トリガーモード',
+    event: 'イベントトリガー',
+    api: 'APIトリガー',
+  },
+  disabled: {
+    form_label: '有効化',
+    label: 'ステータス',
+    false: '有効',
+    true: '無効',
+  },
+  inputs: {
+    label: '事前入力',
+    help: '事前入力変数は、ワークフロープロセッサーで {{$inputs.変数名}} を通じて参照できます',
+    add_btn: '変数を追加',
+    key: '変数名',
+    key_required: '変数名は空にできません',
+    value: 'デフォルト値',
+    description: '変数の説明',
+  },
+  executions: {
+    title: '実行履歴',
+    search_placeholder: '検索キーワードを入力してください',
+    status: {
+      label: 'ステータス',
+      running: '実行中',
+      success: '成功',
+      failed: '失敗',
+    },
+    id: '実行ID',
+    pipeline_name: 'ワークフロー名',
+    mode: 'トリガーモード',
+    created_at: '開始時刻',
+    finished_at: '終了時刻',
+    duration_ms: '実行時間（ミリ秒）',
+    trigger_by: 'トリガー者',
+    detail_title: '実行詳細',
+    detail_basic_info: '基本情報',
+    error_message: 'エラーメッセージ',
+    node_results_parsed_title: 'ノード実行結果',
+  },
+  test_modal: {
+    title: {
+      settings: 'アラームイベントを選択',
+      result: 'イベントプレビュー',
+    },
+  },
+  batch: {
+    not_select: '操作するワークフローを選択してください',
+    export: {
+      title: '一括エクスポート',
+    },
+  },
+
   processor: {
     title: 'プロセッサー',
     add_btn: 'プロセッサーを追加',
     typ: 'タイプ',
     help_btn: '使用説明',
+    options: {
+      relabel: 'イベントラベルの書き換え',
+      callback: 'コールバック',
+      event_update: 'イベント更新',
+      event_drop: 'イベント破棄',
+      ai_summary: 'AI要約',
+      label_enrich: 'イベントラベルの充実化',
+      script: 'スクリプト処理',
+      inhibit: 'イベント抑制',
+      inhibit_qd: 'クエリデータによるイベント抑制',
+      annotation_qd: 'クエリデータによる注釈の充実化',
+      event_recover: 'イベント回復',
+    },
   },
   label_enrich: {
     label_source_type: {
@@ -45,12 +118,6 @@ const ja_JP = {
       source_key_placeholder: 'マッピングのフィールド',
       rename_key: 'ラベルキーを変更',
       target_key_placeholder: 'ラベルキー',
-    },
-  },
-  test_modal: {
-    title: {
-      settings: 'アラームイベントを選択',
-      result: 'イベントプレビュー',
     },
   },
   callback: {
@@ -185,6 +252,23 @@ const ja_JP = {
     data_preview_query: 'クエリステートメント',
     data_preview_no_eventid: '先にアラートイベントを選択してください',
     query_limit: '返却件数制限',
+  },
+  event_recover: {
+    help: 'アラート自己修復イベントプロセッサー。アラートがトリガーされた時点で、マシン上でシェルスクリプトを実行するために使用。関連するアラート情報の取得または自己修復タスクの実行に使用できます。 <a>使用文書</a>',
+    title: 'アラート自己修復',
+    create_btn: '自己修復テンプレートを作成',
+    tpl_id: '自己修復テンプレート',
+    tpl_id_required: '自己修復テンプレートは必須です',
+    host: '実行マシン',
+    host_placeholder: 'デフォルトでは空欄にできます。空欄の場合は、イベント内の ident ラベルから実行対象のマシンを取得します',
+    args: 'パラメータ',
+    args_tip: 'スクリプトの後に追加されるパラメータ。複数のパラメータはダブルコンマ,,で区切ります。例：arg1,,arg2,,arg3',
+    save_result: '実行結果を保存',
+    save_result_tip: 'スクリプトの実行結果をアラートイベントに保存',
+    timeout: '実行待機時間',
+    timeout_tip: 'スクリプトが指定時間内に完了できない場合、結果は取得されません',
+    timeout_max_warning: '実行待機時間は60秒を超えることはできません',
+    select_host: 'マシンを選択',
   },
 };
 

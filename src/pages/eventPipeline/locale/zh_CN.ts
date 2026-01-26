@@ -2,6 +2,7 @@ const zh_CN = {
   title: '工作流',
   title_add: '新增事件工作流',
   title_edit: '编辑事件工作流',
+  title_clone: '克隆事件工作流',
   teams: '授权团队',
   teams_tip: '限定哪些团队成员可以查看和修改此配置，可以关联多个团队<br />例如：将配置授权给 infra-team，则只有 infra-team 团队下的成员可以访问或调整本配置。',
   basic_configuration: '基本配置',
@@ -18,11 +19,83 @@ const zh_CN = {
     cluster: '数据源',
     is_recovered: '是恢复事件？',
   },
+  use_case: {
+    label: '用途',
+    firemap: '灭火图',
+    event_pipeline: '事件处理',
+  },
+  trigger_mode: {
+    label: '触发模式',
+    event: '事件触发',
+    api: 'API 触发',
+  },
+  disabled: {
+    form_label: '启用',
+    label: '状态',
+    false: '已启用',
+    true: '已禁用',
+  },
+  inputs: {
+    label: '前置输入',
+    help: '前置输入变量可在工作流处理器中通过 {{$inputs.变量名}} 引用',
+    add_btn: '添加变量',
+    key: '变量名',
+    key_required: '变量名不能为空',
+    value: '变量默认值',
+    description: '变量描述',
+  },
+  executions: {
+    title: '执行记录',
+    search_placeholder: '请输入搜索关键字',
+    status: {
+      label: '状态',
+      running: '执行中',
+      success: '成功',
+      failed: '失败',
+    },
+    id: '执行 ID',
+    pipeline_name: '工作流名称',
+    mode: '触发模式',
+    created_at: '开始时间',
+    finished_at: '结束时间',
+    duration_ms: '执行耗时',
+    trigger_by: '触发者',
+    detail_title: '执行详情',
+    detail_basic_info: '基本信息',
+    error_message: '错误信息',
+    node_results_parsed_title: '节点执行结果',
+  },
+  test_modal: {
+    title: {
+      settings: '选择告警事件',
+      result: '事件预览',
+    },
+  },
+  batch: {
+    not_select: '请先选择要操作的工作流',
+    export: {
+      title: '批量导出',
+    },
+  },
+
   processor: {
     title: '处理器',
     add_btn: '添加处理器',
     typ: '类型',
     help_btn: '使用说明',
+    options: {
+      relabel: '事件标签重写',
+      label_enrich: '事件标签丰富',
+      inhibit: '事件抑制',
+      event_drop: '事件丢弃',
+      event_update: '事件更新',
+      inhibit_qd: '事件抑制（基于查询）',
+      annotation_qd: '事件附加信息丰富（基于查询）',
+      callback: 'Webhook 回调',
+      ai_summary: 'AI 摘要生成',
+      script: '脚本执行',
+      event_recover: '故障自愈',
+    },
   },
   label_enrich: {
     label_source_type: {
@@ -44,12 +117,6 @@ const zh_CN = {
       source_key_placeholder: '词表中的字段',
       rename_key: '重命名标签 Key',
       target_key_placeholder: '标签 Key',
-    },
-  },
-  test_modal: {
-    title: {
-      settings: '选择告警事件',
-      result: '事件预览',
     },
   },
   callback: {
@@ -203,6 +270,23 @@ const zh_CN = {
     data_preview_query: '查询语句',
     data_preview_no_eventid: '请先选择告警事件',
     query_limit: '返回条数限制',
+  },
+  event_recover: {
+    help: '告警自愈事件处理器，用于在告警触发时，在机器上执行 shell 脚本，可用于获取相关告警信息或执行自愈任务。<a>使用文档</a>',
+    title: '告警自愈',
+    create_btn: '创建自愈模板',
+    tpl_id: '自愈模板',
+    tpl_id_required: '自愈模板不能为空',
+    host: '执行机器',
+    host_placeholder: '默认可留空，如果为空，会从事件中的 ident 标签获取要执行的机器',
+    args: '参数',
+    args_tip: '附于脚本之后的参数，多个参数之间用双逗号,,分隔，比如arg1,,arg2,,arg3',
+    save_result: '保存执行结果',
+    save_result_tip: '将脚本 执行结果保存到告警事件中',
+    timeout: '等待执行时间',
+    timeout_tip: '若脚本无法再等待时间内执行完，则不会等待结果获取',
+    timeout_max_warning: '等待执行时间不能超过 60 秒',
+    select_host: '筛选机器',
   },
 };
 export default zh_CN;

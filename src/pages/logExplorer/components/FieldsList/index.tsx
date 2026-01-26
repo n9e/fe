@@ -75,7 +75,7 @@ export default function index(props: Props) {
         style={{
           height: 'calc(100% - 31px)',
         }}
-        className='overflow-y-auto mt-[-1px] border border-antd border-t-0 rounded-bl-sm rounded-br-sm py-2'
+        className='best-looking-scroll overflow-y-auto mt-[-1px] border border-antd border-t-0 rounded-bl-sm rounded-br-sm py-2'
       >
         <Spin spinning={loading}>
           {organizeFieldNames && organizeFieldNames.length > 0 && (
