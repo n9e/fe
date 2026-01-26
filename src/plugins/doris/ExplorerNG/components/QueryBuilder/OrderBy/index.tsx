@@ -13,9 +13,9 @@ import ConfigPopover from './ConfigPopover';
 import Describe from '../Describe';
 
 interface Props {
-  eleRef: React.RefObject<HTMLDivElement>;
   indexData: Field[];
   aggregates: AggregateConfig[];
+  group_by: string[];
 
   value?: OrderByConfig[];
   onChange?: (values: OrderByConfig[]) => void;
@@ -23,7 +23,7 @@ interface Props {
 
 export default function Aggregates(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { eleRef, indexData, aggregates, value, onChange } = props;
+  const { indexData, aggregates, group_by, value, onChange } = props;
 
   return (
     <Space size={SIZE} wrap>
@@ -33,10 +33,10 @@ export default function Aggregates(props: Props) {
         }
         return (
           <ConfigPopover
-            key={`${item.field}-${item.direction}`}
-            eleRef={eleRef}
+            key={`${item.field}-${item.direction}-${index}`}
             indexData={indexData}
             aggregates={aggregates}
+            group_by={group_by}
             data={item}
             onChange={(values) => {
               onChange?.(_.map(value, (v, i) => (i === index ? values : v)));
@@ -58,9 +58,9 @@ export default function Aggregates(props: Props) {
       })}
 
       <ConfigPopover
-        eleRef={eleRef}
         indexData={indexData}
         aggregates={aggregates}
+        group_by={group_by}
         onAdd={(values) => {
           onChange?.([...(value || []), values]);
         }}

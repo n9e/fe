@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import { useTranslation } from 'react-i18next';
 import { Select } from 'antd';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 
-import { NAME_SPACE } from '../../constants';
 import { getDorisTables } from '../../services';
 
 interface Props {
@@ -15,12 +13,11 @@ interface Props {
   onChange?: (value: string) => void;
   disabled?: boolean;
   className?: string;
-  getPopupContainer?: () => HTMLElement;
+  dropdownClassName?: string;
 }
 
 export default function TableSelect(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
-  const { datasourceValue, database, value, onChange, disabled, className, getPopupContainer } = props;
+  const { datasourceValue, database, value, onChange, disabled, className, dropdownClassName } = props;
   const [tables, setTables] = useState<string[]>([]);
 
   useEffect(() => {
@@ -34,8 +31,8 @@ export default function TableSelect(props: Props) {
   return (
     <Select
       size='small'
-      getPopupContainer={getPopupContainer}
       className={className}
+      dropdownClassName={dropdownClassName}
       showSearch
       optionFilterProp='label'
       options={_.map(tables, (item) => {

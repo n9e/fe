@@ -58,13 +58,25 @@ export default function index(props: Props) {
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
   const form = Form.useFormInstance();
-  const navMode = Form.useWatch(['query', 'navMode']);
+  // const navMode = Form.useWatch(['query', 'navMode']);
+  const navMode = 'fields';
   const syntax = Form.useWatch(['query', 'syntax']);
+  const database = Form.useWatch(['query', 'database']);
+  const table = Form.useWatch(['query', 'table']);
+  const time_field = Form.useWatch(['query', 'time_field']);
 
   const [executeLoading, setExecuteLoading] = useState(false);
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(queryBuilderPinnedCache ? queryBuilderPinnedCache === 'true' : true); // 是否固定显示
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false); // 不固定时，控制显示隐藏
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+  // 当 builder 生成的 sql 同时设置时序图的 value/label keys 的 options，只有 builder 生成 sql 时才更新
+  const [timeseriesKeys, setTimeseriesKeys] = useState<{
+    value: string[];
+    label: string[];
+  }>({
+    value: [],
+    label: [],
+  });
 
   const queryInputRef = useRef<any>(null);
 
@@ -85,7 +97,7 @@ export default function index(props: Props) {
   return (
     <div className='flex flex-col h-full'>
       <div className='flex-shrink-0 relative'>
-        <Row gutter={SIZE}>
+        <Row gutter={SIZE} wrap={false}>
           <Col flex='none'>
             <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>
               <Segmented
@@ -106,7 +118,7 @@ export default function index(props: Props) {
               />
             </Form.Item>
           </Col>
-          <Col flex='auto'>
+          <Col flex='auto' style={{ minWidth: 0 }}>
             {syntax === 'query' && (
               <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
             )}
@@ -179,7 +191,11 @@ export default function index(props: Props) {
         </Row>
         {syntax === 'sql' && (
           <QueryBuilder
-            key={datasourceValue} // 切换数据源时，重置 QueryBuilder 组件
+            key={datasourceValue + database + table + time_field} // 切换这些配置时，重置 QueryBuilder 组件
+            datasourceValue={datasourceValue}
+            database={database}
+            table={table}
+            time_field={time_field}
             visible={!queryBuilderPinned ? queryBuilderVisible : true}
             onClose={() => {
               if (!queryBuilderPinned) {
@@ -191,12 +207,14 @@ export default function index(props: Props) {
               setQueryBuilderPinned(pinned);
               window.localStorage.setItem(QUERY_BUILDER_PINNED_CACHE_KEY, pinned ? 'true' : 'false');
             }}
-            onExecute={() => {
+            onExecute={(keys) => {
               setIsContentChangedDotVisible(false);
+              setTimeseriesKeys(keys);
             }}
-            onPreviewSQL={() => {
+            onPreviewSQL={(keys) => {
               queryInputRef.current?.focus();
               setIsContentChangedDotVisible(true);
+              setTimeseriesKeys(keys);
             }}
           />
         )}
@@ -228,6 +246,7 @@ export default function index(props: Props) {
           }}
           setExecuteLoading={setExecuteLoading}
           executeQuery={executeQuery}
+          timeseriesKeys={timeseriesKeys}
         />
       )}
     </div>

@@ -8,14 +8,13 @@ import { NAME_SPACE } from '../../../../constants';
 import { EQUAL_OPERATORS, IN_OPERATORS, NULL_OPERATORS, BETWEEN_OPERATORS, LIKE_OPERATORS, MATCH_OPERATORS } from '../constants';
 
 interface Props {
-  eleRef: React.RefObject<HTMLDivElement>;
   operator: string;
   fieldSample?: string[];
 }
 
 export default function FilterConfigValue(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { eleRef, operator, fieldSample } = props;
+  const { operator, fieldSample } = props;
 
   if (_.includes(NULL_OPERATORS, operator)) {
     return null;
@@ -34,9 +33,7 @@ export default function FilterConfigValue(props: Props) {
           ]}
         >
           <Select
-            getPopupContainer={() => {
-              return eleRef?.current!;
-            }}
+            dropdownClassName='doris-query-builder-popup'
             placeholder={t('builder.filters.value_placeholder')}
             options={_.map(fieldSample, (item) => {
               return {
@@ -67,9 +64,7 @@ export default function FilterConfigValue(props: Props) {
             ]}
           >
             <AutoComplete
-              getPopupContainer={() => {
-                return eleRef?.current!;
-              }}
+              dropdownClassName='doris-query-builder-popup'
               placeholder={t('builder.filters.value_placeholder')}
               options={_.map(fieldSample, (item) => {
                 return {
@@ -94,9 +89,7 @@ export default function FilterConfigValue(props: Props) {
             ]}
           >
             <AutoComplete
-              getPopupContainer={() => {
-                return eleRef?.current!;
-              }}
+              dropdownClassName='doris-query-builder-popup'
               placeholder={t('builder.filters.value_placeholder')}
               options={_.map(fieldSample, (item) => {
                 return {
@@ -126,9 +119,7 @@ export default function FilterConfigValue(props: Props) {
           ]}
         >
           <AutoComplete
-            getPopupContainer={() => {
-              return eleRef?.current!;
-            }}
+            dropdownClassName='doris-query-builder-popup'
             placeholder={t('builder.filters.value_placeholder')}
             options={_.map(fieldSample, (item) => {
               return {

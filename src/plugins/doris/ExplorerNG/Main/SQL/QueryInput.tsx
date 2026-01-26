@@ -1,14 +1,15 @@
-import React, { useImperativeHandle, forwardRef } from 'react';
+import React, { useImperativeHandle, forwardRef, useContext } from 'react';
 import { Space, Form } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
+import { SqlMonacoEditor } from '@fc-components/monaco-editor';
 
+import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../../../constants';
-import QueryInput from '../../components/QueryInput';
 import QueryInputAddonAfter from '../../components/QueryInputAddonAfter';
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
 
 export default forwardRef(function QueryInputCpt(props: Props, ref) {
   const { t } = useTranslation(NAME_SPACE);
+  const { darkMode } = useContext(CommonStateContext);
 
   const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick } = props;
 
@@ -77,9 +79,12 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
           })}
         >
           <Form.Item name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
-            <QueryInput
-              inputRef={inputRef}
-              onEnterPress={() => {
+            <SqlMonacoEditor
+              className='bg-fc-100 z-0'
+              maxHeight={200}
+              theme={darkMode ? 'dark' : 'light'}
+              enableAutocomplete={true}
+              onEnter={() => {
                 snapRangeRef.current = {
                   from: undefined,
                   to: undefined,

@@ -25,8 +25,6 @@ export default function QueryBuilderFiltersCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { indexData, snapRangeRef, executeQuery } = props;
 
-  const eleRef = React.useRef<HTMLDivElement>(null);
-
   const datasourceCate = Form.useWatch('datasourceCate');
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
@@ -65,34 +63,31 @@ export default function QueryBuilderFiltersCpt(props: Props) {
   }, [indexData]);
 
   return (
-    <div ref={eleRef}>
-      <Row align='middle' gutter={SIZE}>
-        <Col flex='none'>
-          <Tooltip title={t('builder.filters.label_tip')}>
-            <Space size={SIZE / 2}>
-              <span>{t('builder.filters.label')}</span>
-              <InfoCircleOutlined />
-            </Space>
-          </Tooltip>
-        </Col>
-        <Col flex='auto'>
-          <Form.Item name={['query', 'query_builder_filter']} noStyle>
-            <QueryBuilderFilters
-              eleRef={eleRef}
-              size='small'
-              indexData={validIndexData}
-              fieldSampleParams={fieldSampleParams}
-              onChange={() => {
-                snapRangeRef.current = {
-                  from: undefined,
-                  to: undefined,
-                };
-                executeQuery();
-              }}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-    </div>
+    <Row align='middle' gutter={SIZE}>
+      <Col flex='none'>
+        <Tooltip title={t('builder.filters.label_tip')}>
+          <Space size={SIZE / 2}>
+            <span>{t('builder.filters.label')}</span>
+            <InfoCircleOutlined />
+          </Space>
+        </Tooltip>
+      </Col>
+      <Col flex='auto'>
+        <Form.Item name={['query', 'query_builder_filter']} noStyle>
+          <QueryBuilderFilters
+            size='small'
+            indexData={validIndexData}
+            fieldSampleParams={fieldSampleParams}
+            onChange={() => {
+              snapRangeRef.current = {
+                from: undefined,
+                to: undefined,
+              };
+              executeQuery();
+            }}
+          />
+        </Form.Item>
+      </Col>
+    </Row>
   );
 }
