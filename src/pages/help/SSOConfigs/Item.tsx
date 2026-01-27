@@ -92,9 +92,13 @@ export default function Item(props: Props) {
           </Form.Item>
           <Row gutter={SIZE}>
             <Col span={12}>
-              <Form.Item label={t('dingtalk_setting.username_field')} name={['setting', 'username_field']} rules={[{ required: true }]} initialValue='email'>
+              <Form.Item label={t('dingtalk_setting.username_field')} name={['setting', 'username_field']} rules={[{ required: true }]} initialValue='userid'>
                 <Select
                   options={[
+                    {
+                      label: t('dingtalk_setting.username_field_map.userid'),
+                      value: 'userid',
+                    },
                     {
                       label: t('dingtalk_setting.username_field_map.email'),
                       value: 'email',
