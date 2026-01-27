@@ -27,6 +27,7 @@ const ja_JP = {
       phone: '電話番号',
       name: '名前',
       email: 'メール',
+      userid: 'UserId',
     },
     default_roles: 'デフォルトロール',
     auth_url: '認証URL',

@@ -29,6 +29,7 @@ const en_US = {
       phone: 'Phone Number',
       name: 'Name',
       email: 'Email',
+      userid: 'UserId',
     },
     default_roles: 'Default Roles',
     auth_url: 'Authentication URL',
