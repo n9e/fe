@@ -26,7 +26,7 @@ const zh_HK = {
       phone: '手機號',
       name: '名稱',
       email: '郵箱',
-      userid: 'UserId',
+      userid: '用户ID',
     },
     default_roles: '默認角色',
     auth_url: '登入認證地址',
