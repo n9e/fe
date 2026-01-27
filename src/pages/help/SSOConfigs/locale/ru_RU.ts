@@ -29,6 +29,7 @@ const ru_RU = {
       phone: 'Номер телефона',
       name: 'Имя',
       email: 'Электронная почта',
+      userid: 'UserId',
     },
     default_roles: 'Роли по умолчанию',
     auth_url: 'URL аутентификации',
