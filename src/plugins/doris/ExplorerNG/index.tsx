@@ -21,7 +21,7 @@ import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 
 import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
-import { Field } from '../types';
+import { Field } from './types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
 
 import SideBarNav from './SideBarNav';
@@ -37,7 +37,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { datasourceList, datasourceCateOptions, groupedDatasourceList, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, datasourceCateOptions, groupedDatasourceList, darkMode, logsDefaultRange } = useContext(CommonStateContext);
   const { tabKey, disabled, defaultFormValuesControl } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -110,7 +110,7 @@ export default function index(props: Props) {
     const assignmentOperator = params.assignmentOperator || ':';
     const values = form.getFieldsValue();
     const query = values.query;
-    let queryStr = _.trim(_.split(query.query, '|')?.[0]);
+    let queryStr = _.trim(query.query);
     if (queryStr === '*') {
       queryStr = '';
     }
@@ -156,8 +156,9 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'defaultSearchField']} hidden>
           <div />
         </Form.Item>
-        <div className='h-full flex gap-4'>
+        <div className='h-full flex gap-2'>
           <Resizable
+            className='pr-2'
             size={{ width, height: '100%' }}
             enable={{
               right: true,
@@ -173,6 +174,19 @@ export default function index(props: Props) {
               setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
               }, 0);
+            }}
+            handleComponent={{
+              right: (
+                <div className='w-full h-full relative group'>
+                  <div
+                    className='h-full absolute left-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-200'
+                    style={{
+                      borderLeft: '2px solid var(--fc-fill-4)',
+                    }}
+                  />
+                  <div className='w-[6px] h-[60px] bg-fc-300 rounded-md absolute top-1/2 -translate-y-1/2 left-[2px] group-hover:bg-fc-400 group-hover:h-[100px] transition-all duration-200' />
+                </div>
+              ),
             }}
           >
             <div className='flex-shrink-0 h-full flex flex-col'>
@@ -232,7 +246,8 @@ export default function index(props: Props) {
                         ...filterValues,
                         query: {
                           ...filterValues.query,
-                          range,
+                          range: range ?? logsDefaultRange,
+                          navMode: filterValues.query?.navMode || 'fields',
                           syntax: filterValues.query?.syntax || 'query',
                         },
                       });
@@ -291,7 +306,7 @@ export default function index(props: Props) {
                       form.setFieldsValue({
                         refreshFlag: undefined,
                         query: {
-                          navMode: queryValues.navMode,
+                          navMode: queryValues.navMode || 'fields',
                           syntax: queryValues.syntax,
                           sqlVizType: queryValues.sqlVizType,
                           range: queryValues.range,
@@ -334,10 +349,20 @@ export default function index(props: Props) {
           <div className='min-w-0 flex-1'>
             <Main
               tabKey={tabKey}
+              datasourceValue={datasourceValue}
               indexData={indexData}
               organizeFields={organizeFields}
               setOrganizeFields={(value) => {
+                const queryValues = form.getFieldValue('query');
                 setOrganizeFields(value);
+                setOrganizeFieldsToLocalstorage(
+                  {
+                    datasourceValue,
+                    database: queryValues?.database,
+                    table: queryValues?.table,
+                  },
+                  value,
+                );
               }}
               executeQuery={executeQuery}
               handleValueFilter={handleValueFilter}
