@@ -26,7 +26,7 @@ const zh_CN = {
       phone: '手机号',
       name: '名称',
       email: '邮箱',
-      userid: 'UserId',
+      userid: '用户ID',
     },
     default_roles: '默认角色',
     auth_url: '登陆认证地址',
