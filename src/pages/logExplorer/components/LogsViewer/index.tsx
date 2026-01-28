@@ -70,6 +70,8 @@ interface Props {
   id_key?: string;
   raw_key?: string;
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
+  logViewerFilterFields?: (log: Record<string, any>) => string[];
+  logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -130,6 +132,8 @@ export default function LogsViewer(props: Props) {
     id_key = '___id___',
     raw_key = '___raw___',
     logViewerExtraRender,
+    logViewerFilterFields,
+    logViewerRenderCustomTagsArea,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -275,6 +279,8 @@ export default function LogsViewer(props: Props) {
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
                   logViewerExtraRender={logViewerExtraRender}
+                  logViewerFilterFields={logViewerFilterFields}
+                  logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
                 />
               )}
               {options.logMode === 'table' && (
@@ -302,6 +308,8 @@ export default function LogsViewer(props: Props) {
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
                   logViewerExtraRender={logViewerExtraRender}
+                  logViewerFilterFields={logViewerFilterFields}
+                  logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
                 />
               )}
             </div>

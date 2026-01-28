@@ -51,6 +51,8 @@ interface Props {
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
+  logViewerFilterFields?: (log: Record<string, any>) => string[];
+  logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
 }
 
 function Table(props: Props) {
@@ -72,6 +74,8 @@ function Table(props: Props) {
     timeFieldColumnFormat,
     linesColumnFormat,
     logViewerExtraRender,
+    logViewerFilterFields,
+    logViewerRenderCustomTagsArea,
   } = props;
   const fields = useMemo(() => {
     const resolvedFields = getFieldsFromTableData(data);
@@ -212,11 +216,12 @@ function Table(props: Props) {
             id_key={id_key}
             raw_key={raw_key}
             value={data[logViewerDrawerState.currentIndex]}
-            rawValue={data[logViewerDrawerState.currentIndex]}
             onValueFilter={(params) => {
               onValueFilter?.(params);
               setLogViewerDrawerState({ visible: false, currentIndex: -1 });
             }}
+            logViewerFilterFields={logViewerFilterFields}
+            logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
