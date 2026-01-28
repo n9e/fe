@@ -61,7 +61,7 @@ export default function index(props: Props) {
         // 设置 tabs 缓存值
         if (defaultFormValuesControl?.setDefaultFormValues) {
           defaultFormValuesControl.setDefaultFormValues({
-            datasourceCate: DatasourceCateEnum.doris,
+            datasourceCate: values.datasourceCate,
             datasourceValue: values.datasourceValue,
             query: values.query,
           });
