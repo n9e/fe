@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Table, Tooltip, Drawer, Empty } from 'antd';
-import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { Table, Tooltip, Empty, Space } from 'antd';
+import { CaretDownOutlined, CaretRightOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { useClickAway } from 'ahooks';
+
+import NavigableDrawer from '@/components/NavigableDrawer';
 
 import { NAME_SPACE } from '../../constants';
 import { OnValueFilterParams } from './types';
@@ -12,9 +15,9 @@ import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
 import LogFieldValue from './components/LogFieldValue';
 
-const explorerOriginInlineCellClassName = 'inline-block mr-1';
-const explorerOriginBreakCellClassName = 'break-all block mr-1';
-const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-title inline-flex text-[12px] my-[2px] py-[1px] px-[3px]';
+const explorerOriginInlineCellClassName = 'inline-block mr-1 my-[2px] align-top';
+const explorerOriginBreakCellClassName = 'break-all block mr-1 my-[2px]';
+const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-title inline-flex text-[12px] py-[1px] px-[3px]';
 const explorerOrigiFieldValClassName = 'inline text-main m-0 p-0 cursor-pointer';
 const explorerOriginUlClassName = 'border-0 list-none bg-transparent p-0 m-0';
 const explorerOriginLiClassName = 'relative ml-0 pl-0 ';
@@ -37,27 +40,66 @@ interface Props {
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   /** 排序反转回调 */
   onReverseChange: (reverse: boolean) => void;
+  timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
+  linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  id_key: string;
+  raw_key: string;
+  logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
 }
 
 interface RenderValueProps {
   name: string;
   value: string;
+  parentKey?: string;
   onValueFilter?: Props['onValueFilter'];
 }
 
-function RenderValue({ name, value, onValueFilter }: RenderValueProps) {
+function RenderValue({ name, value, parentKey, onValueFilter }: RenderValueProps) {
+  const { t } = useTranslation(NAME_SPACE);
   const { rawValue } = useContext(DataContext);
 
-  return <LogFieldValue name={name} value={value} onTokenClick={onValueFilter} rawValue={rawValue} />;
+  const [expand, setExpand] = useState(false);
+
+  if (typeof value === 'string' && value.indexOf('\n') > -1) {
+    const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
+    return (
+      <div className='inline text-hint m-0 p-0'>
+        {_.map(lines, (v, idx) => {
+          return (
+            <div key={idx}>
+              <LogFieldValue parentKey={parentKey} name={name} value={v} onTokenClick={onValueFilter} rawValue={rawValue} />
+              {idx === lines.length - 1 && (
+                <a
+                  onClick={() => {
+                    setExpand(!expand);
+                  }}
+                  className='ml-2'
+                >
+                  <Space size={2}>
+                    {expand ? t('logs.collapse') : t('logs.expand')}
+                    {expand ? <LeftOutlined /> : <RightOutlined />}
+                  </Space>
+                </a>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return <LogFieldValue parentKey={parentKey} name={name} value={value} onTokenClick={onValueFilter} rawValue={rawValue} />;
 }
 
 function RenderSubJSON({
+  parentKey,
   label,
   subJSON,
   options,
   currentExpandLevel,
   onValueFilter,
 }: {
+  parentKey?: string;
   label: string;
   subJSON: any;
   options: any;
@@ -81,14 +123,7 @@ function RenderSubJSON({
             className='cursor-pointer'
           >
             {expand ? <CaretDownOutlined className='text-link' /> : <CaretRightOutlined className='text-link' />}
-            <span
-              className={explorerOriginFieldKeyClassName}
-              style={{
-                marginLeft: '2px',
-              }}
-            >
-              {label}
-            </span>
+            <span className={`${explorerOriginFieldKeyClassName} ml-[2px]`}>{label}</span>
           </div>
           <div className='text-link'>{`{}`}</div>
         </div>
@@ -104,7 +139,17 @@ function RenderSubJSON({
                       </>
                     ) : (
                       _.map(_.isArray(v) ? v : [v], (item, idx) => {
-                        return <RenderSubJSON key={idx} label={k} subJSON={item} options={options} currentExpandLevel={currentExpandLevel + 1} onValueFilter={onValueFilter} />;
+                        return (
+                          <RenderSubJSON
+                            key={idx}
+                            parentKey={parentKey ? parentKey + '.' + k : k}
+                            label={k}
+                            subJSON={item}
+                            options={options}
+                            currentExpandLevel={currentExpandLevel + 1}
+                            onValueFilter={onValueFilter}
+                          />
+                        );
                       })
                     )}
                   </ul>
@@ -113,7 +158,7 @@ function RenderSubJSON({
               return (
                 <li key={k}>
                   <div className={explorerOriginFieldKeyClassName}>{k}</div>:
-                  <RenderValue name={k} value={v} onValueFilter={onValueFilter} />
+                  <RenderValue parentKey={parentKey ? parentKey + '.' + k : k} name={k} value={v} onValueFilter={onValueFilter} />
                 </li>
               );
             })}
@@ -122,14 +167,16 @@ function RenderSubJSON({
       </li>
     );
   }
-  if (options.jsonDisplaType === 'string') {
-    return (
-      <li className={explorerOriginLiClassName}>
-        <div className={explorerOriginFieldKeyClassName}>{label}</div>:<div className={explorerOrigiFieldValClassName}>{JSON.stringify(subJSON)}</div>
-      </li>
-    );
-  }
-  return null;
+
+  // 默认为 jsonDisplaType: string 格式渲染
+  return (
+    <li className={explorerOriginLiClassName}>
+      <div className={explorerOriginFieldKeyClassName}>{label}</div>:
+      <div className={explorerOrigiFieldValClassName}>
+        <RenderValue name={label} value={JSON.stringify(subJSON)} onValueFilter={onValueFilter} />
+      </div>
+    </li>
+  );
 }
 
 export const DataContext = React.createContext({
@@ -138,8 +185,22 @@ export const DataContext = React.createContext({
 
 function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { timeField, data, options, onValueFilter, onReverseChange, rowPrefixRender, filterFields } = props;
-  const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; value: any }>({ visible: false, value: null });
+  const {
+    timeField,
+    data,
+    logsHash,
+    options,
+    onValueFilter,
+    onReverseChange,
+    rowPrefixRender,
+    filterFields,
+    timeFieldColumnFormat,
+    linesColumnFormat,
+    id_key,
+    raw_key,
+    logViewerExtraRender,
+  } = props;
+  const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
     {
       title: t('logs.title'),
@@ -168,8 +229,8 @@ function Raw(props: Props) {
                             <div className={explorerOriginFieldKeyClassName}>{key}</div>: <div className={explorerOrigiFieldValClassName}>{`[]`}</div>
                           </>
                         ) : (
-                          _.map(_.isArray(valToObj) ? valToObj : [valToObj], (item, idx) => {
-                            return <RenderSubJSON key={idx} label={key} subJSON={item} options={options} currentExpandLevel={1} onValueFilter={onValueFilter} />;
+                          _.map(subJSON, (item, idx) => {
+                            return <RenderSubJSON key={idx} parentKey={key} label={key} subJSON={item} options={options} currentExpandLevel={1} onValueFilter={onValueFilter} />;
                           })
                         )}
                       </ul>
@@ -194,16 +255,16 @@ function Raw(props: Props) {
       width: 140,
       dataIndex: timeField,
       key: 'time',
-      render: (val, record) => {
+      render: (val, record, index) => {
         return (
           <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
             <div
               className='absolute inset-0 flex items-center cursor-pointer'
               onClick={() => {
-                setLogViewerDrawerState({ visible: true, value: record });
+                setLogViewerDrawerState({ visible: true, currentIndex: index });
               }}
             >
-              {moment(val).format('MM-DD HH:mm:ss.SSS')}
+              {timeFieldColumnFormat ? timeFieldColumnFormat(val) : moment(val).format('MM-DD HH:mm:ss.SSS')}
             </div>
           </Tooltip>
         );
@@ -223,10 +284,10 @@ function Raw(props: Props) {
             <div
               className='absolute inset-0 flex items-center cursor-pointer'
               onClick={() => {
-                setLogViewerDrawerState({ visible: true, value: record });
+                setLogViewerDrawerState({ visible: true, currentIndex: index });
               }}
             >
-              {index + 1}
+              {linesColumnFormat ? linesColumnFormat(index + 1) : index + 1}
             </div>
           </Tooltip>
         );
@@ -237,11 +298,39 @@ function Raw(props: Props) {
     });
   }
 
+  const navigableDrawerTitle = useMemo(() => {
+    if (timeField) {
+      const logItem = data[logViewerDrawerState.currentIndex];
+      if (logItem && logItem[timeField]) {
+        return timeFieldColumnFormat ? timeFieldColumnFormat(logItem[timeField]) : moment(logItem[timeField]).format('MM-DD HH:mm:ss.SSS');
+      }
+    }
+    return t('log_viewer_drawer_title');
+  }, [logsHash, timeField, logViewerDrawerState]);
+
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  useClickAway(
+    (event) => {
+      // 忽略点击发生在 log viewer drawer 内的情况
+      const target = (event && (event as Event).target) as HTMLElement | null;
+      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-log-viewer-drawer')) {
+        return;
+      }
+      // 只有当 Drawer 打开时才尝试关闭
+      if (logViewerDrawerState.currentIndex > -1) {
+        setLogViewerDrawerState({ visible: false, currentIndex: -1 });
+      }
+    },
+    [drawerRef],
+    ['click'],
+  );
+
   return (
-    <>
+    <div className='min-h-0 h-full' ref={drawerRef}>
       <Table
         className='n9e-event-logs-table n9e-log-explorer-raw-table'
-        rowKey='___id___'
+        rowKey={id_key}
         size='small'
         pagination={false}
         expandable={{
@@ -253,8 +342,9 @@ function Raw(props: Props) {
               <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
                 <div
                   className='absolute inset-0 flex items-center justify-center cursor-pointer'
-                  onClick={(e) => {
-                    setLogViewerDrawerState({ visible: true, value: record });
+                  onClick={() => {
+                    const index = _.findIndex(data, (d) => d[id_key] === record[id_key]);
+                    setLogViewerDrawerState({ visible: true, currentIndex: index });
                   }}
                 >
                   <TextSearchIcon className='text-[14px]' />
@@ -274,30 +364,42 @@ function Raw(props: Props) {
         dataSource={data}
         columns={columns}
       />
-      <Drawer
-        title={t('log_viewer_drawer_title')}
+      <NavigableDrawer
+        className='log-explorer-log-viewer-drawer'
+        title={navigableDrawerTitle}
+        extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'
         width='55%'
         onClose={() => {
-          setLogViewerDrawerState({ visible: false, value: null });
+          setLogViewerDrawerState({ visible: false, currentIndex: -1 });
+        }}
+        hasPrev={logViewerDrawerState.currentIndex > 0}
+        hasNext={logViewerDrawerState.currentIndex !== -1 && logViewerDrawerState.currentIndex < data.length - 1}
+        onPrev={() => {
+          setLogViewerDrawerState({ visible: true, currentIndex: logViewerDrawerState.currentIndex - 1 });
+        }}
+        onNext={() => {
+          setLogViewerDrawerState({ visible: true, currentIndex: logViewerDrawerState.currentIndex + 1 });
         }}
         visible={logViewerDrawerState.visible}
         destroyOnClose
       >
-        {logViewerDrawerState.value ? (
+        {logViewerDrawerState.currentIndex > -1 ? (
           <LogViewer
-            value={logViewerDrawerState.value}
-            rawValue={logViewerDrawerState.value}
+            id_key={id_key}
+            raw_key={raw_key}
+            value={data[logViewerDrawerState.currentIndex]}
+            rawValue={data[logViewerDrawerState.currentIndex]}
             onValueFilter={(params) => {
               onValueFilter?.(params);
-              setLogViewerDrawerState({ visible: false, value: null });
+              setLogViewerDrawerState({ visible: false, currentIndex: -1 });
             }}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
         )}
-      </Drawer>
-    </>
+      </NavigableDrawer>
+    </div>
   );
 }
 

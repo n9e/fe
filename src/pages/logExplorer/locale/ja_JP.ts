@@ -51,9 +51,11 @@ const ja_JP = {
     view_statistic: '統計値を表示',
     view_timeseries: '時系列を表示',
   },
+  field_type: 'フィールドタイプ',
   logs: {
     title: 'ログデータ',
-    count: '結果数',
+    duration: '所要時間',
+    count: '件数',
     filter_fields: 'フィールドをフィルタ',
     settings: {
       mode: {
@@ -90,6 +92,8 @@ const ja_JP = {
     filterAllNot: 'すべてを現在の検索から除外',
     total: 'ログ件数',
     stack_group_by_tip: 'このフィールド値で積み上げトレンドチャートを表示',
+    collapse: '折りたたむ',
+    expand: '展開',
   },
   view_placeholder: 'ログビュー',
 };

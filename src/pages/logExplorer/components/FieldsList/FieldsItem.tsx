@@ -292,11 +292,24 @@ export default function FieldsItem(props: Props) {
         }
       }}
     >
-      <Tooltip placement='left' title={field.indexable === false ? t('unindexable') : t('field_tip')}>
+      <Tooltip
+        placement='left'
+        title={
+          <div className='break-all'>
+            {field.type2 && (
+              <div>
+                <Space align='start'>
+                  <span className='whitespace-nowrap'>{t('field_type')}:</span>
+                  {field.type2}
+                </Space>
+              </div>
+            )}
+            <div>{field.indexable === false ? t('unindexable') : t('field_tip')}</div>
+          </div>
+        }
+      >
         <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'>
-          <Tooltip placement='top' title={field.type2}>
-            <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
-          </Tooltip>
+          <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
           <span
             style={{
               width: 'calc(100% - 26px)',

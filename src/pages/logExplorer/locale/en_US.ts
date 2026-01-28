@@ -51,9 +51,11 @@ const en_US = {
     view_statistic: 'View Table',
     view_timeseries: 'View Time Series',
   },
+  field_type: 'Type',
   logs: {
     title: 'Log Data',
-    count: 'Result Count',
+    duration: 'Duration',
+    count: 'Count',
     filter_fields: 'Filter Fields',
     settings: {
       mode: {
@@ -90,6 +92,8 @@ const en_US = {
     filterAllNot: 'Exclude all from current query',
     total: 'Log Count',
     stack_group_by_tip: 'Display stacked trend chart by this field value',
+    collapse: 'Collapse',
+    expand: 'Expand',
   },
   view_placeholder: 'Log View',
 };

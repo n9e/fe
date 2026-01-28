@@ -11,7 +11,6 @@ import { tokenizer } from './util';
 import Token from './Token';
 
 interface Props {
-  indexName?: string; // 用于 SLS 添加检索条件时的 key
   parentKey?: string; // 嵌套json渲染时可以传入，目前仅用在下钻的字段名判断中。目前仅在 sls 中使用
   name: string;
   value: any;
@@ -23,7 +22,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { indexData: indexList } = useContext(LogsViewerStateContext);
-  const { indexName, parentKey, name, value, onTokenClick, rawValue, enableTooltip, fieldValueClassName } = props;
+  const { parentKey, name, value, onTokenClick, rawValue, enableTooltip, fieldValueClassName } = props;
 
   const indexData = _.find(indexList, (item) => {
     return item.field === (parentKey ? parentKey + '.' + name : name);
@@ -34,14 +33,13 @@ export default function index(props: Props) {
   if (_.isString(value) && delimiters && delimiters.length > 0) {
     const result = tokenizer(value, delimiters);
     return (
-      <>
+      <span className={fieldValueClassName}>
         {_.map(result, (item, idx) => {
           if (item.type === 'text') {
             return (
               <Token
                 key={idx}
                 segmented={result.length > 1}
-                indexName={indexName}
                 parentKey={parentKey}
                 name={name}
                 value={item.value}
@@ -61,13 +59,12 @@ export default function index(props: Props) {
           }
           return null;
         })}
-      </>
+      </span>
     );
   }
   return (
     <Token
       segmented={false}
-      indexName={indexName}
       name={name}
       parentKey={parentKey}
       value={value}

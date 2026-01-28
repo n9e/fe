@@ -6,8 +6,8 @@
 import React, { useState, useMemo, useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Tabs } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
+import { Space, Table, Tabs, Tooltip } from 'antd';
+import { CopyOutlined, QuestionOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 import { copyToClipBoard } from '@/utils';
@@ -15,6 +15,8 @@ import getTextWidth from '@/utils/getTextWidth';
 import { parseRange } from '@/components/TimeRangePicker';
 
 import { NAME_SPACE } from '../../../constants';
+import { TYPE_MAP } from '../../FieldsList/constants';
+import { typeIconMap } from '../../FieldsList/FieldsItem';
 import { OnValueFilterParams } from '../types';
 import { LogsViewerStateContext } from '../index';
 import LogFieldValue from './LogFieldValue';
@@ -24,25 +26,27 @@ interface Props {
   value: Record<string, any>;
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   rawValue?: object;
+  id_key: string;
+  raw_key: string;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { fieldConfig, range } = useContext(LogsViewerStateContext);
-  const { value, onValueFilter, rawValue } = props;
+  const { fieldConfig, range, indexData } = useContext(LogsViewerStateContext);
+  const { value, onValueFilter, rawValue, raw_key, id_key } = props;
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
   let end = parsedRange ? moment(parsedRange.end).unix() : 0;
   const data = useMemo(
     () =>
-      _.map(_.omit(value, ['___id___', '___raw___']), (val, key) => {
+      _.map(_.omit(value, [id_key, raw_key]), (val, key) => {
         return {
           field: key,
           value: val,
         };
       }),
-    [],
+    [value],
   );
 
   const maxFieldLength = useMemo(() => {
@@ -52,7 +56,7 @@ export default function LogView(props: Props) {
 
   let jsonValue = '';
   try {
-    jsonValue = JSON.stringify(value.___raw___, null, 4);
+    jsonValue = JSON.stringify(value[raw_key], null, 4);
   } catch (e) {
     console.warn(e);
     jsonValue = '无法解析';
@@ -60,6 +64,7 @@ export default function LogView(props: Props) {
 
   return (
     <Tabs
+      className='flex flex-col n9e-log-explorer-log-viewer-tabs'
       activeKey={type}
       onChange={(val) => {
         setType(val);
@@ -78,33 +83,62 @@ export default function LogView(props: Props) {
       }
     >
       <Tabs.TabPane tab='Table' key='table'>
-        <Table
-          showHeader={false}
-          rowKey='field'
-          tableLayout='fixed'
-          dataSource={data}
-          columns={[
-            {
-              title: 'Field',
-              dataIndex: 'field',
-              key: 'field',
-              width: maxFieldLength + 16 + 8, // 16px 是 padding，8px 容错
-            },
-            {
-              title: 'Value',
-              dataIndex: 'value',
-              key: 'value',
-              render: (val, record) => {
-                return <LogFieldValue enableTooltip name={record.field} value={val} onTokenClick={onValueFilter} rawValue={rawValue} fieldValueClassName='truncate' />;
+        <div className='h-full overflow-auto'>
+          <Table
+            showHeader={false}
+            rowKey='field'
+            tableLayout='fixed'
+            dataSource={data}
+            columns={[
+              {
+                title: 'Field',
+                dataIndex: 'field',
+                key: 'field',
+                width: maxFieldLength + 16 + 16 + 8, // 16px 是 padding, 16px 是图标宽度, 8px 容错
+                render: (val) => {
+                  const fieldObject = _.find(indexData, (item) => item.field === val);
+                  return (
+                    <Tooltip
+                      placement='left'
+                      title={
+                        fieldObject?.type2 ? (
+                          <div className='break-all'>
+                            <Space align='start'>
+                              <span className='whitespace-nowrap'>{t('field_type')}:</span>
+                              {fieldObject.type2}
+                            </Space>
+                          </div>
+                        ) : undefined
+                      }
+                    >
+                      <Space>
+                        <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>
+                          {fieldObject ? typeIconMap[TYPE_MAP[fieldObject.type]] ?? <QuestionOutlined /> : <QuestionOutlined />}
+                        </span>
+                        <span>{val}</span>
+                      </Space>
+                    </Tooltip>
+                  );
+                },
               },
-            },
-          ]}
-          size='small'
-          pagination={false}
-        />
+              {
+                title: 'Value',
+                dataIndex: 'value',
+                key: 'value',
+                render: (val, record) => {
+                  return <LogFieldValue name={record.field} value={val} onTokenClick={onValueFilter} rawValue={rawValue} fieldValueClassName='whitespace-pre-wrap' />;
+                },
+              },
+            ]}
+            size='small'
+            pagination={false}
+          />
+        </div>
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <HighLightJSON value={value.___raw___} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
+        <div className='h-full overflow-auto'>
+          <HighLightJSON value={value[raw_key]} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
+        </div>
       </Tabs.TabPane>
     </Tabs>
   );

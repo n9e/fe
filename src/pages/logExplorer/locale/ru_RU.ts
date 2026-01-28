@@ -51,9 +51,11 @@ const ru_RU = {
     view_statistic: 'Просмотреть таблицу',
     view_timeseries: 'Просмотреть временной ряд',
   },
+  field_type: 'Тип поля',
   logs: {
     title: 'Данные логов',
-    count: 'Количество результатов',
+    duration: 'Время выполнения',
+    count: 'Количество',
     filter_fields: 'Фильтр полей',
     settings: {
       mode: {
@@ -90,6 +92,8 @@ const ru_RU = {
     filterAllNot: 'Исключить все из текущего запроса',
     total: 'Количество логов',
     stack_group_by_tip: 'Отобразить график тренда со стеком по значению этого поля',
+    collapse: 'Свернуть',
+    expand: 'Развернуть',
   },
   view_placeholder: 'Просмотр логов',
 };

@@ -25,7 +25,7 @@ const zh_HK = {
     median: '中位數',
     p95: '百分位數(P95)',
   },
-  field_popover_info_alert: '點擊數值可查看統計圖表和SQL',
+  field_popover_info_alert: '點擊數值可查看統計圖表和 SQL',
   field_search_placeholder: '搜索字段',
   field_list: {
     show_fields: '顯示字段',
@@ -51,9 +51,11 @@ const zh_HK = {
     view_statistic: '查看統計值',
     view_timeseries: '查看時序圖',
   },
+  field_type: '類型',
   logs: {
     title: '日誌數據',
-    count: '結果數',
+    duration: '耗時',
+    count: '條數',
     filter_fields: '篩選字段',
     settings: {
       mode: {
@@ -90,6 +92,8 @@ const zh_HK = {
     filterAllNot: '從本次檢索中排除全部',
     total: '日誌條數',
     stack_group_by_tip: '以此字段值展示堆疊趨勢圖',
+    collapse: '收起',
+    expand: '展開',
   },
   view_placeholder: '日誌視圖',
 };

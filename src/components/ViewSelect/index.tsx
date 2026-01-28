@@ -4,6 +4,7 @@ import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ReloadOutline
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { View, getViews, updateView, deleteView, postViewFavorite, deleteViewFavorite } from './services';
 import { ModalStat } from './types';
