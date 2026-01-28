@@ -45,6 +45,8 @@ interface Props {
   id_key: string;
   raw_key: string;
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
+  logViewerFilterFields?: (log: Record<string, any>) => string[];
+  logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
 }
 
 interface RenderValueProps {
@@ -199,6 +201,8 @@ function Raw(props: Props) {
     id_key,
     raw_key,
     logViewerExtraRender,
+    logViewerFilterFields,
+    logViewerRenderCustomTagsArea,
   } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
@@ -312,6 +316,7 @@ function Raw(props: Props) {
 
   useClickAway(
     (event) => {
+      console.log(event);
       // 忽略点击发生在 log viewer drawer 内的情况
       const target = (event && (event as Event).target) as HTMLElement | null;
       if (target && typeof target.closest === 'function' && target.closest('.log-explorer-log-viewer-drawer')) {
@@ -389,11 +394,12 @@ function Raw(props: Props) {
             id_key={id_key}
             raw_key={raw_key}
             value={data[logViewerDrawerState.currentIndex]}
-            rawValue={data[logViewerDrawerState.currentIndex]}
             onValueFilter={(params) => {
               onValueFilter?.(params);
               setLogViewerDrawerState({ visible: false, currentIndex: -1 });
             }}
+            logViewerFilterFields={logViewerFilterFields}
+            logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
