@@ -90,6 +90,8 @@ const ja_JP = {
     filterAllNot: 'すべてを現在の検索から除外',
     total: 'ログ件数',
     stack_group_by_tip: 'このフィールド値で積み上げトレンドチャートを表示',
+    collapse: '折りたたむ',
+    expand: '展開',
   },
   view_placeholder: 'ログビュー',
 };

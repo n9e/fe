@@ -289,7 +289,7 @@ export default function index(props: Props) {
                     ajustDatasourceList={(list) => {
                       return _.filter(list, (item) => {
                         const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                        if (cateData && _.includes(cateData.type, 'logging') && item.plugin_type === DatasourceCateEnum.doris) {
+                        if (cateData && _.includes(cateData.type, 'logging') && _.includes(ENABLED_VIEW_CATES, item.plugin_type)) {
                           return cateData.graphPro ? IS_PLUS : true;
                         }
                         return false;

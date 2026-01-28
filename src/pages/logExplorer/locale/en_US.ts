@@ -90,6 +90,8 @@ const en_US = {
     filterAllNot: 'Exclude all from current query',
     total: 'Log Count',
     stack_group_by_tip: 'Display stacked trend chart by this field value',
+    collapse: 'Collapse',
+    expand: 'Expand',
   },
   view_placeholder: 'Log View',
 };

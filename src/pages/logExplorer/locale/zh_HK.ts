@@ -90,6 +90,8 @@ const zh_HK = {
     filterAllNot: '從本次檢索中排除全部',
     total: '日誌條數',
     stack_group_by_tip: '以此字段值展示堆疊趨勢圖',
+    collapse: '收起',
+    expand: '展開',
   },
   view_placeholder: '日誌視圖',
 };

@@ -24,25 +24,27 @@ interface Props {
   value: Record<string, any>;
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   rawValue?: object;
+  id_key: string;
+  raw_key: string;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { fieldConfig, range } = useContext(LogsViewerStateContext);
-  const { value, onValueFilter, rawValue } = props;
+  const { value, onValueFilter, rawValue, raw_key, id_key } = props;
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
   let end = parsedRange ? moment(parsedRange.end).unix() : 0;
   const data = useMemo(
     () =>
-      _.map(_.omit(value, ['___id___', '___raw___']), (val, key) => {
+      _.map(_.omit(value, [id_key, raw_key]), (val, key) => {
         return {
           field: key,
           value: val,
         };
       }),
-    [],
+    [value],
   );
 
   const maxFieldLength = useMemo(() => {
@@ -52,7 +54,7 @@ export default function LogView(props: Props) {
 
   let jsonValue = '';
   try {
-    jsonValue = JSON.stringify(value.___raw___, null, 4);
+    jsonValue = JSON.stringify(value[raw_key], null, 4);
   } catch (e) {
     console.warn(e);
     jsonValue = '无法解析';
@@ -60,6 +62,7 @@ export default function LogView(props: Props) {
 
   return (
     <Tabs
+      className='flex flex-col n9e-log-explorer-log-viewer-tabs'
       activeKey={type}
       onChange={(val) => {
         setType(val);
@@ -78,33 +81,37 @@ export default function LogView(props: Props) {
       }
     >
       <Tabs.TabPane tab='Table' key='table'>
-        <Table
-          showHeader={false}
-          rowKey='field'
-          tableLayout='fixed'
-          dataSource={data}
-          columns={[
-            {
-              title: 'Field',
-              dataIndex: 'field',
-              key: 'field',
-              width: maxFieldLength + 16 + 8, // 16px 是 padding，8px 容错
-            },
-            {
-              title: 'Value',
-              dataIndex: 'value',
-              key: 'value',
-              render: (val, record) => {
-                return <LogFieldValue enableTooltip name={record.field} value={val} onTokenClick={onValueFilter} rawValue={rawValue} fieldValueClassName='truncate' />;
+        <div className='h-full overflow-auto'>
+          <Table
+            showHeader={false}
+            rowKey='field'
+            tableLayout='fixed'
+            dataSource={data}
+            columns={[
+              {
+                title: 'Field',
+                dataIndex: 'field',
+                key: 'field',
+                width: maxFieldLength + 16 + 8, // 16px 是 padding，8px 容错
               },
-            },
-          ]}
-          size='small'
-          pagination={false}
-        />
+              {
+                title: 'Value',
+                dataIndex: 'value',
+                key: 'value',
+                render: (val, record) => {
+                  return <LogFieldValue enableTooltip name={record.field} value={val} onTokenClick={onValueFilter} rawValue={rawValue} fieldValueClassName='whitespace-pre-wrap' />;
+                },
+              },
+            ]}
+            size='small'
+            pagination={false}
+          />
+        </div>
       </Tabs.TabPane>
       <Tabs.TabPane tab='JSON' key='json'>
-        <HighLightJSON value={value.___raw___} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
+        <div className='h-full overflow-auto'>
+          <HighLightJSON value={value[raw_key]} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
+        </div>
       </Tabs.TabPane>
     </Tabs>
   );

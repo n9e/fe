@@ -90,6 +90,8 @@ const zh_CN = {
     filterAllNot: '从本次检索中排除全部',
     total: '日志条数',
     stack_group_by_tip: '以此字段值展示堆叠趋势图',
+    collapse: '收起',
+    expand: '展开',
   },
   view_placeholder: '日志视图',
 };
