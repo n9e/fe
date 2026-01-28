@@ -50,6 +50,7 @@ interface Props {
   onOpenOrganizeFieldsModal?: () => void;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
 }
 
 function Table(props: Props) {
@@ -70,6 +71,7 @@ function Table(props: Props) {
     onOpenOrganizeFieldsModal,
     timeFieldColumnFormat,
     linesColumnFormat,
+    logViewerExtraRender,
   } = props;
   const fields = useMemo(() => {
     const resolvedFields = getFieldsFromTableData(data);
@@ -123,7 +125,12 @@ function Table(props: Props) {
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useClickAway(
-    () => {
+    (event) => {
+      // 忽略点击发生在 log viewer drawer 内的情况
+      const target = (event && (event as Event).target) as HTMLElement | null;
+      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-log-viewer-drawer')) {
+        return;
+      }
       // 只有当 Drawer 打开时才尝试关闭
       if (logViewerDrawerState.currentIndex > -1) {
         setLogViewerDrawerState({ visible: false, currentIndex: -1 });
@@ -181,7 +188,9 @@ function Table(props: Props) {
         }}
       />
       <NavigableDrawer
+        className='log-explorer-log-viewer-drawer'
         title={navigableDrawerTitle}
+        extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'
         width='55%'
         onClose={() => {

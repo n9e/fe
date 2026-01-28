@@ -44,6 +44,7 @@ interface Props {
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
   id_key: string;
   raw_key: string;
+  logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
 }
 
 interface RenderValueProps {
@@ -184,7 +185,21 @@ export const DataContext = React.createContext({
 
 function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { timeField, data, logsHash, options, onValueFilter, onReverseChange, rowPrefixRender, filterFields, timeFieldColumnFormat, linesColumnFormat, id_key, raw_key } = props;
+  const {
+    timeField,
+    data,
+    logsHash,
+    options,
+    onValueFilter,
+    onReverseChange,
+    rowPrefixRender,
+    filterFields,
+    timeFieldColumnFormat,
+    linesColumnFormat,
+    id_key,
+    raw_key,
+    logViewerExtraRender,
+  } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
     {
@@ -296,7 +311,12 @@ function Raw(props: Props) {
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useClickAway(
-    () => {
+    (event) => {
+      // 忽略点击发生在 log viewer drawer 内的情况
+      const target = (event && (event as Event).target) as HTMLElement | null;
+      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-log-viewer-drawer')) {
+        return;
+      }
       // 只有当 Drawer 打开时才尝试关闭
       if (logViewerDrawerState.currentIndex > -1) {
         setLogViewerDrawerState({ visible: false, currentIndex: -1 });
@@ -345,7 +365,9 @@ function Raw(props: Props) {
         columns={columns}
       />
       <NavigableDrawer
+        className='log-explorer-log-viewer-drawer'
         title={navigableDrawerTitle}
+        extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'
         width='55%'
         onClose={() => {

@@ -30,3 +30,9 @@ export interface DefaultFormValuesControl {
   defaultFormValues?: any;
   setDefaultFormValues?: (query: any) => void;
 }
+
+export interface RenderCommonSettingsParams {
+  getDefaultQueryValues?: (filterValues: Record<string, any>) => Record<string, any>;
+  executeQuery: () => void;
+}
+export type RenderCommonSettings = ({ getDefaultQueryValues, executeQuery }: RenderCommonSettingsParams) => React.ReactNode;

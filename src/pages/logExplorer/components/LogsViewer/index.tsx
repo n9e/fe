@@ -69,6 +69,7 @@ interface Props {
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
   id_key?: string;
   raw_key?: string;
+  logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -128,6 +129,7 @@ export default function LogsViewer(props: Props) {
     linesColumnFormat,
     id_key = '___id___',
     raw_key = '___raw___',
+    logViewerExtraRender,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -272,6 +274,7 @@ export default function LogsViewer(props: Props) {
                   filterFields={filterFields}
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
+                  logViewerExtraRender={logViewerExtraRender}
                 />
               )}
               {options.logMode === 'table' && (
@@ -298,6 +301,7 @@ export default function LogsViewer(props: Props) {
                   }}
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
+                  logViewerExtraRender={logViewerExtraRender}
                 />
               )}
             </div>

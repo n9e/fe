@@ -34,7 +34,7 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   const inlineProps: Partial<DrawerProps> = inlineMode
     ? {
         mask: false, // 1. 去掉遮罩，允许点击左侧内容
-        getContainer: false, // 2. 挂载在当前父元素，而非 body
+        // getContainer: false, // 2. 挂载在当前父元素，而非 body
         style: {
           position: 'absolute', // 3. 绝对定位，使其只占满父容器的高度
           ...style,

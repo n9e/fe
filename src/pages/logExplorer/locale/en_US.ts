@@ -51,9 +51,11 @@ const en_US = {
     view_statistic: 'View Table',
     view_timeseries: 'View Time Series',
   },
+  field_type: 'Type',
   logs: {
     title: 'Log Data',
-    count: 'Result Count',
+    duration: 'Duration',
+    count: 'Count',
     filter_fields: 'Filter Fields',
     settings: {
       mode: {

@@ -51,9 +51,11 @@ const ru_RU = {
     view_statistic: 'Просмотреть таблицу',
     view_timeseries: 'Просмотреть временной ряд',
   },
+  field_type: 'Тип поля',
   logs: {
     title: 'Данные логов',
-    count: 'Количество результатов',
+    duration: 'Время выполнения',
+    count: 'Количество',
     filter_fields: 'Фильтр полей',
     settings: {
       mode: {
