@@ -74,8 +74,8 @@ export default function index(props: IProps) {
           }
         />
       )}
-      <Row gutter={8}>
-        <Col flex='auto'>
+      <Row gutter={8} wrap={false}>
+        <Col flex='auto' style={{ minWidth: 0 }}>
           <InputGroupWithFormItem
             label={
               <Space>

@@ -20,6 +20,7 @@ import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../util
 import filteredFields from '../../utils/filteredFields';
 import replaceTemplateVariables from '../../utils/replaceTemplateVariables';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
+import AddTo from '../../components/AddTo';
 
 // @ts-ignore
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
@@ -225,47 +226,45 @@ export default function Table(props: IProps) {
                     </Space>
                   )}
                   {pageLoadMode === 'pagination' ? (
-                    <Space>
-                      <Pagination
-                        size='small'
-                        total={data?.total}
-                        current={serviceParams.current}
-                        pageSize={serviceParams.pageSize}
-                        onChange={(current, pageSize) => {
-                          setServiceParams((prev) => ({
-                            ...prev,
-                            current,
-                            pageSize,
-                          }));
-                          const newLogs = _.slice(data?.list, (current - 1) * pageSize, current * pageSize) || [];
-                          setLogs({
-                            data: _.map(newLogs, (item) => {
-                              return {
-                                ...item,
-                                ___id___: _.uniqueId('log_id_'),
-                              };
-                            }),
-                            hash: _.uniqueId('logs_'),
-                          });
-                        }}
-                        showTotal={(total) => {
-                          return (
-                            <Space>
-                              <span>{t('query.count')} :</span>
-                              <span>{total}</span>
-                            </Space>
-                          );
-                        }}
-                      />
-                      {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />}
-                    </Space>
+                    <Pagination
+                      size='small'
+                      total={data?.total}
+                      current={serviceParams.current}
+                      pageSize={serviceParams.pageSize}
+                      onChange={(current, pageSize) => {
+                        setServiceParams((prev) => ({
+                          ...prev,
+                          current,
+                          pageSize,
+                        }));
+                        const newLogs = _.slice(data?.list, (current - 1) * pageSize, current * pageSize) || [];
+                        setLogs({
+                          data: _.map(newLogs, (item) => {
+                            return {
+                              ...item,
+                              ___id___: _.uniqueId('log_id_'),
+                            };
+                          }),
+                          hash: _.uniqueId('logs_'),
+                        });
+                      }}
+                      showTotal={(total) => {
+                        return (
+                          <Space>
+                            <span>{t('query.count')} :</span>
+                            <span>{total}</span>
+                          </Space>
+                        );
+                      }}
+                    />
                   ) : (
                     <Space size={4}>
                       <span>{t('query.count')} :</span>
                       <span>{data?.total}</span>
-                      {IS_PLUS && <DownloadModal queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />}
                     </Space>
                   )}
+                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />}
+                  <AddTo />
                 </Space>
               }
               onOptionsChange={updateOptions}

@@ -32,6 +32,23 @@ export default function index(props: Props) {
 
   if (_.isString(value) && delimiters && delimiters.length > 0) {
     const result = tokenizer(value, delimiters);
+    if (result.length > 100) {
+      // 分割结果过多时不进行分割展示，避免页面卡顿
+      return (
+        <Token
+          segmented={false}
+          indexName={indexName}
+          name={name}
+          parentKey={parentKey}
+          value={value}
+          fieldValue={value}
+          onTokenClick={onTokenClick}
+          rawValue={rawValue}
+          enableTooltip={enableTooltip}
+          fieldValueClassName={fieldValueClassName}
+        />
+      );
+    }
     return (
       <span className={fieldValueClassName}>
         {_.map(result, (item, idx) => {

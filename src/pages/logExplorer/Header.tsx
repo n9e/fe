@@ -35,21 +35,26 @@ export default function Header(props: Props) {
         activeKey={activeKey}
         onEdit={(targetKey: string, action: 'add' | 'remove') => {
           if (action === 'add') {
+            const activeItem = _.find(items, { key: activeKey });
             const newActiveKey = getUUID();
-            const newItems = [
-              ...items,
-              {
-                key: newActiveKey,
-                isInited: false,
-                formValues: {
-                  datasourceCate: defaultDatasourceCate,
-                  datasourceValue: defaultDatasourceValue,
-                  query: {
-                    range: logsDefaultRange,
+            const newItem = activeItem
+              ? {
+                  ...activeItem,
+                  key: newActiveKey,
+                  isInited: false,
+                }
+              : {
+                  key: newActiveKey,
+                  isInited: false,
+                  formValues: {
+                    datasourceCate: defaultDatasourceCate,
+                    datasourceValue: defaultDatasourceValue,
+                    query: {
+                      range: logsDefaultRange,
+                    },
                   },
-                },
-              },
-            ];
+                };
+            const newItems = [...items, newItem];
             setItems(newItems);
             setLocalItems(newItems);
             setActiveKey(newActiveKey);
