@@ -132,7 +132,7 @@ function Table(props: Props) {
     (event) => {
       // 忽略点击发生在 log viewer drawer 内的情况
       const target = (event && (event as Event).target) as HTMLElement | null;
-      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-log-viewer-drawer')) {
+      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-ignore-click-away')) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭
@@ -192,7 +192,7 @@ function Table(props: Props) {
         }}
       />
       <NavigableDrawer
-        className='log-explorer-log-viewer-drawer'
+        className='log-explorer-ignore-click-away'
         title={navigableDrawerTitle}
         extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'

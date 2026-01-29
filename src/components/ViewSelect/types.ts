@@ -8,7 +8,7 @@ export interface View {
   is_favorite: boolean;
 }
 
-export interface ModalStat {
+export interface ModalState {
   visible: boolean;
   action?: 'save_new' | 'edit';
   values?: View;

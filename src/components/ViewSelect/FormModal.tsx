@@ -6,12 +6,12 @@ import _ from 'lodash';
 import { getTeamInfoList } from '@/services/manage';
 
 import { postView, updateView } from './services';
-import { ModalStat } from './types';
+import { ModalState } from './types';
 
 interface Props {
   page: string;
-  modalStat: ModalStat;
-  setModalState: React.Dispatch<React.SetStateAction<ModalStat>>;
+  modalState: ModalState;
+  setModalState: React.Dispatch<React.SetStateAction<ModalState>>;
   getFilterValues: () => any;
   run: () => void;
   setSelected: React.Dispatch<React.SetStateAction<number | undefined>>;
@@ -19,36 +19,36 @@ interface Props {
 
 export default function FormModal(props: Props) {
   const { t } = useTranslation('viewSelect');
-  const { page, modalStat, setModalState, getFilterValues, run, setSelected } = props;
+  const { page, modalState, setModalState, getFilterValues, run, setSelected } = props;
   const [form] = Form.useForm();
   const publicCate = Form.useWatch('public_cate', form);
   const [teamList, setTeamList] = React.useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
-    if (modalStat.visible) {
-      if (modalStat.values) {
-        form.setFieldsValue(modalStat.values);
+    if (modalState.visible) {
+      if (modalState.values) {
+        form.setFieldsValue(modalState.values);
       }
       getTeamInfoList().then((res) => {
         setTeamList(res.dat || []);
       });
     }
-  }, [modalStat.visible]);
+  }, [modalState.visible]);
 
   return (
     <Modal
-      visible={modalStat.visible}
-      title={modalStat.action ? t(modalStat.action) : ''}
+      visible={modalState.visible}
+      title={modalState.action ? t(modalState.action) : ''}
       onCancel={() => {
         setModalState({
-          ...modalStat,
+          ...modalState,
           visible: false,
         });
         form.resetFields();
       }}
       onOk={() => {
         form.validateFields().then((values) => {
-          if (modalStat.action === 'save_new') {
+          if (modalState.action === 'save_new') {
             const filterValues = getFilterValues();
             postView({
               ...values,
@@ -57,23 +57,23 @@ export default function FormModal(props: Props) {
               message.success(t('common:success.add'));
               run();
               setModalState({
-                ...modalStat,
+                ...modalState,
                 visible: false,
               });
               form.resetFields();
               setSelected(newId);
             });
-          } else if (modalStat.action === 'edit') {
+          } else if (modalState.action === 'edit') {
             const filterValues = getFilterValues();
-            if (modalStat.values) {
-              updateView(modalStat.values.id, {
+            if (modalState.values) {
+              updateView(modalState.values.id, {
                 ...values,
                 filter: JSON.stringify(filterValues),
               }).then(() => {
                 message.success(t('common:success.edit'));
                 run();
                 setModalState({
-                  ...modalStat,
+                  ...modalState,
                   visible: false,
                 });
                 form.resetFields();
