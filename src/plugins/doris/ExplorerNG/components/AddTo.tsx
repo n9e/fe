@@ -72,7 +72,8 @@ export default function AddTo() {
         {addToRecordingRuleModalState.visible && (
           <RecordingRuleForm
             form={recordingRuleForm}
-            detail={{
+            initialValues={{
+              cron_pattern: '@every 60s',
               query_configs: [
                 {
                   exp: '$A',
