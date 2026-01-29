@@ -23,6 +23,7 @@ import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { NAME_SPACE } from '../../../constants';
 import { getDsQuery } from '../../../services';
 import replaceTemplateVariables from '../../utils/replaceTemplateVariables';
+import AddTo from '../../components/AddTo';
 import ResetZoomButton from './ResetZoomButton';
 
 interface Props {
@@ -241,18 +242,9 @@ export default function TimeseriesCpt(props: Props) {
     });
   }, [dataRefresh, activeLegend, JSON.stringify(seriesData), unit]);
 
-  // useEffect(() => {
-  //   if (refreshFlag === undefined) {
-  //     setData({
-  //       frames: [],
-  //       baseSeries: [],
-  //     });
-  //   }
-  // }, [refreshFlag]);
-
   return (
     <>
-      <div className='flex-shrink-0 mb-[18px]'>
+      <div className='flex-shrink-0 mb-[18px] flex justify-between items-center'>
         <Space wrap align='start'>
           <Form.Item className='input-group-with-form-item-content-small' style={{ margin: 0 }}>
             <Radio.Group
@@ -360,6 +352,7 @@ export default function TimeseriesCpt(props: Props) {
             </Form.Item>
           </InputGroupWithFormItem>
         </Space>
+        <AddTo />
       </div>
       <>
         {!_.isEmpty(data.frames) ? (

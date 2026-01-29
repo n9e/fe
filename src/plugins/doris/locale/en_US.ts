@@ -99,6 +99,11 @@ const en_US = {
       table: 'Table',
       timeseries: 'Time Series',
     },
+    add_to: {
+      btn: 'Add to...',
+      recording_rule: 'Add to Recording Rule',
+      add_recording_rule_title: 'Add Recording Rule',
+    },
   },
   builder: {
     to_pinned_btn: 'Pin',
