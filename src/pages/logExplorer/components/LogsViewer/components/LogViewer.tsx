@@ -70,6 +70,9 @@ export default function LogView(props: Props) {
       style={{
         height: 'calc(100% - 20px)',
       }}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
     >
       {logViewerRenderCustomTagsArea && <div className='mb-2'>{logViewerRenderCustomTagsArea(log)}</div>}
       <Tabs

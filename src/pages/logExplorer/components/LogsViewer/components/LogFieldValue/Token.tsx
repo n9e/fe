@@ -71,7 +71,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
         }
       }}
       trigger={['click']}
-      overlayClassName='explorer-origin-field-val-popover log-explorer-ignore-click-away'
+      overlayClassName='explorer-origin-field-val-popover'
       content={
         <ul className='ant-dropdown-menu ant-dropdown-menu-root ant-dropdown-menu-vertical ant-dropdown-menu-light'>
           <li
