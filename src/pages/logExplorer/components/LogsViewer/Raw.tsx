@@ -316,7 +316,8 @@ function Raw(props: Props) {
 
   useClickAway(
     (event) => {
-      // 忽略点击发生在 log viewer drawer 内的情况
+      // 忽略点击发生在 ignore-click-away 内的情况
+      // 还需要结合阻止事件冒泡一起使用
       const target = (event && (event as Event).target) as HTMLElement | null;
       if (target && typeof target.closest === 'function' && target.closest('.log-explorer-ignore-click-away')) {
         return;
