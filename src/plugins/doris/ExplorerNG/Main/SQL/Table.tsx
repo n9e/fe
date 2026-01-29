@@ -346,6 +346,7 @@ export default function Table(props: IProps) {
                     ]);
                   }}
                 />
+                <AddTo />
               </div>
               <div className='flex justify-center'>
                 <Empty
@@ -386,6 +387,7 @@ export default function Table(props: IProps) {
                 ]);
               }}
             />
+            <AddTo />
           </div>
           <div className='flex justify-center'>
             <Empty
