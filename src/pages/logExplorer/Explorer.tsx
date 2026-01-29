@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -9,7 +9,7 @@ import { CommonStateContext } from '@/App';
 import { setDefaultDatasourceValue } from '@/utils';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { allCates } from '@/components/AdvancedWrap/utils';
-import ViewSelect from '@/components/ViewSelect';
+import ViewSelect, { ModalState } from '@/components/ViewSelect';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 
@@ -33,6 +33,13 @@ export default function Explorer(props: Props) {
   const { active, tabKey, defaultFormValuesControl } = props;
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
+
+  // 统一维护 ViewSelect 的状态，这样 ViewSelect 组件本身就是一个无状态组件
+  const [viewSelectValue, setViewSelectValue] = useState<number>();
+  const [viewSelectFilters, setViewSelectFilters] = useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
+  const [viewModalState, setViewModalState] = useState<ModalState>({
+    visible: false,
+  });
 
   useEffect(() => {
     if (active && defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
@@ -72,6 +79,16 @@ export default function Explorer(props: Props) {
                       datasourceValue: number;
                       [key: string]: any;
                     }>
+                      // 统一的状态
+                      value={viewSelectValue}
+                      onChange={(value) => {
+                        setViewSelectValue(value);
+                      }}
+                      filters={viewSelectFilters}
+                      setFilters={setViewSelectFilters}
+                      modalState={viewModalState}
+                      setModalState={setViewModalState}
+                      // 其他 props
                       disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
                       page={location.pathname}
                       getFilterValues={() => {

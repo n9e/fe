@@ -1,19 +1,29 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, message, Tooltip } from 'antd';
 import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
 import _ from 'lodash';
-import moment from 'moment';
 
 import { View, getViews, updateView, deleteView, postViewFavorite, deleteViewFavorite } from './services';
-import { ModalStat } from './types';
+import { ModalState } from './types';
 import FormModal from './FormModal';
 import DropdownTrigger from './DropdownTrigger';
 
 import './style.less';
 
+export type { ModalState } from './types';
+
 interface Props<FilterValues> {
+  // 统一的状态
+  value?: number;
+  onChange: (value: number | undefined) => void;
+  filters: { searchText: string; publicCate?: number };
+  setFilters: (filters: { searchText: string; publicCate?: number }) => void;
+  modalState: ModalState;
+  setModalState: (modalState: ModalState) => void;
+
+  // 其他 props
   disabled?: boolean;
   page: string;
   getFilterValues: () => FilterValues;
@@ -30,13 +40,22 @@ const VERSION = '1.0.0';
 
 export default function index<FilterValues>(props: Props<FilterValues>) {
   const { t } = useTranslation('viewSelect');
-  const { disabled, page, renderOptionExtra, onSelect, oldFilterValues, adjustOldFilterValues, placeholder } = props;
+  const {
+    value: selected,
+    onChange: setSelected,
+    filters,
+    setFilters,
+    modalState,
+    setModalState,
+    disabled,
+    page,
+    renderOptionExtra,
+    onSelect,
+    oldFilterValues,
+    adjustOldFilterValues,
+    placeholder,
+  } = props;
   const selectDropdownContainer = useRef<HTMLDivElement>(null);
-  const [selected, setSelected] = useState<number | undefined>(undefined);
-  const [filters, setFilters] = useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
-  const [modalStat, setModalState] = useState<ModalStat>({
-    visible: false,
-  });
 
   const service = () => {
     return getViews(page).then((res) => {
@@ -434,7 +453,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
           <DropdownTrigger disabled={disabled} filterValues={filterValues} oldFilterValues={oldFilterValues} adjustOldFilterValues={adjustOldFilterValues} />
         </Dropdown>
       </Input.Group>
-      <FormModal page={page} modalStat={modalStat} setModalState={setModalState} getFilterValues={getFilterValues} run={run} setSelected={setSelected} />
+      <FormModal page={page} modalState={modalState} setModalState={setModalState} getFilterValues={getFilterValues} run={run} setSelected={setSelected} />
     </Tooltip>
   );
 }

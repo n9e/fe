@@ -34,7 +34,7 @@ import { CommonStateContext } from '@/App';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
-import ViewSelect from '@/components/ViewSelect';
+import ViewSelect, { ModalState } from '@/components/ViewSelect';
 
 import { useGlobalState } from './globalState';
 import Prometheus from './Prometheus';
@@ -120,6 +120,12 @@ const Panel = (props: IProps) => {
   const explorerContainerRef = useRef<HTMLDivElement>(null);
   const [promql, setPromql] = React.useState<string>();
 
+  const [viewSelectValue, setViewSelectValue] = React.useState<number>();
+  const [viewSelectFilters, setViewSelectFilters] = React.useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
+  const [viewModalState, setViewModalState] = React.useState<ModalState>({
+    visible: false,
+  });
+
   useEffect(() => {
     setTabKey(props.tabKey);
   }, [props.tabKey]);
@@ -138,6 +144,14 @@ const Panel = (props: IProps) => {
             {type === 'metric' && (
               <Col flex='none'>
                 <ViewSelect<Query>
+                  value={viewSelectValue}
+                  onChange={(value) => {
+                    setViewSelectValue(value);
+                  }}
+                  filters={viewSelectFilters}
+                  setFilters={setViewSelectFilters}
+                  modalState={viewModalState}
+                  setModalState={setViewModalState}
                   disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus], datasourceCate)}
                   page={location.pathname}
                   getFilterValues={() => {
