@@ -102,6 +102,11 @@ const ru_RU = {
       table: 'Таблица',
       timeseries: 'Временные ряды',
     },
+    add_to: {
+      btn: 'Добавить в...',
+      recording_rule: 'Добавить в правило записи',
+      add_recording_rule_title: 'Добавить правило записи',
+    },
   },
   builder: {
     to_pinned_btn: 'Закрепить',

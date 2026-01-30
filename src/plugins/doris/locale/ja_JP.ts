@@ -99,6 +99,11 @@ const ja_JP = {
       table: '表',
       timeseries: '時系列',
     },
+    add_to: {
+      btn: '追加先...',
+      recording_rule: '記録ルールに追加',
+      add_recording_rule_title: '記録ルールを追加',
+    },
   },
   builder: {
     to_pinned_btn: 'ピン留め',

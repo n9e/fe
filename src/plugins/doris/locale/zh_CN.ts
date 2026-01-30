@@ -94,6 +94,11 @@ const zh_CN = {
       table: '表格',
       timeseries: '时序图',
     },
+    add_to: {
+      btn: '添加至...',
+      recording_rule: '添加至记录规则',
+      add_recording_rule_title: '新增记录规则',
+    },
   },
   builder: {
     to_pinned_btn: '固定',
