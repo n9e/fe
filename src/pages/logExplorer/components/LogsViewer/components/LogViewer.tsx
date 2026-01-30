@@ -58,7 +58,7 @@ export default function LogView(props: Props) {
 
   let jsonValue = '';
   try {
-    jsonValue = JSON.stringify(value[raw_key], null, 4);
+    jsonValue = JSON.stringify(value?.[raw_key], null, 4);
   } catch (e) {
     console.warn(e);
     jsonValue = '无法解析';
@@ -149,7 +149,7 @@ export default function LogView(props: Props) {
         </Tabs.TabPane>
         <Tabs.TabPane tab='JSON' key='json'>
           <div className='h-full overflow-auto'>
-            <HighLightJSON value={value[raw_key]} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
+            <HighLightJSON value={value?.[raw_key]} query={{ start, end }} urlTemplates={fieldConfig?.linkArr} extractArr={fieldConfig?.regExtractArr} />
           </div>
         </Tabs.TabPane>
       </Tabs>

@@ -196,6 +196,8 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
 
     // 监听绘图区域点击，命中最近的柱子（即使柱子高度很低）
     chart.on('plot:click', (event: any) => {
+      // 默认没有冒泡，导致外部的 useClickAway 无法触发，这里手动触发一次 click 事件
+      document.dispatchEvent(new MouseEvent('click'));
       if (!onBarClick) return;
 
       // 使用 snap 记录获取最近的柱子数据
