@@ -141,8 +141,8 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.power_sql = formValues.query?.power_sql;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
-    query.timeKey = formValues.query?.timeKey;
-    query.timeFormat = formValues.query?.timeFormat;
+    query.timeKey = formValues.query?.keys?.timeKey;
+    query.timeFormat = formValues.query?.keys?.timeFormat;
     return queryString.stringify(query);
   }
   return '';
