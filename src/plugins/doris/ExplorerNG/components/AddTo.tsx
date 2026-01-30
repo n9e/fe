@@ -23,6 +23,8 @@ export default function AddTo() {
     visible: false,
   });
 
+  return null;
+
   return (
     <>
       <Dropdown
