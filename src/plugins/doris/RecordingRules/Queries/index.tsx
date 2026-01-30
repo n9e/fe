@@ -3,11 +3,11 @@ import { Form, Row, Col, Space, Input, Tooltip, InputNumber, Select, Alert } fro
 import { InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
+import { SqlMonacoEditor } from '@fc-components/monaco-editor';
 
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import LogQL from '@/components/LogQL';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { normalizeTime } from '@/pages/alertRules/Form/utils';
 
@@ -74,8 +74,8 @@ export default function index(props: IProps) {
           }
         />
       )}
-      <Row gutter={8}>
-        <Col flex='auto'>
+      <Row gutter={8} wrap={false}>
+        <Col flex='auto' style={{ minWidth: 0 }}>
           <InputGroupWithFormItem
             label={
               <Space>
@@ -95,7 +95,7 @@ export default function index(props: IProps) {
             }
           >
             <Form.Item {...field} name={[...path, 'sql']}>
-              <LogQL datasourceCate={DatasourceCateEnum.doris} datasourceValue={datasourceValue} query={{}} historicalRecords={[]} placeholder={t('query.query_placeholder')} />
+              <SqlMonacoEditor disabled={disabled} maxHeight={200} placeholder={t('query.query_placeholder')} theme={darkMode ? 'dark' : 'light'} enableAutocomplete={true} />
             </Form.Item>
           </InputGroupWithFormItem>
         </Col>

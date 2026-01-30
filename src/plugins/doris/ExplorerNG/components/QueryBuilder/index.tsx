@@ -15,13 +15,12 @@ import { Field, FieldSampleParams } from '../../types';
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
 import { getDorisIndex, buildSql } from '../../../services';
 import getMaxLabelWidth from '../QueryBuilder/utils/getMaxLabelWidth';
-import DatabaseSelect from '../DatabaseSelect';
-import TableSelect from '../TableSelect';
-import DateFieldSelect from '../DateFieldSelect';
 
 import Filters from './Filters';
 import Aggregates from './Aggregates';
 import OrderBy from './OrderBy';
+
+import './style.less';
 
 interface Props {
   explorerForm: FormInstance;
@@ -41,9 +40,6 @@ export default function index(props: Props) {
   const { explorerForm, datasourceValue, database, table, time_field, sqlValue, visible, onExecute, onPreviewSQL } = props;
 
   const [form] = Form.useForm();
-  // const database = Form.useWatch(['database'], form);
-  // const table = Form.useWatch(['table'], form);
-  // const time_field = Form.useWatch(['time_field'], form);
   const filters = Form.useWatch(['filters'], form);
   const aggregates = Form.useWatch(['aggregates'], form);
   const group_by = Form.useWatch(['group_by'], form);
@@ -135,97 +131,6 @@ export default function index(props: Props) {
           }}
         />
         <div className='table-column' />
-        {/* <div className='table-row'>
-          <div className='table-cell align-top'>
-            <div className='h-[24px] flex items-center'>{t('builder.database_table.label')}</div>
-          </div>
-          <div className='table-cell'>
-            <Space
-              size={SIZE}
-              wrap
-              style={{
-                maxWidth: 'calc(100% - 200px)',
-              }}
-            >
-              <InputGroupWithFormItem label={t('builder.database_table.database')} size='small'>
-                <Form.Item
-                  className='mb-0'
-                  name='database'
-                  rules={[
-                    {
-                      required: true,
-                      message: t('query.database_msg'),
-                    },
-                  ]}
-                >
-                  <DatabaseSelect
-                    className='w-[160px]'
-                    dropdownClassName='doris-query-builder-popup'
-                    datasourceValue={datasourceValue}
-                    onChange={() => {
-                      form.setFieldsValue({
-                        table: undefined,
-                        time_field: undefined,
-                        filters: undefined,
-                        aggregates: undefined,
-                        group_by: undefined,
-                        order_by: undefined,
-                      });
-                    }}
-                  />
-                </Form.Item>
-              </InputGroupWithFormItem>
-              <InputGroupWithFormItem label={t('builder.database_table.table')} size='small'>
-                <Form.Item
-                  className='mb-0'
-                  name='table'
-                  rules={[
-                    {
-                      required: true,
-                      message: t('query.table_msg'),
-                    },
-                  ]}
-                >
-                  <TableSelect
-                    className='w-[160px]'
-                    dropdownClassName='doris-query-builder-popup'
-                    datasourceValue={datasourceValue}
-                    database={database}
-                    onChange={() => {
-                      form.setFieldsValue({
-                        time_field: undefined,
-                        filters: undefined,
-                        aggregates: undefined,
-                        group_by: undefined,
-                        order_by: undefined,
-                      });
-                    }}
-                  />
-                </Form.Item>
-              </InputGroupWithFormItem>
-              <InputGroupWithFormItem label={t('query.time_field')} size='small'>
-                <Form.Item
-                  className='mb-0'
-                  name='time_field'
-                  rules={[
-                    {
-                      required: true,
-                      message: t('query.time_field_msg'),
-                    },
-                  ]}
-                >
-                  <DateFieldSelect
-                    className='w-[160px]'
-                    dropdownClassName='doris-query-builder-popup'
-                    dateFields={_.filter(indexData, (item) => {
-                      return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
-                    })}
-                  />
-                </Form.Item>
-              </InputGroupWithFormItem>
-            </Space>
-          </div>
-        </div> */}
         <div className='table-row'>
           <div className='table-cell align-top'>
             <div className='h-[24px] flex items-center'>
@@ -272,7 +177,8 @@ export default function index(props: Props) {
                 <Form.Item name='group_by' noStyle>
                   <Select
                     size='small'
-                    className='min-w-[160px]'
+                    className='min-w-[160px] doris-query-builder-group-by-select'
+                    dropdownClassName='doris-query-builder-popup'
                     options={_.map(indexData, (item) => {
                       return { label: item.field, value: item.field };
                     })}
