@@ -96,7 +96,7 @@ const zh_HK = {
     },
     add_to: {
       btn: '添加至...',
-      recording_rule: '添加至 記錄規則',
+      recording_rule: '添加至記錄規則',
       add_recording_rule_title: '新增記錄規則',
     },
   },
