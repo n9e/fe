@@ -180,7 +180,7 @@ export default function FieldsItem(props: Props) {
               {_.isEmpty(topNData) && t('topn_no_data')}
               {_.map(topNData, (item) => {
                 const fieldValue = item?.value;
-                const emptyValueNotSupported = fieldValue === '' || fieldValue === null;
+                const emptyValueNotSupported = fieldValue === '' || fieldValue === null || fieldValue === 'null';
                 const percent = _.floor(item.percent, 2);
                 return (
                   <div key={fieldValue} className='flex gap-[10px] mb-2'>

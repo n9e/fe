@@ -236,6 +236,7 @@ export default forwardRef(function OriginSettings(
             <Form.Item label={t('logs.settings.jsonSettings.expandLevel')}>
               <InputNumber
                 min={1}
+                precision={0}
                 value={jsonSettings.jsonExpandLevel}
                 onChange={(val) => {
                   setJsonSettings({

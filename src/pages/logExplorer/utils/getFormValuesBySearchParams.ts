@@ -64,11 +64,11 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const submode = _.get(params, 'submode');
       const project = _.get(params, 'project');
       const logstore = _.get(params, 'logstore');
-      const power_sql = _.get(params, 'power_sql');
+      const power_sql = _.get(params, 'power_sql') === 'true' ? true : false;
       const labelKey = _.get(params, 'labelKey') ?? [];
       const valueKey = _.get(params, 'valueKey') ?? [];
-      const timeKey = _.get(params, 'timeKey');
-      const timeFormat = _.get(params, 'timeFormat');
+      const timeKey = _.get(params, 'timeKey') ?? '';
+      const timeFormat = _.get(params, 'timeFormat') ?? '';
       if (project && logstore) {
         return {
           ...formValues,
