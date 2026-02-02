@@ -33,6 +33,7 @@ export default function FilterConfigValue(props: Props) {
           ]}
         >
           <Select
+            allowClear
             dropdownClassName='doris-query-builder-popup'
             placeholder={t('builder.filters.value_placeholder')}
             options={_.map(fieldSample, (item) => {
@@ -64,6 +65,7 @@ export default function FilterConfigValue(props: Props) {
             ]}
           >
             <AutoComplete
+              allowClear
               dropdownClassName='doris-query-builder-popup'
               placeholder={t('builder.filters.value_placeholder')}
               options={_.map(fieldSample, (item) => {
@@ -74,6 +76,9 @@ export default function FilterConfigValue(props: Props) {
               })}
               showSearch
               optionFilterProp='label'
+              filterOption={(inputValue, option) => {
+                return _.includes(_.toLower(option!.label), _.toLower(inputValue));
+              }}
               dropdownMatchSelectWidth={false}
             />
           </Form.Item>
@@ -89,6 +94,7 @@ export default function FilterConfigValue(props: Props) {
             ]}
           >
             <AutoComplete
+              allowClear
               dropdownClassName='doris-query-builder-popup'
               placeholder={t('builder.filters.value_placeholder')}
               options={_.map(fieldSample, (item) => {
@@ -99,6 +105,9 @@ export default function FilterConfigValue(props: Props) {
               })}
               showSearch
               optionFilterProp='label'
+              filterOption={(inputValue, option) => {
+                return _.includes(_.toLower(option!.label), _.toLower(inputValue));
+              }}
               dropdownMatchSelectWidth={false}
             />
           </Form.Item>
@@ -119,6 +128,7 @@ export default function FilterConfigValue(props: Props) {
           ]}
         >
           <AutoComplete
+            allowClear
             dropdownClassName='doris-query-builder-popup'
             placeholder={t('builder.filters.value_placeholder')}
             options={_.map(fieldSample, (item) => {
@@ -129,6 +139,9 @@ export default function FilterConfigValue(props: Props) {
             })}
             showSearch
             optionFilterProp='label'
+            filterOption={(inputValue, option) => {
+              return _.includes(_.toLower(option!.label), _.toLower(inputValue));
+            }}
             dropdownMatchSelectWidth={false}
           />
         </Form.Item>
