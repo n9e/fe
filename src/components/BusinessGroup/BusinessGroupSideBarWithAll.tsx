@@ -50,6 +50,7 @@ export default function BusinessGroupSideBarWithAll(props: Props) {
 
   return (
     <BusinessGroup
+      selected={gids}
       renderHeadExtra={() => {
         return (
           <div>
