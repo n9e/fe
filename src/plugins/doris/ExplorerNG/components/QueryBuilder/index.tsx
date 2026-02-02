@@ -57,7 +57,7 @@ export default function index(props: Props) {
       filters,
       from: moment(parsedRange.start).unix(),
       to: moment(parsedRange.end).unix(),
-      limit: 10,
+      limit: 100,
     };
   }, [datasourceValue, database, table, time_field, JSON.stringify(filters)]);
 
