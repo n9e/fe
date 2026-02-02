@@ -27,7 +27,10 @@ interface Props {
   allOptionTooltip?: string;
 }
 
-export function getDefaultGids(localeKey: string, businessGroup: any) {
+export function getDefaultGids(localeKey: string, businessGroup: any, queryParamsIds?: string | (string | null)[] | null) {
+  if (queryParamsIds && typeof queryParamsIds === 'string') {
+    return queryParamsIds;
+  }
   return localStorage.getItem(localeKey) || businessGroup.ids || '-2';
 }
 
@@ -47,6 +50,7 @@ export default function BusinessGroupSideBarWithAll(props: Props) {
 
   return (
     <BusinessGroup
+      selected={gids}
       renderHeadExtra={() => {
         return (
           <div>

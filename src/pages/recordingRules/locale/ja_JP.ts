@@ -1,6 +1,8 @@
 const ja_JP = {
   title: '記録ルール',
   search_placeholder: '名前またはタグで検索',
+  group_id: 'ビジネスグループ',
+  group_id_required: 'ビジネスグループを選択してください',
   name: '指標名',
   name_msg: '指標名が無効です',
   name_tip: 'promqlの周期的な計算によって、新しい指標が生成されます。この新しい指標の名前をここに入力してください',

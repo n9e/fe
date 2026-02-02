@@ -293,6 +293,7 @@ export default function TimeseriesCpt(props: Props) {
               style={{ margin: 0 }}
             >
               <Select
+                allowClear
                 className='min-w-[120px] no-padding-small-multiple-select'
                 mode='tags'
                 size='small'
@@ -321,6 +322,7 @@ export default function TimeseriesCpt(props: Props) {
           >
             <Form.Item name={['query', 'keys', 'labelKey']} style={{ margin: 0 }}>
               <Select
+                allowClear
                 className='min-w-[120px] no-padding-small-multiple-select'
                 mode='tags'
                 size='small'

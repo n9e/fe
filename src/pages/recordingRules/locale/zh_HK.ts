@@ -1,6 +1,8 @@
 const zh_HK = {
   title: '記錄規則',
   search_placeholder: '搜尋名稱或標籤',
+  group_id: '業務組',
+  group_id_required: '請選擇業務組',
   name: '指標名稱',
   name_msg: '指標名稱非法',
   name_tip: 'promql 週期性計算，會生成新的指標，這裏填寫新的指標的名字',
