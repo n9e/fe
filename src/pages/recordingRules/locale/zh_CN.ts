@@ -1,6 +1,8 @@
 const zh_CN = {
   title: '记录规则',
   search_placeholder: '搜索名称或标签',
+  group_id: '业务组',
+  group_id_required: '请选择业务组',
   name: '指标名称',
   name_msg: '指标名称非法',
   name_tip: 'promql周期性计算，会生成新的指标，这里填写新的指标的名字',
