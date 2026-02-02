@@ -37,8 +37,8 @@ const en_US = {
     true: 'Disabled',
   },
   inputs: {
-    label: 'Inputs',
-    help: 'Input variables can be referenced in workflow processors via {{$inputs.variable_name}}',
+    label: 'Variables',
+    help: 'Input variables can be referenced in the processors below through {{$inputs.variable_name}}. For example, you can set the ident variable, and in the processor, reference it through {{$inputs.ident}} to specify the machine for script execution.',
     add_btn: 'Add Variable',
     key: 'Variable Name',
     key_required: 'Variable name cannot be empty',

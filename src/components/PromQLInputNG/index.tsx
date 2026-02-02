@@ -150,6 +150,11 @@ export default function index(props: MonacoEditorPromQLProps) {
             }}
             editorDidMount={(editor) => {
               editorRef.current = editor;
+              editor.onKeyDown((e) => {
+                if (e.code === 'Escape') {
+                  e.stopPropagation();
+                }
+              });
               onEditorDidMount?.(editor);
             }}
           />
