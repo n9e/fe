@@ -39,7 +39,7 @@ export default function QueryBuilderFiltersCpt(props: Props) {
       time_field: queryValues.time_field,
       from: moment(range.start).unix(),
       to: moment(range.end).unix(),
-      limit: 10,
+      limit: 100,
       query: queryValues.query,
       default_field: queryValues.defaultSearchField,
       filters: queryValues?.query_builder_filter,
