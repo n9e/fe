@@ -226,7 +226,7 @@ const en_US = {
     disabled: 'Enable',
     severity: 'Severity',
     status: 'Status',
-    status_tip: 'Whether the alarm rule currently triggers the alarm event. The default statistics are the data of the last 30 days',
+    status_tip: 'Whether the alarm rule currently triggers the alarm event. Only data from the last 30 days will be counted and displayed',
   },
   expired: 'The alert rule has been modified by others. To avoid mutual coverage, please refresh the page to view the latest configuration',
   relabel: {
