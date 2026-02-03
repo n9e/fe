@@ -593,6 +593,8 @@ const zh_HK = {
     options_max_data_points_tip: '每條曲線最多的點數，默認為面板寬度（新增時默認為 240），計算 step = (end - start) / maxDataPoints',
     options_time: '查詢時間範圍',
     options_time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
+    copy_query: '複製查詢',
+    hide_response: '隱藏響應數據',
   },
   detail: {
     datasource_empty: '沒有數據源資訊，請先配置數據源',

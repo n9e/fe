@@ -112,7 +112,19 @@ function index(props: IProps) {
                   _.set(valuesCopy, 'type', val);
                   _.set(valuesCopy, 'custom', defaultCustomValuesMap[val]);
                   _.set(valuesCopy, 'options', defaultOptionsValuesMap[val]);
-                  _.set(valuesCopy, 'targets', valuesCopy.targets || [{ refId: 'A' }]);
+                  _.set(
+                    valuesCopy,
+                    'targets',
+                    valuesCopy.targets
+                      ? _.map(valuesCopy.targets, (item) => {
+                          // 如果切换到时序图类型，但是面板的查询配置里的模式不是时序图数据，则切换到时序图模式
+                          if (val === 'timeseries' && item.query?.mode && item.query?.mode !== 'timeSeries') {
+                            return { ...item, query: { ...item.query, mode: 'timeSeries' } };
+                          }
+                          return item;
+                        })
+                      : [{ refId: 'A' }],
+                  );
                   _.set(valuesCopy, 'datasourceCate', valuesCopy.datasourceCate || 'prometheus');
                   _.set(valuesCopy, 'datasourceValue', valuesCopy.datasourceValue || groupedDatasourceList['prometheus'][0]?.id);
                   // 清空 overrides

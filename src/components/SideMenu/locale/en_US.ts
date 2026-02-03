@@ -58,6 +58,7 @@ const en_US = {
     audit_log: 'Audit log',
     alert_servers: 'Alerting engines',
     about: 'About',
+    license_management: 'License Management',
   },
 };
 export default en_US;
