@@ -3,18 +3,17 @@ import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Form, Modal, Button, Alert, Space } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import { Resizable } from 're-resizable';
 
 import { CommonStateContext } from '@/App';
-import { DatasourceCateEnum } from '@/utils/constant';
 import { copy2ClipBoard } from '@/utils';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplorer/types';
 import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
+import SideBar from '@/pages/logExplorer/components/SideBar';
 
-import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
+import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY } from '../constants';
 import { Field } from './types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
 
@@ -39,7 +38,6 @@ export default function index(props: Props) {
   const stackByField = Form.useWatch(['query', 'stackByField']);
   const defaultSearchField = Form.useWatch(['query', 'defaultSearchField']);
 
-  const [width, setWidth] = useState(_.toNumber(localStorage.getItem(SIDEBAR_CACHE_KEY) || 200));
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
@@ -151,80 +149,47 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'defaultSearchField']} hidden>
           <div />
         </Form.Item>
-        <div className='h-full flex gap-2'>
-          <Resizable
-            className='pr-2'
-            size={{ width, height: '100%' }}
-            enable={{
-              right: true,
-            }}
-            onResizeStop={(e, direction, ref, d) => {
-              let curWidth = width + d.width;
-              if (curWidth < 200) {
-                curWidth = 200;
-              }
-              setWidth(curWidth);
-              localStorage.setItem(SIDEBAR_CACHE_KEY, curWidth.toString());
-              // 触发 resize 事件，让右侧图表重新计算尺寸
-              setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-              }, 0);
-            }}
-            handleComponent={{
-              right: (
-                <div className='w-full h-full relative group'>
-                  <div
-                    className='h-full absolute left-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-200'
-                    style={{
-                      borderLeft: '2px solid var(--fc-fill-4)',
-                    }}
-                  />
-                  <div className='w-[6px] h-[60px] bg-fc-300 rounded-md absolute top-1/2 -translate-y-1/2 left-[2px] group-hover:bg-fc-400 group-hover:h-[100px] transition-all duration-200' />
-                </div>
-              ),
-            }}
-          >
-            <div className='flex-shrink-0 h-full flex flex-col'>
-              {renderCommonSettings({
-                getDefaultQueryValues: (queryValues: Record<string, any>) => {
-                  return {
-                    navMode: queryValues.navMode || 'fields',
-                    syntax: queryValues.syntax || 'query',
-                    sqlVizType: queryValues.sqlVizType || 'table',
-                  };
-                },
-                executeQuery,
-              })}
-              <SideBarNav
-                disabled={disabled}
-                datasourceValue={datasourceValue}
-                executeQuery={executeQuery}
-                organizeFields={organizeFields} // 使用到了 query 的 organizeFields
-                setOrganizeFields={(value, setLocalstorage = true) => {
-                  const queryValues = form.getFieldValue('query');
-                  // 初始化时从本地获取，query、sql 都有可能设置
-                  setOrganizeFields(value);
-                  // 字段列表选择 "显示字段" 时更新本地缓存，这里只更新 query 模式的，sql 模式是在右侧表格设置项里设置的
-                  if (setLocalstorage) {
-                    setOrganizeFieldsToLocalstorage(
-                      {
-                        datasourceValue,
-                        database: queryValues?.database,
-                        table: queryValues?.table,
-                      },
-                      value,
-                    );
-                  }
-                }}
-                onIndexDataChange={setIndexData}
-                handleValueFilter={handleValueFilter}
-                stackByField={stackByField}
-                setStackByField={handleSetStackByField}
-                defaultSearchField={defaultSearchField}
-                setDefaultSearchField={handleSetDefaultSearchField}
-              />
-            </div>
-          </Resizable>
+        <div className='h-full flex'>
+          <SideBar ns={NAME_SPACE}>
+            {renderCommonSettings({
+              getDefaultQueryValues: (queryValues: Record<string, any>) => {
+                return {
+                  navMode: queryValues.navMode || 'fields',
+                  syntax: queryValues.syntax || 'query',
+                  sqlVizType: queryValues.sqlVizType || 'table',
+                };
+              },
+              executeQuery,
+            })}
+            <SideBarNav
+              disabled={disabled}
+              datasourceValue={datasourceValue}
+              executeQuery={executeQuery}
+              organizeFields={organizeFields} // 使用到了 query 的 organizeFields
+              setOrganizeFields={(value, setLocalstorage = true) => {
+                const queryValues = form.getFieldValue('query');
+                // 初始化时从本地获取，query、sql 都有可能设置
+                setOrganizeFields(value);
+                // 字段列表选择 "显示字段" 时更新本地缓存，这里只更新 query 模式的，sql 模式是在右侧表格设置项里设置的
+                if (setLocalstorage) {
+                  setOrganizeFieldsToLocalstorage(
+                    {
+                      datasourceValue,
+                      database: queryValues?.database,
+                      table: queryValues?.table,
+                    },
+                    value,
+                  );
+                }
+              }}
+              onIndexDataChange={setIndexData}
+              handleValueFilter={handleValueFilter}
+              stackByField={stackByField}
+              setStackByField={handleSetStackByField}
+              defaultSearchField={defaultSearchField}
+              setDefaultSearchField={handleSetDefaultSearchField}
+            />
+          </SideBar>
           <div className='min-w-0 flex-1'>
             <Main
               tabKey={tabKey}
