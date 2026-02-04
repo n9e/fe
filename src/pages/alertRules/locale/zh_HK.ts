@@ -34,6 +34,9 @@ const zh_HK = {
   effective_time_tip: '00:00-00:00 和 00:00-23:59 都表示全天生效',
   enable_in_bg: '僅在本業務組生效',
   enable_in_bg_tip: '若告警事件中包含 ident 標籤，且對應的機器不屬於本業務組，則丟棄該告警事件；若告警事件中不包含 ident 標籤，則此過濾條件不生效，會繼續後續處理。',
+  time_zone: '時區',
+  local_time: '本地時間',
+
   notify_configs: '通知配置',
   notify_rule_ids: '通知規則',
   switch_to_old: '切換舊版',
@@ -160,6 +163,7 @@ const zh_HK = {
         annotations: '附加資訊',
         triggers: '告警條件',
         cron_pattern: '執行頻率',
+        time_zone: '時區',
       },
     },
     cloneToHosts: {

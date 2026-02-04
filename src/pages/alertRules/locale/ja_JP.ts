@@ -35,6 +35,9 @@ const ja_JP = {
   enable_in_bg: 'このビジネスグループでのみ有効',
   enable_in_bg_tip:
     'アラートイベントに ident タグが含まれており、対応するマシンがこのビジネスグループに属していない場合、アラートイベントは破棄されます。アラートイベントに ident タグが含まれていない場合、このフィルタ条件は有効にならず、フォローアップ処理が続行されます。',
+  time_zone: 'タイムゾーン',
+  local_time: '現地時間',
+
   notify_configs: '通知設定',
   notify_rule_ids: '通知ルール',
   switch_to_old: '切り替え旧版',
@@ -161,6 +164,7 @@ const ja_JP = {
         annotations: '追加情報',
         triggers: 'アラート条件',
         cron_pattern: '実行頻度',
+        time_zone: 'タイムゾーン',
       },
     },
     cloneToHosts: {
