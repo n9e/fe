@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Drawer } from 'antd';
+import { Drawer, Space, Segmented } from 'antd';
 import type { DrawerProps } from 'antd';
 import { useTranslation } from 'react-i18next';
+
 import './style.less';
 
 export interface NavigableDrawerProps extends DrawerProps {
@@ -16,6 +17,14 @@ export interface NavigableDrawerProps extends DrawerProps {
   inlineMode?: boolean;
 }
 
+type SizeType = 'small' | 'middle' | 'large';
+
+const sizeWidthMap = {
+  small: '35%',
+  middle: '55%',
+  large: '75%',
+};
+
 const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   hasPrev,
   hasNext,
@@ -27,9 +36,13 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   mask,
   getContainer,
   style,
+  width,
+  extra,
   ...restProps
 }) => {
   const { t } = useTranslation('navigableDrawer');
+  const [size, setSize] = React.useState<SizeType>('small');
+
   // 计算内联模式的特定属性
   const inlineProps: Partial<DrawerProps> = inlineMode
     ? {
@@ -39,6 +52,32 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
           position: 'absolute', // 3. 绝对定位，使其只占满父容器的高度
           ...style,
         },
+        width: width ?? sizeWidthMap[size],
+        extra: (
+          <Space>
+            {extra && <span>{extra}</span>}
+            <Segmented
+              options={[
+                {
+                  label: t('size.small'),
+                  value: 'small',
+                },
+                {
+                  label: t('size.middle'),
+                  value: 'middle',
+                },
+                {
+                  label: t('size.large'),
+                  value: 'large',
+                },
+              ]}
+              value={size}
+              onChange={(value) => {
+                setSize(value as SizeType);
+              }}
+            />
+          </Space>
+        ),
         // 去掉默认的关闭按钮，因为我们可能想自己控制，或者保留 Antd 的
         // 这里保留默认，但在 extra 里加了导航
       }

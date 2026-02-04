@@ -80,7 +80,7 @@ const en_US = {
       },
       breakLine: 'Line Break',
       reverse: 'Time',
-      lines: 'Line Number',
+      lines: 'Lines',
       time: 'Log Time',
       organizeFields: {
         title: 'Field Column Settings',

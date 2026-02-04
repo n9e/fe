@@ -196,7 +196,6 @@ function Table(props: Props) {
         title={navigableDrawerTitle}
         extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'
-        width='55%'
         onClose={() => {
           setLogViewerDrawerState({ visible: false, currentIndex: -1 });
         }}
