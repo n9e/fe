@@ -201,11 +201,11 @@ export default function MoreOperations(props: MoreOperationsProps) {
         isModalVisible={isModalVisible}
         editModalFinish={async (isOk, fieldsData) => {
           if (isOk && bgid) {
-            if (isPlus && fieldsData?.service_cal_ids) {
+            if (isPlus && fieldsData?.service_cal_configs) {
               const res = await updateServiceCal(
                 {
                   ids: selectRowKeys,
-                  service_cal_ids: fieldsData?.service_cal_ids || [],
+                  service_cal_configs: fieldsData?.service_cal_configs || [],
                 },
                 bgid,
               );
