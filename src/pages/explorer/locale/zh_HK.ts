@@ -58,6 +58,8 @@ const zh_HK = {
       del_btn_tips: '確認刪除嗎?',
       del_btn: '刪除',
       emptyText: '暫無導出記錄，請點擊查詢日誌，然後點擊下載',
+      size: '文件大小',
+      reload_btn_tip: '刷新',
     },
     field_actions: {
       and: '添加到本次檢索',

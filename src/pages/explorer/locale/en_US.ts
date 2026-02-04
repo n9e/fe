@@ -58,6 +58,8 @@ const en_US = {
       del_btn_tips: 'Are you sure you want to delete?',
       del_btn: 'Delete',
       emptyText: 'No export records yet, please click to query logs and then click download',
+      size: 'File size',
+      reload_btn_tip: 'Refresh',
     },
     field_actions: {
       and: 'Filter for value',
