@@ -3,24 +3,17 @@ import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Form, Modal, Button, Alert, Space } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
-import { Resizable } from 're-resizable';
-import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
-import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
-import { setDefaultDatasourceValue, copy2ClipBoard } from '@/utils';
-import ViewSelect from '@/components/ViewSelect';
-import { allCates } from '@/components/AdvancedWrap/utils';
-import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
+import { copy2ClipBoard } from '@/utils';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
 import DocumentDrawer from '@/components/DocumentDrawer';
-import { ENABLED_VIEW_CATES, NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
-import { DefaultFormValuesControl } from '@/pages/logExplorer/types';
-import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
+import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplorer/types';
 import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
+import SideBar from '@/pages/logExplorer/components/SideBar';
 
-import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, SIDEBAR_CACHE_KEY } from '../constants';
+import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY } from '../constants';
 import { Field } from './types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
 
@@ -33,18 +26,18 @@ interface Props {
   tabKey: string;
   disabled?: boolean;
   defaultFormValuesControl?: DefaultFormValuesControl;
+  renderCommonSettings: RenderCommonSettings;
 }
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { datasourceList, datasourceCateOptions, groupedDatasourceList, darkMode, logsDefaultRange } = useContext(CommonStateContext);
-  const { tabKey, disabled, defaultFormValuesControl } = props;
+  const { darkMode } = useContext(CommonStateContext);
+  const { tabKey, disabled, defaultFormValuesControl, renderCommonSettings } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const stackByField = Form.useWatch(['query', 'stackByField']);
   const defaultSearchField = Form.useWatch(['query', 'defaultSearchField']);
 
-  const [width, setWidth] = useState(_.toNumber(localStorage.getItem(SIDEBAR_CACHE_KEY) || 200));
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
@@ -66,7 +59,7 @@ export default function index(props: Props) {
         // 设置 tabs 缓存值
         if (defaultFormValuesControl?.setDefaultFormValues) {
           defaultFormValuesControl.setDefaultFormValues({
-            datasourceCate: DatasourceCateEnum.doris,
+            datasourceCate: values.datasourceCate,
             datasourceValue: values.datasourceValue,
             query: values.query,
           });
@@ -156,196 +149,47 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'defaultSearchField']} hidden>
           <div />
         </Form.Item>
-        <div className='h-full flex gap-2'>
-          <Resizable
-            className='pr-2'
-            size={{ width, height: '100%' }}
-            enable={{
-              right: true,
-            }}
-            onResizeStop={(e, direction, ref, d) => {
-              let curWidth = width + d.width;
-              if (curWidth < 200) {
-                curWidth = 200;
-              }
-              setWidth(curWidth);
-              localStorage.setItem(SIDEBAR_CACHE_KEY, curWidth.toString());
-              // 触发 resize 事件，让右侧图表重新计算尺寸
-              setTimeout(() => {
-                window.dispatchEvent(new Event('resize'));
-              }, 0);
-            }}
-            handleComponent={{
-              right: (
-                <div className='w-full h-full relative group'>
-                  <div
-                    className='h-full absolute left-[4px] opacity-0 group-hover:opacity-100 transition-opacity duration-200'
-                    style={{
-                      borderLeft: '2px solid var(--fc-fill-4)',
-                    }}
-                  />
-                  <div className='w-[6px] h-[60px] bg-fc-300 rounded-md absolute top-1/2 -translate-y-1/2 left-[2px] group-hover:bg-fc-400 group-hover:h-[100px] transition-all duration-200' />
-                </div>
-              ),
-            }}
-          >
-            <div className='flex-shrink-0 h-full flex flex-col'>
-              <div className='flex-shrink-0'>
-                <Form.Item>
-                  <ViewSelect<{
-                    datasourceCate: string;
-                    datasourceValue: number;
-                    [key: string]: any;
-                  }>
-                    disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
-                    page={location.pathname}
-                    getFilterValues={() => {
-                      const formValues = form.getFieldsValue();
-                      let range = formValues.query?.range;
-                      if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
-                        range = {
-                          start: range.start.unix(),
-                          end: range.end.unix(),
-                        };
-                      }
-                      const filterValues = {
-                        datasourceCate: formValues.datasourceCate,
-                        datasourceValue: formValues.datasourceValue,
-                        query: {
-                          ...formValues.query,
-                          range,
-                        },
-                      };
-                      return filterValues;
-                    }}
-                    renderOptionExtra={(filterValues) => {
-                      const { datasourceCate, datasourceValue } = filterValues;
-                      return (
-                        <div className='flex items-center gap-2'>
-                          <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
-                          <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
-                        </div>
-                      );
-                    }}
-                    onSelect={(filterValues) => {
-                      filterValues.datasourceCate = filterValues.datasourceCate || DatasourceCateEnum.doris;
-                      filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[DatasourceCateEnum.doris]?.[0]?.id;
-                      // 完全重置表单后再设置新值，避免旧值残留
-                      form.setFieldsValue({
-                        refreshFlag: undefined,
-                        query: undefined,
-                      });
-                      let range = filterValues.query?.range;
-                      if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
-                        range = {
-                          start: moment.unix(range.start),
-                          end: moment.unix(range.end),
-                        };
-                      }
-                      form.setFieldsValue({
-                        ...filterValues,
-                        query: {
-                          ...filterValues.query,
-                          range: range ?? logsDefaultRange,
-                          navMode: filterValues.query?.navMode || 'fields',
-                          syntax: filterValues.query?.syntax || 'query',
-                        },
-                      });
-                      executeQuery();
-                    }}
-                    adjustOldFilterValues={(values) => {
-                      if (values) {
-                        // 去掉 query 中值为 undefined 的字段
-                        const cleanedQuery = omitUndefinedDeep(values.query) || {};
-                        if (moment.isMoment(cleanedQuery.range?.start) && moment.isMoment(cleanedQuery.range?.end)) {
-                          cleanedQuery.range = {
-                            start: cleanedQuery.range.start.unix(),
-                            end: cleanedQuery.range.end.unix(),
-                          };
-                        }
-                        return {
-                          datasourceCate: values.datasourceCate,
-                          datasourceValue: values.datasourceValue,
-                          query: cleanedQuery,
-                        };
-                      }
-                      return {};
-                    }}
-                    placeholder={t(`${logExplorerNS}:view_placeholder`)}
-                  />
-                </Form.Item>
-                <Form.Item
-                  name='datasourceValue'
-                  rules={[
+        <div className='h-full flex'>
+          <SideBar ns={NAME_SPACE}>
+            {renderCommonSettings({
+              getDefaultQueryValues: (queryValues: Record<string, any>) => {
+                return {
+                  navMode: queryValues.navMode || 'fields',
+                  syntax: queryValues.syntax || 'query',
+                  sqlVizType: queryValues.sqlVizType || 'table',
+                };
+              },
+              executeQuery,
+            })}
+            <SideBarNav
+              disabled={disabled}
+              datasourceValue={datasourceValue}
+              executeQuery={executeQuery}
+              organizeFields={organizeFields} // 使用到了 query 的 organizeFields
+              setOrganizeFields={(value, setLocalstorage = true) => {
+                const queryValues = form.getFieldValue('query');
+                // 初始化时从本地获取，query、sql 都有可能设置
+                setOrganizeFields(value);
+                // 字段列表选择 "显示字段" 时更新本地缓存，这里只更新 query 模式的，sql 模式是在右侧表格设置项里设置的
+                if (setLocalstorage) {
+                  setOrganizeFieldsToLocalstorage(
                     {
-                      required: true,
-                      message: t('common:datasource.id_required'),
+                      datasourceValue,
+                      database: queryValues?.database,
+                      table: queryValues?.table,
                     },
-                  ]}
-                >
-                  <DatasourceSelectV3
-                    className='w-full'
-                    datasourceCateList={datasourceCateOptions}
-                    ajustDatasourceList={(list) => {
-                      return _.filter(list, (item) => {
-                        const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                        if (cateData && _.includes(cateData.type, 'logging') && item.plugin_type === DatasourceCateEnum.doris) {
-                          return cateData.graphPro ? IS_PLUS : true;
-                        }
-                        return false;
-                      });
-                    }}
-                    onChange={(datasourceValue, datasourceCate) => {
-                      setDefaultDatasourceValue(datasourceCate, datasourceValue);
-                      const queryValues = form.getFieldValue('query');
-                      form.setFieldsValue({
-                        datasourceCate,
-                        datasourceValue,
-                        query: undefined,
-                      });
-                      form.setFieldsValue({
-                        refreshFlag: undefined,
-                        query: {
-                          navMode: queryValues.navMode || 'fields',
-                          syntax: queryValues.syntax,
-                          sqlVizType: queryValues.sqlVizType,
-                          range: queryValues.range,
-                        },
-                      });
-                    }}
-                  />
-                </Form.Item>
-              </div>
-              <SideBarNav
-                disabled={disabled}
-                datasourceValue={datasourceValue}
-                executeQuery={executeQuery}
-                organizeFields={organizeFields} // 使用到了 query 的 organizeFields
-                setOrganizeFields={(value, setLocalstorage = true) => {
-                  const queryValues = form.getFieldValue('query');
-                  // 初始化时从本地获取，query、sql 都有可能设置
-                  setOrganizeFields(value);
-                  // 字段列表选择 "显示字段" 时更新本地缓存，这里只更新 query 模式的，sql 模式是在右侧表格设置项里设置的
-                  if (setLocalstorage) {
-                    setOrganizeFieldsToLocalstorage(
-                      {
-                        datasourceValue,
-                        database: queryValues?.database,
-                        table: queryValues?.table,
-                      },
-                      value,
-                    );
-                  }
-                }}
-                onIndexDataChange={setIndexData}
-                handleValueFilter={handleValueFilter}
-                stackByField={stackByField}
-                setStackByField={handleSetStackByField}
-                defaultSearchField={defaultSearchField}
-                setDefaultSearchField={handleSetDefaultSearchField}
-              />
-            </div>
-          </Resizable>
+                    value,
+                  );
+                }
+              }}
+              onIndexDataChange={setIndexData}
+              handleValueFilter={handleValueFilter}
+              stackByField={stackByField}
+              setStackByField={handleSetStackByField}
+              defaultSearchField={defaultSearchField}
+              setDefaultSearchField={handleSetDefaultSearchField}
+            />
+          </SideBar>
           <div className='min-w-0 flex-1'>
             <Main
               tabKey={tabKey}

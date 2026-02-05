@@ -73,6 +73,10 @@ export default function Header(props: Props) {
           setActiveKey(key);
           setLocalActiveKey(key);
         }}
+        onTabClick={() => {
+          // antd tabs 默认阻止了冒泡，导致外部的 useClickAway 无法触发，这里手动触发一次 click 事件
+          document.dispatchEvent(new MouseEvent('click'));
+        }}
       >
         {_.map(items, (item, idx) => {
           return (

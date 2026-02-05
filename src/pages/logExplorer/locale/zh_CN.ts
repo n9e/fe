@@ -25,7 +25,7 @@ const zh_CN = {
     median: '中位数',
     p95: '百分位数(P95)',
   },
-  field_popover_info_alert: '点击数值可查看统计图表和SQL',
+  field_popover_info_alert: '点击数值可查看统计图表和 SQL',
   field_search_placeholder: '搜索字段',
   field_list: {
     show_fields: '显示字段',
@@ -51,9 +51,27 @@ const zh_CN = {
     view_statistic: '查看统计值',
     view_timeseries: '查看时序图',
   },
+  field_type: '类型',
+  field_type_map: {
+    float: '浮点数',
+    float64: '64位浮点数',
+    scaled_float: '缩放浮点数',
+    double: '双精度浮点数',
+    integer: '整数',
+    int64: '64位整数',
+    long: '长整数',
+    date: '日期',
+    date_nanos: '纳秒日期',
+    string: '字符串',
+    text: '字符串',
+    nested: '嵌套对象',
+    histogram: '直方图型',
+    boolean: '布尔值',
+  },
   logs: {
     title: '日志数据',
-    count: '结果数',
+    duration: '耗时',
+    count: '条数',
     filter_fields: '筛选字段',
     settings: {
       mode: {
@@ -90,6 +108,8 @@ const zh_CN = {
     filterAllNot: '从本次检索中排除全部',
     total: '日志条数',
     stack_group_by_tip: '以此字段值展示堆叠趋势图',
+    collapse: '收起',
+    expand: '展开',
   },
   view_placeholder: '日志视图',
 };

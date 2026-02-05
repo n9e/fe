@@ -22,13 +22,14 @@ export default forwardRef(function OriginSettings(
     fields: string[];
     showDateField?: boolean;
     showPageLoadMode?: boolean;
+    showJSONSettings?: boolean;
     organizeFields?: string[];
     setOrganizeFields?: (value?: string[]) => void;
   },
   ref,
 ) {
   const { t } = useTranslation(NAME_SPACE);
-  const { options, updateOptions, fields, showDateField, showPageLoadMode } = props;
+  const { options, updateOptions, fields, showDateField, showJSONSettings, showPageLoadMode } = props;
 
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
   const [organizeFields, setOrganizeFields] = useState<string[] | undefined>(props.organizeFields);
@@ -125,19 +126,23 @@ export default forwardRef(function OriginSettings(
                       </a>
                     ),
                   },
-                  // {
-                  //   key: 'jsonSettingsBtn',
-                  //   label: (
-                  //     <a
-                  //       onClick={() => {
-                  //         setJsonSettingsModalVisible(true);
-                  //       }}
-                  //     >
-                  //       {t('logs.settings.jsonSettings.title')}
-                  //     </a>
-                  //   ),
-                  // },
                 ],
+                showJSONSettings
+                  ? [
+                      {
+                        key: 'jsonSettingsBtn',
+                        label: (
+                          <a
+                            onClick={() => {
+                              setJsonSettingsModalVisible(true);
+                            }}
+                          >
+                            {t('logs.settings.jsonSettings.title')}
+                          </a>
+                        ),
+                      },
+                    ]
+                  : [],
                 showPageLoadMode
                   ? [
                       {
@@ -231,6 +236,7 @@ export default forwardRef(function OriginSettings(
             <Form.Item label={t('logs.settings.jsonSettings.expandLevel')}>
               <InputNumber
                 min={1}
+                precision={0}
                 value={jsonSettings.jsonExpandLevel}
                 onChange={(val) => {
                   setJsonSettings({

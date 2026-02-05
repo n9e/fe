@@ -59,6 +59,37 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         },
       };
     }
+    if (data_source_name === DatasourceCateEnum.aliyunSLS) {
+      const mode = _.get(params, 'mode');
+      const submode = _.get(params, 'submode');
+      const project = _.get(params, 'project');
+      const logstore = _.get(params, 'logstore');
+      const power_sql = _.get(params, 'power_sql') === 'true' ? true : false;
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
+      const timeKey = _.get(params, 'timeKey') ?? '';
+      const timeFormat = _.get(params, 'timeFormat') ?? '';
+      if (project && logstore) {
+        return {
+          ...formValues,
+          query: {
+            range,
+            mode,
+            submode,
+            project,
+            logstore,
+            query,
+            power_sql,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              timeKey,
+              timeFormat,
+            },
+          },
+        };
+      }
+    }
   }
   return undefined;
 }
@@ -99,6 +130,19 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.sql = formValues.query?.sql;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.aliyunSLS) {
+    query.mode = formValues.query?.mode;
+    query.submode = formValues.query?.submode;
+    query.project = formValues.query?.project;
+    query.logstore = formValues.query?.logstore;
+    query.query = formValues.query?.query;
+    query.power_sql = formValues.query?.power_sql;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
+    query.timeKey = formValues.query?.keys?.timeKey;
+    query.timeFormat = formValues.query?.keys?.timeFormat;
     return queryString.stringify(query);
   }
   return '';

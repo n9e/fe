@@ -51,9 +51,27 @@ const en_US = {
     view_statistic: 'View Table',
     view_timeseries: 'View Time Series',
   },
+  field_type: 'Type',
+  field_type_map: {
+    float: 'Float',
+    float64: '64-bit Float',
+    scaled_float: 'Scaled Float',
+    double: 'Double Precision Float',
+    integer: 'Integer',
+    int64: '64-bit Integer',
+    long: 'Long Integer',
+    date: 'Date',
+    date_nanos: 'Nanosecond Date',
+    string: 'String',
+    text: 'String',
+    nested: 'Nested Object',
+    histogram: 'Histogram',
+    boolean: 'Boolean',
+  },
   logs: {
     title: 'Log Data',
-    count: 'Result Count',
+    duration: 'Duration',
+    count: 'Count',
     filter_fields: 'Filter Fields',
     settings: {
       mode: {
@@ -62,7 +80,7 @@ const en_US = {
       },
       breakLine: 'Line Break',
       reverse: 'Time',
-      lines: 'Line Number',
+      lines: 'Lines',
       time: 'Log Time',
       organizeFields: {
         title: 'Field Column Settings',
@@ -90,6 +108,8 @@ const en_US = {
     filterAllNot: 'Exclude all from current query',
     total: 'Log Count',
     stack_group_by_tip: 'Display stacked trend chart by this field value',
+    collapse: 'Collapse',
+    expand: 'Expand',
   },
   view_placeholder: 'Log View',
 };

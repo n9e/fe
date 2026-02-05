@@ -305,6 +305,9 @@ export default function Table(props: IProps) {
               })}`}
               showPageLoadMode
               showLogMode={false}
+              linesColumnFormat={(val) => {
+                return serviceParams.pageSize * (serviceParams.current - 1) + val;
+              }}
             />
           ) : loading ? (
             <div className='flex justify-center'>
@@ -318,16 +321,43 @@ export default function Table(props: IProps) {
               />
             </div>
           ) : (
-            <div className='flex justify-center'>
-              <Empty
-                className='ant-empty-normal'
-                image='/image/img_empty.svg'
-                description={t(`${logExplorerNS}:no_data`)}
-                imageStyle={{
-                  height: 80,
-                }}
-              />
-            </div>
+            <>
+              <div className='flex justify-between pb-2'>
+                <Radio.Group
+                  options={[
+                    {
+                      label: t('query.sqlVizType.table'),
+                      value: 'table',
+                    },
+                    {
+                      label: t('query.sqlVizType.timeseries'),
+                      value: 'timeseries',
+                    },
+                  ]}
+                  optionType='button'
+                  size='small'
+                  value={sqlVizType}
+                  onChange={(e) => {
+                    form.setFields([
+                      {
+                        name: ['query', 'sqlVizType'],
+                        value: e.target.value,
+                      },
+                    ]);
+                  }}
+                />
+              </div>
+              <div className='flex justify-center'>
+                <Empty
+                  className='ant-empty-normal'
+                  image='/image/img_empty.svg'
+                  description={t(`${logExplorerNS}:no_data`)}
+                  imageStyle={{
+                    height: 80,
+                  }}
+                />
+              </div>
+            </>
           )}{' '}
         </>
       ) : (

@@ -18,11 +18,10 @@ import { OnValueFilterParams } from '../../types';
 
 interface Props {
   segmented: boolean;
-  indexName?: string; // 用于 SLS 添加检索条件时的 key
   parentKey?: string; // 嵌套json渲染时可以传入，目前仅用在下钻的字段名判断中。目前仅在 sls 中使用
   name: string;
-  value: string;
-  fieldValue: string;
+  value: string; // 单个 token 的值
+  fieldValue: string; // 完整字段值
   onTokenClick?: (parmas: OnValueFilterParams) => void;
   rawValue?: { [key: string]: any };
   enableTooltip?: boolean;
@@ -38,9 +37,9 @@ export default function Token(props: Props) {
 
 function TokenWithContext(props: Props & { indexData: Field[] }) {
   const { t } = useTranslation(NAME_SPACE);
-  const { fieldConfig, range, getAddToQueryInfo } = useContext(LogsViewerStateContext);
+  const { raw_key, fieldConfig, range, getAddToQueryInfo } = useContext(LogsViewerStateContext);
 
-  const { segmented, indexName, parentKey, name, value, fieldValue, onTokenClick, rawValue, enableTooltip, fieldValueClassName, indexData } = props;
+  const { segmented, parentKey, name, value, fieldValue, onTokenClick, rawValue, enableTooltip, fieldValueClassName, indexData } = props;
 
   const [popoverVisible, setPopoverVisible] = useState(false);
   const relatedLinks = fieldConfig?.linkArr?.filter((item) => (parentKey ? item.field === parentKey : item.field === name));
@@ -51,8 +50,13 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   const indexInfo = getAddToQueryInfo
     ? useMemo(() => {
-        return getAddToQueryInfo(name, rawValue || {}, indexData);
-      }, [name, JSON.stringify(rawValue?.___raw___), JSON.stringify(indexData)])
+        return getAddToQueryInfo({
+          parentKey,
+          fieldName: name,
+          logRowData: rawValue || {},
+          indexData,
+        });
+      }, [name, JSON.stringify(rawValue?.[raw_key]), JSON.stringify(indexData)])
     : {
         isIndex: true,
         indexName: name,
@@ -91,7 +95,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                     onClick={() => {
                       setPopoverVisible(false);
                       onTokenClick?.({
-                        key: indexName ?? name,
+                        key: name,
                         value,
                         assignmentOperator: ':',
                         operator: 'AND',
@@ -111,7 +115,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                     onClick={() => {
                       setPopoverVisible(false);
                       onTokenClick?.({
-                        key: indexName ?? name,
+                        key: name,
                         value,
                         assignmentOperator: ':',
                         operator: 'NOT',
@@ -133,7 +137,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                 onClick={() => {
                   setPopoverVisible(false);
                   onTokenClick?.({
-                    key: indexName ?? name,
+                    key: name,
                     value: fieldValue,
                     assignmentOperator: '=',
                     operator: 'AND',
@@ -151,7 +155,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                 onClick={() => {
                   setPopoverVisible(false);
                   onTokenClick?.({
-                    key: indexName ?? name,
+                    key: name,
                     value: fieldValue,
                     assignmentOperator: '=',
                     operator: 'NOT',
@@ -202,7 +206,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       }
     >
       <Tooltip
-        title={enableTooltip ? <pre className='whitespace-pre-wrap overflow-hidden mb-0 ant-tooltip-max-height-400 overflow-y-auto'>{value}</pre> : undefined}
+        title={enableTooltip ? <pre className='whitespace-pre-wrap overflow-hidden mb-0 ant-tooltip-max-height-400 overflow-y-auto'>{toString(value)}</pre> : undefined}
         placement='topLeft'
         overlayClassName='ant-tooltip-max-width-600'
       >

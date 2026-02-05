@@ -62,8 +62,16 @@ interface Props {
   colWidths?: { [key: string]: number };
   tableColumnsWidthCacheKey?: string;
   showPageLoadMode?: boolean;
+  showJSONSettings?: boolean;
   showLogMode?: boolean;
   addonBefore?: React.ReactNode;
+  timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
+  linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  id_key?: string;
+  raw_key?: string;
+  logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
+  logViewerFilterFields?: (log: Record<string, any>) => string[];
+  logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -71,17 +79,15 @@ interface Props {
   /** 日志索引数据 */
   indexData?: Field[];
   range?: IRawTimeRange;
-  getAddToQueryInfo?: (
-    fieldName: string,
-    logRowData: { [index: string]: any },
-    indexData: Field[],
-  ) => {
+  getAddToQueryInfo?: (params: { parentKey?: string; fieldName: string; logRowData: { [index: string]: any }; indexData: Field[] }) => {
     isIndex: boolean;
     indexName: string;
   };
 }
 
 interface LogsViewerState {
+  id_key: string;
+  raw_key: string;
   /** 字段下钻、格式化相关配置 */
   fieldConfig?: Props['fieldConfig'];
   indexData?: Props['indexData'];
@@ -118,8 +124,16 @@ export default function LogsViewer(props: Props) {
     colWidths,
     tableColumnsWidthCacheKey,
     showPageLoadMode,
+    showJSONSettings,
     showLogMode = true,
     addonBefore,
+    timeFieldColumnFormat,
+    linesColumnFormat,
+    id_key = '___id___',
+    raw_key = '___raw___',
+    logViewerExtraRender,
+    logViewerFilterFields,
+    logViewerRenderCustomTagsArea,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -139,6 +153,8 @@ export default function LogsViewer(props: Props) {
   return (
     <LogsViewerStateContext.Provider
       value={{
+        id_key,
+        raw_key,
         fieldConfig: props.fieldConfig,
         indexData: props.indexData,
         range: props.range,
@@ -233,6 +249,7 @@ export default function LogsViewer(props: Props) {
                 updateOptions={updateOptions}
                 fields={fields}
                 showPageLoadMode={showPageLoadMode}
+                showJSONSettings={showJSONSettings}
                 organizeFields={organizeFields}
                 setOrganizeFields={setOrganizeFields}
               />
@@ -245,6 +262,8 @@ export default function LogsViewer(props: Props) {
             <div className='n9e-antd-table-height-full'>
               {options.logMode === 'origin' && (
                 <Raw
+                  id_key={id_key}
+                  raw_key={raw_key}
                   timeField={timeField}
                   data={logs}
                   options={options}
@@ -257,10 +276,17 @@ export default function LogsViewer(props: Props) {
                   onValueFilter={onAddToQuery}
                   rowPrefixRender={rowPrefixRender}
                   filterFields={filterFields}
+                  timeFieldColumnFormat={timeFieldColumnFormat}
+                  linesColumnFormat={linesColumnFormat}
+                  logViewerExtraRender={logViewerExtraRender}
+                  logViewerFilterFields={logViewerFilterFields}
+                  logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
                 />
               )}
               {options.logMode === 'table' && (
                 <Table
+                  id_key={id_key}
+                  raw_key={raw_key}
                   indexData={props.indexData}
                   timeField={timeField}
                   data={logs}
@@ -279,6 +305,11 @@ export default function LogsViewer(props: Props) {
                   onOpenOrganizeFieldsModal={() => {
                     originSettingsRef.current?.setOrganizeFieldsModalVisible(true);
                   }}
+                  timeFieldColumnFormat={timeFieldColumnFormat}
+                  linesColumnFormat={linesColumnFormat}
+                  logViewerExtraRender={logViewerExtraRender}
+                  logViewerFilterFields={logViewerFilterFields}
+                  logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
                 />
               )}
             </div>

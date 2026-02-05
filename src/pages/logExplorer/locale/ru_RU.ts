@@ -51,9 +51,27 @@ const ru_RU = {
     view_statistic: 'Просмотреть таблицу',
     view_timeseries: 'Просмотреть временной ряд',
   },
+  field_type: 'Тип поля',
+  field_type_map: {
+    float: 'Флoт',
+    float64: '64-битный флoт',
+    scaled_float: 'Масштабированный флoт',
+    double: 'Двойной точности флoт',
+    integer: 'Целое число',
+    int64: '64-битное целое число',
+    long: 'Длинное целое число',
+    date: 'Дата',
+    date_nanos: 'Дата с наносекундами',
+    string: 'Строка',
+    text: 'Строка',
+    nested: 'Вложенный объект',
+    histogram: 'Гистограмма',
+    boolean: 'Булево значение',
+  },
   logs: {
     title: 'Данные логов',
-    count: 'Количество результатов',
+    duration: 'Время выполнения',
+    count: 'Количество',
     filter_fields: 'Фильтр полей',
     settings: {
       mode: {
@@ -90,6 +108,8 @@ const ru_RU = {
     filterAllNot: 'Исключить все из текущего запроса',
     total: 'Количество логов',
     stack_group_by_tip: 'Отобразить график тренда со стеком по значению этого поля',
+    collapse: 'Свернуть',
+    expand: 'Развернуть',
   },
   view_placeholder: 'Просмотр логов',
 };

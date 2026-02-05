@@ -477,6 +477,9 @@ export default function index(props: Props) {
                   }
                 }
               }}
+              linesColumnFormat={(val) => {
+                return serviceParams.pageSize * (serviceParams.current - 1) + val;
+              }}
               // state context
               fieldConfig={currentFieldConfig}
               indexData={indexData}

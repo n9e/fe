@@ -11,6 +11,7 @@ import { OptionsType, OnValueFilterParams } from '../types';
 import toString from './toString';
 
 export default function getColumnsFromFields(params: {
+  id_key: string;
   colWidths?: { [key: string]: number };
   indexData?: Field[];
   fields: string[];
@@ -20,9 +21,12 @@ export default function getColumnsFromFields(params: {
   data?: any[];
   tableColumnsWidthCacheKey?: string;
   onOpenOrganizeFieldsModal?: () => void;
-  setLogViewerDrawerState?: React.Dispatch<React.SetStateAction<{ visible: boolean; value: any }>>;
+  setLogViewerDrawerState?: React.Dispatch<React.SetStateAction<{ visible: boolean; currentIndex: number }>>;
+  timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
+  linesColumnFormat?: (linesValue: number) => React.ReactNode;
 }) {
   const {
+    id_key,
     colWidths,
     indexData,
     fields,
@@ -33,6 +37,8 @@ export default function getColumnsFromFields(params: {
     tableColumnsWidthCacheKey,
     onOpenOrganizeFieldsModal,
     setLogViewerDrawerState,
+    timeFieldColumnFormat,
+    linesColumnFormat,
   } = params;
 
   let tableColumnsWidthCacheValue: { [index: string]: number | undefined } = {};
@@ -103,15 +109,16 @@ export default function getColumnsFromFields(params: {
       sortable: true,
       resizable: false,
       formatter: ({ row }) => {
+        const idx = _.findIndex(data, { [id_key]: row[id_key] });
         return (
           <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
             <div
               className='cursor-pointer'
               onClick={() => {
-                setLogViewerDrawerState?.({ visible: true, value: _.omit(row, ['__expanded', '__id', '__type']) });
+                setLogViewerDrawerState?.({ visible: true, currentIndex: idx });
               }}
             >
-              {moment(row[time_field]).format('MM-DD HH:mm:ss.SSS')}
+              {timeFieldColumnFormat ? timeFieldColumnFormat(row[time_field]) : moment(row[time_field]).format('MM-DD HH:mm:ss.SSS')}
             </div>
           </Tooltip>
         );
@@ -125,16 +132,16 @@ export default function getColumnsFromFields(params: {
       width: 40,
       resizable: false,
       formatter: ({ row }) => {
-        const idx = _.findIndex(data, { ___id___: row.___id___ });
+        const idx = _.findIndex(data, { [id_key]: row[id_key] });
         return (
           <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
             <div
               className='cursor-pointer'
               onClick={() => {
-                setLogViewerDrawerState?.({ visible: true, value: _.omit(row, ['__expanded', '__id', '__type']) });
+                setLogViewerDrawerState?.({ visible: true, currentIndex: idx });
               }}
             >
-              {idx + 1}
+              {linesColumnFormat ? linesColumnFormat(idx + 1) : idx + 1}
             </div>
           </Tooltip>
         );

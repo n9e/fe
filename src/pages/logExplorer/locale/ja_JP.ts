@@ -51,9 +51,27 @@ const ja_JP = {
     view_statistic: '統計値を表示',
     view_timeseries: '時系列を表示',
   },
+  field_type: 'フィールドタイプ',
+  field_type_map: {
+    float: '浮動小数点数',
+    float64: '64ビット浮動小数点数',
+    scaled_float: 'スケール付き浮動小数点数',
+    double: '倍精度浮動小数点数',
+    integer: '整数',
+    int64: '64ビット整数',
+    long: '長整数',
+    date: '日付',
+    date_nanos: 'ナノ秒日付',
+    string: '文字列',
+    text: '文字列',
+    nested: 'ネストされたオブジェクト',
+    histogram: 'ヒストグラム',
+    boolean: 'ブール値',
+  },
   logs: {
     title: 'ログデータ',
-    count: '結果数',
+    duration: '所要時間',
+    count: '件数',
     filter_fields: 'フィールドをフィルタ',
     settings: {
       mode: {
@@ -90,6 +108,8 @@ const ja_JP = {
     filterAllNot: 'すべてを現在の検索から除外',
     total: 'ログ件数',
     stack_group_by_tip: 'このフィールド値で積み上げトレンドチャートを表示',
+    collapse: '折りたたむ',
+    expand: '展開',
   },
   view_placeholder: 'ログビュー',
 };
