@@ -106,6 +106,7 @@ const ja_JP = {
     filterNot: '"{{token}}" を現在の検索から除外',
     filterAllAnd: 'すべてを現在の検索に追加',
     filterAllNot: 'すべてを現在の検索から除外',
+    filterExists: 'このフィールドを持つドキュメントをフィルタ',
     total: 'ログ件数',
     stack_group_by_tip: 'このフィールド値で積み上げトレンドチャートを表示',
     collapse: '折りたたむ',

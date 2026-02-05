@@ -19,11 +19,16 @@ export default function getColumnsFromFields(params: {
   options?: OptionsType;
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   data?: any[];
+  highlights?: {
+    [index: number]: string[];
+  }[];
   tableColumnsWidthCacheKey?: string;
   onOpenOrganizeFieldsModal?: () => void;
   setLogViewerDrawerState?: React.Dispatch<React.SetStateAction<{ visible: boolean; currentIndex: number }>>;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  showExistsAction?: boolean;
 }) {
   const {
     id_key,
@@ -34,11 +39,14 @@ export default function getColumnsFromFields(params: {
     options,
     onValueFilter,
     data,
+    highlights,
     tableColumnsWidthCacheKey,
     onOpenOrganizeFieldsModal,
     setLogViewerDrawerState,
     timeFieldColumnFormat,
     linesColumnFormat,
+    adjustFieldValue,
+    showExistsAction,
   } = params;
 
   let tableColumnsWidthCacheValue: { [index: string]: number | undefined } = {};
@@ -87,10 +95,21 @@ export default function getColumnsFromFields(params: {
       ),
       formatter: (params) => {
         const record = params.row;
+        const idx = _.findIndex(data, { [id_key]: params.row[id_key] });
+        const highlight = highlights?.[idx] || {};
         return (
           <div className='max-h-[140px]'>
             {onValueFilter ? (
-              <LogFieldValue enableTooltip name={item} value={toString(record[item])} onTokenClick={onValueFilter} rawValue={record} />
+              <LogFieldValue
+                enableTooltip
+                name={item}
+                value={toString(record[item])}
+                onTokenClick={onValueFilter}
+                rawValue={record}
+                highlight={highlight}
+                adjustFieldValue={adjustFieldValue}
+                showExistsAction={showExistsAction}
+              />
             ) : (
               <Tooltip placement='topLeft' overlayClassName='ant-tooltip-max-width-600' title={toString(record[item])}>
                 {toString(record[item])}

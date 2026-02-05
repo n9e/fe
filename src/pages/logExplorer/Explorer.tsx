@@ -13,6 +13,8 @@ import ViewSelect, { ModalState } from '@/components/ViewSelect';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
 
+import Elasticsearch from '@/plugins/elasticsearch/ExplorerNG';
+
 import { DefaultFormValuesControl, RenderCommonSettingsParams } from './types';
 import { NAME_SPACE, ENABLED_VIEW_CATES } from './constants';
 
@@ -66,154 +68,306 @@ export default function Explorer(props: Props) {
           <Form.Item name='datasourceValue' hidden>
             <div />
           </Form.Item>
-          <PlusLogExplorer
-            tabKey={tabKey}
-            datasourceCate={datasourceCate}
-            defaultFormValuesControl={defaultFormValuesControl}
-            renderCommonSettings={({ getDefaultQueryValues, executeQuery }: RenderCommonSettingsParams) => {
-              return (
-                <div className='flex-shrink-0'>
-                  <Form.Item>
-                    <ViewSelect<{
-                      datasourceCate: string;
-                      datasourceValue: number;
-                      [key: string]: any;
-                    }>
-                      // 统一的状态
-                      value={viewSelectValue}
-                      onChange={(value) => {
-                        setViewSelectValue(value);
-                      }}
-                      filters={viewSelectFilters}
-                      setFilters={setViewSelectFilters}
-                      modalState={viewModalState}
-                      setModalState={setViewModalState}
-                      // 其他 props
-                      disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
-                      page={location.pathname}
-                      getFilterValues={() => {
-                        const formValues = form.getFieldsValue();
-                        let range = formValues.query?.range;
-                        if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
-                          range = {
-                            start: range.start.unix(),
-                            end: range.end.unix(),
-                          };
-                        }
-                        const filterValues = {
-                          datasourceCate: formValues.datasourceCate,
-                          datasourceValue: formValues.datasourceValue,
-                          query: {
-                            ...formValues.query,
-                            range,
-                          },
-                        };
-                        return filterValues;
-                      }}
-                      renderOptionExtra={(filterValues) => {
-                        const { datasourceCate, datasourceValue } = filterValues;
-                        return (
-                          <div className='flex items-center gap-2'>
-                            <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
-                            <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
-                          </div>
-                        );
-                      }}
-                      onSelect={(filterValues) => {
-                        const datasourceCate = form.getFieldValue('datasourceCate');
-
-                        filterValues.datasourceCate = filterValues.datasourceCate || datasourceCate;
-                        filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[datasourceCate]?.[0]?.id!;
-
-                        // 完全重置表单后再设置新值，避免旧值残留
-                        form.setFieldsValue({
-                          refreshFlag: undefined,
-                          query: undefined,
-                        });
-
-                        let range = filterValues.query?.range;
-                        if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
-                          range = {
-                            start: moment.unix(range.start),
-                            end: moment.unix(range.end),
-                          };
-                        }
-
-                        form.setFieldsValue({
-                          ...filterValues,
-                          query: {
-                            ...filterValues.query,
-                            range: range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
-                            ...(getDefaultQueryValues ? getDefaultQueryValues(filterValues.query || {}) || {} : {}),
-                          },
-                        });
-
-                        executeQuery();
-                      }}
-                      adjustOldFilterValues={(values) => {
-                        if (values) {
-                          // 去掉 query 中值为 undefined 的字段
-                          const cleanedQuery = omitUndefinedDeep(values.query) || {};
-                          if (moment.isMoment(cleanedQuery.range?.start) && moment.isMoment(cleanedQuery.range?.end)) {
-                            cleanedQuery.range = {
-                              start: cleanedQuery.range.start.unix(),
-                              end: cleanedQuery.range.end.unix(),
+          {datasourceCate === DatasourceCateEnum.elasticsearch ? (
+            <Elasticsearch
+              tabKey={tabKey}
+              defaultFormValuesControl={defaultFormValuesControl}
+              renderCommonSettings={({ getDefaultQueryValues, executeQuery }: RenderCommonSettingsParams) => {
+                return (
+                  <div className='flex-shrink-0'>
+                    <Form.Item>
+                      <ViewSelect<{
+                        datasourceCate: string;
+                        datasourceValue: number;
+                        [key: string]: any;
+                      }>
+                        // 统一的状态
+                        value={viewSelectValue}
+                        onChange={(value) => {
+                          setViewSelectValue(value);
+                        }}
+                        filters={viewSelectFilters}
+                        setFilters={setViewSelectFilters}
+                        modalState={viewModalState}
+                        setModalState={setViewModalState}
+                        // 其他 props
+                        disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
+                        page={location.pathname}
+                        getFilterValues={() => {
+                          const formValues = form.getFieldsValue();
+                          let range = formValues.query?.range;
+                          if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
+                            range = {
+                              start: range.start.unix(),
+                              end: range.end.unix(),
                             };
                           }
-                          return {
-                            datasourceCate: values.datasourceCate,
-                            datasourceValue: values.datasourceValue,
-                            query: cleanedQuery,
+                          const filterValues = {
+                            datasourceCate: formValues.datasourceCate,
+                            datasourceValue: formValues.datasourceValue,
+                            query: {
+                              ...formValues.query,
+                              range,
+                            },
                           };
-                        }
-                        return {};
-                      }}
-                      placeholder={t('view_placeholder')}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name='datasourceValue'
-                    rules={[
-                      {
-                        required: true,
-                        message: t('common:datasource.id_required'),
-                      },
-                    ]}
-                  >
-                    <DatasourceSelectV3
-                      className='w-full'
-                      datasourceCateList={datasourceCateOptions}
-                      ajustDatasourceList={(list) => {
-                        return _.filter(list, (item) => {
-                          const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                          if (cateData && _.includes(cateData.type, 'logging') && _.includes(ENABLED_VIEW_CATES, item.plugin_type)) {
-                            return cateData.graphPro ? IS_PLUS : true;
+                          return filterValues;
+                        }}
+                        renderOptionExtra={(filterValues) => {
+                          const { datasourceCate, datasourceValue } = filterValues;
+                          return (
+                            <div className='flex items-center gap-2'>
+                              <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
+                              <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
+                            </div>
+                          );
+                        }}
+                        onSelect={(filterValues) => {
+                          const datasourceCate = form.getFieldValue('datasourceCate');
+
+                          filterValues.datasourceCate = filterValues.datasourceCate || datasourceCate;
+                          filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[datasourceCate]?.[0]?.id!;
+
+                          // 完全重置表单后再设置新值，避免旧值残留
+                          form.setFieldsValue({
+                            refreshFlag: undefined,
+                            query: undefined,
+                          });
+
+                          let range = filterValues.query?.range;
+                          if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
+                            range = {
+                              start: moment.unix(range.start),
+                              end: moment.unix(range.end),
+                            };
                           }
-                          return false;
-                        });
-                      }}
-                      onChange={(datasourceValue, datasourceCate) => {
-                        setDefaultDatasourceValue(datasourceCate, datasourceValue);
-                        const queryValues = form.getFieldValue('query');
-                        form.setFieldsValue({
-                          datasourceCate,
-                          datasourceValue,
-                          query: undefined,
-                        });
-                        form.setFieldsValue({
-                          refreshFlag: undefined,
-                          query: {
-                            range: queryValues.range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
-                            ...(getDefaultQueryValues ? getDefaultQueryValues(queryValues || {}) || {} : {}),
-                          },
-                        });
-                      }}
-                    />
-                  </Form.Item>
-                </div>
-              );
-            }}
-          />
+
+                          form.setFieldsValue({
+                            ...filterValues,
+                            query: {
+                              ...filterValues.query,
+                              range: range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
+                              ...(getDefaultQueryValues ? getDefaultQueryValues(filterValues.query || {}) || {} : {}),
+                            },
+                          });
+
+                          executeQuery();
+                        }}
+                        adjustOldFilterValues={(values) => {
+                          if (values) {
+                            // 去掉 query 中值为 undefined 的字段
+                            const cleanedQuery = omitUndefinedDeep(values.query) || {};
+                            if (moment.isMoment(cleanedQuery.range?.start) && moment.isMoment(cleanedQuery.range?.end)) {
+                              cleanedQuery.range = {
+                                start: cleanedQuery.range.start.unix(),
+                                end: cleanedQuery.range.end.unix(),
+                              };
+                            }
+                            return {
+                              datasourceCate: values.datasourceCate,
+                              datasourceValue: values.datasourceValue,
+                              query: cleanedQuery,
+                            };
+                          }
+                          return {};
+                        }}
+                        placeholder={t('view_placeholder')}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name='datasourceValue'
+                      rules={[
+                        {
+                          required: true,
+                          message: t('common:datasource.id_required'),
+                        },
+                      ]}
+                    >
+                      <DatasourceSelectV3
+                        className='w-full'
+                        datasourceCateList={datasourceCateOptions}
+                        ajustDatasourceList={(list) => {
+                          return _.filter(list, (item) => {
+                            const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+                            if (cateData && _.includes(cateData.type, 'logging') && _.includes(ENABLED_VIEW_CATES, item.plugin_type)) {
+                              return cateData.graphPro ? IS_PLUS : true;
+                            }
+                            return false;
+                          });
+                        }}
+                        onChange={(datasourceValue, datasourceCate) => {
+                          setDefaultDatasourceValue(datasourceCate, datasourceValue);
+                          const queryValues = form.getFieldValue('query');
+                          form.resetFields(['refreshFlag', 'query']);
+                          form.setFieldsValue({
+                            datasourceCate,
+                            datasourceValue,
+                            // query: undefined,
+                          });
+                          // form.setFieldsValue({
+                          //   refreshFlag: undefined,
+                          //   query: {
+                          //     range: queryValues.range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
+                          //     ...(getDefaultQueryValues ? getDefaultQueryValues(queryValues || {}) || {} : {}),
+                          //   },
+                          // });
+                        }}
+                      />
+                    </Form.Item>
+                  </div>
+                );
+              }}
+            />
+          ) : (
+            <PlusLogExplorer
+              tabKey={tabKey}
+              datasourceCate={datasourceCate}
+              defaultFormValuesControl={defaultFormValuesControl}
+              renderCommonSettings={({ getDefaultQueryValues, executeQuery }: RenderCommonSettingsParams) => {
+                return (
+                  <div className='flex-shrink-0'>
+                    <Form.Item>
+                      <ViewSelect<{
+                        datasourceCate: string;
+                        datasourceValue: number;
+                        [key: string]: any;
+                      }>
+                        // 统一的状态
+                        value={viewSelectValue}
+                        onChange={(value) => {
+                          setViewSelectValue(value);
+                        }}
+                        filters={viewSelectFilters}
+                        setFilters={setViewSelectFilters}
+                        modalState={viewModalState}
+                        setModalState={setViewModalState}
+                        // 其他 props
+                        disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
+                        page={location.pathname}
+                        getFilterValues={() => {
+                          const formValues = form.getFieldsValue();
+                          let range = formValues.query?.range;
+                          if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
+                            range = {
+                              start: range.start.unix(),
+                              end: range.end.unix(),
+                            };
+                          }
+                          const filterValues = {
+                            datasourceCate: formValues.datasourceCate,
+                            datasourceValue: formValues.datasourceValue,
+                            query: {
+                              ...formValues.query,
+                              range,
+                            },
+                          };
+                          return filterValues;
+                        }}
+                        renderOptionExtra={(filterValues) => {
+                          const { datasourceCate, datasourceValue } = filterValues;
+                          return (
+                            <div className='flex items-center gap-2'>
+                              <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
+                              <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
+                            </div>
+                          );
+                        }}
+                        onSelect={(filterValues) => {
+                          const datasourceCate = form.getFieldValue('datasourceCate');
+
+                          filterValues.datasourceCate = filterValues.datasourceCate || datasourceCate;
+                          filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[datasourceCate]?.[0]?.id!;
+
+                          // 完全重置表单后再设置新值，避免旧值残留
+                          form.setFieldsValue({
+                            refreshFlag: undefined,
+                            query: undefined,
+                          });
+
+                          let range = filterValues.query?.range;
+                          if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
+                            range = {
+                              start: moment.unix(range.start),
+                              end: moment.unix(range.end),
+                            };
+                          }
+
+                          form.setFieldsValue({
+                            ...filterValues,
+                            query: {
+                              ...filterValues.query,
+                              range: range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
+                              ...(getDefaultQueryValues ? getDefaultQueryValues(filterValues.query || {}) || {} : {}),
+                            },
+                          });
+
+                          executeQuery();
+                        }}
+                        adjustOldFilterValues={(values) => {
+                          if (values) {
+                            // 去掉 query 中值为 undefined 的字段
+                            const cleanedQuery = omitUndefinedDeep(values.query) || {};
+                            if (moment.isMoment(cleanedQuery.range?.start) && moment.isMoment(cleanedQuery.range?.end)) {
+                              cleanedQuery.range = {
+                                start: cleanedQuery.range.start.unix(),
+                                end: cleanedQuery.range.end.unix(),
+                              };
+                            }
+                            return {
+                              datasourceCate: values.datasourceCate,
+                              datasourceValue: values.datasourceValue,
+                              query: cleanedQuery,
+                            };
+                          }
+                          return {};
+                        }}
+                        placeholder={t('view_placeholder')}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name='datasourceValue'
+                      rules={[
+                        {
+                          required: true,
+                          message: t('common:datasource.id_required'),
+                        },
+                      ]}
+                    >
+                      <DatasourceSelectV3
+                        className='w-full'
+                        datasourceCateList={datasourceCateOptions}
+                        ajustDatasourceList={(list) => {
+                          return _.filter(list, (item) => {
+                            const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+                            if (cateData && _.includes(cateData.type, 'logging') && _.includes(ENABLED_VIEW_CATES, item.plugin_type)) {
+                              return cateData.graphPro ? IS_PLUS : true;
+                            }
+                            return false;
+                          });
+                        }}
+                        onChange={(datasourceValue, datasourceCate) => {
+                          setDefaultDatasourceValue(datasourceCate, datasourceValue);
+                          const queryValues = form.getFieldValue('query');
+                          form.resetFields(['refreshFlag', 'query']);
+                          form.setFieldsValue({
+                            datasourceCate,
+                            datasourceValue,
+                            // query: undefined,
+                          });
+                          // form.setFieldsValue({
+                          //   refreshFlag: undefined,
+                          //   query: {
+                          //     range: queryValues.range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
+                          //     ...(getDefaultQueryValues ? getDefaultQueryValues(queryValues || {}) || {} : {}),
+                          //   },
+                          // });
+                        }}
+                      />
+                    </Form.Item>
+                  </div>
+                );
+              }}
+            />
+          )}
         </Form>
       </div>
     </div>

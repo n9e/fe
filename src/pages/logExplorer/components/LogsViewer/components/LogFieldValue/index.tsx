@@ -16,13 +16,18 @@ interface Props {
   value: any;
   onTokenClick?: (parmas: OnValueFilterParams) => void;
   rawValue?: object;
+  highlight?: {
+    [index: string]: string[];
+  };
   enableTooltip?: boolean;
   fieldValueClassName?: string;
+  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  showExistsAction?: boolean;
 }
 
 export default function index(props: Props) {
   const { indexData: indexList } = useContext(LogsViewerStateContext);
-  const { parentKey, name, value, onTokenClick, rawValue, enableTooltip, fieldValueClassName } = props;
+  const { parentKey, name, value, onTokenClick, rawValue, highlight, enableTooltip, fieldValueClassName, adjustFieldValue, showExistsAction } = props;
 
   const indexData = _.find(indexList, (item) => {
     return item.field === (parentKey ? parentKey + '.' + name : name);
@@ -37,15 +42,17 @@ export default function index(props: Props) {
       return (
         <Token
           segmented={false}
-          indexName={indexName}
           name={name}
           parentKey={parentKey}
           value={value}
           fieldValue={value}
           onTokenClick={onTokenClick}
           rawValue={rawValue}
+          highlight={highlight}
           enableTooltip={enableTooltip}
           fieldValueClassName={fieldValueClassName}
+          adjustFieldValue={adjustFieldValue}
+          showExistsAction={showExistsAction}
         />
       );
     }
@@ -63,8 +70,11 @@ export default function index(props: Props) {
                 fieldValue={value}
                 onTokenClick={onTokenClick}
                 rawValue={rawValue}
+                highlight={highlight}
                 enableTooltip={enableTooltip}
                 fieldValueClassName={fieldValueClassName}
+                adjustFieldValue={adjustFieldValue}
+                showExistsAction={showExistsAction}
               />
             );
           } else if (item.type === 'delimiter') {
@@ -88,8 +98,11 @@ export default function index(props: Props) {
       fieldValue={value}
       onTokenClick={onTokenClick}
       rawValue={rawValue}
+      highlight={highlight}
       enableTooltip={enableTooltip}
       fieldValueClassName={fieldValueClassName}
+      adjustFieldValue={adjustFieldValue}
+      showExistsAction={showExistsAction}
     />
   );
 }

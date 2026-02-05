@@ -84,6 +84,11 @@ export default function index(props: Props) {
             onClick={() => {
               setCollapse(!collapse);
               localStorage.setItem(sidebarCollapseCacheKey, !collapse ? '1' : '0');
+
+              // 触发 resize 事件，让右侧图表重新计算尺寸
+              setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+              }, 0);
             }}
           >
             {!collapse ? <LeftOutlined /> : <RightOutlined />}

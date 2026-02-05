@@ -106,6 +106,7 @@ const zh_HK = {
     filterNot: '從本次檢索中排除 "{{token}}"',
     filterAllAnd: '添加全部到本次檢索',
     filterAllNot: '從本次檢索中排除全部',
+    filterExists: '過濾存在該字段的文檔',
     total: '日誌條數',
     stack_group_by_tip: '以此字段值展示堆疊趨勢圖',
     collapse: '收起',
