@@ -29,6 +29,9 @@ interface Props {
   data: {
     [index: string]: any;
   }[];
+  highlights: {
+    [index: number]: string[];
+  }[];
   logsHash?: string;
   /** 日志格式配置项 */
   options: any;
@@ -47,6 +50,8 @@ interface Props {
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  showExistsAction?: boolean;
 }
 
 interface RenderValueProps {
@@ -54,11 +59,13 @@ interface RenderValueProps {
   value: string;
   parentKey?: string;
   onValueFilter?: Props['onValueFilter'];
+  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  showExistsAction?: boolean;
 }
 
-function RenderValue({ name, value, parentKey, onValueFilter }: RenderValueProps) {
+function RenderValue({ name, value, parentKey, onValueFilter, adjustFieldValue, showExistsAction }: RenderValueProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { rawValue } = useContext(DataContext);
+  const { rawValue, highlight } = useContext(DataContext);
 
   const [expand, setExpand] = useState(false);
 
@@ -69,7 +76,16 @@ function RenderValue({ name, value, parentKey, onValueFilter }: RenderValueProps
         {_.map(lines, (v, idx) => {
           return (
             <div key={idx}>
-              <LogFieldValue parentKey={parentKey} name={name} value={v} onTokenClick={onValueFilter} rawValue={rawValue} />
+              <LogFieldValue
+                parentKey={parentKey}
+                name={name}
+                value={v}
+                onTokenClick={onValueFilter}
+                rawValue={rawValue}
+                highlight={highlight}
+                adjustFieldValue={adjustFieldValue}
+                showExistsAction={showExistsAction}
+              />
               {idx === lines.length - 1 && (
                 <a
                   onClick={() => {
@@ -90,7 +106,18 @@ function RenderValue({ name, value, parentKey, onValueFilter }: RenderValueProps
     );
   }
 
-  return <LogFieldValue parentKey={parentKey} name={name} value={value} onTokenClick={onValueFilter} rawValue={rawValue} />;
+  return (
+    <LogFieldValue
+      parentKey={parentKey}
+      name={name}
+      value={value}
+      onTokenClick={onValueFilter}
+      rawValue={rawValue}
+      highlight={highlight}
+      adjustFieldValue={adjustFieldValue}
+      showExistsAction={showExistsAction}
+    />
+  );
 }
 
 function RenderSubJSON({
@@ -100,6 +127,8 @@ function RenderSubJSON({
   options,
   currentExpandLevel,
   onValueFilter,
+  adjustFieldValue,
+  showExistsAction,
 }: {
   parentKey?: string;
   label: string;
@@ -107,6 +136,8 @@ function RenderSubJSON({
   options: any;
   currentExpandLevel: number;
   onValueFilter?: Props['onValueFilter'];
+  adjustFieldValue?: Props['adjustFieldValue'];
+  showExistsAction?: Props['showExistsAction'];
 }) {
   const [expand, setExpand] = useState(currentExpandLevel <= options.jsonExpandLevel);
 
@@ -150,6 +181,8 @@ function RenderSubJSON({
                             options={options}
                             currentExpandLevel={currentExpandLevel + 1}
                             onValueFilter={onValueFilter}
+                            adjustFieldValue={adjustFieldValue}
+                            showExistsAction={showExistsAction}
                           />
                         );
                       })
@@ -160,7 +193,14 @@ function RenderSubJSON({
               return (
                 <li key={k}>
                   <div className={explorerOriginFieldKeyClassName}>{k}</div>:
-                  <RenderValue parentKey={parentKey ? parentKey + '.' + k : k} name={k} value={v} onValueFilter={onValueFilter} />
+                  <RenderValue
+                    parentKey={parentKey ? parentKey + '.' + k : k}
+                    name={k}
+                    value={v}
+                    onValueFilter={onValueFilter}
+                    adjustFieldValue={adjustFieldValue}
+                    showExistsAction={showExistsAction}
+                  />
                 </li>
               );
             })}
@@ -175,7 +215,7 @@ function RenderSubJSON({
     <li className={explorerOriginLiClassName}>
       <div className={explorerOriginFieldKeyClassName}>{label}</div>:
       <div className={explorerOrigiFieldValClassName}>
-        <RenderValue name={label} value={JSON.stringify(subJSON)} onValueFilter={onValueFilter} />
+        <RenderValue name={label} value={JSON.stringify(subJSON)} onValueFilter={onValueFilter} adjustFieldValue={adjustFieldValue} showExistsAction={showExistsAction} />
       </div>
     </li>
   );
@@ -183,6 +223,7 @@ function RenderSubJSON({
 
 export const DataContext = React.createContext({
   rawValue: {},
+  highlight: {},
 });
 
 function Raw(props: Props) {
@@ -190,6 +231,7 @@ function Raw(props: Props) {
   const {
     timeField,
     data,
+    highlights,
     logsHash,
     options,
     onValueFilter,
@@ -203,12 +245,15 @@ function Raw(props: Props) {
     logViewerExtraRender,
     logViewerFilterFields,
     logViewerRenderCustomTagsArea,
+    adjustFieldValue,
+    showExistsAction,
   } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
     {
       title: t('logs.title'),
-      render: (item) => {
+      render: (item, _record, index) => {
+        const highlight = highlights?.[index];
         const fields = filterFields ? filterFields(_.keys(item)) : _.keys(item);
 
         return (
@@ -219,7 +264,7 @@ function Raw(props: Props) {
               const valToObj = val;
               const subJSON = _.isArray(valToObj) ? valToObj : [valToObj];
               return (
-                <DataContext.Provider value={{ rawValue: item }} key={key}>
+                <DataContext.Provider value={{ rawValue: item, highlight }} key={key}>
                   <div
                     className={classNames({
                       [explorerOriginInlineCellClassName]: options.lineBreak !== 'true',
@@ -234,13 +279,26 @@ function Raw(props: Props) {
                           </>
                         ) : (
                           _.map(subJSON, (item, idx) => {
-                            return <RenderSubJSON key={idx} parentKey={key} label={key} subJSON={item} options={options} currentExpandLevel={1} onValueFilter={onValueFilter} />;
+                            return (
+                              <RenderSubJSON
+                                key={idx}
+                                parentKey={key}
+                                label={key}
+                                subJSON={item}
+                                options={options}
+                                currentExpandLevel={1}
+                                onValueFilter={onValueFilter}
+                                adjustFieldValue={adjustFieldValue}
+                                showExistsAction={showExistsAction}
+                              />
+                            );
                           })
                         )}
                       </ul>
                     ) : (
                       <>
-                        <div className={explorerOriginFieldKeyClassName}>{key}</div>: <RenderValue name={key} value={val} onValueFilter={onValueFilter} />
+                        <div className={explorerOriginFieldKeyClassName}>{key}</div>:{' '}
+                        <RenderValue name={key} value={val} onValueFilter={onValueFilter} adjustFieldValue={adjustFieldValue} showExistsAction={showExistsAction} />
                       </>
                     )}
                   </div>

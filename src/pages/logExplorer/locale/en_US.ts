@@ -106,6 +106,7 @@ const en_US = {
     filterNot: 'Exclude "{{token}}" from current query',
     filterAllAnd: 'Add all to current query',
     filterAllNot: 'Exclude all from current query',
+    filterExists: 'Filter documents with this field',
     total: 'Log Count',
     stack_group_by_tip: 'Display stacked trend chart by this field value',
     collapse: 'Collapse',

@@ -13,6 +13,6 @@ export interface OnValueFilterParams {
   key: string;
   value: string;
   assignmentOperator?: ':' | '=';
-  operator: 'AND' | 'NOT';
+  operator: 'AND' | 'NOT' | 'EXISTS';
   indexName?: string;
 }
