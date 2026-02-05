@@ -37,7 +37,6 @@ export default function index(props: Props) {
       return (
         <Token
           segmented={false}
-          indexName={indexName}
           name={name}
           parentKey={parentKey}
           value={value}
