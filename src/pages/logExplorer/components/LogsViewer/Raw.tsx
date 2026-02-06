@@ -29,7 +29,7 @@ interface Props {
   data: {
     [index: string]: any;
   }[];
-  highlights: {
+  highlights?: {
     [index: number]: string[];
   }[];
   logsHash?: string;
@@ -221,7 +221,12 @@ function RenderSubJSON({
   );
 }
 
-export const DataContext = React.createContext({
+export const DataContext = React.createContext<{
+  rawValue: { [index: string]: any };
+  highlight: {
+    [index: number]: string[];
+  };
+}>({
   rawValue: {},
   highlight: {},
 });
@@ -253,7 +258,7 @@ function Raw(props: Props) {
     {
       title: t('logs.title'),
       render: (item, _record, index) => {
-        const highlight = highlights?.[index];
+        const highlight = highlights?.[index] ?? {};
         const fields = filterFields ? filterFields(_.keys(item)) : _.keys(item);
 
         return (

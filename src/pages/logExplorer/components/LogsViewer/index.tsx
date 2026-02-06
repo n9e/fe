@@ -33,7 +33,7 @@ interface Props {
   loading: boolean;
   /** 日志数据 */
   logs: { [index: string]: string }[];
-  highlights: {
+  highlights?: {
     [index: number]: string[];
   }[];
   logsHash?: string;
