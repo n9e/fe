@@ -50,24 +50,20 @@ export default function indexCpt(props: Props) {
 
   const { data: incdices = [] } = useRequest(
     () => {
-      return getIndices(datasourceValue, queryValues?.allowHideSystemIndices);
+      return getIndices(datasourceValue, queryValues?.allow_hide_system_indices);
     },
     {
-      refreshDeps: [datasourceValue, queryValues?.allowHideSystemIndices],
-      ready: !!datasourceValue && queryValues?.allowHideSystemIndices !== undefined,
+      refreshDeps: [datasourceValue, queryValues?.allow_hide_system_indices],
+      ready: !!datasourceValue && queryValues?.allow_hide_system_indices !== undefined,
       debounceWait: 300,
     },
   );
 
-  const {
-    data: indexData = [],
-    loading: indexDataLoading,
-    run: runIndexData,
-  } = useRequest(
+  const { data: indexData = [], loading: indexDataLoading } = useRequest(
     () =>
       getFullFields(datasourceValue, queryValues.index, {
         type: 'date',
-        allowHideSystemIndices: !!queryValues?.allowHideSystemIndices,
+        allowHideSystemIndices: !!queryValues?.allow_hide_system_indices,
       })
         .then((res) => {
           const fieldData = _.map(res.allFields, (item) => {
@@ -85,8 +81,8 @@ export default function indexCpt(props: Props) {
           return [];
         }),
     {
-      refreshDeps: [datasourceValue, queryValues?.index, queryValues?.allowHideSystemIndices],
-      ready: !!datasourceValue && !!queryValues?.index && queryValues?.allowHideSystemIndices !== undefined,
+      refreshDeps: [datasourceValue, queryValues?.index, queryValues?.allow_hide_system_indices],
+      ready: !!datasourceValue && !!queryValues?.index && queryValues?.allow_hide_system_indices !== undefined,
       debounceWait: 500,
     },
   );
@@ -155,7 +151,7 @@ export default function indexCpt(props: Props) {
           </Form.Item>
           {queryValues?.mode === 'indices' && (
             <>
-              <Form.Item name={['query', 'allowHideSystemIndices']} initialValue={false} noStyle hidden>
+              <Form.Item name={['query', 'allow_hide_system_indices']} initialValue={false} noStyle hidden>
                 <div />
               </Form.Item>
               <Form.Item
@@ -193,7 +189,7 @@ export default function indexCpt(props: Props) {
                       <Popover
                         content={
                           <div>
-                            <Form.Item name={['query', 'allowHideSystemIndices']} valuePropName='checked' noStyle>
+                            <Form.Item name={['query', 'allow_hide_system_indices']} valuePropName='checked' noStyle>
                               <Checkbox>{t('query.allow_hide_system_indices')}</Checkbox>
                             </Form.Item>
                           </div>
@@ -235,7 +231,7 @@ export default function indexCpt(props: Props) {
               <Form.Item name={['query', 'index']} hidden>
                 <div />
               </Form.Item>
-              <Form.Item name={['query', 'allowHideSystemIndices']} hidden>
+              <Form.Item name={['query', 'allow_hide_system_indices']} hidden>
                 <div />
               </Form.Item>
               <Form.Item name={['query', 'date_field']} hidden>
@@ -319,7 +315,7 @@ export default function indexCpt(props: Props) {
 
                       queryValues.date_field = selected.time_field;
                       queryValues.index = selected.name;
-                      queryValues.allowHideSystemIndices = selected.allow_hide_system_indices;
+                      queryValues.allow_hide_system_indices = selected.allow_hide_system_indices;
                       form.setFieldsValue({
                         query: queryValues,
                         fieldConfig,
