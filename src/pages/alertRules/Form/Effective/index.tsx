@@ -113,8 +113,8 @@ export default function index() {
               const enable_etime = form.getFieldValue(['effective_time', name, 'enable_etime']);
               let local_text = '';
               if (enable_stime && enable_etime && time_zone) {
-                const local_stime = moment.tz(enable_stime, 'HH:mm', time_zone).local().format('HH:mm');
-                const local_etime = moment.tz(enable_etime, 'HH:mm', time_zone).local().format('HH:mm');
+                const local_stime = moment.tz(enable_stime.format('HH:mm'), 'HH:mm', time_zone).local().format('HH:mm');
+                const local_etime = moment.tz(enable_etime.format('HH:mm'), 'HH:mm', time_zone).local().format('HH:mm');
                 local_text = `${local_stime} ~ ${local_etime}`;
               }
 
@@ -179,7 +179,11 @@ export default function index() {
           </>
         )}
       </Form.List>
-      {isPlus && <ServiceCalendarWithTimeSelect namePath={['extra_config', 'service_cal_configs']} time_zone={time_zone} />}
+      {isPlus && (
+        <div>
+          <ServiceCalendarWithTimeSelect namePath={['extra_config', 'service_cal_configs']} time_zone={time_zone} />
+        </div>
+      )}
       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
         {({ getFieldValue }) => {
           if (getFieldValue('cate') === 'prometheus') {
