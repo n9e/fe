@@ -54,7 +54,7 @@ export default function indexCpt(props: Props) {
     },
     {
       refreshDeps: [datasourceValue, queryValues?.allow_hide_system_indices],
-      ready: !!datasourceValue && queryValues?.allow_hide_system_indices !== undefined,
+      ready: !!datasourceValue,
       debounceWait: 300,
     },
   );
@@ -82,7 +82,7 @@ export default function indexCpt(props: Props) {
         }),
     {
       refreshDeps: [datasourceValue, queryValues?.index, queryValues?.allow_hide_system_indices],
-      ready: !!datasourceValue && !!queryValues?.index && queryValues?.allow_hide_system_indices !== undefined,
+      ready: !!datasourceValue && !!queryValues?.index,
       debounceWait: 500,
     },
   );
@@ -108,6 +108,7 @@ export default function indexCpt(props: Props) {
 
           queryValues.date_field = indexPattern.time_field;
           queryValues.index = indexPattern.name;
+          queryValues.allow_hide_system_indices = indexPattern.allow_hide_system_indices;
           form.setFieldsValue({
             query: queryValues,
             fieldConfig,
