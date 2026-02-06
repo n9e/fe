@@ -11,6 +11,8 @@ import { NAME_SPACE } from '../../constants';
 import { Field, StatsResult } from './types';
 import QuickViewPopover from './QuickViewPopover';
 
+const DEFAULT_TOP_NUMBER = 5;
+
 interface Props {
   operType: 'show' | 'available';
   onOperClick: () => void;
@@ -70,6 +72,7 @@ export default function FieldsItem(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats, renderStatsPopoverTitleExtra, renderFieldNameExtra, onStatisticClick } = props;
   const [topNVisible, setTopNVisible] = useState<boolean>(false);
+  const [topNumber, setTopNumber] = useState<number>(DEFAULT_TOP_NUMBER);
   const [topNData, setTopNData] = useState<any[]>([]);
   const [topNLoading, setTopNLoading] = useState<boolean>(false);
   const [stats, setStats] = useState<{
@@ -153,7 +156,7 @@ export default function FieldsItem(props: Props) {
             )}
             <div>
               <div className='my-2 text-l2 flex items-center justify-between'>
-                <strong>{t('field_values_topn.title', { n: 5 })}</strong>
+                <strong>{t('field_values_topn.title', { n: topNumber })}</strong>
                 {onStatisticClick && (
                   <Space>
                     <QuickViewPopover
@@ -161,7 +164,7 @@ export default function FieldsItem(props: Props) {
                         func: 'count',
                         group_by: field.field,
                         field: field.field,
-                        ref: 'top5',
+                        ref: `top${topNumber}`,
                       }}
                       onStatisticClick={onStatisticClick}
                       setTopNVisible={setTopNVisible}
@@ -173,7 +176,7 @@ export default function FieldsItem(props: Props) {
                         func: 'ratio',
                         group_by: field.field,
                         field: field.field,
-                        ref: 'top5',
+                        ref: `top${topNumber}`,
                       }}
                       onStatisticClick={onStatisticClick}
                       setTopNVisible={setTopNVisible}
@@ -282,7 +285,8 @@ export default function FieldsItem(props: Props) {
             setTopNLoading(true);
             fetchStats(field)
               .then((res) => {
-                const { topN, stats } = res;
+                const { topNumber, topN, stats } = res;
+                setTopNumber(topNumber ?? DEFAULT_TOP_NUMBER);
                 setTopNData(topN);
                 setStats(stats);
               })

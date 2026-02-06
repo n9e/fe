@@ -100,6 +100,9 @@ const zh_CN = {
         pagination: '分页器',
         infiniteScroll: '滚动加载更多',
       },
+      topNSettings: {
+        title: '前 N 个值设置',
+      },
     },
     fieldLabelTip: '字段未开启统计，无法进行统计分析',
     filterAnd: '添加 "{{token}}" 到本次检索',

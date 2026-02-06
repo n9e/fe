@@ -1,24 +1,11 @@
 import _ from 'lodash';
 
-interface Options {
-  logMode: 'origin' | 'table';
-  lineBreak: 'true' | 'false';
-  reverse: string;
-  lines: 'true' | 'false';
-  time: 'true' | 'false';
-  jsonDisplaType: 'tree' | 'string'; // 默认 formatted
-  jsonExpandLevel: number;
-}
+import { OptionsType } from '@/pages/logExplorer/components/LogsViewer/types';
+import { DEFAULT_OPTIONS } from '@/pages/logExplorer/constants';
 
-export function getOptionsFromLocalstorage(logsOptionsCacheKey: string, options?: Partial<Options>): Options {
-  const defaultOptions: Options = {
-    logMode: 'origin',
-    lineBreak: 'false',
-    reverse: 'true',
-    lines: 'true',
-    time: 'true',
-    jsonDisplaType: 'string',
-    jsonExpandLevel: 1,
+export function getOptionsFromLocalstorage(logsOptionsCacheKey: string, options?: Partial<OptionsType>): OptionsType {
+  const defaultOptions: OptionsType = {
+    ...DEFAULT_OPTIONS,
     ...options,
   };
   const optionsLocalStorage = localStorage.getItem(`${logsOptionsCacheKey}@options`);
@@ -34,6 +21,6 @@ export function getOptionsFromLocalstorage(logsOptionsCacheKey: string, options?
   return defaultOptions;
 }
 
-export function setOptionsToLocalstorage(logsOptionsCacheKey: string, options: Options) {
+export function setOptionsToLocalstorage(logsOptionsCacheKey: string, options: OptionsType) {
   localStorage.setItem(`${logsOptionsCacheKey}@options`, JSON.stringify(options));
 }

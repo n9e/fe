@@ -100,6 +100,9 @@ const en_US = {
         pagination: 'Pagination',
         infiniteScroll: 'Infinite Scroll',
       },
+      topNSettings: {
+        title: 'Top N Values Settings',
+      },
     },
     fieldLabelTip: 'Field statistics not enabled, unable to perform statistical analysis',
     filterAnd: 'Add "{{token}}" to current query',

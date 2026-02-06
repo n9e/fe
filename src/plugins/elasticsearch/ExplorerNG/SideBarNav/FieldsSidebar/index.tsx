@@ -7,9 +7,11 @@ import moment from 'moment';
 import { parseRange } from '@/components/TimeRangePicker';
 import FieldsList, { Field } from '@/pages/logExplorer/components/FieldsList';
 
-import { HandleValueFilterParams } from '../../types';
+import { LOGS_OPTIONS_CACHE_KEY } from '../../../constants';
 import { getESVersion, getFieldValues } from '../../../services';
 import dslBuilder from '../../../utils/dslBuilder';
+import { getOptionsFromLocalstorage } from '../../utils/optionsLocalstorage';
+import { HandleValueFilterParams } from '../../types';
 
 interface IProps {
   organizeFields: string[];
@@ -39,7 +41,6 @@ export default function index(props: IProps) {
   const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, requestParams } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
-  const queryValues = Form.useWatch('query');
   const { from, range, limit } = requestParams;
 
   return (
@@ -67,12 +68,13 @@ export default function index(props: IProps) {
           });
         }}
         fetchStats={async (record) => {
-          console.log('fetchStats', record);
+          const options = getOptionsFromLocalstorage(LOGS_OPTIONS_CACHE_KEY);
+          const topNumber = options.topNumber ?? 5;
+
           try {
             const queryValues = form.getFieldValue('query');
             const parsedRange = parseRange(queryValues.range);
 
-            console.log('queryValues', queryValues, parsedRange);
             const timeParams = range
               ? range
               : {
@@ -80,7 +82,6 @@ export default function index(props: IProps) {
                   to: moment(parsedRange.end).valueOf(),
                 };
 
-            console.log('timeParams', timeParams);
             const version = await getESVersion(datasourceValue);
             const topN = await getFieldValues(
               datasourceValue,
@@ -99,9 +100,10 @@ export default function index(props: IProps) {
                 fields: [ajustFieldParamValue(record, version)],
               }),
               ajustFieldParamValue(record, version),
-              5,
+              topNumber,
             );
             return {
+              topNumber,
               topN: _.map(topN, (item) => {
                 return {
                   percent: _.floor(item.value * 100, 2),
@@ -112,6 +114,7 @@ export default function index(props: IProps) {
           } catch (e) {
             console.error(e);
             return {
+              topNumber,
               topN: [],
             };
           }

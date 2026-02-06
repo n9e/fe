@@ -23,13 +23,14 @@ export default forwardRef(function OriginSettings(
     showDateField?: boolean;
     showPageLoadMode?: boolean;
     showJSONSettings?: boolean;
+    showTopNSettings?: boolean;
     organizeFields?: string[];
     setOrganizeFields?: (value?: string[]) => void;
   },
   ref,
 ) {
   const { t } = useTranslation(NAME_SPACE);
-  const { options, updateOptions, fields, showDateField, showJSONSettings, showPageLoadMode } = props;
+  const { options, updateOptions, fields, showDateField, showJSONSettings, showPageLoadMode, showTopNSettings } = props;
 
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
   const [organizeFields, setOrganizeFields] = useState<string[] | undefined>(props.organizeFields);
@@ -41,13 +42,18 @@ export default forwardRef(function OriginSettings(
   });
 
   const [pageLoadModeModalVisible, setPageLoadModeModalVisible] = useState(false);
-  const [pageLoadMode, setPageLoadMode] = useState(options.pageLoadMode || 'pagination');
+  const [pageLoadMode, setPageLoadMode] = useState(options.pageLoadMode ?? 'pagination');
+
+  const [topNSettingsModalVisible, setTopNSettingsModalVisible] = useState(false);
+  const [topNumber, setTopNumber] = useState(options.topNumber ?? 5);
 
   useEffect(() => {
     setJsonSettings({
       jsonDisplaType: options.jsonDisplaType,
       jsonExpandLevel: options.jsonExpandLevel,
     });
+    setPageLoadMode(options.pageLoadMode || 'pagination');
+    setTopNumber(options.topNumber || 5);
   }, [JSON.stringify(options)]);
 
   useEffect(() => {
@@ -154,6 +160,22 @@ export default forwardRef(function OriginSettings(
                             }}
                           >
                             {t('logs.settings.pageLoadMode.title')}
+                          </a>
+                        ),
+                      },
+                    ]
+                  : [],
+                showTopNSettings
+                  ? [
+                      {
+                        key: 'topN',
+                        label: (
+                          <a
+                            onClick={() => {
+                              setTopNSettingsModalVisible(true);
+                            }}
+                          >
+                            {t('logs.settings.topNSettings.title')}
                           </a>
                         ),
                       },
@@ -277,6 +299,34 @@ export default forwardRef(function OriginSettings(
               <Radio value='pagination'>{t('logs.settings.pageLoadMode.pagination')}</Radio>
               <Radio value='infiniteScroll'>{t('logs.settings.pageLoadMode.infiniteScroll')}</Radio>
             </Radio.Group>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={t('logs.settings.topNSettings.title')}
+        visible={topNSettingsModalVisible}
+        onOk={() => {
+          updateOptions({
+            topNumber,
+          });
+          setTopNSettingsModalVisible(false);
+        }}
+        onCancel={() => {
+          setTopNSettingsModalVisible(false);
+        }}
+      >
+        <Form>
+          <Form.Item>
+            <InputNumber
+              className='w-full'
+              min={1}
+              value={topNumber}
+              onChange={(val) => {
+                if (val) {
+                  setTopNumber(val);
+                }
+              }}
+            />
           </Form.Item>
         </Form>
       </Modal>
