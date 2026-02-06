@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Form } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -44,6 +44,17 @@ export default function Explorer(props: Props) {
   const [viewModalState, setViewModalState] = useState<ModalState>({
     visible: false,
   });
+  const executeQueryRef = useRef<() => void>();
+  const [shouldExecuteQuery, setShouldExecuteQuery] = useState(false);
+
+  useEffect(() => {
+    if (shouldExecuteQuery && executeQueryRef.current) {
+      if (active) {
+        executeQueryRef.current();
+        setShouldExecuteQuery(false);
+      }
+    }
+  }, [shouldExecuteQuery, datasourceCate, active]);
 
   useEffect(() => {
     if (active && defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
@@ -61,6 +72,7 @@ export default function Explorer(props: Props) {
   }, [active]);
 
   const renderCommonSettings = ({ getDefaultQueryValues, executeQuery }: RenderCommonSettingsParams) => {
+    executeQueryRef.current = executeQuery;
     return (
       <div className='flex-shrink-0'>
         <Form.Item>
@@ -115,12 +127,6 @@ export default function Explorer(props: Props) {
               filterValues.datasourceCate = filterValues.datasourceCate || datasourceCate;
               filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[datasourceCate]?.[0]?.id!;
 
-              // 完全重置表单后再设置新值，避免旧值残留
-              form.setFieldsValue({
-                refreshFlag: undefined,
-                query: undefined,
-              });
-
               let range = filterValues.query?.range;
               if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
                 range = {
@@ -129,6 +135,9 @@ export default function Explorer(props: Props) {
                 };
               }
 
+              const isCateChanged = datasourceCate !== filterValues.datasourceCate;
+
+              form.resetFields(['refreshFlag', 'query']);
               form.setFieldsValue({
                 ...filterValues,
                 query: {
@@ -138,7 +147,11 @@ export default function Explorer(props: Props) {
                 },
               });
 
-              executeQuery();
+              if (isCateChanged) {
+                setShouldExecuteQuery(true);
+              } else if (executeQueryRef.current) {
+                executeQueryRef.current();
+              }
             }}
             adjustOldFilterValues={(values) => {
               if (values) {
