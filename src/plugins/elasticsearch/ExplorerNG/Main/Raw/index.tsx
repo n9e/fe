@@ -405,6 +405,7 @@ export default function index(props: Props) {
               highlights={data?.highlights || []}
               logsHash={data?.hash}
               fields={data?.fields || []}
+              showTopNSettings
               options={options}
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}

@@ -100,6 +100,9 @@ const zh_HK = {
         pagination: '分頁器',
         infiniteScroll: '滾動加載更多',
       },
+      topNSettings: {
+        title: '前 N 個值設置',
+      },
     },
     fieldLabelTip: '字段未開啟統計，無法進行統計分析',
     filterAnd: '添加 "{{token}}" 到本次檢索',

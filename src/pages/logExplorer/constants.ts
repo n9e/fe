@@ -1,5 +1,7 @@
 import { DatasourceCateEnum } from '@/utils/constant';
+
 import getUUID from './utils/getUUID';
+import { OptionsType } from './components/LogsViewer/types';
 
 export const NAME_SPACE = 'log_explorer';
 export const PATHNAME = '/log/explorer';
@@ -24,4 +26,15 @@ export const TYPE_MAP: Record<string, string> = {
   nested: 'nested',
   histogram: 'number',
   boolean: 'boolean',
+};
+
+export const DEFAULT_OPTIONS: OptionsType = {
+  logMode: 'origin',
+  lineBreak: 'false',
+  reverse: 'true',
+  lines: 'true',
+  time: 'true',
+  jsonDisplaType: 'string',
+  jsonExpandLevel: 1,
+  topNumber: 5,
 };

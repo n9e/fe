@@ -100,6 +100,9 @@ const ja_JP = {
         pagination: 'ページネーション',
         infiniteScroll: '無限スクロール',
       },
+      topNSettings: {
+        title: '上位 N 件の設定',
+      },
     },
     fieldLabelTip: 'フィールド統計が有効になっていないため、統計分析を実行できません',
     filterAnd: '"{{token}}" を現在の検索に追加',

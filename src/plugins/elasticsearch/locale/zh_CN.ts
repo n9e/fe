@@ -15,6 +15,7 @@ const zh_CN = {
     syntax_kuery: 'KQL',
     syntax_lucene: 'Lucene',
     interval_label: '聚合粒度',
+    syntax: '语法',
   },
 };
 export default zh_CN;

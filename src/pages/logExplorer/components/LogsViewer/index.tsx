@@ -66,6 +66,7 @@ interface Props {
   tableColumnsWidthCacheKey?: string;
   showPageLoadMode?: boolean;
   showJSONSettings?: boolean;
+  showTopNSettings?: boolean;
   showLogMode?: boolean;
   addonBefore?: React.ReactNode;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
@@ -131,6 +132,7 @@ export default function LogsViewer(props: Props) {
     tableColumnsWidthCacheKey,
     showPageLoadMode,
     showJSONSettings,
+    showTopNSettings,
     showLogMode = true,
     addonBefore,
     timeFieldColumnFormat,
@@ -258,6 +260,7 @@ export default function LogsViewer(props: Props) {
                 fields={fields}
                 showPageLoadMode={showPageLoadMode}
                 showJSONSettings={showJSONSettings}
+                showTopNSettings={showTopNSettings}
                 organizeFields={organizeFields}
                 setOrganizeFields={setOrganizeFields}
               />

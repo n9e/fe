@@ -22,4 +22,4 @@ export const LOGS_ORGANIZE_FIELDS_CACHE_KEY = `ng-${NAME_SPACE}-logs-organize-fi
 export const LOGS_OPTIONS_CACHE_KEY = `ng-${NAME_SPACE}-logs-options`;
 export const LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY = `ng-${NAME_SPACE}-logs-table-columns-width`;
 export const QUERY_CACHE_KEY = `ng-${NAME_SPACE}-query-history-records`;
-export const QUERY_CACHE_PICK_KEYS = ['mode', 'index', 'indexPattern', 'syntax', 'query'];
+export const QUERY_CACHE_PICK_KEYS = ['mode', 'index', 'index_pattern', 'syntax', 'query', 'date_field'];

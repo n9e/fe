@@ -3,6 +3,7 @@ import { Field } from '../../types';
 export type { Field };
 
 export interface StatsResult {
+  topNumber?: number;
   topN: {
     value: any;
     percent: number;
