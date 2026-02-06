@@ -36,7 +36,7 @@ interface Props {
   data: {
     [index: string]: any;
   }[];
-  highlights: {
+  highlights?: {
     [index: number]: string[];
   }[];
   logsHash?: string;
