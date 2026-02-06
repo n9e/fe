@@ -1,5 +1,5 @@
 import React from 'react';
-import { Space, Form, Input } from 'antd';
+import { Space, Form } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -7,6 +7,7 @@ import _ from 'lodash';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import QueryInput from '@/pages/logExplorer/components/QueryInput';
 
 import { NAME_SPACE } from '../../constants';
 import QueryInputAddonAfter from '../components/QueryInputAddonAfter';
@@ -51,9 +52,8 @@ export default function QueryInputCpt(props: Props) {
       <div className='relative'>
         {queryValues?.syntax === 'lucene' ? (
           <Form.Item name={['query', 'query']}>
-            <Input.TextArea
-              autoSize={{ minRows: 1, maxRows: 6 }}
-              onPressEnter={() => {
+            <QueryInput
+              onEnterPress={() => {
                 snapRangeRef.current = {
                   from: undefined,
                   to: undefined,

@@ -7,10 +7,10 @@ import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import QueryInput from '@/pages/logExplorer/components/QueryInput';
 
 import { NAME_SPACE } from '../../../constants';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from '../../SideBarNav/FieldsSidebar/DefaultSearchIcon';
-import QueryInput from '../../components/QueryInput';
 import QueryInputAddonAfter from '../../components/QueryInputAddonAfter';
 
 interface Props {
