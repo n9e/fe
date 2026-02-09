@@ -330,8 +330,6 @@ export default function index(props: Props) {
     setExecuteLoading(loading || histogramLoading);
   }, [loading, histogramLoading]);
 
-  // console.log('highlights', highlights);
-
   return (
     <>
       {!_.isEmpty(queryValues?.filters) && (
