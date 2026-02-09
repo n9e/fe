@@ -153,3 +153,8 @@ export const getAuthorizedDatasourceCates = (feats, isPlus, filter?: (cate: any)
   }
   return cates;
 };
+
+export const getGraphProByCate = (cate: string) => {
+  const currentCate = _.find(allCates, { value: cate });
+  return currentCate?.graphPro;
+};

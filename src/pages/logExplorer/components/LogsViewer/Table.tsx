@@ -36,6 +36,9 @@ interface Props {
   data: {
     [index: string]: any;
   }[];
+  highlights?: {
+    [index: number]: string[];
+  }[];
   logsHash?: string;
   colWidths?: { [key: string]: number };
   tableColumnsWidthCacheKey?: string;
@@ -53,6 +56,8 @@ interface Props {
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  showExistsAction?: boolean;
 }
 
 function Table(props: Props) {
@@ -63,6 +68,7 @@ function Table(props: Props) {
     indexData,
     timeField,
     data,
+    highlights,
     logsHash,
     colWidths,
     tableColumnsWidthCacheKey,
@@ -76,6 +82,8 @@ function Table(props: Props) {
     logViewerExtraRender,
     logViewerFilterFields,
     logViewerRenderCustomTagsArea,
+    adjustFieldValue,
+    showExistsAction,
   } = props;
   const fields = useMemo(() => {
     const resolvedFields = getFieldsFromTableData(data);
@@ -97,11 +105,14 @@ function Table(props: Props) {
         options,
         onValueFilter,
         data,
+        highlights,
         tableColumnsWidthCacheKey,
         onOpenOrganizeFieldsModal,
         setLogViewerDrawerState,
         timeFieldColumnFormat,
         linesColumnFormat,
+        adjustFieldValue,
+        showExistsAction,
       }),
     [columnDeps, onValueFilter, onOpenOrganizeFieldsModal],
   );
