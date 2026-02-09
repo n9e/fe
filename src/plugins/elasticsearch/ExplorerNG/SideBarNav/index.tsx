@@ -91,11 +91,13 @@ export default function indexCpt(props: Props) {
     refreshDeps: [datasourceValue],
     ready: !!datasourceValue && queryValues?.mode === 'index-patterns',
     onSuccess: (data) => {
-      if (urlSearchParams.get('index_pattern')) {
-        const indexPattern = _.find(data, (item) => item.name === urlSearchParams.get('index_pattern'));
+      const queryValues = form.getFieldValue('query');
+      if (queryValues.index_pattern && queryValues.index === undefined) {
+        const indexPattern = _.find(data, (item) => {
+          // Support searching by both id and name for better compatibility with old URL params
+          return item.id === _.toNumber(queryValues.index_pattern) || item.name === queryValues.index_pattern;
+        });
         if (indexPattern) {
-          const queryValues = form.getFieldValue('query');
-
           let fieldConfig;
 
           try {
