@@ -35,6 +35,8 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
       'syntax',
       'query',
       '__execute__',
+      'filters',
+      'allow_hide_system_indices',
     ]);
     _.forEach(validParmas, (value, key) => {
       if (value) {
@@ -139,6 +141,17 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const syntax = _.get(params, 'syntax');
       const mode = _.get(params, 'mode');
       const allow_hide_system_indices = _.get(params, 'allow_hide_system_indices') === 'true' ? true : false;
+      let filters: any[] = [];
+      try {
+        if (params?.filters) {
+          const parsedFilters = JSON.parse(params.filters);
+          if (_.isArray(parsedFilters)) {
+            filters = parsedFilters;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to parse filters from URL params', error);
+      }
 
       if (mode === 'index-patterns' || index_pattern) {
         return {
@@ -151,6 +164,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             range,
             syntax,
             allow_hide_system_indices,
+            filters,
           },
         };
       } else if (index) {
@@ -164,6 +178,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             range,
             syntax,
             allow_hide_system_indices,
+            filters,
           },
         };
       }
@@ -224,6 +239,16 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.elasticsearch) {
+    let filtersString = '';
+    const filters = formValues.query?.filters;
+    if (filters && _.isArray(filters) && filters.length > 0) {
+      try {
+        filtersString = JSON.stringify(filters);
+      } catch (error) {
+        console.error('Failed to stringify filters for URL params', error);
+      }
+    }
+
     query.mode = formValues.query?.mode;
     query.index = formValues.query?.index;
     query.index_pattern = formValues.query?.index_pattern;
@@ -231,6 +256,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.syntax = formValues.query?.syntax;
     query.query = formValues.query?.query;
     query.allow_hide_system_indices = formValues.query?.allow_hide_system_indices ? 'true' : 'false';
+    query.filters = filtersString;
     return queryString.stringify(query);
   }
   return '';
