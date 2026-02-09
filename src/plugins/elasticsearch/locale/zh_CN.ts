@@ -16,6 +16,7 @@ const zh_CN = {
     syntax_lucene: 'Lucene',
     interval_label: '聚合粒度',
     syntax: '语法',
+    query: '查询条件',
   },
 };
 export default zh_CN;

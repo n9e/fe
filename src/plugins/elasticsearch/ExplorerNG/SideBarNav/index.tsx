@@ -4,7 +4,7 @@ import { SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { useRequest } from 'ahooks';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import OutlinedAutoComplete from '@/components/OutlinedAutoComplete';
 import { OutlinedSelect } from '@/components/OutlinedSelect';
@@ -32,13 +32,14 @@ interface Props {
     from: number;
     limit: number;
   };
+
+  isOpenSearch?: boolean;
 }
 
 export default function indexCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { disabled, executeQuery, organizeFields, setOrganizeFields, onIndexDataChange, handleValueFilter, requestParams } = props;
+  const { disabled, executeQuery, organizeFields, setOrganizeFields, onIndexDataChange, handleValueFilter, requestParams, isOpenSearch } = props;
 
-  const urlSearchParams = new URLSearchParams(useLocation().search);
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
 
   const form = Form.useFormInstance();
@@ -137,7 +138,7 @@ export default function indexCpt(props: Props) {
     <>
       <div className='min-h-0 flex-1 h-full flex flex-col'>
         <div className='flex-shrink-0'>
-          <Form.Item name={['query', 'mode']} initialValue='indices'>
+          <Form.Item name={['query', 'mode']} initialValue='indices' hidden={isOpenSearch}>
             <OutlinedSelect
               label={t('query.mode')}
               options={[
@@ -188,21 +189,23 @@ export default function indexCpt(props: Props) {
                     setIndexSearch(val);
                   }}
                   suffix={
-                    <Tooltip title={t('query.indices_tip')} placement='top'>
-                      <Popover
-                        content={
-                          <div>
-                            <Form.Item name={['query', 'allow_hide_system_indices']} valuePropName='checked' noStyle>
-                              <Checkbox>{t('query.allow_hide_system_indices')}</Checkbox>
-                            </Form.Item>
-                          </div>
-                        }
-                        trigger='click'
-                        placement='bottom'
-                      >
-                        <Button icon={<SettingOutlined />} />
-                      </Popover>
-                    </Tooltip>
+                    isOpenSearch ? undefined : (
+                      <Tooltip title={t('query.indices_tip')} placement='top'>
+                        <Popover
+                          content={
+                            <div>
+                              <Form.Item name={['query', 'allow_hide_system_indices']} valuePropName='checked' noStyle>
+                                <Checkbox>{t('query.allow_hide_system_indices')}</Checkbox>
+                              </Form.Item>
+                            </div>
+                          }
+                          trigger='click'
+                          placement='bottom'
+                        >
+                          <Button icon={<SettingOutlined />} />
+                        </Popover>
+                      </Tooltip>
+                    )
                   }
                 />
               </Form.Item>

@@ -16,6 +16,7 @@ const ja_JP = {
     syntax_lucene: 'Lucene',
     interval_label: '集計間隔',
     syntax: '構文',
+    query: 'クエリ',
   },
 };
 
