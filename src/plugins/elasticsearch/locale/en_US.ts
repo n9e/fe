@@ -16,6 +16,7 @@ const en_US = {
     syntax_lucene: 'Lucene',
     interval_label: 'Interval',
     syntax: 'Syntax',
+    query: 'Query',
   },
 };
 export default en_US;

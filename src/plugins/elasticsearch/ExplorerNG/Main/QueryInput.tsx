@@ -1,11 +1,13 @@
-import React from 'react';
-import { Space, Form } from 'antd';
+import React, { useContext } from 'react';
+import { Space, Form, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import QueryInput from '@/pages/logExplorer/components/QueryInput';
 
@@ -21,7 +23,8 @@ interface Props {
 }
 
 export default function QueryInputCpt(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
+  const { darkMode } = useContext(CommonStateContext);
 
   const { snapRangeRef, executeQuery } = props;
 
@@ -35,16 +38,19 @@ export default function QueryInputCpt(props: Props) {
       label={
         <Space>
           {t(`${logExplorerNS}:query`)}
-          <a
-            href={
-              queryValues?.syntax === 'lucene'
-                ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
-                : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
-            }
-            target='_blank'
-          >
-            <QuestionCircleOutlined />
-          </a>
+          <Tooltip title={t('common:page_help')}>
+            <QuestionCircleOutlined
+              onClick={() => {
+                DocumentDrawer({
+                  language: i18n.language,
+                  darkMode,
+                  title: t('common:page_help'),
+                  type: 'iframe',
+                  documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/elasticserch/',
+                });
+              }}
+            />
+          </Tooltip>
         </Space>
       }
       addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}

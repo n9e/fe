@@ -25,10 +25,12 @@ interface Props {
   disabled?: boolean;
   defaultFormValuesControl?: DefaultFormValuesControl;
   renderCommonSettings: RenderCommonSettings;
+
+  isOpenSearch?: boolean; // 是否是 OpenSearch，OpenSearch 是 Elasticsearch 的分支，Explorer 组件基本通用，但在某些细节上会有差异，所以单独传一个标识来区分，目前 openSearch 是不存在 indexPattern
 }
 
 export default function index(props: Props) {
-  const { disabled, defaultFormValuesControl, renderCommonSettings } = props;
+  const { disabled, defaultFormValuesControl, renderCommonSettings, isOpenSearch } = props;
 
   const form = Form.useFormInstance();
 
@@ -181,6 +183,7 @@ export default function index(props: Props) {
               onIndexDataChange={setIndexData}
               handleValueFilter={handleValueFilter}
               requestParams={{ from: (serviceParams.current - 1) * serviceParams.pageSize, range: rangeRef.current, limit: serviceParams.pageSize }}
+              isOpenSearch={isOpenSearch}
             />
           </SideBar>
           <div className='min-w-0 flex-1'>

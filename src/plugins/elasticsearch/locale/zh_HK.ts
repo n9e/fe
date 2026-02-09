@@ -16,6 +16,7 @@ const zh_HK = {
     syntax_lucene: 'Lucene',
     interval_label: '聚合粒度',
     syntax: '語法',
+    query: '查詢條件',
   },
 };
 
