@@ -82,7 +82,7 @@ const zh_CN = {
     host: '机器',
     error_msg: '错误',
     username: '用户名',
-    nickname: '显示名',
+    nickname: '用户昵称',
   },
   datasource: {
     prod: '监控类型',
