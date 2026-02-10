@@ -77,6 +77,7 @@ const zh_HK = {
       mode: {
         origin: '原始',
         table: '表格',
+        clustering: '聚合',
       },
       breakLine: '換行',
       reverse: '時間',

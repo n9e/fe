@@ -77,6 +77,7 @@ const zh_CN = {
       mode: {
         origin: '原始',
         table: '表格',
+        clustering: '聚合',
       },
       breakLine: '换行',
       reverse: '时间',

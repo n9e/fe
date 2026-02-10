@@ -77,6 +77,7 @@ const en_US = {
       mode: {
         origin: 'Original',
         table: 'Table',
+        clustering: 'Clustering',
       },
       breakLine: 'Line Break',
       reverse: 'Time',

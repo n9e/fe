@@ -77,6 +77,7 @@ const ja_JP = {
       mode: {
         origin: '元のデータ',
         table: 'テーブル',
+        clustering: 'クラスタリング',
       },
       breakLine: '改行',
       reverse: '時間',

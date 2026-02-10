@@ -581,11 +581,13 @@ export default function index(props: Props) {
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
               adjustFieldValue={(formatedValue, highlightValue) => {
-                // console.log(formatedValue, highlightValue);
                 if (highlightValue) {
                   return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlightValue)) }} />;
                 }
                 return formatedValue;
+              }}
+              logClusting={{
+                enabled: true,
               }}
             />
           ) : loading || histogramLoading ? (

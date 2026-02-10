@@ -1,5 +1,5 @@
 export interface OptionsType {
-  logMode: 'origin' | 'table';
+  logMode: 'origin' | 'table' | 'clustering';
   lineBreak: 'true' | 'false';
   reverse: 'true' | 'false';
   lines: 'true' | 'false';

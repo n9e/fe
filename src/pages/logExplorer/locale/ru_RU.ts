@@ -77,6 +77,7 @@ const ru_RU = {
       mode: {
         origin: 'Исходный',
         table: 'Таблица',
+        clustering: 'Кластеризация',
       },
       breakLine: 'Перенос строки',
       reverse: 'Время',
