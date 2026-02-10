@@ -137,6 +137,11 @@ export default function Item(props: Props) {
                   options={_.map(teamList, (item) => {
                     return { label: item.name, value: item.id };
                   })}
+                  optionFilterProp='label'
+                  showSearch
+                  filterOption={(input, option) => {
+                    return option?.label ? String(option.label).toLowerCase().includes(String(input).toLowerCase()) : false;
+                  }}
                 />
               </Form.Item>
             </Col>
