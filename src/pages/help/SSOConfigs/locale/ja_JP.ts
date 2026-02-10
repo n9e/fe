@@ -23,6 +23,7 @@ const ja_JP = {
     cover_attributes: 'ユーザー情報を更新',
     cover_attributes_tip: 'ログインするたびに、ユーザー情報が変更された場合、DingTalkのユーザー情報でNightingaleのユーザー情報（電話番号、メール）を上書きします',
     username_field: 'ユーザー名フィールド',
+    default_team: 'デフォルトチーム',
     username_field_map: {
       phone: '電話番号',
       name: '名前',

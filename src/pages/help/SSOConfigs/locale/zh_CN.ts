@@ -22,6 +22,7 @@ const zh_CN = {
     cover_attributes: '更新用户信息',
     cover_attributes_tip: '每次登陆后，如果用户信息有变化，会使用钉钉中用户的信息覆盖夜莺中用户的信息(手机号、邮箱)',
     username_field: '用户名字段',
+    default_team: '默认团队',
     username_field_map: {
       phone: '手机号',
       name: '名称',
