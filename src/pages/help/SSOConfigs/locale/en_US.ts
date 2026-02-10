@@ -25,6 +25,7 @@ const en_US = {
     cover_attributes_tip:
       'After each login, if user information has changed, the user information from DingTalk will overwrite the user information in Nightingale (phone number, email)',
     username_field: 'Username Field',
+    default_team: 'Default Team',
     username_field_map: {
       phone: 'Phone Number',
       name: 'Name',
