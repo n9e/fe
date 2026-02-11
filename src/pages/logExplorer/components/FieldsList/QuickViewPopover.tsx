@@ -66,7 +66,9 @@ export default function StatisticPopover(props: Props) {
       }
       visible={statisticPopoverVisible}
       onVisibleChange={(visible) => {
-        setStatisticPopoverVisible(visible);
+        if (onStatisticClick) {
+          setStatisticPopoverVisible(visible);
+        }
       }}
     >
       {children}

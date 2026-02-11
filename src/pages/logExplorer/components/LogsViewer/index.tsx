@@ -33,6 +33,9 @@ interface Props {
   loading: boolean;
   /** 日志数据 */
   logs: { [index: string]: string }[];
+  highlights?: {
+    [index: number]: string[];
+  }[];
   logsHash?: string;
   /** 字段列表 */
   fields: string[];
@@ -63,6 +66,7 @@ interface Props {
   tableColumnsWidthCacheKey?: string;
   showPageLoadMode?: boolean;
   showJSONSettings?: boolean;
+  showTopNSettings?: boolean;
   showLogMode?: boolean;
   addonBefore?: React.ReactNode;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
@@ -72,6 +76,8 @@ interface Props {
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  showExistsAction?: boolean;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -105,6 +111,7 @@ export default function LogsViewer(props: Props) {
     histogram,
     loading,
     logs,
+    highlights,
     logsHash,
     fields,
     onOptionsChange,
@@ -125,6 +132,7 @@ export default function LogsViewer(props: Props) {
     tableColumnsWidthCacheKey,
     showPageLoadMode,
     showJSONSettings,
+    showTopNSettings,
     showLogMode = true,
     addonBefore,
     timeFieldColumnFormat,
@@ -134,6 +142,8 @@ export default function LogsViewer(props: Props) {
     logViewerExtraRender,
     logViewerFilterFields,
     logViewerRenderCustomTagsArea,
+    adjustFieldValue,
+    showExistsAction,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -250,6 +260,7 @@ export default function LogsViewer(props: Props) {
                 fields={fields}
                 showPageLoadMode={showPageLoadMode}
                 showJSONSettings={showJSONSettings}
+                showTopNSettings={showTopNSettings}
                 organizeFields={organizeFields}
                 setOrganizeFields={setOrganizeFields}
               />
@@ -266,6 +277,7 @@ export default function LogsViewer(props: Props) {
                   raw_key={raw_key}
                   timeField={timeField}
                   data={logs}
+                  highlights={highlights}
                   options={options}
                   onReverseChange={(val) => {
                     onLogRequestParamsChange?.({
@@ -281,6 +293,8 @@ export default function LogsViewer(props: Props) {
                   logViewerExtraRender={logViewerExtraRender}
                   logViewerFilterFields={logViewerFilterFields}
                   logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
+                  adjustFieldValue={adjustFieldValue}
+                  showExistsAction={showExistsAction}
                 />
               )}
               {options.logMode === 'table' && (
@@ -290,6 +304,7 @@ export default function LogsViewer(props: Props) {
                   indexData={props.indexData}
                   timeField={timeField}
                   data={logs}
+                  highlights={highlights}
                   logsHash={logsHash}
                   options={options}
                   onReverseChange={(val) => {
@@ -310,6 +325,8 @@ export default function LogsViewer(props: Props) {
                   logViewerExtraRender={logViewerExtraRender}
                   logViewerFilterFields={logViewerFilterFields}
                   logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
+                  adjustFieldValue={adjustFieldValue}
+                  showExistsAction={showExistsAction}
                 />
               )}
             </div>

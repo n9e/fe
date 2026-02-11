@@ -3,12 +3,13 @@ import { Field } from '../../types';
 export type { Field };
 
 export interface StatsResult {
+  topNumber?: number;
   topN: {
     value: any;
     percent: number;
-    count: number;
+    count?: number;
   }[];
-  stats: {
+  stats?: {
     min: number;
     max: number;
     avg: number;

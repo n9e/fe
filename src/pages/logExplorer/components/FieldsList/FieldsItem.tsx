@@ -11,6 +11,8 @@ import { NAME_SPACE } from '../../constants';
 import { Field, StatsResult } from './types';
 import QuickViewPopover from './QuickViewPopover';
 
+const DEFAULT_TOP_NUMBER = 5;
+
 interface Props {
   operType: 'show' | 'available';
   onOperClick: () => void;
@@ -70,6 +72,7 @@ export default function FieldsItem(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats, renderStatsPopoverTitleExtra, renderFieldNameExtra, onStatisticClick } = props;
   const [topNVisible, setTopNVisible] = useState<boolean>(false);
+  const [topNumber, setTopNumber] = useState<number>(DEFAULT_TOP_NUMBER);
   const [topNData, setTopNData] = useState<any[]>([]);
   const [topNLoading, setTopNLoading] = useState<boolean>(false);
   const [stats, setStats] = useState<{
@@ -96,86 +99,92 @@ export default function FieldsItem(props: Props) {
       content={
         <div>
           <Spin spinning={topNLoading}>
-            <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />
-            <div className='bg-fc-200 p-4'>
-              {stats?.unique_count !== undefined && stats?.exist_ratio !== undefined && (
-                <Row gutter={[16, 16]}>
-                  {['unique_count', 'exist_ratio'].map((statName) => {
-                    const statValue = stats?.[statName];
-                    if (statValue === undefined) return null;
-                    return (
-                      <QuickViewPopover
-                        key={statName}
-                        options={{
-                          func: statName,
-                          field: field.field,
-                        }}
-                        onStatisticClick={onStatisticClick}
-                        setTopNVisible={setTopNVisible}
-                      >
-                        <Col span={12} key={statName}>
-                          <Statistic
-                            className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer'
-                            title={t(`stats.${statName}`)}
-                            value={statValue}
-                            suffix={statName === 'exist_ratio' ? '%' : undefined}
-                          />
-                        </Col>
-                      </QuickViewPopover>
-                    );
-                  })}
-                </Row>
-              )}
-              {Object.keys(_.omit(stats, ['unique_count', 'exist_ratio'])).length > 0 && <Divider />}
-              <Row gutter={[16, 16]}>
-                {_.map(_.omit(stats, ['unique_count', 'exist_ratio']), (statValue, statName) => {
-                  return (
+            {stats && (
+              <>
+                <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />
+                <div className='bg-fc-200 p-4'>
+                  {stats?.unique_count !== undefined && stats?.exist_ratio !== undefined && (
+                    <Row gutter={[16, 16]}>
+                      {['unique_count', 'exist_ratio'].map((statName) => {
+                        const statValue = stats?.[statName];
+                        if (statValue === undefined) return null;
+                        return (
+                          <QuickViewPopover
+                            key={statName}
+                            options={{
+                              func: statName,
+                              field: field.field,
+                            }}
+                            onStatisticClick={onStatisticClick}
+                            setTopNVisible={setTopNVisible}
+                          >
+                            <Col span={12} key={statName}>
+                              <Statistic
+                                className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer'
+                                title={t(`stats.${statName}`)}
+                                value={statValue}
+                                suffix={statName === 'exist_ratio' ? '%' : undefined}
+                              />
+                            </Col>
+                          </QuickViewPopover>
+                        );
+                      })}
+                    </Row>
+                  )}
+                  {Object.keys(_.omit(stats, ['unique_count', 'exist_ratio'])).length > 0 && <Divider />}
+                  <Row gutter={[16, 16]}>
+                    {_.map(_.omit(stats, ['unique_count', 'exist_ratio']), (statValue, statName) => {
+                      return (
+                        <QuickViewPopover
+                          key={statName}
+                          options={{
+                            func: statName,
+                            field: field.field,
+                          }}
+                          onStatisticClick={onStatisticClick}
+                          setTopNVisible={setTopNVisible}
+                        >
+                          <Col span={8} key={statName}>
+                            <Statistic className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer' title={t(`stats.${statName}`)} value={statValue} />
+                          </Col>
+                        </QuickViewPopover>
+                      );
+                    })}
+                  </Row>
+                </div>
+              </>
+            )}
+            <div>
+              <div className='my-2 text-l2 flex items-center justify-between'>
+                <strong>{t('field_values_topn.title', { n: topNumber })}</strong>
+                {onStatisticClick && (
+                  <Space>
                     <QuickViewPopover
-                      key={statName}
                       options={{
-                        func: statName,
+                        func: 'count',
+                        group_by: field.field,
                         field: field.field,
+                        ref: `top${topNumber}`,
                       }}
                       onStatisticClick={onStatisticClick}
                       setTopNVisible={setTopNVisible}
                     >
-                      <Col span={8} key={statName}>
-                        <Statistic className='n9e-logexplorer-field-statistic text-center hover:bg-fc-100 cursor-pointer' title={t(`stats.${statName}`)} value={statValue} />
-                      </Col>
+                      <a className='text-base'>{t('field_values_topn.quick_view_count')}</a>
                     </QuickViewPopover>
-                  );
-                })}
-              </Row>
-            </div>
-            <div>
-              <div className='my-2 text-l2 flex items-center justify-between'>
-                <strong>{t('field_values_topn.title', { n: 5 })}</strong>
-                <Space>
-                  <QuickViewPopover
-                    options={{
-                      func: 'count',
-                      group_by: field.field,
-                      field: field.field,
-                      ref: 'top5',
-                    }}
-                    onStatisticClick={onStatisticClick}
-                    setTopNVisible={setTopNVisible}
-                  >
-                    <a className='text-base'>{t('field_values_topn.quick_view_count')}</a>
-                  </QuickViewPopover>
-                  <QuickViewPopover
-                    options={{
-                      func: 'ratio',
-                      group_by: field.field,
-                      field: field.field,
-                      ref: 'top5',
-                    }}
-                    onStatisticClick={onStatisticClick}
-                    setTopNVisible={setTopNVisible}
-                  >
-                    <a className='text-base'>{t('field_values_topn.quick_view_ratio')}</a>
-                  </QuickViewPopover>
-                </Space>
+                    <QuickViewPopover
+                      options={{
+                        func: 'ratio',
+                        group_by: field.field,
+                        field: field.field,
+                        ref: `top${topNumber}`,
+                      }}
+                      onStatisticClick={onStatisticClick}
+                      setTopNVisible={setTopNVisible}
+                    >
+                      <a className='text-base'>{t('field_values_topn.quick_view_ratio')}</a>
+                    </QuickViewPopover>
+                  </Space>
+                )}
               </div>
               {_.isEmpty(topNData) && t('topn_no_data')}
               {_.map(topNData, (item) => {
@@ -191,19 +200,21 @@ export default function FieldsItem(props: Props) {
                             {_.isEmpty(fieldValue) && !_.isNumber(fieldValue) ? '(empty)' : fieldValue}
                           </div>
                         </Tooltip>
-                        <QuickViewPopover
-                          options={{
-                            func: 'count',
-                            field: field.field,
-                            field_filter: fieldValue,
-                          }}
-                          onStatisticClick={onStatisticClick}
-                          setTopNVisible={setTopNVisible}
-                        >
-                          <Button type='link' size='small' className='p-0' disabled={emptyValueNotSupported}>
-                            {item.count}
-                          </Button>
-                        </QuickViewPopover>
+                        {item.count !== undefined && (
+                          <QuickViewPopover
+                            options={{
+                              func: 'count',
+                              field: field.field,
+                              field_filter: fieldValue,
+                            }}
+                            onStatisticClick={onStatisticClick}
+                            setTopNVisible={setTopNVisible}
+                          >
+                            <Button type='link' size='small' className='p-0' disabled={emptyValueNotSupported}>
+                              {item.count}
+                            </Button>
+                          </QuickViewPopover>
+                        )}
                       </div>
                       <div className='flex justify-between'>
                         <div style={{ width: 'calc(100% - 50px)' }} className='truncate flex items-center'>
@@ -274,7 +285,8 @@ export default function FieldsItem(props: Props) {
             setTopNLoading(true);
             fetchStats(field)
               .then((res) => {
-                const { topN, stats } = res;
+                const { topNumber, topN, stats } = res;
+                setTopNumber(topNumber ?? DEFAULT_TOP_NUMBER);
                 setTopNData(topN);
                 setStats(stats);
               })
