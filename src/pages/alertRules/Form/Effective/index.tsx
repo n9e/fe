@@ -36,6 +36,7 @@ export default function index() {
   const { isPlus } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
   const time_zone = Form.useWatch('time_zone');
+  const effective_time = Form.useWatch('effective_time'); // 监听以便实时更新本地时间显示
 
   const { data: timezones } = useRequest(() => getTimezones(), {
     refreshDeps: [],
