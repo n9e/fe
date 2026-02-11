@@ -69,11 +69,14 @@ export default function LCDBar(props: Props) {
   return (
     <Tooltip
       mouseEnterDelay={0.5}
+      overlayClassName='ant-tooltip-max-width-600'
       title={
         <Space>
-          {item.name}
-          {item.value}
-          {item.unit}
+          {name}
+          <Space size={2}>
+            {item.value}
+            {item.unit}
+          </Space>
         </Space>
       }
     >

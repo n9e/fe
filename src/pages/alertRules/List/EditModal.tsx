@@ -222,6 +222,17 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
             delete data.action;
           }
           break;
+        case 'service_cal_ids':
+          data.service_cal_configs = _.map(data.service_cal_configs, (item) => {
+            return {
+              ...item,
+              time_range: {
+                start: item.time_range.start.format('HH:mm'),
+                end: item.time_range.end.format('HH:mm'),
+              },
+            };
+          });
+          break;
         default:
           break;
       }
