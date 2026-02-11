@@ -20,7 +20,7 @@ export default function Elasticsearch({ datasourceValue }) {
                 if (__mode__ === '__expr__') {
                   return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
                 }
-                return <QueryPanel key={field.key} field={field} index={index} fields={fields} remove={remove} datasourceValue={datasourceValue} />;
+                return <QueryPanel key={field.key} field={field} index={index} fields={fields} add={add} remove={remove} datasourceValue={datasourceValue} />;
               })}
 
               <Form.ErrorList errors={errors} />

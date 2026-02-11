@@ -590,6 +590,8 @@ const ja_JP = {
     options_max_data_points_tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
     options_time: '時間',
     options_time_tip: 'クエリのカスタム時間範囲を指定できます。空白のままにすると、ダッシュボードの時間範囲が使用されます',
+    copy_query: 'クエリをコピー',
+    hide_response: 'レスポンスを非表示',
   },
   detail: {
     datasource_empty: 'データソース情報がありません。まずデータソースを設定してください',

@@ -34,6 +34,9 @@ const zh_CN = {
   effective_time_tip: '00:00-00:00 和 00:00-23:59 都表示全天生效',
   enable_in_bg: '仅在本业务组生效',
   enable_in_bg_tip: '若告警事件中包含 ident 标签，且对应的机器不属于本业务组，则丢弃该告警事件；若告警事件中不包含 ident 标签，则此过滤条件不生效，会继续后续处理。',
+  time_zone: '时区',
+  local_time: '本地时间',
+
   notify_configs: '通知配置',
   notify_rule_ids: '通知规则',
   switch_to_old: '切换旧版',
@@ -160,6 +163,7 @@ const zh_CN = {
         annotations: '附加信息',
         triggers: '告警条件',
         cron_pattern: '执行频率',
+        time_zone: '时区',
       },
     },
     cloneToHosts: {
@@ -224,7 +228,7 @@ const zh_CN = {
     disabled: '启用',
     severity: '级别',
     status: '状态',
-    status_tip: '告警规则当前是否触发了告警事件，默认统计最近 30 天的数据',
+    status_tip: '告警规则当前是否触发了告警事件，只会统计展示最近30天的数据',
   },
   expired: '告警规则已经被别人修改，为避免相互覆盖，请刷新页面查看最新配置',
   relabel: {
