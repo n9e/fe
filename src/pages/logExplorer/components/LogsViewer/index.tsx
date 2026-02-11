@@ -39,6 +39,7 @@ interface Props {
     [index: number]: string[];
   }[];
   logsHash?: string;
+  logTotal?: number;
   /** 字段列表 */
   fields: string[];
   /** 日志格式配置项 */
@@ -84,6 +85,8 @@ interface Props {
   // 日志聚类参数
   logClusting?: {
     enabled: boolean;
+    queryStrRef: React.RefObject<string>;
+    logTotal: number;
   };
 
   /** 以下是 context 依赖的数据 */
@@ -153,6 +156,7 @@ export default function LogsViewer(props: Props) {
     showExistsAction,
     logClusting,
   } = props;
+  console.log('logClusting', logClusting);
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
 
@@ -173,6 +177,7 @@ export default function LogsViewer(props: Props) {
   const [patternHistogramState, setPatternHistogramState] = useState<{
     visible: boolean;
     uuid?: string; // 用户查询柱状图数据的相关参数
+    rowIndex?: number;
   }>({
     visible: false,
   });
@@ -190,7 +195,7 @@ export default function LogsViewer(props: Props) {
     >
       <>
         {patternHistogramState.visible ? (
-          <ClusteringHistogram {...patternHistogramState} />
+          <ClusteringHistogram {...patternHistogramState} setPatternHistogramState={setPatternHistogramState} />
         ) : (
           <>
             {!hideHistogram && (
@@ -202,6 +207,7 @@ export default function LogsViewer(props: Props) {
               >
                 <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
                   <Space>
+                    <span>{t('clustering.all_log_statistics')}</span>
                     {histogramAddonBeforeRender}
                     <Spin spinning={histogramLoading} size='small' />
                   </Space>
@@ -250,7 +256,7 @@ export default function LogsViewer(props: Props) {
           </>
         )}
         <FullscreenButton.Provider>
-          <div className='flex justify-between pb-2'>
+          <div className='flex justify-between pb-2 56'>
             <Space>
               {addonBefore}
               {showLogMode && (
@@ -270,11 +276,11 @@ export default function LogsViewer(props: Props) {
                     ],
                     logClusting?.enabled
                       ? [
-                          {
-                            label: t('logs.settings.mode.clustering'),
-                            value: 'clustering',
-                          },
-                        ]
+                        {
+                          label: t('logs.settings.mode.clustering'),
+                          value: 'clustering',
+                        },
+                      ]
                       : [],
                   )}
                   value={options.logMode}
@@ -364,7 +370,7 @@ export default function LogsViewer(props: Props) {
                 />
               )}
               {options.logMode === 'clustering' && (
-                <ClusteringTable clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} />
+                <ClusteringTable queryStrRef={logClusting?.queryStrRef} onValueFilter={onAddToQuery || (() => { })} clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} options={options} logTotal={logClusting?.logTotal || 0} indexData={props.indexData || []} />
               )}
             </div>
           </div>
