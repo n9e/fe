@@ -152,8 +152,8 @@ function index(props: Props) {
               // 手动获取字段值，解决字段名包含"点"时无法正确获取的问题
               const fieldValue1 = node1.data?.[item];
               const fieldValue2 = node2.data?.[item];
-              const date1Number = fieldValue1?.value ?? null;
-              const date2Number = fieldValue2?.value ?? null;
+              const date1Number = fieldValue1?.stat ?? fieldValue1?.value ?? null;
+              const date2Number = fieldValue2?.stat ?? fieldValue2?.value ?? null;
               if (date1Number === null && date2Number === null) {
                 return 0;
               }

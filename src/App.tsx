@@ -294,9 +294,7 @@ function App() {
             };
           });
         } else {
-          const datasourceList = !_.some(anonymousRoutes, (route) => location.pathname.startsWith(route))
-            ? await getDatasourceBriefList()
-            : [];
+          const datasourceList = !_.some(anonymousRoutes, (route) => location.pathname.startsWith(route)) ? await getDatasourceBriefList() : [];
           removePreloader();
           initialized.current = true;
           setCommonState((state) => {

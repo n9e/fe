@@ -1,8 +1,8 @@
 const zh_HK = {
   title: '工作流',
-  title_add: '新增事件工作流',
-  title_edit: '編輯事件工作流',
-  title_clone: '克隆事件工作流',
+  title_add: '新增工作流',
+  title_edit: '編輯工作流',
+  title_clone: '克隆工作流',
   teams: '授權團隊',
   teams_tip: '限定哪些團隊成員可以查看和修改此配置，可以關聯多個團隊<br />例如：將配置授權給 infra-team，則只有 infra-team 團隊下的成員可以訪問或調整本配置。',
   basic_configuration: '基本配置',
@@ -36,8 +36,8 @@ const zh_HK = {
     true: '已禁用',
   },
   inputs: {
-    label: '前置輸入',
-    help: '前置輸入變量可在工作流處理器中通過 {{$inputs.變量名}} 引用',
+    label: '前置變量',
+    help: '前置變量可在下面處理器中通過 {{$inputs.變量名}} 引用，比如可以設置 ident 變量，在處理器中，通過 {{$inputs.ident}} 的方式引用，指定腳本執行的機器。',
     add_btn: '添加變量',
     key: '變量名',
     key_required: '變量名不能為空',

@@ -20,6 +20,7 @@ import { debounce, join } from 'lodash';
 import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useRequest } from 'ahooks';
 
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
@@ -30,9 +31,10 @@ import { alphabet } from '@/utils/constant';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 
 import { defaultValues } from '../Form/constants';
+import { getTimezones } from '../services';
 
 // @ts-ignore
-import ServiceCalendarSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarSelect';
+import ServiceCalendarWithTimeSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarWithTimeSelect';
 // @ts-ignore
 import BatchEditNotifyChannels from 'plus:/parcels/AlertRule/BatchEditNotifyChannels';
 
@@ -112,6 +114,9 @@ const fields = [
   },
   {
     field: 'triggers',
+  },
+  {
+    field: 'time_zone',
   },
 ];
 
@@ -230,7 +235,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
         if (key === 'annotations') {
           data[key] = _.chain(data[key]).keyBy('key').mapValues('value').value();
         } else {
-          if (Array.isArray(data[key]) && field !== 'datasource_ids' && key !== 'service_cal_ids' && field !== 'triggers' && field !== 'notify_rule_ids') {
+          if (Array.isArray(data[key]) && field !== 'datasource_ids' && key !== 'service_cal_configs' && field !== 'triggers' && field !== 'notify_rule_ids') {
             data[key] = data[key].join(' ');
           }
         }
@@ -242,6 +247,10 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
   const editModalClose = () => {
     editModalFinish(false);
   };
+
+  const { data: timezones } = useRequest(() => getTimezones(), {
+    refreshDeps: [],
+  });
 
   return (
     <>
@@ -278,7 +287,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
               },
             ]}
           >
-            <Select style={{ width: '100%' }}>
+            <Select style={{ width: '100%' }} showSearch optionFilterProp='children'>
               {_.map(
                 isPlus
                   ? _.concat(fields, {
@@ -724,7 +733,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                 return (
                   <>
                     <Form.Item label={changetoText}>
-                      <ServiceCalendarSelect name='service_cal_ids' showLabel={false} />
+                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} />
                     </Form.Item>
                   </>
                 );
@@ -763,6 +772,20 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                       }
                     />
                   </Form.Item>
+                );
+              case 'time_zone':
+                return (
+                  <>
+                    <Form.Item label={changetoText} name='time_zone'>
+                      <Select
+                        options={_.map(timezones, (item) => {
+                          return { label: item, value: item };
+                        })}
+                        showSearch
+                        optionFilterProp='label'
+                      />
+                    </Form.Item>
+                  </>
                 );
               default:
                 return null;

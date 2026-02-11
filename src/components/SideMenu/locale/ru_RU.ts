@@ -57,6 +57,7 @@ const ru_RU = {
     audit_log: 'Журнал аудита',
     alert_servers: 'Система оповещений',
     about: 'О продукте',
+    license_management: 'Управление лицензиями',
   },
 };
 
