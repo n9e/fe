@@ -21,6 +21,7 @@ import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
+import moment from 'moment';
 
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
@@ -744,7 +745,17 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                 return (
                   <>
                     <Form.Item label={changetoText}>
-                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} />
+                      <ServiceCalendarWithTimeSelect
+                        namePath={['service_cal_configs']}
+                        initialValue={[
+                          {
+                            time_range: {
+                              start: moment('00:00', 'HH:mm'),
+                              end: moment('00:00', 'HH:mm'),
+                            },
+                          },
+                        ]}
+                      />
                     </Form.Item>
                   </>
                 );
