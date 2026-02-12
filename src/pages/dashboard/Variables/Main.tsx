@@ -5,6 +5,7 @@ import queryString from 'query-string';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { useGlobalState } from '../globalState';
+import { VariableManagerProvider } from './VariableManagerContext';
 import Variable from './Variable';
 
 interface Props {
@@ -50,41 +51,32 @@ export default function Main(props: Props) {
 
   return (
     <div className='flex flex-wrap items-center gap-2 px-2'>
-      {_.map(variablesWithOptions, (item) => {
-        return (
-          <Variable
-            key={item.name}
-            variableValueFixed={variableValueFixed}
-            item={item}
-            value={item.value}
-            onChange={(update) => {
-              setVariablesWithOptions((currentVariablesWithOptions) => {
-                const newData = _.map(currentVariablesWithOptions, (dataItem) => {
-                  if (dataItem.name === item.name) {
-                    return {
-                      ...dataItem,
-                      ...update,
-                    };
-                  }
-                  return dataItem;
-                });
+      <VariableManagerProvider
+        variables={variablesWithOptions}
+        setVariables={(callback, partial) => {
+          setVariablesWithOptions((prev) => {
+            const newVariables = _.map(prev, (item) => {
+              if (item.name === partial.name) {
+                return { ...item, ...partial };
+              }
+              return item;
+            });
+            callback();
+            // localStorage 本地保存
+            if (dashboardMeta.dashboardId && partial.value !== undefined) {
+              localStorage.setItem(`dashboard_v6_${dashboardMeta.dashboardId}_${partial.name}`, typeof partial.value === 'string' ? partial.value : JSON.stringify(partial.value));
+            }
 
-                const val = update.value;
-
-                // localStorage 本地保存
-                if (dashboardMeta.dashboardId && val !== undefined) {
-                  localStorage.setItem(`dashboard_v6_${dashboardMeta.dashboardId}_${item.name}`, typeof val === 'string' ? val : JSON.stringify(val));
-                }
-
-                // 标记需要更新 URL
-                shouldUpdateUrl.current = true;
-
-                return newData;
-              });
-            }}
-          />
-        );
-      })}
+            // 标记需要更新 URL
+            shouldUpdateUrl.current = true;
+            return newVariables;
+          });
+        }}
+      >
+        {_.map(variablesWithOptions, (item) => {
+          return <Variable key={item.name} variableValueFixed={variableValueFixed} item={item} value={item.value} />;
+        })}
+      </VariableManagerProvider>
       {renderBtns && renderBtns()}
       <Spin spinning={loading} />
     </div>
