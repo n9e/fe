@@ -435,7 +435,6 @@ export default function List(props: IProps) {
             </Tooltip>
           </Space>
         ),
-        sorter: true,
         dataIndex: 'beat_time',
         render: (val, reocrd) => {
           let result = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
