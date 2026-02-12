@@ -1,14 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 
-import { CommonStateContext } from '@/App';
-import { useGlobalState } from '@/pages/dashboard/globalState';
-
 import { IVariable } from '../types';
-import adjustData from '../utils/ajustData';
-import isPlaceholderQuoted from '../utils/isPlaceholderQuoted';
-import { formatString } from '../utils/formatString';
-import { getBuiltInVariables } from '../utils/replaceTemplateVariables';
 
 import Constant from './Constant';
 import Custom from './Custom';
@@ -22,26 +15,11 @@ interface Props {
   variableValueFixed: boolean;
   item: IVariable;
   value: IVariable['value'];
-  onChange: (update: { [key: string]: any }) => void;
 }
 
 export default function index(props: Props) {
-  const { datasourceList } = useContext(CommonStateContext);
-  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
-  const [range] = useGlobalState('range');
-
   const { item } = props;
   const { type, value: propValue, multi, hide } = item;
-  const builtInVariables = getBuiltInVariables({
-    range,
-  });
-  const data = adjustData(_.concat(variablesWithOptions, builtInVariables), {
-    datasourceList: datasourceList,
-    isPlaceholderQuoted: isPlaceholderQuoted(item.definition, item.name),
-    isEscapeJsonString: true,
-  });
-  const formatedReg = item.reg ? formatString(item.reg, data) : '';
-  const formatedRegex = item.regex ? formatString(item.regex, data) : ''; // datasource, datasourceIdentifier 特有
 
   const [value, setValue] = useState<IVariable['value']>(propValue);
 
@@ -61,9 +39,6 @@ export default function index(props: Props) {
 
   const subProps = {
     ...props,
-    data,
-    formatedReg,
-    formatedRegex,
     value,
     setValue,
   };

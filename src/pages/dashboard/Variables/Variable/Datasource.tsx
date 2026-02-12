@@ -1,47 +1,82 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import { useGlobalState } from '@/pages/dashboard/globalState';
 
-import { IVariable } from '../types';
 import getValueByOptions from '../utils/getValueByOptions';
 import stringToRegex from '../utils/stringToRegex';
+import { buildVariableInterpolations } from '../utils/ajustData';
+import { formatString } from '../utils/formatString';
+import { useVariableManager } from '../VariableManagerContext';
 import { Props } from './types';
 
 export default function Datasource(props: Props) {
-  const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { item, formatedRegex, variableValueFixed, onChange, value, setValue } = props;
-  const { name, label, options } = item;
-  const latestItemRef = React.useRef<IVariable>(item);
+  const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
+  const [range] = useGlobalState('range');
+
+  const { item: variable, variableValueFixed, value, setValue } = props;
+  const { name, label, options } = variable;
+
+  const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
+  const variableRef = useRef(variable);
 
   useEffect(() => {
-    latestItemRef.current = item;
+    variableRef.current = variable;
   });
 
-  useEffect(() => {
-    const itemClone = _.cloneDeep(latestItemRef.current);
-    let datasourceList = item.definition ? (groupedDatasourceList[item.definition] as any) : [];
+  // 执行查询的核心逻辑
+  const executeQuery = async () => {
+    const currentVariable = variableRef.current;
+
+    const variableInterpolations = buildVariableInterpolations({
+      variable: currentVariable,
+      variables: getVariables(),
+      datasourceList,
+      range,
+    });
+
+    let currentDatasourceList = currentVariable.definition ? (groupedDatasourceList[currentVariable.definition] as any) : [];
+    const formatedRegex = currentVariable.regex ? formatString(currentVariable.regex, variableInterpolations) : '';
     const regex = stringToRegex(formatedRegex);
     if (regex) {
-      datasourceList = _.filter(datasourceList, (option) => {
+      currentDatasourceList = _.filter(currentDatasourceList, (option) => {
         return regex.test(option.name);
       });
     }
-    const itemOptions = _.map(datasourceList, (ds) => {
-      return { label: ds.name, value: ds.id }; // TODO value 实际是 number 类型
+    const itemOptions = _.map(currentDatasourceList, (ds) => {
+      return { label: ds.name, value: ds.id as any }; // TODO value 实际是 number 类型
     });
 
-    onChange({
+    updateVariable(name, {
       options: itemOptions,
       value: getValueByOptions({
         variableValueFixed,
-        variable: itemClone,
+        variable: currentVariable,
         itemOptions,
       }),
     });
-  }, [JSON.stringify(item.definition), formatedRegex]);
+  };
+
+  // 注册变量到管理器
+  useEffect(() => {
+    const meta = {
+      name: variable.name,
+      variable,
+      executor: executeQuery,
+    };
+
+    registerVariable(meta);
+
+    // 组件卸载时清理
+    return () => {
+      const meta = registeredVariables.current.get(variable.name);
+      if (meta && meta.cleanup) meta.cleanup();
+      registeredVariables.current.delete(variable.name);
+    };
+  }, [variable.name]);
 
   return (
     <div>
@@ -57,7 +92,7 @@ export default function Datasource(props: Props) {
           value={value}
           onChange={(newValue) => {
             setValue(newValue as any);
-            onChange({
+            updateVariable(name, {
               value: newValue,
             });
           }}
