@@ -237,6 +237,7 @@ const zh_HK = {
     select_alert_event_label: '已選告警樣例事件',
     query_required: '查詢條件不能為空',
     sql_limit_valid: 'SQL 查詢語句必須包含 LIMIT 子句',
+    oracle_sql_limit_valid: 'SQL 查詢語句必須包含 ROWNUM 子句',
     annotation_configs: '數據追加',
     annotation_configs_tip: '配置 Key/Value 將數據查詢結果，添加到告警信息中',
     annotation_key_tip: '定義新增字段 Key，建議使用英文字母命名',
