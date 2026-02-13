@@ -104,9 +104,14 @@ export default function adjustData(
         isEscapeJsonString,
       };
       // value: 已选的值
-      // defaultValue: 数据源变量默认值
-      // definition: 常量定义的值
-      let joinedValue = value ?? defaultValue ?? definition;
+      let joinedValue = value;
+      if (type === 'constant') {
+        // definition: 常量定义的值
+        joinedValue = value ?? definition ?? '';
+      } else if (type === 'datasource' || type === 'datasourceIdentifier') {
+        // defaultValue: 数据源变量默认值
+        joinedValue = value ?? defaultValue;
+      }
       if (_.isEqual(value, ['all']) || _.isEqual(value, ['__all__'])) {
         if (allValue) {
           joinedValue = allValue;
