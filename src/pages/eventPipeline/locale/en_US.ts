@@ -239,6 +239,7 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     select_alert_event_label: 'Selected alert sample event',
     query_required: 'Query condition cannot be empty',
     sql_limit_valid: 'SQL query statement must contain LIMIT clause',
+    oracle_sql_limit_valid: 'SQL query statement must contain ROWNUM clause',
     annotation_configs: 'Data Append',
     annotation_configs_tip: 'Configure Key/Value to add query results to alert information',
     annotation_key_tip: 'Define the new field Key, it is recommended to use English letters',

@@ -258,6 +258,7 @@ const zh_CN = {
     select_alert_event_label: '已选告警样例事件',
     query_required: '查询条件不能为空',
     sql_limit_valid: 'SQL 查询语句必须包含 LIMIT 子句',
+    oracle_sql_limit_valid: 'SQL 查询语句必须包含 ROWNUM 子句',
     annotation_configs: '数据追加',
     annotation_configs_tip: '配置 Key/Value 将数据查询结果，添加到告警信息中',
     annotation_key_tip: '定义新增字段 Key, 建议使用英文字母命名',
