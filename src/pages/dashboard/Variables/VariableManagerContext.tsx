@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import { IVariable as Variable, VariableExecutionMeta, DependencyGraph } from './types';
 
-function extractDependencies(str: string): string[] {
+function extractDependencies(str: string, validVars?: Set<string>): string[] {
   // 正则表达式匹配$变量名格式
   // 匹配规则：
   // - 支持 $var 格式：$ 符号后跟一个或多个字母、数字、下划线
@@ -16,11 +16,26 @@ function extractDependencies(str: string): string[] {
     // 第一个捕获组是 ${var} 的情况，第二个是 $var 的情况
     const varName = match[1] || match[2];
     if (varName) {
+      if (validVars && !validVars.has(varName)) {
+        continue;
+      }
       dependencies.add(varName);
     }
   }
 
   return Array.from(dependencies);
+}
+
+// 生成稳定的 JSON 字符串，确保相同的对象产生相同的字符串
+function stringifyStable(obj: any): string {
+  if (obj === null || obj === undefined) return String(obj);
+  if (typeof obj !== 'object') return JSON.stringify(obj);
+  if (Array.isArray(obj)) {
+    return '[' + obj.map(stringifyStable).join(',') + ']';
+  }
+  // 对对象的键进行排序，确保一致的输出
+  const keys = Object.keys(obj).sort();
+  return '{' + keys.map((k) => `"${k}":${stringifyStable(obj[k])}`).join(',') + '}';
 }
 
 interface VariableManagerContextType {
@@ -54,6 +69,10 @@ export const VariableManagerProvider = ({
   const registeredVariables = useRef<Map<string, VariableExecutionMeta>>(new Map());
   // 变量值的同步副本，用于在依赖链执行中获取最新值
   const variablesRef = useRef<Variable[]>(variables);
+  // Ensure ref is synced with props during render to be available for children's effects
+  if (variables !== variablesRef.current) {
+    variablesRef.current = variables;
+  }
   // 依赖关系图
   const dependencyGraph = useRef<DependencyGraph>({});
   // 订阅者映射：key为变量名，value为订阅该变量变化的回调函数列表
@@ -66,43 +85,44 @@ export const VariableManagerProvider = ({
   const initialized = useRef(false);
   // 等待初始化的变量队列
   const pendingInitialExecution = useRef<Set<string>>(new Set());
+  // 追踪正在重新执行的变量，防止并发竞争
+  const reExecutingVariables = useRef<Set<string>>(new Set());
 
   const getVariables = useCallback(() => {
     // 在依赖链执行期间，返回 ref 中的最新值
-    return isExecutingChain.current ? variablesRef.current : variables;
+    const effectiveVariables = variablesRef.current.length > 0 ? variablesRef.current : variables;
+    return isExecutingChain.current ? effectiveVariables : variables;
   }, [variables]);
 
   // 更新变量值并通知订阅者
-  const updateVariable = useCallback((name: string, partial: Partial<Variable>) => {
-    console.log(`[updateVariable] 更新变量 ${name}`, partial);
-
-    // 同步更新 ref 中的值，确保依赖链中立即可用
-    variablesRef.current = _.map(variablesRef.current, (item) => {
-      if (item.name === name) {
-        return { ...item, ...partial };
-      }
-      return item;
-    });
-
-    setVariables(
-      () => {
-        // 只有在非依赖链执行期间才触发订阅回调
-        if (!isExecutingChain.current) {
-          const variableSubscribers = subscribers.current.get(name);
-          console.log(`[updateVariable] ${name} 的订阅者数量:`, variableSubscribers?.size || 0);
-          if (variableSubscribers) {
-            variableSubscribers.forEach((callback) => {
-              console.log(`[updateVariable] 触发 ${name} 的订阅回调`);
-              callback();
-            });
-          }
-        } else {
-          console.log(`[updateVariable] ${name} 在依赖链执行中，暂不触发订阅回调`);
+  const updateVariable = useCallback(
+    (name: string, partial: Partial<Variable>) => {
+      // 同步更新 ref 中的值，确保依赖链中立即可用
+      const sourceVariables = variablesRef.current.length > 0 ? variablesRef.current : variables;
+      variablesRef.current = _.map(sourceVariables, (item) => {
+        if (item.name === name) {
+          return { ...item, ...partial };
         }
-      },
-      { name, ...partial },
-    );
-  }, []);
+        return item;
+      });
+
+      setVariables(
+        () => {
+          // 只有在非依赖链执行期间才触发订阅回调
+          if (!isExecutingChain.current) {
+            const variableSubscribers = subscribers.current.get(name);
+            if (variableSubscribers) {
+              variableSubscribers.forEach((callback) => {
+                callback();
+              });
+            }
+          }
+        },
+        { name, ...partial },
+      );
+    },
+    [setVariables, variables],
+  );
 
   // 订阅变量变化
   const subscribeToVariable = useCallback((variableName: string, callback: () => void) => {
@@ -111,12 +131,9 @@ export const VariableManagerProvider = ({
     }
     subscribers.current.get(variableName)!.add(callback);
 
-    console.log(`[subscribeToVariable] 订阅 ${variableName}, 当前订阅者数量:`, subscribers.current.get(variableName)!.size);
-
     // 返回取消订阅的函数
     return () => {
       subscribers.current.get(variableName)?.delete(callback);
-      console.log(`[subscribeToVariable] 取消订阅 ${variableName}, 剩余订阅者数量:`, subscribers.current.get(variableName)?.size || 0);
     };
   }, []);
 
@@ -166,12 +183,10 @@ export const VariableManagerProvider = ({
     async (dependencyName: string) => {
       // 如果当前依赖正在执行，则跳过（防止递归调用）
       if (executingDependencies.current.has(dependencyName)) {
-        console.log(`[triggerDependencyUpdate] ${dependencyName} 正在执行中，跳过重复触发`);
         return;
       }
 
       const dependentVariables = dependencyGraph.current[dependencyName] || [];
-      console.log(`[triggerDependencyUpdate] ${dependencyName} 的依赖变量:`, dependentVariables);
 
       if (dependentVariables.length === 0) return;
 
@@ -180,22 +195,17 @@ export const VariableManagerProvider = ({
       const isRootExecution = !isExecutingChain.current;
       if (isRootExecution) {
         isExecutingChain.current = true;
-        console.log(`[triggerDependencyUpdate] ${dependencyName} 开始执行根依赖链`);
       }
 
       try {
         // 对依赖变量进行拓扑排序，确保执行顺序正确
         const executionOrder = topologicalSort(dependentVariables, dependencyGraph.current);
-        console.log(`[triggerDependencyUpdate] 执行顺序:`, executionOrder);
 
         // 执行所有依赖变量
         for (const variableName of executionOrder) {
           const meta = registeredVariables.current.get(variableName);
-          console.log(`[triggerDependencyUpdate] 准备执行 ${variableName}, meta 存在:`, !!meta);
           if (meta) {
-            console.log(`[triggerDependencyUpdate] 开始执行 ${variableName}`);
             await meta.executor();
-            console.log(`[triggerDependencyUpdate] 完成执行 ${variableName}`);
           }
         }
       } finally {
@@ -203,7 +213,6 @@ export const VariableManagerProvider = ({
         executingDependencies.current.delete(dependencyName);
         if (isRootExecution) {
           isExecutingChain.current = false;
-          console.log(`[triggerDependencyUpdate] ${dependencyName} 完成根依赖链执行`);
         }
       }
     },
@@ -215,14 +224,7 @@ export const VariableManagerProvider = ({
     const registeredNames = new Set(registeredVariables.current.keys());
     const allRegistered = variables.length > 0 && variables.every((v) => registeredNames.has(v.name));
 
-    console.log(
-      `[checkAndExecuteInitialization] 已注册: ${registeredNames.size}/${variables.length}, allRegistered: ${allRegistered}, initialized: ${initialized.current}, pending: ${pendingInitialExecution.current.size}`,
-    );
-
     if (allRegistered && !initialized.current && pendingInitialExecution.current.size > 0) {
-      console.log('[VariableManager] 所有变量已注册，开始初始化执行');
-      console.log('[VariableManager] 待执行的无依赖变量:', Array.from(pendingInitialExecution.current));
-
       initialized.current = true;
 
       // 执行所有无依赖的变量
@@ -232,13 +234,11 @@ export const VariableManagerProvider = ({
 
         // 设置执行锁，防止初始化期间触发依赖链
         isExecutingChain.current = true;
-        console.log('[VariableManager] 设置初始化执行锁');
 
         try {
           for (const name of initialVarNames) {
             const meta = registeredVariables.current.get(name);
             if (meta) {
-              console.log(`[VariableManager] 初始执行: ${name}`);
               try {
                 await meta.executor();
               } catch (error) {
@@ -250,14 +250,11 @@ export const VariableManagerProvider = ({
         } finally {
           // 释放执行锁
           isExecutingChain.current = false;
-          console.log('[VariableManager] 释放初始化执行锁');
 
           // 初始化完成后，手动触发所有无依赖变量的依赖链
-          console.log('[VariableManager] 触发初始化后的依赖链');
           for (const name of initialVarNames) {
             const dependentVariables = dependencyGraph.current[name] || [];
             if (dependentVariables.length > 0) {
-              console.log(`[VariableManager] 触发 ${name} 的依赖链`);
               await triggerDependencyUpdate(name);
             }
           }
@@ -275,26 +272,27 @@ export const VariableManagerProvider = ({
 
       // 如果已经注册过，先清理旧的订阅
       const oldMeta = registeredVariables.current.get(name);
+      const wasRegistered = !!oldMeta;
       if (oldMeta?.cleanup) {
-        console.log(`[registerVariable] 清理旧的 ${name} 注册`);
         oldMeta.cleanup();
       }
 
       // 自动分析依赖关系
       let dependencies: string[] = [];
       const dependencySet = new Set<string>();
+      const validVarNames = new Set(variablesRef.current.map((v) => v.name));
 
       if (variable.type === 'query') {
         // 分析 definition 中的依赖
         if (variable.definition) {
-          extractDependencies(variable.definition).forEach((dep) => dependencySet.add(dep));
+          extractDependencies(variable.definition, validVarNames).forEach((dep) => dependencySet.add(dep));
         } else if (variable.query?.query) {
-          extractDependencies(variable.query.query).forEach((dep) => dependencySet.add(dep));
+          extractDependencies(variable.query.query, validVarNames).forEach((dep) => dependencySet.add(dep));
         }
 
         // 分析 datasource.value 中的依赖
         if (variable.datasource?.value && typeof variable.datasource.value === 'string') {
-          extractDependencies(variable.datasource.value).forEach((dep) => dependencySet.add(dep));
+          extractDependencies(variable.datasource.value, validVarNames).forEach((dep) => dependencySet.add(dep));
         }
       }
 
@@ -316,18 +314,13 @@ export const VariableManagerProvider = ({
 
       registeredVariables.current.set(name, fullMeta);
 
-      console.log(`[registerVariable] 注册变量 ${name}, 依赖:`, dependencies);
-      console.log(`[registerVariable] 依赖关系图:`, { ...dependencyGraph.current });
-
       // 如果是无依赖变量，加入待执行队列
       if (dependencies.length === 0) {
         pendingInitialExecution.current.add(name);
-        console.log(`[registerVariable] ${name} 无依赖，加入待执行队列`);
       }
 
       // 订阅所有依赖变量的变化
       const unsubscribers = dependencies.map((dep) => {
-        console.log(`[registerVariable] ${name} 订阅 ${dep} 的变化`);
         return subscribeToVariable(dep, () => {
           triggerDependencyUpdate(dep);
         });
@@ -348,53 +341,94 @@ export const VariableManagerProvider = ({
 
       // 检查是否所有变量都已注册，如果是则触发初始化
       checkAndExecuteInitialization();
+
+      // 变量配置变更后需要立即重新执行并触发依赖链（防止并发竞争）
+      if (wasRegistered && initialized.current) {
+        // 如果已经在重新执行，则跳过（防止同一变量的多个重新执行竞争）
+        if (reExecutingVariables.current.has(name)) {
+          return;
+        }
+
+        const reExecute = async () => {
+          reExecutingVariables.current.add(name);
+          try {
+            await fullMeta.executor();
+          } catch (error) {
+            console.error(`[registerVariable] 重新执行 ${name} 失败:`, error);
+          } finally {
+            await triggerDependencyUpdate(name);
+            reExecutingVariables.current.delete(name);
+          }
+        };
+        reExecute();
+      }
     },
     [subscribeToVariable, triggerDependencyUpdate, checkAndExecuteInitialization],
   );
 
-  // 清理依赖关系图（当变量列表变化时）
-  const variableNamesKey = variables
-    .map((v) => v.name)
-    .sort()
-    .join(',');
+  // 清理依赖关系图（当变量列表或配置变化时）
+  // 生成包含关键配置的 key，排除 label、value、options、hide 这些不影响执行逻辑的字段
+  // 使用 useMemo 缓存以避免不必要的重新计算
+  const variablesKey = React.useMemo(() => {
+    return variables
+      .map((v) => {
+        const { label, value, options, hide, ...rest } = v;
+        return stringifyStable(rest);
+      })
+      .sort()
+      .join(',');
+  }, [variables]);
+
+  const variableNamesKey = React.useMemo(() => {
+    return variables
+      .map((v) => v.name)
+      .sort()
+      .join(',');
+  }, [variables]);
+  const previousVariablesKey = useRef<string>('');
   const previousVariableNamesKey = useRef<string>('');
 
   useEffect(() => {
     // 当变量列表发生变化时，同步更新 ref
     variablesRef.current = variables;
 
-    // 清理不存在的变量的依赖关系
-    if (previousVariableNamesKey.current !== variableNamesKey) {
+    // 清理不存在的变量的依赖关系，或配置已变化的变量
+    if (!previousVariablesKey.current) {
+      previousVariablesKey.current = variablesKey;
+      previousVariableNamesKey.current = variableNamesKey;
+      return;
+    }
+
+    if (previousVariablesKey.current !== variablesKey) {
       const currentVariableNames = new Set(variables.map((v) => v.name));
+      const namesChanged = previousVariableNamesKey.current !== variableNamesKey;
 
-      // 重置初始化状态
-      initialized.current = false;
-      pendingInitialExecution.current.clear();
+      // 仅在变量列表发生变化时重置初始化状态
+      if (namesChanged) {
+        initialized.current = false;
+        pendingInitialExecution.current.clear();
+      }
 
-      // 清理已删除变量的依赖关系
+      // 清理所有已注册变量的注册信息（配置变化时需要重新注册）
       Array.from(registeredVariables.current.keys()).forEach((name) => {
+        const meta = registeredVariables.current.get(name);
+        if (meta?.cleanup) {
+          meta.cleanup();
+        }
+        // 如果变量已被删除，则从注册表中移除；否则保留但会在重新注册时被覆盖
         if (!currentVariableNames.has(name)) {
-          const meta = registeredVariables.current.get(name);
-          if (meta?.cleanup) {
-            meta.cleanup();
-          }
           registeredVariables.current.delete(name);
-          console.log(`[VariableManager] 清理已删除的变量: ${name}`);
         }
       });
 
-      // 清理依赖关系图中已删除变量的引用
-      Object.keys(dependencyGraph.current).forEach((dep) => {
-        dependencyGraph.current[dep] = dependencyGraph.current[dep].filter((name) => currentVariableNames.has(name));
-        if (dependencyGraph.current[dep].length === 0) {
-          delete dependencyGraph.current[dep];
-        }
-      });
+      // 清理依赖关系图，准备重新构建
+      dependencyGraph.current = {};
 
+      previousVariablesKey.current = variablesKey;
       previousVariableNamesKey.current = variableNamesKey;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variableNamesKey]);
+  }, [variablesKey]);
 
   return (
     <VariableManagerContext.Provider

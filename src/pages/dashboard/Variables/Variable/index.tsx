@@ -19,7 +19,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { item } = props;
-  const { type, value: propValue, multi, hide } = item;
+  const { type, value: propValue, multi } = item;
 
   const [value, setValue] = useState<IVariable['value']>(propValue);
 
@@ -37,14 +37,15 @@ export default function index(props: Props) {
     setValue(curValue);
   }, [JSON.stringify(propValue)]);
 
+  // 兼容旧数据，constant 的 hide 默认为 true
+  const hide = item.hide || (type === 'constant' && item.hide === undefined);
+
   const subProps = {
     ...props,
+    hide,
     value,
     setValue,
   };
-
-  // 兼容旧数据，constant 的 hide 默认为 true
-  if (hide || (type === 'constant' && hide === undefined)) return null;
 
   if (type === 'constant') {
     return <Constant {...subProps} />;
