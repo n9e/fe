@@ -240,6 +240,7 @@ const ja_JP = {
     select_alert_event_label: '選択済みアラートサンプルイベント',
     query_required: 'クエリ条件は必須です',
     sql_limit_valid: 'SQLクエリステートメントにはLIMIT句が必要です',
+    oracle_sql_limit_valid: 'SQLクエリステートメントにはROWNUM句が必要です',
     annotation_configs: 'データ追加',
     annotation_configs_tip: 'Key/Valueを設定して、クエリ結果をアラート情報に追加',
     annotation_key_tip: '新規フィールドKeyを定義します。英字を使用することを推奨',

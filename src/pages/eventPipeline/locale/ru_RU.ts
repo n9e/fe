@@ -244,6 +244,7 @@ const ru_RU = {
     select_alert_event_label: 'Выбранный образец события оповещения',
     query_required: 'Условие запроса обязательно',
     sql_limit_valid: 'SQL-запрос должен содержать предложение LIMIT',
+    oracle_sql_limit_valid: 'SQL-запрос должен содержать предложение ROWNUM',
     annotation_configs: 'Добавление данных',
     annotation_configs_tip: 'Настройте Key/Value для добавления результатов запроса в информацию об оповещении',
     annotation_key_tip: 'Определите ключ нового поля. Рекомендуется использовать английские буквы',
