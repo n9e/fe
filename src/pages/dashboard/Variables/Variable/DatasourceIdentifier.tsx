@@ -17,7 +17,7 @@ export default function DatasourceIdentifier(props: Props) {
   const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
 
-  const { item: variable, variableValueFixed, value, setValue } = props;
+  const { hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, options } = variable;
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
@@ -64,6 +64,12 @@ export default function DatasourceIdentifier(props: Props) {
     });
   };
 
+  // 计算变量的配置签名（排除 label, value, options, hide）
+  const variableConfigSignature = React.useMemo(() => {
+    const { label, value, options, hide, ...rest } = variable;
+    return JSON.stringify(rest);
+  }, [variable]);
+
   // 注册变量到管理器
   useEffect(() => {
     const meta = {
@@ -74,16 +80,15 @@ export default function DatasourceIdentifier(props: Props) {
 
     registerVariable(meta);
 
-    // 组件卸载时清理
+    // 配置变更时清理订阅
     return () => {
       const meta = registeredVariables.current.get(variable.name);
       if (meta && meta.cleanup) meta.cleanup();
-      registeredVariables.current.delete(variable.name);
     };
-  }, [variable.name]);
+  }, [variableConfigSignature]);
 
   return (
-    <div>
+    <div className={hide ? 'hidden' : ''}>
       <InputGroupWithFormItem label={label || name}>
         <Select
           style={{

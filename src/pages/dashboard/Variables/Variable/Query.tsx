@@ -18,7 +18,7 @@ import { Props } from './types';
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
-  const { item: variable, variableValueFixed, value, setValue } = props;
+  const { hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options } = variable;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -55,11 +55,12 @@ export default function Query(props: Props) {
     const datasourceValue = formatDatasource(currentVariable.datasource?.value as any, variableInterpolations);
 
     if (!datasourceValue) {
-      const errMsg = 'Variable ' + name + ' datasource not found';
+      const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
       setErrorMsg(errMsg);
       return Promise.reject(errMsg);
     }
 
+    setErrorMsg('');
     try {
       const options = await datasource({
         datasourceCate,
@@ -90,6 +91,12 @@ export default function Query(props: Props) {
     }
   };
 
+  // 计算变量的配置签名（排除 label, value, options, hide）
+  const variableConfigSignature = React.useMemo(() => {
+    const { label, value, options, hide, ...rest } = variable;
+    return JSON.stringify(rest);
+  }, [variable]);
+
   // 注册变量到管理器
   useEffect(() => {
     const meta = {
@@ -100,16 +107,15 @@ export default function Query(props: Props) {
 
     registerVariable(meta);
 
-    // 组件卸载时清理
+    // 配置变更时清理订阅
     return () => {
       const meta = registeredVariables.current.get(variable.name);
       if (meta && meta.cleanup) meta.cleanup();
-      registeredVariables.current.delete(variable.name);
     };
-  }, [variable.name]);
+  }, [variableConfigSignature]); // 使用 useMemo 计算的配置签名
 
   return (
-    <div>
+    <div className={hide ? 'hidden' : ''}>
       <InputGroupWithFormItem
         label={
           <Space>
