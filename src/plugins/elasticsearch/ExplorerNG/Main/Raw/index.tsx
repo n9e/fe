@@ -238,6 +238,7 @@ export default function index(props: Props) {
     data,
     loading,
     run: fetchLogs,
+    mutate: setData,
   } = useRequest<
     {
       list: { [index: string]: string }[];
@@ -292,7 +293,11 @@ export default function index(props: Props) {
     }
   };
 
-  const { data: histogramData, loading: histogramLoading } = useRequest<
+  const {
+    data: histogramData,
+    loading: histogramLoading,
+    mutate: setHistogramData,
+  } = useRequest<
     {
       data: any[];
       hash: string;
@@ -625,6 +630,17 @@ export default function index(props: Props) {
                   b: (
                     <a
                       onClick={() => {
+                        setData({
+                          list: [],
+                          total: 0,
+                          hash: _.uniqueId('logs_'),
+                          fields: [],
+                          highlights: [],
+                        });
+                        setHistogramData({
+                          data: [],
+                          hash: _.uniqueId('histogram_'),
+                        });
                         executeQuery();
                       }}
                     />
