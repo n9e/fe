@@ -207,6 +207,11 @@ export default function indexCpt(props: Props) {
                       </Tooltip>
                     )
                   }
+                  onChange={() => {
+                    form.setFieldsValue({
+                      refreshFlag: undefined,
+                    });
+                  }}
                 />
               </Form.Item>
               <Form.Item
@@ -228,6 +233,9 @@ export default function indexCpt(props: Props) {
                       value: item.field,
                     };
                   })}
+                  onChange={() => {
+                    executeQuery();
+                  }}
                 />
               </Form.Item>
             </>
@@ -323,6 +331,7 @@ export default function indexCpt(props: Props) {
                       queryValues.index = selected.name;
                       queryValues.allow_hide_system_indices = selected.allow_hide_system_indices;
                       form.setFieldsValue({
+                        refreshFlag: undefined,
                         query: queryValues,
                         fieldConfig,
                       });
