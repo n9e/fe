@@ -46,13 +46,14 @@ function normalizeOverrideSeriesOptions(override: any) {
 }
 
 export default function seriesBuider(props: Props) {
-  let { baseSeries, colors, pathsType, width = 1, points, fillOpacity = 0.1, gradientMode = 'none', overrides, spanGaps } = props;
-  let paths;
-  if (pathsType === 'spline') {
-    paths = uPlot.paths.spline && uPlot.paths.spline();
-  } else if (pathsType === 'bars') {
-    paths = uPlot.paths.bars && uPlot.paths.bars();
-  }
+  const { baseSeries, colors, overrides } = props;
+  const defaultPathsType = props.pathsType;
+  const defaultWidth = props.width ?? 1;
+  const defaultPoints = props.points;
+  const defaultFillOpacity = props.fillOpacity ?? 0.1;
+  const defaultGradientMode = props.gradientMode ?? 'none';
+  const defaultSpanGaps = props.spanGaps;
+
   const rightYAxisDisplay = _.get(overrides, [0, 'properties', 'rightYAxisDisplay']);
   const matchRefId = _.get(overrides, [0, 'matcher', 'value']);
   const refIds = _.union(_.map(baseSeries, (item) => _.get(item, 'n9e_internal.refId')));
@@ -60,6 +61,15 @@ export default function seriesBuider(props: Props) {
     [{}] as Series[],
     _.map(baseSeries, (item, idx) => {
       const refId = _.get(item, 'n9e_internal.refId');
+
+      // Initialize current series options with defaults
+      let currentWidth = defaultWidth;
+      let currentPoints = defaultPoints;
+      let currentFillOpacity = defaultFillOpacity;
+      let currentGradientMode = defaultGradientMode;
+      let currentSpanGaps = defaultSpanGaps;
+      let currentPathsType = defaultPathsType;
+
       const curOverride = _.find(overrides, (override) => {
         // TODO 删除的时候可能会出现 matcher 不存在的情况，一个 bug 需要修复，像是删除的时候出现一个临时的状态（没有被彻底删除前）
         if (override.matcher?.id === 'byFrameRefID') {
@@ -75,50 +85,53 @@ export default function seriesBuider(props: Props) {
       if (curOverride) {
         const overrideOptions = normalizeOverrideSeriesOptions(curOverride);
         if (_.isNumber(overrideOptions.width)) {
-          width = overrideOptions.width;
+          currentWidth = overrideOptions.width;
         }
         if (overrideOptions.pathsType) {
-          paths = undefined; // reset paths
-          if (overrideOptions.pathsType === 'spline') {
-            paths = uPlot.paths.spline && uPlot.paths.spline();
-          } else if (overrideOptions.pathsType === 'bars') {
-            paths = uPlot.paths.bars && uPlot.paths.bars();
-          }
+          currentPathsType = overrideOptions.pathsType;
         }
         if (overrideOptions.points) {
-          points = overrideOptions.points;
+          currentPoints = overrideOptions.points;
         }
         if (overrideOptions.spanGaps !== undefined) {
-          spanGaps = overrideOptions.spanGaps;
+          currentSpanGaps = overrideOptions.spanGaps;
         }
         if (_.isNumber(overrideOptions.fillOpacity)) {
-          fillOpacity = overrideOptions.fillOpacity;
+          currentFillOpacity = overrideOptions.fillOpacity;
         }
         if (overrideOptions.gradientMode) {
-          gradientMode = overrideOptions.gradientMode;
+          currentGradientMode = overrideOptions.gradientMode;
         }
       }
+
+      let paths;
+      if (currentPathsType === 'spline') {
+        paths = uPlot.paths.spline && uPlot.paths.spline();
+      } else if (currentPathsType === 'bars') {
+        paths = uPlot.paths.bars && uPlot.paths.bars();
+      }
+
       return {
         ...item,
         scale: scaleKey,
         stroke: colors[idx % colors.length],
         paths,
-        width,
-        points,
-        spanGaps,
+        width: currentWidth,
+        points: currentPoints,
+        spanGaps: currentSpanGaps,
         fill:
-          fillOpacity !== 0
+          currentFillOpacity !== 0
             ? (self, seriesIdx) => {
                 const seriesStroke = self.series[seriesIdx].stroke;
                 if (typeof seriesStroke === 'function') {
                   const color = seriesStroke(self, seriesIdx);
-                  if (gradientMode === 'opacity') {
+                  if (currentGradientMode === 'opacity') {
                     const gradient = self.ctx.createLinearGradient(0, 0, 0, self.bbox.height);
                     gradient.addColorStop(0, Color(color).alpha(0.6).rgb().string());
                     gradient.addColorStop(1, Color(color).alpha(0.01).rgb().string());
                     return gradient;
                   }
-                  return Color(color).alpha(fillOpacity).rgb().string();
+                  return Color(color).alpha(currentFillOpacity).rgb().string();
                 }
                 return '';
               }
@@ -126,5 +139,6 @@ export default function seriesBuider(props: Props) {
       };
     }),
   );
+
   return series;
 }
