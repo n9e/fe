@@ -148,17 +148,24 @@ function App() {
     groupedDatasourceList: {},
     reloadGroupedDatasourceList: async () => {
       const datasourceList = await getDatasourceBriefList();
-      setCommonState((state) => ({ ...state, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
+      setCommonState((state) => ({
+        ...state,
+        groupedDatasourceList: _.groupBy(_.orderBy(datasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), 'plugin_type'),
+      }));
     },
     datasourceList: [],
     setDatasourceList: (datasourceList) => {
-      setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type') }));
+      setCommonState((state) => ({
+        ...state,
+        datasourceList,
+        groupedDatasourceList: _.groupBy(_.orderBy(datasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), 'plugin_type'),
+      }));
     },
     reloadDatasourceList: async () => {
       const { feats } = await getLicense(t);
       const datasourceList = await getDatasourceBriefList();
       const datasourceCateOptions = getAuthorizedDatasourceCates(feats, isPlus, (cate) => {
-        const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
+        const groupedDatasourceList = _.groupBy(_.orderBy(datasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), 'plugin_type');
         return !_.isEmpty(groupedDatasourceList[cate.value]);
       });
       setCommonState((state) => ({ ...state, datasourceList, groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'), datasourceCateOptions }));
@@ -281,8 +288,8 @@ function App() {
                 const groupedDatasourceList = _.groupBy(datasourceList, 'plugin_type');
                 return !_.isEmpty(groupedDatasourceList[cate.value]);
               }),
-              groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
-              datasourceList: datasourceList,
+              groupedDatasourceList: _.groupBy(_.orderBy(datasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), 'plugin_type'),
+              datasourceList: _.orderBy(datasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']),
               curBusiId: defaultBusiId,
               licenseRulesRemaining,
               licenseExpireDays,
