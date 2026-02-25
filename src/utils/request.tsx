@@ -57,7 +57,8 @@ const processError = (res: any): string => {
 
 const redirectTo403 = _.debounce(
   () => {
-    location.href = `${basePrefix}/403`;
+    // 在触发403的地方
+    location.href = `${basePrefix}/403?from=${encodeURIComponent(location.pathname + location.search)}`;
   },
   1000,
   { leading: true, trailing: false },
