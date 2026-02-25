@@ -55,6 +55,14 @@ const processError = (res: any): string => {
   return JSON.stringify(res);
 };
 
+const redirectTo403 = _.debounce(
+  () => {
+    location.href = `${basePrefix}/403`;
+  },
+  1000,
+  { leading: true, trailing: false },
+);
+
 const combineLoginURL = () => {
   return `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + encodeURIComponent(location.pathname + location.search) : ''}`;
 };
@@ -137,16 +145,16 @@ request.interceptors.response.use(
       } else {
         localStorage.getItem('refresh_token')
           ? UpdateAccessToken().then((res) => {
-              console.log('401 err', res);
-              if (res.err) {
-                location.href = combineLoginURL();
-              } else {
-                const { access_token, refresh_token } = res.dat;
-                localStorage.setItem(AccessTokenKey, access_token);
-                localStorage.setItem('refresh_token', refresh_token);
-                location.href = `${basePrefix}${location.pathname}${location.search}`;
-              }
-            })
+            console.log('401 err', res);
+            if (res.err) {
+              location.href = combineLoginURL();
+            } else {
+              const { access_token, refresh_token } = res.dat;
+              localStorage.setItem(AccessTokenKey, access_token);
+              localStorage.setItem('refresh_token', refresh_token);
+              location.href = `${basePrefix}${location.pathname}${location.search}`;
+            }
+          })
           : (location.href = combineLoginURL());
       }
     } else if (
@@ -160,7 +168,7 @@ request.interceptors.response.use(
         .clone()
         .json()
         .then((data) => {
-          location.href = `${basePrefix}/403`;
+          redirectTo403();
           if (data.error && data.error.message) throw new Error(data.error.message);
         });
     } else if ([502, 503, 504].includes(status)) {
