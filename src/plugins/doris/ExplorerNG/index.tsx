@@ -101,6 +101,8 @@ export default function index(props: Props) {
 
   const handleValueFilter = (params: OnValueFilterParams) => {
     const assignmentOperator = params.assignmentOperator || ':';
+    // 转义 value 中的双引号
+    const escapedValue = params.value.replace(/"/g, '\\"');
     const values = form.getFieldsValue();
     const query = values.query;
     let queryStr = _.trim(query.query);
@@ -108,10 +110,10 @@ export default function index(props: Props) {
       queryStr = '';
     }
     if (params.operator === 'AND') {
-      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${params.value}"`;
+      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${escapedValue}"`;
     }
     if (params.operator === 'NOT') {
-      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${params.value}"`;
+      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${escapedValue}"`;
     }
     form.setFieldsValue({
       refreshFlag: undefined,
