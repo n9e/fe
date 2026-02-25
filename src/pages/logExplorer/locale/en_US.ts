@@ -135,6 +135,12 @@ const en_US = {
     duration: 'Duration:',
     top5_title: 'Top 5 Values',
     no_data: 'No Data',
+    loading_title: 'Aggregation in progress, please wait',
+    loading_info: 'Log count: ',
+    loading_field: 'Aggregate field: ',
+    loading_tip: 'Please do not close this page. For a new query, ',
+    loading_new_tab: 'open a new tab',
+    loading_tip_suffix: ' for log search',
   },
   view_placeholder: 'Log View',
 };

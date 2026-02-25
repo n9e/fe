@@ -135,6 +135,12 @@ const ru_RU = {
     duration: 'Время выполнения:',
     top5_title: 'Топ 5 значений',
     no_data: 'Нет данных',
+    loading_title: 'Агрегация выполняется, пожалуйста подождите',
+    loading_info: 'Количество логов: ',
+    loading_field: 'Поле агрегации: ',
+    loading_tip: 'Не закрывайте эту страницу. Для нового запроса ',
+    loading_new_tab: 'откройте новую вкладку',
+    loading_tip_suffix: ' для поиска логов',
   },
   view_placeholder: 'Просмотр логов',
 };

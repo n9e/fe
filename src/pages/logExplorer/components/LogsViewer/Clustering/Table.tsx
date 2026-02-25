@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Space, Tag, Dropdown, Button, Menu, Popover, Spin, Progress, Row, Col, Statistic, Tooltip } from 'antd';
-import { CaretDownOutlined, MinusCircleOutlined, PlusCircleOutlined, CopyOutlined, BarChartOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, MinusCircleOutlined, PlusCircleOutlined, CopyOutlined, BarChartOutlined, SyncOutlined } from '@ant-design/icons';
 import { copy2ClipBoard } from '@/utils';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ interface Props {
   queryStrRef: React.RefObject<string> | undefined;
   indexData: Field[];
   logTotal: number;
-  options?: OptionsType;
+  options: OptionsType;
   clusteringOptionsEleRef: React.RefObject<HTMLDivElement>;
   logs: { [index: string]: string }[];
   logsHash?: string;
@@ -39,6 +39,7 @@ export default function TableCpt(props: Props) {
   const [maxLogCount, setMaxLogCount] = useState<number>(DEFAULT_MAX_LOG_COUNT);
   const id_key = 'uuid'; // 数据唯一标识字段
   const [data, setData] = useState<ClusteringItem[]>([]);
+  const [fullAggregateLoading, setFullAggregateLoading] = useState(false);
   useEffect(() => {
     getGlobalConfig('log_clustering_max').then((res) => {
       setMaxLogCount(isNaN(Number(res)) || Number(res) === 0 ? DEFAULT_MAX_LOG_COUNT : Number(res));
@@ -57,11 +58,15 @@ export default function TableCpt(props: Props) {
   }, [logsHash]);
 
   const handleFullAggregation = () => {
-    // TODO: 实现全量聚合逻辑
-    getQueryClustering('doris', queryStrRef?.current || '', field).then((res) => {
-      setData(res);
-      setBackEndCluster(true);
-    });
+    setFullAggregateLoading(true);
+    getQueryClustering('doris', queryStrRef?.current || '', field)
+      .then((res) => {
+        setData(res);
+        setBackEndCluster(true);
+      })
+      .finally(() => {
+        setFullAggregateLoading(false);
+      });
   };
 
   const PatternPopover = ({ uuid, partId, children, title }: { uuid: string; partId: number; children: React.ReactNode; title: string }) => {
@@ -325,11 +330,16 @@ export default function TableCpt(props: Props) {
             label: option.field,
           }))}
           onClick={({ key }) => {
-            setField(key)
-            getQueryClustering('doris', queryStrRef?.current || '', field).then((res) => {
-              setData(res);
-              setBackEndCluster(true);
-            });
+            setField(key);
+            setFullAggregateLoading(true);
+            getQueryClustering('doris', queryStrRef?.current || '', key)
+              .then((res) => {
+                setData(res);
+                setBackEndCluster(true);
+              })
+              .finally(() => {
+                setFullAggregateLoading(false);
+              });
           }}
           style={{ maxHeight: '300px', overflowY: 'auto' }}
           className='best-looking-scroll'
@@ -355,14 +365,31 @@ export default function TableCpt(props: Props) {
           backEndCluster ? backendClusterPortal : currentLogClusterPortal,
           clusteringOptionsEleRef.current,
         )}
-      <RDGTable
-        className='n9e-event-logs-table'
-        rowKeyGetter={(row) => {
-          return row[id_key] || '';
-        }}
-        columns={getColumns()}
-        rows={data}
-      />
+      {fullAggregateLoading ? (
+        <div className='h-full flex flex-col items-center justify-center bg-fc-200' style={{ minHeight: 300 }}>
+          <SyncOutlined spin style={{ fontSize: 64, color: 'var(--fc-text-4)' }} />
+          <div className='mt-6 text-base font-bold'>{t('clustering.loading_title')}</div>
+          <div className='mt-2 text-l2'>
+            {t('clustering.loading_info')}<span style={{ color: 'var(--fc-primary-color)', fontWeight: 'bold' }}>{logTotal?.toLocaleString()}</span>
+            <span className='mx-1'>|</span>
+            {t('clustering.loading_field')}{field}
+          </div>
+          <div className='mt-2 text-l2'>
+            {t('clustering.loading_tip')}
+            <a onClick={() => window.open(window.location.href, '_blank')}>{t('clustering.loading_new_tab')}</a>
+            {t('clustering.loading_tip_suffix')}
+          </div>
+        </div>
+      ) : (
+        <RDGTable
+          className='n9e-event-logs-table'
+          rowKeyGetter={(row) => {
+            return row[id_key] || '';
+          }}
+          columns={getColumns()}
+          rows={data}
+        />
+      )}
     </div>
   );
 }

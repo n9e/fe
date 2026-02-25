@@ -135,6 +135,12 @@ const zh_CN = {
     duration: '耗时:',
     top5_title: '前 5 个值',
     no_data: '暂无数据',
+    loading_title: '聚合分析中，请稍等',
+    loading_info: '聚合日志量：',
+    loading_field: '聚合字段：',
+    loading_tip: '请勿关闭此页。需要新的查询，',
+    loading_new_tab: '打开新的标签页',
+    loading_tip_suffix: '进行日志检索',
   },
   view_placeholder: '日志视图',
 };

@@ -135,6 +135,12 @@ const zh_HK = {
     duration: '耗時:',
     top5_title: '前 5 個值',
     no_data: '暫無數據',
+    loading_title: '聚合分析中，請稍等',
+    loading_info: '聚合日誌量：',
+    loading_field: '聚合字段：',
+    loading_tip: '請勿關閉此頁。需要新的查詢，',
+    loading_new_tab: '打開新的標籤頁',
+    loading_tip_suffix: '進行日誌檢索',
   },
   view_placeholder: '日誌視圖',
 };

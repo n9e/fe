@@ -135,6 +135,12 @@ const ja_JP = {
     duration: '所要時間:',
     top5_title: '上位 5 件',
     no_data: 'データなし',
+    loading_title: '集約分析中、しばらくお待ちください',
+    loading_info: '集約ログ数：',
+    loading_field: '集約フィールド：',
+    loading_tip: 'このページを閉じないでください。新しいクエリが必要な場合は、',
+    loading_new_tab: '新しいタブを開いて',
+    loading_tip_suffix: 'ログ検索を行ってください',
   },
   view_placeholder: 'ログビュー',
 };

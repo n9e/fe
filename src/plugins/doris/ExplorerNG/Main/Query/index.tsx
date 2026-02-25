@@ -316,6 +316,7 @@ export default function index(props: Props) {
                 enabled: true,
                 queryStrRef,
                 logTotal: data?.total || 0,
+                cate: DatasourceCateEnum.doris,
               }}
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}

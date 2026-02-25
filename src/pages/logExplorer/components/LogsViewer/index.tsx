@@ -19,6 +19,7 @@ import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
 import classNames from 'classnames';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 interface Props {
   /** 时间字段 */
@@ -87,6 +88,7 @@ interface Props {
     enabled: boolean;
     queryStrRef: React.RefObject<string>;
     logTotal: number;
+    cate: DatasourceCateEnum;
   };
 
   /** 以下是 context 依赖的数据 */
@@ -156,7 +158,6 @@ export default function LogsViewer(props: Props) {
     showExistsAction,
     logClusting,
   } = props;
-  console.log('logClusting', logClusting);
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
 
