@@ -64,8 +64,8 @@ export default function index(props: Props) {
       form.validateFields().then((values) => {
         const queryValues = values.query;
 
-        if (!intervalFixedRef.current) {
-          const { start, end } = parseRange(values.query.range);
+        if (!intervalFixedRef.current && queryValues.range) {
+          const { start, end } = parseRange(queryValues.range);
           const newInterval = calcInterval(moment(start), moment(end));
           setInterval(newInterval);
         }
@@ -75,7 +75,7 @@ export default function index(props: Props) {
           defaultFormValuesControl.setDefaultFormValues({
             datasourceCate: values.datasourceCate,
             datasourceValue: values.datasourceValue,
-            query: values.query,
+            query: queryValues,
           });
         }
 

@@ -201,6 +201,10 @@ export default function Explorer(props: Props) {
               form.setFieldsValue({
                 datasourceCate,
                 datasourceValue,
+                query: {
+                  range: logsDefaultRange ?? { start: 'now-5m', end: 'now' },
+                  ...(getDefaultQueryValues ? getDefaultQueryValues({}) || {} : {}),
+                },
               });
             }}
           />
