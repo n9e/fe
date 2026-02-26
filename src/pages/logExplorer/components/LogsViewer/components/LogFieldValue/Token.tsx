@@ -191,7 +191,6 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                   className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                   onClick={() => {
                     setPopoverVisible(false);
-                    console.log('indexInfo', indexInfo)
                     onTokenClick?.({
                       key: name,
                       value: fieldValue,
