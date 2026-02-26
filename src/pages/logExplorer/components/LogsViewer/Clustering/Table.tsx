@@ -321,7 +321,7 @@ export default function TableCpt(props: Props) {
           }))}
           onClick={({ key }) => {
             setField(key)
-            getLogClustering(logs, key).then((res) => {
+            getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, key).then((res) => {
               setData(res);
             });
           }}
