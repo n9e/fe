@@ -35,9 +35,9 @@ interface Props {
   indexData: Field[];
   rangeRef: React.MutableRefObject<
     | {
-        from: number;
-        to: number;
-      }
+      from: number;
+      to: number;
+    }
     | undefined
   >;
   snapRangeRef: React.MutableRefObject<{
@@ -62,7 +62,7 @@ export default function index(props: Props) {
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
-
+  const queryStrRef = useRef<string>('');
   const {
     tableSelector,
     indexData,
@@ -121,16 +121,16 @@ export default function index(props: Props) {
       let timeParams =
         fixedRangeRef.current === false
           ? {
-              from: moment(range.start).unix(),
-              to: moment(range.end).unix(),
-            }
+            from: moment(range.start).unix(),
+            to: moment(range.end).unix(),
+          }
           : rangeRef.current!;
       if (snapRangeRef.current && snapRangeRef.current.from && snapRangeRef.current.to) {
         timeParams = snapRangeRef.current as { from: number; to: number };
       }
       rangeRef.current = timeParams;
       const queryStart = Date.now();
-      return getDorisLogsQuery({
+      const reqData = {
         cate: DatasourceCateEnum.doris,
         datasource_id: datasourceValue,
         query: [
@@ -148,7 +148,9 @@ export default function index(props: Props) {
             default_field: defaultSearchField,
           },
         ],
-      })
+      }
+      queryStrRef.current = JSON.stringify(reqData);
+      return getDorisLogsQuery(reqData)
         .then((res) => {
           if (fixedRangeRef.current === false) {
             loadTimeRef.current = Date.now() - queryStart;
@@ -315,6 +317,13 @@ export default function index(props: Props) {
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
+              logClusting={{
+                enabled: true,
+                queryStrRef,
+                logTotal: data?.total || 0,
+                cate: DatasourceCateEnum.doris,
+                datasourceValue: datasourceValue,
+              }}
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
               histogram={histogramData?.data || []}

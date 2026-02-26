@@ -45,9 +45,9 @@ interface Props {
   indexData: Field[];
   rangeRef: React.MutableRefObject<
     | {
-        from: number;
-        to: number;
-      }
+      from: number;
+      to: number;
+    }
     | undefined
   >;
   snapRangeRef: React.MutableRefObject<{
@@ -88,7 +88,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-
+  const queryStrRef = useRef<string>('');
   const {
     indexData,
     rangeRef,
@@ -144,9 +144,9 @@ export default function index(props: Props) {
       let timeParams =
         fixedRangeRef.current === false
           ? {
-              from: moment(range.start).valueOf(),
-              to: moment(range.end).valueOf(),
-            }
+            from: moment(range.start).valueOf(),
+            to: moment(range.end).valueOf(),
+          }
           : rangeRef.current!;
       if (snapRangeRef.current && snapRangeRef.current.from && snapRangeRef.current.to) {
         timeParams = snapRangeRef.current as { from: number; to: number };
@@ -185,6 +185,8 @@ export default function index(props: Props) {
           highlights: [],
         });
       }
+
+      queryStrRef.current = requestBody;
 
       const queryStart = Date.now();
       return getLogsQuery(datasourceValue, requestBody, requestId)
@@ -588,11 +590,17 @@ export default function index(props: Props) {
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
               adjustFieldValue={(formatedValue, highlightValue) => {
-                // console.log(formatedValue, highlightValue);
                 if (highlightValue) {
                   return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlightValue)) }} />;
                 }
                 return formatedValue;
+              }}
+              logClusting={{
+                enabled: true,
+                queryStrRef,
+                logTotal: data?.total || 0,
+                cate: DatasourceCateEnum.elasticsearch,
+                datasourceValue
               }}
             />
           ) : loading || histogramLoading ? (
