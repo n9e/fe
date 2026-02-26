@@ -27,6 +27,7 @@ interface IProps {
     };
     from: number;
     limit: number;
+    reverse: boolean;
   };
 }
 
@@ -41,7 +42,7 @@ export default function index(props: IProps) {
   const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, requestParams } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
-  const { from, range, limit } = requestParams;
+  const { from, range, limit, reverse } = requestParams;
 
   return (
     <div className='h-full flex flex-col flex-shrink-0'>
@@ -97,6 +98,12 @@ export default function index(props: IProps) {
                 kuery: queryValues.query,
                 from,
                 limit,
+                sorter: [
+                  {
+                    field: queryValues.date_field,
+                    order: reverse ? 'desc' : 'asc',
+                  },
+                ],
                 fields: [ajustFieldParamValue(record, version)],
               }),
               ajustFieldParamValue(record, version),

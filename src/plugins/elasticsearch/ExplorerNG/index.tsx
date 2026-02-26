@@ -182,7 +182,7 @@ export default function index(props: Props) {
               }}
               onIndexDataChange={setIndexData}
               handleValueFilter={handleValueFilter}
-              requestParams={{ from: (serviceParams.current - 1) * serviceParams.pageSize, range: rangeRef.current, limit: serviceParams.pageSize }}
+              requestParams={{ from: (serviceParams.current - 1) * serviceParams.pageSize, range: rangeRef.current, limit: serviceParams.pageSize, reverse: serviceParams.reverse }}
               isOpenSearch={isOpenSearch}
             />
           </SideBar>
