@@ -13,7 +13,7 @@ import HistogramChart from './components/HistogramChart';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
-import ClusteringTable from './Clustering/Table';
+import ClusteringTable, { LogClusting } from './Clustering/Table';
 import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
@@ -84,12 +84,7 @@ interface Props {
   showExistsAction?: boolean;
 
   // 日志聚类参数
-  logClusting?: {
-    enabled: boolean;
-    queryStrRef: React.RefObject<string>;
-    logTotal: number;
-    cate: DatasourceCateEnum;
-  };
+  logClusting?: LogClusting
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -257,7 +252,7 @@ export default function LogsViewer(props: Props) {
           </>
         )}
         <FullscreenButton.Provider>
-          <div className='flex justify-between pb-2 56'>
+          <div className='flex justify-between pb-2'>
             <Space>
               {addonBefore}
               {showLogMode && (
@@ -370,8 +365,8 @@ export default function LogsViewer(props: Props) {
                   showExistsAction={showExistsAction}
                 />
               )}
-              {options.logMode === 'clustering' && (
-                <ClusteringTable queryStrRef={logClusting?.queryStrRef} onValueFilter={onAddToQuery || (() => { })} clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} options={options} logTotal={logClusting?.logTotal || 0} indexData={props.indexData || []} />
+              {options.logMode === 'clustering' && logClusting && (
+                <ClusteringTable logClusting={logClusting} onValueFilter={onAddToQuery || (() => { })} clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} options={options} indexData={props.indexData || []} />
               )}
             </div>
           </div>

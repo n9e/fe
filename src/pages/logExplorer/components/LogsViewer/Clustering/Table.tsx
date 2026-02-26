@@ -1,3 +1,4 @@
+// 日志聚类，目前仅支持了doris和es
 import React, { useState, useEffect, useMemo } from 'react';
 import { Space, Tag, Dropdown, Button, Menu, Popover, Spin, Progress, Row, Col, Statistic, Tooltip } from 'antd';
 import { CaretDownOutlined, MinusCircleOutlined, PlusCircleOutlined, CopyOutlined, BarChartOutlined, SyncOutlined } from '@ant-design/icons';
@@ -7,30 +8,41 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { PRIMARY_COLOR } from '@/utils/constant';
 import { NAME_SPACE } from '../../../constants';
-import { getLogClustering, ClusteringItem, getQueryClustering, getLogPattern, getLogHistogram } from '../../../services';
+import { getLogClustering, ClusteringItem, getQueryClustering, getLogPattern } from '../../../services';
 import { ClusterPattern } from '../../../types';
 import { getGlobalConfig } from '@/plus/components/LogDownload/service';
 import { OnValueFilterParams, OptionsType } from '../types';
 import { Field } from '@/plugins/doris/ExplorerNG/types';
 import RDGTable from '../components/Table';
 const DEFAULT_MAX_LOG_COUNT = 10000000;
-
+import { DatasourceCateEnum } from '@/utils/constant';
+import ExistsIcon from '@/pages/explorer/components/RenderValue/ExistsIcon';
 interface Props {
   onValueFilter: (condition: OnValueFilterParams) => void;
-  queryStrRef: React.RefObject<string> | undefined;
   indexData: Field[];
-  logTotal: number;
   options: OptionsType;
   clusteringOptionsEleRef: React.RefObject<HTMLDivElement>;
   logs: { [index: string]: string }[];
   logsHash?: string;
   setPatternHistogramState: (v: { visible: boolean, uuid?: string, rowIndex?: number }) => void;
+  logClusting: LogClusting;
 }
+
+// 日志聚类参数
+export interface LogClusting {
+  enabled: boolean;
+  queryStrRef: React.RefObject<string>;
+  logTotal: number;
+  cate: DatasourceCateEnum;
+  datasourceValue: number;
+};
 
 export default function TableCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { queryStrRef, indexData, logTotal, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState } = props;
+  const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState } = props;
+  const { queryStrRef, logTotal, cate, datasourceValue } = logClusting;
   const [backEndCluster, setBackEndCluster] = useState<boolean>(false);
+  const [timeCost, setTimeCost] = useState<number>(0);
   // 默认：首个文本类型的字段
   const [field, setField] = useState<string>(() => {
     const firstTextField = indexData.find((item) => item.type === 'text')?.field;
@@ -47,7 +59,7 @@ export default function TableCpt(props: Props) {
   }, []);
 
   useEffect(() => {
-    getLogClustering(logs, field).then((res) => {
+    getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
       setData(res);
       setBackEndCluster(false);
     });
@@ -59,10 +71,11 @@ export default function TableCpt(props: Props) {
 
   const handleFullAggregation = () => {
     setFullAggregateLoading(true);
-    getQueryClustering('doris', queryStrRef?.current || '', field)
+    getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', field)
       .then((res) => {
-        setData(res);
+        setData(res.items);
         setBackEndCluster(true);
+        setTimeCost(res.time_cost);
       })
       .finally(() => {
         setFullAggregateLoading(false);
@@ -199,6 +212,26 @@ export default function TableCpt(props: Props) {
                 {t('logs.filterAllNot')}
               </Space>
             </li>
+            {cate === DatasourceCateEnum.elasticsearch && (
+              <li
+                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                onClick={() => {
+                  setPopoverVisible(false);
+                  props.onValueFilter?.({
+                    key: field,
+                    value: value,
+                    assignmentOperator: '=',
+                    operator: 'EXISTS',
+                    indexName: field,
+                  });
+                }}
+              >
+                <Space>
+                  <ExistsIcon />
+                  {t('logs.filterExists')}
+                </Space>
+              </li>
+            )}
           </ul>
         }
       >
@@ -332,10 +365,11 @@ export default function TableCpt(props: Props) {
           onClick={({ key }) => {
             setField(key);
             setFullAggregateLoading(true);
-            getQueryClustering('doris', queryStrRef?.current || '', key)
+            getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', key)
               .then((res) => {
-                setData(res);
+                setData(res.items);
                 setBackEndCluster(true);
+                setTimeCost(res.time_cost);
               })
               .finally(() => {
                 setFullAggregateLoading(false);
@@ -354,8 +388,7 @@ export default function TableCpt(props: Props) {
     <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span>
     <span>|</span>
     <span>{t('clustering.duration')}</span>
-    {/* todo: 获取耗时 */}
-    <span>30s</span>
+    <span>{timeCost}s</span>
   </Space>
 
   return (

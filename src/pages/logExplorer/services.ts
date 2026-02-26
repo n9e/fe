@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { IndexDataItem, ClusteringItem, ClusterPattern } from './types';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 export type { IndexDataItem, ClusteringItem };
 
@@ -11,25 +12,29 @@ export type { IndexDataItem, ClusteringItem };
 //   }).then((res) => res.dat);
 // };
 
-export const getLogClustering = (logs: any[], by: string): Promise<ClusteringItem[]> => {
+export const getLogClustering = (cate: DatasourceCateEnum, datasource_id: number, query: string, logs: any[], by: string): Promise<ClusteringItem[]> => {
   return request('/api/fc-model/log-clusting/logs', {
     method: RequestMethod.Post,
     data: {
       logs,
       by,
+      cate,
+      datasource_id,
+      query,
     },
   }).then((res) => res.data.items);
 };
 
-export const getQueryClustering = (cate: 'doris' | 'elasticsearch', query: string, by: string): Promise<ClusteringItem[]> => {
+export const getQueryClustering = (cate: DatasourceCateEnum, datasource_id: number, query: string, by: string): Promise<{ items: ClusteringItem[]; time_cost: number }> => {
   return request('/api/fc-model/log-clusting/query', {
     method: RequestMethod.Post,
     data: {
       cate,
       query,
       by,
+      datasource_id,
     },
-  }).then((res) => res.data.items);
+  }).then((res) => res.data);
 };
 
 export const getLogPattern = (uuid: string, part_id: number): Promise<ClusterPattern> => {

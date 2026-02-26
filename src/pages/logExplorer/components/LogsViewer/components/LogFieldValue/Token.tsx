@@ -55,17 +55,17 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   const indexInfo = getAddToQueryInfo
     ? useMemo(() => {
-        return getAddToQueryInfo({
-          parentKey,
-          fieldName: name,
-          logRowData: rawValue || {},
-          indexData,
-        });
-      }, [name, JSON.stringify(rawValue?.[raw_key]), JSON.stringify(indexData)])
+      return getAddToQueryInfo({
+        parentKey,
+        fieldName: name,
+        logRowData: rawValue || {},
+        indexData,
+      });
+    }, [name, JSON.stringify(rawValue?.[raw_key]), JSON.stringify(indexData)])
     : {
-        isIndex: true,
-        indexName: name,
-      };
+      isIndex: true,
+      indexName: name,
+    };
 
   // ES 数据源的自定义格式化
   let displayValue = toString(value);
@@ -191,6 +191,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                   className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                   onClick={() => {
                     setPopoverVisible(false);
+                    console.log('indexInfo', indexInfo)
                     onTokenClick?.({
                       key: name,
                       value: fieldValue,

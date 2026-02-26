@@ -130,7 +130,7 @@ export default function index(props: Props) {
       }
       rangeRef.current = timeParams;
       const queryStart = Date.now();
-      const data = {
+      const reqData = {
         cate: DatasourceCateEnum.doris,
         datasource_id: datasourceValue,
         query: [
@@ -149,8 +149,8 @@ export default function index(props: Props) {
           },
         ],
       }
-      queryStrRef.current = JSON.stringify(data);
-      return getDorisLogsQuery(data)
+      queryStrRef.current = JSON.stringify(reqData);
+      return getDorisLogsQuery(reqData)
         .then((res) => {
           if (fixedRangeRef.current === false) {
             loadTimeRef.current = Date.now() - queryStart;
@@ -317,6 +317,7 @@ export default function index(props: Props) {
                 queryStrRef,
                 logTotal: data?.total || 0,
                 cate: DatasourceCateEnum.doris,
+                datasourceValue: datasourceValue,
               }}
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
