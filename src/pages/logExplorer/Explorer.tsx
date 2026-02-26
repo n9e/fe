@@ -35,6 +35,7 @@ export default function Explorer(props: Props) {
 
   const [form] = Form.useForm();
   const datasourceCate = Form.useWatch('datasourceCate', form);
+  const datasourceValue = Form.useWatch('datasourceValue', form);
 
   const cateGraphPro = getGraphProByCate(datasourceCate);
 
@@ -45,7 +46,10 @@ export default function Explorer(props: Props) {
     visible: false,
   });
   const executeQueryRef = useRef<() => void>();
+  const getDefaultQueryValuesRef = useRef<RenderCommonSettingsParams['getDefaultQueryValues']>();
   const [shouldExecuteQuery, setShouldExecuteQuery] = useState(false);
+  const prevDatasourceCateRef = useRef<string>();
+  const prevDatasourceValueRef = useRef<number>();
 
   useEffect(() => {
     if (shouldExecuteQuery && executeQueryRef.current) {
@@ -55,6 +59,30 @@ export default function Explorer(props: Props) {
       }
     }
   }, [shouldExecuteQuery, datasourceCate, active]);
+
+  // 监听数据源类型/数据源值切换，重置 query 字段到默认值
+  useEffect(() => {
+    const cateChanged = prevDatasourceCateRef.current && prevDatasourceCateRef.current !== datasourceCate && datasourceCate;
+    const valueChanged = prevDatasourceValueRef.current && prevDatasourceValueRef.current !== datasourceValue && datasourceValue;
+
+    if (cateChanged || valueChanged) {
+      // 数据源已切换，此时 renderCommonSettings 已经重新渲染，getDefaultQueryValues 是新的
+      const queryValues = form.getFieldValue('query');
+      // 只有在 query 为空或 undefined 时才设置默认值
+      if (!queryValues || _.isEmpty(queryValues)) {
+        const defaultQueryValues = getDefaultQueryValuesRef.current ? getDefaultQueryValuesRef.current({}) || {} : {};
+        const newQueryValues = {
+          range: logsDefaultRange ?? { start: 'now-5m', end: 'now' },
+          ...defaultQueryValues,
+        };
+        form.setFieldsValue({
+          query: newQueryValues,
+        });
+      }
+    }
+    prevDatasourceCateRef.current = datasourceCate;
+    prevDatasourceValueRef.current = datasourceValue;
+  }, [datasourceCate, datasourceValue]);
 
   useEffect(() => {
     if (active && defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
@@ -73,6 +101,7 @@ export default function Explorer(props: Props) {
 
   const renderCommonSettings = ({ getDefaultQueryValues, executeQuery }: RenderCommonSettingsParams) => {
     executeQueryRef.current = executeQuery;
+    getDefaultQueryValuesRef.current = getDefaultQueryValues;
     return (
       <div className='flex-shrink-0'>
         <Form.Item>
@@ -201,10 +230,6 @@ export default function Explorer(props: Props) {
               form.setFieldsValue({
                 datasourceCate,
                 datasourceValue,
-                query: {
-                  range: logsDefaultRange ?? { start: 'now-5m', end: 'now' },
-                  ...(getDefaultQueryValues ? getDefaultQueryValues({}) || {} : {}),
-                },
               });
             }}
           />
