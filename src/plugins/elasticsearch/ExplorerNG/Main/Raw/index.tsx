@@ -357,6 +357,7 @@ export default function index(props: Props) {
                     });
                     executeQuery();
                   }}
+                  className='whitespace-normal break-all'
                 >
                   {getFieldLabel(filter.key, currentFieldConfig)}: exists
                 </Tag>
@@ -379,6 +380,7 @@ export default function index(props: Props) {
                   });
                   executeQuery();
                 }}
+                className='whitespace-normal break-all'
               >
                 {filter.operator === 'NOT' ? 'NOT ' : ''}
                 {getFieldLabel(filter.key, currentFieldConfig)}: {filter.value}
