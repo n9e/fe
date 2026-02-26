@@ -31,6 +31,7 @@ interface Props {
     };
     from: number;
     limit: number;
+    reverse: boolean;
   };
 
   isOpenSearch?: boolean;
