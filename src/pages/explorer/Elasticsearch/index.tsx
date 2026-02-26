@@ -578,7 +578,19 @@ export default function index(props: IProps) {
                         >
                           {chartVisible ? t('log.hideChart') : t('log.showChart')}
                         </a>
-                        {isPlus && <DownloadModal queryData={{ ...form.getFieldsValue(), mode, total: total }} />}
+                        {isPlus && (
+                          <DownloadModal
+                            queryData={(() => {
+                              const values = form.getFieldsValue();
+                              return {
+                                ...values,
+                                query: { ...values.query, filters },
+                                mode,
+                                total,
+                              };
+                            })()}
+                          />
+                        )}
                       </div>
                     </>
                   )}
