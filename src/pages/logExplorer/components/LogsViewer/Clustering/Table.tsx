@@ -87,9 +87,11 @@ export default function TableCpt(props: Props) {
 
   useEffect(() => {
     if (scope === 'current') {
-      getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
-        setData(res);
-      });
+      if (field) {
+        getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
+          setData(res);
+        });
+      }
     } else if (scope === 'full') {
       handleFullAggregation(field);
     }
@@ -228,6 +230,7 @@ export default function TableCpt(props: Props) {
           bordered={false}
           size='small'
           value={field}
+          dropdownMatchSelectWidth={false}
           options={indexData.map((item) => ({ value: item.field, label: item.field }))}
           onChange={(value) => {
             setCachedField(value);
