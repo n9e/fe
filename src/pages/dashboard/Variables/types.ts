@@ -30,3 +30,15 @@ export interface IVariable<QueryType = any> {
   hide?: boolean; // v6 新增，用于隐藏变量
   query?: QueryType; // v8 新增，用于规范各类数据的查询条件
 }
+
+export interface VariableExecutionMeta {
+  name: string;
+  dependencies: string[];
+  executor: () => Promise<void>; // 执行函数，内部处理请求
+  cleanup?: () => void; // 清理函数
+}
+
+// 依赖关系图
+export interface DependencyGraph {
+  [key: string]: string[]; // key: 变量名, value: 依赖它的变量列表
+}

@@ -1,42 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Select, Tooltip } from 'antd';
 import _ from 'lodash';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 
-import { IVariable } from '../types';
 import filterOptionsByReg from '../utils/filterOptionsByReg';
 import getValueByOptions from '../utils/getValueByOptions';
+import { useVariableManager } from '../VariableManagerContext';
 import { Props } from './types';
 
 export default function Custom(props: Props) {
-  const { item, onChange, variableValueFixed, value, setValue } = props;
-  const { name, label, multi, allOption, options } = item;
-  const latestItemRef = React.useRef<IVariable>(item);
+  const { hide, item: variable, variableValueFixed, value, setValue } = props;
+  const { name, label, multi, allOption, options } = variable;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
+  const { updateVariable, registerVariable, registeredVariables } = useVariableManager();
+  const variableRef = useRef(variable);
+
   useEffect(() => {
-    latestItemRef.current = item;
+    variableRef.current = variable;
   });
 
-  useEffect(() => {
-    const itemClone = _.cloneDeep(latestItemRef.current);
-    const options = _.map(_.compact(_.split(itemClone.definition, ',')), _.trim);
+  // 执行查询的核心逻辑
+  const executeQuery = async () => {
+    const currentVariable = variableRef.current;
+
+    const options = _.map(_.compact(_.split(currentVariable.definition, ',')), _.trim);
     const itemOptions = _.sortBy(filterOptionsByReg(options), 'value');
 
-    onChange({
+    updateVariable(name, {
       options: itemOptions,
       value: getValueByOptions({
         variableValueFixed,
-        variable: itemClone,
+        variable: currentVariable,
         itemOptions,
       }),
     });
-  }, [JSON.stringify(item.definition)]);
+  };
+
+  // 计算变量的配置签名（排除 label, value, options, hide）
+  const variableConfigSignature = React.useMemo(() => {
+    const { label, value, options, hide, ...rest } = variable;
+    return JSON.stringify(rest);
+  }, [variable]);
+
+  // 注册变量到管理器
+  useEffect(() => {
+    const meta = {
+      name: variable.name,
+      variable,
+      executor: executeQuery,
+    };
+
+    registerVariable(meta);
+
+    // 配置变更时清理订阅
+    return () => {
+      const meta = registeredVariables.current.get(variable.name);
+      if (meta && meta.cleanup) meta.cleanup();
+    };
+  }, [variableConfigSignature]);
 
   return (
-    <div>
+    <div className={hide ? 'hidden' : ''}>
       <InputGroupWithFormItem label={label || name}>
         <Select
           allowClear
@@ -59,7 +86,7 @@ export default function Custom(props: Props) {
               // 完成选择后清空搜索框
               setSearchValue('');
               setValue(v);
-              onChange({
+              updateVariable(name, {
                 value: v,
               });
             }
@@ -79,7 +106,7 @@ export default function Custom(props: Props) {
               // 如果是点击的 Tag 上的关闭按钮，也需要触发 onChange
               if (!dropdownVisible) {
                 setSearchValue('');
-                onChange({
+                updateVariable(name, {
                   value: newSelected,
                 });
               }
@@ -98,7 +125,7 @@ export default function Custom(props: Props) {
               if (multi) {
                 // 完成选择后清空搜索框
                 setSearchValue('');
-                onChange({
+                updateVariable(name, {
                   value,
                 });
               }
@@ -108,13 +135,13 @@ export default function Custom(props: Props) {
           onClear={() => {
             if (multi) {
               setValue([]);
-              onChange({
+              updateVariable(name, {
                 value: [],
               });
             } else {
               // 2024-10-28 清空变量时将 undefined 转为 '', 使之能缓存清空值状态，以便下次访问时变量值为空
               setValue('');
-              onChange({
+              updateVariable(name, {
                 value: '',
               });
             }
