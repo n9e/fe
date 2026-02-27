@@ -170,6 +170,7 @@ export default function LogsViewer(props: Props) {
 
   // 日志聚类相关状态
   const clusteringOptionsEleRef = React.useRef<HTMLDivElement>(null);
+  const clusteringExtraEleRef = React.useRef<HTMLDivElement>(null);
   const [patternHistogramState, setPatternHistogramState] = useState<{
     visible: boolean;
     uuid?: string; // 用户查询柱状图数据的相关参数
@@ -284,9 +285,11 @@ export default function LogsViewer(props: Props) {
                     updateOptions({
                       logMode: e.target.value,
                     });
+                    setPatternHistogramState({ visible: false });
                   }}
                 />
               )}
+              {options.logMode === 'clustering' && <div ref={clusteringOptionsEleRef} />}
               <OriginSettings
                 ref={originSettingsRef}
                 options={options}
@@ -303,7 +306,7 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {options.logMode === 'clustering' ? <div ref={clusteringOptionsEleRef} /> : optionsExtraRender}
+            {options.logMode === 'clustering' ? <div ref={clusteringExtraEleRef} /> : optionsExtraRender}
           </div>
           <div className='min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>
@@ -366,7 +369,7 @@ export default function LogsViewer(props: Props) {
                 />
               )}
               {options.logMode === 'clustering' && logClusting && (
-                <ClusteringTable logClusting={logClusting} onValueFilter={onAddToQuery || (() => { })} clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} options={options} indexData={props.indexData || []} />
+                <ClusteringTable logClusting={logClusting} onValueFilter={onAddToQuery || (() => { })} clusteringExtraEleRef={clusteringExtraEleRef} clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} options={options} indexData={props.indexData || []} />
               )}
             </div>
           </div>

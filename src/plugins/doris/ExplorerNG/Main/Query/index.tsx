@@ -323,6 +323,7 @@ export default function index(props: Props) {
                 logTotal: data?.total || 0,
                 cate: DatasourceCateEnum.doris,
                 datasourceValue: datasourceValue,
+                fieldCacheKey: queryValues?.database + queryValues?.table,
               }}
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
