@@ -269,7 +269,7 @@ export default function LogsViewer(props: Props) {
             </Space>
             {optionsExtraRender}
           </div>
-          <div className='min-h-0' onScrollCapture={onScrollCapture}>
+          <div className='h-full min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>
               {options.logMode === 'origin' && (
                 <Raw
