@@ -114,6 +114,7 @@ const en_US = {
     stack_group_by_tip: 'Display stacked trend chart by this field value',
     collapse: 'Collapse',
     expand: 'Expand',
+    copy_field_value: 'Copy field value',
   },
   view_placeholder: 'Log View',
 };

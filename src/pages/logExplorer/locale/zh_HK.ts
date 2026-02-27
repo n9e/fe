@@ -114,6 +114,7 @@ const zh_HK = {
     stack_group_by_tip: '以此字段值展示堆疊趨勢圖',
     collapse: '收起',
     expand: '展開',
+    copy_field_value: '拷貝字段值',
   },
   view_placeholder: '日誌視圖',
 };
