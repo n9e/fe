@@ -1,7 +1,7 @@
 // 日志聚类，目前仅支持了doris和es
 import React, { useState, useEffect } from 'react';
-import { Space, Tag, Dropdown, Button, Menu, Popover, Spin, Progress, Row, Col, Statistic, Tooltip } from 'antd';
-import { CaretDownOutlined, MinusCircleOutlined, PlusCircleOutlined, CopyOutlined, BarChartOutlined, SyncOutlined } from '@ant-design/icons';
+import { Space, Tag, Dropdown, Button, Menu, Divider } from 'antd';
+import { CaretDownOutlined, BarChartOutlined, SyncOutlined } from '@ant-design/icons';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -32,19 +32,48 @@ export interface LogClusting {
   logTotal: number;
   cate: DatasourceCateEnum;
   datasourceValue: number;
+  fieldCacheKey: string;
 };
 
 export default function TableCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState } = props;
-  const { queryStrRef, logTotal, cate, datasourceValue } = logClusting;
+  const { queryStrRef, logTotal, cate, datasourceValue, fieldCacheKey } = logClusting;
   const [backEndCluster, setBackEndCluster] = useState<boolean>(false);
   const [timeCost, setTimeCost] = useState<number>(0);
-  // 默认：首个文本类型的字段
-  const [field, setField] = useState<string>(() => {
-    const firstTextField = indexData.find((item) => item.type === 'text')?.field;
-    return firstTextField || '';
-  });
+  const FIELD_CACHE_PREFIX = 'log_clustering_field__';
+
+  const getDefaultField = (fields: Field[]) => {
+    const textFields = fields.filter((item) => item.type === 'text' && item.indexable);
+    const priorityFields = ['message', 'data', 'msg'];
+    const priorityField = priorityFields.map((name) => textFields.find((item) => item.field === name)).find(Boolean);
+    return priorityField?.field || textFields[0]?.field || '';
+  };
+
+  const getInitialField = () => {
+    const cached = localStorage.getItem(FIELD_CACHE_PREFIX + fieldCacheKey);
+    if (cached && indexData.some((item) => item.field === cached)) {
+      return cached;
+    }
+    return getDefaultField(indexData);
+  };
+
+  const [field, setField] = useState<string>(getInitialField);
+
+  const setCachedField = (value: string) => {
+    localStorage.setItem(FIELD_CACHE_PREFIX + fieldCacheKey, value);
+    setField(value);
+  };
+
+  useEffect(() => {
+    const cached = localStorage.getItem(FIELD_CACHE_PREFIX + fieldCacheKey);
+    if (cached && indexData.some((item) => item.field === cached)) {
+      setField(cached);
+    } else {
+      setField(getDefaultField(indexData));
+    }
+  }, [fieldCacheKey]);
+
   const [maxLogCount, setMaxLogCount] = useState<number>(DEFAULT_MAX_LOG_COUNT);
   const id_key = 'uuid'; // 数据唯一标识字段
   const [data, setData] = useState<ClusteringItem[]>([]);
@@ -83,18 +112,14 @@ export default function TableCpt(props: Props) {
     const columns: any[] = [
       {
         key: 'count',
+        width: 40,
         name: t('clustering.count'),
       },
       {
         key: 'parts',
         name: t('clustering.log_data'),
         formatter: ({ row }) => {
-          const sortedParts = [...(row.parts ?? [])].sort((a, b) => {
-            if (a.type === 'pattern' && b.type !== 'pattern') return -1;
-            if (a.type !== 'pattern' && b.type === 'pattern') return 1;
-            return 0;
-          });
-          return <Space size={'small'}>{sortedParts.map((part) => {
+          return <Space size={'small'}>{row.parts.map((part) => {
             if (part.type === 'pattern') {
               if (backEndCluster) {
                 return (
@@ -103,7 +128,7 @@ export default function TableCpt(props: Props) {
                   </PatternPopover>
                 );
               } else {
-                return <Tag className='mr-0 cursor-pointer' color='purple'>{part.data}</Tag>
+                return <Tag className='mr-0' color='purple'>{part.data}</Tag>
               }
             } else {
               if (backEndCluster) {
@@ -159,7 +184,7 @@ export default function TableCpt(props: Props) {
             label: option.field,
           }))}
           onClick={({ key }) => {
-            setField(key)
+            setCachedField(key);
             getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, key).then((res) => {
               setData(res);
             });
@@ -202,7 +227,7 @@ export default function TableCpt(props: Props) {
             label: option.field,
           }))}
           onClick={({ key }) => {
-            setField(key);
+            setCachedField(key);
             setFullAggregateLoading(true);
             getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', key)
               .then((res) => {

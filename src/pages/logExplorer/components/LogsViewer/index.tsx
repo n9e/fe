@@ -284,9 +284,11 @@ export default function LogsViewer(props: Props) {
                     updateOptions({
                       logMode: e.target.value,
                     });
+                    setPatternHistogramState({ visible: false });
                   }}
                 />
               )}
+              {options.logMode === 'clustering' ? <div ref={clusteringOptionsEleRef} /> : optionsExtraRender}
               <OriginSettings
                 ref={originSettingsRef}
                 options={options}
@@ -303,7 +305,6 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {options.logMode === 'clustering' ? <div ref={clusteringOptionsEleRef} /> : optionsExtraRender}
           </div>
           <div className='min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>

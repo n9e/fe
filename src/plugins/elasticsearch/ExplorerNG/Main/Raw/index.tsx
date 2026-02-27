@@ -593,7 +593,8 @@ export default function index(props: Props) {
                 queryStrRef,
                 logTotal: data?.total || 0,
                 cate: DatasourceCateEnum.elasticsearch,
-                datasourceValue
+                datasourceValue,
+                fieldCacheKey: queryValues.index
               }}
             />
           ) : loading || histogramLoading ? (

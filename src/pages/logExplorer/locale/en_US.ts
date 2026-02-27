@@ -127,7 +127,7 @@ const en_US = {
     aggregate: ', ',
     cannot_aggregate: 'Unable to fully aggregate',
     full_aggregate_logs: 'logs',
-    need_aggregate: 'To aggregate',
+    need_aggregate: 'To aggregate all',
     click_to_aggregate: 'logs, click',
     full_aggregate: 'Full Aggregate',
     aggregate_field: 'Aggregate Field:',
