@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { Select, Space, Tooltip } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { useRequest } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
-import { IVariable } from '../types';
+import { buildVariableInterpolations } from '../utils/ajustData';
+import { useVariableManager } from '../VariableManagerContext';
 import { formatString, formatDatasource } from '../utils/formatString';
 import filterOptionsByReg from '../utils/filterOptionsByReg';
 import getValueByOptions from '../utils/getValueByOptions';
@@ -18,80 +18,104 @@ import { Props } from './types';
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
-  const { item, onChange, data, formatedReg, variableValueFixed, value, setValue } = props;
-  const { name, label, multi, allOption, options } = item;
-  const latestItemRef = React.useRef<IVariable>(item);
-  const initializedRef = React.useRef<boolean>(false);
+  const { hide, item: variable, variableValueFixed, value, setValue } = props;
+  const { name, label, multi, allOption, options } = variable;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const formatedDefinition = formatString(item.definition, data);
-  const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
-  const datasourceCate = item.datasource?.cate;
-  const datasourceValue = formatDatasource(item.datasource?.value as any, data);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
+  const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
+  const variableRef = useRef(variable);
+
   useEffect(() => {
-    latestItemRef.current = item;
+    variableRef.current = variable;
   });
 
-  const service = () => {
-    if (!item.datasource) {
-      const errMsg = 'Variable ' + name + ' datasource not found';
-      setErrorMsg(errMsg);
-      return Promise.reject(errMsg);
-    }
-    if (!datasourceValue) {
-      const errMsg = 'Variable ' + name + ' datasource not found';
-      setErrorMsg(errMsg);
-      return Promise.reject(errMsg);
-    }
-    return datasource({
-      datasourceCate,
-      datasourceValue,
-      datasourceList,
-      query: {
-        ...item.query,
-        query: formatedDefinition || formatedQuery, // query 是标准写法
-        range,
-        config: item.config, // config 是 es 特有的写法
-      },
-    })
-      .then((options) => {
-        const itemClone = _.cloneDeep(latestItemRef.current);
-        const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+  // 执行查询的核心逻辑
+  const executeQuery = async () => {
+    const currentVariable = variableRef.current;
 
-        setErrorMsg('');
-        const isFirstLoad = !initializedRef.current;
-        onChange({
-          options: itemOptions,
-          value: getValueByOptions({
-            variableValueFixed,
-            variable: itemClone,
-            itemOptions,
-          }),
-          initialized: isFirstLoad ? true : undefined,
-        });
-        initializedRef.current = true;
-      })
-      .catch((error) => {
-        setErrorMsg(error.message || 'Error fetching variable options');
-        const isFirstLoad = !initializedRef.current;
-        onChange({
-          options: [],
-          // value: variableValueFixed ? value : undefined, // TODO 如果查询失败暂时不清除变量值
-          initialized: isFirstLoad ? true : undefined,
-        });
-        initializedRef.current = true;
+    if (!currentVariable.datasource) {
+      const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
+      setErrorMsg(errMsg);
+      return Promise.reject(errMsg);
+    }
+
+    const variableInterpolations = buildVariableInterpolations({
+      variable: currentVariable,
+      variables: getVariables(),
+      datasourceList,
+      range,
+    });
+
+    const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
+    const formatedDefinition = formatString(currentVariable.definition, variableInterpolations);
+    const formatedQuery = currentVariable.query?.query ? formatString(currentVariable.query.query, variableInterpolations) : undefined;
+    const datasourceCate = currentVariable.datasource?.cate;
+    const datasourceValue = formatDatasource(currentVariable.datasource?.value as any, variableInterpolations);
+
+    if (!datasourceValue) {
+      const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
+      setErrorMsg(errMsg);
+      return Promise.reject(errMsg);
+    }
+
+    setErrorMsg('');
+    try {
+      const options = await datasource({
+        datasourceCate,
+        datasourceValue,
+        datasourceList,
+        query: {
+          ...(currentVariable.query ?? {}),
+          query: formatedDefinition || formatedQuery, // query 是标准写法
+          range,
+          config: currentVariable.config, // config 是 es 特有的写法
+        },
       });
+      const filteredOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+      updateVariable(name, {
+        options: filteredOptions,
+        value: getValueByOptions({
+          variableValueFixed,
+          variable: currentVariable,
+          itemOptions: filteredOptions,
+        }),
+      });
+    } catch (error: any) {
+      setErrorMsg(error?.message || 'Error fetching variable options');
+      updateVariable(name, {
+        options: [],
+        // value: variableValueFixed ? value : undefined, // TODO 如果查询失败暂时不清除变量值
+      });
+    }
   };
 
-  useRequest(service, {
-    refreshDeps: [datasourceCate, datasourceValue, JSON.stringify(range), formatedDefinition, formatedQuery, formatedReg],
-    throttleWait: 300,
-  });
+  // 计算变量的配置签名（排除 label, value, options, hide）
+  const variableConfigSignature = React.useMemo(() => {
+    const { label, value, options, hide, ...rest } = variable;
+    return JSON.stringify(rest);
+  }, [variable]);
+
+  // 注册变量到管理器
+  useEffect(() => {
+    const meta = {
+      name: variable.name,
+      variable,
+      executor: executeQuery,
+    };
+
+    registerVariable(meta);
+
+    // 配置变更时清理订阅
+    return () => {
+      const meta = registeredVariables.current.get(variable.name);
+      if (meta && meta.cleanup) meta.cleanup();
+    };
+  }, [variableConfigSignature]); // 使用 useMemo 计算的配置签名
 
   return (
-    <div>
+    <div className={hide ? 'hidden' : ''}>
       <InputGroupWithFormItem
         label={
           <Space>
@@ -125,7 +149,7 @@ export default function Query(props: Props) {
               // 完成选择后清空搜索框
               setSearchValue('');
               setValue(v);
-              onChange({
+              updateVariable(name, {
                 value: v,
               });
             }
@@ -145,7 +169,7 @@ export default function Query(props: Props) {
               // 如果是点击的 Tag 上的关闭按钮，也需要触发 onChange
               if (!dropdownVisible) {
                 setSearchValue('');
-                onChange({
+                updateVariable(name, {
                   value: newSelected,
                 });
               }
@@ -164,7 +188,7 @@ export default function Query(props: Props) {
               if (multi) {
                 // 完成选择后清空搜索框
                 setSearchValue('');
-                onChange({
+                updateVariable(name, {
                   value,
                 });
               }
@@ -174,13 +198,13 @@ export default function Query(props: Props) {
           onClear={() => {
             if (multi) {
               setValue([]);
-              onChange({
+              updateVariable(name, {
                 value: [],
               });
             } else {
               // 2024-10-28 清空变量时将 undefined 转为 '', 使之能缓存清空值状态，以便下次访问时变量值为空
               setValue('');
-              onChange({
+              updateVariable(name, {
                 value: '',
               });
             }

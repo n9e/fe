@@ -6,6 +6,8 @@ import { IVariable } from '../types';
 import { replaceAllSeparatorMap } from '../constant';
 import stringToRegex from './stringToRegex';
 import { escapePromQLString, escapeJsonString } from './escapeString';
+import { getBuiltInVariables } from './replaceTemplateVariables';
+import isPlaceholderQuoted from './isPlaceholderQuoted';
 
 function adjustValue(
   value: string,
@@ -23,7 +25,7 @@ function adjustValue(
     if (!isPlaceholderQuoted) {
       value = `"${value}"`;
     }
-    // TOD: ES 其他类型的变量值是否需要转义？
+    // TODO: 除 ES 外其他类型的变量值是否需要转义？
     if (isEscapeJsonString) {
       value = escapeJsonString(value);
     }
@@ -102,9 +104,14 @@ export default function adjustData(
         isEscapeJsonString,
       };
       // value: 已选的值
-      // defaultValue: 数据源变量默认值
-      // definition: 常量定义的值
-      let joinedValue = value ?? defaultValue ?? definition;
+      let joinedValue = value;
+      if (type === 'constant') {
+        // definition: 常量定义的值
+        joinedValue = value ?? definition ?? '';
+      } else if (type === 'datasource' || type === 'datasourceIdentifier') {
+        // defaultValue: 数据源变量默认值
+        joinedValue = value ?? defaultValue;
+      }
       if (_.isEqual(value, ['all']) || _.isEqual(value, ['__all__'])) {
         if (allValue) {
           joinedValue = allValue;
@@ -137,5 +144,17 @@ export default function adjustData(
     },
     {},
   );
+  return data;
+}
+
+export function buildVariableInterpolations({ variable, variables, datasourceList, range }: { variable: IVariable; variables: IVariable[]; datasourceList: any[]; range: any }) {
+  const builtInVariables = getBuiltInVariables({
+    range,
+  });
+  const data = adjustData(_.concat(variables, builtInVariables), {
+    datasourceList: datasourceList,
+    isPlaceholderQuoted: isPlaceholderQuoted(variable.definition, variable.name), // only for ES
+    isEscapeJsonString: true, // only for ES
+  });
   return data;
 }

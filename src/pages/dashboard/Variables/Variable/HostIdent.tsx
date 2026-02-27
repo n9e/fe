@@ -1,66 +1,113 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Tooltip } from 'antd';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Select, Tooltip, Space } from 'antd';
+import { WarningOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
+import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { getMonObjectList } from '@/services/targets';
 
 import { useGlobalState } from '../../globalState';
-import { IVariable } from '../types';
 import getValueByOptions from '../utils/getValueByOptions';
 import filterOptionsByReg from '../utils/filterOptionsByReg';
+import { buildVariableInterpolations } from '../utils/ajustData';
+import { formatString } from '../utils/formatString';
+import { useVariableManager } from '../VariableManagerContext';
 import { Props } from './types';
 
 export default function HostIdent(props: Props) {
+  const { datasourceList } = useContext(CommonStateContext);
+  const [range] = useGlobalState('range');
   const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const { item, formatedReg, variableValueFixed, onChange, value, setValue } = props;
-  const { name, label, options, multi, allOption } = item;
-  const latestItemRef = React.useRef<IVariable>(item);
-  const [data, setData] = useState<{
-    list: string[];
-    flag: string;
-  }>({
-    list: [],
-    flag: '',
-  });
+
+  const { hide, item: variable, variableValueFixed, value, setValue } = props;
+  const { name, label, options, multi, allOption } = variable;
+
+  const [errorMsg, setErrorMsg] = useState<string>('');
+
+  const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
+  const variableRef = useRef(variable);
 
   useEffect(() => {
-    latestItemRef.current = item;
+    variableRef.current = variable;
   });
 
-  useEffect(() => {
-    getMonObjectList({
-      gids: dashboardMeta.group_id,
-      p: 1,
-      limit: 5000,
-    }).then((res) => {
-      setData({
-        list: _.uniq(_.map(res?.dat?.list, 'ident')),
-        flag: _.uniqueId('flag_'),
-      });
+  // 执行查询的核心逻辑
+  const executeQuery = async () => {
+    const currentVariable = variableRef.current;
+
+    const variableInterpolations = buildVariableInterpolations({
+      variable: currentVariable,
+      variables: getVariables(),
+      datasourceList,
+      range,
     });
-  }, [formatedReg]);
 
-  useEffect(() => {
-    if (data.flag) {
-      const itemClone = _.cloneDeep(latestItemRef.current);
-      const options = data.list;
-      const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+    const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
 
-      onChange({
+    try {
+      const res = await getMonObjectList({
+        gids: dashboardMeta.group_id,
+        p: 1,
+        limit: 5000,
+      });
+      const list = _.uniq(_.map(res?.dat?.list, 'ident'));
+      const itemOptions = _.sortBy(filterOptionsByReg(_.map(list, _.toString), formatedReg), 'value');
+
+      updateVariable(name, {
         options: itemOptions,
         value: getValueByOptions({
           variableValueFixed,
-          variable: itemClone,
+          variable: currentVariable,
           itemOptions,
         }),
       });
+    } catch (err) {
+      const errMsg = 'Failed to fetch host idents for variable ' + currentVariable.name;
+      setErrorMsg(errMsg);
+      updateVariable(name, {
+        options: [],
+      });
     }
-  }, [formatedReg, data.flag]);
+  };
+
+  // 计算变量的配置签名（排除 label, value, options, hide）
+  const variableConfigSignature = React.useMemo(() => {
+    const { label, value, options, hide, ...rest } = variable;
+    return JSON.stringify(rest);
+  }, [variable]);
+
+  // 注册变量到管理器
+  useEffect(() => {
+    const meta = {
+      name: variable.name,
+      variable,
+      executor: executeQuery,
+    };
+
+    registerVariable(meta);
+
+    // 配置变更时清理订阅
+    return () => {
+      const meta = registeredVariables.current.get(variable.name);
+      if (meta && meta.cleanup) meta.cleanup();
+    };
+  }, [variableConfigSignature]);
 
   return (
-    <div>
-      <InputGroupWithFormItem label={label || name}>
+    <div className={hide ? 'hidden' : ''}>
+      <InputGroupWithFormItem
+        label={
+          <Space>
+            {errorMsg ? (
+              <Tooltip title={errorMsg}>
+                <WarningOutlined style={{ color: '#f06' }} />
+              </Tooltip>
+            ) : null}
+            {label || name}
+          </Space>
+        }
+      >
         <Select
           allowClear
           mode={multi ? 'tags' : undefined}
@@ -79,7 +126,7 @@ export default function HostIdent(props: Props) {
               }
             }
             setValue(val);
-            onChange({
+            updateVariable(name, {
               value: val,
             });
           }}
