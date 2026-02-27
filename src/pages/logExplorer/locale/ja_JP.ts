@@ -114,6 +114,7 @@ const ja_JP = {
     stack_group_by_tip: 'このフィールド値で積み上げトレンドチャートを表示',
     collapse: '折りたたむ',
     expand: '展開',
+    copy_field_value: 'フィールド値をコピー',
   },
   view_placeholder: 'ログビュー',
 };
