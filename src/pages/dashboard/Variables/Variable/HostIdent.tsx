@@ -46,6 +46,7 @@ export default function HostIdent(props: Props) {
     const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
 
     try {
+      setErrorMsg('');
       const res = await getMonObjectList({
         gids: dashboardMeta.group_id,
         p: 1,
