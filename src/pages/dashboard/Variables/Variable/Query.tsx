@@ -26,6 +26,7 @@ export default function Query(props: Props) {
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
   const variableRef = useRef(variable);
+  const dropdownOpenValueRef = useRef<any>(null);
 
   useEffect(() => {
     variableRef.current = variable;
@@ -183,14 +184,20 @@ export default function Query(props: Props) {
           }}
           open={dropdownVisible}
           onDropdownVisibleChange={(open) => {
-            if (!open) {
+            if (open) {
+              // dropdown 打开时，记录当前的值
+              dropdownOpenValueRef.current = value;
+            } else {
               // 多选模式下 dropdown 关闭时，触发 onChange
               if (multi) {
                 // 完成选择后清空搜索框
                 setSearchValue('');
-                updateVariable(name, {
-                  value,
-                });
+                // 只有当值发生变化时才调用 updateVariable
+                if (!_.isEqual(dropdownOpenValueRef.current, value)) {
+                  updateVariable(name, {
+                    value,
+                  });
+                }
               }
             }
             setDropdownVisible(open);
