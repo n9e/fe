@@ -115,6 +115,7 @@ const ru_RU = {
     stack_group_by_tip: 'Отобразить график тренда со стеком по значению этого поля',
     collapse: 'Свернуть',
     expand: 'Развернуть',
+    copy_field_value: 'Скопировать значение поля',
   },
   clustering: {
     count: 'Количество',
