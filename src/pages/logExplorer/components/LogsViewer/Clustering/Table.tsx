@@ -1,7 +1,7 @@
 // 日志聚类，目前仅支持了doris和es
 import React, { useState, useEffect } from 'react';
-import { Space, Tag, Dropdown, Button, Menu, Divider } from 'antd';
-import { CaretDownOutlined, BarChartOutlined, SyncOutlined } from '@ant-design/icons';
+import { Space, Tag, Select } from 'antd';
+import { BarChartOutlined, SyncOutlined } from '@ant-design/icons';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -19,9 +19,10 @@ interface Props {
   indexData: Field[];
   options: OptionsType;
   clusteringOptionsEleRef: React.RefObject<HTMLDivElement>;
+  clusteringExtraEleRef: React.RefObject<HTMLDivElement>;
   logs: { [index: string]: string }[];
   logsHash?: string;
-  setPatternHistogramState: (v: { visible: boolean, uuid?: string, rowIndex?: number }) => void;
+  setPatternHistogramState: (v: { visible: boolean; uuid?: string; rowIndex?: number }) => void;
   logClusting: LogClusting;
 }
 
@@ -33,13 +34,13 @@ export interface LogClusting {
   cate: DatasourceCateEnum;
   datasourceValue: number;
   fieldCacheKey: string;
-};
+}
 
 export default function TableCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState } = props;
+  const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState, clusteringExtraEleRef } = props;
   const { queryStrRef, logTotal, cate, datasourceValue, fieldCacheKey } = logClusting;
-  const [backEndCluster, setBackEndCluster] = useState<boolean>(false);
+  const [scope, setScope] = useState<'current' | 'full'>('current');
   const [timeCost, setTimeCost] = useState<number>(0);
   const FIELD_CACHE_PREFIX = 'log_clustering_field__';
 
@@ -85,22 +86,31 @@ export default function TableCpt(props: Props) {
   }, []);
 
   useEffect(() => {
-    getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
-      setData(res);
-      setBackEndCluster(false);
-    });
+    if (scope === 'current') {
+      getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
+        setData(res);
+      });
+    } else if (scope === 'full') {
+      handleFullAggregation(field);
+    }
   }, [logs, logsHash]);
+
+  useEffect(() => {
+    if (logTotal > maxLogCount) {
+      setScope('current');
+    }
+  }, [logTotal]);
 
   useEffect(() => {
     setPatternHistogramState({ visible: false });
   }, [logsHash]);
 
-  const handleFullAggregation = () => {
+  const handleFullAggregation = (clusterField: string) => {
     setFullAggregateLoading(true);
-    getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', field)
+    getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', clusterField)
       .then((res) => {
         setData(res.items);
-        setBackEndCluster(true);
+        setScope('full');
         setTimeCost(res.time_cost);
       })
       .finally(() => {
@@ -119,29 +129,39 @@ export default function TableCpt(props: Props) {
         key: 'parts',
         name: t('clustering.log_data'),
         formatter: ({ row }) => {
-          return <Space size={'small'}>{row.parts.map((part) => {
-            if (part.type === 'pattern') {
-              if (backEndCluster) {
-                return (
-                  <PatternPopover key={part.part_id} uuid={(row.uuid)} partId={part.part_id} title={part.data}>
-                    <Tag className='mr-0 cursor-pointer' color='purple'>{part.data}</Tag>
-                  </PatternPopover>
-                );
-              } else {
-                return <Tag className='mr-0' color='purple'>{part.data}</Tag>
-              }
-            } else {
-              if (backEndCluster) {
-                return (
-                  <ConstPopover key={part.part_id} value={part.data} field={field} cate={cate} onValueFilter={props.onValueFilter}>
-                    <span className='cursor-pointer hover:underline'>{part.data}</span>
-                  </ConstPopover>
-                );
-              } else {
-                return <span >{part.data}</span>
-              }
-            }
-          })}</Space>;
+          return (
+            <Space size={'small'}>
+              {row.parts.map((part) => {
+                if (part.type === 'pattern') {
+                  if (scope === 'full') {
+                    return (
+                      <PatternPopover key={part.part_id} uuid={row.uuid} partId={part.part_id} title={part.data}>
+                        <Tag className='mr-0 cursor-pointer' color='purple'>
+                          {part.data}
+                        </Tag>
+                      </PatternPopover>
+                    );
+                  } else {
+                    return (
+                      <Tag className='mr-0' color='purple'>
+                        {part.data}
+                      </Tag>
+                    );
+                  }
+                } else {
+                  if (scope === 'full') {
+                    return (
+                      <ConstPopover key={part.part_id} value={part.data} field={field} cate={cate} onValueFilter={props.onValueFilter}>
+                        <span className='cursor-pointer hover:underline'>{part.data}</span>
+                      </ConstPopover>
+                    );
+                  } else {
+                    return <span>{part.data}</span>;
+                  }
+                }
+              })}
+            </Space>
+          );
         },
       },
     ];
@@ -157,119 +177,161 @@ export default function TableCpt(props: Props) {
         },
       });
     }
-    if (backEndCluster) {
+    if (scope === 'full') {
       columns.unshift({
         name: '',
         key: 'chart',
         width: 40,
         resizable: false,
         formatter: ({ row }) => {
-          return <BarChartOutlined style={{ cursor: 'pointer' }} onClick={async () => {
-            const idx = _.findIndex(data, { [id_key]: row[id_key] });
-            setPatternHistogramState({ visible: true, uuid: row[id_key] as string, rowIndex: idx + 1 });
-          }} />
+          return (
+            <BarChartOutlined
+              style={{ cursor: 'pointer' }}
+              onClick={async () => {
+                const idx = _.findIndex(data, { [id_key]: row[id_key] });
+                setPatternHistogramState({ visible: true, uuid: row[id_key] as string, rowIndex: idx + 1 });
+              }}
+            />
+          );
         },
       });
     }
     return columns;
   };
 
-  const currentLogClusterPortal = <Space>
-    <span>{t('clustering.current_page_field')}</span>
-    <Dropdown
-      overlay={
-        <Menu
-          items={indexData.map(option => ({
-            key: option.field,
-            label: option.field,
-          }))}
-          onClick={({ key }) => {
-            setCachedField(key);
-            getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, key).then((res) => {
-              setData(res);
-            });
+  const clusteringPortal = (
+    <Space>
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          border: '1px solid var(--fc-border-color2)',
+          borderRadius: 4,
+          overflow: 'hidden',
+        }}
+      >
+        {/* 聚类字段 */}
+        <span
+          style={{
+            padding: '0 8px',
+            fontSize: 12,
+            color: 'var(--fc-text-3)',
+            background: 'var(--fc-fill-3)',
+            borderRight: '1px solid var(--fc-border-color2)',
+            whiteSpace: 'nowrap',
+            lineHeight: '24px',
           }}
-          style={{ maxHeight: '300px', overflowY: 'auto' }}
-          className='best-looking-scroll'
-        />
-      }
-      getPopupContainer={() => clusteringOptionsEleRef.current as HTMLElement}
-    >
-      <span>{field} <CaretDownOutlined /></span>
-    </Dropdown>
-    <span>{t('clustering.aggregate')}</span>
-
-    {logTotal > maxLogCount ? (
-      <>
-        <span>{t('clustering.cannot_aggregate')}</span>
-        <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span>
-        <span>{t('clustering.full_aggregate_logs')}</span>
-      </>
-    ) : (
-      <>
-        <span>{t('clustering.need_aggregate')}</span>
-        <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span>
-        <span>{t('clustering.click_to_aggregate')}</span>
-        <Button type="link" size='small' onClick={handleFullAggregation} className='pl-0'>
-          {t('clustering.full_aggregate')}
-        </Button>
-      </>
-    )}
-  </Space>
-
-  const backendClusterPortal = <Space>
-    <span>{t('clustering.aggregate_field')}</span>
-    <Dropdown
-      overlay={
-        <Menu
-          items={indexData.map(option => ({
-            key: option.field,
-            label: option.field,
-          }))}
-          onClick={({ key }) => {
-            setCachedField(key);
-            setFullAggregateLoading(true);
-            getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', key)
-              .then((res) => {
-                setData(res.items);
-                setBackEndCluster(true);
-                setTimeCost(res.time_cost);
-              })
-              .finally(() => {
-                setFullAggregateLoading(false);
+        >
+          {t('clustering.field_label')}
+        </span>
+        <Select
+          bordered={false}
+          size='small'
+          value={field}
+          options={indexData.map((item) => ({ value: item.field, label: item.field }))}
+          onChange={(value) => {
+            setCachedField(value);
+            if (scope === 'full') {
+              handleFullAggregation(value);
+            } else {
+              getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, value).then((res) => {
+                setData(res);
               });
+            }
           }}
-          style={{ maxHeight: '300px', overflowY: 'auto' }}
+          getPopupContainer={() => clusteringOptionsEleRef.current as HTMLElement}
+          style={{ minWidth: 100 }}
           className='best-looking-scroll'
         />
-      }
-      getPopupContainer={() => clusteringOptionsEleRef.current as HTMLElement}
-    >
-      <span>{field} <CaretDownOutlined /></span>
-    </Dropdown>
-    <span>|</span>
-    <span>{t('clustering.log_count')}</span>
-    <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span>
-    <span>|</span>
-    <span>{t('clustering.duration')}</span>
-    <span>{timeCost}s</span>
-  </Space>
+        {/* 分隔线 */}
+        <span style={{ width: 1, alignSelf: 'stretch', background: 'var(--fc-border-color2)' }} />
+        {/* 范围 */}
+        <span
+          style={{
+            padding: '0 8px',
+            fontSize: 12,
+            color: 'var(--fc-text-3)',
+            background: 'var(--fc-fill-3)',
+            borderRight: '1px solid var(--fc-border-color2)',
+            whiteSpace: 'nowrap',
+            lineHeight: '24px',
+          }}
+        >
+          {t('clustering.scope_label')}
+        </span>
+        <Select
+          bordered={false}
+          size='small'
+          value={scope}
+          optionLabelProp='title'
+          options={[
+            {
+              value: 'current' as const,
+              title: t('clustering.scope_current_page'),
+              label: (
+                <div style={{ padding: '2px 0' }}>
+                  <div>{t('clustering.scope_current_page')}</div>
+                  <div style={{ color: 'var(--fc-text-3)', fontSize: 12 }}>{t('clustering.scope_current_page_desc')}</div>
+                </div>
+              ),
+            },
+            {
+              value: 'full' as const,
+              title: t('clustering.scope_full'),
+              label: (
+                <div style={{ padding: '2px 0' }}>
+                  <div>{t('clustering.scope_full')}</div>
+                  <div style={{ color: 'var(--fc-text-3)', fontSize: 12 }}>
+                    {logTotal > maxLogCount ? t('clustering.scope_full_desc_disable_prefix') : t('clustering.scope_full_desc_prefix')}{' '}
+                    <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span> {t('clustering.scope_full_desc_suffix')}
+                  </div>
+                </div>
+              ),
+              disabled: logTotal > maxLogCount,
+            },
+          ]}
+          onChange={(value: 'current' | 'full') => {
+            setScope(value);
+            if (value === 'full') {
+              handleFullAggregation(field);
+            } else {
+              getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
+                setData(res);
+              });
+            }
+          }}
+          getPopupContainer={() => clusteringOptionsEleRef.current as HTMLElement}
+          dropdownMatchSelectWidth={false}
+        />
+      </div>
+    </Space>
+  );
 
   return (
     <div className='min-h-0 h-full'>
-      {clusteringOptionsEleRef.current &&
+      {clusteringOptionsEleRef.current && createPortal(clusteringPortal, clusteringOptionsEleRef.current)}
+      {clusteringExtraEleRef.current &&
         createPortal(
-          backEndCluster ? backendClusterPortal : currentLogClusterPortal,
-          clusteringOptionsEleRef.current,
+          scope === 'full' ? (
+            <Space size='small'>
+              <span>{t('clustering.log_count')}</span>
+              <span>{logTotal?.toLocaleString()}</span>
+              <span>{t('clustering.duration')}</span>
+              <span>{timeCost}s</span>
+            </Space>
+          ) : null,
+          clusteringExtraEleRef.current,
         )}
       {fullAggregateLoading ? (
         <div className='h-full flex flex-col items-center justify-center bg-fc-200' style={{ minHeight: 300 }}>
           <SyncOutlined spin style={{ fontSize: 64, color: 'var(--fc-text-4)' }} />
           <div className='mt-6 text-base font-bold'>{t('clustering.loading_title')}</div>
           <div className='mt-2 text-l2'>
-            {t('clustering.loading_info')}<span style={{ color: 'var(--fc-primary-color)', fontWeight: 'bold' }}>{logTotal?.toLocaleString()}</span>
+            {t('clustering.loading_info')}
+            <span style={{ color: 'var(--fc-primary-color)', fontWeight: 'bold' }}>{logTotal?.toLocaleString()}</span>
             <span className='mx-1'>|</span>
-            {t('clustering.loading_field')}{field}
+            {t('clustering.loading_field')}
+            {field}
           </div>
           <div className='mt-2 text-l2'>
             {t('clustering.loading_tip')}
