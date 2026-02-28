@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { NAME_SPACE } from '../../../constants';
+import getTextWidth from '@/utils/getTextWidth';
 import { getLogClustering, ClusteringItem, getQueryClustering, getLogPattern } from '../../../services';
 import { getGlobalConfig } from '@/plus/components/LogDownload/service';
 import { OnValueFilterParams, OptionsType } from '../types';
@@ -38,7 +39,7 @@ export interface LogClusting {
 
 export default function TableCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState, clusteringExtraEleRef } = props;
+  const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState, clusteringExtraEleRef, updateOptions } = props;
   const { queryStrRef, logTotal, cate, datasourceValue, fieldCacheKey } = logClusting;
   const [scope, setScope] = useState<'current' | 'full'>('current');
   const [timeCost, setTimeCost] = useState<number>(0);
@@ -93,6 +94,7 @@ export default function TableCpt(props: Props) {
         });
       }
     } else if (scope === 'full') {
+      if (logTotal > maxLogCount) return;
       handleFullAggregation(field);
     }
   }, [logs, logsHash]);
@@ -121,6 +123,23 @@ export default function TableCpt(props: Props) {
   };
 
   const getColumns = () => {
+    const TAG_PADDING = 14;
+    const CELL_PADDING = 16;
+    const MIN_COL_WIDTH = 200;
+
+    let partsColWidth = MIN_COL_WIDTH;
+    _.forEach(data, (row) => {
+      let rowWidth = 0;
+      _.forEach(row.parts, (part) => {
+        const textWidth = getTextWidth(part.data);
+        rowWidth += part.type === 'pattern' ? textWidth + TAG_PADDING : textWidth;
+      });
+      rowWidth += CELL_PADDING;
+      if (rowWidth > partsColWidth) {
+        partsColWidth = rowWidth;
+      }
+    });
+
     const columns: any[] = [
       {
         key: 'count',
@@ -130,6 +149,8 @@ export default function TableCpt(props: Props) {
       {
         key: 'parts',
         name: t('clustering.log_data'),
+        width: partsColWidth,
+        minWidth: MIN_COL_WIDTH,
         formatter: ({ row }) => {
           return (
             <Space size={'small'}>
