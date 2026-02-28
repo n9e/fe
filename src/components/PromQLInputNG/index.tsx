@@ -152,6 +152,11 @@ export default function index(props: MonacoEditorPromQLProps) {
               editorRef.current = editor;
               editor.onKeyDown((e) => {
                 if (e.code === 'Escape') {
+                  const suggestWidgetVisible = (editor as any)?._contextKeyService?.getContextKeyValue?.('suggestWidgetVisible');
+
+                  if (suggestWidgetVisible) {
+                    editor.trigger('keyboard', 'hideSuggestWidget', {});
+                  }
                   e.stopPropagation();
                 }
               });
