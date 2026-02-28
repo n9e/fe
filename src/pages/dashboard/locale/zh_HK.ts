@@ -5,7 +5,7 @@ const zh_HK = {
   back_icon_tip_is_built_in: '返回上一頁，沒有上一頁則返回模板中心',
   name: '儀表盤名稱',
   tags: '分類標籤',
-  ident: '英文標識',
+  ident: '唯一標識',
   ident_msg: '請輸入英文字母、數字、中劃線',
   search_placeholder: '儀表盤名稱、分類標籤',
   refresh_tip: '刷新間隔小於 step({{num}}s) 將不會更新資料',

@@ -5,7 +5,7 @@ const zh_CN = {
   back_icon_tip_is_built_in: '返回上一页，没有上一页则返回模板中心',
   name: '仪表盘名称',
   tags: '分类标签',
-  ident: '英文标识',
+  ident: '唯一标识',
   ident_msg: '请输入英文字母、数字、中划线',
   search_placeholder: '仪表盘名称、分类标签',
   refresh_tip: '刷新间隔小于 step({{num}}s) 将不会更新数据',
