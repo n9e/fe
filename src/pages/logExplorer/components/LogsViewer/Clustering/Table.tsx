@@ -39,7 +39,7 @@ export interface LogClusting {
 
 export default function TableCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState, clusteringExtraEleRef, updateOptions } = props;
+  const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState, clusteringExtraEleRef } = props;
   const { queryStrRef, logTotal, cate, datasourceValue, fieldCacheKey } = logClusting;
   const [scope, setScope] = useState<'current' | 'full'>('current');
   const [timeCost, setTimeCost] = useState<number>(0);
