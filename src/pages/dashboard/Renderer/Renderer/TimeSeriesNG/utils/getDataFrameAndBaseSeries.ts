@@ -62,7 +62,7 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
   // Create frames
   for (const item of result) {
     for (const data of item.data) {
-      const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
+      const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), undefined);
       for (const [ts, value] of data.values) {
         const index = timestamps.indexOf(ts);
 
@@ -128,7 +128,7 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
 
   // Create frames
   for (const item of oldSeries) {
-    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
+    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), undefined);
     if (item.data) {
       for (const [ts, value] of item.data) {
         const index = timestamps.indexOf(ts);
