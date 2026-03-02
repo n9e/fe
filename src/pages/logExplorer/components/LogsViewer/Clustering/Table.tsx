@@ -149,7 +149,7 @@ export default function TableCpt(props: Props) {
       {
         key: 'parts',
         name: t('clustering.log_data'),
-        width: partsColWidth,
+        width: partsColWidth + 15,
         minWidth: MIN_COL_WIDTH,
         formatter: ({ row }) => {
           return (
