@@ -36,6 +36,7 @@ const en_US = {
   enable_in_bg_tip:
     'If the alert event contains the ident tag and the corresponding machine does not belong to this business group, the alert event will be discarded; if the alert event does not contain the ident tag, this filter condition will not take effect and will continue to follow-up processing.',
   time_zone: 'Time zone',
+  time_zone_tip: 'Time zone only affects the start time and end time in the rule, and does not affect the relevant time fields of viewing alert events',
   local_time: 'Local time',
 
   notify_configs: 'Notification Configuration',

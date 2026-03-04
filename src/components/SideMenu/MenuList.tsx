@@ -65,7 +65,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
       if (props.isCustomBg) {
         textColor = '';
       } else {
-        textColor = 'text-primary/80';
+        textColor = 'text-primary-80';
       }
     }
   }
@@ -255,7 +255,7 @@ export default function MenuList(
               props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
-            <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', isBlueTheme ? 'text-[#427AF4]' : props.isCustomBg ? '' : 'text-primary/80')}>
+            <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', isBlueTheme ? 'text-[#427AF4]' : props.isCustomBg ? '' : 'text-primary-80')}>
               {<IconFont type='icon-Menu_Search' />}
             </div>
 
