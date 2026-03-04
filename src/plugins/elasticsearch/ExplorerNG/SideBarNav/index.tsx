@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form, Checkbox, Space, Button, Tooltip, Popover } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { useRequest } from 'ahooks';
 import { Link } from 'react-router-dom';
 
+import { CommonStateContext } from '@/App';
 import OutlinedAutoComplete from '@/components/OutlinedAutoComplete';
 import { OutlinedSelect } from '@/components/OutlinedSelect';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
@@ -39,6 +40,7 @@ interface Props {
 
 export default function indexCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
+  const { esIndexMode } = useContext(CommonStateContext);
   const { disabled, executeQuery, organizeFields, setOrganizeFields, onIndexDataChange, handleValueFilter, requestParams, isOpenSearch } = props;
 
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
@@ -139,7 +141,7 @@ export default function indexCpt(props: Props) {
     <>
       <div className='min-h-0 flex-1 h-full flex flex-col'>
         <div className='flex-shrink-0'>
-          <Form.Item name={['query', 'mode']} initialValue='indices' hidden={isOpenSearch}>
+          <Form.Item name={['query', 'mode']} initialValue={esIndexMode !== 'all' ? esIndexMode : 'indices'} hidden={isOpenSearch || esIndexMode !== 'all'}>
             <OutlinedSelect
               label={t('query.mode')}
               options={[
