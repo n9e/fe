@@ -1,0 +1,78 @@
+.n9e-splitter {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  &-dragging {
+    user-select: none;
+    cursor: col-resize;
+
+    * {
+      user-select: none;
+      pointer-events: none;
+    }
+  }
+
+  &-panel {
+
+    &-left {
+      flex-shrink: 0;
+    }
+
+    &-right {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &-resizer {
+    position: relative;
+    width: 8px;
+    flex-shrink: 0;
+    background: transparent;
+    cursor: col-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+
+      .n9e-splitter-resizer-bar {
+        background-color: var(--fc-primary-color);
+      }
+    }
+
+    &:active {
+      background-color: rgba(24, 144, 255, 0.1);
+    }
+
+    &-bar {
+      width: 1px;
+      height: 100%;
+      background-color: #e8e8e8;
+      transition: background-color 0.2s;
+    }
+  }
+}
+
+// 暗色主题支持
+.theme-dark {
+  .n9e-splitter {
+    &-resizer {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+
+      &:active {
+        background-color: rgba(24, 144, 255, 0.15);
+      }
+
+      &-bar {
+        background-color: rgba(255, 255, 255, 0.12);
+      }
+    }
+  }
+}
