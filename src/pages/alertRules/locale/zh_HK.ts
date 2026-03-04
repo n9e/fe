@@ -35,6 +35,7 @@ const zh_HK = {
   enable_in_bg: '僅在本業務組生效',
   enable_in_bg_tip: '若告警事件中包含 ident 標籤，且對應的機器不屬於本業務組，則丟棄該告警事件；若告警事件中不包含 ident 標籤，則此過濾條件不生效，會繼續後續處理。',
   time_zone: '時區',
+  time_zone_tip: '時區僅影響規則中的開始時間、結束時間，不影響告警事件查看相關時間字段',
   local_time: '本地時間',
 
   notify_configs: '通知配置',
