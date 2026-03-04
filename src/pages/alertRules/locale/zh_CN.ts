@@ -35,6 +35,7 @@ const zh_CN = {
   enable_in_bg: '仅在本业务组生效',
   enable_in_bg_tip: '若告警事件中包含 ident 标签，且对应的机器不属于本业务组，则丢弃该告警事件；若告警事件中不包含 ident 标签，则此过滤条件不生效，会继续后续处理。',
   time_zone: '时区',
+  time_zone_tip: '时区仅影响规则中的开始时间、结束时间，不影响告警事件查看相关时间字段',
   local_time: '本地时间',
 
   notify_configs: '通知配置',
