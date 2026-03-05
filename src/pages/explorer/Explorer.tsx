@@ -19,7 +19,7 @@
  * data_source_name: string
  * data_source_id: string
  */
-import React, { useRef, useContext, useEffect } from 'react';
+import React, { useRef, useContext, useEffect, useState, useCallback } from 'react';
 import { Form, Row, Col } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
@@ -35,6 +35,7 @@ import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import ViewSelect, { ModalState } from '@/components/ViewSelect';
+import AICopilot from '@/components/AICopilot';
 
 import { useGlobalState } from './globalState';
 import Prometheus from './Prometheus';
@@ -119,6 +120,16 @@ const Panel = (props: IProps) => {
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);
   const [promql, setPromql] = React.useState<string>();
+  const [copilotVisible, setCopilotVisible] = useState(false);
+  const copilotApplyRef = useRef<((query: string) => void) | null>(null);
+
+  const handleCopilotOpen = useCallback(() => setCopilotVisible(true), []);
+  const handleCopilotClose = useCallback(() => setCopilotVisible(false), []);
+  const handleApplyQuery = useCallback((query: string) => {
+    if (copilotApplyRef.current) {
+      copilotApplyRef.current(query);
+    }
+  }, []);
 
   const [viewSelectValue, setViewSelectValue] = React.useState<number>();
   const [viewSelectFilters, setViewSelectFilters] = React.useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
@@ -351,6 +362,8 @@ const Panel = (props: IProps) => {
                       panelIdx={panelIdx}
                       allowReplaceHistory
                       showBuilder={false}
+                      onCopilotOpen={handleCopilotOpen}
+                      copilotApplyRef={copilotApplyRef}
                     />
                   );
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
@@ -374,6 +387,13 @@ const Panel = (props: IProps) => {
           </div>
         </div>
       </Form>
+      <AICopilot
+        visible={copilotVisible}
+        onClose={handleCopilotClose}
+        datasourceType={datasourceCate || 'prometheus'}
+        datasourceId={form.getFieldValue('datasourceValue') || 0}
+        onApplyQuery={handleApplyQuery}
+      />
     </div>
   );
 };

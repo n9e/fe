@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, MutableRefObject } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
@@ -7,6 +7,7 @@ import { FormInstance } from 'antd/lib/form/Form';
 
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
+import { CopilotButton } from '@/components/AICopilot';
 import { getHistoryEventsById } from '@/services/warning';
 
 import { queryStringOptions } from '../constants';
@@ -33,6 +34,8 @@ interface IProps {
   onDefaultTypeChange?: (newMode: IMode) => void;
   defaultTime?: IRawTimeRange; // 受控的 time 和 allowReplaceHistory 的 querystring (start, end) 是互斥的
   onDefaultTimeChange?: (newRange: IRawTimeRange) => void;
+  onCopilotOpen?: () => void;
+  copilotApplyRef?: MutableRefObject<((query: string) => void) | null>;
 }
 
 export default function Prometheus(props: IProps) {
@@ -54,6 +57,8 @@ export default function Prometheus(props: IProps) {
     onDefaultTypeChange,
     defaultTime,
     onDefaultTimeChange,
+    onCopilotOpen,
+    copilotApplyRef,
   } = props;
   const history = useHistory();
   const { search } = useLocation();
@@ -90,6 +95,17 @@ export default function Prometheus(props: IProps) {
       setDefaultTimeState(defaultTime);
     }
   }, []);
+
+  // Wire up copilot apply ref to set promql and trigger refresh
+  const promGraphRef = React.useRef<{ setValue: (v: string) => void; refresh: () => void }>();
+
+  React.useEffect(() => {
+    if (copilotApplyRef) {
+      copilotApplyRef.current = (query: string) => {
+        setPromql(query);
+      };
+    }
+  }, [copilotApplyRef]);
 
   return (
     <PromGraph
@@ -139,7 +155,12 @@ export default function Prometheus(props: IProps) {
           onDefaultTypeChange(newType);
         }
       }}
-      extra={<HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />}
+      extra={
+        <>
+          <CopilotButton datasourceCate='prometheus' onClick={onCopilotOpen} />
+          <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />
+        </>
+      }
       showExportButton
     />
   );
