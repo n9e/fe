@@ -37,11 +37,17 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
   }, [visible, data]);
 
   const handleTest = async () => {
-    if (!data) return;
     setTesting(true);
     setTestResult(null);
     try {
-      const result = await testLLMProvider(data.id);
+      const values = form.getFieldsValue();
+      const result = await testLLMProvider({
+        id: data?.id,
+        api_type: values.api_type,
+        api_url: values.api_url,
+        api_key: values.api_key,
+        model: values.model,
+      });
       setTestResult(result);
     } catch (err: any) {
       setTestResult({ success: false, error: err.message || 'Test failed' });
@@ -88,11 +94,10 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div>
-            {isEdit && (
-              <Space>
-                <Button onClick={handleTest} loading={testing}>
-                  {t('llm.test')}
-                </Button>
+            <Space>
+              <Button onClick={handleTest} loading={testing}>
+                {t('llm.test')}
+              </Button>
                 {testResult &&
                   (testResult.success ? (
                     <Tag color='success'>
@@ -101,8 +106,7 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
                   ) : (
                     <Tag color='error'>{t('llm.test_failed')}</Tag>
                   ))}
-              </Space>
-            )}
+            </Space>
           </div>
           <Space>
             <Button onClick={onClose}>Cancel</Button>

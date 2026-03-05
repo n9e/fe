@@ -33,6 +33,7 @@ export function deleteLLMProvider(id: number) {
   return request(`/api/n9e/llm-provider/${id}`, { method: RequestMethod.Delete });
 }
 
-export function testLLMProvider(id: number) {
-  return request(`/api/n9e/llm-provider/${id}/test`, { method: RequestMethod.Post }).then((res) => res.dat);
+export function testLLMProvider(data: Partial<LLMProvider> & { id?: number }) {
+  const id = data.id || 0;
+  return request(`/api/n9e/llm-provider/${id}/test`, { method: RequestMethod.Post, data }).then((res) => res.dat);
 }

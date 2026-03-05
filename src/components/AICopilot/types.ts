@@ -29,7 +29,8 @@ export interface StreamChunk {
 export interface DoneResponse {
   type: 'done';
   duration_ms: number;
-  content: string;
+  message: string; // accumulated reasoning/thinking text
+  response: string; // final answer content (may contain JSON with query/explanation)
 }
 
 export interface ToolCallInfo {

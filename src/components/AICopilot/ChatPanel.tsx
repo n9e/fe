@@ -9,6 +9,42 @@ import type { Message, ChatMessage, QueryGeneratorRequest, ToolCallInfo, DoneRes
 
 const { TextArea } = Input;
 
+// Try to extract query/explanation from various LLM response formats
+function tryParseQueryResponse(text: string): { query: string; explanation: string; remaining: string } | null {
+  try {
+    // Try to find JSON object in the text
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    // Format 1: {"query": "...", "explanation": "..."}
+    if (parsed.query && typeof parsed.query === 'string') {
+      const remaining = text.replace(jsonMatch[0], '').trim();
+      return { query: parsed.query, explanation: parsed.explanation || '', remaining };
+    }
+
+    // Format 2: {"summary": "...", "metrics": [{"promql_examples": [...]}]}
+    if (parsed.metrics && Array.isArray(parsed.metrics)) {
+      const firstMetric = parsed.metrics[0];
+      const examples = firstMetric?.promql_examples;
+      if (examples && examples.length > 0) {
+        // Use the first non-comment example as query
+        const query = examples.find((e: string) => e && !e.startsWith('#')) || examples[0];
+        return {
+          query: query.replace(/^#.*\n/gm, '').trim(),
+          explanation: parsed.summary || firstMetric?.description || '',
+          remaining: '',
+        };
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 interface Props {
   datasourceType: string;
   datasourceId: number;
@@ -75,11 +111,9 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
       };
 
       sendMessage(params, {
-        onThinking: (delta) => {
-          if (assistantRef.current) {
-            assistantRef.current.thinking = (assistantRef.current.thinking || '') + delta;
-            setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
-          }
+        onThinking: () => {
+          // No-op: text chunks already contain the full reasoning (including thoughts).
+          // Separate thinking chunks are parsed subsets and would cause duplication.
         },
         onToolCall: (name, input) => {
           if (assistantRef.current) {
@@ -93,29 +127,29 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
         },
         onText: (delta) => {
           if (assistantRef.current) {
-            assistantRef.current.content = (assistantRef.current.content || '') + delta;
+            // Text from ReAct agent is reasoning process, accumulate into thinking
+            assistantRef.current.thinking = (assistantRef.current.thinking || '') + delta;
             setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
           }
         },
         onDone: (response: DoneResponse) => {
           if (assistantRef.current) {
             assistantRef.current.isStreaming = false;
-            // Try to parse final answer as JSON with query/explanation
-            try {
-              const content = response.content || assistantRef.current.content;
-              // Look for JSON in the content
-              const jsonMatch = content.match(/\{[\s\S]*"query"[\s\S]*\}/);
-              if (jsonMatch) {
-                const parsed = JSON.parse(jsonMatch[0]);
-                if (parsed.query) {
-                  assistantRef.current.query = parsed.query;
-                  assistantRef.current.explanation = parsed.explanation || '';
-                  // Remove JSON from display content
-                  assistantRef.current.content = content.replace(jsonMatch[0], '').trim();
-                }
+            // Use message as thinking (fallback if not already accumulated via streaming)
+            if (response.message && !assistantRef.current.thinking) {
+              assistantRef.current.thinking = response.message;
+            }
+            // Parse response for query/explanation
+            const finalAnswer = response.response || '';
+            if (finalAnswer) {
+              const parsed = tryParseQueryResponse(finalAnswer);
+              if (parsed) {
+                assistantRef.current.query = parsed.query;
+                assistantRef.current.explanation = parsed.explanation;
+                assistantRef.current.content = parsed.remaining;
+              } else {
+                assistantRef.current.content = finalAnswer;
               }
-            } catch {
-              // If JSON parsing fails, keep content as-is
             }
             setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
           }

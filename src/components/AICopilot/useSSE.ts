@@ -30,6 +30,9 @@ export default function useSSE() {
     setIsStreaming(true);
 
     try {
+      console.log('[useSSE] Sending request to /api/n9e/query-generator', { params });
+      const fetchStart = performance.now();
+
       const response = await fetch('/api/n9e/query-generator', {
         method: 'POST',
         headers: {
@@ -40,8 +43,16 @@ export default function useSSE() {
         signal: controller.signal,
       });
 
+      console.log('[useSSE] Response received', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        elapsed: `${(performance.now() - fetchStart).toFixed(0)}ms`,
+      });
+
       if (!response.ok) {
         const text = await response.text();
+        console.error('[useSSE] HTTP error', { status: response.status, body: text });
         callbacks.onError(text || `HTTP ${response.status}`);
         setIsStreaming(false);
         return;
@@ -49,10 +60,13 @@ export default function useSSE() {
 
       const reader = response.body?.getReader();
       if (!reader) {
+        console.error('[useSSE] No response body (reader is null)');
         callbacks.onError('No response body');
         setIsStreaming(false);
         return;
       }
+
+      console.log('[useSSE] SSE stream started, reading chunks...');
 
       const decoder = new TextDecoder();
       let buffer = '';
@@ -61,7 +75,9 @@ export default function useSSE() {
         const { done, value } = await reader.read();
         if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
+        const rawText = decoder.decode(value, { stream: true });
+        console.log('[useSSE] Chunk received', { length: rawText.length, raw: rawText.slice(0, 500) });
+        buffer += rawText;
         const events = buffer.split('\n\n');
         buffer = events.pop() || '';
 
@@ -84,6 +100,7 @@ export default function useSSE() {
 
           try {
             const parsed = JSON.parse(data);
+            console.log('[useSSE] Event parsed', { eventType, type: parsed.type, contentLength: (parsed.content || parsed.delta || '').length });
 
             if (eventType === 'done' || parsed.type === 'done') {
               callbacks.onDone(parsed as DoneResponse);
@@ -112,16 +129,20 @@ export default function useSSE() {
                 callbacks.onText(chunk.delta || chunk.content || '');
                 break;
             }
-          } catch {
-            // Skip malformed JSON
+          } catch (parseErr) {
+            console.warn('[useSSE] Malformed JSON in SSE event', { eventType, data, error: parseErr });
           }
         }
       }
 
+      console.log('[useSSE] Stream ended normally');
       setIsStreaming(false);
     } catch (err: any) {
       if (err.name !== 'AbortError') {
+        console.error('[useSSE] Network/fetch error', { name: err.name, message: err.message, stack: err.stack });
         callbacks.onError(err.message || 'Network error');
+      } else {
+        console.log('[useSSE] Request aborted by user');
       }
       setIsStreaming(false);
     }

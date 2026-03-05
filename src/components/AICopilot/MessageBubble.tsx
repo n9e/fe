@@ -22,7 +22,7 @@ export default function MessageBubble({ message, datasourceType, onRunQuery }: P
         ) : (
           <>
             {(message.thinking || (message.toolCalls && message.toolCalls.length > 0)) && (
-              <ThinkingBlock thinking={message.thinking || ''} toolCalls={message.toolCalls} isStreaming={message.isStreaming && !message.content && !message.query} />
+              <ThinkingBlock thinking={message.thinking || ''} toolCalls={message.toolCalls} isStreaming={message.isStreaming} />
             )}
             {message.content && <Markdown content={message.content} />}
             {message.query && <QueryResultBlock query={message.query} explanation={message.explanation} language={language} onRunQuery={onRunQuery} />}

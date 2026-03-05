@@ -53,7 +53,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, darkMode }) =>
             return !inline && match ? (
               <SyntaxHighlighter {...props} children={String(children).replace(/\n$/, '')} language={match[1]} PreTag='div' style={currentDarkMode ? dark : undefined} />
             ) : (
-              <div
+              <span
                 className={classNames({
                   [className || '']: !!className,
                   'base-code': true,
@@ -61,7 +61,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, darkMode }) =>
                 })}
               >
                 <code {...props}>{children}</code>
-              </div>
+              </span>
             );
           },
         }}
