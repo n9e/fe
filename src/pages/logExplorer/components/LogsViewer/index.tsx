@@ -78,6 +78,7 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
+  customLogFieldRender?: (key: string, value: any) => React.ReactNode | false;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -144,6 +145,7 @@ export default function LogsViewer(props: Props) {
     logViewerRenderCustomTagsArea,
     adjustFieldValue,
     showExistsAction,
+    customLogFieldRender,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -295,6 +297,7 @@ export default function LogsViewer(props: Props) {
                   logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
+                  customLogFieldRender={customLogFieldRender}
                 />
               )}
               {options.logMode === 'table' && (
