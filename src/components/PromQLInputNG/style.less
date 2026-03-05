@@ -2,6 +2,7 @@
 
   .ant-input-affix-wrapper {
     padding: 5px 11px;
+    position: relative;
 
     &:hover {
       z-index: 2 !important; // TODO: 修复 promql 下拉层会被遮挡的问题
@@ -12,5 +13,27 @@
     padding: 0;
     border: none;
     outline: none;
+  }
+
+  .promql-input-ng-placeholder-overlay {
+    position: absolute;
+    left: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 14px;
+
+    > * {
+      pointer-events: auto;
+    }
+  }
+
+  .promql-input-ng-placeholder-text {
+    color: var(--fc-text-color-quaternary, rgba(0, 0, 0, 0.25));
+    pointer-events: none;
   }
 }

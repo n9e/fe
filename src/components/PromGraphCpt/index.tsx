@@ -63,6 +63,7 @@ interface IProps {
   onChange?: (promQL?: string) => void;
   promQLInputTooltip?: string;
   extra?: React.ReactElement;
+  placeholderExtra?: React.ReactNode;
   showExportButton?: boolean; // 是否显示导出按钮
 }
 
@@ -96,6 +97,7 @@ export default function index(props: IProps) {
     onChange,
     promQLInputTooltip,
     extra,
+    placeholderExtra,
     defaultRange,
     showExportButton,
   } = props;
@@ -191,6 +193,7 @@ export default function index(props: IProps) {
                 showGlobalMetrics={showGlobalMetrics}
                 onChangeTrigger={['onBlur', 'onEnter']}
                 value={value}
+                placeholderExtra={placeholderExtra}
                 onChange={(newVal) => {
                   setValue(newVal);
                   onChange && onChange(newVal);

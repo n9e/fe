@@ -4,10 +4,11 @@ import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
 import { FormInstance } from 'antd/lib/form/Form';
+import { useTranslation } from 'react-i18next';
 
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
-import { CopilotButton } from '@/components/AICopilot';
+import { CopilotButton, CopilotPlaceholderLink } from '@/components/AICopilot';
 import { getHistoryEventsById } from '@/services/warning';
 
 import { queryStringOptions } from '../constants';
@@ -161,6 +162,7 @@ export default function Prometheus(props: IProps) {
           <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />
         </div>
       }
+      placeholderExtra={<CopilotPlaceholderLink datasourceCate='prometheus' onClick={onCopilotOpen} />}
       showExportButton
     />
   );

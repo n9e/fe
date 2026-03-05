@@ -37,6 +37,7 @@ interface MonacoEditorPromQLProps {
   onBlur?: (value?: string) => void;
   onEditorDidMount?: (editor: monacoTypes.editor.IStandaloneCodeEditor) => void;
   onMetricUnitChange?: (unit: string) => void; // 用于内置指标启用时选择指标获取对应的 unit
+  placeholderExtra?: React.ReactNode;
 }
 
 const URL_PREFIX = `/api/${N9E_PATHNAME}/proxy`;
@@ -64,6 +65,7 @@ export default function index(props: MonacoEditorPromQLProps) {
     onBlur,
     onEditorDidMount,
     onMetricUnitChange,
+    placeholderExtra,
   } = props;
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
   const editorRef = React.useRef<monacoTypes.editor.IStandaloneCodeEditor | null>(null);
@@ -109,7 +111,7 @@ export default function index(props: MonacoEditorPromQLProps) {
             size={size}
             theme={darkMode ? 'dark' : 'light'}
             value={value}
-            placeholder={placeholder || t('promQLInput:placeholder')}
+            placeholder={placeholderExtra ? ' ' : placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
             apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
             enableRequests={datasourceValue !== undefined}
@@ -158,6 +160,11 @@ export default function index(props: MonacoEditorPromQLProps) {
               onEditorDidMount?.(editor);
             }}
           />
+          {!value && placeholderExtra && (
+            <div className='promql-input-ng-placeholder-overlay'>
+              {placeholderExtra}
+            </div>
+          )}
           {showGlobalMetrics && (
             <span className='ant-input-suffix'>
               <GlobalOutlined

@@ -173,7 +173,7 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
     }
   };
 
-  const presetPrompts = [t('prompts.generate_query'), t('prompts.cpu_usage'), t('prompts.memory_usage')];
+  const presetPrompts = [t('prompts.cpu_usage'), t('prompts.memory_usage'), t('prompts.mysql_alive')];
 
   return (
     <div className='ai-copilot-chat-panel'>

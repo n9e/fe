@@ -15,6 +15,7 @@ interface Props {
 }
 
 export { default as CopilotButton } from './CopilotButton';
+export { default as CopilotPlaceholderLink } from './CopilotPlaceholderLink';
 
 export default function AICopilot({ visible, onClose, datasourceType, datasourceId, databaseName, tableName, onApplyQuery }: Props) {
   const { t } = useTranslation('AICopilot');
