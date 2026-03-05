@@ -30,6 +30,7 @@ import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import PromQLInputNG from '@/components/PromQLInputNG';
+import { CopilotEntry, CopilotEntryButton } from '@/components/AICopilot';
 
 import GraphPreview from './GraphPreview';
 import AdvancedSettings from './components/AdvancedSettings';
@@ -75,17 +76,22 @@ export default function PrometheusV2(props: Props) {
                       </Form.Item>
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <InputGroupWithFormItem label='PromQL'>
-                        <Form.Item
-                          {...field}
-                          name={[field.name, 'query']}
-                          validateTrigger={['onBlur']}
-                          trigger='onChange'
-                          rules={[{ required: true, message: t('promQLInput:required') }]}
-                        >
-                          <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} durationVariablesCompletion={false} />
-                        </Form.Item>
-                      </InputGroupWithFormItem>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <InputGroupWithFormItem label='PromQL'>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'query']}
+                              validateTrigger={['onBlur']}
+                              trigger='onChange'
+                              rules={[{ required: true, message: t('promQLInput:required') }]}
+                            >
+                              <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} durationVariablesCompletion={false} placeholderExtra={!disabled ? <CopilotEntry datasourceCate='prometheus' datasourceId={datasourceValue} /> : undefined} />
+                            </Form.Item>
+                          </InputGroupWithFormItem>
+                        </div>
+                        {!disabled && <CopilotEntryButton datasourceCate='prometheus' datasourceId={datasourceValue} />}
+                      </div>
                     </div>
                   </div>
                   {IS_PLUS && (

@@ -8,6 +8,7 @@ import { useRequest } from 'ahooks';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
 import PromQLInputNG from '@/components/PromQLInputNG';
+import { CopilotEntry, CopilotEntryButton } from '@/components/AICopilot';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import CronPattern from '@/components/CronPattern';
@@ -134,17 +135,21 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
               {({ getFieldValue, validateFields }) => {
                 const datasourceIds = getFieldValue('datasource_ids');
                 return (
-                  <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]}>
-                    <PromQLInputNG
-                      datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
-                      onChange={(val) => {
-                        if (val) {
-                          validateFields(['prom_ql']);
-                        }
-                      }}
-                      showBuiltinMetrics
-                    />
-                  </Form.Item>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]} style={{ flex: 1, marginBottom: 0 }}>
+                      <PromQLInputNG
+                        datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
+                        onChange={(val) => {
+                          if (val) {
+                            validateFields(['prom_ql']);
+                          }
+                        }}
+                        showBuiltinMetrics
+                        placeholderExtra={<CopilotEntry datasourceCate='prometheus' datasourceId={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)} />}
+                      />
+                    </Form.Item>
+                    <CopilotEntryButton datasourceCate='prometheus' datasourceId={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)} />
+                  </div>
                 );
               }}
             </Form.Item>

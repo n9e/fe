@@ -21,6 +21,7 @@ import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from 
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import PromQLInputNG from '@/components/PromQLInputNG';
+import { CopilotEntry, CopilotEntryButton } from '@/components/AICopilot';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import { FormStateContext } from '@/pages/alertRules/Form';
@@ -129,15 +130,19 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                 {fields.map((field) => (
                   <div key={field.key} className='alert-rule-trigger-container'>
                     <VariablesConfig prefixName={['rule_config', 'queries']} field={field} />
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'prom_ql']}
-                      validateTrigger={['onBlur']}
-                      trigger='onChange'
-                      rules={[{ required: true, message: t('promQLInput:required') }]}
-                    >
-                      <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} />
-                    </Form.Item>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'prom_ql']}
+                        validateTrigger={['onBlur']}
+                        trigger='onChange'
+                        rules={[{ required: true, message: t('promQLInput:required') }]}
+                        style={{ flex: 1, marginBottom: 0 }}
+                      >
+                        <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} placeholderExtra={!disabled ? <CopilotEntry datasourceCate='prometheus' datasourceId={datasourceValue} /> : undefined} />
+                      </Form.Item>
+                      {!disabled && <CopilotEntryButton datasourceCate='prometheus' datasourceId={datasourceValue} />}
+                    </div>
                     <ChildVariablesConfigs
                       topPrefixName={['rule_config', 'queries']}
                       topField={field}

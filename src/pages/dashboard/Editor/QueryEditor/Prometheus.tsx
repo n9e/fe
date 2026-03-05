@@ -7,6 +7,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { alphabet } from '@/utils/constant';
 import Resolution from '@/components/Resolution';
 import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
+import { CopilotEntry, CopilotEntryButton } from '@/components/AICopilot';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
 import { useGlobalState } from '@/pages/dashboard/globalState';
@@ -80,7 +81,7 @@ export default function Prometheus({ panelWidth, datasourceValue, range }) {
                     <Form.Item noStyle {...field} name={[field.name, 'refId']}>
                       <div />
                     </Form.Item>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <Form.Item
                         label={t('query.prometheus.query')}
                         tooltip={{
@@ -104,6 +105,7 @@ export default function Prometheus({ panelWidth, datasourceValue, range }) {
                           variablesNames={varNams}
                           durationVariablesCompletion
                           showBuiltinMetrics
+                          placeholderExtra={<CopilotEntry datasourceCate='prometheus' datasourceId={datasourceValue} />}
                           interpolateString={(query) => {
                             return interpolateString({
                               query,
@@ -113,6 +115,7 @@ export default function Prometheus({ panelWidth, datasourceValue, range }) {
                           }}
                         />
                       </Form.Item>
+                      <CopilotEntryButton datasourceCate='prometheus' datasourceId={datasourceValue} />
                     </div>
                     <Row gutter={10}>
                       {chartType !== 'tableNG' && (
