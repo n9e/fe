@@ -183,6 +183,33 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         };
       }
     }
+    if (data_source_name === DatasourceCateEnum.huaweiLTS) {
+      const mode = _.get(params, 'mode');
+      const submode = _.get(params, 'submode');
+      const group_id = _.get(params, 'group_id');
+      const stream_id = _.get(params, 'stream_id');
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
+      const timeKey = _.get(params, 'timeKey') ?? '';
+      if (group_id && stream_id) {
+        return {
+          ...formValues,
+          query: {
+            range,
+            mode,
+            submode,
+            group_id,
+            stream_id,
+            query,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              timeKey,
+            },
+          },
+        };
+      }
+    }
   }
   return undefined;
 }
@@ -257,6 +284,17 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.query = formValues.query?.query;
     query.allow_hide_system_indices = formValues.query?.allow_hide_system_indices ? 'true' : 'false';
     query.filters = filtersString;
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.huaweiLTS) {
+    query.mode = formValues.query?.mode;
+    query.submode = formValues.query?.submode;
+    query.group_id = formValues.query?.group_id;
+    query.stream_id = formValues.query?.stream_id;
+    query.query = formValues.query?.query;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
+    query.timeKey = formValues.query?.keys?.timeKey;
     return queryString.stringify(query);
   }
   return '';
