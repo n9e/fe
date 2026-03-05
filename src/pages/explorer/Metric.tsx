@@ -32,10 +32,14 @@ const MetricExplorerPage = () => {
     },
   ]);
   const [copilotVisible, setCopilotVisible] = useState(false);
+  const [activeDatasource, setActiveDatasource] = useState<{ cate: string; id: number }>({ cate: 'prometheus', id: 0 });
   const copilotApplyRef = useRef<((query: string) => void) | null>(null);
 
   const handleCopilotOpen = useCallback(() => setCopilotVisible(true), []);
   const handleCopilotClose = useCallback(() => setCopilotVisible(false), []);
+  const handleDatasourceChange = useCallback((cate: string, id: number) => {
+    setActiveDatasource({ cate, id });
+  }, []);
   const handleApplyQuery = useCallback((query: string) => {
     if (copilotApplyRef.current) {
       copilotApplyRef.current(query);
@@ -51,7 +55,7 @@ const MetricExplorerPage = () => {
               {_.map(panels, (panel, idx) => {
                 return (
                   <div key={panel.uuid} className='bg-fc-100 fc-border' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
-                    <Explorer tabKey={panel.uuid} type='metric' defaultCate='prometheus' panelIdx={idx} onCopilotOpen={handleCopilotOpen} copilotApplyRef={copilotApplyRef} />
+                    <Explorer tabKey={panel.uuid} type='metric' defaultCate='prometheus' panelIdx={idx} onCopilotOpen={handleCopilotOpen} copilotApplyRef={copilotApplyRef} onDatasourceChange={idx === 0 ? handleDatasourceChange : undefined} />
                     {panels.length > 1 && (
                       <CloseCircleOutlined
                         style={{
@@ -79,7 +83,7 @@ const MetricExplorerPage = () => {
             </div>
           </div>
         </div>
-        <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType='prometheus' datasourceId={0} onApplyQuery={handleApplyQuery} />
+        <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType={activeDatasource.cate} datasourceId={activeDatasource.id} onApplyQuery={handleApplyQuery} />
       </div>
     </PageLayout>
   );

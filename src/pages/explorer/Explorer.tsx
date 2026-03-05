@@ -62,6 +62,7 @@ interface IProps {
   panelIdx?: number;
   onCopilotOpen?: () => void;
   copilotApplyRef?: React.MutableRefObject<((query: string) => void) | null>;
+  onDatasourceChange?: (cate: string, id: number) => void;
   defaultFormValuesControl?: {
     isInited?: boolean;
     setIsInited: () => void;
@@ -109,7 +110,7 @@ function omitUndefinedDeep<T>(val: T): T {
 
 const Panel = (props: IProps) => {
   const { t } = useTranslation('explorer');
-  const { type, defaultCate, panelIdx = 0, onCopilotOpen, defaultFormValuesControl } = props;
+  const { type, defaultCate, panelIdx = 0, onCopilotOpen, onDatasourceChange, defaultFormValuesControl } = props;
   const { datasourceCateOptions, datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
   const [tabKey, setTabKey] = useGlobalState('tabKey');
   const [form] = Form.useForm();
@@ -120,6 +121,7 @@ const Panel = (props: IProps) => {
   const defaultDatasourceCate = params.get('data_source_name') || getDefaultDatasourceCate(datasourceList, defaultCate);
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
   const datasourceCate = Form.useWatch('datasourceCate', form);
+  const datasourceValue = Form.useWatch('datasourceValue', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);
   const [promql, setPromql] = React.useState<string>();
   const copilotApplyRef = useRef<((query: string) => void) | null>(null);
@@ -133,6 +135,12 @@ const Panel = (props: IProps) => {
   useEffect(() => {
     setTabKey(props.tabKey);
   }, [props.tabKey]);
+
+  useEffect(() => {
+    if (onDatasourceChange && datasourceCate && datasourceValue) {
+      onDatasourceChange(datasourceCate, datasourceValue);
+    }
+  }, [datasourceCate, datasourceValue]);
 
   return (
     <div className={`explorer-container explorer-container-${tabKey}`} ref={explorerContainerRef}>
