@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import ChatPanel from './ChatPanel';
 import './style.less';
@@ -19,18 +19,15 @@ export { default as CopilotButton } from './CopilotButton';
 export default function AICopilot({ visible, onClose, datasourceType, datasourceId, databaseName, tableName, onApplyQuery }: Props) {
   const { t } = useTranslation('AICopilot');
 
+  if (!visible) return null;
+
   return (
-    <Drawer
-      title={t('title')}
-      placement='right'
-      width={480}
-      mask={false}
-      visible={visible}
-      onClose={onClose}
-      className='ai-copilot-drawer'
-      destroyOnClose
-    >
+    <div className='ai-copilot-sidebar'>
+      <div className='ai-copilot-sidebar-header'>
+        <span className='ai-copilot-sidebar-title'>{t('title')}</span>
+        <CloseOutlined className='ai-copilot-sidebar-close' onClick={onClose} />
+      </div>
       <ChatPanel datasourceType={datasourceType} datasourceId={datasourceId} databaseName={databaseName} tableName={tableName} onApplyQuery={onApplyQuery} />
-    </Drawer>
+    </div>
   );
 }

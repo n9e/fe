@@ -11,13 +11,44 @@
   }
 }
 
-// Drawer overrides
-.ai-copilot-drawer {
-  .ant-drawer-body {
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+// Sidebar panel (side-by-side with main content)
+.ai-copilot-sidebar {
+  width: 420px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-left: 8px;
+  border-radius: var(--fc-radius-md, 6px);
+  border: 1px solid var(--fc-border-color);
+  background: var(--fc-body-bg, #fff);
+  box-shadow: var(--fc-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.08));
+  overflow: hidden;
+}
+
+.ai-copilot-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--fc-border-color);
+  flex-shrink: 0;
+}
+
+.ai-copilot-sidebar-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ai-copilot-sidebar-close {
+  cursor: pointer;
+  color: var(--fc-text-color-secondary);
+  font-size: 12px;
+  padding: 4px;
+  border-radius: 4px;
+  &:hover {
+    color: var(--fc-text-color);
+    background: var(--fc-fill-hover, rgba(0, 0, 0, 0.04));
   }
 }
 
@@ -25,8 +56,9 @@
 .ai-copilot-chat-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
 // Messages area

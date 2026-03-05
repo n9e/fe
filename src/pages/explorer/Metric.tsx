@@ -14,12 +14,13 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Button } from 'antd';
 import { LineChartOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
+import AICopilot from '@/components/AICopilot';
 import Explorer from './Explorer';
 import './index.less';
 
@@ -30,42 +31,55 @@ const MetricExplorerPage = () => {
       uuid: _.uniqueId('panel_'),
     },
   ]);
+  const [copilotVisible, setCopilotVisible] = useState(false);
+  const copilotApplyRef = useRef<((query: string) => void) | null>(null);
+
+  const handleCopilotOpen = useCallback(() => setCopilotVisible(true), []);
+  const handleCopilotClose = useCallback(() => setCopilotVisible(false), []);
+  const handleApplyQuery = useCallback((query: string) => {
+    if (copilotApplyRef.current) {
+      copilotApplyRef.current(query);
+    }
+  }, []);
 
   return (
     <PageLayout title={t('title')} icon={<LineChartOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/quickstart/ad-hoc/'>
-      <div>
-        <div style={{ boxShadow: 'unset', background: 'unset' }}>
-          <div>
-            {_.map(panels, (panel, idx) => {
-              return (
-                <div key={panel.uuid} className='bg-fc-100 fc-border' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
-                  <Explorer tabKey={panel.uuid} type='metric' defaultCate='prometheus' panelIdx={idx} />
-                  {panels.length > 1 && (
-                    <CloseCircleOutlined
-                      style={{
-                        position: 'absolute',
-                        top: 4,
-                        right: 4,
-                        fontSize: 14,
-                      }}
-                      onClick={() => {
-                        setPanels(_.filter(panels, (item) => item.uuid !== panel.uuid));
-                      }}
-                    />
-                  )}
-                </div>
-              );
-            })}
-            <Button
-              style={{ width: '100%' }}
-              onClick={() => {
-                setPanels([...panels, { uuid: _.uniqueId('panel_') }]);
-              }}
-            >
-              {t('addPanel')}
-            </Button>
+      <div style={{ display: 'flex', height: '100%' }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: 'auto' }}>
+          <div style={{ boxShadow: 'unset', background: 'unset' }}>
+            <div>
+              {_.map(panels, (panel, idx) => {
+                return (
+                  <div key={panel.uuid} className='bg-fc-100 fc-border' style={{ padding: 16, maxHeight: 650, marginBottom: 16, position: 'relative', display: 'flex' }}>
+                    <Explorer tabKey={panel.uuid} type='metric' defaultCate='prometheus' panelIdx={idx} onCopilotOpen={handleCopilotOpen} copilotApplyRef={copilotApplyRef} />
+                    {panels.length > 1 && (
+                      <CloseCircleOutlined
+                        style={{
+                          position: 'absolute',
+                          top: 4,
+                          right: 4,
+                          fontSize: 14,
+                        }}
+                        onClick={() => {
+                          setPanels(_.filter(panels, (item) => item.uuid !== panel.uuid));
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+              <Button
+                style={{ width: '100%' }}
+                onClick={() => {
+                  setPanels([...panels, { uuid: _.uniqueId('panel_') }]);
+                }}
+              >
+                {t('addPanel')}
+              </Button>
+            </div>
           </div>
         </div>
+        <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType='prometheus' datasourceId={0} onApplyQuery={handleApplyQuery} />
       </div>
     </PageLayout>
   );
