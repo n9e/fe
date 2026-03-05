@@ -156,10 +156,10 @@ export default function Prometheus(props: IProps) {
         }
       }}
       extra={
-        <>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <CopilotButton datasourceCate='prometheus' onClick={onCopilotOpen} />
           <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />
-        </>
+        </div>
       }
       showExportButton
     />

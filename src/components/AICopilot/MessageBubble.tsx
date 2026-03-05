@@ -21,9 +21,7 @@ export default function MessageBubble({ message, datasourceType, onRunQuery }: P
           <div className='ai-copilot-message-text'>{message.content}</div>
         ) : (
           <>
-            {(message.thinking || (message.toolCalls && message.toolCalls.length > 0)) && (
-              <ThinkingBlock thinking={message.thinking || ''} toolCalls={message.toolCalls} isStreaming={message.isStreaming} />
-            )}
+            {message.thinking && <ThinkingBlock thinking={message.thinking} isStreaming={message.isStreaming} />}
             {message.content && <Markdown content={message.content} />}
             {message.query && <QueryResultBlock query={message.query} explanation={message.explanation} language={language} onRunQuery={onRunQuery} />}
             {message.error && <div className='ai-copilot-message-error'>{message.error}</div>}

@@ -27,7 +27,6 @@ export default function QueryResultBlock({ query, explanation, language = 'sql',
           {query}
         </SyntaxHighlighter>
       </div>
-      {explanation && <div className='ai-copilot-query-result-explanation'>{explanation}</div>}
       <div className='ai-copilot-query-result-actions'>
         <Button size='small' icon={<CopyOutlined />} onClick={handleCopy}>
           {t('copy')}
@@ -38,6 +37,7 @@ export default function QueryResultBlock({ query, explanation, language = 'sql',
           </Button>
         )}
       </div>
+      {explanation && <div className='ai-copilot-query-result-explanation'>{explanation}</div>}
     </div>
   );
 }
