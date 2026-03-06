@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect, createContext } from 'react';
+import React, { useContext, useEffect, useState, useCallback, createContext } from 'react';
 import { Form, Space, Button, message, Affix, Card, Alert } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams, Link } from 'react-router-dom';
@@ -23,6 +23,7 @@ import { CommonStateContext } from '@/App';
 import { addStrategy, EditStrategy } from '@/services/warning';
 import { scrollToFirstError } from '@/utils';
 import AffixWrapper from '@/components/AffixWrapper';
+import AICopilot, { CopilotSidebarContext } from '@/components/AICopilot';
 import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
@@ -51,6 +52,9 @@ export default function index(props: IProps) {
   const { licenseRulesRemaining, datasourceCateOptions } = useContext(CommonStateContext);
   const disabled = type === 3;
   const containerRef = React.useRef(null);
+  const [copilotVisible, setCopilotVisible] = useState(false);
+  const handleCopilotOpen = useCallback(() => setCopilotVisible(true), []);
+  const handleCopilotClose = useCallback(() => setCopilotVisible(false), []);
   // TODO: 废弃的检测，beta.5 起已经不需要
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
@@ -120,75 +124,83 @@ export default function index(props: IProps) {
     }
   }, [initialValues]);
 
+  const cate = Form.useWatch('cate', form);
+  const datasourceValue = Form.useWatch('datasource_value', form);
+
   return (
     <FormStateContext.Provider
       value={{
         disabled,
       }}
     >
-      <div style={{ overflow: 'hidden auto', padding: 0 }} ref={containerRef}>
-        <Form form={form} layout='vertical' disabled={disabled} style={{ background: 'unset' }}>
-          <div className='p-4'>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {editable === false && (
-                <Affix
-                  target={() => {
-                    return containerRef.current || window;
-                  }}
-                >
-                  <Alert type='warning' message={t('expired')} />
-                </Affix>
-              )}
-              <Form.Item name='disabled' hidden>
-                <div />
-              </Form.Item>
-              <Base />
-              <Rule form={form} />
-              <EventSettings initialValues={initialValues} />
-              <Effective />
-              <PipelineConfigs />
-              <Notify disabled={disabled} />
-            </div>
-            <AffixWrapper>
-              <Card size='small' className='affix-bottom-shadow'>
-                {!disabled && (
-                  <Space>
-                    <Button
-                      type='primary'
-                      onClick={() => {
-                        form
-                          .validateFields()
-                          .then(async (values) => {
-                            handleCheck(values);
-                            const data = processFormValues(values) as any;
-                            if (type === 1) {
-                              const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                              handleMessage(res);
-                            } else {
-                              const curBusiId = initialValues?.group_id || Number(bgid);
-                              const res = await addStrategy([data], curBusiId);
-                              handleMessage(res);
-                            }
-                          })
-                          .catch((err) => {
-                            console.error(err);
-                            scrollToFirstError();
-                          });
+      <CopilotSidebarContext.Provider value={{ openCopilot: handleCopilotOpen }}>
+        <div style={{ display: 'flex', height: '100%' }}>
+          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden auto', padding: 0 }} ref={containerRef}>
+            <Form form={form} layout='vertical' disabled={disabled} style={{ background: 'unset' }}>
+              <div className='p-4'>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {editable === false && (
+                    <Affix
+                      target={() => {
+                        return containerRef.current || window;
                       }}
-                      disabled={editable === false}
                     >
-                      {t('common:btn.save')}
-                    </Button>
-                    <Link to='/alert-rules'>
-                      <Button>{t('common:btn.cancel')}</Button>
-                    </Link>
-                  </Space>
-                )}
-              </Card>
-            </AffixWrapper>
+                      <Alert type='warning' message={t('expired')} />
+                    </Affix>
+                  )}
+                  <Form.Item name='disabled' hidden>
+                    <div />
+                  </Form.Item>
+                  <Base />
+                  <Rule form={form} />
+                  <EventSettings initialValues={initialValues} />
+                  <Effective />
+                  <PipelineConfigs />
+                  <Notify disabled={disabled} />
+                </div>
+                <AffixWrapper>
+                  <Card size='small' className='affix-bottom-shadow'>
+                    {!disabled && (
+                      <Space>
+                        <Button
+                          type='primary'
+                          onClick={() => {
+                            form
+                              .validateFields()
+                              .then(async (values) => {
+                                handleCheck(values);
+                                const data = processFormValues(values) as any;
+                                if (type === 1) {
+                                  const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                                  handleMessage(res);
+                                } else {
+                                  const curBusiId = initialValues?.group_id || Number(bgid);
+                                  const res = await addStrategy([data], curBusiId);
+                                  handleMessage(res);
+                                }
+                              })
+                              .catch((err) => {
+                                console.error(err);
+                                scrollToFirstError();
+                              });
+                          }}
+                          disabled={editable === false}
+                        >
+                          {t('common:btn.save')}
+                        </Button>
+                        <Link to='/alert-rules'>
+                          <Button>{t('common:btn.cancel')}</Button>
+                        </Link>
+                      </Space>
+                    )}
+                  </Card>
+                </AffixWrapper>
+              </div>
+            </Form>
           </div>
-        </Form>
-      </div>
+          <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType={cate || ''} datasourceId={datasourceValue || 0} />
+        </div>
+      </CopilotSidebarContext.Provider>
     </FormStateContext.Provider>
   );
 }

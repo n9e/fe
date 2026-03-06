@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import _ from 'lodash';
 import { useHistory } from 'react-router-dom';
 import { Form, Input, Button, Modal, message, Space, Select, notification } from 'antd';
@@ -8,7 +8,7 @@ import { useRequest } from 'ahooks';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
 import PromQLInputNG from '@/components/PromQLInputNG';
-import { CopilotEntry, CopilotEntryButton } from '@/components/AICopilot';
+import AICopilot, { CopilotPlaceholderLink, CopilotButton } from '@/components/AICopilot';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import CronPattern from '@/components/CronPattern';
@@ -33,6 +33,9 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
   const history = useHistory(); // 创建的时候默认选中的值
   const [form] = Form.useForm();
   const { groupedDatasourceList } = useContext(CommonStateContext);
+  const [copilotVisible, setCopilotVisible] = useState(false);
+  const handleCopilotOpen = useCallback(() => setCopilotVisible(true), []);
+  const handleCopilotClose = useCallback(() => setCopilotVisible(false), []);
 
   const addSubmit = () => {
     form.validateFields().then(async (values) => {
@@ -98,102 +101,108 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
     }
   }, []);
 
+  const datasourceIds = Form.useWatch('datasource_ids', form);
+  const currentDatasourceId = getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus);
+
   return (
-    <div>
-      <div className='fc-border p-4'>
-        <Form form={form} className='strategy-form' layout='vertical'>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true, message: t('group_id_required') }]}>
-              <Select
-                options={_.map(busiGroups, (item) => {
-                  return { label: item.name, value: item.id };
-                })}
-                showSearch
-                optionFilterProp='label'
-              />
-            </Form.Item>
-            <Form.Item
-              required
-              label={t('name')}
-              tooltip={t('name_tip')}
-              name='name'
-              rules={[
-                {
-                  required: true,
-                },
-                { pattern: new RegExp(/^[0-9a-zA-Z_:]{1,}$/, 'g'), message: 'name_msg' },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item label={t('note')} name='note'>
-              <Input />
-            </Form.Item>
-            <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={groupedDatasourceList?.prometheus || []} />
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div className='fc-border p-4'>
+          <Form form={form} className='strategy-form' layout='vertical'>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true, message: t('group_id_required') }]}>
+                <Select
+                  options={_.map(busiGroups, (item) => {
+                    return { label: item.name, value: item.id };
+                  })}
+                  showSearch
+                  optionFilterProp='label'
+                />
+              </Form.Item>
+              <Form.Item
+                required
+                label={t('name')}
+                tooltip={t('name_tip')}
+                name='name'
+                rules={[
+                  {
+                    required: true,
+                  },
+                  { pattern: new RegExp(/^[0-9a-zA-Z_:]{1,}$/, 'g'), message: 'name_msg' },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item label={t('note')} name='note'>
+                <Input />
+              </Form.Item>
+              <DatasourceValueSelect mode='multiple' setFieldsValue={form.setFieldsValue} cate='prometheus' datasourceList={groupedDatasourceList?.prometheus || []} />
 
-            <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.datasource_ids !== curValues.datasource_ids}>
-              {({ getFieldValue, validateFields }) => {
-                const datasourceIds = getFieldValue('datasource_ids');
-                return (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]} style={{ flex: 1, marginBottom: 0 }}>
-                      <PromQLInputNG
-                        datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
-                        onChange={(val) => {
-                          if (val) {
-                            validateFields(['prom_ql']);
-                          }
-                        }}
-                        showBuiltinMetrics
-                        placeholderExtra={<CopilotEntry datasourceCate='prometheus' datasourceId={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)} />}
-                      />
-                    </Form.Item>
-                    <CopilotEntryButton datasourceCate='prometheus' datasourceId={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)} />
-                  </div>
-                );
-              }}
-            </Form.Item>
-            <CronPattern name='cron_pattern' />
-            <Form.Item label={t('append_tags')} name='append_tags' rules={[validatorOfKVTagSelect]}>
-              <KVTagSelect />
-            </Form.Item>
-            <Form.Item>
-              <Button type='primary' onClick={addSubmit} style={{ marginRight: '8px' }}>
-                {t('common:btn.save')}
-              </Button>
-              {type === 1 && (
+              <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.datasource_ids !== curValues.datasource_ids}>
+                {({ getFieldValue, validateFields }) => {
+                  const datasourceIds = getFieldValue('datasource_ids');
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]} style={{ flex: 1, marginBottom: 0 }}>
+                        <PromQLInputNG
+                          datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
+                          onChange={(val) => {
+                            if (val) {
+                              validateFields(['prom_ql']);
+                            }
+                          }}
+                          showBuiltinMetrics
+                          placeholderExtra={<CopilotPlaceholderLink datasourceCate='prometheus' onClick={handleCopilotOpen} />}
+                        />
+                      </Form.Item>
+                      <CopilotButton datasourceCate='prometheus' onClick={handleCopilotOpen} />
+                    </div>
+                  );
+                }}
+              </Form.Item>
+              <CronPattern name='cron_pattern' />
+              <Form.Item label={t('append_tags')} name='append_tags' rules={[validatorOfKVTagSelect]}>
+                <KVTagSelect />
+              </Form.Item>
+              <Form.Item>
+                <Button type='primary' onClick={addSubmit} style={{ marginRight: '8px' }}>
+                  {t('common:btn.save')}
+                </Button>
+                {type === 1 && (
+                  <Button
+                    danger
+                    style={{ marginRight: '8px' }}
+                    onClick={() => {
+                      Modal.confirm({
+                        title: t('common:confirm.delete'),
+                        onOk: () => {
+                          deleteRecordingRule([initialValues.id], initialValues.group_id).then(() => {
+                            message.success(t('common:success.delete'));
+                            history.push('/recording-rules');
+                          });
+                        },
+
+                        onCancel() {},
+                      });
+                    }}
+                  >
+                    {t('common:btn.delete')}
+                  </Button>
+                )}
+
                 <Button
-                  danger
-                  style={{ marginRight: '8px' }}
                   onClick={() => {
-                    Modal.confirm({
-                      title: t('common:confirm.delete'),
-                      onOk: () => {
-                        deleteRecordingRule([initialValues.id], initialValues.group_id).then(() => {
-                          message.success(t('common:success.delete'));
-                          history.push('/recording-rules');
-                        });
-                      },
-
-                      onCancel() {},
-                    });
+                    history.push('/recording-rules');
                   }}
                 >
-                  {t('common:btn.delete')}
+                  {t('common:btn.cancel')}
                 </Button>
-              )}
-
-              <Button
-                onClick={() => {
-                  history.push('/recording-rules');
-                }}
-              >
-                {t('common:btn.cancel')}
-              </Button>
-            </Form.Item>
-          </Space>
-        </Form>
+              </Form.Item>
+            </Space>
+          </Form>
+        </div>
       </div>
+      <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType='prometheus' datasourceId={currentDatasourceId || 0} />
     </div>
   );
 };

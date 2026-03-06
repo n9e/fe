@@ -30,7 +30,7 @@ import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import PromQLInputNG from '@/components/PromQLInputNG';
-import { CopilotEntry, CopilotEntryButton } from '@/components/AICopilot';
+import { CopilotPlaceholderLink, CopilotButton, useCopilotSidebar } from '@/components/AICopilot';
 
 import GraphPreview from './GraphPreview';
 import AdvancedSettings from './components/AdvancedSettings';
@@ -43,6 +43,7 @@ export default function PrometheusV2(props: Props) {
   const { datasourceValue } = props;
   const { t } = useTranslation('alertRules');
   const { disabled } = useContext(FormStateContext);
+  const copilotSidebar = useCopilotSidebar();
   const form = Form.useFormInstance();
   const queries = Form.useWatch(['rule_config', 'queries']);
 
@@ -86,11 +87,11 @@ export default function PrometheusV2(props: Props) {
                               trigger='onChange'
                               rules={[{ required: true, message: t('promQLInput:required') }]}
                             >
-                              <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} durationVariablesCompletion={false} placeholderExtra={!disabled ? <CopilotEntry datasourceCate='prometheus' datasourceId={datasourceValue} /> : undefined} />
+                              <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} durationVariablesCompletion={false} placeholderExtra={!disabled ? <CopilotPlaceholderLink datasourceCate='prometheus' onClick={copilotSidebar?.openCopilot} /> : undefined} />
                             </Form.Item>
                           </InputGroupWithFormItem>
                         </div>
-                        {!disabled && <CopilotEntryButton datasourceCate='prometheus' datasourceId={datasourceValue} />}
+                        {!disabled && <CopilotButton datasourceCate='prometheus' onClick={copilotSidebar?.openCopilot} />}
                       </div>
                     </div>
                   </div>

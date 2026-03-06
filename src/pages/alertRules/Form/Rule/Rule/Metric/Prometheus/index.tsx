@@ -21,7 +21,7 @@ import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from 
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import PromQLInputNG from '@/components/PromQLInputNG';
-import { CopilotEntry, CopilotEntryButton } from '@/components/AICopilot';
+import { CopilotPlaceholderLink, CopilotButton, useCopilotSidebar } from '@/components/AICopilot';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import { FormStateContext } from '@/pages/alertRules/Form';
@@ -37,6 +37,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
   const { datasourceValue } = props;
   const { t } = useTranslation('alertRules');
   const { disabled } = useContext(FormStateContext);
+  const copilotSidebar = useCopilotSidebar();
   const form = Form.useFormInstance();
   const ruleConfigVersion = Form.useWatch(['rule_config', 'version']);
 
@@ -139,9 +140,9 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                         rules={[{ required: true, message: t('promQLInput:required') }]}
                         style={{ flex: 1, marginBottom: 0 }}
                       >
-                        <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} placeholderExtra={!disabled ? <CopilotEntry datasourceCate='prometheus' datasourceId={datasourceValue} /> : undefined} />
+                        <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} placeholderExtra={!disabled ? <CopilotPlaceholderLink datasourceCate='prometheus' onClick={copilotSidebar?.openCopilot} /> : undefined} />
                       </Form.Item>
-                      {!disabled && <CopilotEntryButton datasourceCate='prometheus' datasourceId={datasourceValue} />}
+                      {!disabled && <CopilotButton datasourceCate='prometheus' onClick={copilotSidebar?.openCopilot} />}
                     </div>
                     <ChildVariablesConfigs
                       topPrefixName={['rule_config', 'queries']}
