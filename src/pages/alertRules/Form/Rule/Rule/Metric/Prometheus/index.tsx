@@ -131,14 +131,14 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                 {fields.map((field) => (
                   <div key={field.key} className='alert-rule-trigger-container'>
                     <VariablesConfig prefixName={['rule_config', 'queries']} field={field} />
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <Form.Item
                         {...field}
                         name={[field.name, 'prom_ql']}
                         validateTrigger={['onBlur']}
                         trigger='onChange'
                         rules={[{ required: true, message: t('promQLInput:required') }]}
-                        style={{ flex: 1, marginBottom: 0 }}
+                        style={{ flex: 1, minWidth: 0, marginBottom: 0 }}
                       >
                         <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} placeholderExtra={!disabled ? <CopilotPlaceholderLink datasourceCate='prometheus' onClick={copilotSidebar?.openCopilot} /> : undefined} />
                       </Form.Item>

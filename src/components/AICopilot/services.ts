@@ -1,8 +1,8 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-export function getLLMProviders() {
-  return request('/api/n9e/llm-providers', {
+export function getAgents() {
+  return request('/api/n9e/ai-agents', {
     method: RequestMethod.Get,
   });
 }

@@ -52,7 +52,7 @@ const ja_JP = {
     contact: '連絡先',
     setting: 'システム設定',
     ai_config: 'AI 設定',
-    ai_llm: 'LLM プロバイダー',
+    ai_agents: 'エージェント管理',
     ai_skills: 'スキル管理',
     ai_mcp: 'MCP サーバー',
     site_setting: 'サイト設定',

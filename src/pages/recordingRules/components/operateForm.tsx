@@ -142,8 +142,8 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
                 {({ getFieldValue, validateFields }) => {
                   const datasourceIds = getFieldValue('datasource_ids');
                   return (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]} style={{ flex: 1, marginBottom: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, minWidth: 0 }}>
+                      <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]} style={{ flex: 1, minWidth: 0, marginBottom: 0 }}>
                         <PromQLInputNG
                           datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
                           onChange={(val) => {

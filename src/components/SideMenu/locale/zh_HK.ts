@@ -52,7 +52,7 @@ const zh_HK = {
     contact: '聯繫方式',
     setting: '系統配置',
     ai_config: 'AI 配置',
-    ai_llm: '大模型管理',
+    ai_agents: 'Agent 管理',
     ai_skills: 'Skill 管理',
     ai_mcp: 'MCP 管理',
     site_setting: '站點設置',

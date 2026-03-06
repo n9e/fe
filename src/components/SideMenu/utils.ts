@@ -55,6 +55,12 @@ export const getSavedPath = (pathname: string) => {
   const currentMenu = findMenuByPath(pathname, menuList);
   if (currentMenu?.currentItem && currentMenu?.parentItem) {
     const storageKey = getStorageKey(currentMenu.parentItem.key);
-    return localStorage.getItem(storageKey);
+    const saved = localStorage.getItem(storageKey);
+    // Validate saved path still exists in current menu children
+    if (saved && currentMenu.parentItem.children?.some((c) => c.key === saved)) {
+      return saved;
+    }
+    localStorage.removeItem(storageKey);
+    return null;
   }
 };

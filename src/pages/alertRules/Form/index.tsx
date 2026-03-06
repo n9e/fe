@@ -135,7 +135,7 @@ export default function index(props: IProps) {
     >
       <CopilotSidebarContext.Provider value={{ openCopilot: handleCopilotOpen }}>
         <div style={{ display: 'flex', height: '100%' }}>
-          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden auto', padding: 0 }} ref={containerRef}>
+          <div style={{ flex: 1, minWidth: 0, overflowX: 'hidden', overflowY: 'auto', padding: 0 }} ref={containerRef}>
             <Form form={form} layout='vertical' disabled={disabled} style={{ background: 'unset' }}>
               <div className='p-4'>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

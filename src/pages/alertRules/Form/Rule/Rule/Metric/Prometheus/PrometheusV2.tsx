@@ -77,7 +77,7 @@ export default function PrometheusV2(props: Props) {
                       </Form.Item>
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <InputGroupWithFormItem label='PromQL'>
                             <Form.Item

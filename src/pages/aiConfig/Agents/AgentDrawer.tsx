@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, Select, Switch, InputNumber, Collapse, Space, Button, Tag, message } from 'antd';
+import { Drawer, Form, Input, Select, Switch, InputNumber, Collapse, Space, Button, Tag, message, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LLMProvider, addLLMProvider, updateLLMProvider, testLLMProvider } from './services';
+import { AIAgent, addAgent, updateAgent, testAgentLLM } from './services';
 
 interface Props {
   visible: boolean;
-  data?: LLMProvider;
+  data?: AIAgent;
   onClose: () => void;
   onOk: () => void;
 }
 
-export default function EditModal({ visible, data, onClose, onOk }: Props) {
+export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
   const { t } = useTranslation('aiConfig');
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -41,7 +41,7 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
     setTestResult(null);
     try {
       const values = form.getFieldsValue();
-      const result = await testLLMProvider({
+      const result = await testAgentLLM({
         id: data?.id,
         api_type: values.api_type,
         api_url: values.api_url,
@@ -74,9 +74,9 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
       };
 
       if (isEdit && data) {
-        await updateLLMProvider(data.id, payload);
+        await updateAgent(data.id, payload);
       } else {
-        await addLLMProvider(payload);
+        await addAgent(payload);
       }
       message.success(isEdit ? 'Updated' : 'Created');
       onOk();
@@ -86,41 +86,43 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
   };
 
   return (
-    <Modal
-      title={isEdit ? t('llm.edit') : t('llm.add')}
+    <Drawer
+      title={isEdit ? t('agent.edit') : t('agent.add')}
       visible={visible}
-      onCancel={onClose}
+      onClose={onClose}
       destroyOnClose
+      width={600}
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-            <Space>
-              <Button onClick={handleTest} loading={testing}>
-                {t('llm.test')}
-              </Button>
-                {testResult &&
-                  (testResult.success ? (
-                    <Tag color='success'>
-                      {t('llm.test_success')} ({testResult.duration_ms}ms)
-                    </Tag>
-                  ) : (
-                    <Tag color='error'>{t('llm.test_failed')}</Tag>
-                  ))}
-            </Space>
-          </div>
           <Space>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
             <Button type='primary' onClick={handleOk} loading={loading}>
-              OK
+              {t('common:btn.save')}
             </Button>
           </Space>
         </div>
       }
     >
       <Form form={form} layout='vertical'>
-        <Form.Item name='name' label={t('llm.name')} rules={[{ required: true }]}>
+        {/* Basic Info */}
+        <div style={{ marginBottom: 8, fontWeight: 600, fontSize: 14 }}>{t('agent.basic_info')}</div>
+        <Form.Item name='name' label={t('agent.name')} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
+        <Form.Item name='description' label={t('agent.description')}>
+          <Input.TextArea rows={2} placeholder={t('agent.description_placeholder')} />
+        </Form.Item>
+        <Space size={24}>
+          <Form.Item name='is_default' label={t('agent.is_default')} valuePropName='checked'>
+            <Switch />
+          </Form.Item>
+          <Form.Item name='enabled' label={t('agent.enabled')} valuePropName='checked'>
+            <Switch />
+          </Form.Item>
+        </Space>
+
+        {/* LLM Configuration */}
+        <div style={{ marginBottom: 8, marginTop: 8, fontWeight: 600, fontSize: 14 }}>{t('agent.llm_config')}</div>
         <Form.Item name='api_type' label={t('llm.api_type')} rules={[{ required: true }]}>
           <Select>
             <Select.Option value='openai'>{t('llm.api_type_options.openai')}</Select.Option>
@@ -137,14 +139,21 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
         <Form.Item name='model' label={t('llm.model')} rules={[{ required: true }]}>
           <Input placeholder='gpt-4o' />
         </Form.Item>
-        <Space size={24}>
-          <Form.Item name='is_default' label={t('llm.is_default')} valuePropName='checked'>
-            <Switch />
-          </Form.Item>
-          <Form.Item name='enabled' label={t('llm.enabled')} valuePropName='checked'>
-            <Switch />
-          </Form.Item>
-        </Space>
+        <div style={{ marginBottom: 16 }}>
+          <Space>
+            <Button onClick={handleTest} loading={testing}>
+              {t('llm.test')}
+            </Button>
+            {testResult &&
+              (testResult.success ? (
+                <Tag color='success'>
+                  {t('llm.test_success')} ({testResult.duration_ms}ms)
+                </Tag>
+              ) : (
+                <Tag color='error'>{t('llm.test_failed')}</Tag>
+              ))}
+          </Space>
+        </div>
         <Collapse ghost>
           <Collapse.Panel header={t('llm.extra_config')} key='extra'>
             <Form.Item name='temperature' label={t('llm.temperature')}>
@@ -158,7 +167,30 @@ export default function EditModal({ visible, data, onClose, onOk }: Props) {
             </Form.Item>
           </Collapse.Panel>
         </Collapse>
+
+        {/* Phase 2: Skill / MCP / IM references */}
+        <div style={{ marginBottom: 8, marginTop: 16, fontWeight: 600, fontSize: 14 }}>
+          {t('agent.extensions')}
+          <Tag style={{ marginLeft: 8 }}>{t('agent.coming_soon')}</Tag>
+        </div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Tooltip title={t('agent.coming_soon')}>
+            <Button disabled style={{ flex: 1 }}>
+              + Skill
+            </Button>
+          </Tooltip>
+          <Tooltip title={t('agent.coming_soon')}>
+            <Button disabled style={{ flex: 1 }}>
+              + MCP
+            </Button>
+          </Tooltip>
+          <Tooltip title={t('agent.coming_soon')}>
+            <Button disabled style={{ flex: 1 }}>
+              + IM
+            </Button>
+          </Tooltip>
+        </div>
       </Form>
-    </Modal>
+    </Drawer>
   );
 }

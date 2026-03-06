@@ -53,7 +53,7 @@ const en_US = {
     contact: 'Contact',
     setting: 'System setting',
     ai_config: 'AI Config',
-    ai_llm: 'LLM Providers',
+    ai_agents: 'Agents',
     ai_skills: 'Skills',
     ai_mcp: 'MCP Servers',
     site_setting: 'Site settings',
