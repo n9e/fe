@@ -80,7 +80,7 @@ const en_US = {
     tool_name: 'Tool Name',
     tool_description: 'Description',
     server_requirements_title: 'MCP Server Requirements',
-    server_requirements_desc: 'Only remote MCP servers are supported. The server must either require no authentication, accept a custom Authorization header, or support the MCP OAuth specification.',
+    server_requirements_desc: 'Only remote MCP servers are supported. The server must either require no authentication or accept a custom Authorization header.',
   },
 };
 

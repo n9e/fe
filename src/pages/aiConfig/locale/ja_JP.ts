@@ -80,7 +80,7 @@ const ja_JP = {
     tool_name: 'ツール名',
     tool_description: '説明',
     server_requirements_title: 'MCP サーバー要件',
-    server_requirements_desc: 'リモート MCP サーバーのみサポートされています。サーバーは認証不要、カスタム Authorization ヘッダー認証、または MCP OAuth 仕様のいずれかに対応する必要があります。',
+    server_requirements_desc: 'リモート MCP サーバーのみサポートされています。サーバーは認証不要、またはカスタム Authorization ヘッダー認証に対応する必要があります。',
   },
 };
 

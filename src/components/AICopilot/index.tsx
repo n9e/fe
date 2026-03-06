@@ -1,7 +1,7 @@
-import React from 'react';
-import { CloseOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useCallback } from 'react';
 import ChatPanel from './ChatPanel';
+import ConversationHeader from './ConversationHeader';
+import type { AIConversation } from './types';
 import './style.less';
 
 interface Props {
@@ -20,17 +20,41 @@ export { default as CopilotEntry, CopilotEntryButton } from './CopilotEntry';
 export { CopilotSidebarContext, useCopilotSidebar } from './CopilotSidebarContext';
 
 export default function AICopilot({ visible, onClose, datasourceType, datasourceId, databaseName, tableName, onApplyQuery }: Props) {
-  const { t } = useTranslation('AICopilot');
+  const [conversationId, setConversationId] = useState<number | undefined>();
+  const [refreshKey, setRefreshKey] = useState(0);
+  // Use a key to force remount ChatPanel when switching conversations
+  const [chatKey, setChatKey] = useState(0);
+
+  const handleSelectConversation = useCallback((conv: AIConversation) => {
+    setConversationId(conv.id);
+    setChatKey((k) => k + 1);
+  }, []);
+
+  const handleNewConversation = useCallback(() => {
+    setConversationId(undefined);
+    setChatKey((k) => k + 1);
+  }, []);
+
+  const handleConversationChange = useCallback((id: number, _title: string) => {
+    setConversationId(id);
+    setRefreshKey((k) => k + 1);
+  }, []);
 
   if (!visible) return null;
 
   return (
     <div className='ai-copilot-sidebar'>
-      <div className='ai-copilot-sidebar-header'>
-        <span className='ai-copilot-sidebar-title'>{t('title')}</span>
-        <CloseOutlined className='ai-copilot-sidebar-close' onClick={onClose} />
-      </div>
-      <ChatPanel datasourceType={datasourceType} datasourceId={datasourceId} databaseName={databaseName} tableName={tableName} onApplyQuery={onApplyQuery} />
+      <ConversationHeader currentId={conversationId} onSelect={handleSelectConversation} onNew={handleNewConversation} onClose={onClose} refreshKey={refreshKey} />
+      <ChatPanel
+        key={chatKey}
+        datasourceType={datasourceType}
+        datasourceId={datasourceId}
+        databaseName={databaseName}
+        tableName={tableName}
+        conversationId={conversationId}
+        onConversationChange={handleConversationChange}
+        onApplyQuery={onApplyQuery}
+      />
     </div>
   );
 }

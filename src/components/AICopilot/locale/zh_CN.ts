@@ -15,7 +15,19 @@ const zh_CN = {
     memory_usage: '查询 Host 内存使用率',
     mysql_alive: '查询 Mysql 是否存活',
   },
-  empty: '你好！我是夜莺 AI Copilot。我可以帮忙生成查询语句，分析告警事件，生成告警规则等等，试试用自然语言描述你的监控需求吧：）',
+  empty: '你好！我是夜莺 AI Copilot。我可以帮忙生成查询语句，分析告警事件，生成告警规则等等，有什么问题可以帮你吗？',
+  conversation: {
+    new: '新会话',
+    search: '搜索会话...',
+    no_conversations: '暂无历史会话',
+    today: '今天',
+    yesterday: '昨天',
+    this_week: '本周',
+    this_month: '本月',
+    delete_confirm: '确定删除此会话？',
+    delete_ok: '删除',
+    delete_cancel: '取消',
+  },
 };
 
 export default zh_CN;

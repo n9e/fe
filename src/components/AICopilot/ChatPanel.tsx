@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import useSSE from './useSSE';
 import MessageBubble from './MessageBubble';
+import { createConversation, getConversation, addConversationMessages } from './services';
 import type { Message, ChatMessage, QueryGeneratorRequest, ToolCallInfo, DoneResponse } from './types';
 
 const { TextArea } = Input;
@@ -50,16 +51,56 @@ interface Props {
   datasourceId: number;
   databaseName?: string;
   tableName?: string;
+  conversationId?: number;
+  onConversationChange?: (id: number, title: string) => void;
   onApplyQuery?: (query: string) => void;
 }
 
-export default function ChatPanel({ datasourceType, datasourceId, databaseName, tableName, onApplyQuery }: Props) {
+export default function ChatPanel({ datasourceType, datasourceId, databaseName, tableName, conversationId, onConversationChange, onApplyQuery }: Props) {
   const { t } = useTranslation('AICopilot');
   const { sendMessage, cancel, isStreaming } = useSSE();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const assistantRef = useRef<Message | null>(null);
+  const convIdRef = useRef<number | undefined>(conversationId);
+  // Skip next load when conversation was just created internally
+  const skipNextLoadRef = useRef(false);
+
+  // Track conversationId changes
+  useEffect(() => {
+    convIdRef.current = conversationId;
+  }, [conversationId]);
+
+  // Load messages when conversationId changes (only for switching to existing conversations)
+  useEffect(() => {
+    if (skipNextLoadRef.current) {
+      skipNextLoadRef.current = false;
+      return;
+    }
+    if (conversationId) {
+      getConversation(conversationId)
+        .then((res) => {
+          const data = res?.dat;
+          if (data?.messages) {
+            const loaded: Message[] = data.messages.map((m: any) => ({
+              id: `loaded_${m.id}`,
+              role: m.role,
+              content: m.content || '',
+              thinking: m.thinking || '',
+              toolCalls: m.tool_calls ? JSON.parse(m.tool_calls) : undefined,
+              query: m.query || '',
+              explanation: m.explanation || '',
+              error: m.error || '',
+            }));
+            setMessages(loaded);
+          }
+        })
+        .catch(() => {});
+    } else {
+      setMessages([]);
+    }
+  }, [conversationId]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -68,6 +109,52 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
+
+  // Save messages to backend
+  const saveMessages = useCallback(
+    (userMsg: Message, assistantMsg: Message, currentConvId?: number) => {
+      const msgsToSave = [
+        {
+          role: userMsg.role,
+          content: userMsg.content,
+        },
+        {
+          role: assistantMsg.role,
+          content: assistantMsg.content || '',
+          thinking: assistantMsg.thinking || '',
+          tool_calls: assistantMsg.toolCalls ? JSON.stringify(assistantMsg.toolCalls) : '',
+          query: assistantMsg.query || '',
+          explanation: assistantMsg.explanation || '',
+          error: assistantMsg.error || '',
+        },
+      ];
+
+      if (currentConvId) {
+        addConversationMessages(currentConvId, msgsToSave).catch(() => {});
+      } else {
+        // Create a new conversation with the first user message as title
+        const title = userMsg.content.slice(0, 50) + (userMsg.content.length > 50 ? '...' : '');
+        const ctx: Record<string, any> = { datasource_type: datasourceType, datasource_id: datasourceId };
+        if (databaseName) ctx.database_name = databaseName;
+        if (tableName) ctx.table_name = tableName;
+        createConversation({
+          title,
+          context: JSON.stringify(ctx),
+        })
+          .then((res) => {
+            const newConv = res?.dat;
+            if (newConv?.id) {
+              convIdRef.current = newConv.id;
+              skipNextLoadRef.current = true;
+              onConversationChange?.(newConv.id, title);
+              addConversationMessages(newConv.id, msgsToSave).catch(() => {});
+            }
+          })
+          .catch(() => {});
+      }
+    },
+    [datasourceType, datasourceId, databaseName, tableName, onConversationChange],
+  );
 
   const handleSend = useCallback(
     (text?: string) => {
@@ -152,6 +239,8 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
               }
             }
             setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
+            // Save to backend
+            saveMessages(userMsg, assistantRef.current, convIdRef.current);
           }
         },
         onError: (error) => {
@@ -159,11 +248,13 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
             assistantRef.current.isStreaming = false;
             assistantRef.current.error = error;
             setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
+            // Save even on error
+            saveMessages(userMsg, assistantRef.current, convIdRef.current);
           }
         },
       });
     },
-    [inputValue, isStreaming, messages, datasourceType, datasourceId, databaseName, tableName, sendMessage],
+    [inputValue, isStreaming, messages, datasourceType, datasourceId, databaseName, tableName, sendMessage, saveMessages],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

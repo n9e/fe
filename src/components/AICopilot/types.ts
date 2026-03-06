@@ -50,4 +50,13 @@ export interface Message {
   error?: string;
 }
 
+export interface AIConversation {
+  id: number;
+  title: string;
+  user_id: number;
+  context: string; // JSON string, page-specific context
+  created_at: number;
+  updated_at: number;
+}
+
 export const SUPPORTED_DATASOURCE_TYPES = ['prometheus', 'mysql', 'doris', 'ck', 'pgsql'];

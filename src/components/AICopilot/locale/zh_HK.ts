@@ -15,7 +15,19 @@ const zh_HK = {
     memory_usage: '查詢 Host 記憶體使用率',
     mysql_alive: '查詢 Mysql 是否存活',
   },
-  empty: '你好！我是夜鶯 AI Copilot。我可以幫忙生成查詢語句，分析告警事件，生成告警規則等等，試試用自然語言描述你的監控需求吧：）',
+  empty: '你好！我是夜鶯 AI Copilot。我可以幫忙生成查詢語句，分析告警事件，生成告警規則等等，有什麼問題可以幫你嗎？',
+  conversation: {
+    new: '新會話',
+    search: '搜尋會話...',
+    no_conversations: '暫無歷史會話',
+    today: '今天',
+    yesterday: '昨天',
+    this_week: '本週',
+    this_month: '本月',
+    delete_confirm: '確定刪除此會話？',
+    delete_ok: '刪除',
+    delete_cancel: '取消',
+  },
 };
 
 export default zh_HK;

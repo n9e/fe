@@ -15,7 +15,19 @@ const en_US = {
     memory_usage: 'Query host memory usage',
     mysql_alive: 'Check if MySQL is alive',
   },
-  empty: "Hi! I'm Nightingale AI Copilot. I can help generate queries, analyze alert events, create alert rules, and more. Try describing your monitoring needs in natural language :)",
+  empty: "Hi! I'm Nightingale AI Copilot. I can help generate queries, analyze alert events, create alert rules, and more. How can I help you?",
+  conversation: {
+    new: 'New conversation',
+    search: 'Search conversations...',
+    no_conversations: 'No conversations yet',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    this_week: 'This week',
+    this_month: 'This month',
+    delete_confirm: 'Delete this conversation?',
+    delete_ok: 'Delete',
+    delete_cancel: 'Cancel',
+  },
 };
 
 export default en_US;

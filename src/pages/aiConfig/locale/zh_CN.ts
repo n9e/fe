@@ -80,7 +80,7 @@ const zh_CN = {
     tool_name: '工具名称',
     tool_description: '描述',
     server_requirements_title: 'MCP Server 接入说明',
-    server_requirements_desc: '仅支持远程 MCP Server。Server 需满足以下条件之一：无需认证、支持自定义 Authorization Header 认证、或支持 MCP OAuth 规范。',
+    server_requirements_desc: '仅支持远程 MCP Server。Server 需满足以下条件之一：无需认证、支持自定义 Authorization Header 认证。',
   },
 };
 
