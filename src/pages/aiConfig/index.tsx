@@ -21,7 +21,7 @@ export default function AIConfig() {
 
   return (
     <PageLayout title={t('title')}>
-      <div style={{ padding: '0 24px' }}>{content}</div>
+      <div className='n9e' style={{ padding: '16px 24px' }}>{content}</div>
     </PageLayout>
   );
 }

@@ -94,7 +94,9 @@ export default function AgentList() {
           {t('agent.add')}
         </Button>
       </div>
-      <Table rowKey='id' columns={columns} dataSource={list} loading={loading} pagination={false} />
+      <div className='fc-border' style={{ borderRadius: 'var(--fc-radius-md, 6px)', padding: 16 }}>
+        <Table rowKey='id' columns={columns} dataSource={list} loading={loading} pagination={false} />
+      </div>
       <AgentDrawer
         visible={drawerVisible}
         data={editData}
