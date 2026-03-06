@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Switch, Button, Space, message } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { MCPServer, addMCPServer, updateMCPServer } from './services';
 
@@ -47,11 +47,10 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
         description: data.description,
         enabled: data.enabled === 1,
         headers: parseKV(data.headers),
-        env_vars: parseKV(data.env_vars),
       });
     } else if (visible) {
       form.resetFields();
-      form.setFieldsValue({ enabled: true, headers: [], env_vars: [] });
+      form.setFieldsValue({ enabled: true, headers: [] });
     }
   }, [visible, data]);
 
@@ -65,7 +64,7 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
         description: values.description || '',
         enabled: values.enabled ? 1 : 0,
         headers: serializeKV(values.headers || []),
-        env_vars: serializeKV(values.env_vars || []),
+        env_vars: '',
       };
 
       if (isEdit && data) {
@@ -80,31 +79,6 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
     }
   };
 
-  const renderKVList = (name: string, label: string) => (
-    <Form.Item label={label}>
-      <Form.List name={name}>
-        {(fields, { add, remove }) => (
-          <>
-            {fields.map(({ key, name: fieldName, ...restField }) => (
-              <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                <Form.Item {...restField} name={[fieldName, 'key']} style={{ marginBottom: 0 }}>
-                  <Input placeholder={t('mcp.key_placeholder')} style={{ width: 180 }} />
-                </Form.Item>
-                <Form.Item {...restField} name={[fieldName, 'value']} style={{ marginBottom: 0 }}>
-                  <Input placeholder={t('mcp.value_placeholder')} style={{ width: 180 }} />
-                </Form.Item>
-                <MinusCircleOutlined onClick={() => remove(fieldName)} />
-              </Space>
-            ))}
-            <Button type='dashed' onClick={() => add({ key: '', value: '' })} icon={<PlusOutlined />} size='small'>
-              Add
-            </Button>
-          </>
-        )}
-      </Form.List>
-    </Form.Item>
-  );
-
   return (
     <Modal
       title={isEdit ? t('mcp.edit') : t('mcp.add')}
@@ -115,20 +89,64 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
       destroyOnClose
     >
       <Form form={form} layout='vertical'>
-        <Form.Item name='name' label={t('mcp.name')} rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <Form.Item name='name' label={t('mcp.name')} rules={[{ required: true }]} style={{ flex: 1, marginBottom: 16 }}>
+            <Input placeholder={t('mcp.name_placeholder')} />
+          </Form.Item>
+          <Form.Item name='enabled' label={t('mcp.enabled')} valuePropName='checked' style={{ marginBottom: 16 }}>
+            <Switch />
+          </Form.Item>
+        </div>
         <Form.Item name='url' label={t('mcp.url')} rules={[{ required: true }]}>
-          <Input placeholder='Streamable HTTP/SSE URL' />
+          <Input placeholder='https://my.mcp.server.com/mcp' />
         </Form.Item>
-        {renderKVList('headers', t('mcp.headers'))}
-        {renderKVList('env_vars', t('mcp.env_vars'))}
-        <Form.Item name='description' label={t('mcp.description')}>
-          <Input.TextArea rows={2} />
+        <Form.Item label={t('mcp.headers_label')} style={{ marginBottom: 0 }}>
+          <div style={{ color: 'var(--fc-text-3)', fontSize: 12, marginBottom: 8 }}>{t('mcp.headers_tip')}</div>
+          <Form.List name='headers'>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.length > 0 && (
+                  <Space style={{ display: 'flex', marginBottom: 4 }}>
+                    <div style={{ width: 200, fontWeight: 500, fontSize: 12 }}>{t('mcp.header_name')}</div>
+                    <div style={{ width: 200, fontWeight: 500, fontSize: 12 }}>{t('mcp.header_value')}</div>
+                  </Space>
+                )}
+                {fields.map(({ key, name: fieldName, ...restField }) => (
+                  <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
+                    <Form.Item {...restField} name={[fieldName, 'key']} style={{ marginBottom: 0 }}>
+                      <Input placeholder='Authorization' style={{ width: 200 }} />
+                    </Form.Item>
+                    <Form.Item {...restField} name={[fieldName, 'value']} style={{ marginBottom: 0 }}>
+                      <Input placeholder='Bearer <token>' style={{ width: 200 }} />
+                    </Form.Item>
+                    <DeleteOutlined style={{ color: 'var(--fc-text-4)' }} onClick={() => remove(fieldName)} />
+                  </Space>
+                ))}
+                <Button type='dashed' onClick={() => add({ key: '', value: '' })} icon={<PlusOutlined />} size='small'>
+                  {t('mcp.add_header')}
+                </Button>
+              </>
+            )}
+          </Form.List>
         </Form.Item>
-        <Form.Item name='enabled' label={t('mcp.enabled')} valuePropName='checked'>
-          <Switch />
+        <Form.Item name='description' label={t('mcp.description')} style={{ marginTop: 16 }}>
+          <Input.TextArea rows={2} placeholder={t('mcp.description_placeholder')} />
         </Form.Item>
+        <div
+          style={{
+            marginTop: 12,
+            padding: '12px 16px',
+            borderRadius: 'var(--fc-radius-md, 6px)',
+            background: 'var(--fc-fill-1, #f8fafc)',
+            border: '1px solid var(--fc-border-subtle, #f0f0f0)',
+            fontSize: 12,
+            color: 'var(--fc-text-3)',
+            lineHeight: 1.8,
+          }}
+        >
+          <div style={{ fontWeight: 500, color: 'var(--fc-text-2)', marginBottom: 4 }}>{t('mcp.server_requirements_title')}</div>
+          {t('mcp.server_requirements_desc')}
+        </div>
       </Form>
     </Modal>
   );
