@@ -60,14 +60,13 @@ export default function index() {
           </Form.Item>
         </Space>
       </div>
-      <Form.Item label={t('time_zone')} name='time_zone'>
+      <Form.Item label={t('time_zone')} name='time_zone' initialValue='Local' tooltip={t('time_zone_tip')}>
         <Select
           options={_.map(timezones, (item) => {
-            return { label: item, value: item };
+            return { label: item === 'Local' ? `${item} (${t('local_time')})` : item, value: item };
           })}
           showSearch
           optionFilterProp='label'
-          allowClear
         />
       </Form.Item>
       <Form.List name='effective_time'>
@@ -113,7 +112,7 @@ export default function index() {
               const enable_stime = form.getFieldValue(['effective_time', name, 'enable_stime']);
               const enable_etime = form.getFieldValue(['effective_time', name, 'enable_etime']);
               let local_text = '';
-              if (enable_stime && enable_etime && time_zone) {
+              if (enable_stime && enable_etime && time_zone && time_zone !== 'Local') {
                 const local_stime = moment.tz(enable_stime.format('HH:mm'), 'HH:mm', time_zone).local().format('HH:mm');
                 const local_etime = moment.tz(enable_etime.format('HH:mm'), 'HH:mm', time_zone).local().format('HH:mm');
                 local_text = `${local_stime} ~ ${local_etime}`;
