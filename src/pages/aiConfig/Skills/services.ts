@@ -48,7 +48,6 @@ export function importAISkill(formData: FormData) {
   return request('/api/n9e/ai-skills/import', {
     method: RequestMethod.Post,
     data: formData,
-    headers: { 'Content-Type': 'multipart/form-data' },
   });
 }
 
@@ -60,7 +59,6 @@ export function uploadAISkillFile(skillId: number, formData: FormData) {
   return request(`/api/n9e/ai-skill/${skillId}/files`, {
     method: RequestMethod.Post,
     data: formData,
-    headers: { 'Content-Type': 'multipart/form-data' },
   });
 }
 

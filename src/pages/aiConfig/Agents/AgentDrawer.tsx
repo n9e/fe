@@ -154,7 +154,7 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
               ))}
           </Space>
         </div>
-        <Collapse ghost>
+        <Collapse ghost style={{ marginLeft: -16 }}>
           <Collapse.Panel header={t('llm.extra_config')} key='extra'>
             <Form.Item name='temperature' label={t('llm.temperature')}>
               <InputNumber min={0} max={2} step={0.1} style={{ width: '100%' }} />

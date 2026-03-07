@@ -9,7 +9,7 @@ const en_US = {
     llm_config: 'LLM Configuration',
     extensions: 'Extensions',
     coming_soon: 'Coming Soon',
-    is_default: 'Default',
+    is_default: 'Default Agent',
     enabled: 'Enabled',
     add: 'Add Agent',
     edit: 'Edit Agent',

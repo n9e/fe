@@ -9,7 +9,7 @@ const zh_CN = {
     llm_config: '大模型配置',
     extensions: '扩展能力',
     coming_soon: '即将支持',
-    is_default: '默认',
+    is_default: '默认Agent',
     enabled: '启用',
     add: '新增 Agent',
     edit: '编辑 Agent',
