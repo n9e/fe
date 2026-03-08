@@ -407,6 +407,7 @@ export default function index(props: Props) {
                   )}
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
+                      showQuickJumper
                       size='small'
                       total={data?.total}
                       current={serviceParams.current}
