@@ -616,6 +616,10 @@ const zh_HK = {
       okText: '儲存',
     },
     noPanelToPaste: '沒有可粘貼的圖表',
+    importPanel: {
+      invalidJSON: '圖表配置 JSON 格式不正確',
+      placeholder: '請粘貼圖表配置 JSON',
+    },
   },
   settings: {
     graphTooltip: {
@@ -648,6 +652,7 @@ const zh_HK = {
     iframe: '內嵌文檔 (iframe)',
     row: '分組',
     pastePanel: '粘貼圖表',
+    importPanel: '導入圖表配置',
   },
   calcs: {
     lastNotNull: '最後一個非空值',

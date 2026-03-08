@@ -609,6 +609,10 @@ const en_US = {
       okText: 'Save',
     },
     noPanelToPaste: 'No panel to paste',
+    importPanel: {
+      invalidJSON: 'Invalid panel config JSON',
+      placeholder: 'Paste panel config JSON here',
+    },
   },
   settings: {
     graphTooltip: {
@@ -641,6 +645,7 @@ const en_US = {
     iframe: 'Iframe',
     row: 'Row',
     pastePanel: 'Paste panel',
+    importPanel: 'Import panel config',
   },
   calcs: {
     lastNotNull: 'Last not null value',

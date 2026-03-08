@@ -392,6 +392,15 @@ export default function DetailV2(props: IProps) {
                     setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
                   }
                 }}
+                onImportPanel={(panelConfig) => {
+                  const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelConfig, id: uuidv4() }, 'chart', false);
+                  setPanels(newPanels);
+                  scrollToLastPanel(newPanels);
+                  handleUpdateDashboardConfigs(dashboard.id, {
+                    ...dashboard,
+                    configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                  });
+                }}
                 routerPromptRef={routerPromptRef}
                 hideGoBack={hideGoBack}
                 hideGoList={hideGoList}
