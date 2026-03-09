@@ -142,6 +142,7 @@ const ja_JP = {
     loading_tip: 'このページを閉じないでください。新しいクエリが必要な場合は、',
     loading_new_tab: '新しいタブを開いて',
     loading_tip_suffix: 'ログ検索を行ってください',
+    sampled_tip: 'ログ数が多すぎるため、現在の集約結果はサンプルログに基づいています',
   },
   view_placeholder: 'ログビュー',
 };

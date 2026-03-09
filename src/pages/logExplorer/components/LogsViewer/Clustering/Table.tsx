@@ -1,6 +1,8 @@
 // 日志聚类，目前仅支持了doris和es
 import React, { useState, useEffect } from 'react';
-import { Space, Tag, Select } from 'antd';
+import { Space, Tag, Select, Divider, Button } from 'antd';
+import IconFont from '@/components/IconFont';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { BarChartOutlined, SyncOutlined } from '@ant-design/icons';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +10,9 @@ import _ from 'lodash';
 import { NAME_SPACE } from '../../../constants';
 import getTextWidth from '@/utils/getTextWidth';
 import { getLogClustering, ClusteringItem, getQueryClustering, getLogPattern } from '../../../services';
-import { getGlobalConfig } from '@/plus/components/LogDownload/service';
 import { OnValueFilterParams, OptionsType } from '../types';
 import { Field } from '@/plugins/doris/ExplorerNG/types';
 import RDGTable from '../components/Table';
-const DEFAULT_MAX_LOG_COUNT = 100000;
 import { DatasourceCateEnum } from '@/utils/constant';
 import { PatternPopover, ConstPopover } from './Popover';
 interface Props {
@@ -44,6 +44,7 @@ export default function TableCpt(props: Props) {
   const [scope, setScope] = useState<'current' | 'full'>('current');
   const [timeCost, setTimeCost] = useState<number>(0);
   const FIELD_CACHE_PREFIX = 'log_clustering_field__';
+  const [isSampled, setIsSampled] = useState<boolean>(false);
 
   const getDefaultField = (fields: Field[]) => {
     const textFields = fields.filter((item) => item.type === 'text' && item.indexable);
@@ -76,15 +77,9 @@ export default function TableCpt(props: Props) {
     }
   }, [fieldCacheKey]);
 
-  const [maxLogCount, setMaxLogCount] = useState<number>(DEFAULT_MAX_LOG_COUNT);
   const id_key = 'uuid'; // 数据唯一标识字段
   const [data, setData] = useState<ClusteringItem[]>([]);
   const [fullAggregateLoading, setFullAggregateLoading] = useState(false);
-  useEffect(() => {
-    getGlobalConfig('log_clustering_max').then((res) => {
-      setMaxLogCount(isNaN(Number(res)) || Number(res) === 0 ? DEFAULT_MAX_LOG_COUNT : Number(res));
-    });
-  }, []);
 
   useEffect(() => {
     if (scope === 'current') {
@@ -94,16 +89,9 @@ export default function TableCpt(props: Props) {
         });
       }
     } else if (scope === 'full') {
-      if (logTotal > maxLogCount) return;
       handleFullAggregation(field);
     }
   }, [logs, logsHash]);
-
-  useEffect(() => {
-    if (logTotal > maxLogCount) {
-      setScope('current');
-    }
-  }, [logTotal]);
 
   useEffect(() => {
     setPatternHistogramState({ visible: false });
@@ -116,6 +104,7 @@ export default function TableCpt(props: Props) {
         setData(res.items);
         setScope('full');
         setTimeCost(res.time_cost);
+        setIsSampled(res.is_sampled);
       })
       .finally(() => {
         setFullAggregateLoading(false);
@@ -156,31 +145,21 @@ export default function TableCpt(props: Props) {
             <Space size={'small'}>
               {row.parts.map((part) => {
                 if (part.type === 'pattern') {
-                  if (scope === 'full') {
-                    return (
-                      <PatternPopover key={part.part_id} uuid={row.uuid} partId={part.part_id} title={part.data}>
-                        <Tag className='mr-0 cursor-pointer' color='purple'>
-                          {part.data}
-                        </Tag>
-                      </PatternPopover>
-                    );
-                  } else {
-                    return (
-                      <Tag className='mr-0' color='purple'>
+                  return (
+                    <PatternPopover key={part.part_id} uuid={row.uuid} partId={part.part_id} title={part.data}>
+                      <Tag className='mr-0 cursor-pointer' color='purple'>
                         {part.data}
                       </Tag>
-                    );
-                  }
+                    </PatternPopover>
+                  );
+
                 } else {
-                  if (scope === 'full') {
-                    return (
-                      <ConstPopover key={part.part_id} value={part.data} field={field} cate={cate} onValueFilter={props.onValueFilter}>
-                        <span className='cursor-pointer hover:underline'>{part.data}</span>
-                      </ConstPopover>
-                    );
-                  } else {
-                    return <span>{part.data}</span>;
-                  }
+                  return (
+                    <ConstPopover key={part.part_id} value={part.data} field={field} cate={cate} onValueFilter={props.onValueFilter}>
+                      <span className='cursor-pointer hover:underline'>{part.data}</span>
+                    </ConstPopover>
+                  );
+
                 }
               })}
             </Space>
@@ -306,12 +285,11 @@ export default function TableCpt(props: Props) {
                 <div style={{ padding: '2px 0' }}>
                   <div>{t('clustering.scope_full')}</div>
                   <div style={{ color: 'var(--fc-text-3)', fontSize: 12 }}>
-                    {logTotal > maxLogCount ? t('clustering.scope_full_desc_disable_prefix') : t('clustering.scope_full_desc_prefix')}{' '}
+                    {t('clustering.scope_full_desc_prefix')}{' '}
                     <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span> {t('clustering.scope_full_desc_suffix')}
                   </div>
                 </div>
               ),
-              disabled: logTotal > maxLogCount,
             },
           ]}
           onChange={(value: 'current' | 'full') => {
@@ -328,6 +306,21 @@ export default function TableCpt(props: Props) {
           dropdownMatchSelectWidth={false}
         />
       </div>
+      <Button
+        className='document-open-button'
+        type='link'
+        size='small'
+        icon={<IconFont type='icon-ic_book_one' />}
+        onClick={() =>
+          DocumentDrawer({
+            title: t('common:page_help'),
+            type: 'iframe',
+            documentPath: '/docs/content/flashcat/log/discover/log-clustering/',
+          })
+        }
+      >
+        {t('说明文档')}
+      </Button>
     </Space>
   );
 
@@ -338,6 +331,10 @@ export default function TableCpt(props: Props) {
         createPortal(
           scope === 'full' ? (
             <Space size='small'>
+              {isSampled ? <>
+                {t('clustering.sampled_tip')}
+                <Divider type='vertical' />
+              </> : null}
               <span>{t('clustering.log_count')}</span>
               <span>{logTotal?.toLocaleString()}</span>
               <span>{t('clustering.duration')}</span>
