@@ -35,6 +35,10 @@ export function testMCPServer(id: number) {
   return request(`/api/n9e/mcp-server/${id}/test`, { method: RequestMethod.Post }).then((res) => res.dat);
 }
 
+export function testMCPServerConfig(data: { url: string; headers: string }) {
+  return request('/api/n9e/mcp-servers/test', { method: RequestMethod.Post, data }).then((res) => res.dat);
+}
+
 export function getMCPServerTools(id: number) {
   return request(`/api/n9e/mcp-server/${id}/tools`, { method: RequestMethod.Get }).then((res) => res.dat ?? []);
 }

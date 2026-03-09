@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, Switch, Button, Space, message } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Modal, Form, Input, Switch, Button, Space, Tag, Spin, Table, message } from 'antd';
+import { PlusOutlined, DeleteOutlined, ApiOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { MCPServer, addMCPServer, updateMCPServer } from './services';
+import { MCPServer, addMCPServer, updateMCPServer, testMCPServer, testMCPServerConfig, getMCPServerTools } from './services';
 
 interface Props {
   visible: boolean;
@@ -37,6 +37,9 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
   const { t } = useTranslation('aiConfig');
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [testLoading, setTestLoading] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; duration_ms?: number; error?: string } | null>(null);
+  const [tools, setTools] = useState<{ name: string; description: string }[]>([]);
   const isEdit = !!data;
 
   useEffect(() => {
@@ -52,7 +55,42 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
       form.resetFields();
       form.setFieldsValue({ enabled: true, headers: [] });
     }
+    if (visible) {
+      setTestResult(null);
+      setTools([]);
+    }
   }, [visible, data]);
+
+  const handleTest = async () => {
+    const url = form.getFieldValue('url');
+    if (!url) {
+      form.validateFields(['url']);
+      return;
+    }
+    setTestLoading(true);
+    setTestResult(null);
+    setTools([]);
+    try {
+      let result;
+      if (isEdit && data) {
+        result = await testMCPServer(data.id);
+      } else {
+        const headers = serializeKV(form.getFieldValue('headers') || []);
+        result = await testMCPServerConfig({ url, headers });
+      }
+      setTestResult(result);
+      if (result.success && isEdit && data) {
+        try {
+          const toolsList = await getMCPServerTools(data.id);
+          setTools(toolsList);
+        } catch {}
+      }
+    } catch (err: any) {
+      setTestResult({ success: false, error: err.message || 'Test failed' });
+    } finally {
+      setTestLoading(false);
+    }
+  };
 
   const handleOk = async () => {
     try {
@@ -84,9 +122,17 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
       title={isEdit ? t('mcp.edit') : t('mcp.add')}
       visible={visible}
       onCancel={onClose}
-      onOk={handleOk}
-      confirmLoading={loading}
       destroyOnClose
+      width={640}
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div><Button icon={<ApiOutlined />} onClick={handleTest} loading={testLoading}>{t('mcp.test')}</Button></div>
+          <Space>
+            <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
+            <Button type='primary' onClick={handleOk} loading={loading}>{t('common:btn.save')}</Button>
+          </Space>
+        </div>
+      }
     >
       <Form form={form} layout='vertical'>
         <div style={{ display: 'flex', gap: 16 }}>
@@ -147,6 +193,38 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
           <div style={{ fontWeight: 500, color: 'var(--fc-text-2)', marginBottom: 4 }}>{t('mcp.server_requirements_title')}</div>
           {t('mcp.server_requirements_desc')}
         </div>
+        {testLoading && (
+          <div style={{ textAlign: 'center', padding: 24 }}>
+            <Spin />
+          </div>
+        )}
+        {testResult && !testLoading && (
+          <div style={{ marginTop: 12 }}>
+            <Space style={{ marginBottom: tools.length > 0 ? 12 : 0 }}>
+              {testResult.success ? <Tag color='success'>{t('mcp.test_success')}</Tag> : <Tag color='error'>{t('mcp.test_failed')}</Tag>}
+              {testResult.duration_ms != null && <span style={{ fontSize: 12, color: 'var(--fc-text-3)' }}>{testResult.duration_ms}ms</span>}
+            </Space>
+            {testResult.error && <div style={{ color: '#ff4d4f', marginTop: 4, fontSize: 12 }}>{testResult.error}</div>}
+            {tools.length > 0 && (
+              <>
+                <div style={{ fontWeight: 500, marginBottom: 8, fontSize: 12 }}>
+                  {t('mcp.tools')} ({tools.length})
+                </div>
+                <Table
+                  size='small'
+                  dataSource={tools}
+                  columns={[
+                    { title: t('mcp.tool_name'), dataIndex: 'name', key: 'name', width: 200 },
+                    { title: t('mcp.tool_description'), dataIndex: 'description', key: 'description', ellipsis: true },
+                  ]}
+                  pagination={false}
+                  rowKey='name'
+                  scroll={{ y: 200 }}
+                />
+              </>
+            )}
+          </div>
+        )}
       </Form>
     </Modal>
   );
