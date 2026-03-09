@@ -14,8 +14,10 @@ const en_US = {
     use_case_options: {
       chat: 'Chat',
     },
-    extensions: 'Extensions',
-    coming_soon: 'Coming Soon',
+    skill_ids: 'Skills',
+    skill_select_placeholder: 'Select skills to associate...',
+    mcp_server_ids: 'MCP Servers',
+    mcp_select_placeholder: 'Select MCP servers to associate...',
     enabled: 'Enabled',
     add: 'Add Agent',
     edit: 'Edit Agent',

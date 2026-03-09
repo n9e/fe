@@ -14,8 +14,10 @@ const ja_JP = {
     use_case_options: {
       chat: 'チャット',
     },
-    extensions: '拡張機能',
-    coming_soon: '近日公開',
+    skill_ids: 'スキル',
+    skill_select_placeholder: '関連するスキルを選択...',
+    mcp_server_ids: 'MCP サーバー',
+    mcp_select_placeholder: '関連する MCP サーバーを選択...',
     enabled: '有効',
     add: 'エージェント追加',
     edit: 'エージェント編集',

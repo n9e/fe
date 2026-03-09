@@ -1,8 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Drawer, Form, Input, Select, Switch, Space, Button, Tag, Tooltip, message } from 'antd';
+import { Drawer, Form, Input, Select, Switch, Space, Button, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AIAgent, addAgent, updateAgent } from './services';
 import { getLLMConfigs, AILLMConfig } from '../LLMConfigs/services';
+import { getAISkills, AISkill } from '../Skills/services';
+import { getMCPServers, MCPServer } from '../MCPServers/services';
+import LLMConfigDrawer from '../LLMConfigs/LLMConfigDrawer';
+
+// Parse comma-separated ID string to number array
+function parseIds(str?: string): number[] {
+  if (!str) return [];
+  return str
+    .split(',')
+    .map((s) => Number(s.trim()))
+    .filter((n) => n > 0);
+}
+
+// Convert number array to comma-separated string
+function joinIds(ids?: number[]): string {
+  if (!ids || ids.length === 0) return '';
+  return ids.join(',');
+}
 
 interface Props {
   visible: boolean;
@@ -16,11 +35,16 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [llmConfigs, setLLMConfigs] = useState<AILLMConfig[]>([]);
+  const [skills, setSkills] = useState<AISkill[]>([]);
+  const [mcpServers, setMCPServers] = useState<MCPServer[]>([]);
+  const [llmDrawerVisible, setLLMDrawerVisible] = useState(false);
   const isEdit = !!data;
 
   useEffect(() => {
     if (visible) {
       getLLMConfigs().then((configs) => setLLMConfigs(configs));
+      getAISkills().then((list) => setSkills(list));
+      getMCPServers().then((list) => setMCPServers(list));
     }
   }, [visible]);
 
@@ -31,6 +55,8 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
         enabled: data.enabled === 1,
         use_case: data.use_case || undefined,
         llm_config_id: data.llm_config_id || undefined,
+        skill_ids: parseIds(data.skill_ids),
+        mcp_server_ids: parseIds(data.mcp_server_ids),
       });
     } else if (visible) {
       form.resetFields();
@@ -48,6 +74,8 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
         description: values.description || '',
         use_case: values.use_case || '',
         llm_config_id: values.llm_config_id || 0,
+        skill_ids: joinIds(values.skill_ids),
+        mcp_server_ids: joinIds(values.mcp_server_ids),
         enabled: values.enabled ? 1 : 0,
       };
 
@@ -99,9 +127,16 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
           <Switch />
         </Form.Item>
 
-        {/* LLM Configuration - Dropdown */}
-        <div style={{ marginBottom: 8, marginTop: 8, fontWeight: 600, fontSize: 14 }}>{t('agent.llm_config')}</div>
-        <Form.Item name='llm_config_id' label={t('agent.llm_select')} rules={[{ required: true, message: t('agent.llm_select_required') }]}>
+        <Form.Item
+          name='llm_config_id'
+          label={
+            <Space>
+              {t('agent.llm_select')}
+              <PlusOutlined style={{ cursor: 'pointer', color: '#1890ff' }} onClick={() => setLLMDrawerVisible(true)} />
+            </Space>
+          }
+          rules={[{ required: true, message: t('agent.llm_select_required') }]}
+        >
           <Select placeholder={t('agent.llm_select_placeholder')} allowClear showSearch optionFilterProp='children'>
             {llmConfigs
               .filter((c) => c.enabled === 1)
@@ -113,29 +148,44 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
           </Select>
         </Form.Item>
 
-        {/* Phase 2: Skill / MCP / IM references */}
-        <div style={{ marginBottom: 8, marginTop: 16, fontWeight: 600, fontSize: 14 }}>
-          {t('agent.extensions')}
-          <Tag style={{ marginLeft: 8 }}>{t('agent.coming_soon')}</Tag>
-        </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <Tooltip title={t('agent.coming_soon')}>
-            <Button disabled style={{ flex: 1 }}>
-              + Skill
-            </Button>
-          </Tooltip>
-          <Tooltip title={t('agent.coming_soon')}>
-            <Button disabled style={{ flex: 1 }}>
-              + MCP
-            </Button>
-          </Tooltip>
-          <Tooltip title={t('agent.coming_soon')}>
-            <Button disabled style={{ flex: 1 }}>
-              + IM
-            </Button>
-          </Tooltip>
-        </div>
+        <Form.Item name='skill_ids' label={t('agent.skill_ids')}>
+          <Select mode='multiple' placeholder={t('agent.skill_select_placeholder')} allowClear showSearch optionFilterProp='children'>
+            {skills
+              .filter((s) => s.enabled === 1)
+              .map((skill) => (
+                <Select.Option key={skill.id} value={skill.id}>
+                  {skill.name}
+                </Select.Option>
+              ))}
+          </Select>
+        </Form.Item>
+        <Form.Item name='mcp_server_ids' label={t('agent.mcp_server_ids')}>
+          <Select mode='multiple' placeholder={t('agent.mcp_select_placeholder')} allowClear showSearch optionFilterProp='children'>
+            {mcpServers
+              .filter((s) => s.enabled === 1)
+              .map((server) => (
+                <Select.Option key={server.id} value={server.id}>
+                  {server.name}
+                </Select.Option>
+              ))}
+          </Select>
+        </Form.Item>
       </Form>
+      <LLMConfigDrawer
+        visible={llmDrawerVisible}
+        onClose={() => setLLMDrawerVisible(false)}
+        onOk={() => {
+          setLLMDrawerVisible(false);
+          getLLMConfigs().then((configs) => {
+            setLLMConfigs(configs);
+            // Auto-select the newly created LLM (latest by id)
+            const latest = configs.filter((c) => c.enabled === 1).sort((a, b) => b.id - a.id)[0];
+            if (latest) {
+              form.setFieldsValue({ llm_config_id: latest.id });
+            }
+          });
+        }}
+      />
     </Drawer>
   );
 }

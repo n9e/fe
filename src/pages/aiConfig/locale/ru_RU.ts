@@ -14,8 +14,10 @@ const ru_RU = {
     use_case_options: {
       chat: 'Чат',
     },
-    extensions: 'Расширения',
-    coming_soon: 'Скоро',
+    skill_ids: 'Навыки',
+    skill_select_placeholder: 'Выберите навыки для связывания...',
+    mcp_server_ids: 'MCP Серверы',
+    mcp_select_placeholder: 'Выберите MCP серверы для связывания...',
     enabled: 'Включен',
     add: 'Добавить агента',
     edit: 'Редактировать агента',

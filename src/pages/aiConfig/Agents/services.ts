@@ -13,6 +13,9 @@ export interface AIAgent {
   api_key: string;
   model: string;
   extra_config: string;
+  // Extensions
+  skill_ids: string;
+  mcp_server_ids: string;
   // Status
   is_default: number;
   enabled: number;
