@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Drawer, Form, Input, Select, Switch, Space, Button, message } from 'antd';
+import { Drawer, Form, Input, Select, Switch, Space, Button, Row, Col, Divider, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AIAgent, addAgent, updateAgent } from './services';
@@ -8,7 +8,6 @@ import { getAISkills, AISkill } from '../Skills/services';
 import { getMCPServers, MCPServer } from '../MCPServers/services';
 import LLMConfigDrawer from '../LLMConfigs/LLMConfigDrawer';
 
-// Parse comma-separated ID string to number array
 function parseIds(str?: string): number[] {
   if (!str) return [];
   return str
@@ -17,7 +16,6 @@ function parseIds(str?: string): number[] {
     .filter((n) => n > 0);
 }
 
-// Convert number array to comma-separated string
 function joinIds(ids?: number[]): string {
   if (!ids || ids.length === 0) return '';
   return ids.join(',');
@@ -99,7 +97,7 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
       destroyOnClose
       width={600}
       footer={
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
             <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
             <Button type='primary' onClick={handleOk} loading={loading}>
@@ -110,22 +108,28 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
       }
     >
       <Form form={form} layout='vertical'>
-        {/* Basic Info */}
-        <div style={{ marginBottom: 8, fontWeight: 600, fontSize: 14 }}>{t('agent.basic_info')}</div>
-        <Form.Item name='name' label={t('agent.name')} rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item name='description' label={t('agent.description')}>
+        <Row gutter={16}>
+          <Col span={16}>
+            <Form.Item name='name' label={t('agent.name')} rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item name='use_case' label={t('agent.use_case')} rules={[{ required: true }]}>
+              <Select>
+                <Select.Option value='chat'>{t('agent.use_case_options.chat')}</Select.Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Form.Item name='description' label={t('agent.description')} style={{ marginBottom: 12 }}>
           <Input.TextArea rows={2} placeholder={t('agent.description_placeholder')} />
         </Form.Item>
-        <Form.Item name='use_case' label={t('agent.use_case')} rules={[{ required: true }]}>
-          <Select>
-            <Select.Option value='chat'>{t('agent.use_case_options.chat')}</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name='enabled' label={t('agent.enabled')} valuePropName='checked'>
+        <Form.Item name='enabled' label={t('agent.enabled')} valuePropName='checked' style={{ marginBottom: 0 }}>
           <Switch />
         </Form.Item>
+
+        <Divider style={{ margin: '16px 0' }} />
 
         <Form.Item
           name='llm_config_id'
@@ -178,7 +182,6 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
           setLLMDrawerVisible(false);
           getLLMConfigs().then((configs) => {
             setLLMConfigs(configs);
-            // Auto-select the newly created LLM (latest by id)
             const latest = configs.filter((c) => c.enabled === 1).sort((a, b) => b.id - a.id)[0];
             if (latest) {
               form.setFieldsValue({ llm_config_id: latest.id });
