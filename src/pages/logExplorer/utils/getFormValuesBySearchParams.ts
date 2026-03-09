@@ -210,6 +210,33 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         };
       }
     }
+    if (data_source_name === DatasourceCateEnum.tencentCLS) {
+      const mode = _.get(params, 'mode');
+      const submode = _.get(params, 'submode');
+      const logNamespace = _.get(params, 'logset');
+      const logSource = _.get(params, 'topic');
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
+      const timeKey = _.get(params, 'timeKey') ?? '';
+      if (logNamespace && logSource) {
+        return {
+          ...formValues,
+          query: {
+            range,
+            mode,
+            submode,
+            logNamespace,
+            logSource,
+            query,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              timeKey,
+            },
+          },
+        };
+      }
+    }
   }
   return undefined;
 }
@@ -291,6 +318,17 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.submode = formValues.query?.submode;
     query.group_id = formValues.query?.group_id;
     query.stream_id = formValues.query?.stream_id;
+    query.query = formValues.query?.query;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
+    query.timeKey = formValues.query?.keys?.timeKey;
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.tencentCLS) {
+    query.mode = formValues.query?.mode;
+    query.submode = formValues.query?.submode;
+    query.logset = formValues.query?.logNamespace;
+    query.topic = formValues.query?.logSource;
     query.query = formValues.query?.query;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
