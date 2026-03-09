@@ -25,7 +25,12 @@ export const getLogClustering = (cate: DatasourceCateEnum, datasource_id: number
   }).then((res) => res.data.items);
 };
 
-export const getQueryClustering = (cate: DatasourceCateEnum, datasource_id: number, query: string, by: string): Promise<{ items: ClusteringItem[]; time_cost: number }> => {
+export const getQueryClustering = (
+  cate: DatasourceCateEnum,
+  datasource_id: number,
+  query: string,
+  by: string,
+): Promise<{ items: ClusteringItem[]; time_cost: number; is_sampled: boolean }> => {
   return request('/api/fc-model/log-clusting/query', {
     method: RequestMethod.Post,
     data: {

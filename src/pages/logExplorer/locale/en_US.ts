@@ -150,6 +150,7 @@ const en_US = {
     loading_tip: 'Please do not close this page. For a new query, ',
     loading_new_tab: 'open a new tab',
     loading_tip_suffix: ' for log search',
+    sampled_tip: 'Log count is too large, the current clustering result is based on sampled logs',
   },
   view_placeholder: 'Log View',
 };
