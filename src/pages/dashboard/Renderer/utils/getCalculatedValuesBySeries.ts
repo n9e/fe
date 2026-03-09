@@ -15,8 +15,9 @@
  *
  */
 import _ from 'lodash';
-import valueFormatter from './valueFormatter';
+import stringToRegex from '../../Variables/utils/stringToRegex';
 import { IValueMapping, IThresholds, IOverride } from '../../types';
+import valueFormatter from './valueFormatter';
 import getSerieName from './getSerieName';
 
 const getValueAndToNumber = (value: any[]) => {
@@ -47,7 +48,10 @@ export const getSerieTextObj = (
       return false;
     } else {
       if (type === 'textValue') {
-        return value === match?.textValue;
+        if (value === match?.textValue) return true;
+        const reg = stringToRegex(match?.textValue);
+        if (reg && reg.test(value as string)) return true;
+        return false;
       }
       const toNumberValue = _.toNumber(value) as number;
       if (type === 'special') {
@@ -121,7 +125,10 @@ export const getMappedTextObj = (textValue: string, valueMappings?: IValueMappin
     const matchedValueMapping = _.find(valueMappings, (item: any) => {
       const { type, match } = item;
       if (type === 'textValue') {
-        return textValue === match?.textValue;
+        if (textValue === match?.textValue) return true;
+        const reg = stringToRegex(match?.textValue);
+        if (reg && reg.test(textValue)) return true;
+        return false;
       }
       return false;
     });

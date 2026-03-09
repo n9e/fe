@@ -47,8 +47,21 @@ export function mappingsToFullFields(
   const fields: Field[] = [];
   _.forEach(mappings, (item: any) => {
     function loop(mappings, prefix = '') {
-      // mappings?.doc?.properties 为了兼容 6.x 版本接口
-      _.forEach(mappings?.doc?.properties ?? mappings?._doc?.properties ?? mappings?.properties, (item, key) => {
+      // mappings?.doc?.properties 兼容 6.x 版本接口
+      // mappings?.properties 兼容 7.x 版本（过渡版本，这个版本废弃了多文档类型）
+      // mappings?._doc?.properties 兼容 8.x 版本
+      let properties = mappings?.doc?.properties ?? mappings?._doc?.properties ?? mappings?.properties;
+      // 这里还要兼容 mappings?.${document_type}?.properties 自定义文档类型的情况
+      if (!properties) {
+        const customType = Object.keys(mappings || {}).find((key) => key !== 'doc' && key !== '_doc' && key !== 'properties');
+        if (customType) {
+          if (mappings[customType]?.properties) {
+            properties = mappings[customType].properties;
+          }
+        }
+      }
+
+      _.forEach(properties, (item, key) => {
         if (item.type) {
           if (options.includeSubFields && item.type === 'text' && item.fields) {
             fields.push({

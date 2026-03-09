@@ -221,8 +221,13 @@ export default function index() {
                     render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
                   },
                   {
-                    title: t('common:table.update_by'),
+                    title: t('common:table.username'),
                     dataIndex: 'update_by',
+                    width: 100,
+                  },
+                  {
+                    title: t('common:table.nickname'),
+                    dataIndex: 'update_by_nickname',
                     width: 100,
                   },
                   {

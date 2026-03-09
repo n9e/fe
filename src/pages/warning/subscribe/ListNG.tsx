@@ -232,9 +232,14 @@ const Subscribe = (props: Props) => {
         },
       },
       {
-        title: t('common:table.create_by'),
+        title: t('common:table.username'),
         ellipsis: true,
         dataIndex: 'update_by',
+      },
+      {
+        title: t('common:table.nickname'),
+        ellipsis: true,
+        dataIndex: 'update_by_nickname',
       },
     ],
     readonly

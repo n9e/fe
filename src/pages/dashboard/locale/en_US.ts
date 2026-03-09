@@ -586,6 +586,8 @@ const en_US = {
     options_max_data_points_tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
     options_time: 'Time',
     options_time_tip: 'Specify a custom time range for the query, leave blank to use the dashboard time range',
+    copy_query: 'Copy query',
+    hide_response: 'Hide response data',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',

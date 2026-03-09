@@ -122,7 +122,8 @@ export default function Content() {
       !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token', '/alert-aggr-events'], location.pathname) &&
       !location.pathname.includes('/settings/datasource/edit/') &&
       !location.pathname.includes('/settings/infrastructure/add') &&
-      !location.pathname.includes('/settings/source/')
+      !location.pathname.includes('/settings/source/') &&
+      !location.pathname.includes('/403')
     ) {
       if (profile?.roles.indexOf('Admin') === -1) {
         // 如果没有权限则重定向到 403 页面

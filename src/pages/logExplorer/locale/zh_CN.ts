@@ -115,6 +115,7 @@ const zh_CN = {
     stack_group_by_tip: '以此字段值展示堆叠趋势图',
     collapse: '收起',
     expand: '展开',
+    copy_field_value: '拷贝字段值',
   },
   clustering: {
     count: '数量',

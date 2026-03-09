@@ -609,6 +609,8 @@ const zh_CN = {
     options_max_data_points_tip: '每条曲线最多的点数，默认为面板宽度（新增时默认为 240）。用于计算 step = (end - start) / maxDataPoints',
     options_time: '查询时间范围',
     options_time_tip: '可指定查询时间范围，默认为仪表盘全局时间范围',
+    copy_query: '复制查询',
+    hide_response: '隐藏查询结果',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',

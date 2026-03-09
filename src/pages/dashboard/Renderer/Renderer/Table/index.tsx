@@ -376,15 +376,15 @@ function TableCpt(props: IProps, ref: any) {
                   '__field.name': data.name,
                   '__field.value': data.value,
                 };
-                _.forEach(data.metric, (value, key) => {
-                  scopedVars[`__field.labels.${key}`] = value;
-                });
                 if (displayMode === 'labelValuesToRows' && aggrDimension) {
                   data.metric = {};
                   _.forEach(getColumnsKeys(calculatedValues), (item) => {
                     data.metric[item] = record[item];
                   });
                 }
+                _.forEach(data.metric, (value, key) => {
+                  scopedVars[`__field.labels.${key}`] = value;
+                });
                 return (
                   <a
                     key={idx}

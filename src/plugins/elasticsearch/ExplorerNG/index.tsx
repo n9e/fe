@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { Form } from 'antd';
 import moment from 'moment';
 import { useGetState } from 'ahooks';
 
+import { CommonStateContext } from '@/App';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplorer/types';
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export default function index(props: Props) {
+  const { esIndexMode } = useContext(CommonStateContext);
   const { disabled, defaultFormValuesControl, renderCommonSettings, isOpenSearch } = props;
 
   const form = Form.useFormInstance();
@@ -64,8 +66,8 @@ export default function index(props: Props) {
       form.validateFields().then((values) => {
         const queryValues = values.query;
 
-        if (!intervalFixedRef.current) {
-          const { start, end } = parseRange(values.query.range);
+        if (!intervalFixedRef.current && queryValues.range) {
+          const { start, end } = parseRange(queryValues.range);
           const newInterval = calcInterval(moment(start), moment(end));
           setInterval(newInterval);
         }
@@ -75,7 +77,7 @@ export default function index(props: Props) {
           defaultFormValuesControl.setDefaultFormValues({
             datasourceCate: values.datasourceCate,
             datasourceValue: values.datasourceValue,
-            query: values.query,
+            query: queryValues,
           });
         }
 
@@ -154,7 +156,7 @@ export default function index(props: Props) {
             {renderCommonSettings({
               getDefaultQueryValues: (queryValues: Record<string, any>) => {
                 return {
-                  mode: queryValues.mode || 'indices',
+                  mode: queryValues.mode || (esIndexMode !== 'all' ? esIndexMode : 'indices'),
                   syntax: queryValues.syntax || 'kuery',
                 };
               },
@@ -182,7 +184,7 @@ export default function index(props: Props) {
               }}
               onIndexDataChange={setIndexData}
               handleValueFilter={handleValueFilter}
-              requestParams={{ from: (serviceParams.current - 1) * serviceParams.pageSize, range: rangeRef.current, limit: serviceParams.pageSize }}
+              requestParams={{ from: (serviceParams.current - 1) * serviceParams.pageSize, range: rangeRef.current, limit: serviceParams.pageSize, reverse: serviceParams.reverse }}
               isOpenSearch={isOpenSearch}
             />
           </SideBar>

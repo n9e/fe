@@ -104,6 +104,18 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
               {t('common:btn.copy')}
             </Space>
           </li>
+          <li
+            className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+            onClick={() => {
+              setPopoverVisible(false);
+              copy2ClipBoard(fieldValue);
+            }}
+          >
+            <Space>
+              <CopyOutlined />
+              {t('logs.copy_field_value')}
+            </Space>
+          </li>
           {indexInfo.isIndex && (
             <>
               {segmented && (

@@ -93,7 +93,7 @@ export default function Prometheus(props: IProps) {
 
   return (
     <PromGraph
-      key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
+      // key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
       type={query.mode as IMode}
       defaultType={defaultType}
       defaultTime={defaultTimeState}

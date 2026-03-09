@@ -57,6 +57,7 @@ const ja_JP = {
     audit_log: '監査ログ',
     alert_servers: 'アラートエンジン',
     about: '製品について',
+    license_management: 'ライセンス管理',
   },
 };
 

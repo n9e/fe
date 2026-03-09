@@ -136,6 +136,10 @@ export default function index(props: IProps) {
     }
   }, [type]);
 
+  useEffect(() => {
+    setValue(promQL);
+  }, [promQL]);
+
   return (
     <div className='prom-graph-container'>
       {headerExtra && globalOperates.enabled ? (

@@ -83,7 +83,7 @@ const ja_JP = {
     host: 'マシン',
     error_msg: 'エラー',
     username: 'ユーザー名',
-    nickname: '表示名',
+    nickname: 'ユーザーニックネーム',
   },
   datasource: {
     prod: '監視タイプ',

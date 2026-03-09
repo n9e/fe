@@ -45,7 +45,7 @@ export default function index(props: MonacoEditorPromQLProps) {
   const { t } = useTranslation();
   const { darkMode: appDarkMode } = useContext(CommonStateContext);
   // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底；无痕第一次登录时 兜不住，再拿body上的classname来兜底一下
-  const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
+  const darkMode = appDarkMode ?? (localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark'));
   const {
     readOnly,
     datasourceValue,
@@ -150,6 +150,11 @@ export default function index(props: MonacoEditorPromQLProps) {
             }}
             editorDidMount={(editor) => {
               editorRef.current = editor;
+              editor.onKeyDown((e) => {
+                if (e.code === 'Escape') {
+                  e.stopPropagation();
+                }
+              });
               onEditorDidMount?.(editor);
             }}
           />

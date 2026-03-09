@@ -226,7 +226,9 @@ export default function DetailV2(props: IProps) {
   };
   const handleVariableChange = (newValue) => {
     const dashboardConfigs: any = dashboard.configs;
-    dashboardConfigs.var = newValue;
+    dashboardConfigs.var = _.map(newValue, (item) => {
+      return _.omit(item, ['value', 'options']); // 兼容性代码，去除掉 value, options
+    });
     // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
     // if (dashboardSaveMode === 'manual') {
     //   setVariablesWithOptions(newValue);
@@ -314,7 +316,7 @@ export default function DetailV2(props: IProps) {
         var: obj,
       },
     });
-  }, [JSON.stringify(_.map(variablesWithOptions, _.pick(['name', 'value']))), JSON.stringify(range)]);
+  }, [JSON.stringify(_.map(variablesWithOptions, (item) => _.pick(item, ['name', 'value']))), JSON.stringify(range)]);
 
   return (
     <PageLayout customArea={<div />}>

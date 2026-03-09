@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import _ from 'lodash';
 import TsGraph from '@fc-plot/ts-graph';
 import { IOverride } from '../../../types';
-import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 
 const UNIT_PADDING = 4;
@@ -55,6 +55,7 @@ export default function StatItem(props: Props) {
   const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', item.fields?.refId);
   if (!_.isEmpty(overrideProps)) {
     const textObj = getSerieTextObj(item?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings, overrideProps?.thresholds);
+    item.name = getMappedTextObj(item.name, overrideProps?.valueMappings)?.text;
     item.value = textObj.value;
     item.unit = textObj.unit;
     item.color = textObj.color;

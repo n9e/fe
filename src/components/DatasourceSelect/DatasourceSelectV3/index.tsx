@@ -40,7 +40,7 @@ export default function index(props: SelectProps & Props) {
         const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw) as string[];
         return _.every(keywords, (kw) => _.includes(_.toLower(option?.filter), _.toLower(kw)));
       }}
-      options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type'], ['desc', 'asc']), (item) => {
+      options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
         const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
         return {
           filter: item.plugin_type + item.name,
