@@ -377,13 +377,7 @@ const Targets: React.FC = () => {
             setGids(ids);
           }}
         />
-        <div
-          className='table-area fc-border'
-          style={{
-            height: '100%',
-            overflowY: 'auto',
-          }}
-        >
+        <div className='table-area'>
           <List
             gids={gids}
             selectedRows={selectedRows}
