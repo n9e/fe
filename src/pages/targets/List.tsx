@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
+import { Table, Tag, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, InfoCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -21,6 +21,7 @@ import TargetMetaDrawer from './TargetMetaDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
 import HostsSelect from './components/HostsSelect';
+import Tooltip from '@/components/v2/Tooltip';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -66,11 +67,18 @@ interface IProps {
 }
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
-const TAG_CLASS_NAME = 'targets-page-tag';
+const TAG_CLASS_NAME = 'fc-tag-default';
 
 const Unknown = () => {
   const { t } = useTranslation('targets');
-  return <Tooltip title={t('unknown_tip')}>unknown</Tooltip>;
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <span>unknown</span>
+      </Tooltip.Trigger>
+      <Tooltip.Content>{t('unknown_tip')}</Tooltip.Content>
+    </Tooltip.Root>
+  );
 };
 
 export default function List(props: IProps) {
@@ -141,19 +149,27 @@ export default function List(props: IProps) {
 
   const renderGroupTag = (label: string) => {
     return (
-      <Tag className='targets-page-group-tag' key={label}>
+      <Tag className='fc-tag-primary' key={label}>
         {label}
       </Tag>
     );
   };
 
   const updateAtColumn = {
+    className: 'n9e-hosts-table-column-update-at',
     title: (
       <Space>
         {t('update_at')}
-        <Tooltip title={<Trans ns='targets' i18nKey='update_at_tip' components={{ 1: <br /> }} />}>
-          <InfoCircleOutlined />
-        </Tooltip>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <span>
+              <InfoCircleOutlined />
+            </span>
+          </Tooltip.Trigger>
+          <Tooltip.Content>
+            <Trans ns='targets' i18nKey='update_at_tip' components={{ 1: <br /> }} />
+          </Tooltip.Content>
+        </Tooltip.Root>
       </Space>
     ),
     dataIndex: 'beat_time',
@@ -239,14 +255,19 @@ export default function List(props: IProps) {
             <div className='n9e-hosts-table-ident-cell'>
               <div className='flex items-center gap-2'>
                 <div className='n9e-hosts-table-ident-line'>{text ? <TargetMetaDrawer ident={text} /> : '-'}</div>
-                <Tooltip title='查看告警关联'>
-                  <ApartmentOutlined
-                    onClick={() => {
-                      setCollectsDrawerVisible(true);
-                      setCollectsDrawerIdent(text);
-                    }}
-                  />
-                </Tooltip>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <span>
+                      <ApartmentOutlined
+                        onClick={() => {
+                          setCollectsDrawerVisible(true);
+                          setCollectsDrawerIdent(text);
+                        }}
+                      />
+                    </span>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>查看告警关联</Tooltip.Content>
+                </Tooltip.Root>
               </div>
               {record?.host_ip != null && record.host_ip !== '' && (
                 <div className='n9e-hosts-table-ip-line'>
@@ -268,9 +289,14 @@ export default function List(props: IProps) {
         title: (
           <Space>
             {t('common:host.host_tags')}
-            <Tooltip title={t('common:host.host_tags_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('common:host.host_tags_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'host_tags',
@@ -293,9 +319,12 @@ export default function List(props: IProps) {
             );
           return (
             tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <span>{content}</span>
+                </Tooltip.Trigger>
+                <Tooltip.Content>{content}</Tooltip.Content>
+              </Tooltip.Root>
             )
           );
         },
@@ -306,9 +335,14 @@ export default function List(props: IProps) {
         title: (
           <Space>
             {t('common:host.tags')}
-            <Tooltip title={t('common:host.tags_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('common:host.tags_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'tags',
@@ -331,9 +365,14 @@ export default function List(props: IProps) {
             );
           return (
             tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <span>{content}</span>
+                </Tooltip.Trigger>
+                <Tooltip.Content side='top' align='start' className='mon-manage-table-tooltip'>
+                  {content}
+                </Tooltip.Content>
+              </Tooltip.Root>
             )
           );
         },
@@ -352,9 +391,14 @@ export default function List(props: IProps) {
           const content = tagArr && tagArr.map((item) => renderGroupTag(item.name));
           return (
             tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body}>
-                {content}
-              </Tooltip>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <span>{content}</span>
+                </Tooltip.Trigger>
+                <Tooltip.Content side='top' align='start'>
+                  {content}
+                </Tooltip.Content>
+              </Tooltip.Root>
             )
           );
         },
@@ -395,9 +439,14 @@ export default function List(props: IProps) {
         title: (
           <Space>
             {t('offset')}
-            <Tooltip title={t('offset_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('offset_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'offset',
@@ -432,9 +481,14 @@ export default function List(props: IProps) {
         title: (
           <Space>
             {t('remote_addr')}
-            <Tooltip title={t('remote_addr_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('remote_addr_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'remote_addr',
@@ -454,9 +508,14 @@ export default function List(props: IProps) {
         },
         render(note) {
           return (
-            <Tooltip title={note} placement='topLeft' getPopupContainer={() => document.body}>
-              {note}
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>{note}</span>
+              </Tooltip.Trigger>
+              <Tooltip.Content side='top' align='start'>
+                {note}
+              </Tooltip.Content>
+            </Tooltip.Root>
           );
         },
       });
@@ -506,17 +565,15 @@ export default function List(props: IProps) {
 
   return (
     <div className='targets-list-panel'>
-      <div className='targets-toolbar'>
-        <Space className='targets-toolbar-section targets-toolbar-section-left' size={12} wrap>
+      <div className='fc-toolbar flex flex-wrap items-center justify-between gap-3'>
+        <Space size={12} wrap>
           <Button
-            className='targets-toolbar-button'
             icon={<ReloadOutlined />}
             onClick={() => {
               setRefreshFlag(_.uniqueId('refreshFlag_'));
             }}
           />
           <Input
-            className='targets-toolbar-input'
             style={{ width: 300 }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
@@ -536,7 +593,6 @@ export default function List(props: IProps) {
             }}
           />
           <Select
-            className='targets-toolbar-select'
             allowClear
             placeholder={t('filterDowntime')}
             style={{ width: 'max-content' }}
@@ -573,7 +629,7 @@ export default function List(props: IProps) {
             }}
           />
         </Space>
-        <Space className='targets-toolbar-section targets-toolbar-section-right' size={12} wrap>
+        <Space size={12} wrap>
           {editable && (
             <Dropdown
               trigger={['click']}
@@ -611,14 +667,13 @@ export default function List(props: IProps) {
                 </Menu>
               }
             >
-              <Button className='targets-toolbar-button'>
+              <Button>
                 {t('common:btn.batch_operations')} <DownOutlined />
               </Button>
             </Dropdown>
           )}
           {explorable && <Explorer selectedIdents={selectedIdents} />}
           <Button
-            className='targets-toolbar-button'
             onClick={() => {
               OrganizeColumns({
                 value: columnsConfigs,
@@ -633,7 +688,7 @@ export default function List(props: IProps) {
         </Space>
       </div>
       <Table
-        className='n9e-hosts-table targets-table'
+        className='fc-table n9e-hosts-table targets-table'
         rowKey='id'
         columns={columns}
         size='small'

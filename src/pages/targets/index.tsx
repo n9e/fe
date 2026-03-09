@@ -340,7 +340,7 @@ const Targets: React.FC = () => {
 
   return (
     <PageLayout icon={<DatabaseOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/infrastructure/server-list/'>
-      <div className='object-manage-page-content'>
+      <div className='object-manage-page-content fc-page'>
         <BusinessGroup2
           showSelected={gids !== '0' && gids !== undefined}
           renderHeadExtra={() => {
