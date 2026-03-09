@@ -115,13 +115,14 @@ export default function TableCpt(props: Props) {
     const TAG_PADDING = 14;
     const CELL_PADDING = 16;
     const MIN_COL_WIDTH = 200;
+    const SPACE_GAP = 8;
 
     let partsColWidth = MIN_COL_WIDTH;
     _.forEach(data, (row) => {
       let rowWidth = 0;
       _.forEach(row.parts, (part) => {
         const textWidth = getTextWidth(part.data);
-        rowWidth += part.type === 'pattern' ? textWidth + TAG_PADDING : textWidth;
+        rowWidth += part.type === 'pattern' ? textWidth + TAG_PADDING + SPACE_GAP : textWidth + SPACE_GAP;
       });
       rowWidth += CELL_PADDING;
       if (rowWidth > partsColWidth) {
