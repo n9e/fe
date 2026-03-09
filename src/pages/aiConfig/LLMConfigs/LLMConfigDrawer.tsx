@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Drawer, Form, Input, Select, Switch, InputNumber, Collapse, Space, Button, Tag, message } from 'antd';
+import { Drawer, Form, Input, Select, Switch, InputNumber, Collapse, Space, Button, Row, Col, Divider, Tag, message } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AILLMConfig, addLLMConfig, updateLLMConfig, testLLMConfig } from './services';
@@ -120,7 +120,7 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
       destroyOnClose
       width={600}
       footer={
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
             <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
             <Button type='primary' onClick={handleOk} loading={loading}>
@@ -131,32 +131,45 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
       }
     >
       <Form form={form} layout='vertical'>
-        <Form.Item name='name' label={t('llm_config.name')} rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item name='description' label={t('llm_config.description')}>
+        <Row gutter={16} align='bottom'>
+          <Col flex='auto'>
+            <Form.Item name='name' label={t('llm_config.name')} rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col>
+            <Form.Item name='enabled' label={t('llm_config.enabled')} valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Form.Item name='description' label={t('llm_config.description')} style={{ marginBottom: 12 }}>
           <Input.TextArea rows={2} placeholder={t('llm_config.description_placeholder')} />
         </Form.Item>
-        <Form.Item name='enabled' label={t('llm_config.enabled')} valuePropName='checked'>
-          <Switch />
-        </Form.Item>
 
-        <div style={{ marginBottom: 8, marginTop: 8, fontWeight: 600, fontSize: 14 }}>{t('agent.llm_config')}</div>
-        <Form.Item name='api_type' label={t('llm.api_type')} rules={[{ required: true }]}>
-          <Select>
-            <Select.Option value='openai'>{t('llm.api_type_options.openai')}</Select.Option>
-            <Select.Option value='claude'>{t('llm.api_type_options.claude')}</Select.Option>
-            <Select.Option value='gemini'>{t('llm.api_type_options.gemini')}</Select.Option>
-          </Select>
-        </Form.Item>
+        <Divider style={{ margin: '12px 0 16px' }} />
+
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item name='api_type' label={t('llm.api_type')} rules={[{ required: true }]}>
+              <Select>
+                <Select.Option value='openai'>{t('llm.api_type_options.openai')}</Select.Option>
+                <Select.Option value='claude'>{t('llm.api_type_options.claude')}</Select.Option>
+                <Select.Option value='gemini'>{t('llm.api_type_options.gemini')}</Select.Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name='model' label={t('llm.model')} rules={[{ required: true }]}>
+              <Input placeholder='gpt-4o' />
+            </Form.Item>
+          </Col>
+        </Row>
         <Form.Item name='api_url' label={t('llm.api_url')} rules={[{ required: true }]}>
           <Input placeholder='https://api.openai.com/v1' />
         </Form.Item>
-        <Form.Item name='api_key' label={t('llm.api_key')} rules={[{ required: !isEdit }]}>
+        <Form.Item name='api_key' label={t('llm.api_key')} rules={[{ required: !isEdit }]} style={{ marginBottom: 12 }}>
           <Input.Password placeholder={isEdit ? '••••••••' : ''} />
-        </Form.Item>
-        <Form.Item name='model' label={t('llm.model')} rules={[{ required: true }]}>
-          <Input placeholder='gpt-4o' />
         </Form.Item>
         <div style={{ marginBottom: 16 }}>
           <Space>

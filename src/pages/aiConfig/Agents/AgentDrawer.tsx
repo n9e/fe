@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Drawer, Form, Input, Select, Switch, Space, Button, Row, Col, Divider, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AIAgent, addAgent, updateAgent } from './services';
 import { getLLMConfigs, AILLMConfig } from '../LLMConfigs/services';
@@ -136,7 +136,7 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
           label={
             <Space>
               {t('agent.llm_select')}
-              <PlusOutlined style={{ cursor: 'pointer', color: '#1890ff' }} onClick={() => setLLMDrawerVisible(true)} />
+              <PlusCircleOutlined style={{ cursor: 'pointer' }} onClick={() => setLLMDrawerVisible(true)} />
             </Space>
           }
           rules={[{ required: true, message: t('agent.llm_select_required') }]}
