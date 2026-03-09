@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Drawer, Form, Input, Select, Switch, InputNumber, Collapse, Space, Button, Tag, message, Tooltip } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AIAgent, addAgent, updateAgent, testAgentLLM } from './services';
 
@@ -20,15 +21,27 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
 
   useEffect(() => {
     if (visible && data) {
-      let extraConfig = {};
+      let extraConfig: Record<string, any> = {};
       try {
         extraConfig = data.extra_config ? JSON.parse(data.extra_config) : {};
       } catch {}
+      // Convert custom_headers object to array for Form.List
+      let customHeadersArr: { name: string; value: string }[] = [];
+      if (extraConfig.custom_headers && typeof extraConfig.custom_headers === 'object') {
+        customHeadersArr = Object.entries(extraConfig.custom_headers).map(([name, value]) => ({ name, value: value as string }));
+      }
+      const { custom_headers: _ch, custom_params, timeout_seconds, proxy, skip_tls_verify, context_length, ...restExtra } = extraConfig;
       form.setFieldsValue({
         ...data,
         is_default: data.is_default === 1,
         enabled: data.enabled === 1,
-        ...extraConfig,
+        ...restExtra,
+        timeout: timeout_seconds,
+        skip_tls_verify: !!skip_tls_verify,
+        proxy: proxy || '',
+        context_length,
+        custom_headers: customHeadersArr.length > 0 ? customHeadersArr : undefined,
+        custom_params: custom_params ? JSON.stringify(custom_params, null, 2) : '',
       });
     } else if (visible) {
       form.resetFields();
@@ -60,11 +73,28 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      const { temperature, max_tokens, timeout, ...rest } = values;
+      const { temperature, max_tokens, timeout, custom_headers, skip_tls_verify, proxy, context_length, custom_params, ...rest } = values;
       const extraConfig: Record<string, any> = {};
       if (temperature !== undefined && temperature !== null) extraConfig.temperature = temperature;
       if (max_tokens !== undefined && max_tokens !== null) extraConfig.max_tokens = max_tokens;
       if (timeout !== undefined && timeout !== null) extraConfig.timeout_seconds = timeout;
+      if (skip_tls_verify) extraConfig.skip_tls_verify = true;
+      if (proxy) extraConfig.proxy = proxy;
+      if (context_length !== undefined && context_length !== null) extraConfig.context_length = context_length;
+      if (custom_headers && custom_headers.length > 0) {
+        const headers: Record<string, string> = {};
+        custom_headers.forEach((h: { name: string; value: string }) => {
+          if (h?.name) headers[h.name] = h.value || '';
+        });
+        if (Object.keys(headers).length > 0) extraConfig.custom_headers = headers;
+      }
+      if (custom_params) {
+        try {
+          extraConfig.custom_params = JSON.parse(custom_params);
+        } catch {
+          extraConfig.custom_params = custom_params;
+        }
+      }
 
       const payload = {
         ...rest,
@@ -156,14 +186,50 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
         </div>
         <Collapse ghost style={{ marginLeft: -16 }}>
           <Collapse.Panel header={t('llm.extra_config')} key='extra'>
-            <Form.Item name='temperature' label={t('llm.temperature')}>
-              <InputNumber min={0} max={2} step={0.1} style={{ width: '100%' }} />
+            {/* HTTP Configuration */}
+            <Form.Item name='timeout' label={t('llm.timeout')} tooltip={t('llm.timeout_tip')}>
+              <InputNumber min={1} style={{ width: '100%' }} placeholder='e.g. 60' />
             </Form.Item>
-            <Form.Item name='max_tokens' label={t('llm.max_tokens')}>
-              <InputNumber min={1} style={{ width: '100%' }} />
+            <Form.Item name='skip_tls_verify' label={t('llm.skip_tls_verify')} tooltip={t('llm.skip_tls_verify_tip')} valuePropName='checked'>
+              <Switch />
             </Form.Item>
-            <Form.Item name='timeout' label={t('llm.timeout')}>
-              <InputNumber min={1} style={{ width: '100%' }} />
+            <Form.Item name='proxy' label={t('llm.proxy')} tooltip={t('llm.proxy_tip')}>
+              <Input placeholder='http://proxy:8080' />
+            </Form.Item>
+            <div style={{ marginBottom: 8, fontWeight: 500 }}>{t('llm.custom_headers')}</div>
+            <Form.List name='custom_headers'>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
+                      <Form.Item {...restField} name={[name, 'name']} rules={[{ required: true, message: t('llm.header_name') }]} style={{ marginBottom: 0 }}>
+                        <Input placeholder={t('llm.header_name')} />
+                      </Form.Item>
+                      <Form.Item {...restField} name={[name, 'value']} style={{ marginBottom: 0 }}>
+                        <Input placeholder={t('llm.header_value')} />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />} style={{ marginBottom: 16 }}>
+                    {t('llm.add_header')}
+                  </Button>
+                </>
+              )}
+            </Form.List>
+            <Form.Item name='custom_params' label={t('llm.custom_params')} tooltip={t('llm.custom_params_tip')}>
+              <Input.TextArea rows={3} placeholder='{"key": "value"}' />
+            </Form.Item>
+
+            {/* Model Configuration */}
+            <Form.Item name='temperature' label={t('llm.temperature')} tooltip={t('llm.temperature_tip')}>
+              <InputNumber min={0} max={2} step={0.1} style={{ width: '100%' }} placeholder='e.g. 0.7' />
+            </Form.Item>
+            <Form.Item name='max_tokens' label={t('llm.max_tokens')} tooltip={t('llm.max_tokens_tip')}>
+              <InputNumber min={1} style={{ width: '100%' }} placeholder='e.g. 4096' />
+            </Form.Item>
+            <Form.Item name='context_length' label={t('llm.context_length')} tooltip={t('llm.context_length_tip')}>
+              <InputNumber min={1} style={{ width: '100%' }} placeholder='e.g. 128000' />
             </Form.Item>
           </Collapse.Panel>
         </Collapse>
