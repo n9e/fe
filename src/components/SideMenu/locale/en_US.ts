@@ -54,6 +54,7 @@ const en_US = {
     setting: 'System setting',
     ai_config: 'AI Config',
     ai_agents: 'Agents',
+    ai_llm: 'LLM Configs',
     ai_skills: 'Skills',
     ai_mcp: 'MCP Servers',
     site_setting: 'Site settings',

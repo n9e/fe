@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Tag, Switch, Popconfirm, Space, message } from 'antd';
+import { Table, Button, Switch, Popconfirm, Space, message } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { ColumnsType } from 'antd/lib/table';
-import { AIAgent, getAgents, deleteAgent, updateAgent } from './services';
-import { getLLMConfigs, AILLMConfig } from '../LLMConfigs/services';
-import AgentDrawer from './AgentDrawer';
+import { AILLMConfig, getLLMConfigs, deleteLLMConfig, updateLLMConfig } from './services';
+import LLMConfigDrawer from './LLMConfigDrawer';
 
-export default function AgentList() {
+export default function LLMConfigList() {
   const { t } = useTranslation('aiConfig');
-  const [list, setList] = useState<AIAgent[]>([]);
-  const [llmConfigs, setLLMConfigs] = useState<AILLMConfig[]>([]);
+  const [list, setList] = useState<AILLMConfig[]>([]);
   const [loading, setLoading] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [editData, setEditData] = useState<AIAgent | undefined>();
+  const [editData, setEditData] = useState<AILLMConfig | undefined>();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [agents, configs] = await Promise.all([getAgents(), getLLMConfigs()]);
-      setList(agents);
-      setLLMConfigs(configs);
+      const data = await getLLMConfigs();
+      setList(data);
     } finally {
       setLoading(false);
     }
@@ -31,44 +28,28 @@ export default function AgentList() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    await deleteAgent(id);
+    await deleteLLMConfig(id);
     message.success('Deleted');
     fetchData();
   };
 
-  const handleToggleEnabled = async (record: AIAgent) => {
-    await updateAgent(record.id, { ...record, enabled: record.enabled === 1 ? 0 : 1 });
+  const handleToggleEnabled = async (record: AILLMConfig) => {
+    await updateLLMConfig(record.id, { ...record, enabled: record.enabled === 1 ? 0 : 1 });
     fetchData();
   };
 
-  const getLLMConfigName = (agent: AIAgent) => {
-    if (agent.llm_config_id) {
-      const config = llmConfigs.find((c) => c.id === agent.llm_config_id);
-      return config ? config.name : '-';
-    }
-    // Legacy: show inline api_type/model
-    if (agent.api_type) {
-      return `${t(`llm.api_type_options.${agent.api_type}` as any)} / ${agent.model}`;
-    }
-    return '-';
-  };
-
-  const columns: ColumnsType<AIAgent> = [
-    { title: t('agent.name'), dataIndex: 'name', key: 'name' },
-    { title: t('agent.description'), dataIndex: 'description', key: 'description', ellipsis: true },
+  const columns: ColumnsType<AILLMConfig> = [
+    { title: t('llm_config.name'), dataIndex: 'name', key: 'name' },
+    { title: t('llm_config.description'), dataIndex: 'description', key: 'description', ellipsis: true },
     {
-      title: t('agent.llm_config'),
-      key: 'llm_config',
-      render: (_, record) => getLLMConfigName(record),
+      title: t('llm.api_type'),
+      dataIndex: 'api_type',
+      key: 'api_type',
+      render: (val) => (val ? t(`llm.api_type_options.${val}` as any) : '-'),
     },
+    { title: t('llm.model'), dataIndex: 'model', key: 'model' },
     {
-      title: t('agent.use_case'),
-      dataIndex: 'use_case',
-      key: 'use_case',
-      render: (val) => (val ? t(`agent.use_case_options.${val}` as any) : '-'),
-    },
-    {
-      title: t('agent.enabled'),
+      title: t('llm_config.enabled'),
       dataIndex: 'enabled',
       key: 'enabled',
       render: (val, record) => <Switch size='small' checked={val === 1} onChange={() => handleToggleEnabled(record)} />,
@@ -85,7 +66,7 @@ export default function AgentList() {
               setDrawerVisible(true);
             }}
           />
-          <Popconfirm title={t('agent.delete_confirm')} onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title={t('llm_config.delete_confirm')} onConfirm={() => handleDelete(record.id)}>
             <DeleteOutlined style={{ color: '#ff4d4f' }} />
           </Popconfirm>
         </Space>
@@ -104,13 +85,13 @@ export default function AgentList() {
             setDrawerVisible(true);
           }}
         >
-          {t('agent.add')}
+          {t('llm_config.add')}
         </Button>
       </div>
       <div className='fc-border' style={{ borderRadius: 'var(--fc-radius-md, 6px)', padding: 16 }}>
         <Table rowKey='id' columns={columns} dataSource={list} loading={loading} pagination={false} />
       </div>
-      <AgentDrawer
+      <LLMConfigDrawer
         visible={drawerVisible}
         data={editData}
         onClose={() => setDrawerVisible(false)}

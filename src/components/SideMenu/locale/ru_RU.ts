@@ -53,6 +53,7 @@ const ru_RU = {
     setting: 'Настройки системы',
     ai_config: 'Настройки AI',
     ai_agents: 'Агенты',
+    ai_llm: 'Конфигурации LLM',
     ai_skills: 'Навыки',
     ai_mcp: 'MCP серверы',
     site_setting: 'Настройки сайта',

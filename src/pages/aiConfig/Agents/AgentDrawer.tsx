@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Drawer, Form, Input, Select, Switch, InputNumber, Collapse, Space, Button, Tag, message, Tooltip } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Drawer, Form, Input, Select, Switch, Space, Button, Tag, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { AIAgent, addAgent, updateAgent, testAgentLLM } from './services';
+import { AIAgent, addAgent, updateAgent } from './services';
+import { getLLMConfigs, AILLMConfig } from '../LLMConfigs/services';
 
 interface Props {
   visible: boolean;
@@ -15,92 +15,40 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
   const { t } = useTranslation('aiConfig');
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [testing, setTesting] = useState(false);
-  const [testResult, setTestResult] = useState<{ success: boolean; duration_ms?: number; error?: string } | null>(null);
+  const [llmConfigs, setLLMConfigs] = useState<AILLMConfig[]>([]);
   const isEdit = !!data;
 
   useEffect(() => {
+    if (visible) {
+      getLLMConfigs().then((configs) => setLLMConfigs(configs));
+    }
+  }, [visible]);
+
+  useEffect(() => {
     if (visible && data) {
-      let extraConfig: Record<string, any> = {};
-      try {
-        extraConfig = data.extra_config ? JSON.parse(data.extra_config) : {};
-      } catch {}
-      // Convert custom_headers object to array for Form.List
-      let customHeadersArr: { name: string; value: string }[] = [];
-      if (extraConfig.custom_headers && typeof extraConfig.custom_headers === 'object') {
-        customHeadersArr = Object.entries(extraConfig.custom_headers).map(([name, value]) => ({ name, value: value as string }));
-      }
-      const { custom_headers: _ch, custom_params, timeout_seconds, proxy, skip_tls_verify, context_length, ...restExtra } = extraConfig;
       form.setFieldsValue({
         ...data,
-        is_default: data.is_default === 1,
         enabled: data.enabled === 1,
-        ...restExtra,
-        timeout: timeout_seconds,
-        skip_tls_verify: !!skip_tls_verify,
-        proxy: proxy || '',
-        context_length,
-        custom_headers: customHeadersArr.length > 0 ? customHeadersArr : undefined,
-        custom_params: custom_params ? JSON.stringify(custom_params, null, 2) : '',
+        use_case: data.use_case || undefined,
+        llm_config_id: data.llm_config_id || undefined,
       });
     } else if (visible) {
       form.resetFields();
-      form.setFieldsValue({ enabled: true, api_type: 'openai' });
+      form.setFieldsValue({ enabled: true, use_case: 'chat' });
     }
   }, [visible, data]);
-
-  const handleTest = async () => {
-    setTesting(true);
-    setTestResult(null);
-    try {
-      const values = form.getFieldsValue();
-      const result = await testAgentLLM({
-        id: data?.id,
-        api_type: values.api_type,
-        api_url: values.api_url,
-        api_key: values.api_key,
-        model: values.model,
-      });
-      setTestResult(result);
-    } catch (err: any) {
-      setTestResult({ success: false, error: err.message || 'Test failed' });
-    } finally {
-      setTesting(false);
-    }
-  };
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-      const { temperature, max_tokens, timeout, custom_headers, skip_tls_verify, proxy, context_length, custom_params, ...rest } = values;
-      const extraConfig: Record<string, any> = {};
-      if (temperature !== undefined && temperature !== null) extraConfig.temperature = temperature;
-      if (max_tokens !== undefined && max_tokens !== null) extraConfig.max_tokens = max_tokens;
-      if (timeout !== undefined && timeout !== null) extraConfig.timeout_seconds = timeout;
-      if (skip_tls_verify) extraConfig.skip_tls_verify = true;
-      if (proxy) extraConfig.proxy = proxy;
-      if (context_length !== undefined && context_length !== null) extraConfig.context_length = context_length;
-      if (custom_headers && custom_headers.length > 0) {
-        const headers: Record<string, string> = {};
-        custom_headers.forEach((h: { name: string; value: string }) => {
-          if (h?.name) headers[h.name] = h.value || '';
-        });
-        if (Object.keys(headers).length > 0) extraConfig.custom_headers = headers;
-      }
-      if (custom_params) {
-        try {
-          extraConfig.custom_params = JSON.parse(custom_params);
-        } catch {
-          extraConfig.custom_params = custom_params;
-        }
-      }
 
       const payload = {
-        ...rest,
-        is_default: values.is_default ? 1 : 0,
+        name: values.name,
+        description: values.description || '',
+        use_case: values.use_case || '',
+        llm_config_id: values.llm_config_id || 0,
         enabled: values.enabled ? 1 : 0,
-        extra_config: Object.keys(extraConfig).length > 0 ? JSON.stringify(extraConfig) : '',
       };
 
       if (isEdit && data) {
@@ -142,97 +90,28 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
         <Form.Item name='description' label={t('agent.description')}>
           <Input.TextArea rows={2} placeholder={t('agent.description_placeholder')} />
         </Form.Item>
-        <Space size={24}>
-          <Form.Item name='is_default' label={t('agent.is_default')} valuePropName='checked'>
-            <Switch />
-          </Form.Item>
-          <Form.Item name='enabled' label={t('agent.enabled')} valuePropName='checked'>
-            <Switch />
-          </Form.Item>
-        </Space>
-
-        {/* LLM Configuration */}
-        <div style={{ marginBottom: 8, marginTop: 8, fontWeight: 600, fontSize: 14 }}>{t('agent.llm_config')}</div>
-        <Form.Item name='api_type' label={t('llm.api_type')} rules={[{ required: true }]}>
+        <Form.Item name='use_case' label={t('agent.use_case')} rules={[{ required: true }]}>
           <Select>
-            <Select.Option value='openai'>{t('llm.api_type_options.openai')}</Select.Option>
-            <Select.Option value='claude'>{t('llm.api_type_options.claude')}</Select.Option>
-            <Select.Option value='gemini'>{t('llm.api_type_options.gemini')}</Select.Option>
+            <Select.Option value='chat'>{t('agent.use_case_options.chat')}</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item name='api_url' label={t('llm.api_url')} rules={[{ required: true }]}>
-          <Input placeholder='https://api.openai.com/v1' />
+        <Form.Item name='enabled' label={t('agent.enabled')} valuePropName='checked'>
+          <Switch />
         </Form.Item>
-        <Form.Item name='api_key' label={t('llm.api_key')} rules={[{ required: !isEdit }]}>
-          <Input.Password placeholder={isEdit ? '••••••••' : ''} />
-        </Form.Item>
-        <Form.Item name='model' label={t('llm.model')} rules={[{ required: true }]}>
-          <Input placeholder='gpt-4o' />
-        </Form.Item>
-        <div style={{ marginBottom: 16 }}>
-          <Space>
-            <Button onClick={handleTest} loading={testing}>
-              {t('llm.test')}
-            </Button>
-            {testResult &&
-              (testResult.success ? (
-                <Tag color='success'>
-                  {t('llm.test_success')} ({testResult.duration_ms}ms)
-                </Tag>
-              ) : (
-                <Tag color='error'>{t('llm.test_failed')}</Tag>
-              ))}
-          </Space>
-        </div>
-        <Collapse ghost style={{ marginLeft: -16 }}>
-          <Collapse.Panel header={t('llm.extra_config')} key='extra'>
-            {/* HTTP Configuration */}
-            <Form.Item name='timeout' label={t('llm.timeout')} tooltip={t('llm.timeout_tip')}>
-              <InputNumber min={1} style={{ width: '100%' }} placeholder='e.g. 60' />
-            </Form.Item>
-            <Form.Item name='skip_tls_verify' label={t('llm.skip_tls_verify')} tooltip={t('llm.skip_tls_verify_tip')} valuePropName='checked'>
-              <Switch />
-            </Form.Item>
-            <Form.Item name='proxy' label={t('llm.proxy')} tooltip={t('llm.proxy_tip')}>
-              <Input placeholder='http://proxy:8080' />
-            </Form.Item>
-            <div style={{ marginBottom: 8, fontWeight: 500 }}>{t('llm.custom_headers')}</div>
-            <Form.List name='custom_headers'>
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                      <Form.Item {...restField} name={[name, 'name']} rules={[{ required: true, message: t('llm.header_name') }]} style={{ marginBottom: 0 }}>
-                        <Input placeholder={t('llm.header_name')} />
-                      </Form.Item>
-                      <Form.Item {...restField} name={[name, 'value']} style={{ marginBottom: 0 }}>
-                        <Input placeholder={t('llm.header_value')} />
-                      </Form.Item>
-                      <MinusCircleOutlined onClick={() => remove(name)} />
-                    </Space>
-                  ))}
-                  <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />} style={{ marginBottom: 16 }}>
-                    {t('llm.add_header')}
-                  </Button>
-                </>
-              )}
-            </Form.List>
-            <Form.Item name='custom_params' label={t('llm.custom_params')} tooltip={t('llm.custom_params_tip')}>
-              <Input.TextArea rows={3} placeholder='{"key": "value"}' />
-            </Form.Item>
 
-            {/* Model Configuration */}
-            <Form.Item name='temperature' label={t('llm.temperature')} tooltip={t('llm.temperature_tip')}>
-              <InputNumber min={0} max={2} step={0.1} style={{ width: '100%' }} placeholder='e.g. 0.7' />
-            </Form.Item>
-            <Form.Item name='max_tokens' label={t('llm.max_tokens')} tooltip={t('llm.max_tokens_tip')}>
-              <InputNumber min={1} style={{ width: '100%' }} placeholder='e.g. 4096' />
-            </Form.Item>
-            <Form.Item name='context_length' label={t('llm.context_length')} tooltip={t('llm.context_length_tip')}>
-              <InputNumber min={1} style={{ width: '100%' }} placeholder='e.g. 128000' />
-            </Form.Item>
-          </Collapse.Panel>
-        </Collapse>
+        {/* LLM Configuration - Dropdown */}
+        <div style={{ marginBottom: 8, marginTop: 8, fontWeight: 600, fontSize: 14 }}>{t('agent.llm_config')}</div>
+        <Form.Item name='llm_config_id' label={t('agent.llm_select')} rules={[{ required: true, message: t('agent.llm_select_required') }]}>
+          <Select placeholder={t('agent.llm_select_placeholder')} allowClear showSearch optionFilterProp='children'>
+            {llmConfigs
+              .filter((c) => c.enabled === 1)
+              .map((config) => (
+                <Select.Option key={config.id} value={config.id}>
+                  {config.name} ({t(`llm.api_type_options.${config.api_type}` as any)} / {config.model})
+                </Select.Option>
+              ))}
+          </Select>
+        </Form.Item>
 
         {/* Phase 2: Skill / MCP / IM references */}
         <div style={{ marginBottom: 8, marginTop: 16, fontWeight: 600, fontSize: 14 }}>

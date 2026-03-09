@@ -176,6 +176,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
           type: 'tabs',
           children: [
             { key: '/ai-config/agents', label: 'menu.ai_agents' },
+            { key: '/ai-config/llm-configs', label: 'menu.ai_llm' },
             { key: '/ai-config/skills', label: 'menu.ai_skills' },
             { key: '/ai-config/mcp-servers', label: 'menu.ai_mcp' },
           ],

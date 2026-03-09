@@ -5,7 +5,9 @@ export interface AIAgent {
   id: number;
   name: string;
   description: string;
-  // LLM configuration
+  use_case: string;
+  llm_config_id: number;
+  // LLM configuration (legacy inline fields)
   api_type: string;
   api_url: string;
   api_key: string;
