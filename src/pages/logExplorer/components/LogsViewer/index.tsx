@@ -13,10 +13,13 @@ import HistogramChart from './components/HistogramChart';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
+import ClusteringTable, { LogClusting } from './Clustering/Table';
+import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
 import classNames from 'classnames';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 interface Props {
   /** 时间字段 */
@@ -37,6 +40,7 @@ interface Props {
     [index: number]: string[];
   }[];
   logsHash?: string;
+  logTotal?: number;
   /** 字段列表 */
   fields: string[];
   /** 日志格式配置项 */
@@ -78,6 +82,9 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
+
+  // 日志聚类参数
+  logClusting?: LogClusting
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -144,6 +151,7 @@ export default function LogsViewer(props: Props) {
     logViewerRenderCustomTagsArea,
     adjustFieldValue,
     showExistsAction,
+    logClusting,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -160,6 +168,17 @@ export default function LogsViewer(props: Props) {
     setOptions(props.options);
   }, [props.options]);
 
+  // 日志聚类相关状态
+  const clusteringOptionsEleRef = React.useRef<HTMLDivElement>(null);
+  const clusteringExtraEleRef = React.useRef<HTMLDivElement>(null);
+  const [patternHistogramState, setPatternHistogramState] = useState<{
+    visible: boolean;
+    uuid?: string; // 用户查询柱状图数据的相关参数
+    rowIndex?: number;
+  }>({
+    visible: false,
+  });
+
   return (
     <LogsViewerStateContext.Provider
       value={{
@@ -172,59 +191,66 @@ export default function LogsViewer(props: Props) {
       }}
     >
       <>
-        {!hideHistogram && (
-          <div
-            className={classNames('flex-shrink-0', {
-              'h-[130px]': histogramVisible,
-              'h-[30px]': !histogramVisible,
-            })}
-          >
-            <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
-              <Space>
-                {histogramAddonBeforeRender}
-                <Spin spinning={histogramLoading} size='small' />
-              </Space>
+        {patternHistogramState.visible ? (
+          <ClusteringHistogram {...patternHistogramState} setPatternHistogramState={setPatternHistogramState} />
+        ) : (
+          <>
+            {!hideHistogram && (
+              <div
+                className={classNames('flex-shrink-0', {
+                  'h-[130px]': histogramVisible,
+                  'h-[30px]': !histogramVisible,
+                })}
+              >
+                <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
+                  <Space>
+                    <span>{t('clustering.all_log_statistics')}</span>
+                    {histogramAddonBeforeRender}
+                    <Spin spinning={histogramLoading} size='small' />
+                  </Space>
 
-              {renderHistogramAddonAfterRender?.(
-                <a
-                  onClick={() => {
-                    setHistogramVisible(!histogramVisible);
-                  }}
+                  {renderHistogramAddonAfterRender?.(
+                    <a
+                      onClick={() => {
+                        setHistogramVisible(!histogramVisible);
+                      }}
+                    >
+                      {histogramVisible ? t('histogram_hide') : t('histogram_show')}
+                    </a>,
+                  )}
+                </div>
+                <div
+                  className={classNames('flex-shrink-0', {
+                    'h-[120px]': histogramVisible,
+                    block: histogramVisible,
+                    hidden: !histogramVisible,
+                  })}
                 >
-                  {histogramVisible ? t('histogram_hide') : t('histogram_show')}
-                </a>,
-              )}
-            </div>
-            <div
-              className={classNames('flex-shrink-0', {
-                'h-[120px]': histogramVisible,
-                block: histogramVisible,
-                hidden: !histogramVisible,
-              })}
-            >
-              {props.range && histogram && (
-                <HistogramChart
-                  series={histogram}
-                  stacked={stacked}
-                  onClick={(start, end) => {
-                    if (start && end) {
-                      onLogRequestParamsChange?.({
-                        from: start,
-                        to: end,
-                        context: undefined,
-                      });
-                    }
-                  }}
-                  onZoomWithoutDefult={(times) => {
-                    onRangeChange?.({
-                      start: moment(times[0]),
-                      end: moment(times[1]),
-                    });
-                  }}
-                />
-              )}
-            </div>
-          </div>
+                  {props.range && histogram && (
+                    <HistogramChart
+                      series={histogram}
+                      stacked={stacked}
+                      onClick={(start, end) => {
+                        if (start && end) {
+                          onLogRequestParamsChange?.({
+                            from: start,
+                            to: end,
+                            context: undefined,
+                          });
+                        }
+                      }}
+                      onZoomWithoutDefult={(times) => {
+                        onRangeChange?.({
+                          start: moment(times[0]),
+                          end: moment(times[1]),
+                        });
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </>
         )}
         <FullscreenButton.Provider>
           <div className='flex justify-between pb-2'>
@@ -234,30 +260,43 @@ export default function LogsViewer(props: Props) {
                 <Radio.Group
                   size='small'
                   optionType='button'
-                  options={[
-                    {
-                      label: t('logs.settings.mode.origin'),
-                      value: 'origin',
-                    },
-                    {
-                      label: t('logs.settings.mode.table'),
-                      value: 'table',
-                    },
-                  ]}
+                  options={_.concat(
+                    [
+                      {
+                        label: t('logs.settings.mode.origin'),
+                        value: 'origin',
+                      },
+                      {
+                        label: t('logs.settings.mode.table'),
+                        value: 'table',
+                      },
+                    ],
+                    logClusting?.enabled
+                      ? [
+                        {
+                          label: t('logs.settings.mode.clustering'),
+                          value: 'clustering',
+                        },
+                      ]
+                      : [],
+                  )}
                   value={options.logMode}
                   onChange={(e) => {
                     updateOptions({
                       logMode: e.target.value,
                     });
+                    setPatternHistogramState({ visible: false });
                   }}
                 />
               )}
+              {options.logMode === 'clustering' && <div ref={clusteringOptionsEleRef} />}
               <OriginSettings
                 ref={originSettingsRef}
-                showDateField={showDateField}
                 options={options}
                 updateOptions={updateOptions}
                 fields={fields}
+                showDateField={showDateField && options.logMode !== 'clustering'}
+                showMoreSettings={options.logMode !== 'clustering'}
                 showPageLoadMode={showPageLoadMode}
                 showJSONSettings={showJSONSettings}
                 showTopNSettings={showTopNSettings}
@@ -267,7 +306,7 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {optionsExtraRender}
+            {options.logMode === 'clustering' ? <div ref={clusteringExtraEleRef} /> : optionsExtraRender}
           </div>
           <div className='h-full min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>
@@ -328,6 +367,9 @@ export default function LogsViewer(props: Props) {
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
                 />
+              )}
+              {options.logMode === 'clustering' && logClusting && (
+                <ClusteringTable logClusting={logClusting} onValueFilter={onAddToQuery || (() => { })} clusteringExtraEleRef={clusteringExtraEleRef} clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} options={options} indexData={props.indexData || []} />
               )}
             </div>
           </div>
