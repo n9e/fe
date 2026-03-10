@@ -67,15 +67,7 @@ function renderValue(value: JsonValue, keyPath: string[], param: IParam) {
   const renderLink = (linkParams: ILogURL[], text: string | number | boolean) => <Links rawValue={rawValue} range={query} text={text} paramsArr={linkParams} />;
 
   if (typeof value === 'number') {
-    return links.length > 0 ? (
-      renderLink(links, value)
-    ) : (
-      <span
-      // style={{ color: 'var(--fc-fill-success)' }}
-      >
-        {value}
-      </span>
-    );
+    return links.length > 0 ? renderLink(links, value) : <span style={{ color: 'var(--fc-fill-success)' }}>{value}</span>;
   } else if (typeof value === 'string') {
     return links.length > 0 ? renderLink(links, value) : <span style={{ color: 'var(--fc-fill-error)' }}>&quot;{value}&quot;</span>;
   } else if (typeof value === 'boolean') {
