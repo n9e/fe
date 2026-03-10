@@ -103,7 +103,7 @@ export default function getColumnsFromFields(params: {
               <LogFieldValue
                 enableTooltip
                 name={item}
-                value={toString(record[item])}
+                value={record[item]}
                 onTokenClick={onValueFilter}
                 rawValue={record}
                 highlight={highlight}
