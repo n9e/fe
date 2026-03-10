@@ -101,19 +101,28 @@ export default function index(props: Props) {
 
   const handleValueFilter = (params: OnValueFilterParams) => {
     const assignmentOperator = params.assignmentOperator || ':';
-    // 转义 value 中的双引号
-    const escapedValue = params.value.replace(/"/g, '\\"');
     const values = form.getFieldsValue();
     const query = values.query;
     let queryStr = _.trim(query.query);
     if (queryStr === '*') {
       queryStr = '';
     }
-    if (params.operator === 'AND') {
-      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${escapedValue}"`;
-    }
-    if (params.operator === 'NOT') {
-      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${escapedValue}"`;
+    if (params.value === null) {
+      if (params.operator === 'AND') {
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key} IS NULL`;
+      }
+      if (params.operator === 'NOT') {
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key} IS NOT NULL`;
+      }
+    } else {
+      // 转义 value 中的双引号
+      const escapedValue = _.replace(params.value, /"/g, '\\"');
+      if (params.operator === 'AND') {
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${escapedValue}"`;
+      }
+      if (params.operator === 'NOT') {
+        queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${escapedValue}"`;
+      }
     }
     form.setFieldsValue({
       refreshFlag: undefined,

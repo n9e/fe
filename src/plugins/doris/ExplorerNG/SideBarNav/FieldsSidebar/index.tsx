@@ -41,6 +41,7 @@ export default function index(props: IProps) {
       <FieldsList
         loading={loading}
         organizeFieldNames={organizeFields}
+        disableEmptyValueClick={false}
         onOperClick={(field, type) => {
           if (type === 'show') {
             setOrganizeFields(

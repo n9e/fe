@@ -31,7 +31,7 @@ export default function HighlightJson(props: IProps) {
   return (
     <div className='highlight-json'>
       <div>{'{'}</div>
-      {renderObject(value, [], { urlTemplates, rawValue: value, query, extractArr })}
+      {renderObject(value as JsonObject, [], { urlTemplates, rawValue: value, query, extractArr })}
       <div>{'}'}</div>
     </div>
   );
@@ -44,18 +44,45 @@ interface IParam {
   extractArr?: ILogExtract[];
 }
 
-function renderValue(value, keyPath: string[], param: IParam) {
-  const { urlTemplates, rawValue, query, extractArr } = param;
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | JsonObject | JsonArray;
+interface JsonObject {
+  [key: string]: JsonValue;
+}
+type JsonArray = JsonValue[];
+
+function isJsonObject(value: JsonValue): value is JsonObject {
+  return _.isPlainObject(value);
+}
+
+function isJsonArray(value: JsonValue): value is JsonArray {
+  return _.isArray(value);
+}
+
+function renderValue(value: JsonValue, keyPath: string[], param: IParam) {
+  const { urlTemplates, rawValue, query } = param;
   const keyPathStr = keyPath.join('.');
   const links = urlTemplates?.filter((i) => i.field === keyPathStr) || [];
 
-  const renderLink = (links, value) => <Links rawValue={rawValue} range={query} text={value} paramsArr={links} />;
+  const renderLink = (linkParams: ILogURL[], text: string | number | boolean) => <Links rawValue={rawValue} range={query} text={text} paramsArr={linkParams} />;
 
   if (_.isNumber(value)) {
-    return links.length > 0 ? renderLink(links, value) : <span style={{ color: '#164' }}>{value}</span>;
+    return links.length > 0 ? (
+      renderLink(links, value)
+    ) : (
+      <span
+      // style={{ color: 'var(--fc-fill-success)' }}
+      >
+        {value}
+      </span>
+    );
   } else if (_.isString(value)) {
-    return links.length > 0 ? renderLink(links, value) : <span style={{ color: '#a11' }}>"{value}"</span>;
-  } else if (_.isPlainObject(value)) {
+    return links.length > 0 ? renderLink(links, value) : <span style={{ color: 'var(--fc-fill-error)' }}>&quot;{value}&quot;</span>;
+  } else if (_.isBoolean(value)) {
+    return links.length > 0 ? renderLink(links, value) : <span style={{ color: 'var(--fc-purple-6-color)' }}>{String(value)}</span>;
+  } else if (_.isNull(value)) {
+    return <span style={{ color: 'var(--fc-text-4)' }}>null</span>;
+  } else if (isJsonObject(value)) {
     return (
       <>
         <span>{'{'}</span>
@@ -63,7 +90,7 @@ function renderValue(value, keyPath: string[], param: IParam) {
         <div>{'},'}</div>
       </>
     );
-  } else if (_.isArray(value)) {
+  } else if (isJsonArray(value)) {
     return (
       <>
         <span>{'['}</span>
@@ -74,7 +101,7 @@ function renderValue(value, keyPath: string[], param: IParam) {
   }
 }
 
-function renderObject(value, keyPath: string[] = [], param: IParam) {
+function renderObject(value: JsonObject, keyPath: string[] = [], param: IParam) {
   const keys = Object.keys(value);
   return keys.map((k, i) => (
     <div key={k} style={{ marginLeft: Indent }}>
@@ -86,12 +113,12 @@ function renderObject(value, keyPath: string[] = [], param: IParam) {
   ));
 }
 
-function renderArray(value, keyPath: string[] = [], param: IParam) {
+function renderArray(value: JsonArray, keyPath: string[] = [], param: IParam) {
   const keys = Object.keys(value);
   return keys.map((k, i) => (
     <div key={k} style={{ marginLeft: Indent }}>
-      {renderValue(value[k], [...keyPath, k], param)}
-      {i < keys.length - 1 && !_.isPlainObject(value[k]) && ','}
+      {renderValue(value[Number(k)], [...keyPath, k], param)}
+      {i < keys.length - 1 && !_.isPlainObject(value[Number(k)]) && ','}
     </div>
   ));
 }
