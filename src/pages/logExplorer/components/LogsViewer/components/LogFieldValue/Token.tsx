@@ -15,6 +15,7 @@ import { toString } from './util';
 import { LogsViewerStateContext } from '../../index';
 import { Field } from '../../../../types';
 import { NAME_SPACE } from '../../../../constants';
+import renderFieldValue from '../../../../utils/renderFieldValue';
 import { OnValueFilterParams } from '../../types';
 
 interface Props {
@@ -78,7 +79,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
   }
 
   // 可通过 adjustFieldValue 再加工一次
-  const adjustedValue = adjustFieldValue ? adjustFieldValue(displayValue, highlight?.[name]) : displayValue;
+  const adjustedValue = adjustFieldValue ? adjustFieldValue(displayValue, highlight?.[name]) : renderFieldValue(value);
 
   return (
     <Popover

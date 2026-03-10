@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider, Tag } from 'antd';
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
 import { PRIMARY_COLOR } from '@/utils/constant';
 
 import { NAME_SPACE } from '../../constants';
+import renderFieldValue from '../../utils/renderFieldValue';
 import { Field, StatsResult } from './types';
 import QuickViewPopover from './QuickViewPopover';
 
@@ -19,6 +20,7 @@ interface Props {
   typeMap: Record<string, string>;
   field: Field;
   enableStats: boolean;
+  disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: string; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
   renderStatsPopoverTitleExtra?: (options: {
@@ -68,9 +70,26 @@ const operIconMap = {
   available: <PlusCircleOutlined />,
 };
 
+// 正常情况下，我们会将空字符串、null 和 'null' 视为 empty value
+const isEmptyValue = (value: string | null) => {
+  return value === '' || value === null || value === 'null';
+};
+
 export default function FieldsItem(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats, renderStatsPopoverTitleExtra, renderFieldNameExtra, onStatisticClick } = props;
+  const {
+    operType,
+    onOperClick,
+    field,
+    onValueFilter,
+    typeMap,
+    enableStats,
+    fetchStats,
+    renderStatsPopoverTitleExtra,
+    renderFieldNameExtra,
+    onStatisticClick,
+    disableEmptyValueClick = true,
+  } = props;
   const [topNVisible, setTopNVisible] = useState<boolean>(false);
   const [topNumber, setTopNumber] = useState<number>(DEFAULT_TOP_NUMBER);
   const [topNData, setTopNData] = useState<any[]>([]);
@@ -91,7 +110,6 @@ export default function FieldsItem(props: Props) {
         <div className='flex justify-between items-center'>
           <Space>
             <span>{field.field}</span>
-            {/* <span className='text-hint'>{field.type2}</span> */}
           </Space>
           {topNVisible ? renderStatsPopoverTitleExtra?.({ index: field, stats, setTopNVisible }) : null}
         </div>
@@ -189,7 +207,7 @@ export default function FieldsItem(props: Props) {
               {_.isEmpty(topNData) && t('topn_no_data')}
               {_.map(topNData, (item) => {
                 const fieldValue = item?.value;
-                const emptyValueNotSupported = fieldValue === '' || fieldValue === null || fieldValue === 'null';
+                const emptyValueNotSupported = disableEmptyValueClick ? isEmptyValue(fieldValue) : false;
                 const percent = _.floor(item.percent, 2);
                 return (
                   <div key={fieldValue} className='flex gap-[10px] mb-2'>
@@ -197,7 +215,7 @@ export default function FieldsItem(props: Props) {
                       <div className='flex justify-between'>
                         <Tooltip title={fieldValue}>
                           <div style={{ width: 'calc(100% - 50px)' }} className='truncate'>
-                            {_.isEmpty(fieldValue) && !_.isNumber(fieldValue) ? '(empty)' : fieldValue}
+                            {renderFieldValue(fieldValue)}
                           </div>
                         </Tooltip>
                         {item.count !== undefined && (
