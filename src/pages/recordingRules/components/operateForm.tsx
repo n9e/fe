@@ -202,7 +202,7 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
           </Form>
         </div>
       </div>
-      <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType='prometheus' datasourceId={currentDatasourceId || 0} />
+      <AICopilot visible={copilotVisible} onClose={handleCopilotClose} actionKey='query_generator' actionContext={{ datasource_type: 'prometheus', datasource_id: currentDatasourceId || 0 }} />
     </div>
   );
 };

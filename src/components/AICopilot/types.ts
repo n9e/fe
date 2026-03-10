@@ -1,10 +1,8 @@
-export interface QueryGeneratorRequest {
-  datasource_type: string; // prometheus, mysql, doris, ck, pgsql
-  datasource_id: number;
-  database_name?: string;
-  table_name?: string;
+export interface AIChatRequest {
+  action_key: string; // e.g. "query_generator"
   user_input: string;
   history?: ChatMessage[];
+  context?: Record<string, any>; // action-specific params
 }
 
 export interface ChatMessage {

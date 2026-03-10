@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Input, Button, Dropdown, Menu, Switch, Popconfirm, Empty, Tag, message } from 'antd';
-import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CodeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import Markdown from '@/components/Markdown';
 import { AISkill, getAISkills, deleteAISkill, updateAISkill, importAISkill } from './services';
 import WriteSkillModal from './WriteSkillModal';
 import ResourceFiles from './ResourceFiles';
@@ -14,6 +15,7 @@ export default function Skills() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editData, setEditData] = useState<AISkill | undefined>();
   const [showSearch, setShowSearch] = useState(false);
+  const [instructionsViewMode, setInstructionsViewMode] = useState<'preview' | 'source'>('preview');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchSkills = async () => {
@@ -165,22 +167,73 @@ export default function Skills() {
               </div>
             )}
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>{t('skill.instructions')}</div>
-              <pre
-                style={{
-                  background: 'var(--fc-fill-1, #fafafa)',
-                  border: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                  borderRadius: 4,
-                  padding: 12,
-                  whiteSpace: 'pre-wrap',
-                  maxHeight: 400,
-                  overflow: 'auto',
-                  fontSize: 13,
-                  fontFamily: 'Monaco, Menlo, monospace',
-                }}
-              >
-                {selected.instructions}
-              </pre>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <div style={{ fontSize: 12, color: '#999' }}>{t('skill.instructions')}</div>
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    border: '1px solid var(--fc-border-subtle, #e8e8e8)',
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <span
+                    onClick={() => setInstructionsViewMode('preview')}
+                    style={{
+                      padding: '2px 8px',
+                      cursor: 'pointer',
+                      background: instructionsViewMode === 'preview' ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <EyeOutlined style={{ fontSize: 14 }} />
+                  </span>
+                  <span
+                    onClick={() => setInstructionsViewMode('source')}
+                    style={{
+                      padding: '2px 8px',
+                      cursor: 'pointer',
+                      background: instructionsViewMode === 'source' ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      borderLeft: '1px solid var(--fc-border-subtle, #e8e8e8)',
+                    }}
+                  >
+                    <CodeOutlined style={{ fontSize: 14 }} />
+                  </span>
+                </div>
+              </div>
+              {instructionsViewMode === 'preview' ? (
+                <div
+                  style={{
+                    background: 'var(--fc-fill-1, #fafafa)',
+                    border: '1px solid var(--fc-border-subtle, #e8e8e8)',
+                    borderRadius: 4,
+                    padding: 12,
+                    maxHeight: 400,
+                    overflow: 'auto',
+                  }}
+                >
+                  <Markdown content={selected.instructions} />
+                </div>
+              ) : (
+                <pre
+                  style={{
+                    background: 'var(--fc-fill-1, #fafafa)',
+                    border: '1px solid var(--fc-border-subtle, #e8e8e8)',
+                    borderRadius: 4,
+                    padding: 12,
+                    whiteSpace: 'pre-wrap',
+                    maxHeight: 400,
+                    overflow: 'auto',
+                    fontSize: 13,
+                    fontFamily: 'Monaco, Menlo, monospace',
+                  }}
+                >
+                  {selected.instructions}
+                </pre>
+              )}
             </div>
             <ResourceFiles skillId={selected.id} />
           </>

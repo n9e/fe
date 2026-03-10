@@ -6,7 +6,7 @@ import _ from 'lodash';
 import useSSE from './useSSE';
 import MessageBubble from './MessageBubble';
 import { createConversation, getConversation, addConversationMessages } from './services';
-import type { Message, ChatMessage, QueryGeneratorRequest, ToolCallInfo, DoneResponse } from './types';
+import type { Message, ChatMessage, AIChatRequest, ToolCallInfo, DoneResponse } from './types';
 
 const { TextArea } = Input;
 
@@ -47,16 +47,14 @@ function tryParseQueryResponse(text: string): { query: string; explanation: stri
 }
 
 interface Props {
-  datasourceType: string;
-  datasourceId: number;
-  databaseName?: string;
-  tableName?: string;
+  actionKey: string;
+  actionContext?: Record<string, any>;
   conversationId?: number;
   onConversationChange?: (id: number, title: string) => void;
   onApplyQuery?: (query: string) => void;
 }
 
-export default function ChatPanel({ datasourceType, datasourceId, databaseName, tableName, conversationId, onConversationChange, onApplyQuery }: Props) {
+export default function ChatPanel({ actionKey, actionContext, conversationId, onConversationChange, onApplyQuery }: Props) {
   const { t } = useTranslation('AICopilot');
   const { sendMessage, cancel, isStreaming } = useSSE();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -134,12 +132,9 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
       } else {
         // Create a new conversation with the first user message as title
         const title = userMsg.content.slice(0, 50) + (userMsg.content.length > 50 ? '...' : '');
-        const ctx: Record<string, any> = { datasource_type: datasourceType, datasource_id: datasourceId };
-        if (databaseName) ctx.database_name = databaseName;
-        if (tableName) ctx.table_name = tableName;
         createConversation({
           title,
-          context: JSON.stringify(ctx),
+          context: JSON.stringify({ action_key: actionKey, ...actionContext }),
         })
           .then((res) => {
             const newConv = res?.dat;
@@ -153,7 +148,7 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
           .catch(() => {});
       }
     },
-    [datasourceType, datasourceId, databaseName, tableName, onConversationChange],
+    [actionKey, actionContext, onConversationChange],
   );
 
   const handleSend = useCallback(
@@ -188,13 +183,11 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
           content: m.role === 'assistant' ? m.query || m.content : m.content,
         }));
 
-      const params: QueryGeneratorRequest = {
-        datasource_type: datasourceType,
-        datasource_id: datasourceId,
-        database_name: databaseName,
-        table_name: tableName,
+      const params: AIChatRequest = {
+        action_key: actionKey,
         user_input: input,
         history,
+        context: actionContext,
       };
 
       sendMessage(params, {
@@ -254,7 +247,7 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
         },
       });
     },
-    [inputValue, isStreaming, messages, datasourceType, datasourceId, databaseName, tableName, sendMessage, saveMessages],
+    [inputValue, isStreaming, messages, actionKey, actionContext, sendMessage, saveMessages],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -281,7 +274,7 @@ export default function ChatPanel({ datasourceType, datasourceId, databaseName, 
             </Space>
           </div>
         ) : (
-          messages.map((msg) => <MessageBubble key={msg.id} message={msg} datasourceType={datasourceType} onRunQuery={onApplyQuery} />)
+          messages.map((msg) => <MessageBubble key={msg.id} message={msg} datasourceType={actionContext?.datasource_type} onRunQuery={onApplyQuery} />)
         )}
         <div ref={messagesEndRef} />
       </div>

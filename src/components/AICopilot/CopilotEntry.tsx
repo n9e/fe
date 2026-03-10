@@ -49,7 +49,13 @@ export default function CopilotEntry({ datasourceCate, datasourceId, onApplyQuer
         closeIcon={<CloseOutlined />}
         bodyStyle={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
       >
-        {visible && <ChatPanel datasourceType={datasourceCate} datasourceId={datasourceId} onApplyQuery={onApplyQuery} />}
+        {visible && (
+          <ChatPanel
+            actionKey='query_generator'
+            actionContext={{ datasource_type: datasourceCate, datasource_id: datasourceId }}
+            onApplyQuery={onApplyQuery}
+          />
+        )}
       </Drawer>
     </>
   );
@@ -83,7 +89,13 @@ export function CopilotEntryButton({ datasourceCate, datasourceId, onApplyQuery 
         closeIcon={<CloseOutlined />}
         bodyStyle={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
       >
-        {visible && <ChatPanel datasourceType={datasourceCate} datasourceId={datasourceId} onApplyQuery={onApplyQuery} />}
+        {visible && (
+          <ChatPanel
+            actionKey='query_generator'
+            actionContext={{ datasource_type: datasourceCate, datasource_id: datasourceId }}
+            onApplyQuery={onApplyQuery}
+          />
+        )}
       </Drawer>
     </>
   );

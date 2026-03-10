@@ -83,7 +83,7 @@ const MetricExplorerPage = () => {
             </div>
           </div>
         </div>
-        <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType={activeDatasource.cate} datasourceId={activeDatasource.id} onApplyQuery={handleApplyQuery} />
+        <AICopilot visible={copilotVisible} onClose={handleCopilotClose} actionKey='query_generator' actionContext={{ datasource_type: activeDatasource.cate, datasource_id: activeDatasource.id }} onApplyQuery={handleApplyQuery} />
       </div>
     </PageLayout>
   );

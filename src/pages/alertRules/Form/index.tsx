@@ -198,7 +198,7 @@ export default function index(props: IProps) {
               </div>
             </Form>
           </div>
-          <AICopilot visible={copilotVisible} onClose={handleCopilotClose} datasourceType={cate || ''} datasourceId={datasourceValue || 0} />
+          <AICopilot visible={copilotVisible} onClose={handleCopilotClose} actionKey='query_generator' actionContext={{ datasource_type: cate || '', datasource_id: datasourceValue || 0 }} />
         </div>
       </CopilotSidebarContext.Provider>
     </FormStateContext.Provider>

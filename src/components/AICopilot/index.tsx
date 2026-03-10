@@ -7,10 +7,8 @@ import './style.less';
 interface Props {
   visible: boolean;
   onClose: () => void;
-  datasourceType: string;
-  datasourceId: number;
-  databaseName?: string;
-  tableName?: string;
+  actionKey: string;
+  actionContext?: Record<string, any>;
   onApplyQuery?: (query: string) => void;
 }
 
@@ -19,7 +17,7 @@ export { default as CopilotPlaceholderLink } from './CopilotPlaceholderLink';
 export { default as CopilotEntry, CopilotEntryButton } from './CopilotEntry';
 export { CopilotSidebarContext, useCopilotSidebar } from './CopilotSidebarContext';
 
-export default function AICopilot({ visible, onClose, datasourceType, datasourceId, databaseName, tableName, onApplyQuery }: Props) {
+export default function AICopilot({ visible, onClose, actionKey, actionContext, onApplyQuery }: Props) {
   const [conversationId, setConversationId] = useState<number | undefined>();
   const [refreshKey, setRefreshKey] = useState(0);
   // Use a key to force remount ChatPanel when switching conversations
@@ -47,10 +45,8 @@ export default function AICopilot({ visible, onClose, datasourceType, datasource
       <ConversationHeader currentId={conversationId} onSelect={handleSelectConversation} onNew={handleNewConversation} onClose={onClose} refreshKey={refreshKey} />
       <ChatPanel
         key={chatKey}
-        datasourceType={datasourceType}
-        datasourceId={datasourceId}
-        databaseName={databaseName}
-        tableName={tableName}
+        actionKey={actionKey}
+        actionContext={actionContext}
         conversationId={conversationId}
         onConversationChange={handleConversationChange}
         onApplyQuery={onApplyQuery}
