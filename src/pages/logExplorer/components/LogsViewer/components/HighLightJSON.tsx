@@ -66,7 +66,7 @@ function renderValue(value: JsonValue, keyPath: string[], param: IParam) {
 
   const renderLink = (linkParams: ILogURL[], text: string | number | boolean) => <Links rawValue={rawValue} range={query} text={text} paramsArr={linkParams} />;
 
-  if (_.isNumber(value)) {
+  if (typeof value === 'number') {
     return links.length > 0 ? (
       renderLink(links, value)
     ) : (
@@ -76,11 +76,11 @@ function renderValue(value: JsonValue, keyPath: string[], param: IParam) {
         {value}
       </span>
     );
-  } else if (_.isString(value)) {
+  } else if (typeof value === 'string') {
     return links.length > 0 ? renderLink(links, value) : <span style={{ color: 'var(--fc-fill-error)' }}>&quot;{value}&quot;</span>;
-  } else if (_.isBoolean(value)) {
+  } else if (typeof value === 'boolean') {
     return links.length > 0 ? renderLink(links, value) : <span style={{ color: 'var(--fc-purple-6-color)' }}>{String(value)}</span>;
-  } else if (_.isNull(value)) {
+  } else if (value === null) {
     return <span style={{ color: 'var(--fc-text-4)' }}>null</span>;
   } else if (isJsonObject(value)) {
     return (
