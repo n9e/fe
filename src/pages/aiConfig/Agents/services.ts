@@ -7,15 +7,9 @@ export interface AIAgent {
   description: string;
   use_case: string;
   llm_config_id: number;
-  // LLM configuration (legacy inline fields)
-  api_type: string;
-  api_url: string;
-  api_key: string;
-  model: string;
-  extra_config: string;
   // Extensions
-  skill_ids: string;
-  mcp_server_ids: string;
+  skill_ids: number[];
+  mcp_server_ids: number[];
   // Status
   is_default: number;
   enabled: number;

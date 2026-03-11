@@ -46,10 +46,6 @@ export default function AgentList() {
       const config = llmConfigs.find((c) => c.id === agent.llm_config_id);
       return config ? config.name : '-';
     }
-    // Legacy: show inline api_type/model
-    if (agent.api_type) {
-      return `${t(`llm.api_type_options.${agent.api_type}` as any)} / ${agent.model}`;
-    }
     return '-';
   };
 

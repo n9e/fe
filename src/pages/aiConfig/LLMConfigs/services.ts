@@ -1,6 +1,17 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
+export interface LLMExtraConfig {
+  timeout_seconds?: number;
+  skip_tls_verify?: boolean;
+  proxy?: string;
+  custom_headers?: Record<string, string>;
+  custom_params?: Record<string, any>;
+  temperature?: number;
+  max_tokens?: number;
+  context_length?: number;
+}
+
 export interface AILLMConfig {
   id: number;
   name: string;
@@ -9,7 +20,7 @@ export interface AILLMConfig {
   api_url: string;
   api_key: string;
   model: string;
-  extra_config: string;
+  extra_config: LLMExtraConfig;
   enabled: number;
   created_at: number;
   created_by: string;

@@ -21,25 +21,22 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
 
   useEffect(() => {
     if (visible && data) {
-      let extraConfig: Record<string, any> = {};
-      try {
-        extraConfig = data.extra_config ? JSON.parse(data.extra_config) : {};
-      } catch {}
+      const extraConfig = data.extra_config || {};
       let customHeadersArr: { name: string; value: string }[] = [];
       if (extraConfig.custom_headers && typeof extraConfig.custom_headers === 'object') {
         customHeadersArr = Object.entries(extraConfig.custom_headers).map(([name, value]) => ({ name, value: value as string }));
       }
-      const { custom_headers: _ch, custom_params, timeout_seconds, proxy, skip_tls_verify, context_length, ...restExtra } = extraConfig;
       form.setFieldsValue({
         ...data,
         enabled: data.enabled === 1,
-        ...restExtra,
-        timeout: timeout_seconds,
-        skip_tls_verify: !!skip_tls_verify,
-        proxy: proxy || '',
-        context_length,
+        timeout: extraConfig.timeout_seconds,
+        skip_tls_verify: !!extraConfig.skip_tls_verify,
+        proxy: extraConfig.proxy || '',
+        temperature: extraConfig.temperature,
+        max_tokens: extraConfig.max_tokens,
+        context_length: extraConfig.context_length,
         custom_headers: customHeadersArr.length > 0 ? customHeadersArr : undefined,
-        custom_params: custom_params ? JSON.stringify(custom_params, null, 2) : '',
+        custom_params: extraConfig.custom_params ? JSON.stringify(extraConfig.custom_params, null, 2) : '',
       });
     } else if (visible) {
       form.resetFields();
@@ -97,7 +94,7 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
       const payload = {
         ...rest,
         enabled: values.enabled ? 1 : 0,
-        extra_config: Object.keys(extraConfig).length > 0 ? JSON.stringify(extraConfig) : '',
+        extra_config: extraConfig,
       };
 
       if (isEdit && data) {

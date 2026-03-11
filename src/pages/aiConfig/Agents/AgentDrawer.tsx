@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Drawer, Form, Input, Select, Switch, Space, Button, Row, Col, Divider, message } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { Drawer, Form, Input, Select, Switch, Space, Button, Row, Col, Divider, Tooltip, message } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AIAgent, addAgent, updateAgent } from './services';
 import { getLLMConfigs, AILLMConfig } from '../LLMConfigs/services';
 import { getAISkills, AISkill } from '../Skills/services';
 import { getMCPServers, MCPServer } from '../MCPServers/services';
 import LLMConfigDrawer from '../LLMConfigs/LLMConfigDrawer';
-
-function parseIds(str?: string): number[] {
-  if (!str) return [];
-  return str
-    .split(',')
-    .map((s) => Number(s.trim()))
-    .filter((n) => n > 0);
-}
-
-function joinIds(ids?: number[]): string {
-  if (!ids || ids.length === 0) return '';
-  return ids.join(',');
-}
 
 interface Props {
   visible: boolean;
@@ -53,8 +40,8 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
         enabled: data.enabled === 1,
         use_case: data.use_case || undefined,
         llm_config_id: data.llm_config_id || undefined,
-        skill_ids: parseIds(data.skill_ids),
-        mcp_server_ids: parseIds(data.mcp_server_ids),
+        skill_ids: data.skill_ids || [],
+        mcp_server_ids: data.mcp_server_ids || [],
       });
     } else if (visible) {
       form.resetFields();
@@ -72,8 +59,8 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
         description: values.description || '',
         use_case: values.use_case || '',
         llm_config_id: values.llm_config_id || 0,
-        skill_ids: joinIds(values.skill_ids),
-        mcp_server_ids: joinIds(values.mcp_server_ids),
+        skill_ids: values.skill_ids || [],
+        mcp_server_ids: values.mcp_server_ids || [],
         enabled: values.enabled ? 1 : 0,
       };
 
@@ -115,7 +102,18 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item name='use_case' label={t('agent.use_case')} rules={[{ required: true }]}>
+            <Form.Item
+              name='use_case'
+              label={
+                <Space size={4}>
+                  {t('agent.use_case')}
+                  <Tooltip title={t('agent.use_case_tip')}>
+                    <QuestionCircleOutlined style={{ color: 'var(--fc-text-4)' }} />
+                  </Tooltip>
+                </Space>
+              }
+              rules={[{ required: true }]}
+            >
               <Select>
                 <Select.Option value='chat'>{t('agent.use_case_options.chat')}</Select.Option>
               </Select>
@@ -136,7 +134,7 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
           label={
             <Space>
               {t('agent.llm_select')}
-              <PlusCircleOutlined style={{ cursor: 'pointer' }} onClick={() => setLLMDrawerVisible(true)} />
+              <a onClick={() => setLLMDrawerVisible(true)}>{t('agent.llm_add')}</a>
             </Space>
           }
           rules={[{ required: true, message: t('agent.llm_select_required') }]}
@@ -152,7 +150,17 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
           </Select>
         </Form.Item>
 
-        <Form.Item name='skill_ids' label={t('agent.skill_ids')}>
+        <Form.Item
+          name='skill_ids'
+          label={
+            <Space size={4}>
+              {t('agent.skill_ids')}
+              <Tooltip title={t('agent.skill_ids_tip')}>
+                <QuestionCircleOutlined style={{ color: 'var(--fc-text-4)' }} />
+              </Tooltip>
+            </Space>
+          }
+        >
           <Select mode='multiple' placeholder={t('agent.skill_select_placeholder')} allowClear showSearch optionFilterProp='children'>
             {skills
               .filter((s) => s.enabled === 1)
@@ -163,7 +171,17 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
               ))}
           </Select>
         </Form.Item>
-        <Form.Item name='mcp_server_ids' label={t('agent.mcp_server_ids')}>
+        <Form.Item
+          name='mcp_server_ids'
+          label={
+            <Space size={4}>
+              {t('agent.mcp_server_ids')}
+              <Tooltip title={t('agent.mcp_server_ids_tip')}>
+                <QuestionCircleOutlined style={{ color: 'var(--fc-text-4)' }} />
+              </Tooltip>
+            </Space>
+          }
+        >
           <Select mode='multiple' placeholder={t('agent.mcp_select_placeholder')} allowClear showSearch optionFilterProp='children'>
             {mcpServers
               .filter((s) => s.enabled === 1)
