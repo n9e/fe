@@ -9,6 +9,7 @@ const ru_RU = {
     targets: 'хостов',
     collects: 'Настройка сбора данных',
     network_devices: 'Сетевые устройства',
+    mobile_device: 'Мобильные устройства',
     dashboards: 'Панель мониторинга',
     reports: 'Отчёты мониторинга',
     heartbeat: 'Тестирование',

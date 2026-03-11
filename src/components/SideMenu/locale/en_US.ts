@@ -9,6 +9,7 @@ const en_US = {
     targets: 'Hosts',
     collects: 'Collection rules',
     network_devices: 'Network devices',
+    mobile_device: 'Mobile device',
     dashboards: 'Dashboards',
     reports: 'Reports',
     heartbeat: 'Heartbeat',
