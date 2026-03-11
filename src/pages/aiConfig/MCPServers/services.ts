@@ -5,7 +5,7 @@ export interface MCPServer {
   id: number;
   name: string;
   url: string;
-  headers: string;
+  headers: Record<string, string>;
   env_vars: string;
   description: string;
   enabled: number;
@@ -35,7 +35,7 @@ export function testMCPServer(id: number) {
   return request(`/api/n9e/mcp-server/${id}/test`, { method: RequestMethod.Post }).then((res) => res.dat);
 }
 
-export function testMCPServerConfig(data: { url: string; headers: string }) {
+export function testMCPServerConfig(data: { url: string; headers: Record<string, string> }) {
   return request('/api/n9e/mcp-servers/test', { method: RequestMethod.Post, data }).then((res) => res.dat);
 }
 

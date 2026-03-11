@@ -16,21 +16,17 @@ interface KVPair {
   value: string;
 }
 
-function parseKV(jsonStr: string): KVPair[] {
-  try {
-    const obj = JSON.parse(jsonStr);
-    return Object.entries(obj).map(([key, value]) => ({ key, value: String(value) }));
-  } catch {
-    return [];
-  }
+function headersToKV(headers: Record<string, string> | undefined): KVPair[] {
+  if (!headers || typeof headers !== 'object') return [];
+  return Object.entries(headers).map(([key, value]) => ({ key, value: String(value) }));
 }
 
-function serializeKV(pairs: KVPair[]): string {
+function kvToHeaders(pairs: KVPair[]): Record<string, string> {
   const obj: Record<string, string> = {};
   pairs.forEach((p) => {
     if (p.key) obj[p.key] = p.value;
   });
-  return Object.keys(obj).length > 0 ? JSON.stringify(obj) : '';
+  return obj;
 }
 
 export default function AddServerModal({ visible, data, onClose, onOk }: Props) {
@@ -49,7 +45,7 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
         url: data.url,
         description: data.description,
         enabled: data.enabled === 1,
-        headers: parseKV(data.headers),
+        headers: headersToKV(data.headers),
       });
     } else if (visible) {
       form.resetFields();
@@ -75,7 +71,7 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
       if (isEdit && data) {
         result = await testMCPServer(data.id);
       } else {
-        const headers = serializeKV(form.getFieldValue('headers') || []);
+        const headers = kvToHeaders(form.getFieldValue('headers') || []);
         result = await testMCPServerConfig({ url, headers });
       }
       setTestResult(result);
@@ -101,7 +97,7 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
         url: values.url,
         description: values.description || '',
         enabled: values.enabled ? 1 : 0,
-        headers: serializeKV(values.headers || []),
+        headers: kvToHeaders(values.headers || []),
         env_vars: '',
       };
 
