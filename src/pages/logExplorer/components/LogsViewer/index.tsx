@@ -23,7 +23,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 
 interface Props {
   /** 时间字段 */
-  timeField: string;
+  timeField?: string;
   /** 直方图数据 */
   hideHistogram?: boolean;
   histogramLoading?: boolean;

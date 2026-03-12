@@ -119,9 +119,10 @@ export default function FieldsItem(props: Props) {
           <Spin spinning={topNLoading}>
             {stats && (
               <>
-                <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />
+                {onStatisticClick && <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />}
                 <div className='bg-fc-200 p-4'>
-                  {stats?.unique_count !== undefined && stats?.exist_ratio !== undefined && (
+                  {stats?.unique_count !== undefined && (
+                    // && stats?.exist_ratio !== undefined
                     <Row gutter={[16, 16]}>
                       {['unique_count', 'exist_ratio'].map((statName) => {
                         const statValue = stats?.[statName];
@@ -211,7 +212,7 @@ export default function FieldsItem(props: Props) {
                 const percent = _.floor(item.percent, 2);
                 return (
                   <div key={fieldValue} className='flex gap-[10px] mb-2'>
-                    <div className='flex-shrink-0' style={{ width: 'calc(100% - 64px)' }}>
+                    <div className='flex-shrink-0' style={{ width: onValueFilter ? 'calc(100% - 64px)' : '100%' }}>
                       <div className='flex justify-between'>
                         <Tooltip title={fieldValue}>
                           <div style={{ width: 'calc(100% - 50px)' }} className='truncate'>
@@ -253,42 +254,44 @@ export default function FieldsItem(props: Props) {
                         </QuickViewPopover>
                       </div>
                     </div>
-                    <div style={{ width: 64 }}>
-                      <Space size={0}>
-                        <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
-                          <Button
-                            className='p-0'
-                            type='text'
-                            icon={<PlusCircleOutlined />}
-                            disabled={emptyValueNotSupported}
-                            onClick={() => {
-                              onValueFilter?.({
-                                key: field.field,
-                                value: fieldValue,
-                                operator: 'and',
-                              });
-                              setTopNVisible(false);
-                            }}
-                          />
-                        </Tooltip>
-                        <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
-                          <Button
-                            className='p-0'
-                            type='text'
-                            icon={<MinusCircleOutlined />}
-                            disabled={emptyValueNotSupported}
-                            onClick={() => {
-                              onValueFilter?.({
-                                key: field.field,
-                                value: fieldValue,
-                                operator: 'not',
-                              });
-                              setTopNVisible(false);
-                            }}
-                          />
-                        </Tooltip>
-                      </Space>
-                    </div>
+                    {onValueFilter && (
+                      <div style={{ width: 64 }}>
+                        <Space size={0}>
+                          <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
+                            <Button
+                              className='p-0'
+                              type='text'
+                              icon={<PlusCircleOutlined />}
+                              disabled={emptyValueNotSupported}
+                              onClick={() => {
+                                onValueFilter?.({
+                                  key: field.field,
+                                  value: fieldValue,
+                                  operator: 'and',
+                                });
+                                setTopNVisible(false);
+                              }}
+                            />
+                          </Tooltip>
+                          <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
+                            <Button
+                              className='p-0'
+                              type='text'
+                              icon={<MinusCircleOutlined />}
+                              disabled={emptyValueNotSupported}
+                              onClick={() => {
+                                onValueFilter?.({
+                                  key: field.field,
+                                  value: fieldValue,
+                                  operator: 'not',
+                                });
+                                setTopNVisible(false);
+                              }}
+                            />
+                          </Tooltip>
+                        </Space>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -339,7 +342,9 @@ export default function FieldsItem(props: Props) {
         }
       >
         <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'>
-          <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+          {field.type && (
+            <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+          )}
           <span
             style={{
               width: 'calc(100% - 26px)',
