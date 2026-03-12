@@ -43,7 +43,7 @@ export default function MCPServerList() {
     setTools([]);
     setTestModalVisible(true);
     try {
-      const result = await testMCPServer(record.id);
+      const result = await testMCPServer({ url: record.url, headers: record.headers });
       setTestResult(result);
       if (result.success) {
         try {

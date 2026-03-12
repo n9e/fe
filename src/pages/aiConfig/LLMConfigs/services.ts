@@ -44,7 +44,6 @@ export function deleteLLMConfig(id: number) {
   return request(`/api/n9e/ai-llm-config/${id}`, { method: RequestMethod.Delete });
 }
 
-export function testLLMConfig(data: { id?: number; api_type: string; api_url: string; api_key: string; model: string }) {
-  const id = data.id || 0;
-  return request(`/api/n9e/ai-llm-config/${id}/test`, { method: RequestMethod.Post, data }).then((res) => res.dat);
+export function testLLMConfig(data: { api_type: string; api_url: string; api_key: string; model: string; extra_config?: LLMExtraConfig }) {
+  return request('/api/n9e/ai-llm-config/test', { method: RequestMethod.Post, data }).then((res) => res.dat);
 }

@@ -44,17 +44,32 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
     }
   }, [visible, data]);
 
+  const buildExtraConfig = (values: any) => {
+    const extraConfig: Record<string, any> = {};
+    if (values.timeout !== undefined && values.timeout !== null) extraConfig.timeout_seconds = values.timeout;
+    if (values.skip_tls_verify) extraConfig.skip_tls_verify = true;
+    if (values.proxy) extraConfig.proxy = values.proxy;
+    if (values.custom_headers && values.custom_headers.length > 0) {
+      const headers: Record<string, string> = {};
+      values.custom_headers.forEach((h: { name: string; value: string }) => {
+        if (h?.name) headers[h.name] = h.value || '';
+      });
+      if (Object.keys(headers).length > 0) extraConfig.custom_headers = headers;
+    }
+    return extraConfig;
+  };
+
   const handleTest = async () => {
     setTesting(true);
     setTestResult(null);
     try {
       const values = form.getFieldsValue();
       const result = await testLLMConfig({
-        id: data?.id,
         api_type: values.api_type,
         api_url: values.api_url,
         api_key: values.api_key,
         model: values.model,
+        extra_config: buildExtraConfig(values),
       });
       setTestResult(result);
     } catch (err: any) {

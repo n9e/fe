@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Switch, Button, Space, Tag, Spin, Table, message } from 'antd';
 import { PlusOutlined, DeleteOutlined, ApiOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { MCPServer, addMCPServer, updateMCPServer, testMCPServer, testMCPServerConfig, getMCPServerTools } from './services';
+import { MCPServer, addMCPServer, updateMCPServer, testMCPServer, getMCPServerTools } from './services';
 
 interface Props {
   visible: boolean;
@@ -67,13 +67,8 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
     setTestResult(null);
     setTools([]);
     try {
-      let result;
-      if (isEdit && data) {
-        result = await testMCPServer(data.id);
-      } else {
-        const headers = kvToHeaders(form.getFieldValue('headers') || []);
-        result = await testMCPServerConfig({ url, headers });
-      }
+      const headers = kvToHeaders(form.getFieldValue('headers') || []);
+      const result = await testMCPServer({ url, headers });
       setTestResult(result);
       if (result.success && isEdit && data) {
         try {
@@ -98,7 +93,6 @@ export default function AddServerModal({ visible, data, onClose, onOk }: Props) 
         description: values.description || '',
         enabled: values.enabled ? 1 : 0,
         headers: kvToHeaders(values.headers || []),
-        env_vars: '',
       };
 
       if (isEdit && data) {
