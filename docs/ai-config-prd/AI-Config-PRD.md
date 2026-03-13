@@ -114,7 +114,6 @@ interface AIAgent {
 | POST | `/api/n9e/ai-agents` | 新增 Agent |
 | PUT | `/api/n9e/ai-agent/{id}` | 更新指定 Agent |
 | DELETE | `/api/n9e/ai-agent/{id}` | 删除指定 Agent |
-| POST | `/api/n9e/ai-agent/{id}/test` | 测试 Agent 的 LLM 连接 |
 
 ---
 
