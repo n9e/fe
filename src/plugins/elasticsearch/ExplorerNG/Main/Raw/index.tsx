@@ -10,6 +10,7 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
+import { RenderValue } from '@/pages/logExplorer/components/LogsViewer/Raw';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
@@ -45,9 +46,9 @@ interface Props {
   indexData: Field[];
   rangeRef: React.MutableRefObject<
     | {
-      from: number;
-      to: number;
-    }
+        from: number;
+        to: number;
+      }
     | undefined
   >;
   snapRangeRef: React.MutableRefObject<{
@@ -144,9 +145,9 @@ export default function index(props: Props) {
       let timeParams =
         fixedRangeRef.current === false
           ? {
-            from: moment(range.start).valueOf(),
-            to: moment(range.end).valueOf(),
-          }
+              from: moment(range.start).valueOf(),
+              to: moment(range.end).valueOf(),
+            }
           : rangeRef.current!;
       if (snapRangeRef.current && snapRangeRef.current.from && snapRangeRef.current.to) {
         timeParams = snapRangeRef.current as { from: number; to: number };
@@ -326,11 +327,11 @@ export default function index(props: Props) {
   const currentFieldConfig = useFieldConfig(
     {
       cate: DatasourceCateEnum.elasticsearch,
-      indexPatternId: queryValues?.indexPattern,
+      indexPatternId: queryValues?.index_pattern,
       datasource_id: form.getFieldValue('datasourceValue'),
       resource: { es_resource: { index: queryValues?.index } },
     },
-    refreshFlag,
+    queryValues?.index_pattern + queryValues?.index,
   );
 
   useEffect(() => {
@@ -578,7 +579,16 @@ export default function index(props: Props) {
                 }
               }}
               timeFieldColumnFormat={(val) => {
+                if (!queryValues.date_field) return val as string;
+                if (queryValues?.index_pattern) {
+                  return <RenderValue name={queryValues.date_field} value={val as string} />;
+                }
                 if (_.isString(val)) {
+                  const parsedTime = moment(val);
+                  if (parsedTime.isValid()) {
+                    return parsedTime.format('YYYY-MM-DD HH:mm:ss');
+                  }
+                } else if (_.isNumber(val)) {
                   const parsedTime = moment(val);
                   if (parsedTime.isValid()) {
                     return parsedTime.format('YYYY-MM-DD HH:mm:ss');
@@ -601,7 +611,7 @@ export default function index(props: Props) {
                 logTotal: data?.total || 0,
                 cate: DatasourceCateEnum.elasticsearch,
                 datasourceValue,
-                fieldCacheKey: queryValues.index
+                fieldCacheKey: queryValues.index,
               }}
             />
           ) : loading || histogramLoading ? (
