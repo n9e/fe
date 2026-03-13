@@ -137,12 +137,22 @@ export default function Skills() {
     }
     if (items.length === 0) return null;
     return (
-      <div style={{ marginBottom: 16 }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          columnGap: 12,
+          rowGap: 6,
+          fontSize: 13,
+          lineHeight: '20px',
+        }}
+      >
         {items.map((item) => (
-          <div key={item.label} style={{ marginBottom: 4 }}>
-            <span style={{ fontSize: 12, color: '#999' }}>{item.label}: </span>
-            <span>{item.value}</span>
-          </div>
+          <React.Fragment key={item.label}>
+            <span style={{ fontSize: 12, color: '#999', whiteSpace: 'nowrap' }}>{item.label}</span>
+            <span style={{ wordBreak: 'break-word' }}>{item.value}</span>
+          </React.Fragment>
         ))}
       </div>
     );

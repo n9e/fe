@@ -93,6 +93,7 @@ const ja_JP = {
     name_placeholder: 'my-skill-name',
     description_placeholder: 'スキルの用途を説明してください...',
     instructions_placeholder: 'Markdown 形式でスキル指示を記述...',
+    advanced_config: '詳細設定',
     license: 'ライセンス',
     license_placeholder: '例: MIT, Apache-2.0',
     compatibility: '互換性',

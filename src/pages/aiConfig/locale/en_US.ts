@@ -93,6 +93,7 @@ const en_US = {
     name_placeholder: 'my-skill-name',
     description_placeholder: 'Describe when to use this skill...',
     instructions_placeholder: 'Write skill instructions in Markdown...',
+    advanced_config: 'Advanced Config',
     license: 'License',
     license_placeholder: 'e.g. MIT, Apache-2.0',
     compatibility: 'Compatibility',

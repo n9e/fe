@@ -93,6 +93,7 @@ const zh_CN = {
     name_placeholder: 'my-skill-name',
     description_placeholder: '描述该技能的用途和触发场景...',
     instructions_placeholder: '编写提示词指令，支持 Markdown 格式...',
+    advanced_config: '高级配置',
     license: '许可证',
     license_placeholder: '例如 MIT、Apache-2.0',
     compatibility: '兼容性',

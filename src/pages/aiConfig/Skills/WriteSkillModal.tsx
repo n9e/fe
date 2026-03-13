@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, Button, Space, message } from 'antd';
+import { Modal, Form, Input, Button, Space, Collapse, message } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { AISkill, addAISkill, updateAISkill } from './services';
@@ -80,39 +80,41 @@ export default function WriteSkillModal({ visible, data, onClose, onOk }: Props)
         <Form.Item name='instructions' label={t('skill.instructions')} rules={[{ required: true }]}>
           <Input.TextArea rows={10} placeholder={t('skill.instructions_placeholder')} style={{ fontFamily: 'Monaco, Menlo, monospace', fontSize: 13 }} />
         </Form.Item>
-        <Form.Item name='license' label={t('skill.license')}>
-          <Input placeholder={t('skill.license_placeholder')} />
-        </Form.Item>
-        <Form.Item name='compatibility' label={t('skill.compatibility')}>
-          <Input placeholder={t('skill.compatibility_placeholder')} />
-        </Form.Item>
-        <Form.Item name='allowed_tools' label={t('skill.allowed_tools')}>
-          <Input placeholder={t('skill.allowed_tools_placeholder')} />
-        </Form.Item>
-
-        {/* Metadata key-value pairs */}
-        <Form.Item label={t('skill.metadata')}>
-          <Form.List name='metadata_list'>
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restField }) => (
-                  <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                    <Form.Item {...restField} name={[name, 'key']} rules={[{ required: true, message: '' }]} style={{ marginBottom: 0 }}>
-                      <Input placeholder={t('skill.metadata_key')} style={{ width: 200 }} />
-                    </Form.Item>
-                    <Form.Item {...restField} name={[name, 'value']} style={{ marginBottom: 0 }}>
-                      <Input placeholder={t('skill.metadata_value')} style={{ width: 300 }} />
-                    </Form.Item>
-                    <MinusCircleOutlined onClick={() => remove(name)} />
-                  </Space>
-                ))}
-                <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
-                  {t('skill.add_metadata')}
-                </Button>
-              </>
-            )}
-          </Form.List>
-        </Form.Item>
+        <Collapse ghost style={{ marginLeft: -16, marginRight: -16 }}>
+          <Collapse.Panel header={t('skill.advanced_config')} key='advanced' style={{ paddingLeft: 0 }}>
+            <Form.Item name='license' label={t('skill.license')}>
+              <Input placeholder={t('skill.license_placeholder')} />
+            </Form.Item>
+            <Form.Item name='compatibility' label={t('skill.compatibility')}>
+              <Input placeholder={t('skill.compatibility_placeholder')} />
+            </Form.Item>
+            <Form.Item name='allowed_tools' label={t('skill.allowed_tools')}>
+              <Input placeholder={t('skill.allowed_tools_placeholder')} />
+            </Form.Item>
+            <Form.Item label={t('skill.metadata')} style={{ marginBottom: 0 }}>
+              <Form.List name='metadata_list'>
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.map(({ key, name, ...restField }) => (
+                      <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
+                        <Form.Item {...restField} name={[name, 'key']} rules={[{ required: true, message: '' }]} style={{ marginBottom: 0 }}>
+                          <Input placeholder={t('skill.metadata_key')} style={{ width: 200 }} />
+                        </Form.Item>
+                        <Form.Item {...restField} name={[name, 'value']} style={{ marginBottom: 0 }}>
+                          <Input placeholder={t('skill.metadata_value')} style={{ width: 300 }} />
+                        </Form.Item>
+                        <MinusCircleOutlined onClick={() => remove(name)} />
+                      </Space>
+                    ))}
+                    <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
+                      {t('skill.add_metadata')}
+                    </Button>
+                  </>
+                )}
+              </Form.List>
+            </Form.Item>
+          </Collapse.Panel>
+        </Collapse>
       </Form>
     </Modal>
   );

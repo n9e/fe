@@ -93,6 +93,7 @@ const ru_RU = {
     name_placeholder: 'my-skill-name',
     description_placeholder: 'Опишите назначение навыка...',
     instructions_placeholder: 'Напишите инструкции в формате Markdown...',
+    advanced_config: 'Расширенные настройки',
     license: 'Лицензия',
     license_placeholder: 'Например MIT, Apache-2.0',
     compatibility: 'Совместимость',
