@@ -64,7 +64,7 @@ interface RenderValueProps {
   showExistsAction?: boolean;
 }
 
-function RenderValue({ name, value, parentKey, onValueFilter, adjustFieldValue, showExistsAction }: RenderValueProps) {
+export function RenderValue({ name, value, parentKey, onValueFilter, adjustFieldValue, showExistsAction }: RenderValueProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { rawValue, highlight } = useContext(DataContext);
 
