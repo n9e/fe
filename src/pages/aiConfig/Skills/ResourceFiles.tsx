@@ -69,9 +69,9 @@ export default function ResourceFiles({ skillId, files, onRefresh }: Props) {
   ];
 
   return (
-    <div style={{ marginTop: 16 }}>
+    <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <strong>{t('skill.files')}</strong>
+        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fc-text-3, #999)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('skill.files')}</div>
         <Button size='small' icon={<UploadOutlined />} onClick={() => fileInputRef.current?.click()}>
           {t('skill.upload_file')}
         </Button>

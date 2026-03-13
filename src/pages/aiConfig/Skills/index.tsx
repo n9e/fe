@@ -1,11 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, Button, Dropdown, Menu, Switch, Popconfirm, Empty, Tag, message } from 'antd';
+import { Input, Button, Dropdown, Menu, Switch, Popconfirm, Empty, Tag, Radio, Divider, Collapse, message } from 'antd';
 import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CodeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import Markdown from '@/components/Markdown';
 import { AISkill, getAISkills, getAISkill, deleteAISkill, updateAISkill, importAISkill } from './services';
 import WriteSkillModal from './WriteSkillModal';
 import ResourceFiles from './ResourceFiles';
+
+const sectionLabelStyle: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 500,
+  color: 'var(--fc-text-3, #999)',
+  marginBottom: 8,
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+};
 
 export default function Skills() {
   const { t } = useTranslation('aiConfig');
@@ -98,62 +107,113 @@ export default function Skills() {
     </Menu>
   );
 
+  const isActive = (id: number) => selectedId === id;
+
   const renderSkillItem = (skill: AISkill) => (
     <div
       key={skill.id}
       onClick={() => setSelectedId(skill.id)}
       style={{
-        padding: '8px 12px',
+        padding: '7px 12px',
         cursor: 'pointer',
-        borderRadius: 4,
-        background: selectedId === skill.id ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
+        borderRadius: 6,
+        background: isActive(skill.id) ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
+        borderLeft: isActive(skill.id) ? '3px solid var(--ant-primary-color, #1890ff)' : '3px solid transparent',
         marginBottom: 2,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        transition: 'all 0.2s ease',
+        fontSize: 13,
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive(skill.id)) e.currentTarget.style.background = 'var(--fc-fill-1, #fafafa)';
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive(skill.id)) e.currentTarget.style.background = 'transparent';
       }}
     >
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{skill.name}</span>
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: isActive(skill.id) ? 500 : 400 }}>{skill.name}</span>
       {skill.enabled !== 1 && (
-        <Tag color='default' style={{ marginLeft: 4, fontSize: 11 }}>
+        <Tag color='default' style={{ marginLeft: 4, fontSize: 11, lineHeight: '18px' }}>
           off
         </Tag>
       )}
     </div>
   );
 
+  const hasMetaInfo = (skill: AISkill) => {
+    return skill.license || skill.compatibility || skill.allowed_tools || (skill.metadata && Object.keys(skill.metadata).length > 0);
+  };
+
   const renderMetaInfo = (skill: AISkill) => {
-    const items: { label: string; value: string }[] = [];
-    if (skill.license) items.push({ label: t('skill.license'), value: skill.license });
+    if (!hasMetaInfo(skill)) return null;
+
+    const items: { label: string; value: React.ReactNode }[] = [];
+    if (skill.license) items.push({ label: t('skill.license'), value: <Tag style={{ margin: 0, fontSize: 12 }}>{skill.license}</Tag> });
     if (skill.compatibility) items.push({ label: t('skill.compatibility'), value: skill.compatibility });
-    if (skill.allowed_tools) items.push({ label: t('skill.allowed_tools'), value: skill.allowed_tools });
+    if (skill.allowed_tools) {
+      items.push({
+        label: t('skill.allowed_tools'),
+        value: (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {skill.allowed_tools.split(/\s+/).map((tool) => (
+              <Tag key={tool} style={{ margin: 0, fontSize: 12, fontFamily: 'Monaco, Menlo, Consolas, monospace' }}>
+                {tool}
+              </Tag>
+            ))}
+          </div>
+        ),
+      });
+    }
     if (skill.metadata && Object.keys(skill.metadata).length > 0) {
       items.push({
         label: t('skill.metadata'),
-        value: Object.entries(skill.metadata)
-          .map(([k, v]) => `${k}: ${v}`)
-          .join(', '),
+        value: (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {Object.entries(skill.metadata).map(([k, v]) => (
+              <Tag key={k} style={{ margin: 0, fontSize: 12 }}>
+                <span style={{ color: 'var(--fc-text-3, #999)' }}>{k}:</span> {v}
+              </Tag>
+            ))}
+          </div>
+        ),
       });
     }
-    if (items.length === 0) return null;
+
     return (
-      <div
-        style={{
-          marginBottom: 16,
-          display: 'grid',
-          gridTemplateColumns: 'auto 1fr',
-          columnGap: 12,
-          rowGap: 6,
-          fontSize: 13,
-          lineHeight: '20px',
-        }}
-      >
-        {items.map((item) => (
-          <React.Fragment key={item.label}>
-            <span style={{ fontSize: 12, color: '#999', whiteSpace: 'nowrap' }}>{item.label}</span>
-            <span style={{ wordBreak: 'break-word' }}>{item.value}</span>
-          </React.Fragment>
-        ))}
+      <div style={{ marginBottom: 20 }}>
+        <Collapse ghost style={{ marginLeft: -12, marginRight: -12 }}>
+          <Collapse.Panel header={<span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fc-text-3, #999)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('skill.advanced_config')}</span>} key='meta'>
+            <div
+              style={{
+                padding: '12px 16px',
+                background: 'var(--fc-fill-1, #fafafa)',
+                border: '1px solid var(--fc-border-subtle, #e8e8e8)',
+                borderRadius: 6,
+              }}
+            >
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'auto 1fr',
+                  columnGap: 20,
+                  rowGap: 12,
+                  fontSize: 13,
+                  lineHeight: '22px',
+                  alignItems: 'start',
+                }}
+              >
+                {items.map((item) => (
+                  <React.Fragment key={item.label}>
+                    <span style={{ fontSize: 12, color: 'var(--fc-text-3, #999)', whiteSpace: 'nowrap', lineHeight: '22px' }}>{item.label}</span>
+                    <span style={{ wordBreak: 'break-word' }}>{item.value}</span>
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </Collapse.Panel>
+        </Collapse>
       </div>
     );
   };
@@ -179,13 +239,13 @@ export default function Skills() {
         <div style={{ flex: 1, overflow: 'auto', padding: '8px' }}>
           {builtinSkills.length > 0 && (
             <>
-              <div style={{ padding: '4px 12px', fontSize: 12, color: '#999' }}>{t('skill.builtin')}</div>
+              <div style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, color: 'var(--fc-text-3, #999)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('skill.builtin')}</div>
               {builtinSkills.map(renderSkillItem)}
             </>
           )}
           {customSkills.length > 0 && (
             <>
-              <div style={{ padding: '4px 12px', fontSize: 12, color: '#999', marginTop: 8 }}>{t('skill.custom')}</div>
+              <div style={{ padding: '4px 12px', fontSize: 11, fontWeight: 500, color: 'var(--fc-text-3, #999)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: builtinSkills.length > 0 ? 12 : 0 }}>{t('skill.custom')}</div>
               {customSkills.map(renderSkillItem)}
             </>
           )}
@@ -193,84 +253,71 @@ export default function Skills() {
       </div>
 
       {/* Right panel */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '16px 24px' }}>
+      <div style={{ flex: 1, overflow: 'auto', padding: '20px 28px' }}>
         {selected ? (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ margin: 0 }}>{selected.name}</h3>
-              <div>
-                <Switch size='small' checked={selected.enabled === 1} onChange={() => handleToggleEnabled(selected)} style={{ marginRight: 12 }} />
-                <Button
-                  size='small'
-                  icon={<EditOutlined />}
-                  style={{ marginRight: 8 }}
-                  onClick={() => {
-                    setEditData(selected);
-                    setModalVisible(true);
-                  }}
-                >
-                  {t('skill.edit')}
-                </Button>
-                {selected.is_builtin !== 1 && (
-                  <Popconfirm title={t('skill.delete_confirm')} onConfirm={() => handleDelete(selected.id)}>
-                    <Button size='small' icon={<DeleteOutlined />} danger />
-                  </Popconfirm>
-                )}
-              </div>
-            </div>
-            {selected.description && (
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>{t('skill.description')}</div>
-                <div>{selected.description}</div>
-              </div>
-            )}
-            {renderMetaInfo(selected)}
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                <div style={{ fontSize: 12, color: '#999' }}>{t('skill.instructions')}</div>
-                <div
-                  style={{
-                    display: 'inline-flex',
-                    border: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <span
-                    onClick={() => setInstructionsViewMode('preview')}
-                    style={{
-                      padding: '2px 8px',
-                      cursor: 'pointer',
-                      background: instructionsViewMode === 'preview' ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <EyeOutlined style={{ fontSize: 14 }} />
-                  </span>
-                  <span
-                    onClick={() => setInstructionsViewMode('source')}
-                    style={{
-                      padding: '2px 8px',
-                      cursor: 'pointer',
-                      background: instructionsViewMode === 'source' ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      borderLeft: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                    }}
-                  >
-                    <CodeOutlined style={{ fontSize: 14 }} />
-                  </span>
+            {/* Header */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1, marginRight: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, lineHeight: '28px' }}>{selected.name}</h3>
+                    {selected.is_builtin === 1 && (
+                      <Tag color='blue' style={{ margin: 0, fontSize: 11, lineHeight: '18px', borderRadius: 4 }}>
+                        {t('skill.is_builtin')}
+                      </Tag>
+                    )}
+                  </div>
+                  {selected.description && <div style={{ marginTop: 6, fontSize: 13, color: 'var(--fc-text-2, #666)', lineHeight: '20px' }}>{selected.description}</div>}
                 </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                  <Switch size='small' checked={selected.enabled === 1} onChange={() => handleToggleEnabled(selected)} />
+                  <Button
+                    size='small'
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      setEditData(selected);
+                      setModalVisible(true);
+                    }}
+                  >
+                    {t('skill.edit')}
+                  </Button>
+                  {selected.is_builtin !== 1 && (
+                    <Popconfirm title={t('skill.delete_confirm')} onConfirm={() => handleDelete(selected.id)}>
+                      <Button size='small' icon={<DeleteOutlined />} danger />
+                    </Popconfirm>
+                  )}
+                </div>
+              </div>
+              <Divider style={{ margin: '16px 0 0 0' }} />
+            </div>
+
+            {/* Meta info card */}
+            {renderMetaInfo(selected)}
+
+            {/* Instructions */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <div style={sectionLabelStyle}>{t('skill.instructions')}</div>
+                <Radio.Group
+                  size='small'
+                  value={instructionsViewMode}
+                  onChange={(e) => setInstructionsViewMode(e.target.value)}
+                  optionType='button'
+                  buttonStyle='solid'
+                >
+                  <Radio.Button value='preview'><EyeOutlined /></Radio.Button>
+                  <Radio.Button value='source'><CodeOutlined /></Radio.Button>
+                </Radio.Group>
               </div>
               {instructionsViewMode === 'preview' ? (
                 <div
                   style={{
                     background: 'var(--fc-fill-1, #fafafa)',
                     border: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                    borderRadius: 4,
-                    padding: 12,
-                    maxHeight: 400,
+                    borderRadius: 6,
+                    padding: '12px 16px',
+                    maxHeight: 480,
                     overflow: 'auto',
                   }}
                 >
@@ -279,25 +326,31 @@ export default function Skills() {
               ) : (
                 <pre
                   style={{
-                    background: 'var(--fc-fill-1, #fafafa)',
+                    background: '#1e293b',
+                    color: '#e2e8f0',
                     border: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                    borderRadius: 4,
-                    padding: 12,
+                    borderRadius: 6,
+                    padding: '12px 16px',
                     whiteSpace: 'pre-wrap',
-                    maxHeight: 400,
+                    wordBreak: 'break-word',
+                    maxHeight: 480,
                     overflow: 'auto',
                     fontSize: 13,
-                    fontFamily: 'Monaco, Menlo, monospace',
+                    lineHeight: '20px',
+                    fontFamily: 'Monaco, Menlo, Consolas, monospace',
+                    margin: 0,
                   }}
                 >
                   {selected.instructions}
                 </pre>
               )}
             </div>
+
+            {/* Resource Files */}
             <ResourceFiles skillId={selected.id} files={selected.files} onRefresh={refreshSelected} />
           </>
         ) : (
-          <Empty description={t('skill.no_selection')} style={{ marginTop: 100 }} />
+          <Empty description={t('skill.no_selection')} style={{ marginTop: '30%' }} />
         )}
       </div>
 
