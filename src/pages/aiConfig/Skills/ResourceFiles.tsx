@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button, Table, Popconfirm, Modal, message, Space } from 'antd';
 import { UploadOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { ColumnsType } from 'antd/lib/table';
-import { AISkillFile, getAISkillFiles, uploadAISkillFile, getAISkillFile, deleteAISkillFile } from './services';
+import { AISkillFile, uploadAISkillFile, getAISkillFile, deleteAISkillFile } from './services';
 
 interface Props {
   skillId: number;
+  files?: AISkillFile[];
+  onRefresh?: () => void;
 }
 
 function formatSize(bytes: number): string {
@@ -15,28 +17,12 @@ function formatSize(bytes: number): string {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-export default function ResourceFiles({ skillId }: Props) {
+export default function ResourceFiles({ skillId, files, onRefresh }: Props) {
   const { t } = useTranslation('aiConfig');
-  const [files, setFiles] = useState<AISkillFile[]>([]);
-  const [loading, setLoading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewContent, setPreviewContent] = useState('');
   const [previewName, setPreviewName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const fetchFiles = async () => {
-    setLoading(true);
-    try {
-      const data = await getAISkillFiles(skillId);
-      setFiles(data);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (skillId) fetchFiles();
-  }, [skillId]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,7 +32,7 @@ export default function ResourceFiles({ skillId }: Props) {
     try {
       await uploadAISkillFile(skillId, formData);
       message.success('Uploaded');
-      fetchFiles();
+      onRefresh?.();
     } catch {}
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -61,7 +47,7 @@ export default function ResourceFiles({ skillId }: Props) {
   const handleDelete = async (fileId: number) => {
     await deleteAISkillFile(fileId);
     message.success('Deleted');
-    fetchFiles();
+    onRefresh?.();
   };
 
   const columns: ColumnsType<AISkillFile> = [
@@ -91,7 +77,7 @@ export default function ResourceFiles({ skillId }: Props) {
         </Button>
         <input ref={fileInputRef} type='file' accept='.md,.txt,.json,.yaml,.yml,.csv' style={{ display: 'none' }} onChange={handleUpload} />
       </div>
-      <Table rowKey='id' columns={columns} dataSource={files} loading={loading} pagination={false} size='small' />
+      <Table rowKey='id' columns={columns} dataSource={files || []} pagination={false} size='small' />
       <Modal title={previewName} visible={previewVisible} onCancel={() => setPreviewVisible(false)} footer={null} width={640}>
         <pre style={{ maxHeight: 400, overflow: 'auto', whiteSpace: 'pre-wrap', fontSize: 13 }}>{previewContent}</pre>
       </Modal>

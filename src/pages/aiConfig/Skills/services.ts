@@ -6,12 +6,17 @@ export interface AISkill {
   name: string;
   description: string;
   instructions: string;
+  license?: string;
+  compatibility?: string;
+  metadata?: Record<string, string>;
+  allowed_tools?: string;
   is_builtin: number;
   enabled: number;
   created_at: number;
   created_by: string;
   updated_at: number;
   updated_by: string;
+  files?: AISkillFile[];
 }
 
 export interface AISkillFile {
@@ -49,10 +54,6 @@ export function importAISkill(formData: FormData) {
     method: RequestMethod.Post,
     data: formData,
   });
-}
-
-export function getAISkillFiles(skillId: number) {
-  return request(`/api/n9e/ai-skill/${skillId}/files`, { method: RequestMethod.Get }).then((res) => res.dat ?? []);
 }
 
 export function uploadAISkillFile(skillId: number, formData: FormData) {

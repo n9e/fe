@@ -3,7 +3,7 @@ import { Input, Button, Dropdown, Menu, Switch, Popconfirm, Empty, Tag, message 
 import { PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CodeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import Markdown from '@/components/Markdown';
-import { AISkill, getAISkills, deleteAISkill, updateAISkill, importAISkill } from './services';
+import { AISkill, getAISkills, getAISkill, deleteAISkill, updateAISkill, importAISkill } from './services';
 import WriteSkillModal from './WriteSkillModal';
 import ResourceFiles from './ResourceFiles';
 
@@ -12,6 +12,7 @@ export default function Skills() {
   const [skills, setSkills] = useState<AISkill[]>([]);
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selected, setSelected] = useState<AISkill | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [editData, setEditData] = useState<AISkill | undefined>();
   const [showSearch, setShowSearch] = useState(false);
@@ -26,11 +27,27 @@ export default function Skills() {
     }
   };
 
+  const fetchSelectedSkill = async (id: number) => {
+    try {
+      const data = await getAISkill(id);
+      setSelected(data);
+    } catch {
+      setSelected(null);
+    }
+  };
+
   useEffect(() => {
     fetchSkills();
   }, [search]);
 
-  const selected = skills.find((s) => s.id === selectedId);
+  useEffect(() => {
+    if (selectedId) {
+      fetchSelectedSkill(selectedId);
+    } else {
+      setSelected(null);
+    }
+  }, [selectedId]);
+
   const builtinSkills = skills.filter((s) => s.is_builtin === 1);
   const customSkills = skills.filter((s) => s.is_builtin !== 1);
 
@@ -44,6 +61,7 @@ export default function Skills() {
   const handleToggleEnabled = async (skill: AISkill) => {
     await updateAISkill(skill.id, { ...skill, enabled: skill.enabled === 1 ? 0 : 1 });
     fetchSkills();
+    if (selectedId === skill.id) fetchSelectedSkill(skill.id);
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +75,10 @@ export default function Skills() {
       fetchSkills();
     } catch {}
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const refreshSelected = () => {
+    if (selectedId) fetchSelectedSkill(selectedId);
   };
 
   const addMenu = (
@@ -99,6 +121,32 @@ export default function Skills() {
       )}
     </div>
   );
+
+  const renderMetaInfo = (skill: AISkill) => {
+    const items: { label: string; value: string }[] = [];
+    if (skill.license) items.push({ label: t('skill.license'), value: skill.license });
+    if (skill.compatibility) items.push({ label: t('skill.compatibility'), value: skill.compatibility });
+    if (skill.allowed_tools) items.push({ label: t('skill.allowed_tools'), value: skill.allowed_tools });
+    if (skill.metadata && Object.keys(skill.metadata).length > 0) {
+      items.push({
+        label: t('skill.metadata'),
+        value: Object.entries(skill.metadata)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(', '),
+      });
+    }
+    if (items.length === 0) return null;
+    return (
+      <div style={{ marginBottom: 16 }}>
+        {items.map((item) => (
+          <div key={item.label} style={{ marginBottom: 4 }}>
+            <span style={{ fontSize: 12, color: '#999' }}>{item.label}: </span>
+            <span>{item.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 200px)', border: '1px solid var(--fc-border-subtle, #e8e8e8)', borderRadius: 'var(--fc-radius-md, 6px)' }}>
@@ -166,6 +214,7 @@ export default function Skills() {
                 <div>{selected.description}</div>
               </div>
             )}
+            {renderMetaInfo(selected)}
             <div style={{ marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                 <div style={{ fontSize: 12, color: '#999' }}>{t('skill.instructions')}</div>
@@ -235,7 +284,7 @@ export default function Skills() {
                 </pre>
               )}
             </div>
-            <ResourceFiles skillId={selected.id} />
+            <ResourceFiles skillId={selected.id} files={selected.files} onRefresh={refreshSelected} />
           </>
         ) : (
           <Empty description={t('skill.no_selection')} style={{ marginTop: 100 }} />
@@ -250,6 +299,7 @@ export default function Skills() {
         onOk={() => {
           setModalVisible(false);
           fetchSkills();
+          refreshSelected();
         }}
       />
     </div>
