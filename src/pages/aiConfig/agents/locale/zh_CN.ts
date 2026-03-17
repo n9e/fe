@@ -1,0 +1,25 @@
+const zh_CN = {
+  title: 'Agent',
+  name: '名称',
+  description: '描述',
+  llm_config: 'LLM 配置',
+  use_case: '用途',
+  enabled: '启用',
+  add_btn: '新建 Agent',
+  cannot_delete_when_enabled: '启用状态的 Agent 无法删除',
+  form: {
+    add_title: '新建 Agent',
+    edit_title: '编辑 Agent',
+    description_placeholder: '请输入 Agent 的描述信息',
+    llm_config: '选择 LLM',
+    add_llm_config: '新建 LLM',
+    llm_config_placeholder: '请选择 Agent 使用的 LLM 配置',
+    skill: '关联 Skill',
+    skill_tip: '被关联的 Skill 会优先考虑使用',
+    skill_placeholder: '请选择 Agent 关联的 Skill',
+    mcp: '关联 MCP Server',
+    mcp_tip: '配置该 Agent 可以使用哪些 MCP Server',
+    mcp_placeholder: '请选择 Agent 关联的 MCP Server',
+  },
+};
+export default zh_CN;

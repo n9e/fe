@@ -59,6 +59,11 @@ const ru_RU = {
     alert_servers: 'Система оповещений',
     about: 'О продукте',
     license_management: 'Управление лицензиями',
+    ai_config: 'AI настройки',
+    ai_config_agents: 'Agent управление',
+    ai_config_llm_configs: 'LLM управление',
+    ai_config_skills: 'Skill управление',
+    ai_config_mcp_servers: 'MCP управление',
   },
 };
 
