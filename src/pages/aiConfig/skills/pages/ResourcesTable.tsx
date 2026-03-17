@@ -104,7 +104,7 @@ export default function ResourcesTable(props: Props) {
                       Modal.confirm({
                         title: t('common:confirm.delete'),
                         onOk: () => {
-                          deleteFile(id).then(() => {
+                          deleteFile(record.id).then(() => {
                             message.success(t('common:success.delete'));
                             run();
                           });
