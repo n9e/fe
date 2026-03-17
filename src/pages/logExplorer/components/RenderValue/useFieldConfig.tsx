@@ -28,7 +28,9 @@ export default function useFieldConfig(search: IFieldSearch, dep: any): FieldCon
       const isLokiAvailable = search.cate === 'loki' && search.query;
       const isSLSAvailable = search.cate === 'aliyun-sls' && search.resource;
       const isDorisAvailable = search.cate === 'doris' && search.resource;
-      if (isESAvailable || isLokiAvailable || isSLSAvailable || isDorisAvailable) {
+      const isCLSAvailable = search.cate === 'tencent-cls' && search.resource;
+      const isLTSAvailable = search.cate === 'huawei-lts' && search.resource;
+      if (isESAvailable || isLokiAvailable || isSLSAvailable || isDorisAvailable || isCLSAvailable || isLTSAvailable) {
         searchDrilldown(search).then((res) => {
           if (res.length > 0) {
             try {
