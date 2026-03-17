@@ -116,7 +116,6 @@ mark {
   margin-inline-start: 0 !important;
 }
 
-
 /* 显示滚动条并设置宽度和颜色 */
 .scroll-container::-webkit-scrollbar {
   width: 6px;
@@ -167,5 +166,200 @@ mark {
 
   &::-webkit-scrollbar-corner {
     background-color: transparent;
+  }
+}
+
+// ============================================================
+// fc-page — 页面级轻量修复，挂在页面根容器上
+// 只做 Ant Design 通用 bug-fix，不含视觉观点
+// ============================================================
+.fc-page {
+  tr.ant-table-measure-row {
+    visibility: collapse;
+  }
+
+  .ant-table-cell-fix-left,
+  .ant-table-cell-fix-right {
+    background: inherit;
+  }
+}
+
+// ============================================================
+// fc-table — 表格设计规范皮肤，挂在 <Table className='fc-table'>
+// 包含表格容器、表头、单元格、行状态、分页的完整覆盖
+// ============================================================
+.fc-table {
+  .ant-table {
+    background: transparent;
+  }
+
+  .ant-table-container {
+    border: 1px solid var(--fc-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .ant-table-thead>tr>th {
+    background: rgb(var(--fc-fill-3-rgb) / 0.7);
+    color: var(--fc-text-3);
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--fc-border-color) !important;
+    padding: 10px 12px;
+  }
+
+  .ant-table-tbody>tr>td {
+    padding: 10px 12px !important;
+    line-height: 1.5 !important;
+    border-bottom: 1px solid var(--fc-border-color);
+    background: var(--fc-fill-2);
+    color: var(--fc-text-2);
+    transition: background-color 0.2s ease;
+  }
+
+  .ant-table-tbody>tr.ant-table-row:hover>td {
+    background: rgb(var(--fc-fill-3-rgb) / 0.65);
+  }
+
+  .ant-table-tbody>tr.ant-table-row-selected>td,
+  .ant-table-tbody>tr.ant-table-row-selected:hover>td {
+    background: rgb(var(--fc-fill-primary-rgb) / 0.08);
+  }
+
+  .ant-pagination {
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+
+  .ant-pagination-item,
+  .ant-pagination-prev .ant-pagination-item-link,
+  .ant-pagination-next .ant-pagination-item-link {
+    border-color: var(--fc-border-color);
+    border-radius: 8px;
+    background: var(--fc-fill-2);
+  }
+
+  .ant-pagination-item-active {
+    background: var(--fc-fill-primary);
+    border-color: var(--fc-fill-primary);
+
+    a {
+      color: #fff;
+    }
+  }
+
+  .ant-pagination-item:hover,
+  .ant-pagination-prev:hover .ant-pagination-item-link,
+  .ant-pagination-next:hover .ant-pagination-item-link {
+    border-color: var(--fc-primary-color);
+    color: var(--fc-primary-color);
+  }
+}
+
+// ============================================================
+// fc-toolbar — 工具栏内 Input/Select/Button 统一样式
+// 挂在工具栏容器上，子控件自动获得设计规范外观
+// ============================================================
+.fc-toolbar {
+  .ant-input-affix-wrapper {
+    border-radius: 4px !important;
+    border-color: var(--fc-border-color) !important;
+    background: var(--fc-fill-2) !important;
+    box-shadow: none !important;
+    // min-height: 32px;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &.ant-input-affix-wrapper-focused {
+      border-color: var(--fc-primary-color) !important;
+      box-shadow: 0 0 0 2px rgb(var(--fc-fill-primary-rgb) / 0.12) !important;
+    }
+
+    .ant-input-prefix {
+      color: var(--fc-text-4);
+    }
+  }
+
+  .ant-select .ant-select-selector {
+    border-radius: 4px !important;
+    border-color: var(--fc-border-color) !important;
+    background: var(--fc-fill-2) !important;
+    box-shadow: none !important;
+    // min-height: 32px !important;
+    transition: all 0.2s ease;
+  }
+
+  .ant-select.ant-select-focused .ant-select-selector,
+  .ant-select:hover .ant-select-selector {
+    border-color: var(--fc-primary-color) !important;
+    box-shadow: 0 0 0 2px rgb(var(--fc-fill-primary-rgb) / 0.12) !important;
+  }
+
+  .ant-btn:not(.ant-btn-primary) {
+    border-radius: 4px !important;
+    border-color: var(--fc-border-color) !important;
+    background: var(--fc-fill-2) !important;
+    color: var(--fc-text-2) !important;
+    // height: 32px;
+    padding-inline: 12px;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &:focus {
+      border-color: var(--fc-primary-color) !important;
+      color: var(--fc-primary-color) !important;
+      background: var(--fc-fill-3) !important;
+    }
+  }
+
+  .ant-btn.ant-btn-icon-only {
+    // width: 32px !important;
+    // min-width: 32px !important;
+    padding: 0 !important;
+
+    .anticon {
+      font-size: 12px;
+    }
+  }
+
+  .ant-btn.ant-btn-primary {
+    // height: 32px;
+    border-radius: 4px;
+    padding-inline: 12px;
+  }
+}
+
+// ============================================================
+// fc-tag-default / fc-tag-primary — 标签 Tag 统一样式
+// ============================================================
+.fc-tag-default.ant-tag {
+  margin: 2px 6px 2px 0;
+  border: none;
+  border-radius: 999px;
+  background: rgb(var(--fc-fill-3-rgb) / 0.35);
+  color: var(--fc-text-3);
+  padding: 1px 7px;
+  line-height: 18px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgb(var(--fc-fill-3-rgb) / 0.5);
+  }
+}
+
+.fc-tag-primary.ant-tag {
+  margin: 2px 6px 2px 0;
+  border: none;
+  border-radius: 999px;
+  background: rgb(var(--fc-fill-primary-rgb) / 0.1);
+  color: var(--fc-text-link);
+  padding: 2px 8px;
+  line-height: 18px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgb(var(--fc-fill-primary-rgb) / 0.16);
   }
 }

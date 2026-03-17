@@ -59,6 +59,11 @@ const ja_JP = {
     alert_servers: 'アラートエンジン',
     about: '製品について',
     license_management: 'ライセンス管理',
+    ai_config: 'AI 設定',
+    ai_config_agents: 'Agent 管理',
+    ai_config_llm_configs: 'LLM 管理',
+    ai_config_skills: 'Skill 管理',
+    ai_config_mcp_servers: 'MCP 管理',
   },
 };
 
