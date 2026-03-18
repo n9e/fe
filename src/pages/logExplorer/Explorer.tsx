@@ -240,7 +240,7 @@ export default function Explorer(props: Props) {
 
   return (
     <div className={`h-full explorer-container-${tabKey}`}>
-      <div className='h-full bg-fc-100 border border-fc-300 rounded-sm p-4'>
+      <div className='h-full bg-fc-100 border border-fc-300 rounded-lg p-4'>
         <Form form={form} layout='vertical' className='h-full'>
           <Form.Item name='datasourceCate' hidden>
             <div />

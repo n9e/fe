@@ -50,7 +50,7 @@ export default function version() {
     >
       <div>
         {!IS_ENT && (
-          <ul className='fc-border' style={{ padding: '20px 30px' }}>
+          <ul className='fc-border rounded-lg' style={{ padding: '20px 30px' }}>
             <li>
               {t('frontend')}：{pkgJson.version}
             </li>

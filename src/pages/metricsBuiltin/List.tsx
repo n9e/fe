@@ -413,11 +413,11 @@ export default function index() {
             defaultWidth={240}
             tooltip={t('filter.title')}
           >
-            <div className='fc-border p-4 built-in-metrics-filter'>
+            <div className='fc-border rounded-lg p-4 built-in-metrics-filter'>
               <Filters ref={filtersRef} />
             </div>
           </Collapse>
-          <div className='fc-border p-4 built-in-metrics-main'>
+          <div className='fc-border rounded-lg p-4 built-in-metrics-main'>
             <div
               className='mb-2'
               style={{

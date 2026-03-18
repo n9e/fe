@@ -72,7 +72,7 @@ export default function List(props: IProps) {
 
   return (
     <Collapse collapseLocalStorageKey='quick_view_list_collapse' widthLocalStorageKey='quick_view_list_width' defaultWidth={240} tooltip={t('list.title')}>
-      <div className='n9e-metric-views-list'>
+      <div className='n9e-metric-views-list rounded-lg'>
         <div className='n9e-metric-views-list-header'>
           <div className='metric-page-title'>{t('list.title')}</div>
           <a>
