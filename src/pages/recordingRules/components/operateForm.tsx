@@ -99,7 +99,7 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
 
   return (
     <div>
-      <div className='fc-border p-4'>
+      <div className='fc-border rounded-lg p-4'>
         <Form form={form} className='strategy-form' layout='vertical'>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true, message: t('group_id_required') }]}>

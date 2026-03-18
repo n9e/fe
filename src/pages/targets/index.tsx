@@ -378,7 +378,7 @@ const Targets: React.FC = () => {
           }}
         />
         <div
-          className='table-area fc-border'
+          className='table-area fc-border rounded-lg'
           style={{
             height: '100%',
             overflowY: 'auto',

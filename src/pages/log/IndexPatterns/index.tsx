@@ -79,7 +79,7 @@ export default function Servers() {
   return (
     <PageLayout title={t('title')}>
       <div>
-        <div className='fc-border p-4'>
+        <div className='fc-border rounded-lg p-4'>
           <AuthorizationWrapper allowedPerms={['/log/index-patterns']} showUnauthorized>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
