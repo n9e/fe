@@ -167,7 +167,7 @@ export default function List() {
                 <Button className='flex-shrink-0' icon={<PlusOutlined />} />
               </Dropdown>
             </div>
-            <div className='bg-fc-100 fc-border rounded h-full min-h-0 p-2 best-looking-scroll'>
+            <div className='bg-fc-100 fc-border rounded-lg h-full min-h-0 p-2 best-looking-scroll'>
               {_.map(
                 _.filter(data, (item) => _.includes(_.upperCase(item.name), _.upperCase(searchValue))),
                 (item) => {
@@ -227,7 +227,6 @@ export default function List() {
                 />
                 <Button
                   size='small'
-                  type='text'
                   icon={<EditOutlined />}
                   onClick={() => {
                     if (activeData?.id) {
@@ -241,7 +240,6 @@ export default function List() {
                 />
                 <Button
                   size='small'
-                  type='text'
                   icon={<DeleteOutlined />}
                   onClick={() => {
                     if (activeData) {
@@ -286,12 +284,12 @@ export default function List() {
               </div>
               <div>
                 {mdFormat === 'formatted' && (
-                  <div className='bg-fc-100 fc-border rounded p-4 max-h-[400px] best-looking-scroll'>
+                  <div className='bg-fc-100 fc-border rounded-lg p-4 max-h-[400px] best-looking-scroll'>
                     <Markdown content={activeData?.instructions || ''} darkMode={darkMode} />
                   </div>
                 )}
                 {mdFormat === 'code' && (
-                  <div className='bg-fc-100 fc-border rounded p-4 max-h-[400px] best-looking-scroll'>
+                  <div className='bg-fc-100 fc-border rounded-lg p-4 max-h-[400px] best-looking-scroll'>
                     <pre className='whitespace-pre-wrap break-all'>{activeData?.instructions}</pre>
                   </div>
                 )}
