@@ -66,6 +66,7 @@
   --fc-antd-border-color: #d9d9d9; /* 用于 跟antd button 连结的边框 */
   --fc-background-color-light: rgba(250, 250, 250, 1);
   --fc-card-border: #f0f0f0;
+  --border-radius-base: 8px;
   
   
 

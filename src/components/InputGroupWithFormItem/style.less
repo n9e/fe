@@ -1,6 +1,42 @@
 .ant-input-group.ant-input-group-compact.input-group-with-form-item {
   display: flex !important;
 
+  // 左侧 label（ant-input-group-addon）：右侧连接处取消圆角
+  >.ant-input-group-addon:first-child {
+    border-radius: var(--border-radius-base) 0 0 var(--border-radius-base) !important;
+  }
+
+  // 中间 content 内的输入控件：当左侧有 label 时取消左圆角
+  .input-group-with-form-item-content:not(:first-child) {
+
+    .ant-input,
+    .ant-select .ant-select-selector,
+    .ant-picker,
+    .ant-input-number,
+    .ant-input-affix-wrapper {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+    }
+  }
+
+  // 有右侧 addonAfter 时，content 内控件右侧也取消圆角
+  .input-group-with-form-item-content:not(:last-child) {
+
+    .ant-input,
+    .ant-select .ant-select-selector,
+    .ant-picker,
+    .ant-input-number,
+    .ant-input-affix-wrapper {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  // 右侧 addonAfter：左侧连接处取消圆角，右侧保留
+  >.ant-input-group-addon:last-child {
+    border-radius: 0 var(--border-radius-base) var(--border-radius-base) 0 !important;
+  }
+
   .input-group-with-form-item-label {
     height: 32px;
     line-height: 30px;
