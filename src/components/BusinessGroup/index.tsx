@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useImperativeHandle, forwardRef } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { Resizable } from 're-resizable';
@@ -6,7 +6,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, Input, Popover, Space, Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined, SearchOutlined, PlusSquareOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
@@ -86,7 +86,7 @@ const filterData = (
 
 const BUSINESS_GROUP_SEARCH_KEY = 'businessGroupSearchValue';
 
-export default function index(props: IProps) {
+const BusinessGroup = forwardRef((props: IProps, ref) => {
   const { t } = useTranslation('BusinessGroup');
   const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
   const location = useLocation();
@@ -122,6 +122,14 @@ export default function index(props: IProps) {
     }
     setBusinessGroupTreeData(listToTree(data, siteInfo?.businessGroupSeparator));
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    getCollapse: () => collapse,
+    setCollapse: (newCollapsed) => {
+      localStorage.setItem('leftlist', newCollapsed ? '1' : '0');
+      setCollapse(newCollapsed);
+    },
+  }));
 
   return (
     <Resizable
@@ -160,11 +168,11 @@ export default function index(props: IProps) {
                 height: '30px',
               }}
               size='small'
-              type='link'
+              type='text'
               onClick={() => {
                 setCreateBusiVisible(true);
               }}
-              icon={<PlusSquareOutlined />}
+              icon={<PlusOutlined />}
             />
           </div>
           <Input
@@ -312,4 +320,6 @@ export default function index(props: IProps) {
       />
     </Resizable>
   );
-}
+});
+
+export default BusinessGroup;
