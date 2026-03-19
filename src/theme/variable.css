@@ -61,6 +61,7 @@
 
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
+  --fc-primary-rgb: var(--fc-text-link-rgb);
   --fc-border-color: var(--fc-fill-4);
   --fc-border-color2: #d9d9d9;
   --fc-border-base: var(--fc-fill-5);
@@ -137,43 +138,43 @@
 /* 深色模式 */
 .theme-dark {
   color-scheme: dark;
-  --fc-fill-1-rgb: 17 18 23;
+  --fc-fill-1-rgb: 12 12 14;
   --fc-fill-1: rgb(var(--fc-fill-1-rgb));
 
-  --fc-fill-2-rgb: 24 27 31;
+  --fc-fill-2-rgb: 22 22 24;
   --fc-fill-2: rgb(var(--fc-fill-2-rgb));
 
-  --fc-fill-2-5-rgb: 28 30 34;
+  --fc-fill-2-5-rgb: 27 27 29;
   --fc-fill-2-5: rgb(var(--fc-fill-2-5-rgb));
 
-  --fc-fill-3-rgb: 34 37 43;
+  --fc-fill-3-rgb: 37 37 40;
   --fc-fill-3: rgb(var(--fc-fill-3-rgb));
 
-  --fc-fill-4-rgb: 39 40 47;
+  --fc-fill-4-rgb: 39 39 42;
   --fc-fill-4: rgb(var(--fc-fill-4-rgb));
 
-  --fc-fill-5-rgb: 47 48 55;
+  --fc-fill-5-rgb: 44 44 48;
   --fc-fill-5: rgb(var(--fc-fill-5-rgb));
 
-  --fc-fill-6-rgb: 54 55 62;
+  --fc-fill-6-rgb: 49 49 53;
   --fc-fill-6: rgb(var(--fc-fill-6-rgb));
 
-  --fc-fill-7-rgb: 62 63 70;
+  --fc-fill-7-rgb: 54 54 58;
   --fc-fill-7: rgb(var(--fc-fill-7-rgb));
 
   --fc-fill-primary-rgb: 148 112 255;
   --fc-fill-primary: rgb(var(--fc-fill-primary-rgb));
 
-  --fc-fill-success-rgb: 63 196 83;
+  --fc-fill-success-rgb: 33 196 93;
   --fc-fill-success: rgb(var(--fc-fill-success-rgb));
 
-  --fc-fill-warning-rgb: 230 198 39;
+  --fc-fill-warning-rgb: 245 194 10;
   --fc-fill-warning: rgb(var(--fc-fill-warning-rgb));
 
-  --fc-fill-alert-rgb: 250 125 0;
+  --fc-fill-alert-rgb: 240 110 10;
   --fc-fill-alert: rgb(var(--fc-fill-alert-rgb));
 
-  --fc-fill-error-rgb: 255 101 107;
+  --fc-fill-error-rgb: 239 67 67;
   --fc-fill-error: rgb(var(--fc-fill-error-rgb));
 
   --fc-fill-gold: #ffbc0d;
@@ -181,18 +182,18 @@
   /* 文本 */
   --fc-text-link: #9470ff;
   --fc-text-link-rgb: 148, 112, 255;
-  --fc-text-1: rgba(255, 255, 255);
-  --fc-text-2: rgb(204, 204, 220);
-  --fc-text-3: rgba(204, 204, 220, 0.85);
-  --fc-text-4: rgba(204, 204, 220, 0.65);
-  --fc-text-5: rgba(204, 204, 220, 0.45);
-  --fc-text-placeholder: rgba(204, 204, 220, 0.65);
+  --fc-text-1: rgb(242, 242, 242);
+  --fc-text-2: rgb(201, 201, 207);
+  --fc-text-3: rgb(135, 135, 146);
+  --fc-text-4: rgb(109, 109, 120);
+  --fc-text-5: rgb(68, 68, 75);
+  --fc-text-placeholder: rgb(89, 89, 98);
 
   /* 其他 */
   --fc-primary-color: var(--fc-text-link);
-  --fc-border-color: rgba(204, 204, 220, 0.12);
-  --fc-border-color2: rgba(204, 204, 220, 0.2);
-  --fc-border-base: var(--fc-fill-5);
+  --fc-border-color: rgba(255, 255, 255, 0.06);
+  --fc-border-color2: rgba(255, 255, 255, 0.08);
+  --fc-border-base: rgba(255, 255, 255, 0.03);
   --fc-antd-border-color: #ccccdc33;
   --fc-background-color-light: rgba(255, 255, 255, 0.04);
   --fc-card-border: #393c4d;

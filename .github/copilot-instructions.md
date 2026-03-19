@@ -35,3 +35,4 @@ src/
 - 修改代码时尽量最小改动，不重写无关模块。
 - React 组件 Props 必须用 interface 显式定义，禁止使用 any。
 - 测试文件命名规范：_.test.ts 或 _.spec.ts。
+- 优先使用 TailwindCSS 进行样式编写，尽量避免使用内联样式或 CSS 模块。

@@ -10,6 +10,7 @@
     }
   }
 
+  background-color: var(--fc-fill-2);
   border: 1px solid var(--fc-border-color);
   border-radius: var(--fc-border-radius-base);
   box-sizing: border-box;
@@ -76,13 +77,18 @@
     position: absolute;
     display: flex;
     align-items: center;
+    justify-content: center;
     top: 50%;
     margin-top: -29px;
-    right: -10px;
+    right: -11px;
     height: 58px;
     width: 10px;
     border-radius: 6px;
     background: var(--fc-fill-4);
+
+    &:hover {
+      background: var(--fc-fill-5);
+    }
   }
 }
 
