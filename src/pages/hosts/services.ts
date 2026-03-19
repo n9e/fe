@@ -1,3 +1,4 @@
+import { IS_PLUS } from '@/utils/constant';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
@@ -14,7 +15,8 @@ export function getList(params: {
   downtime?: number;
   agent_versions?: string;
 }): Promise<{ list: Item[]; total: number }> {
-  return request('/api/n9e-plus/targets', {
+  const url = IS_PLUS ? '/api/n9e-plus/targets' : '/api/n9e/targets';
+  return request(url, {
     method: RequestMethod.Get,
     params,
   }).then((res) => res.dat);
@@ -74,33 +76,4 @@ export function getStats(params: { gids: string }): Promise<Stats> {
       'v0.3.33': 80,
     },
   });
-}
-
-export function getTargetInformationByIdent(ident: string) {
-  return request('/api/n9e/target/extra-meta', {
-    method: RequestMethod.Get,
-    params: {
-      ident,
-    },
-  }).then((res) => {
-    const dat = res?.dat?.extend_info;
-    try {
-      return JSON.parse(dat);
-    } catch (e) {
-      return {};
-    }
-  });
-}
-
-export function putTargetsBgids(data: { bgids: number[]; idents: string[]; action: string }) {
-  return request('/api/n9e/targets/bgids', {
-    method: RequestMethod.Put,
-    data,
-  });
-}
-
-export function getBusiGroupsTags() {
-  return request('/api/n9e/busi-groups/tags', {
-    method: RequestMethod.Get,
-  }).then((res) => res.dat);
 }
