@@ -132,7 +132,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         )}
       >
         <div className='flex min-w-0 flex-1 items-center'>
-          <div className={cn('h-4.5 shrink-0 children-icon2:h-4.5 children-icon2:w-4.5', iconColor, !collapsed ? 'mr-4' : '')}>{item.icon}</div>
+          <div className={cn('h-4.5 shrink-0 children-icon2:h-4.5 children-icon2:w-4.5', iconColor, !collapsed ? 'mr-1' : '')}>{item.icon}</div>
           {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-l1 tracking-wide', titleClass)}>{t(item.label)}</div>}
         </div>
         {!collapsed && (
@@ -278,7 +278,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       onClick={() => onClick?.(item.key)}
     >
       {isSubTreeLayout ? (
-        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5' aria-hidden>
+        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-0.5' aria-hidden>
           <span
             className={cn(
               'h-4 w-[3px] shrink-0 rounded-full',
@@ -378,7 +378,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
       onClick={() => onClick?.(item.key)}
     >
       {isSubTreeLayout ? (
-        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5' aria-hidden>
+        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-0.5' aria-hidden>
           <span className='h-4 w-[3px] shrink-0 rounded-full bg-transparent' />
         </span>
       ) : !isSub ? (
