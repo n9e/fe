@@ -82,7 +82,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   let iconColor = '';
   if (isLight) {
-    iconColor = isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-icon)]';
+    iconColor = isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-text)]';
   } else if (isActive) {
     if (isBlueTheme) {
       iconColor = 'text-[#427AF4]';
@@ -449,7 +449,7 @@ export default function MenuList(
             <div className='overflow-hidden truncate text-l1 tracking-wide'>{t('quickJump')} </div>
           </div>
         </Tooltip>
-        {topExtra ? React.cloneElement(topExtra, { ...props }) : null}
+        {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}
         <div className={cn('my-2 h-px w-full', isLight ? 'bg-[var(--fc-sidemenu-border)]' : props.isCustomBg ? 'bg-white/10' : 'bg-fc-400')}></div>
         <div className='space-y-1'>
           {chunks.map((chunk, chunkIndex) => (
