@@ -440,7 +440,7 @@ export default function MenuList(
             <div
               className={cn(
                 'mr-4 h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-                isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
+                isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
               {<IconFont type='icon-ic_search' />}
