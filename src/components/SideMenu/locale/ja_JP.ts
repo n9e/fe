@@ -60,6 +60,12 @@ const ja_JP = {
     about: '製品について',
     license_management: 'ライセンス管理',
   },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
+  },
 };
 
 export default ja_JP;

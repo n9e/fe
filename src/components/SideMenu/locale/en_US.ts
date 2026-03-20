@@ -61,5 +61,11 @@ const en_US = {
     about: 'About',
     license_management: 'License Management',
   },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
+  },
 };
 export default en_US;

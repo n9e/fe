@@ -60,5 +60,11 @@ const zh_CN = {
     about: '关于产品',
     license_management: '证书管理',
   },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
+  },
 };
 export default zh_CN;

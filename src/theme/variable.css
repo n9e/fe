@@ -66,8 +66,18 @@
   --fc-antd-border-color: #d9d9d9; /* 用于 跟antd button 连结的边框 */
   --fc-background-color-light: rgba(250, 250, 250, 1);
   --fc-card-border: #f0f0f0;
-  
-  
+
+  /* 浅色侧栏（Firemap 参考，组件内 isLight 时引用） */
+  --fc-sidemenu-bg: rgb(247, 247, 248);
+  --fc-sidemenu-border: #e5e7eb;
+  --fc-sidemenu-section-title: #a3a3a3;
+  --fc-sidemenu-item-icon: #6b7280;
+  --fc-sidemenu-item-text: #374151;
+  --fc-sidemenu-item-active-bg: rgb(243, 238, 252);
+  --fc-sidemenu-item-active-text: #7c3aed;
+  --fc-sidemenu-item-hover-bg: #f3f4f6;
+  --fc-sidemenu-beta-bg: #ede9fe;
+  --fc-sidemenu-beta-text: #6d28d9;
 
   /* 需特殊处理额外加的变量 
      灭火图一级卡片的header背景色:  --fc-variable-fill-1

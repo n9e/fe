@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 export interface IMenuItem {
   key: string;
   label: string;
+  section?: BaseMenuItem['section'];
   icon?: React.ReactNode;
   path?: string;
   role?: string[];
@@ -17,6 +18,8 @@ export interface IMenuItem {
 export interface BaseMenuItem {
   key: string;
   label: string;
+  /** 顶层分组 key，用于侧栏分区标题（连续相同 section 共用一个标题） */
+  section?: 'infrastructure' | 'observability' | 'analysis' | 'platform';
   type?: string; // 'tabs'
   pathType?: string; // 'absolute'
   path?: string; // URL for absolute paths

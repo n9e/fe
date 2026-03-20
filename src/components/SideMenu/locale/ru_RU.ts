@@ -60,6 +60,12 @@ const ru_RU = {
     about: 'О продукте',
     license_management: 'Управление лицензиями',
   },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
+  },
 };
 
 export default ru_RU;

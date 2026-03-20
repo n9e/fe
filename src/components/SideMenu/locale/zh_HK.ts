@@ -59,6 +59,12 @@ const zh_HK = {
     about: '關於產品',
     license_management: '證書管理',
   },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
+  },
 };
 
 export default zh_HK;

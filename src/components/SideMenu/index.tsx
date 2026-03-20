@@ -225,9 +225,12 @@ const SideMenu = (props: SideMenuProps) => {
             collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
             !IS_ENT ? 'border-fc-300' : '',
           )}
-          style={{ background: sideMenuBgColor, borderColor: 'var(--fc-border-color)' }}
+          style={{
+            background: sideMenuBgColor,
+            borderColor: isCustomBg ? 'var(--fc-border-color)' : 'var(--fc-sidemenu-border)',
+          }}
         >
-          <div className='flex flex-1 flex-col justify-between gap-8 overflow-hidden'>
+          <div className='flex flex-1 flex-col justify-between gap-1 overflow-hidden'>
             <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
             <ScrollArea className='-mr-2 flex-1'>
               <MenuList
