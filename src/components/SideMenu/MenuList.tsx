@@ -443,7 +443,7 @@ export default function MenuList(
                 isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
-              {<IconFont type='icon-Menu_Search' />}
+              {<IconFont type='icon-ic_search' />}
             </div>
 
             <div className='overflow-hidden truncate text-l1 tracking-wide'>{t('quickJump')} </div>
