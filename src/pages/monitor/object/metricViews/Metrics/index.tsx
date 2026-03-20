@@ -130,7 +130,7 @@ export default function Metrics(props: IProps) {
   }, [match.id, matchStr]);
 
   return (
-    <div className='n9e-metric-views-metrics'>
+    <div className='n9e-metric-views-metrics rounded-lg'>
       <div>
         <div className='n9e-metric-views-metrics-header'>
           {parentSource === 'srm' ? (

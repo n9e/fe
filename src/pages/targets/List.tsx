@@ -88,7 +88,7 @@ export default function List(props: IProps) {
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [downtime, setDowntime] = useState();
-  const [agentVersions, setAgentVersions] = useState<string>();
+  const [agentVersions, setAgentVersions] = useState<string[]>();
   const [hosts, setHosts] = useState<string>();
   const sorterRef = useRef<any>();
   const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;

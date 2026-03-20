@@ -251,62 +251,60 @@ const Resource: React.FC = () => {
       icon={<UserOutlined />}
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/user-management/'
     >
-      <div className='user-manage-content'>
-        <div className='user-content fc-border'>
-          <Row className='event-table-search'>
-            <div className='event-table-search-left'>
-              <Space>
-                <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
-                <TimeRangePicker
-                  allowClear
-                  placeholder={t('user.last_active_time')}
-                  value={range}
-                  onChange={(newVal) => {
-                    setRange(newVal);
-                  }}
-                  onClear={() => {
-                    setRange(undefined);
-                  }}
-                />
-              </Space>
-            </div>
-            <div className='event-table-search-right'>
-              <Space>
-                {_.includes(perms, '/users/add') && (
-                  <div className='user-manage-operate'>
-                    <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
-                      {t('common:btn.add')}
-                    </Button>
-                  </div>
-                )}
-                <Button
-                  onClick={() => {
-                    OrganizeColumns({
-                      i18nNs: 'user',
-                      value: columnsConfigs,
-                      onChange: (val) => {
-                        setColumnsConfigs(val);
-                        setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                      },
-                    });
-                  }}
-                  icon={<EyeOutlined />}
-                />
-              </Space>
-            </div>
-          </Row>
-          <Table
-            className='mt-2'
-            size='small'
-            rowKey='id'
-            columns={ajustColumns(userColumns, columnsConfigs)}
-            {...tableProps}
-            pagination={{
-              ...tableProps.pagination,
-              ...pagination,
-            }}
-          />
-        </div>
+      <div className='user-manage-content n9e'>
+        <Row className='event-table-search'>
+          <div className='event-table-search-left'>
+            <Space>
+              <Input className={'searchInput'} prefix={<SearchOutlined />} onPressEnter={onSearchQuery} placeholder={t('user.search_placeholder')} />
+              <TimeRangePicker
+                allowClear
+                placeholder={t('user.last_active_time')}
+                value={range}
+                onChange={(newVal) => {
+                  setRange(newVal);
+                }}
+                onClear={() => {
+                  setRange(undefined);
+                }}
+              />
+            </Space>
+          </div>
+          <div className='event-table-search-right'>
+            <Space>
+              {_.includes(perms, '/users/add') && (
+                <div className='user-manage-operate'>
+                  <Button type='primary' onClick={() => handleClick(ActionType.CreateUser)}>
+                    {t('common:btn.add')}
+                  </Button>
+                </div>
+              )}
+              <Button
+                onClick={() => {
+                  OrganizeColumns({
+                    i18nNs: 'user',
+                    value: columnsConfigs,
+                    onChange: (val) => {
+                      setColumnsConfigs(val);
+                      setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
+                    },
+                  });
+                }}
+                icon={<EyeOutlined />}
+              />
+            </Space>
+          </div>
+        </Row>
+        <Table
+          className='mt-2'
+          size='small'
+          rowKey='id'
+          columns={ajustColumns(userColumns, columnsConfigs)}
+          {...tableProps}
+          pagination={{
+            ...tableProps.pagination,
+            ...pagination,
+          }}
+        />
         <UserInfoModal
           visible={visible}
           action={action as ActionType}

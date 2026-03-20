@@ -84,7 +84,7 @@ function FormCpt(props: IProps, ref) {
                 {/* 直接渲染变量选择器，避免依赖 portal 对 ref 变化不触发重渲染的问题 */}
                 <VariablesMain variableValueFixed={queryParams.__variable_value_fixed as any} loading={false} />
               </div>
-              <div className='fc-border n9e-dashboard-editor-modal-left-chart-wrapper'>
+              <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper'>
                 {values && (
                   <Renderer
                     id={`${id}__editor__`}

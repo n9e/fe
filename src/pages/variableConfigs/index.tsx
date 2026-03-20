@@ -50,142 +50,135 @@ export default function index() {
       icon={<SettingOutlined />}
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/variable/'
     >
-      <div>
+      <div className='n9e'>
         <div
-          className='fc-border'
+          className='mb-2'
           style={{
-            padding: 16,
+            display: 'flex',
+            justifyContent: 'space-between',
           }}
         >
-          <div
-            className='mb-2'
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
+          <Input
+            placeholder={t('search_placeholder')}
+            style={{ width: 300 }}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+          <Button
+            type='primary'
+            onClick={() => {
+              FormModal({
+                title: t('common:btn.create'),
+                rsaConfig,
+                onOk: (values) => {
+                  return postVariableConfigs(values).then(() => {
+                    fetchData();
+                    message.success(t('common:success.create'));
+                  });
+                },
+              });
             }}
           >
-            <Input
-              placeholder={t('search_placeholder')}
-              style={{ width: 300 }}
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-              }}
-            />
-            <Button
-              type='primary'
-              onClick={() => {
-                FormModal({
-                  title: t('common:btn.create'),
-                  rsaConfig,
-                  onOk: (values) => {
-                    return postVariableConfigs(values).then(() => {
-                      fetchData();
-                      message.success(t('common:success.create'));
-                    });
-                  },
-                });
-              }}
-            >
-              {t('common:btn.create')}
-            </Button>
-          </div>
-          <Table
-            className='mt-2'
-            rowKey='id'
-            size='small'
-            columns={[
-              {
-                dataIndex: 'ckey',
-                title: t('ckey'),
-              },
-              {
-                dataIndex: 'cval',
-                title: t('cval'),
-                ellipsis: true,
-                render: (val, record) => {
-                  if (record.encrypted) {
-                    return '******';
-                  }
-                  return val;
-                },
-              },
-              {
-                dataIndex: 'note',
-                title: t('common:table.note'),
-              },
-              {
-                title: t('common:table.operations'),
-                width: 140,
-                render: (record) => {
-                  return (
-                    <Space>
-                      <Button
-                        size='small'
-                        type='link'
-                        style={{ padding: 0 }}
-                        onClick={() => {
-                          FormModal({
-                            title: t('common:btn.clone'),
-                            rsaConfig,
-                            data: record,
-                            onOk: (values) => {
-                              return postVariableConfigs(values).then(() => {
-                                fetchData();
-                                message.success(t('common:success.clone'));
-                              });
-                            },
-                          });
-                        }}
-                      >
-                        {t('common:btn.clone')}
-                      </Button>
-                      <Button
-                        size='small'
-                        type='link'
-                        style={{ padding: 0 }}
-                        onClick={() => {
-                          FormModal({
-                            title: t('common:btn.edit'),
-                            rsaConfig,
-                            data: record,
-                            onOk: (values) => {
-                              return putVariableConfigs(record.id, values).then(() => {
-                                fetchData();
-                                message.success(t('common:success.edit'));
-                              });
-                            },
-                          });
-                        }}
-                      >
-                        {t('common:btn.edit')}
-                      </Button>
-                      <Popconfirm
-                        title={t('common:confirm.delete')}
-                        onConfirm={() => {
-                          deleteVariableConfigs(record.id).then(() => {
-                            message.success(t('common:success.delete'));
-                            fetchData();
-                          });
-                        }}
-                      >
-                        <Button size='small' type='link' danger style={{ padding: 0 }}>
-                          {t('common:btn.delete')}
-                        </Button>
-                      </Popconfirm>
-                    </Space>
-                  );
-                },
-              },
-            ]}
-            dataSource={_.filter(data, (item) => {
-              if (search) {
-                return _.includes(item.ckey, search) || _.includes(item.note, search);
-              }
-              return true;
-            })}
-          />
+            {t('common:btn.create')}
+          </Button>
         </div>
+        <Table
+          className='mt-2'
+          rowKey='id'
+          size='small'
+          columns={[
+            {
+              dataIndex: 'ckey',
+              title: t('ckey'),
+            },
+            {
+              dataIndex: 'cval',
+              title: t('cval'),
+              ellipsis: true,
+              render: (val, record) => {
+                if (record.encrypted) {
+                  return '******';
+                }
+                return val;
+              },
+            },
+            {
+              dataIndex: 'note',
+              title: t('common:table.note'),
+            },
+            {
+              title: t('common:table.operations'),
+              width: 140,
+              render: (record) => {
+                return (
+                  <Space>
+                    <Button
+                      size='small'
+                      type='link'
+                      style={{ padding: 0 }}
+                      onClick={() => {
+                        FormModal({
+                          title: t('common:btn.clone'),
+                          rsaConfig,
+                          data: record,
+                          onOk: (values) => {
+                            return postVariableConfigs(values).then(() => {
+                              fetchData();
+                              message.success(t('common:success.clone'));
+                            });
+                          },
+                        });
+                      }}
+                    >
+                      {t('common:btn.clone')}
+                    </Button>
+                    <Button
+                      size='small'
+                      type='link'
+                      style={{ padding: 0 }}
+                      onClick={() => {
+                        FormModal({
+                          title: t('common:btn.edit'),
+                          rsaConfig,
+                          data: record,
+                          onOk: (values) => {
+                            return putVariableConfigs(record.id, values).then(() => {
+                              fetchData();
+                              message.success(t('common:success.edit'));
+                            });
+                          },
+                        });
+                      }}
+                    >
+                      {t('common:btn.edit')}
+                    </Button>
+                    <Popconfirm
+                      title={t('common:confirm.delete')}
+                      onConfirm={() => {
+                        deleteVariableConfigs(record.id).then(() => {
+                          message.success(t('common:success.delete'));
+                          fetchData();
+                        });
+                      }}
+                    >
+                      <Button size='small' type='link' danger style={{ padding: 0 }}>
+                        {t('common:btn.delete')}
+                      </Button>
+                    </Popconfirm>
+                  </Space>
+                );
+              },
+            },
+          ]}
+          dataSource={_.filter(data, (item) => {
+            if (search) {
+              return _.includes(item.ckey, search) || _.includes(item.note, search);
+            }
+            return true;
+          })}
+        />
       </div>
     </PageLayout>
   );
