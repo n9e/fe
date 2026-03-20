@@ -15,7 +15,7 @@ import UsageDistributionChart from './UsageDistributionChart';
 import VersionsDistributionChart from './VersionsDistributionChart';
 
 interface Props {
-  gids: string;
+  gids?: string;
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -24,9 +24,14 @@ export default function StatsCards(props: Props) {
   const { t } = useTranslation(NS);
   const { gids, collapsed, setCollapsed } = props;
 
-  const { data: stats, loading } = useRequest(getStats, {
-    defaultParams: [{ gids }],
-  });
+  const { data: stats, loading } = useRequest(
+    () => {
+      return getStats({ gids });
+    },
+    {
+      refreshDeps: [gids],
+    },
+  );
 
   const alivePercentage = stats?.count ? Math.round((stats.alive_count / stats.count) * 100) : 0;
   const ringR = 18;
@@ -124,7 +129,7 @@ export default function StatsCards(props: Props) {
             <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative flex flex-col'>
               <div className='mb-3 text-l1 leading-none shrink-0'>{t('memory_usage')}</div>
               <div className='flex-1 min-h-0 overflow-hidden'>
-                <UsageDistributionChart data={stats?.memory_usage} chartId='mem' />
+                <UsageDistributionChart data={stats?.mem_usage} chartId='mem' />
               </div>
               {loading && (
                 <div className='absolute right-1 top-1'>

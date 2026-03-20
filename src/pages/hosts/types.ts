@@ -33,7 +33,7 @@ export interface Stats {
   count: number; // 机器总数
   alive_count: number; // 有心跳的数量
   dead_count: number; // 无心跳的数量
-  memory_usage: {
+  mem_usage: {
     [index: number]: number;
   }; // 内存用量分布
   cpu_usage: {
