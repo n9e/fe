@@ -450,7 +450,7 @@ export default function MenuList(
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}
-        <div className={cn('my-2 h-px w-full', isLight ? 'bg-[var(--fc-sidemenu-border)]' : props.isCustomBg ? 'bg-white/10' : 'bg-fc-400')}></div>
+        {/* <div className={cn('my-2 h-px w-full', isLight ? 'bg-[var(--fc-sidemenu-border)]' : props.isCustomBg ? 'bg-white/10' : 'bg-fc-400')}></div> */}
         <div className='space-y-1'>
           {chunks.map((chunk, chunkIndex) => (
             <React.Fragment key={`${chunk.section ?? 'none'}-${chunkIndex}`}>
