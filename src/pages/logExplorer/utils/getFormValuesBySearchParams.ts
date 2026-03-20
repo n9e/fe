@@ -237,6 +237,34 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         };
       }
     }
+    if (data_source_name === DatasourceCateEnum.cloudwatchLogs) {
+      const region = _.get(params, 'region');
+      const log_group_names = _.get(params, 'log_group_names');
+      const stackByField = _.get(params, 'stackByField');
+      const query_language = _.get(params, 'query_language');
+      const vizType = _.get(params, 'vizType');
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
+      const timeKey = _.get(params, 'timeKey') ?? '';
+      if (region && log_group_names) {
+        return {
+          ...formValues,
+          query: {
+            region,
+            log_group_names: _.isArray(log_group_names) ? log_group_names : [log_group_names],
+            stackByField,
+            query_language,
+            vizType,
+            query,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              timeKey,
+            },
+          },
+        };
+      }
+    }
   }
   return undefined;
 }
@@ -330,6 +358,18 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.logset = formValues.query?.logNamespace;
     query.topic = formValues.query?.logSource;
     query.query = formValues.query?.query;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
+    query.timeKey = formValues.query?.keys?.timeKey;
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.cloudwatchLogs) {
+    query.region = formValues.query?.region;
+    query.log_group_names = formValues.query?.log_group_names;
+    query.stackByField = formValues.query?.stackByField;
+    query.query = formValues.query?.query;
+    query.query_language = formValues.query?.query_language;
+    query.vizType = formValues.query?.vizType;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
