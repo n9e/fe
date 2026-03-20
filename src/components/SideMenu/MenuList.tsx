@@ -446,7 +446,7 @@ export default function MenuList(
               {<IconFont type='icon-ic_search' />}
             </div>
 
-            <div className='overflow-hidden truncate text-l1 tracking-wide'>{t('quickJump')} </div>
+            <div className='overflow-hidden truncate tracking-wide'>{t('quickJump')} </div>
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}
