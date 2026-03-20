@@ -46,6 +46,7 @@ function saveLess(filePath, filename, callback) {
         'normal-color': 'rgb(79, 82, 99)',
 
         // 2026-03 release-23 版本
+        'table-bg': 'var(--fc-fill-2)',
         'table-row-hover-bg': 'rgb(var(--fc-fill-3-rgb) / 0.65)',
         'table-header-bg': 'rgb(var(--fc-fill-3-rgb) / 0.7)',
         'border-radius-base': '8px',

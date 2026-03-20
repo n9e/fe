@@ -280,6 +280,11 @@ export default function List(props: Props) {
               localStorage.setItem('targetsListPageSize', _.toString(pageSize));
             },
           }}
+          rowClassName={(record) => {
+            return classNames('group', {
+              'n9e-hosts-ng-table-row-offline': record.target_up === 0,
+            });
+          }}
           columns={[
             {
               dataIndex: 'ident',
@@ -334,8 +339,19 @@ export default function List(props: Props) {
               render: (ident, record) => {
                 return (
                   <div>
-                    <div className='group'>
-                      <TargetMetaDrawer ident={ident} targetNode={<span className='text-title mb-[2px] cursor-pointer hover:underline'>{ident}</span>} />
+                    <div>
+                      <TargetMetaDrawer
+                        ident={ident}
+                        targetNode={
+                          <span
+                            className={classNames('text-main text-l1 font-bold mb-[2px] cursor-pointer hover:underline hover:text-title', {
+                              'text-soft': record.target_up === 0,
+                            })}
+                          >
+                            {ident}
+                          </span>
+                        }
+                      />
                       {IS_PLUS && (
                         <Tooltip title={t('view_collects')}>
                           <Button
@@ -358,7 +374,16 @@ export default function List(props: Props) {
                       <Divider type='vertical' />
                       <Space size={4}>
                         <span>{record.cpu_num === -1 ? '-' : `${record.cpu_num}${t('cores')}`}</span>
-                        <span>{record.os === '' ? '-' : record.os}</span>
+                        <span>
+                          {record.os === '' ? (
+                            '-'
+                          ) : (
+                            <Space size={4}>
+                              <img src={`/image/sys_${record.os}.svg`} alt='' />
+                              {record.os}
+                            </Space>
+                          )}
+                        </span>
                         <span>{record.arch === '' ? '-' : record.arch}</span>
                         {record.cpu_num === -1 || record.os === '' || record.arch === '' ? (
                           <Tooltip title={t('unknown_tip')}>
@@ -372,6 +397,7 @@ export default function List(props: Props) {
                           'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
                           'bg-alert/10': record.agent_version === '' || record.agent_version === null,
                           'text-alert': record.agent_version === '' || record.agent_version === null,
+                          'text-soft': record.target_up === 0,
                         })}
                       >
                         <VersionIcon className='text-l2 leading-none flex' />
@@ -449,7 +475,7 @@ export default function List(props: Props) {
             {
               dataIndex: 'group_objs',
               title: t('group_objs'),
-              render: (val) => {
+              render: (val, record) => {
                 const minWidth = getTextWidth(t('group_objs')) + 4;
                 const groupNames = _.map(val, 'name');
                 if (_.isEmpty(groupNames)) {
@@ -457,7 +483,7 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags type='fill' data={groupNames} />
+                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
                   </div>
                 );
               },
@@ -491,7 +517,11 @@ export default function List(props: Props) {
                   <div style={{ minWidth }}>
                     <Space size={8} align='start'>
                       <div className='w-[4px] h-[16px] rounded relative top-[2px]' style={{ backgroundColor }} />
-                      <div className='text-main'>
+                      <div
+                        className={classNames('text-main', {
+                          'text-soft': record.target_up === 0,
+                        })}
+                      >
                         <div>{moment.unix(val).format('YYYY-MM-DD')}</div>
                         <div>{moment.unix(val).format('HH:mm:ss')}</div>
                       </div>
@@ -514,7 +544,13 @@ export default function List(props: Props) {
                 }
                 return (
                   <div style={{ minWidth }} className='w-[100px]'>
-                    <div className='text-main'>{val.toFixed(1)} %</div>
+                    <div
+                      className={classNames('text-main', {
+                        'text-soft': record.target_up === 0,
+                      })}
+                    >
+                      {val.toFixed(1)} %
+                    </div>
                     <Progress percent={val} showInfo={false} strokeColor={getStrokeColor(val)} />
                   </div>
                 );
@@ -534,7 +570,13 @@ export default function List(props: Props) {
                 }
                 return (
                   <div style={{ minWidth }} className='w-[100px]'>
-                    <div className='text-main'>{val.toFixed(1)} %</div>
+                    <div
+                      className={classNames('text-main', {
+                        'text-soft': record.target_up === 0,
+                      })}
+                    >
+                      {val.toFixed(1)} %
+                    </div>
                     <Progress percent={val} showInfo={false} strokeColor={getStrokeColor(val)} />
                   </div>
                 );
@@ -570,7 +612,13 @@ export default function List(props: Props) {
                   <div style={{ minWidth }}>
                     <Space size={8} align='start'>
                       <div className='w-[4px] h-[16px] rounded relative top-[2px]' style={{ backgroundColor }} />
-                      <div className='text-main'>{timeFormatter(val, 'milliseconds', 2)?.text}</div>
+                      <div
+                        className={classNames('text-main', {
+                          'text-soft': record.target_up === 0,
+                        })}
+                      >
+                        {timeFormatter(val, 'milliseconds', 2)?.text}
+                      </div>
                     </Space>
                   </div>
                 );

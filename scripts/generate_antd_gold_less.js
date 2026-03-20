@@ -51,6 +51,7 @@ function saveLess(filePath, filename, callback) {
         'font-family': 'Helvetica Neue,sans-serif,PingFangSC-Regular,microsoft yahei ui,microsoft yahei,simsun,"sans-serif"',
 
         // 2026-03 release-23 版本，table 的 header 和 hover 背景色不调整还是以当前主题色为主
+        'table-bg': 'var(--fc-fill-2)',
         'border-radius-base': '8px',
         'border-radius-sm': '4px',
         'checkbox-border-radius': '2px',
