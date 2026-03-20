@@ -70,9 +70,9 @@
   /* 浅色侧栏（Firemap 参考，组件内 isLight 时引用） */
   --fc-sidemenu-bg: rgb(247, 247, 248);
   --fc-sidemenu-border: #e5e7eb;
-  --fc-sidemenu-section-title: #a3a3a3;
-  --fc-sidemenu-item-icon: #6b7280;
-  --fc-sidemenu-item-text: #374151;
+  --fc-sidemenu-section-title: rgba(101, 115, 134, 0.6);
+  --fc-sidemenu-item-icon: rgba(101, 115, 134, 0.4);
+  --fc-sidemenu-item-text: rgb(101, 115, 134);
   --fc-sidemenu-item-active-bg: rgb(243, 238, 252);
   --fc-sidemenu-item-active-text: #7c3aed;
   --fc-sidemenu-item-hover-bg: #f3f4f6;
