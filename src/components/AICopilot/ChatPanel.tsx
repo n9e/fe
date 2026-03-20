@@ -1,36 +1,32 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Input, Button, Space } from 'antd';
-import { SendOutlined, StopOutlined } from '@ant-design/icons';
+import { SendOutlined, StopOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import useSSE from './useSSE';
-import MessageBubble from './MessageBubble';
-import { createConversation, getConversation, addConversationMessages } from './services';
-import type { Message, ChatMessage, AIChatRequest, ToolCallInfo, DoneResponse } from './types';
+import Markdown from '@/components/Markdown';
+import ThinkingBlock from './ThinkingBlock';
+import QueryResultBlock from './QueryResultBlock';
+import useStream from './useStream';
+import { createChat, sendMessage, getMessageDetail, getMessageHistory, cancelMessage } from './services';
+import type { AssistantChat, AssistantMessageDetail, AssistantAction, AssistantPageInfo } from './types';
 
 const { TextArea } = Input;
+const POLL_INTERVAL = 3000;
 
-// Try to extract query/explanation from various LLM response formats
+// Try to extract query/explanation from response content
 function tryParseQueryResponse(text: string): { query: string; explanation: string; remaining: string } | null {
   try {
-    // Try to find JSON object in the text
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return null;
-
     const parsed = JSON.parse(jsonMatch[0]);
-
-    // Format 1: {"query": "...", "explanation": "..."}
     if (parsed.query && typeof parsed.query === 'string') {
       const remaining = text.replace(jsonMatch[0], '').trim();
       return { query: parsed.query, explanation: parsed.explanation || '', remaining };
     }
-
-    // Format 2: {"summary": "...", "metrics": [{"promql_examples": [...]}]}
     if (parsed.metrics && Array.isArray(parsed.metrics)) {
       const firstMetric = parsed.metrics[0];
       const examples = firstMetric?.promql_examples;
       if (examples && examples.length > 0) {
-        // Use the first non-comment example as query
         const query = examples.find((e: string) => e && !e.startsWith('#')) || examples[0];
         return {
           query: query.replace(/^#.*\n/gm, '').trim(),
@@ -39,7 +35,6 @@ function tryParseQueryResponse(text: string): { query: string; explanation: stri
         };
       }
     }
-
     return null;
   } catch {
     return null;
@@ -49,56 +44,47 @@ function tryParseQueryResponse(text: string): { query: string; explanation: stri
 interface Props {
   actionKey: string;
   actionContext?: Record<string, any>;
-  conversationId?: number;
-  onConversationChange?: (id: number, title: string) => void;
+  chatId?: string;
+  onChatChange?: (chat: AssistantChat) => void;
   onApplyQuery?: (query: string) => void;
 }
 
-export default function ChatPanel({ actionKey, actionContext, conversationId, onConversationChange, onApplyQuery }: Props) {
+export default function ChatPanel({ actionKey, actionContext, chatId, onChatChange, onApplyQuery }: Props) {
   const { t } = useTranslation('AICopilot');
-  const { sendMessage, cancel, isStreaming } = useSSE();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { startStream, cancelStream } = useStream();
+
+  const [messages, setMessages] = useState<AssistantMessageDetail[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  // Streaming content keyed by "chatId:seqId"
+  const [streamContent, setStreamContent] = useState<Record<string, string>>({});
+  const [streamReason, setStreamReason] = useState<Record<string, string>>({});
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const assistantRef = useRef<Message | null>(null);
-  const convIdRef = useRef<number | undefined>(conversationId);
-  // Skip next load when conversation was just created internally
+  const chatIdRef = useRef<string | undefined>(chatId);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const skipNextLoadRef = useRef(false);
 
-  // Track conversationId changes
   useEffect(() => {
-    convIdRef.current = conversationId;
-  }, [conversationId]);
+    chatIdRef.current = chatId;
+  }, [chatId]);
 
-  // Load messages when conversationId changes (only for switching to existing conversations)
+  // Load messages when chatId changes
   useEffect(() => {
     if (skipNextLoadRef.current) {
       skipNextLoadRef.current = false;
       return;
     }
-    if (conversationId) {
-      getConversation(conversationId)
+    if (chatId) {
+      getMessageHistory({ chat_id: chatId })
         .then((res) => {
-          const data = res?.dat;
-          if (data?.messages) {
-            const loaded: Message[] = data.messages.map((m: any) => ({
-              id: `loaded_${m.id}`,
-              role: m.role,
-              content: m.content || '',
-              thinking: m.thinking || '',
-              toolCalls: m.tool_calls ? JSON.parse(m.tool_calls) : undefined,
-              query: m.query || '',
-              explanation: m.explanation || '',
-              error: m.error || '',
-            }));
-            setMessages(loaded);
-          }
+          setMessages(res?.dat || []);
         })
         .catch(() => {});
     } else {
       setMessages([]);
     }
-  }, [conversationId]);
+  }, [chatId]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -106,149 +92,193 @@ export default function ChatPanel({ actionKey, actionContext, conversationId, on
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [messages, streamContent, scrollToBottom]);
 
-  // Save messages to backend
-  const saveMessages = useCallback(
-    (userMsg: Message, assistantMsg: Message, currentConvId?: number) => {
-      const msgsToSave = [
-        {
-          role: userMsg.role,
-          content: userMsg.content,
-        },
-        {
-          role: assistantMsg.role,
-          content: assistantMsg.content || '',
-          thinking: assistantMsg.thinking || '',
-          tool_calls: assistantMsg.toolCalls ? JSON.stringify(assistantMsg.toolCalls) : '',
-          query: assistantMsg.query || '',
-          explanation: assistantMsg.explanation || '',
-          error: assistantMsg.error || '',
-        },
-      ];
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      stopPolling();
+      cancelStream();
+    };
+  }, []);
 
-      if (currentConvId) {
-        addConversationMessages(currentConvId, msgsToSave).catch(() => {});
-      } else {
-        // Create a new conversation with the first user message as title
-        const title = userMsg.content.slice(0, 50) + (userMsg.content.length > 50 ? '...' : '');
-        createConversation({
-          title,
-          context: JSON.stringify({ action_key: actionKey, ...actionContext }),
-        })
-          .then((res) => {
-            const newConv = res?.dat;
-            if (newConv?.id) {
-              convIdRef.current = newConv.id;
-              skipNextLoadRef.current = true;
-              onConversationChange?.(newConv.id, title);
-              addConversationMessages(newConv.id, msgsToSave).catch(() => {});
+  const stopPolling = () => {
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+  };
+
+  const startPolling = (pollChatId: string, seqId: number) => {
+    stopPolling();
+    pollTimerRef.current = setInterval(async () => {
+      try {
+        const res = await getMessageDetail({ chat_id: pollChatId, seq_id: seqId });
+        const detail = res?.dat;
+        if (detail) {
+          setMessages((prev) => {
+            const newList = [...prev];
+            const idx = newList.findIndex((m) => m.chat_id === pollChatId && m.seq_id === seqId);
+            if (idx >= 0) {
+              newList[idx] = detail;
             }
-          })
-          .catch(() => {});
+            return newList;
+          });
+          if (detail.is_finish) {
+            stopPolling();
+            cancelStream();
+            setIsLoading(false);
+          }
+        }
+      } catch {
+        // Keep polling on transient errors
       }
-    },
-    [actionKey, actionContext, onConversationChange],
-  );
+    }, POLL_INTERVAL);
+  };
 
   const handleSend = useCallback(
-    (text?: string) => {
+    async (text?: string) => {
       const input = (text || inputValue).trim();
-      if (!input || isStreaming) return;
+      if (!input || isLoading) return;
 
-      const userMsg: Message = {
-        id: _.uniqueId('msg_'),
-        role: 'user',
-        content: input,
-      };
-
-      const assistantMsg: Message = {
-        id: _.uniqueId('msg_'),
-        role: 'assistant',
-        content: '',
-        thinking: '',
-        toolCalls: [],
-        isStreaming: true,
-      };
-
-      assistantRef.current = assistantMsg;
-      setMessages((prev) => [...prev, userMsg, assistantMsg]);
       setInputValue('');
+      setIsLoading(true);
 
-      // Build history from previous messages
-      const history: ChatMessage[] = messages
-        .filter((m) => !m.isStreaming)
-        .map((m) => ({
-          role: m.role,
-          content: m.role === 'assistant' ? m.query || m.content : m.content,
-        }));
+      try {
+        // Build structured page_from and action from context
+        const pageFrom: AssistantPageInfo = {
+          page: actionContext?.datasource_type || 'explorer',
+          param: {
+            datasource_type: actionContext?.datasource_type,
+            datasource_id: actionContext?.datasource_id,
+          },
+        };
 
-      const params: AIChatRequest = {
-        action_key: actionKey,
-        user_input: input,
-        history,
-        context: actionContext,
-      };
+        const action: AssistantAction = {
+          key: actionKey,
+          param: {
+            datasource_type: actionContext?.datasource_type,
+            datasource_id: actionContext?.datasource_id,
+          },
+        };
 
-      sendMessage(params, {
-        onThinking: () => {
-          // No-op: text chunks already contain the full reasoning (including thoughts).
-          // Separate thinking chunks are parsed subsets and would cause duplication.
-        },
-        onToolCall: (name, input) => {
-          if (assistantRef.current) {
-            const tc: ToolCallInfo = { name, input };
-            assistantRef.current.toolCalls = [...(assistantRef.current.toolCalls || []), tc];
-            setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
+        // Ensure we have a chat
+        let currentChatId = chatIdRef.current;
+        if (!currentChatId) {
+          const chatRes = await createChat({
+            page: pageFrom.page,
+            param: pageFrom.param,
+          });
+          const newChat = chatRes?.dat;
+          if (!newChat?.chat_id) {
+            setIsLoading(false);
+            return;
           }
-        },
-        onToolResult: () => {
-          // Tool results are shown via thinking/tool_call tags
-        },
-        onText: (delta) => {
-          if (assistantRef.current) {
-            // Text from ReAct agent is reasoning process, accumulate into thinking
-            assistantRef.current.thinking = (assistantRef.current.thinking || '') + delta;
-            setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
-          }
-        },
-        onDone: (response: DoneResponse) => {
-          if (assistantRef.current) {
-            assistantRef.current.isStreaming = false;
-            // Use message as thinking (fallback if not already accumulated via streaming)
-            if (response.message && !assistantRef.current.thinking) {
-              assistantRef.current.thinking = response.message;
-            }
-            // Parse response for query/explanation
-            const finalAnswer = response.response || '';
-            if (finalAnswer) {
-              const parsed = tryParseQueryResponse(finalAnswer);
-              if (parsed) {
-                assistantRef.current.query = parsed.query;
-                assistantRef.current.explanation = parsed.explanation;
-                assistantRef.current.content = parsed.remaining;
-              } else {
-                assistantRef.current.content = finalAnswer;
+          currentChatId = newChat.chat_id;
+          chatIdRef.current = currentChatId;
+          skipNextLoadRef.current = true;
+          onChatChange?.(newChat);
+        }
+
+        // Send message
+        const msgRes = await sendMessage({
+          chat_id: currentChatId,
+          query: {
+            content: input,
+            action,
+            page_from: pageFrom,
+          },
+        });
+
+        const seqId = msgRes?.dat?.seq_id;
+        if (!seqId) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Add placeholder message
+        const placeholder: AssistantMessageDetail = {
+          chat_id: currentChatId,
+          seq_id: seqId,
+          model_id: 0,
+          query: { content: input, action, page_from: pageFrom },
+          response: [],
+          cur_step: '',
+          is_finish: false,
+          feedback: { chat_id: currentChatId, seq_id: seqId, status: 0 },
+          recommend_action: [],
+          err_code: 0,
+          err_title: '',
+          err_msg: '',
+          executed_tools: false,
+        };
+        setMessages((prev) => [...prev, placeholder]);
+
+        // Start polling for message detail
+        startPolling(currentChatId, seqId);
+
+        // Start streaming - the first poll will return the stream_id, but
+        // we can also get it from the first poll result. Let's do an initial
+        // detail fetch to get the stream_id.
+        setTimeout(async () => {
+          try {
+            const detailRes = await getMessageDetail({ chat_id: currentChatId!, seq_id: seqId });
+            const detail = detailRes?.dat;
+            if (detail) {
+              setMessages((prev) => {
+                const newList = [...prev];
+                const idx = newList.findIndex((m) => m.seq_id === seqId && m.chat_id === currentChatId);
+                if (idx >= 0) newList[idx] = detail;
+                return newList;
+              });
+
+              // Find stream_id and start SSE
+              const streamId = detail.response?.[0]?.stream_id;
+              if (streamId && !detail.is_finish) {
+                const key = `${currentChatId}:${seqId}`;
+                startStream(
+                  streamId,
+                  (delta) => {
+                    setStreamContent((prev) => ({ ...prev, [key]: (prev[key] || '') + delta }));
+                  },
+                  (delta) => {
+                    setStreamReason((prev) => ({ ...prev, [key]: (prev[key] || '') + delta }));
+                  },
+                );
+              }
+
+              if (detail.is_finish) {
+                stopPolling();
+                setIsLoading(false);
               }
             }
-            setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
-            // Save to backend
-            saveMessages(userMsg, assistantRef.current, convIdRef.current);
+          } catch {
+            // Polling will catch up
           }
-        },
-        onError: (error) => {
-          if (assistantRef.current) {
-            assistantRef.current.isStreaming = false;
-            assistantRef.current.error = error;
-            setMessages((prev) => [...prev.slice(0, -1), { ...assistantRef.current! }]);
-            // Save even on error
-            saveMessages(userMsg, assistantRef.current, convIdRef.current);
-          }
-        },
-      });
+        }, 500);
+      } catch {
+        setIsLoading(false);
+      }
     },
-    [inputValue, isStreaming, messages, actionKey, actionContext, sendMessage, saveMessages],
+    [inputValue, isLoading, actionKey, actionContext, onChatChange, startStream],
   );
+
+  const handleCancel = useCallback(() => {
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg && !lastMsg.is_finish) {
+      cancelMessage({ chat_id: lastMsg.chat_id, seq_id: lastMsg.seq_id }).catch(() => {});
+    }
+    stopPolling();
+    cancelStream();
+    setIsLoading(false);
+    setMessages((prev) => {
+      const newList = [...prev];
+      if (newList.length > 0) {
+        newList[newList.length - 1] = { ...newList[newList.length - 1], is_finish: true };
+      }
+      return newList;
+    });
+  }, [messages, cancelStream]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -258,6 +288,8 @@ export default function ChatPanel({ actionKey, actionContext, conversationId, on
   };
 
   const presetPrompts = [t('prompts.cpu_usage'), t('prompts.memory_usage'), t('prompts.mysql_alive')];
+  const datasourceType = actionContext?.datasource_type;
+  const language = datasourceType === 'prometheus' ? 'promql' : 'sql';
 
   return (
     <div className='ai-copilot-chat-panel'>
@@ -274,10 +306,71 @@ export default function ChatPanel({ actionKey, actionContext, conversationId, on
             </Space>
           </div>
         ) : (
-          messages.map((msg) => <MessageBubble key={msg.id} message={msg} datasourceType={actionContext?.datasource_type} onRunQuery={onApplyQuery} />)
+          messages.map((msg) => {
+            const key = `${msg.chat_id}:${msg.seq_id}`;
+            const liveContent = streamContent[key];
+            const liveReason = streamReason[key];
+
+            // Determine display content
+            const responseItem = msg.response?.[0];
+            const finalContent = responseItem?.is_finish ? responseItem.content : liveContent || responseItem?.content || '';
+            const isAssistantFinished = msg.is_finish !== false;
+
+            // Try parse query from final content
+            let parsedQuery: string | undefined;
+            let parsedExplanation: string | undefined;
+            let displayContent = finalContent;
+            if (isAssistantFinished && finalContent) {
+              const parsed = tryParseQueryResponse(finalContent);
+              if (parsed) {
+                parsedQuery = parsed.query;
+                parsedExplanation = parsed.explanation;
+                displayContent = parsed.remaining;
+              }
+            }
+
+            return (
+              <React.Fragment key={key}>
+                {/* User message */}
+                {msg.query?.content && (
+                  <div className='ai-copilot-message ai-copilot-message-user'>
+                    <div className='ai-copilot-message-content'>
+                      <div className='ai-copilot-message-text'>{msg.query.content}</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Assistant message */}
+                <div className='ai-copilot-message ai-copilot-message-assistant'>
+                  <div className='ai-copilot-message-content'>
+                    {/* Thinking/reasoning */}
+                    {liveReason && <ThinkingBlock thinking={liveReason} isStreaming={!isAssistantFinished} />}
+
+                    {/* Loading step */}
+                    {!isAssistantFinished && !finalContent && (
+                      <div className='ai-copilot-message-loading'>
+                        <LoadingOutlined style={{ marginRight: 6 }} />
+                        <span>{msg.cur_step || t('thinking')}</span>
+                      </div>
+                    )}
+
+                    {/* Markdown content */}
+                    {displayContent && <Markdown content={displayContent} />}
+
+                    {/* Query result */}
+                    {parsedQuery && <QueryResultBlock query={parsedQuery} explanation={parsedExplanation} language={language} onRunQuery={onApplyQuery} />}
+
+                    {/* Error */}
+                    {msg.err_msg && <div className='ai-copilot-message-error'>{msg.err_msg}</div>}
+                  </div>
+                </div>
+              </React.Fragment>
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>
+
       <div className='ai-copilot-input-area'>
         <TextArea
           value={inputValue}
@@ -285,11 +378,11 @@ export default function ChatPanel({ actionKey, actionContext, conversationId, on
           onKeyDown={handleKeyDown}
           placeholder={t('input_placeholder')}
           autoSize={{ minRows: 1, maxRows: 4 }}
-          disabled={isStreaming}
+          disabled={isLoading}
         />
         <div className='ai-copilot-input-actions'>
-          {isStreaming ? (
-            <Button size='small' danger icon={<StopOutlined />} onClick={cancel}>
+          {isLoading ? (
+            <Button size='small' danger icon={<StopOutlined />} onClick={handleCancel}>
               {t('stop')}
             </Button>
           ) : (

@@ -1,60 +1,84 @@
-export interface AIChatRequest {
-  action_key: string; // e.g. "query_generator"
-  user_input: string;
-  history?: ChatMessage[];
-  context?: Record<string, any>; // action-specific params
+// --- Page Info (aligned with fc-model PageInfo) ---
+export interface AssistantPageInfo {
+  page: string;
+  param?: AssistantPageInfoParam;
 }
 
-export interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
+export interface AssistantPageInfoParam {
+  workspace_id?: number;
+  dashboard?: { id: any; var?: Record<string, any[]>; start?: number; end?: number };
+  datasource_type?: string;
+  datasource_id?: number;
 }
 
-export interface StreamChunk {
-  type: 'thinking' | 'tool_call' | 'tool_result' | 'text' | 'done' | 'error';
-  content: string;
-  delta?: string;
-  metadata?: {
-    name?: string;
-    input?: string;
-    [key: string]: any;
-  };
-  done?: boolean;
-  error?: string;
-  timestamp: number;
+// --- Action (aligned with fc-model Action) ---
+export interface AssistantAction {
+  content?: string;
+  key: string;
+  param?: AssistantActionParam;
 }
 
-export interface DoneResponse {
-  type: 'done';
-  duration_ms: number;
-  message: string; // accumulated reasoning/thinking text
-  response: string; // final answer content (may contain JSON with query/explanation)
+export interface AssistantActionParam {
+  datasource_type?: string;
+  datasource_id?: number;
+  database_name?: string;
+  table_name?: string;
 }
 
-export interface ToolCallInfo {
-  name: string;
-  input?: string;
-}
-
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  thinking?: string;
-  toolCalls?: ToolCallInfo[];
-  query?: string;
-  explanation?: string;
-  isStreaming?: boolean;
-  error?: string;
-}
-
-export interface AIConversation {
-  id: number;
+// --- Chat (aligned with fc-model Chat) ---
+export interface AssistantChat {
+  chat_id: string;
   title: string;
+  last_update: number;
+  page_from: AssistantPageInfo;
+  recommend_action: AssistantAction[];
   user_id: number;
-  context: string; // JSON string, page-specific context
-  created_at: number;
-  updated_at: number;
+  is_new: boolean;
+}
+
+// --- Message (aligned with fc-model Message) ---
+export interface AssistantMessageDetail {
+  chat_id: string;
+  seq_id: number;
+  model_id: number;
+  query: AssistantMessageQuery;
+  response: AssistantMessageResponse[];
+  cur_step: string;
+  is_finish: boolean;
+  feedback: AssistantMessageFeedback;
+  recommend_action: AssistantAction[];
+  err_code: number;
+  err_title: string;
+  err_msg: string;
+  executed_tools: boolean;
+}
+
+export interface AssistantMessageQuery {
+  content: string;
+  action: AssistantAction;
+  page_from: AssistantPageInfo;
+}
+
+export interface AssistantMessageResponse {
+  content_type: string; // "markdown" | "hint"
+  content: string;
+  hint_text?: string;
+  stream_id?: string;
+  is_finish: boolean;
+  param?: any;
+  is_from_ai: boolean;
+}
+
+export interface AssistantMessageFeedback {
+  chat_id: string;
+  seq_id: number;
+  status: number; // 0=none, 1=like, -1=dislike, -2=cancel
+}
+
+// --- Stream ---
+export interface StreamEvent {
+  v: string;
+  p: string; // "content" or "reason"
 }
 
 export const SUPPORTED_DATASOURCE_TYPES = ['prometheus', 'mysql', 'doris', 'ck', 'pgsql'];

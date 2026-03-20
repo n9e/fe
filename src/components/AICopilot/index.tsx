@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import ChatPanel from './ChatPanel';
 import ConversationHeader from './ConversationHeader';
-import type { AIConversation } from './types';
+import type { AssistantChat } from './types';
 import './style.less';
 
 interface Props {
@@ -18,23 +18,22 @@ export { default as CopilotEntry, CopilotEntryButton } from './CopilotEntry';
 export { CopilotSidebarContext, useCopilotSidebar } from './CopilotSidebarContext';
 
 export default function AICopilot({ visible, onClose, actionKey, actionContext, onApplyQuery }: Props) {
-  const [conversationId, setConversationId] = useState<number | undefined>();
+  const [chatId, setChatId] = useState<string | undefined>();
   const [refreshKey, setRefreshKey] = useState(0);
-  // Use a key to force remount ChatPanel when switching conversations
   const [chatKey, setChatKey] = useState(0);
 
-  const handleSelectConversation = useCallback((conv: AIConversation) => {
-    setConversationId(conv.id);
+  const handleSelectChat = useCallback((chat: AssistantChat) => {
+    setChatId(chat.chat_id);
     setChatKey((k) => k + 1);
   }, []);
 
-  const handleNewConversation = useCallback(() => {
-    setConversationId(undefined);
+  const handleNewChat = useCallback(() => {
+    setChatId(undefined);
     setChatKey((k) => k + 1);
   }, []);
 
-  const handleConversationChange = useCallback((id: number, _title: string) => {
-    setConversationId(id);
+  const handleChatChange = useCallback((chat: AssistantChat) => {
+    setChatId(chat.chat_id);
     setRefreshKey((k) => k + 1);
   }, []);
 
@@ -42,15 +41,8 @@ export default function AICopilot({ visible, onClose, actionKey, actionContext, 
 
   return (
     <div className='ai-copilot-sidebar'>
-      <ConversationHeader currentId={conversationId} onSelect={handleSelectConversation} onNew={handleNewConversation} onClose={onClose} refreshKey={refreshKey} />
-      <ChatPanel
-        key={chatKey}
-        actionKey={actionKey}
-        actionContext={actionContext}
-        conversationId={conversationId}
-        onConversationChange={handleConversationChange}
-        onApplyQuery={onApplyQuery}
-      />
+      <ConversationHeader currentId={chatId} onSelect={handleSelectChat} onNew={handleNewChat} onClose={onClose} refreshKey={refreshKey} />
+      <ChatPanel key={chatKey} actionKey={actionKey} actionContext={actionContext} chatId={chatId} onChatChange={handleChatChange} onApplyQuery={onApplyQuery} />
     </div>
   );
 }

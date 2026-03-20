@@ -3,24 +3,24 @@ import { Dropdown, Input, Empty, Popconfirm } from 'antd';
 import { PlusOutlined, CloseOutlined, SearchOutlined, DeleteOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import type { AIConversation } from './types';
-import { getConversations, deleteConversation } from './services';
+import type { AssistantChat } from './types';
+import { getChatHistory, deleteChat } from './services';
 
 interface Props {
-  currentId?: number;
-  onSelect: (conv: AIConversation) => void;
+  currentId?: string;
+  onSelect: (chat: AssistantChat) => void;
   onNew: () => void;
   onClose: () => void;
   refreshKey?: number;
 }
 
-function groupByDate(conversations: AIConversation[], t: (key: string) => string) {
+function groupByDate(chats: AssistantChat[], t: (key: string) => string) {
   const now = dayjs();
-  const groups: { label: string; items: AIConversation[] }[] = [];
-  const map = new Map<string, AIConversation[]>();
+  const groups: { label: string; items: AssistantChat[] }[] = [];
+  const map = new Map<string, AssistantChat[]>();
 
-  for (const conv of conversations) {
-    const d = dayjs.unix(conv.updated_at);
+  for (const chat of chats) {
+    const d = dayjs.unix(chat.last_update);
     let label: string;
     if (d.isSame(now, 'day')) {
       label = t('conversation.today');
@@ -36,7 +36,7 @@ function groupByDate(conversations: AIConversation[], t: (key: string) => string
     if (!map.has(label)) {
       map.set(label, []);
     }
-    map.get(label)!.push(conv);
+    map.get(label)!.push(chat);
   }
 
   map.forEach((items, label) => {
@@ -48,38 +48,38 @@ function groupByDate(conversations: AIConversation[], t: (key: string) => string
 
 export default function ConversationHeader({ currentId, onSelect, onNew, onClose, refreshKey }: Props) {
   const { t } = useTranslation('AICopilot');
-  const [conversations, setConversations] = useState<AIConversation[]>([]);
+  const [chats, setChats] = useState<AssistantChat[]>([]);
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
 
-  const fetchConversations = () => {
-    getConversations()
+  const fetchChats = () => {
+    getChatHistory()
       .then((res) => {
-        setConversations(res?.dat || []);
+        setChats(res?.dat || []);
       })
       .catch(() => {});
   };
 
   useEffect(() => {
-    fetchConversations();
+    fetchChats();
   }, [refreshKey]);
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return conversations;
+    if (!search.trim()) return chats;
     const q = search.toLowerCase();
-    return conversations.filter((c) => c.title.toLowerCase().includes(q));
-  }, [conversations, search]);
+    return chats.filter((c) => c.title.toLowerCase().includes(q));
+  }, [chats, search]);
 
   const groups = useMemo(() => groupByDate(filtered, t), [filtered, t]);
 
-  const currentConv = conversations.find((c) => c.id === currentId);
-  const displayTitle = currentConv ? currentConv.title : t('conversation.new');
+  const currentChat = chats.find((c) => c.chat_id === currentId);
+  const displayTitle = currentChat ? currentChat.title : t('conversation.new');
 
-  const handleDelete = (e: React.MouseEvent, id: number) => {
+  const handleDelete = (e: React.MouseEvent, chatId: string) => {
     e.stopPropagation();
-    deleteConversation(id).then(() => {
-      fetchConversations();
-      if (id === currentId) {
+    deleteChat(chatId).then(() => {
+      fetchChats();
+      if (chatId === currentId) {
         onNew();
       }
     });
@@ -97,20 +97,20 @@ export default function ConversationHeader({ currentId, onSelect, onNew, onClose
           groups.map((group) => (
             <div key={group.label} className='ai-copilot-conv-group'>
               <div className='ai-copilot-conv-group-label'>{group.label}</div>
-              {group.items.map((conv) => (
+              {group.items.map((chat) => (
                 <div
-                  key={conv.id}
-                  className={`ai-copilot-conv-item ${conv.id === currentId ? 'active' : ''}`}
+                  key={chat.chat_id}
+                  className={`ai-copilot-conv-item ${chat.chat_id === currentId ? 'active' : ''}`}
                   onClick={() => {
-                    onSelect(conv);
+                    onSelect(chat);
                     setOpen(false);
                   }}
                 >
-                  <span className='ai-copilot-conv-item-title'>{conv.title}</span>
+                  <span className='ai-copilot-conv-item-title'>{chat.title}</span>
                   <Popconfirm
                     title={t('conversation.delete_confirm')}
                     onConfirm={(e) => {
-                      handleDelete(e as any, conv.id);
+                      handleDelete(e as any, chat.chat_id);
                     }}
                     onCancel={(e) => e?.stopPropagation()}
                     okText={t('conversation.delete_ok')}
