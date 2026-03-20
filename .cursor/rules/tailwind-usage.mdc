@@ -1,0 +1,45 @@
+---
+description: Tailwind 优先与 anti-tailwind 使用原则
+globs:
+  - 'fe/src/**/*.{ts,tsx,less,css}'
+alwaysApply: false
+---
+
+# Tailwind 使用规则（Tailwind-first + minimal Less）
+
+## 目标
+
+- 页面级业务样式优先使用 Tailwind（布局、间距、字体、圆角、颜色、hover/active）。
+- Less 仅保留少量必须场景，避免样式分散和层级膨胀。
+
+## Tailwind 优先场景
+
+- 组件容器布局：`flex/grid/gap/spacing/align`。
+- 业务 UI 外观：按钮、输入框、文本、标签、状态色。
+- 局部交互态：`hover/focus/disabled`。
+- 与业务强相关、仅在当前组件使用的样式。
+
+## anti-tailwind（不要强行用 Tailwind）的场景
+
+- 需要覆盖第三方组件深层 DOM（例如 `.ant-table-thead > tr > th`）。
+- 需要全局或跨页面复用的样式 token/动画 keyframes。
+- 需要处理浏览器兼容 hack 或复杂选择器（`:has`、多层后代/兄弟组合等）。
+
+以上场景优先使用少量 Less，并要求：
+
+- 选择器尽量局部化（挂在页面根类名下）。
+- 不写超长层级链，最多 3 层嵌套优先。
+- 不在 Less 里重复定义已可由 Tailwind 表达的规则。
+
+## 落地约束
+
+- 新增样式时，先问：是否可用 Tailwind 直接表达？能则不用 Less。
+- 允许在 `className` 使用必要的 antd 定向选择器（如 `[&_.ant-input-affix-wrapper]`）。
+- Tailwind 类超过可读上限时，提炼为局部常量字符串，不回退到大段 Less。
+- 修改现有页面时，优先“增量迁移”：先迁移业务块（如 toolbar、列表项），再迁移公共块。
+
+## 评审检查点
+
+- 是否出现“Tailwind 与 Less 同时控制同一属性”的冲突？
+- 是否新增了可被 Tailwind 替代的大段 Less？
+- 是否保持视觉一致并通过暗黑/亮色主题变量？

@@ -11,6 +11,9 @@
   }
 
   border: 1px solid var(--fc-border-color);
+  border-radius: 8px;
+  background: var(--fc-fill-2);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
   box-sizing: border-box;
   flex-direction: column;
   height: 100%;
@@ -25,7 +28,7 @@
     height: 100%;
 
     &-title {
-      // color: @fontColorLevel2;
+      color: var(--fc-text-3);
       font-size: @baseFontSizeSmall;
       font-weight: bold;
       line-height: 36px;
@@ -80,18 +83,27 @@
     right: -10px;
     height: 58px;
     width: 10px;
-    border-radius: 6px;
-    background: var(--fc-fill-4);
+    border-radius: 4px;
+    background: var(--fc-fill-5);
   }
 }
 
 .n9e-biz-group-item {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 6px 8px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background-color: var(--fc-fill-3);
+  }
 
   &.active {
-    background-color: fade(@primary-color, 10%);
+    background-color: rgb(var(--fc-fill-primary-rgb) / 0.08);
+    color: var(--fc-primary-color);
   }
 }
 
@@ -114,19 +126,24 @@
   }
 
   .ant-tree-node-content-wrapper.ant-tree-node-selected {
-    background-color: fade(@primary-color, 10%);
+    background-color: rgb(var(--fc-fill-primary-rgb) / 0.08);
+    border-radius: 6px;
   }
 }
 
 
 .n9e-biz-group-container {
   .n9e-list-item {
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+
     &:hover {
-      background-color: rgba(0, 0, 0, 0.03);
+      background-color: var(--fc-fill-3);
     }
 
     &.active {
-      background-color: rgba(108, 83, 177, 0.1) !important;
+      background-color: rgb(var(--fc-fill-primary-rgb) / 0.08) !important;
+      color: var(--fc-primary-color);
     }
   }
 }
@@ -140,13 +157,15 @@
 
 .theme-dark {
   .n9e-biz-group-container {
+    box-shadow: none;
+
     .n9e-list-item {
       &:hover {
-        background-color: rgba(204, 204, 220, 0.12);
+        background-color: var(--fc-fill-4);
       }
 
       &.active {
-        background-color: rgba(204, 204, 220, 0.08) !important;
+        background-color: rgb(var(--fc-fill-primary-rgb) / 0.14) !important;
       }
     }
   }
