@@ -47,6 +47,7 @@ import useIsPlus from 'plus:/components/useIsPlus';
 // @ts-ignore
 import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatButton';
 
+import Tooltip from '@/components/v2/Tooltip';
 import './App.less';
 import './global.variable.less';
 
@@ -338,6 +339,7 @@ function App() {
     <div className='App'>
       <CommonStateContext.Provider value={commonState}>
         <ConfigProvider locale={i18n.language == 'en_US' ? enUS : i18n.language == 'ru_RU' ? ruRU : zhCN}>
+          <Tooltip.Provider>
           <Router
             getUserConfirmation={(message, callback) => {
               if (message === 'CUSTOM') return;
@@ -357,6 +359,7 @@ function App() {
             </Switch>
             <Feedback />
           </Router>
+          </Tooltip.Provider>
         </ConfigProvider>
       </CommonStateContext.Provider>
       {/* {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />} */}

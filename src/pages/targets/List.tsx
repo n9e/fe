@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
+import { Table, Tag, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, InfoCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -14,12 +14,14 @@ import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 import clipboard from './clipboard';
+import { getOffsetStatusTone, getStatusToneStyle, getUpdateAtStatusTone, getUsageStatusTone } from './display';
 import OrganizeColumns from './OrganizeColumns';
 import { getDefaultColumnsConfigs, setDefaultColumnsConfigs } from './utils';
 import TargetMetaDrawer from './TargetMetaDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
 import HostsSelect from './components/HostsSelect';
+import Tooltip from '@/components/v2/Tooltip';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -64,15 +66,19 @@ interface IProps {
   setOperateType?: (operateType: OperateType) => void;
 }
 
-const GREEN_COLOR = '#3FC453';
-const YELLOW_COLOR = '#FF9919';
-const RED_COLOR = '#FF656B';
-const LOST_COLOR_LIGHT = '#CCCCCC';
-const LOST_COLOR_DARK = '#929090';
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
+const TAG_CLASS_NAME = 'fc-tag-default';
+
 const Unknown = () => {
   const { t } = useTranslation('targets');
-  return <Tooltip title={t('unknown_tip')}>unknown</Tooltip>;
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <span>unknown</span>
+      </Tooltip.Trigger>
+      <Tooltip.Content>{t('unknown_tip')}</Tooltip.Content>
+    </Tooltip.Root>
+  );
 };
 
 export default function List(props: IProps) {
@@ -91,8 +97,92 @@ export default function List(props: IProps) {
   const [agentVersions, setAgentVersions] = useState<string>();
   const [hosts, setHosts] = useState<string>();
   const sorterRef = useRef<any>();
-  const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;
+  const renderStatusCell = (content: React.ReactNode, tone: ReturnType<typeof getUsageStatusTone>) => {
+    return (
+      <div className='table-td-fullBG' style={getStatusToneStyle(tone)}>
+        {content}
+      </div>
+    );
+  };
+
+  // 无背景色，仅文字着色（用于时间偏移）
+  const renderStatusTextOnly = (content: React.ReactNode, tone: ReturnType<typeof getUsageStatusTone>) => {
+    const style = getStatusToneStyle(tone);
+    return <span style={{ color: style.color }}>{content}</span>;
+  };
+
+  // 数字加进度条（用于内存、CPU）
+  const renderProgressStatus = (value: number, tone: ReturnType<typeof getUsageStatusTone>) => {
+    const style = getStatusToneStyle(tone);
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: '100%', minWidth: 50 }}>
+        <span style={{ color: style.color, lineHeight: 1 }}>{_.floor(value, 1)}%</span>
+        <div style={{ width: '100%', height: 4, backgroundColor: 'var(--fc-border-color)', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{ width: `${Math.min(Math.max(value, 0), 100)}%`, height: '100%', backgroundColor: style.color }} />
+        </div>
+      </div>
+    );
+  };
+
+  // 更新时间：正常字体颜色 + 带颜色的实心小圆 indicator
+  const renderUpdateAtWithIndicator = (content: React.ReactNode, tone: ReturnType<typeof getUpdateAtStatusTone>) => {
+    const style = getStatusToneStyle(tone);
+    return (
+      <span className='n9e-hosts-table-update-at'>
+        <span className='n9e-hosts-table-update-at-indicator-wrap'>
+          <span className='n9e-hosts-table-update-at-indicator-wave n9e-hosts-table-update-at-indicator-wave-1' style={{ backgroundColor: style.color }} />
+          <span className='n9e-hosts-table-update-at-indicator-wave n9e-hosts-table-update-at-indicator-wave-2' style={{ backgroundColor: style.color }} />
+          <span className='n9e-hosts-table-update-at-indicator' style={{ backgroundColor: style.color }} />
+        </span>
+        {content}
+      </span>
+    );
+  };
+
+  const renderQueryTag = (label: string, onClick?: () => void) => {
+    return (
+      <Tag className={TAG_CLASS_NAME} key={label} onClick={onClick}>
+        {label}
+      </Tag>
+    );
+  };
+
+  const renderGroupTag = (label: string) => {
+    return (
+      <Tag className='fc-tag-primary' key={label}>
+        {label}
+      </Tag>
+    );
+  };
+
+  const updateAtColumn = {
+    className: 'n9e-hosts-table-column-update-at',
+    title: (
+      <Space>
+        {t('update_at')}
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <span>
+              <InfoCircleOutlined />
+            </span>
+          </Tooltip.Trigger>
+          <Tooltip.Content>
+            <Trans ns='targets' i18nKey='update_at_tip' components={{ 1: <br /> }} />
+          </Tooltip.Content>
+        </Tooltip.Root>
+      </Space>
+    ),
+    dataIndex: 'beat_time',
+    render: (val, reocrd) => {
+      const result = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
+      return renderUpdateAtWithIndicator(result, getUpdateAtStatusTone(reocrd.target_up));
+    },
+  };
+
+  const isUpdateAtVisible = _.find(columnsConfigs, { name: 'update_at' })?.visible;
+
   const columns: ColumnsType<any> = [
+    ...(isUpdateAtVisible ? [updateAtColumn] : []),
     {
       title: (
         <Space>
@@ -148,28 +238,43 @@ export default function List(props: IProps) {
       ),
       dataIndex: 'ident',
       className: 'n9e-hosts-table-column-ident',
-      render: (text) => {
+      onHeaderCell: () => ({
+        className: 'n9e-hosts-table-ident-header',
+      }),
+      render: (text, record) => {
         return (
           <div
             style={{
               width: '100%',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               gap: 8,
             }}
           >
-            <TargetMetaDrawer ident={text} />
-            {import.meta.env['VITE_IS_PRO'] && (
-              <Tooltip title='查看关联采集配置'>
-                <ApartmentOutlined
-                  onClick={() => {
-                    setCollectsDrawerVisible(true);
-                    setCollectsDrawerIdent(text);
-                  }}
-                />
-              </Tooltip>
-            )}
+            <div className='n9e-hosts-table-ident-cell'>
+              <div className='flex items-center gap-2'>
+                <div className='n9e-hosts-table-ident-line'>{text ? <TargetMetaDrawer ident={text} /> : '-'}</div>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <span>
+                      <ApartmentOutlined
+                        onClick={() => {
+                          setCollectsDrawerVisible(true);
+                          setCollectsDrawerIdent(text);
+                        }}
+                      />
+                    </span>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>查看告警关联</Tooltip.Content>
+                </Tooltip.Root>
+              </div>
+              {record?.host_ip != null && record.host_ip !== '' && (
+                <div className='n9e-hosts-table-ip-line'>
+                  <span>{record.host_ip}</span>
+                </div>
+              )}
+            </div>
           </div>
         );
       },
@@ -178,21 +283,20 @@ export default function List(props: IProps) {
 
   _.forEach(columnsConfigs, (item) => {
     if (!item.visible) return;
-    if (item.name === 'host_ip') {
-      columns.push({
-        title: t('host_ip'),
-        dataIndex: 'host_ip',
-        className: 'n9e-hosts-table-column-ip',
-      });
-    }
+    if (item.name === 'host_ip' || item.name === 'update_at') return;
     if (item.name === 'host_tags') {
       columns.push({
         title: (
           <Space>
             {t('common:host.host_tags')}
-            <Tooltip title={t('common:host.host_tags_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('common:host.host_tags_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'host_tags',
@@ -203,27 +307,24 @@ export default function List(props: IProps) {
         render(tagArr) {
           const content =
             tagArr &&
-            tagArr.map((item) => (
-              <Tag
-                color='purple'
-                key={item}
-                onClick={(e) => {
-                  if (!tableQueryContent.includes(item)) {
-                    isAddTagToQueryInput.current = true;
-                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
-                    setTableQueryContent(val);
-                    setSearchVal(val);
-                  }
-                }}
-              >
-                {item}
-              </Tag>
-            ));
+            tagArr.map((item) =>
+              renderQueryTag(item, () => {
+                if (!tableQueryContent.includes(item)) {
+                  isAddTagToQueryInput.current = true;
+                  const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
+                  setTableQueryContent(val);
+                  setSearchVal(val);
+                }
+              }),
+            );
           return (
             tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <span>{content}</span>
+                </Tooltip.Trigger>
+                <Tooltip.Content>{content}</Tooltip.Content>
+              </Tooltip.Root>
             )
           );
         },
@@ -234,9 +335,14 @@ export default function List(props: IProps) {
         title: (
           <Space>
             {t('common:host.tags')}
-            <Tooltip title={t('common:host.tags_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('common:host.tags_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'tags',
@@ -247,27 +353,26 @@ export default function List(props: IProps) {
         render(tagArr) {
           const content =
             tagArr &&
-            tagArr.map((item) => (
-              <Tag
-                color='purple'
-                key={item}
-                onClick={(e) => {
-                  if (!tableQueryContent.includes(item)) {
-                    isAddTagToQueryInput.current = true;
-                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
-                    setTableQueryContent(val);
-                    setSearchVal(val);
-                  }
-                }}
-              >
-                {item}
-              </Tag>
-            ));
+            tagArr.map((item) =>
+              renderQueryTag(item, () => {
+                if (!tableQueryContent.includes(item)) {
+                  isAddTagToQueryInput.current = true;
+                  const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
+                  setTableQueryContent(val);
+                  setSearchVal(val);
+                }
+              }),
+            );
           return (
             tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <span>{content}</span>
+                </Tooltip.Trigger>
+                <Tooltip.Content side='top' align='start' className='mon-manage-table-tooltip'>
+                  {content}
+                </Tooltip.Content>
+              </Tooltip.Root>
             )
           );
         },
@@ -283,18 +388,17 @@ export default function List(props: IProps) {
         },
         render(tagArr) {
           if (_.isEmpty(tagArr)) return t('common:not_grouped');
-          const content =
-            tagArr &&
-            tagArr.map((item) => (
-              <Tag color='purple' key={item.name}>
-                {item.name}
-              </Tag>
-            ));
+          const content = tagArr && tagArr.map((item) => renderGroupTag(item.name));
           return (
             tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body}>
-                {content}
-              </Tooltip>
+              <Tooltip.Root>
+                <Tooltip.Trigger asChild>
+                  <span>{content}</span>
+                </Tooltip.Trigger>
+                <Tooltip.Content side='top' align='start'>
+                  {content}
+                </Tooltip.Content>
+              </Tooltip.Root>
             )
           );
         },
@@ -306,27 +410,7 @@ export default function List(props: IProps) {
         dataIndex: 'mem_util',
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
-          let backgroundColor = GREEN_COLOR;
-          if (text > 70) {
-            backgroundColor = YELLOW_COLOR;
-          }
-          if (text > 85) {
-            backgroundColor = RED_COLOR;
-          }
-          if (reocrd.target_up === 0) {
-            backgroundColor = LOST_COLOR;
-          }
-
-          return (
-            <div
-              className='table-td-fullBG'
-              style={{
-                backgroundColor: backgroundColor,
-              }}
-            >
-              {_.floor(text, 1)}%
-            </div>
-          );
+          return renderProgressStatus(text, getUsageStatusTone(text, reocrd.target_up));
         },
       });
     }
@@ -336,26 +420,7 @@ export default function List(props: IProps) {
         dataIndex: 'cpu_util',
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
-          let backgroundColor = GREEN_COLOR;
-          if (text > 70) {
-            backgroundColor = YELLOW_COLOR;
-          }
-          if (text > 85) {
-            backgroundColor = RED_COLOR;
-          }
-          if (reocrd.target_up === 0) {
-            backgroundColor = LOST_COLOR;
-          }
-          return (
-            <div
-              className='table-td-fullBG'
-              style={{
-                backgroundColor: backgroundColor,
-              }}
-            >
-              {_.floor(text, 1)}%
-            </div>
-          );
+          return renderProgressStatus(text, getUsageStatusTone(text, reocrd.target_up));
         },
       });
     }
@@ -374,34 +439,20 @@ export default function List(props: IProps) {
         title: (
           <Space>
             {t('offset')}
-            <Tooltip title={t('offset_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('offset_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'offset',
         render(text, reocrd) {
           if (reocrd.cpu_num === -1) return <Unknown />;
-          let backgroundColor = RED_COLOR;
-          if (Math.abs(text) < 2000) {
-            backgroundColor = YELLOW_COLOR;
-          }
-          if (Math.abs(text) < 1000) {
-            backgroundColor = GREEN_COLOR;
-          }
-          if (reocrd.target_up === 0) {
-            backgroundColor = LOST_COLOR;
-          }
-          return (
-            <div
-              className='table-td-fullBG'
-              style={{
-                backgroundColor: backgroundColor,
-              }}
-            >
-              {timeFormatter(text, 'milliseconds', 2)?.text}
-            </div>
-          );
+          return renderStatusTextOnly(timeFormatter(text, 'milliseconds', 2)?.text, getOffsetStatusTone(text, reocrd.target_up));
         },
       });
     }
@@ -425,46 +476,19 @@ export default function List(props: IProps) {
         },
       });
     }
-    if (item.name === 'update_at') {
-      columns.push({
-        title: (
-          <Space>
-            {t('update_at')}
-            <Tooltip title={<Trans ns='targets' i18nKey='update_at_tip' components={{ 1: <br /> }} />}>
-              <InfoCircleOutlined />
-            </Tooltip>
-          </Space>
-        ),
-        dataIndex: 'beat_time',
-        render: (val, reocrd) => {
-          let result = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
-          let backgroundColor = GREEN_COLOR;
-          if (reocrd.target_up === 0) {
-            backgroundColor = RED_COLOR;
-          } else if (reocrd.target_up === 1) {
-            backgroundColor = YELLOW_COLOR;
-          }
-          return (
-            <div
-              className='table-td-fullBG'
-              style={{
-                backgroundColor,
-              }}
-            >
-              {result}
-            </div>
-          );
-        },
-      });
-    }
     if (item.name === 'remote_addr') {
       columns.push({
         title: (
           <Space>
             {t('remote_addr')}
-            <Tooltip title={t('remote_addr_tip')}>
-              <InfoCircleOutlined />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{t('remote_addr_tip')}</Tooltip.Content>
+            </Tooltip.Root>
           </Space>
         ),
         dataIndex: 'remote_addr',
@@ -484,9 +508,14 @@ export default function List(props: IProps) {
         },
         render(note) {
           return (
-            <Tooltip title={note} placement='topLeft' getPopupContainer={() => document.body}>
-              {note}
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <span>{note}</span>
+              </Tooltip.Trigger>
+              <Tooltip.Content side='top' align='start'>
+                {note}
+              </Tooltip.Content>
+            </Tooltip.Root>
           );
         },
       });
@@ -535,14 +564,9 @@ export default function List(props: IProps) {
   }, [refreshFlag]);
 
   return (
-    <div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Space>
+    <div className='targets-list-panel'>
+      <div className='fc-toolbar flex flex-wrap items-center justify-between gap-3'>
+        <Space size={12} wrap>
           <Button
             icon={<ReloadOutlined />}
             onClick={() => {
@@ -605,7 +629,7 @@ export default function List(props: IProps) {
             }}
           />
         </Space>
-        <Space>
+        <Space size={12} wrap>
           {editable && (
             <Dropdown
               trigger={['click']}
@@ -664,7 +688,7 @@ export default function List(props: IProps) {
         </Space>
       </div>
       <Table
-        className='mt-2 n9e-hosts-table'
+        className='fc-table n9e-hosts-table targets-table'
         rowKey='id'
         columns={columns}
         size='small'

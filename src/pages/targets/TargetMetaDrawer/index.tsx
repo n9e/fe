@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Drawer, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Tooltip, Space } from 'antd';
+import { Space } from 'antd';
+import Tooltip from '@/components/v2/Tooltip';
 import { DownOutlined, RightOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { copyToClipBoard } from '@/utils';
@@ -57,16 +58,21 @@ function RenderInterfaces({ value }) {
                   <div key={k} className='target-information-interface-item'>
                     <div className='target-information-interface-item-key'>{k}</div>
                     <div className='target-information-interface-item-value'>
-                      <Tooltip title={t('meta_value_click_to_copy')} placement='right'>
-                        <Tag
-                          color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
-                          onClick={() => {
-                            copyToClipBoard(v);
-                          }}
-                        >
-                          {v}
-                        </Tag>
-                      </Tooltip>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <span>
+                            <Tag
+                              color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
+                              onClick={() => {
+                                copyToClipBoard(v);
+                              }}
+                            >
+                              {v}
+                            </Tag>
+                          </span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content side='right'>{t('meta_value_click_to_copy')}</Tooltip.Content>
+                      </Tooltip.Root>
                     </div>
                   </div>
                 );
@@ -145,16 +151,21 @@ function Group({ name, data }) {
                   <div className='target-information-group-content-item-key'>{key}</div>
                   {_.isString(value) && (
                     <div className='target-information-group-content-item-value'>
-                      <Tooltip title={t('meta_value_click_to_copy')} placement='right'>
-                        <Tag
-                          color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
-                          onClick={() => {
-                            copyToClipBoard(value);
-                          }}
-                        >
-                          {val}
-                        </Tag>
-                      </Tooltip>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <span>
+                            <Tag
+                              color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
+                              onClick={() => {
+                                copyToClipBoard(value);
+                              }}
+                            >
+                              {val}
+                            </Tag>
+                          </span>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content side='right'>{t('meta_value_click_to_copy')}</Tooltip.Content>
+                      </Tooltip.Root>
                     </div>
                   )}
                   {_.isArray(value) && key === 'interfaces' && <RenderInterfaces value={value} />}
@@ -177,18 +188,23 @@ export default function TargetMetaDrawer(props: IProps) {
 
   return (
     <>
-      <Tooltip title={t('meta_tip')}>
-        <a
-          onClick={() => {
-            setVisible(true);
-            getTargetInformationByIdent(ident).then((res) => {
-              setInformation(res);
-            });
-          }}
-        >
-          {ident}
-        </a>
-      </Tooltip>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <span>
+            <a
+              onClick={() => {
+                setVisible(true);
+                getTargetInformationByIdent(ident).then((res) => {
+                  setInformation(res);
+                });
+              }}
+            >
+              {ident}
+            </a>
+          </span>
+        </Tooltip.Trigger>
+        <Tooltip.Content>{t('meta_tip')}</Tooltip.Content>
+      </Tooltip.Root>
       <Drawer
         destroyOnClose
         title={t('meta_title')}

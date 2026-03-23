@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Select, Space, Tooltip, Input, Table, message, Row, Col } from 'antd';
+import { Select, Space, Input, Table, message, Row, Col } from 'antd';
+import Tooltip from '@/components/v2/Tooltip';
 import { SearchOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import Markdown from '@/components/Markdown';
@@ -79,37 +80,46 @@ export default function Metrics(props: Props) {
       dataIndex: 'name',
       render: (val, record) => {
         const recordClone = _.cloneDeep(record);
-        return (
-          <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} /> : undefined}>
-            <a
-              onClick={() => {
-                const label_filter = `{ident=~"${_.join(
-                  _.map(selectedIdents, (item) => {
-                    return escapePromQLString(item);
-                  }),
-                  '|',
-                )}"}`;
-                if (label_filter) {
-                  buildLabelFilterAndExpression({
-                    label_filter,
-                    promql: record.expression,
+        const link = (
+          <a
+            onClick={() => {
+              const label_filter = `{ident=~"${_.join(
+                _.map(selectedIdents, (item) => {
+                  return escapePromQLString(item);
+                }),
+                '|',
+              )}"}`;
+              if (label_filter) {
+                buildLabelFilterAndExpression({
+                  label_filter,
+                  promql: record.expression,
+                })
+                  .then((res) => {
+                    recordClone.expression = res;
+                    setExplorerDrawerData(recordClone);
                   })
-                    .then((res) => {
-                      recordClone.expression = res;
-                      setExplorerDrawerData(recordClone);
-                    })
-                    .catch(() => {
-                      message.warning(t('filter.build_labelfilter_and_expression_error'));
-                      setExplorerDrawerData(recordClone);
-                    });
-                } else {
-                  setExplorerDrawerData(recordClone);
-                }
-              }}
-            >
-              {val}
-            </a>
-          </Tooltip>
+                  .catch(() => {
+                    message.warning(t('filter.build_labelfilter_and_expression_error'));
+                    setExplorerDrawerData(recordClone);
+                  });
+              } else {
+                setExplorerDrawerData(recordClone);
+              }
+            }}
+          >
+            {val}
+          </a>
+        );
+        if (!record.note) return link;
+        return (
+          <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+              <span>{link}</span>
+            </Tooltip.Trigger>
+            <Tooltip.Content className='max-w-[600px]'>
+              <Markdown content={record.note} />
+            </Tooltip.Content>
+          </Tooltip.Root>
         );
       },
     },

@@ -7,7 +7,7 @@
 :root {
   /* 填充色 */
   --fc-fill-1-rgb: 248 250 252;
-  --fc-fill-1: rgb(var(--fc-fill-1-rgb)); 
+  --fc-fill-1: rgb(var(--fc-fill-1-rgb));
 
   --fc-fill-2-rgb: 255 255 255;
   --fc-fill-2: rgb(var(--fc-fill-2-rgb));
@@ -46,7 +46,7 @@
   --fc-fill-error: rgb(var(--fc-fill-error-rgb));
 
   --fc-fill-gold: #ffbc0d;
-  --fc-primary-bg: #6C53B114;
+  --fc-primary-bg: #6c53b114;
   /* 文本 */
   --fc-text-1: #1a1a1a;
   --fc-text-2: #333333;
@@ -66,8 +66,6 @@
   --fc-antd-border-color: #d9d9d9; /* 用于 跟antd button 连结的边框 */
   --fc-background-color-light: rgba(250, 250, 250, 1);
   --fc-card-border: #f0f0f0;
-  
-  
 
   /* 需特殊处理额外加的变量 
      灭火图一级卡片的header背景色:  --fc-variable-fill-1
@@ -264,10 +262,9 @@
   --fc-primary-bg: #fff2cb;
 }
 
-
-.theme-light-blue{
-  --fc-fill-primary: #427AF4;
-  --fc-primary-color: #427AF4;
-  --fc-text-link: #2D5BCF;
-  --fc-primary-bg: #EEF6FE;
+.theme-light-blue {
+  --fc-fill-primary: #427af4;
+  --fc-primary-color: #427af4;
+  --fc-text-link: #2d5bcf;
+  --fc-primary-bg: #eef6fe;
 }

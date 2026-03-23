@@ -1,44 +1,157 @@
 .object-manage-page-content {
   display: flex;
   padding: @basePadding;
+  gap: 16px;
   overflow-x: auto;
   box-sizing: border-box;
+  min-height: 100%;
+
   .table-area {
-    padding: 16px;
     flex: 1;
+    min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    border: 1px solid var(--fc-border-color);
+    border-radius: 8px;
+    background: var(--fc-fill-2);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    padding: 16px;
   }
 }
+
+.targets-list-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// targets 页面特有的表格样式（工具栏已由全局 .fc-toolbar 提供）（通用表格皮肤已由 .fc-table 提供）
 .n9e-hosts-table {
   .ant-tag {
     cursor: pointer;
   }
+
   .table-td-fullBG {
-    height: 40px;
-    color: #fff;
+    min-height: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
   }
-  .ant-table-content th,td {
+
+  .ant-table-content th,
+  td {
     text-align: center;
   }
-  td {
-    padding: 1px !important;
-    line-height: unset !important;
+
+  .n9e-hosts-table-ident-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .n9e-hosts-table-ident-line {
+      color: var(--fc-text-2);
+      font-weight: 500;
+
+      a {
+        color: inherit;
+      }
+    }
+
+    .n9e-hosts-table-ip-line {
+      color: var(--fc-text-4);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      line-height: 1.4;
+
+      svg {
+        flex-shrink: 0;
+      }
+    }
   }
-  .n9e-hosts-table-column-ident,.n9e-hosts-table-column-ip,.n9e-hosts-table-column-tags,.n9e-hosts-table-column-groups {
+
+  .n9e-hosts-table-ident-header {
+    font-weight: 500 !important;
+  }
+
+  .n9e-hosts-table-column-ident,
+  .n9e-hosts-table-column-update-at,
+  .n9e-hosts-table-column-tags,
+  .n9e-hosts-table-column-groups {
     text-align: left !important;
-    padding: 8px 8px !important;
+    padding: 10px 12px !important;
   }
+
   .n9e-hosts-table-column-tags {
     max-width: 400px;
+  }
+
+  .n9e-hosts-table-update-at {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--fc-text-2);
+
+    .n9e-hosts-table-update-at-indicator-wrap {
+      position: relative;
+      width: 10px;
+      height: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .n9e-hosts-table-update-at-indicator-wave {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      opacity: 0;
+      transform: scale(0.9);
+      animation: n9e-update-at-indicator-pulse 2s ease-out infinite;
+      pointer-events: none;
+    }
+
+    .n9e-hosts-table-update-at-indicator-wave-2 {
+      animation-delay: 0.8s;
+    }
+
+    .n9e-hosts-table-update-at-indicator {
+      position: relative;
+      display: inline-flex;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  }
+
+  @keyframes n9e-update-at-indicator-pulse {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.35;
+    }
+    70% {
+      transform: scale(2.1);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(2.1);
+      opacity: 0;
+    }
   }
 }
 
 .mon-manage-table-tooltip {
   .ant-tag {
-    margin: 2px 4px;
+    margin: 2px 4px 2px 0;
     cursor: pointer;
   }
 }
