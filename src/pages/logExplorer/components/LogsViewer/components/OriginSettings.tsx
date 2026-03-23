@@ -21,6 +21,7 @@ export default forwardRef(function OriginSettings(
     updateOptions: (options: any, reload?: boolean) => void;
     fields: string[];
     showDateField?: boolean;
+    showMoreSettings?: boolean;
     showPageLoadMode?: boolean;
     showJSONSettings?: boolean;
     showTopNSettings?: boolean;
@@ -30,7 +31,7 @@ export default forwardRef(function OriginSettings(
   ref,
 ) {
   const { t } = useTranslation(NAME_SPACE);
-  const { options, updateOptions, fields, showDateField, showJSONSettings, showPageLoadMode, showTopNSettings } = props;
+  const { options, updateOptions, fields, showDateField, showMoreSettings, showJSONSettings, showPageLoadMode, showTopNSettings } = props;
 
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
   const [organizeFields, setOrganizeFields] = useState<string[] | undefined>(props.organizeFields);
@@ -115,87 +116,91 @@ export default forwardRef(function OriginSettings(
             />
           </div>
         )}
-        <Dropdown
-          overlay={
-            <Menu
-              items={_.concat(
-                [
-                  {
-                    key: 'organizeFieldsBtn',
-                    label: (
-                      <a
-                        onClick={() => {
-                          setOrganizeFieldsModalVisible(true);
-                        }}
-                      >
-                        {t('logs.settings.organizeFields.title')}
-                      </a>
-                    ),
-                  },
-                ],
-                showJSONSettings
-                  ? [
+        {showMoreSettings && (
+          <>
+            <Dropdown
+              overlay={
+                <Menu
+                  items={_.concat(
+                    [
                       {
-                        key: 'jsonSettingsBtn',
+                        key: 'organizeFieldsBtn',
                         label: (
                           <a
                             onClick={() => {
-                              setJsonSettingsModalVisible(true);
+                              setOrganizeFieldsModalVisible(true);
                             }}
                           >
-                            {t('logs.settings.jsonSettings.title')}
+                            {t('logs.settings.organizeFields.title')}
                           </a>
                         ),
                       },
-                    ]
-                  : [],
-                showPageLoadMode
-                  ? [
-                      {
-                        key: 'pageLoadMode',
-                        label: (
-                          <a
-                            onClick={() => {
-                              setPageLoadModeModalVisible(true);
-                            }}
-                          >
-                            {t('logs.settings.pageLoadMode.title')}
-                          </a>
-                        ),
-                      },
-                    ]
-                  : [],
-                showTopNSettings
-                  ? [
-                      {
-                        key: 'topN',
-                        label: (
-                          <a
-                            onClick={() => {
-                              setTopNSettingsModalVisible(true);
-                            }}
-                          >
-                            {t('logs.settings.topNSettings.title')}
-                          </a>
-                        ),
-                      },
-                    ]
-                  : [],
-              )}
-            />
-          }
-          trigger={['click']}
-        >
-          <Button size='small' type='text' icon={<SettingOutlined />} />
-        </Dropdown>
-        {!_.isEmpty(organizeFields) && (
-          <Tooltip title={`当前只显示字段 ${_.join(organizeFields, '、')}，可点击设置图标设置显示所有字段`}>
-            <EyeInvisibleOutlined
-              style={{
-                color: '#999',
-              }}
-            />
-          </Tooltip>
+                    ],
+                    showJSONSettings
+                      ? [
+                          {
+                            key: 'jsonSettingsBtn',
+                            label: (
+                              <a
+                                onClick={() => {
+                                  setJsonSettingsModalVisible(true);
+                                }}
+                              >
+                                {t('logs.settings.jsonSettings.title')}
+                              </a>
+                            ),
+                          },
+                        ]
+                      : [],
+                    showPageLoadMode
+                      ? [
+                          {
+                            key: 'pageLoadMode',
+                            label: (
+                              <a
+                                onClick={() => {
+                                  setPageLoadModeModalVisible(true);
+                                }}
+                              >
+                                {t('logs.settings.pageLoadMode.title')}
+                              </a>
+                            ),
+                          },
+                        ]
+                      : [],
+                    showTopNSettings
+                      ? [
+                          {
+                            key: 'topN',
+                            label: (
+                              <a
+                                onClick={() => {
+                                  setTopNSettingsModalVisible(true);
+                                }}
+                              >
+                                {t('logs.settings.topNSettings.title')}
+                              </a>
+                            ),
+                          },
+                        ]
+                      : [],
+                  )}
+                />
+              }
+              trigger={['click']}
+            >
+              <Button size='small' type='text' icon={<SettingOutlined />} />
+            </Dropdown>
+            {!_.isEmpty(organizeFields) && (
+              <Tooltip title={`当前只显示字段 ${_.join(organizeFields, '、')}，可点击设置图标设置显示所有字段`}>
+                <EyeInvisibleOutlined
+                  style={{
+                    color: '#999',
+                  }}
+                />
+              </Tooltip>
+            )}
+          </>
         )}
       </Space>
       <Modal

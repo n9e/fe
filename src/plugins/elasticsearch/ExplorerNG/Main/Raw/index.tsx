@@ -10,6 +10,7 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
+import { RenderValue } from '@/pages/logExplorer/components/LogsViewer/Raw';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
@@ -88,7 +89,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-
+  const queryStrRef = useRef<string>('');
   const {
     indexData,
     rangeRef,
@@ -185,6 +186,8 @@ export default function index(props: Props) {
           highlights: [],
         });
       }
+
+      queryStrRef.current = requestBody;
 
       const queryStart = Date.now();
       return getLogsQuery(datasourceValue, requestBody, requestId)
@@ -324,11 +327,11 @@ export default function index(props: Props) {
   const currentFieldConfig = useFieldConfig(
     {
       cate: DatasourceCateEnum.elasticsearch,
-      indexPatternId: queryValues?.indexPattern,
+      indexPatternId: queryValues?.index_pattern,
       datasource_id: form.getFieldValue('datasourceValue'),
       resource: { es_resource: { index: queryValues?.index } },
     },
-    refreshFlag,
+    queryValues?.index_pattern + queryValues?.index,
   );
 
   useEffect(() => {
@@ -576,7 +579,16 @@ export default function index(props: Props) {
                 }
               }}
               timeFieldColumnFormat={(val) => {
+                if (!queryValues.date_field) return val as string;
+                if (queryValues?.index_pattern) {
+                  return <RenderValue name={queryValues.date_field} value={val as string} />;
+                }
                 if (_.isString(val)) {
+                  const parsedTime = moment(val);
+                  if (parsedTime.isValid()) {
+                    return parsedTime.format('YYYY-MM-DD HH:mm:ss');
+                  }
+                } else if (_.isNumber(val)) {
                   const parsedTime = moment(val);
                   if (parsedTime.isValid()) {
                     return parsedTime.format('YYYY-MM-DD HH:mm:ss');
@@ -588,11 +600,18 @@ export default function index(props: Props) {
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
               adjustFieldValue={(formatedValue, highlightValue) => {
-                // console.log(formatedValue, highlightValue);
                 if (highlightValue) {
                   return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlightValue)) }} />;
                 }
                 return formatedValue;
+              }}
+              logClusting={{
+                enabled: true,
+                queryStrRef,
+                logTotal: data?.total || 0,
+                cate: DatasourceCateEnum.elasticsearch,
+                datasourceValue,
+                fieldCacheKey: queryValues.index,
               }}
             />
           ) : loading || histogramLoading ? (

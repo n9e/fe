@@ -9,6 +9,7 @@ const zh_CN = {
     targets: '机器',
     collects: '采集规则',
     network_devices: '网络设备',
+    mobile_device: '移动设备',
     dashboards: '仪表盘',
     reports: '巡检报告',
     heartbeat: '拨测',

@@ -9,6 +9,7 @@ const ja_JP = {
     targets: 'ホスト',
     collects: 'データ収集設定',
     network_devices: 'ネットワークデバイス',
+    mobile_device: 'モバイルデバイス',
     dashboards: 'ダッシュボード',
     reports: '監視レポート',
     heartbeat: 'テスト',

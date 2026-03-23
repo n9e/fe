@@ -56,6 +56,7 @@ interface IProps {
   setDashboard: React.Dispatch<React.SetStateAction<Dashboard>>;
   annotations: any[];
   setAllowedLeave: (flag: boolean) => void;
+  setHasUnsavedChanges: (flag: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   timezone: string;
@@ -69,6 +70,10 @@ interface IProps {
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
+interface UpdateDashboardConfigsOptions {
+  configs: string;
+}
+
 const ReactGridLayout = WidthProvider(RGL);
 
 function index(props: IProps) {
@@ -76,7 +81,22 @@ function index(props: IProps) {
   const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const [variableConfigWithOptions] = useGlobalState('variablesWithOptions');
   const themeMode = darkMode ? 'dark' : 'light';
-  const { editable, dashboard, setDashboard, annotations, setAllowedLeave, range, timezone, setTimezone, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const {
+    editable,
+    dashboard,
+    setDashboard,
+    annotations,
+    setAllowedLeave,
+    setHasUnsavedChanges,
+    range,
+    timezone,
+    setTimezone,
+    panels,
+    isPreview,
+    setPanels,
+    onShareClick,
+    onUpdated,
+  } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -87,7 +107,7 @@ function index(props: IProps) {
     useCSSTransforms: false,
     draggableHandle: '.dashboards-panels-item-drag-handle',
   };
-  const updateDashboardConfigs = (dashboardId, options) => {
+  const updateDashboardConfigs = (dashboardId: number, options: UpdateDashboardConfigsOptions, shouldMarkUnsaved = true): Promise<any> => {
     if (dashboardSaveMode === 'manual') {
       let configs = {} as IDashboardConfig;
       try {
@@ -95,7 +115,10 @@ function index(props: IProps) {
       } catch (e) {
         console.error(e);
       }
-      setAllowedLeave(false);
+      setHasUnsavedChanges(true);
+      if (shouldMarkUnsaved) {
+        setAllowedLeave(false);
+      }
       setDashboard((dashboard) => {
         return {
           ...dashboard,
@@ -279,9 +302,13 @@ function index(props: IProps) {
                   onToggle={() => {
                     const newPanels = handleRowToggle(!item.collapsed, panels, _.cloneDeep(item));
                     setPanels(newPanels);
-                    updateDashboardConfigs(dashboard.id, {
-                      configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                    })
+                    updateDashboardConfigs(
+                      dashboard.id,
+                      {
+                        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                      },
+                      false,
+                    )
                       .then((res) => {
                         onUpdated(res);
                       })

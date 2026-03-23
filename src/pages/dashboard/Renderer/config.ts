@@ -15,46 +15,6 @@
  *
  */
 export const utilValMap = {
-  bitsSI: {
-    type: 'si',
-    base: 'bits',
-  },
-  bytesSI: {
-    type: 'si',
-    base: 'bytes',
-  },
-  bitsIEC: {
-    type: 'iec',
-    base: 'bits',
-  },
-  bytesIEC: {
-    type: 'iec',
-    base: 'bytes',
-  },
-  bitsSecSI: {
-    type: 'si',
-    base: 'bits',
-    postfix: '/s',
-  },
-  bytesSecSI: {
-    type: 'si',
-    base: 'bytes',
-    postfix: '/s',
-  },
-  bitsSecIEC: {
-    type: 'iec',
-    base: 'bits',
-    postfix: '/s',
-  },
-  bytesSecIEC: {
-    type: 'iec',
-    base: 'bytes',
-    postfix: '/s',
-  },
-  packetsSec: {
-    type: 'si',
-    postfix: 'p/s',
-  },
   dBm: {
     type: 'si',
     postfix: 'dBm',

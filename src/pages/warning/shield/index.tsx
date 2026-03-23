@@ -74,7 +74,7 @@ const Shield: React.FC = () => {
             <Link
               to={{
                 pathname: `/alert-mutes/edit/${record.id}`,
-                state: record,
+                search: `?bgid=${record.group_id}`,
               }}
             >
               {data}
@@ -118,15 +118,17 @@ const Shield: React.FC = () => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <>
+            <div>
               {text
                 ? text.map((tag, index) => {
                     return tag ? (
-                      <div key={index} style={{ lineHeight: '16px' }}>{`${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}`}</div>
+                      <div className='max-w-[400px] break-all' key={index} style={{ lineHeight: '16px' }}>{`${tag.key} ${tag.func} ${
+                        tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value
+                      }`}</div>
                     ) : null;
                   })
                 : ''}
-            </>
+            </div>
           );
         },
       },
@@ -263,9 +265,9 @@ const Shield: React.FC = () => {
                     display: 'inline-block',
                   }}
                   onClick={() => {
-                    history.push(`/alert-mutes/edit/${record.id}?mode=clone`, {
-                      ...record,
-                      datasource_ids: record.datasource_ids || undefined,
+                    history.push({
+                      pathname: `/alert-mutes/edit/${record.id}`,
+                      search: `?mode=clone&bgid=${record.group_id}`,
                     });
                   }}
                 >

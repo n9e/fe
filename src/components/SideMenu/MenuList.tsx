@@ -24,6 +24,7 @@ interface IMenuProps {
 export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   const { t } = useTranslation('sideMenu');
   const { item, collapsed, selectedKeys, sideMenuBgColor, ...otherProps } = props;
+  const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const keyOfChildrens =
     item.children
       ?.map((c) => {
@@ -44,6 +45,31 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const visibleChildren = item.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
 
+  let iconColor;
+  if (isActive) {
+    if (isBlueTheme) {
+      iconColor = 'text-[#427AF4]';
+    } else if (props.isCustomBg) {
+      if (isBgBlack) {
+        iconColor = 'text-[#ccccdc]';
+      } else {
+        iconColor = 'text-[#fff]';
+      }
+    } else {
+      iconColor = 'text-[#6E6587]';
+    }
+  } else {
+    if (isBlueTheme) {
+      iconColor = 'text-[#427AF4]';
+    } else {
+      if (props.isCustomBg) {
+        iconColor = '';
+      } else {
+        iconColor = 'text-[#6E6587]';
+      }
+    }
+  }
+
   return (
     <div className='w-full'>
       <div
@@ -51,19 +77,11 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         className={cn(
           'group flex h-9 cursor-pointer items-center justify-between rounded px-3.5 transition-colors transition-spacing duration-75',
           props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
-          collapsed && isActive ? (props.isCustomBg ? 'bg-gray-200/20' : 'bg-fc-200') : '',
+          collapsed && isActive ? (props.isCustomBg ? 'bg-gray-200/20' : 'bg-[#E0E2EB]') : '',
         )}
       >
         <div className='flex items-center'>
-          <div
-            className={cn(
-              'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
-              isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-primary') : props.isCustomBg ? '' : 'text-primary/80',
-              !collapsed ? 'mr-4' : '',
-            )}
-          >
-            {item.icon}
-          </div>
+          <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', iconColor, !collapsed ? 'mr-4' : '')}>{item.icon}</div>
           {!collapsed && (
             <div className={`overflow-hidden truncate text-l1 tracking-wide ${isActive ? (props.isCustomBg ? (isBgBlack ? 'text-[#fff]' : 'text-[#ccccdc]') : 'text-title') : ''}`}>
               {t(item.label)}
@@ -102,19 +120,38 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
 export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean } & IMenuProps) {
   const { t } = useTranslation('sideMenu');
+  const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack, onClick, isGoldTheme } = props;
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
   const savedPath = item.children ? getSavedPath(path) : item.key;
+  const activeBg = isActive ? (isBlueTheme ? 'bg-[#EEF6FE]' : isCustomBg ? '' : 'bg-[#E0E2EB]') : '';
+
+  let textColor = '';
+  if (isActive) {
+    if (isBlueTheme) {
+      textColor = 'text-[#427AF4]';
+    } else if (props.isCustomBg) {
+      if (isGoldTheme) {
+        textColor = 'text-[#333]';
+      } else if (isBgBlack) {
+        textColor = 'text-[#ccccdc]';
+      } else {
+        textColor = 'text-[#fff]';
+      }
+    } else {
+      textColor = 'text-title';
+    }
+  }
 
   return (
     <Link
       to={savedPath || path}
       className={cn(
         'group flex h-9 cursor-pointer items-center relative rounded px-3.5 transition-colors transition-spacing duration-75',
-        isActive ? (isCustomBg ? '' : 'bg-fc-200') : '',
+        activeBg,
         isCustomBg ? 'text-[#ccccdc]' : 'text-main',
-        isActive && isGoldTheme ? '' : isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
+        isActive && (isBlueTheme || isGoldTheme) ? '' : isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
       )}
       style={{ background: isActive && isGoldTheme ? '#FFBC0D' : isActive && isCustomBg ? 'rgba(204, 204, 220, 0.08)' : undefined }}
       onClick={() => onClick?.(item.key)}
@@ -133,11 +170,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div
-          className={`overflow-hidden truncate text-l1 tracking-wide ${
-            isActive ? (props.isCustomBg ? (isGoldTheme ? 'text-[#333]' : isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]') : 'text-title') : ''
-          }`}
-        >
+        <div className={`overflow-hidden truncate text-l1 tracking-wide ${textColor}`}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -209,6 +242,7 @@ export default function MenuList(
 ) {
   const { t } = useTranslation('sideMenu');
   const { list, topExtra, ...otherProps } = props;
+  const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const isMac = /Mac/i.test(navigator.userAgent) || navigator.platform.includes('Mac');
   return (
     <>
@@ -221,13 +255,15 @@ export default function MenuList(
               props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
-            <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', props.isCustomBg ? '' : 'text-primary/80')}>{<IconFont type='icon-Menu_Search' />}</div>
+            <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5 mr-4', isBlueTheme ? 'text-[#427AF4]' : props.isCustomBg ? '' : 'text-[#6E6587]')}>
+              {<IconFont type='icon-Menu_Search' />}
+            </div>
 
             <div className={`overflow-hidden truncate text-l1 tracking-wide`}>{t('quickJump')} </div>
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props }) : null}
-        <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-200')}></div>
+        <div className={cn('my-2 h-px w-full', props.isCustomBg ? 'bg-white/10' : 'bg-fc-400')}></div>
         <div className='space-y-1'>
           {list
             .filter((m) => m)
