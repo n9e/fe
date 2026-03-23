@@ -1,5 +1,7 @@
 import React from 'react';
-import { isNumber, isBoolean, toString } from 'lodash';
+import { isNumber, isBoolean } from 'lodash';
+
+import { toString } from '@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/util';
 
 export default function renderFieldValue(value: string | null | number | boolean) {
   if (value === null) {
