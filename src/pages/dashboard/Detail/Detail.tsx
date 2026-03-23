@@ -119,6 +119,7 @@ export default function DetailV2(props: IProps) {
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [allowedLeave, setAllowedLeave] = useState(true);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [variablesInitialized, setVariablesInitialized] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -198,6 +199,7 @@ export default function DetailV2(props: IProps) {
       } catch (e) {
         console.error(e);
       }
+      setHasUnsavedChanges(true);
       // 如果是手动保存模式，并且没有编辑权限则不触发 RouterPrompt 提示
       if (isAuthorized) {
         setAllowedLeave(false);
@@ -342,7 +344,9 @@ export default function DetailV2(props: IProps) {
                 editable={editable}
                 updateAtRef={updateAtRef}
                 allowedLeave={allowedLeave}
+                hasUnsavedChanges={hasUnsavedChanges}
                 setAllowedLeave={setAllowedLeave}
+                setHasUnsavedChanges={setHasUnsavedChanges}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
                 dashboardLinks={dashboardLinks}
@@ -425,6 +429,7 @@ export default function DetailV2(props: IProps) {
                 setDashboard={setDashboard}
                 annotations={annotations}
                 setAllowedLeave={setAllowedLeave}
+                setHasUnsavedChanges={setHasUnsavedChanges}
                 range={range}
                 setRange={setRange}
                 timezone={timezone}
@@ -604,6 +609,7 @@ export default function DetailV2(props: IProps) {
               }).then((res) => {
                 updateAtRef.current = res.update_at;
                 message.success(t('detail.saved'));
+                setHasUnsavedChanges(false);
                 setAllowedLeave(true);
               });
             }}

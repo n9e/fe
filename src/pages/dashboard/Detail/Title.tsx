@@ -57,7 +57,9 @@ interface IProps {
   editable: boolean;
   updateAtRef: React.MutableRefObject<number | undefined>;
   allowedLeave: boolean;
+  hasUnsavedChanges: boolean;
   setAllowedLeave: (allowed: boolean) => void;
+  setHasUnsavedChanges: (changed: boolean) => void;
   routerPromptRef: any;
   hideGoBack?: boolean;
   hideGoList?: boolean;
@@ -85,7 +87,9 @@ export default function Title(props: IProps) {
     editable,
     updateAtRef,
     allowedLeave,
+    hasUnsavedChanges,
     setAllowedLeave,
+    setHasUnsavedChanges,
     routerPromptRef,
     hideGoBack,
     hideGoList,
@@ -233,7 +237,7 @@ export default function Title(props: IProps) {
 
       <div className='dashboard-detail-header-right'>
         <Space>
-          {isAuthorized && dashboardSaveMode === 'manual' && !allowedLeave && (
+          {isAuthorized && dashboardSaveMode === 'manual' && hasUnsavedChanges && (
             <Button
               type={allowedLeave ? 'default' : 'primary'}
               onClick={() => {
@@ -249,6 +253,7 @@ export default function Title(props: IProps) {
                   }).then((res) => {
                     updateAtRef.current = res.update_at;
                     message.success(t('detail.saved'));
+                    setHasUnsavedChanges(false);
                     setAllowedLeave(true);
                   });
                 } else {

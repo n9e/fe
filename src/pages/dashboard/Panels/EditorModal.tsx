@@ -13,7 +13,7 @@ interface Props {
   dashboard: Dashboard;
   panels: any[];
   setPanels: (panels: any[]) => void;
-  updateDashboardConfigs: (dashboardId: number, configs: any) => Promise<any>;
+  updateDashboardConfigs: (dashboardId: number, configs: { configs: string }, shouldMarkUnsaved?: boolean) => Promise<any>;
   onUpdated: (res: any) => void;
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
