@@ -3,6 +3,7 @@ import { Spin, Space, Radio } from 'antd';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 import { IRawTimeRange } from '@/components/TimeRangePicker/types';
 
@@ -18,8 +19,6 @@ import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
-import classNames from 'classnames';
-import { DatasourceCateEnum } from '@/utils/constant';
 
 interface Props {
   /** 时间字段 */
