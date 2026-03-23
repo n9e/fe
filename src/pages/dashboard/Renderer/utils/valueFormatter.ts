@@ -80,6 +80,25 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         postfix,
       });
     }
+    if (fn) {
+      const formattedValue = fn(val, decimals);
+      let text = formattedValue.text;
+
+      if (formattedValue.prefix) {
+        text = `${formattedValue.prefix}${text}`;
+      }
+
+      if (formattedValue.suffix) {
+        text = `${text}${formattedValue.suffix.startsWith(' ') ? formattedValue.suffix : ` ${formattedValue.suffix}`}`;
+      }
+
+      return {
+        value: formattedValue.text,
+        unit: `${formattedValue.prefix || ''}${formattedValue.suffix || ''}`.trim(),
+        text,
+        stat: val,
+      };
+    }
     // 2024-05-08 新增 'sishort' 单位为原 'default' 单位
     if (unit === 'default' || unit === 'sishort') {
       return byteConverter.format(val, {
@@ -186,15 +205,6 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         unit: data.unit + ' ' + symbol,
         text: data.text + ' ' + symbol,
         stat: data.stat,
-      };
-    }
-    if (fn) {
-      const formattedValue = fn(val, decimals);
-      return {
-        value: formattedValue.text,
-        unit: formattedValue.suffix,
-        text: formattedValue.text + ' ' + formattedValue.suffix,
-        stat: val,
       };
     }
     return {
