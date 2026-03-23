@@ -16,6 +16,7 @@ import { processResponseToSeries } from './processResponse';
 import { normalizeInterval } from './utils';
 
 interface IOptions {
+  datasourceCate: string;
   datasourceValue: number;
   id?: string;
   time: IRawTimeRange;
@@ -41,7 +42,7 @@ interface Result {
 }
 
 export default async function elasticSearchQuery(options: IOptions): Promise<Result> {
-  const { id, time, targets, datasourceValue, queryOptionsTime } = options;
+  const { id, time, targets, datasourceCate, datasourceValue, queryOptionsTime } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   let start = moment(parsedRange.start).valueOf();
@@ -121,7 +122,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               batchDsParams.push({
                 ref: target.refId,
                 ds_id: datasourceValue,
-                ds_cate: 'elasticsearch',
+                ds_cate: datasourceCate ?? 'elasticsearch',
                 query: {
                   ref: target.refId,
                   index_type: query.index_type || 'index',
