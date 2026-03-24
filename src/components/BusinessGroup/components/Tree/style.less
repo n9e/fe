@@ -7,17 +7,19 @@
 
   .n9e-tree-node-title {
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 6px;
     position: relative;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.03);
+      background-color: rgb(var(--fc-fill-3-rgb) / 0.8);
     }
   }
 
   .n9e-tree-node-title-selected {
-    background-color: rgba(108, 83, 177, 0.1) !important;
+    background-color: rgb(var(--fc-fill-3-rgb) / 0.9) !important;
     position: relative;
+    font-weight: 700;
+    color: var(--fc-text-1);
   }
 
   .n9e-tree-node-title {
@@ -72,11 +74,11 @@
 
 .theme-dark {
   .n9e-tree-container {
-    .n9e-tree-node-title {
-      &:hover {
-        background-color: rgba(204, 204, 220, 0.12);
-      }
-    }
+    // .n9e-tree-node-title {
+    //   &:hover {
+    //     background-color: rgba(204, 204, 220, 0.12);
+    //   }
+    // }
 
     .n9e-tree-node-indent-current-branch-active,
     .n9e-tree-node-indent-next-branch-active {
@@ -84,7 +86,7 @@
     }
 
     .n9e-tree-node-title-selected {
-      background-color: rgba(204, 204, 220, 0.08) !important;
+      // background-color: rgba(204, 204, 220, 0.08) !important;
     }
   }
 }

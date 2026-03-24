@@ -1,0 +1,384 @@
+---
+description: FC 前端设计规范 - 基于 targets 页面落地的可操作规范，供其他页面直接套用
+globs:
+  - 'fe/src/**/*.{ts,tsx,less,css}'
+alwaysApply: false
+---
+
+# FC 前端设计规范
+
+基于 targets 页面迭代沉淀，所有数值均为实际落地值。新页面或改造旧页面时直接套用。
+
+---
+
+## 1. 圆角体系
+
+所有圆角统一为以下档位，不允许自行定义中间值：
+
+| 档位 | 值      | 适用场景                                         | Tailwind       |
+| ---- | ------- | ------------------------------------------------ | -------------- |
+| xs   | `4px`   | **默认档**：进度条轨道、极小元素、Tooltip 内容区 | `rounded`      |
+| sm   | `6px`   | 状态单元格（table-td-fullBG）                    | `rounded-md`   |
+| md   | `8px`   | 按钮、输入框、下拉框、卡片、表格容器、分页       | `rounded-lg`   |
+| full | `999px` | 标签 Tag、徽标 Badge                             | `rounded-full` |
+
+**关键约束**：同一行/同一工具栏内的控件必须使用同一圆角档位（通常为 `4px`），避免视觉错位。
+
+---
+
+## 2. 颜色体系
+
+### 2.1 文本色阶（必须使用变量，禁止硬编码 hex）
+
+| 语义 | CSS 变量         | Tailwind       | 用途                               |
+| ---- | ---------------- | -------------- | ---------------------------------- |
+| 标题 | `--fc-text-1`    | `text-title`   | 页面标题、表格主标识               |
+| 正文 | `--fc-text-2`    | `text-main`    | 表格正文、工具栏按钮文字           |
+| 辅助 | `--fc-text-3`    | `text-hint`    | 表头文字、次要信息                 |
+| 弱化 | `--fc-text-4`    | `text-soft`    | IP 副行、空心标签文字、placeholder |
+| 禁用 | `--fc-text-5`    | `text-disable` | 禁用态                             |
+| 链接 | `--fc-text-link` | `text-link`    | 可点击链接、主题强调色             |
+
+### 2.2 填充色阶
+
+| 语义     | CSS 变量                            | Tailwind        | 用途                   |
+| -------- | ----------------------------------- | --------------- | ---------------------- |
+| 页面底   | `--fc-fill-1`                       | `bg-fc-50`      | 页面最底层背景         |
+| 卡片底   | `--fc-fill-2`                       | `bg-fc-100`     | 卡片、表格、输入框背景 |
+| hover 底 | `--fc-fill-3`                       | `bg-fc-200`     | hover 态、表头背景     |
+| 边框     | `--fc-fill-4` / `--fc-border-color` | `border-fc-300` | 所有边框               |
+
+### 2.3 状态色
+
+| 状态 | 色值变量                | 文字用                            | 背景用（10-15% 透明度）  |
+| ---- | ----------------------- | --------------------------------- | ------------------------ |
+| 成功 | `--fc-fill-success-rgb` | `rgb(var(--fc-fill-success-rgb))` | `--fc-status-success-bg` |
+| 警告 | `--fc-fill-warning-rgb` | `rgb(var(--fc-fill-warning-rgb))` | `--fc-status-warning-bg` |
+| 错误 | `--fc-fill-error-rgb`   | `rgb(var(--fc-fill-error-rgb))`   | `--fc-status-error-bg`   |
+| 失联 | —                       | `--fc-status-lost-text`           | `--fc-status-lost-bg`    |
+
+---
+
+## 3. 标签 Tag 体系
+
+### 3.1 灰色标签（默认，用于上报标签、自定义标签等筛选型标签）
+
+**类名**：`fc-tag-default`
+
+```
+border: none
+background: rgb(var(--fc-fill-3-rgb) / 0.35)
+color: var(--fc-text-3)
+border-radius: 999px
+font-size: 12px
+padding: 1px 7px
+hover → background: rgb(var(--fc-fill-3-rgb) / 0.5)
+```
+
+### 3.2 主题色实底标签（用于业务组等归属型标签）
+
+**类名**：`fc-tag-primary`
+
+```
+border: none
+background: rgb(var(--fc-fill-primary-rgb) / 0.1)
+color: var(--fc-text-link)
+border-radius: 999px
+font-size: 12px
+padding: 2px 8px
+hover → background opacity 提升到 0.16
+```
+
+### 3.3 何时用哪种
+
+- **默认灰色**：绝大多数标签使用灰色主题（3.1）
+- **主题色**：仅在有明确需求时使用（如业务组归属），**每一行仅允许有一个主题色 tag**
+- **状态色实底**：表示健康/异常（仅在需要强调背景时使用）
+
+---
+
+## 4. 表格规范
+
+### 4.0 全局样式类（分层方案）
+
+表格样式采用**分层复用**，避免每个页面重复覆盖 Ant Design 深层 DOM：
+
+| 类名          | 作用域         | 职责                                                  | 定义位置             |
+| ------------- | -------------- | ----------------------------------------------------- | -------------------- |
+| `.fc-page`    | 页面根容器     | 轻量修复：隐藏 measure-row、固定列背景继承            | `theme/default.less` |
+| `.fc-toolbar` | 工具栏容器     | Input/Select/Button 统一样式：圆角、边框、背景、hover | `theme/default.less` |
+| `.fc-table`   | `<Table>` 组件 | 完整表格皮肤：容器/表头/单元格/行状态/分页            | `theme/default.less` |
+
+**用法**：
+
+```tsx
+<div className='fc-page'>                    {/* 页面根容器 */}
+  <div className='fc-toolbar flex flex-wrap items-center justify-between gap-3'>
+    <Button icon={<ReloadOutlined />} />
+    <Select ... />
+    <SearchInput ... />
+  </div>
+  <Table className='fc-table' />              {/* 表格自动获得设计规范皮肤 */}
+</div>
+```
+
+**页面特有样式**可通过追加类名叠加（如 targets 页面的 `.n9e-hosts-table`）：
+
+```tsx
+<Table className='fc-table n9e-hosts-table' />
+```
+
+**Drawer/Modal 内的独立表格**：只加 `.fc-table`，不需要 `.fc-page`。
+
+### 4.1 容器（由 `.fc-table` 提供）
+
+```
+border: 1px solid var(--fc-border-color)
+border-radius: 8px
+overflow: hidden
+background: transparent（表格自身透明，由外层卡片提供底色）
+```
+
+### 4.2 表头
+
+```
+background: rgb(var(--fc-fill-3-rgb) / 0.7)
+color: var(--fc-text-3)
+font-size: 12px
+font-weight: 500
+padding: 10px 12px
+```
+
+### 4.3 单元格
+
+```
+padding: 10px 12px
+line-height: 1.5
+border-bottom: 1px solid var(--fc-border-color)
+background: var(--fc-fill-2)
+color: var(--fc-text-2)
+transition: background-color 0.2s ease
+```
+
+### 4.4 行状态
+
+| 状态       | 背景                                |
+| ---------- | ----------------------------------- |
+| 默认       | `--fc-fill-2`                       |
+| hover      | `rgb(--fc-fill-3-rgb / 0.65)`       |
+| 选中       | `rgb(--fc-fill-primary-rgb / 0.08)` |
+| 选中+hover | 同选中                              |
+
+### 4.5 分页
+
+```
+border-radius: 8px
+border-color: var(--fc-border-color)
+background: var(--fc-fill-2)
+active → background: var(--fc-fill-primary), 文字 #fff
+hover → border-color/color: var(--fc-primary-color)
+```
+
+### 4.6 Ant Design 表格修复（由 `.fc-page` 提供）
+
+```less
+// 隐藏测量行
+tr.ant-table-measure-row {
+  visibility: collapse;
+}
+// 固定列继承背景
+.ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+  background: inherit;
+}
+```
+
+---
+
+## 5. 双行标识单元格
+
+适用于需要同时展示主标识+副信息的场景（如 ident + IP）：
+
+```
+容器: flex flex-col gap-0.5
+主行: text-main, line-height 1.4, 链接继承父色
+副行: text-soft, font-size 12px, inline-flex items-center gap-1
+副行可加 lucide icon（size=12, strokeWidth=1.75）
+```
+
+---
+
+## 6. 工具栏规范
+
+### 6.0 全局样式类 `.fc-toolbar`
+
+工具栏内 Input/Select/Button 统一样式由 `.fc-toolbar` 提供，挂在工具栏容器上即可，子控件自动获得设计规范外观。
+
+**用法**：
+
+```tsx
+<div className='fc-toolbar flex flex-wrap items-center justify-between gap-3'>
+  <div className='flex flex-wrap items-center gap-3'>
+    <Button icon={<ReloadOutlined />} />
+    <Select ... />
+    <SearchInput ... />
+  </div>
+  <div className='flex flex-wrap items-center gap-3'>
+    <Button type='primary'>新增</Button>
+    <Button>批量操作</Button>
+    <Button icon={<EyeOutlined />} />
+  </div>
+</div>
+```
+
+**无需**在单个 Button/Select/Input 上添加长 className，`.fc-toolbar` 会自动覆盖其内部 Ant Design 控件样式。定义位置：`theme/default.less`。
+
+### 6.1 布局
+
+```
+flex flex-wrap justify-between gap-3
+左区/右区各自 flex items-center gap-3 flex-wrap
+```
+
+### 6.2 按钮
+
+| 类型     | 规格                                  |
+| -------- | ------------------------------------- |
+| 图标按钮 | 32×32, padding 0, icon font-size 12px |
+| 文字按钮 | height 32px, padding-inline 12px      |
+
+```
+共同属性:
+  border-radius: 4px
+  border-color: var(--fc-border-color)
+  background: var(--fc-fill-2)
+  color: var(--fc-text-2)
+  hover → color/border: var(--fc-primary-color), bg: var(--fc-fill-3)
+  transition: all 0.2s ease
+```
+
+### 6.3 输入框 / 下拉框
+
+```
+border-radius: 4px
+border-color: var(--fc-border-color)
+background: var(--fc-fill-2)
+box-shadow: none
+focus/hover:
+  border-color: var(--fc-primary-color)
+  box-shadow: 0 0 0 2px rgb(var(--fc-fill-primary-rgb) / 0.12)
+```
+
+---
+
+## 7. 状态指示器
+
+### 7.1 数值+进度条（CPU / 内存）
+
+```
+容器: flex flex-col items-center gap-1, min-width 50px
+数值: 状态色文字, 无背景
+进度条轨道: height 4px, bg var(--fc-border-color), border-radius 2px
+进度条填充: 状态色, width = 值%
+```
+
+### 7.2 纯文字状态色（时间偏移）
+
+仅文字着色，不加背景和进度条。
+
+### 7.3 Indicator 圆点+脉冲动画（更新时间）
+
+```
+结构: 3 层 — 2 个 wave 层 + 1 个实心点
+实心点: 8×8, border-radius 50%, 状态色
+wave 层: 10×10, 同色, 绝对定位居中
+动画: scale 0.9→2.1, opacity 0.35→0, 2s ease-out infinite
+第二层 wave delay 0.8s
+文字颜色: var(--fc-text-2)（正常色，不着状态色）
+```
+
+---
+
+## 8. 间距体系
+
+| 场景               | 值                   |
+| ------------------ | -------------------- |
+| 页面级区块间距     | 16px (`gap-4`)       |
+| 工具栏内控件间距   | 12px (`gap-3`)       |
+| 面板内部 padding   | 16px (`p-4`)         |
+| 表格单元格 padding | 10px 12px            |
+| 双行单元格行间距   | 2px (`gap-0.5`)      |
+| 标签间距           | margin 2px 6px 2px 0 |
+
+---
+
+## 9. 过渡动画
+
+| 场景               | 值                                       |
+| ------------------ | ---------------------------------------- |
+| 背景/边框/颜色变化 | `transition: all 0.2s ease`              |
+| 表格行 hover       | `transition: background-color 0.2s ease` |
+| 脉冲动画           | `2s ease-out infinite`                   |
+
+---
+
+## 10. 字重规范
+
+| 场景           | font-weight                    |
+| -------------- | ------------------------------ |
+| 表头           | 500 (`font-semibold`)          |
+| 表格正文       | 400 (`font-normal`) — 默认继承 |
+| 表格主标识内容 | 500 (`font-semibold`)          |
+| 状态单元格数值 | 不加粗                         |
+| 页面标题       | 由 PageLayout 组件控制         |
+
+---
+
+## 11. 暗色模式兼容
+
+- 所有颜色**必须使用 CSS 变量**（`--fc-*`），禁止硬编码 hex。
+- `variable.css` 已定义 `:root`（亮色）和 `.theme-dark`（暗色）两套变量。
+- 状态色背景透明度在暗色下为 `0.15`，亮色下为 `0.12`。
+- 不允许使用 `rgba(0,0,0,x)` 等不适配暗色的写法（改用变量）。
+
+---
+
+## 12. Tooltip 组件
+
+**优先使用 v2 Tooltip**（`@/components/v2/Tooltip`），基于 Radix UI，与设计规范一致。
+
+**用法**：
+
+```tsx
+import Tooltip from '@/components/v2/Tooltip';
+
+// 简单文案
+<Tooltip.Root>
+  <Tooltip.Trigger asChild>
+    <span><InfoCircleOutlined /></span>
+  </Tooltip.Trigger>
+  <Tooltip.Content>提示文案</Tooltip.Content>
+</Tooltip.Root>
+
+// 带位置
+<Tooltip.Content side='top' align='start'>...</Tooltip.Content>
+```
+
+**注意**：`Tooltip` 需在 `Tooltip.Provider` 内使用，已在 `App.tsx` 根级配置。`Trigger` 使用 `asChild` 时，子元素需为单一 DOM 节点（可用 `<span>` 包裹）。
+
+---
+
+## 13. 落地检查清单
+
+新页面或改造页面时，逐项核对：
+
+- [ ] Tooltip 是否优先使用 `@/components/v2/Tooltip`？
+- [ ] 圆角是否统一为 4/6/8/999 四档？
+- [ ] 同一工具栏内的控件圆角、高度是否一致？
+- [ ] 标签是否按归属/筛选语义选择了空心/实底？
+- [ ] 表格容器是否有 8px 圆角 + 1px 边框？
+- [ ] 表头是否 12px / 600 / text-3？
+- [ ] hover/选中态是否使用了规范的背景色？
+- [ ] 状态色是否全部走变量，暗色模式下是否正常？
+- [ ] 间距是否遵循 16/12/10 体系？
+- [ ] 过渡动画是否统一为 0.2s ease？

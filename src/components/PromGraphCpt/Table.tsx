@@ -25,6 +25,7 @@ import { json2csv } from 'json-2-csv';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { instantInterpolateString } from '@/components/PromQLInputNG';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { downloadFile } from '@/pages/alertRules/List/utils';
 
 import { getPromData } from './services';
@@ -158,8 +159,7 @@ export default function Table(props: IProps) {
           />
         </Input.Group>
         {showUnitPicker && (
-          <Input.Group>
-            <span className='ant-input-group-addon'>Unit</span>
+          <InputGroupWithFormItem label='Unit'>
             <UnitPicker
               dropdownMatchSelectWidth={false}
               value={unit}
@@ -167,7 +167,7 @@ export default function Table(props: IProps) {
                 setUnit(val);
               }}
             />
-          </Input.Group>
+          </InputGroupWithFormItem>
         )}
         {showExportButton && (
           <Button
