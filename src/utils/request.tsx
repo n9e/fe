@@ -145,16 +145,16 @@ request.interceptors.response.use(
       } else {
         localStorage.getItem('refresh_token')
           ? UpdateAccessToken().then((res) => {
-            console.log('401 err', res);
-            if (res.err) {
-              location.href = combineLoginURL();
-            } else {
-              const { access_token, refresh_token } = res.dat;
-              localStorage.setItem(AccessTokenKey, access_token);
-              localStorage.setItem('refresh_token', refresh_token);
-              location.href = `${basePrefix}${location.pathname}${location.search}`;
-            }
-          })
+              console.log('401 err', res);
+              if (res.err) {
+                location.href = combineLoginURL();
+              } else {
+                const { access_token, refresh_token } = res.dat;
+                localStorage.setItem(AccessTokenKey, access_token);
+                localStorage.setItem('refresh_token', refresh_token);
+                location.href = `${basePrefix}${location.pathname}${location.search}`;
+              }
+            })
           : (location.href = combineLoginURL());
       }
     } else if (
@@ -171,6 +171,17 @@ request.interceptors.response.use(
           redirectTo403();
           if (data.error && data.error.message) throw new Error(data.error.message);
         });
+    } else if (status === 598) {
+      if (location.pathname !== '/system/license-management') {
+        location.href = `${basePrefix}/system/license-management`;
+      } else {
+        return response
+          .clone()
+          .json()
+          .then((data) => {
+            return data;
+          });
+      }
     } else if ([502, 503, 504].includes(status)) {
       throw {
         message: i18next.t('common:request_fail_msg'),
