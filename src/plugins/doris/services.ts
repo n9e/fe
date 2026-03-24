@@ -143,6 +143,7 @@ export function getDorisLogsQuery(data: {
       offset: number;
       reverse: boolean;
       default_field?: string;
+      highlight?: boolean;
     },
   ];
 }): Promise<{
