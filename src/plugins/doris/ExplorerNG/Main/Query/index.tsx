@@ -4,6 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { useRequest, useGetState } from 'ahooks';
+import purify from 'dompurify';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -13,8 +14,9 @@ import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/
 import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
+import { getHighlightHtml } from '@/pages/logExplorer/utils/highlight/highlight_html';
 
-import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
+import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -146,6 +148,7 @@ export default function index(props: Props) {
             offset: (serviceParams.current - 1) * serviceParams.pageSize,
             reverse: serviceParams.reverse,
             default_field: defaultSearchField,
+            highlight: true,
           },
         ],
       }
@@ -156,7 +159,7 @@ export default function index(props: Props) {
             loadTimeRef.current = Date.now() - queryStart;
           }
           const newLogs = _.map(res.list, (item) => {
-            const normalizedItem = normalizeLogStructures(item);
+            const normalizedItem = normalizeLogStructures(_.omit(item, [HIGHLIGHT_FIELD]));
             return {
               ...(flatten(normalizedItem) || {}),
               ___raw___: normalizedItem,
@@ -170,6 +173,7 @@ export default function index(props: Props) {
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(_.concat(data?.list, newLogs)),
+              highlights: _.concat(data?.highlights || [], _.map(res.list, HIGHLIGHT_FIELD)),
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
@@ -181,6 +185,7 @@ export default function index(props: Props) {
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs),
+              highlights: _.map(res.list, HIGHLIGHT_FIELD),
             };
           }
         })
@@ -214,6 +219,7 @@ export default function index(props: Props) {
       total: number;
       hash: string;
       colWidths?: { [key: string]: number };
+      highlights?: { [key: string]: string }[];
     },
     any
   >(service, {
@@ -331,6 +337,7 @@ export default function index(props: Props) {
               histogramHash={histogramData?.hash}
               loading={loading}
               logs={data?.list || []}
+              highlights={data?.highlights || []}
               logsHash={data?.hash}
               fields={_.map(indexData, 'field')}
               options={options}
@@ -495,6 +502,12 @@ export default function index(props: Props) {
               }}
               linesColumnFormat={(val) => {
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
+              }}
+              adjustFieldValue={(formatedValue, highlightValue) => {
+                if (highlightValue) {
+                  return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlightValue)) }} />;
+                }
+                return formatedValue;
               }}
               // state context
               fieldConfig={currentFieldConfig}
