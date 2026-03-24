@@ -26,7 +26,7 @@ function clampPercent(percent: number) {
   return percent;
 }
 
-export default function Progress(props: ProgressProps) {
+export default function N9EProgress(props: ProgressProps) {
   const { percent = 0, strokeColor = 'var(--fc-fill-success)', trailColor = 'var(--fc-fill-1)', status = 'default', className } = props;
 
   const safePercent = clampPercent(percent);

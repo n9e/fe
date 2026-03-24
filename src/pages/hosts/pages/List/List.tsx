@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
-import Progress from '@/components/Progress';
+import N9EProgress from '@/components/N9EProgress';
 import { IS_PLUS } from '@/utils/constant';
 import { copy2ClipBoard } from '@/utils';
 import getTextWidth from '@/utils/getTextWidth';
@@ -560,7 +560,7 @@ export default function List(props: Props) {
                     >
                       {val.toFixed(1)} %
                     </div>
-                    <Progress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
+                    <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
                   </div>
                 );
               },
@@ -586,7 +586,7 @@ export default function List(props: Props) {
                     >
                       {val.toFixed(1)} %
                     </div>
-                    <Progress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
+                    <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
                   </div>
                 );
               },
