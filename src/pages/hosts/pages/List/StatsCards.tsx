@@ -34,6 +34,7 @@ export default function StatsCards(props: Props) {
   );
 
   const alivePercentage = stats?.count ? Math.round((stats.alive_count / stats.count) * 100) : 0;
+  const deadPercentage = stats?.count ? Math.round((stats.dead_count / stats.count) * 100) : 0;
   const ringR = 18;
   const ringCircumference = 2 * Math.PI * ringR;
 
@@ -91,7 +92,7 @@ export default function StatsCards(props: Props) {
                           </div>
                           <svg width='48' height='48' viewBox='0 0 50 50' className='flex-shrink-0'>
                             <circle cx='25' cy='25' r={ringR} fill='none' stroke='var(--fc-border-color)' strokeWidth='4' />
-                            {100 - alivePercentage > 0 && (
+                            {deadPercentage > 0 && (
                               <circle
                                 cx='25'
                                 cy='25'
@@ -99,13 +100,13 @@ export default function StatsCards(props: Props) {
                                 fill='none'
                                 stroke='var(--fc-fill-error)'
                                 strokeWidth='4'
-                                strokeDasharray={`${(ringCircumference * (100 - alivePercentage)) / 100} ${ringCircumference}`}
+                                strokeDasharray={`${(ringCircumference * deadPercentage) / 100} ${ringCircumference}`}
                                 strokeLinecap='round'
                                 transform='rotate(-90 25 25)'
                               />
                             )}
                             <text x='25' y='29' textAnchor='middle' fontSize='11' fontWeight='bold' fill='var(--fc-text-1)'>
-                              {100 - alivePercentage}%
+                              {deadPercentage}%
                             </text>
                           </svg>
                         </div>

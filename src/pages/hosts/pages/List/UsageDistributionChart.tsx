@@ -35,7 +35,7 @@ export default function UsageDistributionChart({ data }: UsageDistributionChartP
 
   const KEYS = ['-1', '20', '40', '60', '80', '100'];
   const COLORS: Record<string, string> = {
-    '-1': 'var(--fc-fill-5)',
+    '-1': 'rgba(123, 119, 141, 0.8)',
     '20': 'var(--fc-fill-success)',
     '40': 'var(--fc-fill-success)',
     '60': 'var(--fc-fill-success)',
@@ -60,37 +60,41 @@ export default function UsageDistributionChart({ data }: UsageDistributionChartP
   const capHeight = 4;
   const capGap = 2;
   const textSpace = 14;
+  const stripeHeightUnit = 2;
+  const stripeGap = 2;
+  const minPlaceholderHeight = 2;
   const maxStripeHeight = Math.max(0, barAreaBottom - textSpace - capHeight - capGap);
+  const maxStripeCount = Math.max(1, Math.floor((maxStripeHeight + stripeGap) / (stripeHeightUnit + stripeGap)));
 
   return (
     <div ref={containerRef} className='w-full h-full'>
       <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width={svgWidth} height={svgHeight}>
         {KEYS.map((key, i) => {
           const value = values[i];
-          // 条纹高度仅代表条纹区域，按比例缩放，最小 4px（至少显示 1 条）
-          const stripeHeight = value > 0 && maxStripeHeight > 0 ? Math.max(4, Math.round((value / maxValue) * maxStripeHeight)) : 0;
           const x = startX + i * (barWidth + barGap);
-          // 条纹从底部向上绘制，底部锚定在 barAreaBottom
-          const stripeTop = barAreaBottom - stripeHeight;
-          // cap 在条纹上方，中间留 capGap
-          const capY = stripeTop - capGap - capHeight;
           const color = COLORS[key];
+          const hasValue = value > 0;
+          // 条纹高度按 2px 条纹 + 2px 间隔离散计算，保证每条修饰条完整且间距固定
+          const targetStripeHeight = hasValue && maxStripeHeight > 0 ? (value / maxValue) * maxStripeHeight : minPlaceholderHeight;
+          const stripeCount = hasValue ? Math.max(1, Math.min(maxStripeCount, Math.round((targetStripeHeight + stripeGap) / (stripeHeightUnit + stripeGap)))) : 1;
+          const stripeHeight = stripeCount * (stripeHeightUnit + stripeGap) - stripeGap;
+          const stripeTop = barAreaBottom - stripeHeight;
+          const capY = stripeTop - capGap - capHeight;
+          const textY = hasValue ? capY - 3 : stripeTop - 3;
 
-          // 从 stripeTop 向下逐条绘制条纹（每条 2px 填充 + 2px 间隔）
-          // 从顶部锚定，保证第一条纹 y === stripeTop，与 cap 的间隔精确为 capGap
+          // 从底部向上逐条绘制完整条纹，保证底部贴齐且条纹之间固定相隔 2px
           const stripeRects: React.ReactNode[] = [];
-          for (let sy = stripeTop; sy + 2 <= barAreaBottom; sy += 4) {
-            stripeRects.push(<rect key={sy} x={x} y={sy} width={barWidth} height={2} fill={color} opacity={0.5} />);
+          for (let stripeIndex = 0; stripeIndex < stripeCount; stripeIndex += 1) {
+            const sy = barAreaBottom - stripeHeightUnit - stripeIndex * (stripeHeightUnit + stripeGap);
+            stripeRects.push(<rect key={sy} x={x} y={sy} width={barWidth} height={stripeHeightUnit} fill={color} opacity={0.5} />);
           }
 
           return (
             <g key={key}>
-              {value > 0 && (
-                <text x={x + barWidth / 2} y={capY - 3} textAnchor='middle' fontSize='11' fontWeight='bold' fill='var(--fc-text-1)'>
-                  {numberToLocaleString(value)}
-                </text>
-              )}
-              {value > 0 && <rect x={x} y={capY} width={barWidth} height={capHeight} fill={color} />}
+              <text x={x + barWidth / 2} y={textY} textAnchor='middle' fontSize='11' fontWeight='bold' fill='var(--fc-text-1)'>
+                {numberToLocaleString(value)}
+              </text>
+              {hasValue && <rect x={x} y={capY} width={barWidth} height={capHeight} fill={color} />}
               {stripeRects}
             </g>
           );

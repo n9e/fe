@@ -178,7 +178,7 @@ export default function TargetMetaDrawer(props: IProps) {
 
   return (
     <>
-      <Tooltip title={t('meta_tip')}>
+      <Tooltip title={t('meta_tip')} placement='left'>
         {targetNode ? (
           <span
             onClick={() => {
