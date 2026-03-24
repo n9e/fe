@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, Progress, message } from 'antd';
+import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
 import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
+import N9EProgress from '@/components/N9EProgress';
 import { IS_PLUS } from '@/utils/constant';
 import { copy2ClipBoard } from '@/utils';
 import getTextWidth from '@/utils/getTextWidth';
@@ -47,6 +48,16 @@ function getStrokeColor(val: number) {
     return 'var(--fc-fill-alert)';
   }
   return 'var(--fc-fill-error)';
+}
+
+function getTrailColor(val: number) {
+  if (val < 60) {
+    return 'var(--fc-green-3)';
+  }
+  if (val < 80) {
+    return 'var(--fc-orange-3)';
+  }
+  return 'var(--fc-red-3)';
 }
 
 interface Props {
@@ -242,7 +253,7 @@ export default function List(props: Props) {
           rowKey='id'
           size='small'
           tableLayout='auto'
-          scroll={{ x: 'max-content', y: 'calc(100% - 38px)' }}
+          scroll={{ x: tableProps.dataSource.length > 0 ? 'max-content' : undefined, y: 'calc(100% - 38px)' }}
           locale={{
             emptyText:
               gids === undefined ? (
@@ -339,7 +350,7 @@ export default function List(props: Props) {
               render: (ident, record) => {
                 return (
                   <div>
-                    <div>
+                    <div className='flex items-center'>
                       <TargetMetaDrawer
                         ident={ident}
                         targetNode={
@@ -372,25 +383,23 @@ export default function List(props: Props) {
                     <Space size={4}>
                       <span>{record.host_ip ? `IP ${record.host_ip}` : '-'}</span>
                       <Divider type='vertical' />
-                      <Space size={4}>
-                        <span>{record.cpu_num === -1 ? '-' : `${record.cpu_num}${t('cores')}`}</span>
-                        <span>
-                          {record.os === '' ? (
-                            '-'
-                          ) : (
-                            <Space size={4}>
-                              <img src={`/image/sys_${record.os}.svg`} alt='' />
-                              {record.os}
-                            </Space>
-                          )}
-                        </span>
-                        <span>{record.arch === '' ? '-' : record.arch}</span>
-                        {record.cpu_num === -1 || record.os === '' || record.arch === '' ? (
-                          <Tooltip title={t('unknown_tip')}>
-                            <QuestionCircleOutlined />
-                          </Tooltip>
-                        ) : null}
-                      </Space>
+                      <span>{record.cpu_num === -1 ? '-' : `${record.cpu_num}${t('cores')}`}</span>
+                      <>
+                        {record.os === '' ? (
+                          '-'
+                        ) : (
+                          <>
+                            <img className='flex' src={`/image/sys_${record.os}.svg`} alt='' />
+                            {record.os}
+                          </>
+                        )}
+                      </>
+                      <span>{record.arch === '' ? '-' : record.arch}</span>
+                      {record.cpu_num === -1 || record.os === '' || record.arch === '' ? (
+                        <Tooltip title={t('unknown_tip')}>
+                          <QuestionCircleOutlined />
+                        </Tooltip>
+                      ) : null}
                       <Divider type='vertical' />
                       <div
                         className={classNames('flex items-center justify-center gap-1 py-1 px-2 rounded-[4px]', {
@@ -543,15 +552,15 @@ export default function List(props: Props) {
                   );
                 }
                 return (
-                  <div style={{ minWidth }} className='w-[100px]'>
+                  <div style={{ minWidth }} className='w-[90px] leading-none'>
                     <div
-                      className={classNames('text-main', {
+                      className={classNames('text-main leading-[18px]', {
                         'text-soft': record.target_up === 0,
                       })}
                     >
                       {val.toFixed(1)} %
                     </div>
-                    <Progress percent={val} showInfo={false} strokeColor={getStrokeColor(val)} />
+                    <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
                   </div>
                 );
               },
@@ -569,15 +578,15 @@ export default function List(props: Props) {
                   );
                 }
                 return (
-                  <div style={{ minWidth }} className='w-[100px]'>
+                  <div style={{ minWidth }} className='w-[90px] leading-none'>
                     <div
-                      className={classNames('text-main', {
+                      className={classNames('text-main leading-[18px]', {
                         'text-soft': record.target_up === 0,
                       })}
                     >
                       {val.toFixed(1)} %
                     </div>
-                    <Progress percent={val} showInfo={false} strokeColor={getStrokeColor(val)} />
+                    <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
                   </div>
                 );
               },
@@ -607,6 +616,9 @@ export default function List(props: Props) {
                 }
                 if (Math.abs(val) < 1000) {
                   backgroundColor = 'var(--fc-fill-success)';
+                }
+                if (record.target_up === 0) {
+                  backgroundColor = 'rgb(var(--fc-fill-5-rgb) / 0.6)';
                 }
                 return (
                   <div style={{ minWidth }}>
