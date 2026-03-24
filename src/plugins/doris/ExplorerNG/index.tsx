@@ -102,7 +102,7 @@ export default function index(props: Props) {
   const handleValueFilter = (params: OnValueFilterParams) => {
     const assignmentOperator = params.assignmentOperator || ':';
     // 转义 value 中的双引号
-    const escapedValue = params.value.replace(/"/g, '\\"');
+    const escapedValue = _.replace(params.value, /"/g, '\\"');
     const values = form.getFieldsValue();
     const query = values.query;
     let queryStr = _.trim(query.query);
