@@ -36,7 +36,7 @@ interface Props {
   /** 日志数据 */
   logs: { [index: string]: string }[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   logsHash?: string;
   logTotal?: number;

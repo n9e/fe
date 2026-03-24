@@ -30,7 +30,7 @@ interface Props {
     [index: string]: any;
   }[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   logsHash?: string;
   /** 日志格式配置项 */
@@ -225,7 +225,7 @@ function RenderSubJSON({
 export const DataContext = React.createContext<{
   rawValue: { [index: string]: any };
   highlight: {
-    [index: number]: string[];
+    [key: string]: string[];
   };
 }>({
   rawValue: {},

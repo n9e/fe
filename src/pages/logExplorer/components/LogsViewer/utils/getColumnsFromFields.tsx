@@ -20,7 +20,7 @@ export default function getColumnsFromFields(params: {
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   data?: any[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   tableColumnsWidthCacheKey?: string;
   onOpenOrganizeFieldsModal?: () => void;
