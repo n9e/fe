@@ -39,11 +39,19 @@ function saveLess(filePath, filename, callback) {
         'border-color-base': 'rgba(204,204,220,0.2)', // input框的边框颜色
         'border-color-split': 'rgb(57, 60, 77)',
         'component-background': 'rgb(24 27 31)', //fc-fill-2
-        'table-header-bg': 'rgb(34 37 43)',//fc-fill-3
-        'table-row-hover-bg': 'rgba(204, 204, 220, 0.08)',
+        // 'table-header-bg': 'rgb(34 37 43)', //fc-fill-3
+        // 'table-row-hover-bg': 'rgba(204, 204, 220, 0.08)',
         'table-header-sort-bg': 'rgba(204, 204, 220, 0.08)',
         'popover-background': 'rgb(24 27 31)', //fc-fill-2
         'normal-color': 'rgb(79, 82, 99)',
+
+        // 2026-03 release-23 版本
+        'table-bg': 'var(--fc-fill-2)',
+        'table-row-hover-bg': 'rgb(var(--fc-fill-3-rgb) / 0.65)',
+        'table-header-bg': 'rgb(var(--fc-fill-3-rgb) / 0.7)',
+        'border-radius-base': '8px',
+        'border-radius-sm': '4px',
+        'checkbox-border-radius': '2px',
       },
       compress: false,
     })

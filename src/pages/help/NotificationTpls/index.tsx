@@ -41,7 +41,7 @@ export default function index() {
     >
       <div>
         <div className='n9e-notification-tpls user-manage-content'>
-          <div className='n9e-notification-tpls-sidebar left-tree-area'>
+          <div className='n9e-notification-tpls-sidebar left-tree-area rounded-lg'>
             <div className='sub-title'>
               {t('list')}
               <Button

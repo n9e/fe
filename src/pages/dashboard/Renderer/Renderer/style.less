@@ -1,28 +1,36 @@
 .renderer-container {
   height: 100%;
+
   background-color: var(--fc-fill-2);
-  box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.04);
+  box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.04);
+  border-radius: var(--fc-border-radius-base);
+
   .renderer-header-controller {
     line-height: 24px !important; // 覆盖 antd dark 样式
   }
+
   &:hover {
     .renderer-header-desc {
+
       .anticon-info-circle,
       .anticon-link {
         display: inline;
       }
     }
+
     .renderer-header-controllers {
       .renderer-header-controller {
         display: flex !important;
-        background-color: rgba(0,0,0,0.1);
+        background-color: rgba(0, 0, 0, 0.1);
       }
     }
   }
+
   .ant-tooltip-inner {
     min-height: 26px !important;
   }
 }
+
 .renderer-container-no-title {
   .renderer-header {
     position: absolute;
@@ -30,6 +38,7 @@
     width: 100%;
   }
 }
+
 .renderer-header {
   padding: 0;
   height: 32px;
@@ -39,14 +48,18 @@
   border: 0 none !important;
   background-color: unset;
 }
+
 .renderer-header-desc {
   margin-right: 10px;
 }
-.renderer-header-desc,.renderer-header-error {
+
+.renderer-header-desc,
+.renderer-header-error {
   text-align: center;
   cursor: pointer;
   position: relative;
 }
+
 .renderer-header-error {
   background-color: #ff0066;
   color: #fff;
@@ -56,11 +69,13 @@
   margin-left: 2px;
   flex-shrink: 0;
 }
+
 .renderer-header-content {
   text-align: left;
   flex: 1;
   width: calc(100% - 32px);
   display: flex;
+
   .renderer-header-title {
     text-overflow: ellipsis;
     overflow: hidden;
@@ -70,10 +85,12 @@
     font-weight: bolder;
   }
 }
+
 .renderer-header-controllers {
   text-align: right;
   margin-right: 2px;
   flex: 1;
+
   .renderer-header-controller {
     width: 24px;
     height: 24px;
@@ -82,9 +99,11 @@
     display: none !important;
   }
 }
+
 .renderer-body-wrap {
   height: 100%;
 }
+
 .renderer-body {
   .unknown-type {
     display: flex;

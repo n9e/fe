@@ -134,22 +134,20 @@ export default function Index() {
 
   return (
     <PageLayout title={t('title')}>
-      <div>
-        <div className='fc-border flex-1 p-[16px]'>
-          <div className='flex justify-end items-center'>
-            <Button
-              type='primary'
-              onClick={() => {
-                setCurrentRecord(null);
-                setModalVisible(true);
-              }}
-            >
-              {t('common:btn.add')}
-            </Button>
-          </div>
-
-          <Table className='mt-2' size='small' rowKey='id' showSorterTooltip={false} pagination={pagination} dataSource={data} columns={columns} />
+      <div className='n9e'>
+        <div className='flex justify-end items-center'>
+          <Button
+            type='primary'
+            onClick={() => {
+              setCurrentRecord(null);
+              setModalVisible(true);
+            }}
+          >
+            {t('common:btn.add')}
+          </Button>
         </div>
+
+        <Table className='mt-2' size='small' rowKey='id' showSorterTooltip={false} pagination={pagination} dataSource={data} columns={columns} />
       </div>
       <EmbeddedProductModal
         open={modalVisible}
