@@ -227,6 +227,7 @@ export default function Table(props: IProps) {
                   )}
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
+                      showQuickJumper
                       size='small'
                       total={data?.total}
                       current={serviceParams.current}

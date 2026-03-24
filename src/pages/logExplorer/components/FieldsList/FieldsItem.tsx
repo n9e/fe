@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider } from 'antd';
+import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider, Tag } from 'antd';
 import Icon, { PlusCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
 import { PRIMARY_COLOR } from '@/utils/constant';
 
 import { NAME_SPACE } from '../../constants';
+import renderFieldValue from '../../utils/renderFieldValue';
 import { Field, StatsResult } from './types';
 import QuickViewPopover from './QuickViewPopover';
 
@@ -19,6 +20,7 @@ interface Props {
   typeMap: Record<string, string>;
   field: Field;
   enableStats: boolean;
+  disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: string; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
   renderStatsPopoverTitleExtra?: (options: {
@@ -68,9 +70,26 @@ const operIconMap = {
   available: <PlusCircleOutlined />,
 };
 
+// 正常情况下，我们会将空字符串、null 和 'null' 视为 empty value
+const isEmptyValue = (value: string | null) => {
+  return value === '' || value === null || value === 'null';
+};
+
 export default function FieldsItem(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { operType, onOperClick, field, onValueFilter, typeMap, enableStats, fetchStats, renderStatsPopoverTitleExtra, renderFieldNameExtra, onStatisticClick } = props;
+  const {
+    operType,
+    onOperClick,
+    field,
+    onValueFilter,
+    typeMap,
+    enableStats,
+    fetchStats,
+    renderStatsPopoverTitleExtra,
+    renderFieldNameExtra,
+    onStatisticClick,
+    disableEmptyValueClick = true,
+  } = props;
   const [topNVisible, setTopNVisible] = useState<boolean>(false);
   const [topNumber, setTopNumber] = useState<number>(DEFAULT_TOP_NUMBER);
   const [topNData, setTopNData] = useState<any[]>([]);
@@ -91,7 +110,6 @@ export default function FieldsItem(props: Props) {
         <div className='flex justify-between items-center'>
           <Space>
             <span>{field.field}</span>
-            {/* <span className='text-hint'>{field.type2}</span> */}
           </Space>
           {topNVisible ? renderStatsPopoverTitleExtra?.({ index: field, stats, setTopNVisible }) : null}
         </div>
@@ -101,9 +119,10 @@ export default function FieldsItem(props: Props) {
           <Spin spinning={topNLoading}>
             {stats && (
               <>
-                <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />
+                {onStatisticClick && <Alert showIcon className='mb-2' type='info' message={t('field_popover_info_alert')} />}
                 <div className='bg-fc-200 p-4'>
-                  {stats?.unique_count !== undefined && stats?.exist_ratio !== undefined && (
+                  {stats?.unique_count !== undefined && (
+                    // && stats?.exist_ratio !== undefined
                     <Row gutter={[16, 16]}>
                       {['unique_count', 'exist_ratio'].map((statName) => {
                         const statValue = stats?.[statName];
@@ -189,15 +208,15 @@ export default function FieldsItem(props: Props) {
               {_.isEmpty(topNData) && t('topn_no_data')}
               {_.map(topNData, (item) => {
                 const fieldValue = item?.value;
-                const emptyValueNotSupported = fieldValue === '' || fieldValue === null || fieldValue === 'null';
+                const emptyValueNotSupported = disableEmptyValueClick ? isEmptyValue(fieldValue) : false;
                 const percent = _.floor(item.percent, 2);
                 return (
                   <div key={fieldValue} className='flex gap-[10px] mb-2'>
-                    <div className='flex-shrink-0' style={{ width: 'calc(100% - 64px)' }}>
+                    <div className='flex-shrink-0' style={{ width: onValueFilter ? 'calc(100% - 64px)' : '100%' }}>
                       <div className='flex justify-between'>
                         <Tooltip title={fieldValue}>
                           <div style={{ width: 'calc(100% - 50px)' }} className='truncate'>
-                            {_.isEmpty(fieldValue) && !_.isNumber(fieldValue) ? '(empty)' : fieldValue}
+                            {renderFieldValue(fieldValue)}
                           </div>
                         </Tooltip>
                         {item.count !== undefined && (
@@ -235,42 +254,44 @@ export default function FieldsItem(props: Props) {
                         </QuickViewPopover>
                       </div>
                     </div>
-                    <div style={{ width: 64 }}>
-                      <Space size={0}>
-                        <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
-                          <Button
-                            className='p-0'
-                            type='text'
-                            icon={<PlusCircleOutlined />}
-                            disabled={emptyValueNotSupported}
-                            onClick={() => {
-                              onValueFilter?.({
-                                key: field.field,
-                                value: fieldValue,
-                                operator: 'and',
-                              });
-                              setTopNVisible(false);
-                            }}
-                          />
-                        </Tooltip>
-                        <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
-                          <Button
-                            className='p-0'
-                            type='text'
-                            icon={<MinusCircleOutlined />}
-                            disabled={emptyValueNotSupported}
-                            onClick={() => {
-                              onValueFilter?.({
-                                key: field.field,
-                                value: fieldValue,
-                                operator: 'not',
-                              });
-                              setTopNVisible(false);
-                            }}
-                          />
-                        </Tooltip>
-                      </Space>
-                    </div>
+                    {onValueFilter && (
+                      <div style={{ width: 64 }}>
+                        <Space size={0}>
+                          <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
+                            <Button
+                              className='p-0'
+                              type='text'
+                              icon={<PlusCircleOutlined />}
+                              disabled={emptyValueNotSupported}
+                              onClick={() => {
+                                onValueFilter?.({
+                                  key: field.field,
+                                  value: fieldValue,
+                                  operator: 'and',
+                                });
+                                setTopNVisible(false);
+                              }}
+                            />
+                          </Tooltip>
+                          <Tooltip title={emptyValueNotSupported ? t('empty_value_not_supported_tip') : ''}>
+                            <Button
+                              className='p-0'
+                              type='text'
+                              icon={<MinusCircleOutlined />}
+                              disabled={emptyValueNotSupported}
+                              onClick={() => {
+                                onValueFilter?.({
+                                  key: field.field,
+                                  value: fieldValue,
+                                  operator: 'not',
+                                });
+                                setTopNVisible(false);
+                              }}
+                            />
+                          </Tooltip>
+                        </Space>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -321,7 +342,9 @@ export default function FieldsItem(props: Props) {
         }
       >
         <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'>
-          <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+          {field.type && (
+            <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+          )}
           <span
             style={{
               width: 'calc(100% - 26px)',

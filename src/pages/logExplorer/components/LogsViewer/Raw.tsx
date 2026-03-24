@@ -52,6 +52,7 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
+  customLogFieldRender?: (key: string, value: any) => React.ReactNode | false;
 }
 
 interface RenderValueProps {
@@ -252,6 +253,7 @@ function Raw(props: Props) {
     logViewerRenderCustomTagsArea,
     adjustFieldValue,
     showExistsAction,
+    customLogFieldRender,
   } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
@@ -268,6 +270,13 @@ function Raw(props: Props) {
               const val = item[key];
               const valToObj = val;
               const subJSON = _.isArray(valToObj) ? valToObj : [valToObj];
+
+              const result = customLogFieldRender ? customLogFieldRender(key, val) : false;
+
+              if (result !== false) {
+                return result;
+              }
+
               return (
                 <DataContext.Provider value={{ rawValue: item, highlight }} key={key}>
                   <div

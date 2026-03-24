@@ -632,6 +632,10 @@ const zh_CN = {
       okText: '保存',
     },
     noPanelToPaste: '没有可粘贴的图表',
+    importPanel: {
+      invalidJSON: '图表配置 JSON 格式不正确',
+      placeholder: '请粘贴图表配置 JSON',
+    },
   },
   settings: {
     graphTooltip: {
@@ -664,6 +668,7 @@ const zh_CN = {
     iframe: '内嵌文档 (iframe)',
     row: '分组',
     pastePanel: '粘贴图表',
+    importPanel: '导入图表配置',
   },
   calcs: {
     lastNotNull: '最后一个非空值',

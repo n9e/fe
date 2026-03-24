@@ -15,6 +15,7 @@ import { toString } from './util';
 import { LogsViewerStateContext } from '../../index';
 import { Field } from '../../../../types';
 import { NAME_SPACE } from '../../../../constants';
+import renderFieldValue from '../../../../utils/renderFieldValue';
 import { OnValueFilterParams } from '../../types';
 
 interface Props {
@@ -78,15 +79,13 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
   }
 
   // 可通过 adjustFieldValue 再加工一次
-  const adjustedValue = adjustFieldValue ? adjustFieldValue(displayValue, highlight?.[name]) : displayValue;
+  const adjustedValue = adjustFieldValue ? adjustFieldValue(displayValue, highlight?.[name]) : renderFieldValue(value);
 
   return (
     <Popover
       visible={popoverVisible}
       onVisibleChange={(visible) => {
-        if (onTokenClick) {
-          setPopoverVisible(visible);
-        }
+        setPopoverVisible(visible);
       }}
       trigger={['click']}
       overlayClassName='explorer-origin-field-val-popover'
@@ -116,18 +115,62 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
               {t('logs.copy_field_value')}
             </Space>
           </li>
-          {indexInfo.isIndex && (
+          {onTokenClick && (
             <>
-              {segmented && (
+              {indexInfo.isIndex && (
                 <>
+                  {segmented && (
+                    <>
+                      <li
+                        className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                        onClick={() => {
+                          setPopoverVisible(false);
+                          onTokenClick?.({
+                            key: name,
+                            value,
+                            assignmentOperator: ':',
+                            operator: 'AND',
+                            indexName: indexInfo.indexName,
+                          });
+                        }}
+                      >
+                        <Space>
+                          <PlusCircleOutlined />
+                          {t('logs.filterAnd', {
+                            token: toString(value),
+                          })}
+                        </Space>
+                      </li>
+                      <li
+                        className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                        onClick={() => {
+                          setPopoverVisible(false);
+                          onTokenClick?.({
+                            key: name,
+                            value,
+                            assignmentOperator: ':',
+                            operator: 'NOT',
+                            indexName: indexInfo.indexName,
+                          });
+                        }}
+                      >
+                        <Space>
+                          <MinusCircleOutlined />
+                          {t('logs.filterNot', {
+                            token: toString(value),
+                          })}
+                        </Space>
+                      </li>
+                    </>
+                  )}
                   <li
                     className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                     onClick={() => {
                       setPopoverVisible(false);
                       onTokenClick?.({
                         key: name,
-                        value,
-                        assignmentOperator: ':',
+                        value: fieldValue,
+                        assignmentOperator: '=',
                         operator: 'AND',
                         indexName: indexInfo.indexName,
                       });
@@ -135,9 +178,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                   >
                     <Space>
                       <PlusCircleOutlined />
-                      {t('logs.filterAnd', {
-                        token: toString(value),
-                      })}
+                      {t('logs.filterAllAnd')}
                     </Space>
                   </li>
                   <li
@@ -146,8 +187,8 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                       setPopoverVisible(false);
                       onTokenClick?.({
                         key: name,
-                        value,
-                        assignmentOperator: ':',
+                        value: fieldValue,
+                        assignmentOperator: '=',
                         operator: 'NOT',
                         indexName: indexInfo.indexName,
                       });
@@ -155,103 +196,65 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                   >
                     <Space>
                       <MinusCircleOutlined />
-                      {t('logs.filterNot', {
-                        token: toString(value),
-                      })}
+                      {t('logs.filterAllNot')}
                     </Space>
                   </li>
+                  {showExistsAction && (
+                    <li
+                      className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                      onClick={() => {
+                        setPopoverVisible(false);
+                        onTokenClick?.({
+                          key: name,
+                          value: fieldValue,
+                          assignmentOperator: '=',
+                          operator: 'EXISTS',
+                          indexName: indexInfo.indexName,
+                        });
+                      }}
+                    >
+                      <Space>
+                        <ExistsIcon />
+                        {t('logs.filterExists')}
+                      </Space>
+                    </li>
+                  )}
                 </>
               )}
-              <li
-                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-                onClick={() => {
-                  setPopoverVisible(false);
-                  onTokenClick?.({
-                    key: name,
-                    value: fieldValue,
-                    assignmentOperator: '=',
-                    operator: 'AND',
-                    indexName: indexInfo.indexName,
-                  });
-                }}
-              >
-                <Space>
-                  <PlusCircleOutlined />
-                  {t('logs.filterAllAnd')}
-                </Space>
-              </li>
-              <li
-                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-                onClick={() => {
-                  setPopoverVisible(false);
-                  onTokenClick?.({
-                    key: name,
-                    value: fieldValue,
-                    assignmentOperator: '=',
-                    operator: 'NOT',
-                    indexName: indexInfo.indexName,
-                  });
-                }}
-              >
-                <Space>
-                  <MinusCircleOutlined />
-                  {t('logs.filterAllNot')}
-                </Space>
-              </li>
-              {showExistsAction && (
-                <li
-                  className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-                  onClick={() => {
-                    setPopoverVisible(false);
-                    onTokenClick?.({
-                      key: name,
-                      value: fieldValue,
-                      assignmentOperator: '=',
-                      operator: 'EXISTS',
-                      indexName: indexInfo.indexName,
-                    });
-                  }}
-                >
-                  <Space>
-                    <ExistsIcon />
-                    {t('logs.filterExists')}
-                  </Space>
-                </li>
-              )}
+
+              {relatedLinks && relatedLinks.length > 0 && <li className='ant-dropdown-menu-item-divider'></li>}
+              {relatedLinks?.map((i) => {
+                return (
+                  <li
+                    key={i}
+                    className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                    style={{ textDecoration: 'underline' }}
+                    onClick={() => {
+                      const valueObjected = Object.entries(rawValue || {}).reduce((acc, [key, value]) => {
+                        if (typeof value === 'string') {
+                          try {
+                            acc[key] = JSON.parse(value);
+                          } catch (e) {
+                            acc[key] = value;
+                          }
+                        } else {
+                          acc[key] = value;
+                        }
+                        return acc;
+                      }, {});
+
+                      handleNav(i.urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
+                    }}
+                  >
+                    {i.name}
+                    <span style={{ background: 'var(--fc-fill-4)', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
+                      <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
+                    </span>
+                  </li>
+                );
+              })}
             </>
           )}
-
-          {relatedLinks && relatedLinks.length > 0 && <li className='ant-dropdown-menu-item-divider'></li>}
-          {relatedLinks?.map((i) => {
-            return (
-              <li
-                key={i}
-                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-                style={{ textDecoration: 'underline' }}
-                onClick={() => {
-                  const valueObjected = Object.entries(rawValue || {}).reduce((acc, [key, value]) => {
-                    if (typeof value === 'string') {
-                      try {
-                        acc[key] = JSON.parse(value);
-                      } catch (e) {
-                        acc[key] = value;
-                      }
-                    } else {
-                      acc[key] = value;
-                    }
-                    return acc;
-                  }, {});
-
-                  handleNav(i.urlTemplate, valueObjected, { start, end }, fieldConfig?.regExtractArr, fieldConfig?.mappingParamsArr);
-                }}
-              >
-                {i.name}
-                <span style={{ background: 'var(--fc-fill-4)', marginLeft: 6, display: 'inline-flex', padding: 3, borderRadius: 2 }}>
-                  <IconFont type='icon-ic_arrow_right' style={{ color: 'var(--fc-fill-primary)', height: 12 }} />
-                </span>
-              </li>
-            );
-          })}
         </ul>
       }
     >

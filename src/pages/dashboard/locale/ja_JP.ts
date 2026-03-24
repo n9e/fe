@@ -613,6 +613,10 @@ const ja_JP = {
       okText: '保存',
     },
     noPanelToPaste: '貼り付け可能なグラフがありません',
+    importPanel: {
+      invalidJSON: 'グラフ設定の JSON 形式が正しくありません',
+      placeholder: 'グラフ設定の JSON を貼り付けてください',
+    },
   },
   settings: {
     graphTooltip: {
@@ -645,6 +649,7 @@ const ja_JP = {
     iframe: '内蔵文書 (iframe)',
     row: 'グループ',
     pastePanel: 'グラフを貼り付け',
+    importPanel: 'グラフ設定をインポート',
   },
   calcs: {
     lastNotNull: '最後の非空値',

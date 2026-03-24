@@ -590,6 +590,10 @@ const ru_RU = {
       okText: 'Сохранить',
     },
     noPanelToPaste: 'Нет диаграмм для вставки',
+    importPanel: {
+      invalidJSON: 'Неверный формат JSON конфигурации диаграммы',
+      placeholder: 'Вставьте JSON конфигурации диаграммы',
+    },
   },
   settings: {
     graphTooltip: {
@@ -622,6 +626,7 @@ const ru_RU = {
     iframe: 'Встроенный документ (iframe)',
     row: 'Группа',
     pastePanel: 'Вставить диаграмму',
+    importPanel: 'Импортировать конфигурацию диаграммы',
   },
   calcs: {
     lastNotNull: 'Последнее ненулевое значение',

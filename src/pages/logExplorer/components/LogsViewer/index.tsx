@@ -3,6 +3,7 @@ import { Spin, Space, Radio } from 'antd';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 import { IRawTimeRange } from '@/components/TimeRangePicker/types';
 
@@ -18,12 +19,10 @@ import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
-import classNames from 'classnames';
-import { DatasourceCateEnum } from '@/utils/constant';
 
 interface Props {
   /** 时间字段 */
-  timeField: string;
+  timeField?: string;
   /** 直方图数据 */
   hideHistogram?: boolean;
   histogramLoading?: boolean;
@@ -82,9 +81,10 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
+  customLogFieldRender?: (key: string, value: any) => React.ReactNode | false;
 
   // 日志聚类参数
-  logClusting?: LogClusting
+  logClusting?: LogClusting;
 
   /** 以下是 context 依赖的数据 */
   /** 字段下钻、格式化相关配置 */
@@ -152,6 +152,7 @@ export default function LogsViewer(props: Props) {
     adjustFieldValue,
     showExistsAction,
     logClusting,
+    customLogFieldRender,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -273,11 +274,11 @@ export default function LogsViewer(props: Props) {
                     ],
                     logClusting?.enabled
                       ? [
-                        {
-                          label: t('logs.settings.mode.clustering'),
-                          value: 'clustering',
-                        },
-                      ]
+                          {
+                            label: t('logs.settings.mode.clustering'),
+                            value: 'clustering',
+                          },
+                        ]
                       : [],
                   )}
                   value={options.logMode}
@@ -334,6 +335,7 @@ export default function LogsViewer(props: Props) {
                   logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
+                  customLogFieldRender={customLogFieldRender}
                 />
               )}
               {options.logMode === 'table' && (
@@ -369,7 +371,17 @@ export default function LogsViewer(props: Props) {
                 />
               )}
               {options.logMode === 'clustering' && logClusting && (
-                <ClusteringTable logClusting={logClusting} onValueFilter={onAddToQuery || (() => { })} clusteringExtraEleRef={clusteringExtraEleRef} clusteringOptionsEleRef={clusteringOptionsEleRef} logs={logs} logsHash={logsHash} setPatternHistogramState={setPatternHistogramState} options={options} indexData={props.indexData || []} />
+                <ClusteringTable
+                  logClusting={logClusting}
+                  onValueFilter={onAddToQuery || (() => {})}
+                  clusteringExtraEleRef={clusteringExtraEleRef}
+                  clusteringOptionsEleRef={clusteringOptionsEleRef}
+                  logs={logs}
+                  logsHash={logsHash}
+                  setPatternHistogramState={setPatternHistogramState}
+                  options={options}
+                  indexData={props.indexData || []}
+                />
               )}
             </div>
           </div>

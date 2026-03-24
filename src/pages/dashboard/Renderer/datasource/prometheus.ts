@@ -160,7 +160,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
                 metric: serie.metric,
                 expr: item.expr,
-                data: !spanNulls ? completeBreakpoints(step, serie.values) : serie.values,
+                data: serie.values,
               });
             });
           }
@@ -193,7 +193,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                   isExp,
                   metric: serie.metric,
                   expr,
-                  data: !spanNulls ? completeBreakpoints(step, serie.values) : serie.values,
+                  data: serie.values,
                 });
               }
             });

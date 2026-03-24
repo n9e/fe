@@ -53,14 +53,16 @@ export default function getLegendData(props: Props): DataItem[] {
       decimals = override?.properties?.standardOptions?.decimals;
       dateFormat = override?.properties?.standardOptions?.dateFormat;
     }
+    // undefined 值是 series 占位的假补点值，不参与统计计算
+    const vaildValues = _.filter(item, (n) => n !== undefined);
     const statValues = {
-      max: _.max(item),
-      min: _.min(item),
-      avg: _.mean(item),
-      sum: _.sum(item),
-      last: _.last(item),
-      variance: calculateVariance(item as number[]),
-      stdDev: calculateStdDev(item as number[]),
+      max: _.max(vaildValues),
+      min: _.min(vaildValues),
+      avg: _.mean(vaildValues),
+      sum: _.sum(vaildValues),
+      last: _.last(vaildValues),
+      variance: calculateVariance(vaildValues as number[]),
+      stdDev: calculateStdDev(vaildValues as number[]),
     };
     return {
       id: seriesItem.n9e_internal.id,

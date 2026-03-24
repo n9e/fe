@@ -2,7 +2,7 @@ import React from 'react';
 
 import './locale';
 import { NS } from './constants';
-import List from './pages/List';
+import ListNG from './pages/ListNG';
 import Add from './pages/Add';
 import Edit from './pages/Edit';
 
@@ -10,7 +10,7 @@ export default {
   routes: [
     {
       path: `/${NS}`,
-      component: List,
+      component: ListNG,
       exact: true,
     },
     {
