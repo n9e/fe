@@ -219,7 +219,9 @@ export default function index(props: Props) {
       total: number;
       hash: string;
       colWidths?: { [key: string]: number };
-      highlights?: { [key: string]: string }[];
+      highlights?: {
+        [index: number]: string[];
+      }[];
     },
     any
   >(service, {
