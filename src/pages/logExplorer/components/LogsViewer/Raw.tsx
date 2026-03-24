@@ -30,7 +30,7 @@ interface Props {
     [index: string]: any;
   }[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   logsHash?: string;
   /** 日志格式配置项 */
@@ -52,7 +52,7 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
-  customLogFieldRender?: (key: string, value: any) => React.ReactNode | false;
+  customLogFieldRender?: (key: string, value: any, context: { rawValue: Record<string, any>; highlight?: { [index: string]: string[] } }) => React.ReactNode | false;
 }
 
 interface RenderValueProps {
@@ -225,7 +225,7 @@ function RenderSubJSON({
 export const DataContext = React.createContext<{
   rawValue: { [index: string]: any };
   highlight: {
-    [index: number]: string[];
+    [key: string]: string[];
   };
 }>({
   rawValue: {},
@@ -271,7 +271,12 @@ function Raw(props: Props) {
               const valToObj = val;
               const subJSON = _.isArray(valToObj) ? valToObj : [valToObj];
 
-              const result = customLogFieldRender ? customLogFieldRender(key, val) : false;
+              const result = customLogFieldRender
+                ? customLogFieldRender(key, val, {
+                    rawValue: item,
+                    highlight,
+                  })
+                : false;
 
               if (result !== false) {
                 return result;

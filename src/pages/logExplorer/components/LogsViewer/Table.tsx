@@ -37,7 +37,7 @@ interface Props {
     [index: string]: any;
   }[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   logsHash?: string;
   colWidths?: { [key: string]: number };

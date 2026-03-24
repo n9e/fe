@@ -37,9 +37,9 @@ interface Props {
   indexData: Field[];
   rangeRef: React.MutableRefObject<
     | {
-      from: number;
-      to: number;
-    }
+        from: number;
+        to: number;
+      }
     | undefined
   >;
   snapRangeRef: React.MutableRefObject<{
@@ -116,6 +116,8 @@ export default function index(props: Props) {
   const fixedRangeRef = useRef<boolean>(false);
   const loadTimeRef = useRef<number | null>(null);
 
+  type HighlightMap = Record<string, string[]>;
+
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field && queryValues.range) {
@@ -123,9 +125,9 @@ export default function index(props: Props) {
       let timeParams =
         fixedRangeRef.current === false
           ? {
-            from: moment(range.start).unix(),
-            to: moment(range.end).unix(),
-          }
+              from: moment(range.start).unix(),
+              to: moment(range.end).unix(),
+            }
           : rangeRef.current!;
       if (snapRangeRef.current && snapRangeRef.current.from && snapRangeRef.current.to) {
         timeParams = snapRangeRef.current as { from: number; to: number };
@@ -151,7 +153,7 @@ export default function index(props: Props) {
             highlight: true,
           },
         ],
-      }
+      };
       queryStrRef.current = JSON.stringify(reqData);
       return getDorisLogsQuery(reqData)
         .then((res) => {
@@ -168,24 +170,26 @@ export default function index(props: Props) {
           });
           if (appendRef.current) {
             appendRef.current = false;
+            const nextHighlights: HighlightMap[] = _.map(res.list, (item) => item[HIGHLIGHT_FIELD] || {});
             return {
               list: _.concat(data?.list, newLogs),
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(_.concat(data?.list, newLogs)),
-              highlights: _.concat(data?.highlights || [], _.map(res.list, HIGHLIGHT_FIELD)),
+              highlights: _.concat(data?.highlights || [], nextHighlights),
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
               scrollToTop(tableSelector.antd, tableSelector.rgd);
             }
             appendRef.current = false;
+            const nextHighlights: HighlightMap[] = _.map(res.list, (item) => item[HIGHLIGHT_FIELD] || {});
             return {
               list: newLogs,
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs),
-              highlights: _.map(res.list, HIGHLIGHT_FIELD),
+              highlights: nextHighlights,
             };
           }
         })
@@ -219,9 +223,7 @@ export default function index(props: Props) {
       total: number;
       hash: string;
       colWidths?: { [key: string]: number };
-      highlights?: {
-        [index: number]: string[];
-      }[];
+      highlights?: HighlightMap[];
     },
     any
   >(service, {
