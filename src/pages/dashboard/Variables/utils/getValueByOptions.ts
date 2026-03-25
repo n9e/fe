@@ -29,7 +29,10 @@ export default function getValueByOptions({
       } else {
         // 否则单选取第一个值，多选取第一个值或者 all
         const head = _.head(itemOptions)?.value;
-        const defaultVal = variable.multi ? (variable.allOption ? ['all'] : head ? [head] : undefined) : head;
+        let defaultVal = variable.multi ? (variable.allOption ? ['all'] : head ? [head] : undefined) : head;
+        if (defaultVal === undefined && variable.type === 'textbox') {
+          defaultVal = '';
+        }
         value = defaultVal;
       }
     }
