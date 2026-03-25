@@ -52,7 +52,16 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
-  customLogFieldRender?: (key: string, value: any, context: { rawValue: Record<string, any>; highlight?: { [index: string]: string[] } }) => React.ReactNode | false;
+  customLogFieldRender?: (
+    key: string,
+    value: any,
+    context: {
+      rawValue: Record<string, any>;
+      highlight?: { [index: string]: string[] };
+      renderScene?: 'raw' | 'logViewer';
+      onValueFilter?: (parmas: OnValueFilterParams) => void;
+    },
+  ) => React.ReactNode | false;
 }
 
 interface RenderValueProps {
@@ -275,6 +284,8 @@ function Raw(props: Props) {
                 ? customLogFieldRender(key, val, {
                     rawValue: item,
                     highlight,
+                    renderScene: 'raw',
+                    onValueFilter,
                   })
                 : false;
 
@@ -470,12 +481,14 @@ function Raw(props: Props) {
             id_key={id_key}
             raw_key={raw_key}
             value={data[logViewerDrawerState.currentIndex]}
+            highlight={highlights?.[logViewerDrawerState.currentIndex]}
             onValueFilter={(params) => {
               onValueFilter?.(params);
               setLogViewerDrawerState({ visible: false, currentIndex: -1 });
             }}
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
+            customLogFieldRender={customLogFieldRender}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -486,6 +499,6 @@ function Raw(props: Props) {
 }
 
 export default React.memo(Raw, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields'];
+  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields', 'customLogFieldRender'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });
