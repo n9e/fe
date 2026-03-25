@@ -79,6 +79,26 @@
   --fc-sidemenu-beta-bg: #ede9fe;
   --fc-sidemenu-beta-text: #6d28d9;
 
+  /* 自定义底色侧栏（深色/紫色等非浅色底） */
+  --fc-sidemenu-custom-text: #ccccdc;
+  --fc-sidemenu-custom-text-bright: #fff;
+  --fc-sidemenu-custom-section-title: rgba(230, 230, 232, 0.55);
+  --fc-sidemenu-custom-hover-bg: rgba(204, 204, 220, 0.12);
+  --fc-sidemenu-custom-active-bg: rgba(204, 204, 220, 0.08);
+  --fc-sidemenu-custom-indicator: #6E6587;
+  --fc-sidemenu-custom-tree-line: rgba(var(--fc-fill-5-rgb), 0.3);
+
+  /* 非自定义底、非浅色的默认态 */
+  --fc-sidemenu-default-active-bg: #E0E2EB;
+
+  /* 蓝色主题侧栏 */
+  --fc-sidemenu-blue-accent: #427AF4;
+  --fc-sidemenu-blue-active-bg: #EEF6FE;
+
+  /* 金色主题侧栏 */
+  --fc-sidemenu-gold-accent: #FFBC0D;
+  --fc-sidemenu-gold-text: #333;
+
   /* 需特殊处理额外加的变量 
      灭火图一级卡片的header背景色:  --fc-variable-fill-1
   */

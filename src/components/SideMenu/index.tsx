@@ -317,6 +317,7 @@ const SideMenu = (props: SideMenuProps) => {
                 collapsed={collapsed && !collapsedHover}
                 selectedKeys={selectedKeys}
                 sideMenuBgColor={sideMenuBgColor}
+                sideMenuBgMode={sideMenuBgMode}
                 isCustomBg={isCustomBg}
                 quickMenuRef={quickMenuRef}
                 topExtra={topExtra}
@@ -327,7 +328,7 @@ const SideMenu = (props: SideMenuProps) => {
           </div>
           <div className='mx-2 my-2 shrink-0'>
             <div
-              className={cn('flex h-10 cursor-pointer items-center justify-center rounded', isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200')}
+              className={cn('flex h-10 cursor-pointer items-center justify-center rounded', isCustomBg ? 'text-[var(--fc-sidemenu-custom-text-bright)] hover:bg-[var(--fc-sidemenu-custom-hover-bg)]' : 'text-title hover:bg-fc-200')}
               onClick={() => {
                 const nextCollapsed = !collapsed;
                 setCollapsed(nextCollapsed);
