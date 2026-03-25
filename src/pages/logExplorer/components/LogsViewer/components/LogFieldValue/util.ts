@@ -22,12 +22,17 @@ export function tokenizer(
 ): {
   value: string;
   type: 'text' | 'delimiter';
+  start: number;
+  end: number;
 }[] {
   const result: {
     value: string;
     type: 'text' | 'delimiter';
+    start: number;
+    end: number;
   }[] = [];
   let temp = '';
+  let tokenStart = 0;
   for (let i = 0; i < value.length; i++) {
     const char = value[i];
     if (_.includes(delimiters, char)) {
@@ -35,14 +40,22 @@ export function tokenizer(
         result.push({
           value: temp,
           type: 'text',
+          start: tokenStart,
+          end: i,
         });
         temp = '';
       }
       result.push({
         value: char,
         type: 'delimiter',
+        start: i,
+        end: i + 1,
       });
+      tokenStart = i + 1;
     } else {
+      if (!temp) {
+        tokenStart = i;
+      }
       temp += char;
     }
   }
@@ -50,6 +63,8 @@ export function tokenizer(
     result.push({
       value: temp,
       type: 'text',
+      start: tokenStart,
+      end: value.length,
     });
   }
   return result;
