@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { getDashboards } from '@/Packages/Outfire/services';
+import { getDashboards } from '../../services/knowledgeBase';
 import { ILabelName } from './index';
 
 interface IProps {

@@ -1,15 +1,16 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Col, Form, FormInstance, Input, InputNumber, message, Modal, Radio, Row, Select, Space } from 'antd';
-import RuleItem from '@/Packages/Outfire/components/RuleItem';
 import { useTranslation } from 'react-i18next';
-import FiremapTreeSelector from '@/Packages/Outfire/pages/Level2/Alert/RelatedMetric';
 import MarkdownEdit from '@/components/MarkdownEdit';
 import DashboardConfig from './DashboardConfig';
-import TipsBox from '@/components/TipsBox';
 import Footer from '../ChatContent/Footer';
 import { EMode } from '../config';
 import { upsertKnowledge } from '../services';
+import TipsBox from '@/components/TipsBox';
+import RuleItem from '@/components/AiChat/components/RuleItem';
+/** @ts-ignore */
+import FiremapTreeSelector from '@/Packages/Outfire/pages/Level2/Alert/RelatedMetric';
+/** @ts-ignore */
 import { handleSubmitCard } from '@/Packages/Outfire/pages/Level2/Alert/RelatedMetric';
 
 interface IProps {

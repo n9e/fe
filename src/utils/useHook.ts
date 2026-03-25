@@ -5,5 +5,4 @@ type IGlobalVarType = {
   RangePickerHour?: string;
 };
 export const useGlobalVar = createGlobalState<IGlobalVarType>({});
-
-export const useParamsAiAction = createGlobalState<any>();
+export const useRuleFormError = createGlobalState<boolean>(false);

@@ -7,9 +7,9 @@ import { deleteKnowledge, getKnowledgeList } from '../../services';
 import { SearchOutlined } from '@ant-design/icons';
 import { EMode } from '../../config';
 import moment from 'moment';
-import { handleRawSelectCard } from '@/Packages/Outfire/pages/Level2/Alert/RelatedMetric';
 import _ from 'lodash';
-import Footer from '../../ChatContent/Footer';
+/** @ts-ignore */
+import { handleRawSelectCard } from '@/Packages/Outfire/pages/Level2/Alert/RelatedMetric';
 
 interface IProps {
   modeChange: (mode: EMode) => void;

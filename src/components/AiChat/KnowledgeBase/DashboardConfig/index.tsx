@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Form, Row, Col, Button, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { getBusiGroups } from '@/Packages/Outfire/services';
+import { getBusiGroups } from '../../services/knowledgeBase';
 import DashboardSelect from './DashboardSelect';
 import { useTranslation } from 'react-i18next';
 
