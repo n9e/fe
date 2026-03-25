@@ -41,6 +41,18 @@ export default function EditModal(props: IProps) {
   const [recordIndex, setRecordIndex] = useState<number>(-1);
   const [mode, setMode] = useState<'list' | 'add' | 'edit'>('list');
 
+  const shouldSyncTextboxValueWithDefault = (previousVariable: IVariable | undefined) => {
+    if (mode === 'add') {
+      return true;
+    }
+
+    if (!previousVariable) {
+      return false;
+    }
+
+    return previousVariable.value === undefined || previousVariable.value === null || previousVariable.value === '' || previousVariable.value === previousVariable.defaultValue;
+  };
+
   return (
     <Modal
       title={t(`var.title.${mode}`)}
@@ -235,6 +247,12 @@ export default function EditModal(props: IProps) {
           onOk={(val) => {
             setVariablesWithOptions((prev) => {
               let newData = _.cloneDeep(prev);
+              const previousVariable = mode === 'edit' ? prev[recordIndex] : undefined;
+
+              if (val.type === 'textbox' && shouldSyncTextboxValueWithDefault(previousVariable)) {
+                val.value = val.defaultValue ?? '';
+              }
+
               if (mode === 'add') {
                 newData = [...newData, val];
               } else if (mode === 'edit') {

@@ -22,20 +22,26 @@ export default function DatasourceIdentifier(props: Props) {
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
   const variableRef = useRef(variable);
+  const rangeRef = useRef(range);
 
   useEffect(() => {
     variableRef.current = variable;
   });
 
+  useEffect(() => {
+    rangeRef.current = range;
+  }, [range]);
+
   // 执行查询的核心逻辑
   const executeQuery = async () => {
     const currentVariable = variableRef.current;
+    const currentRange = rangeRef.current;
 
     const variableInterpolations = buildVariableInterpolations({
       variable: currentVariable,
       variables: getVariables(),
       datasourceList,
-      range,
+      range: currentRange,
     });
 
     let currentDatasourceList = currentVariable.definition
