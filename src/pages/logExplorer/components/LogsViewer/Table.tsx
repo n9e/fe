@@ -58,6 +58,16 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
+  customLogFieldRender?: (
+    key: string,
+    value: any,
+    context: {
+      rawValue: Record<string, any>;
+      highlight?: { [index: string]: string[] };
+      renderScene?: 'raw' | 'logViewer';
+      onValueFilter?: (parmas: OnValueFilterParams) => void;
+    },
+  ) => React.ReactNode | false;
 }
 
 function Table(props: Props) {
@@ -84,6 +94,7 @@ function Table(props: Props) {
     logViewerRenderCustomTagsArea,
     adjustFieldValue,
     showExistsAction,
+    customLogFieldRender,
   } = props;
   const fields = useMemo(() => {
     const resolvedFields = getFieldsFromTableData(data);
@@ -226,12 +237,14 @@ function Table(props: Props) {
             id_key={id_key}
             raw_key={raw_key}
             value={data[logViewerDrawerState.currentIndex]}
+            highlight={highlights?.[logViewerDrawerState.currentIndex]}
             onValueFilter={(params) => {
               onValueFilter?.(params);
               setLogViewerDrawerState({ visible: false, currentIndex: -1 });
             }}
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
+            customLogFieldRender={customLogFieldRender}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -242,6 +255,6 @@ function Table(props: Props) {
 }
 
 export default React.memo(Table, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields'];
+  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields', 'customLogFieldRender'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

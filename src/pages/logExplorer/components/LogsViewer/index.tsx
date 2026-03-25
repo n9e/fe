@@ -81,7 +81,16 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
-  customLogFieldRender?: (key: string, value: any, context: { rawValue: Record<string, any>; highlight?: { [index: string]: string[] } }) => React.ReactNode | false;
+  customLogFieldRender?: (
+    key: string,
+    value: any,
+    context: {
+      rawValue: Record<string, any>;
+      highlight?: { [index: string]: string[] };
+      renderScene?: 'raw' | 'logViewer';
+      onValueFilter?: (parmas: OnValueFilterParams) => void;
+    },
+  ) => React.ReactNode | false;
 
   // 日志聚类参数
   logClusting?: LogClusting;
@@ -368,6 +377,7 @@ export default function LogsViewer(props: Props) {
                   logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
+                  customLogFieldRender={customLogFieldRender}
                 />
               )}
               {options.logMode === 'clustering' && logClusting && (
