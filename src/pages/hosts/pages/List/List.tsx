@@ -502,9 +502,9 @@ export default function List(props: Props) {
               title: (
                 <Space>
                   {t('beat_time')}
-                  <Tooltip title={<Trans ns={NS} i18nKey='beat_time_tip' components={{ 1: <br /> }} />}>
+                  {/* <Tooltip title={<Trans ns={NS} i18nKey='beat_time_tip' components={{ 1: <br /> }} />}>
                     <QuestionCircleOutlined />
-                  </Tooltip>
+                  </Tooltip> */}
                 </Space>
               ),
               render: (val, record) => {
@@ -518,9 +518,7 @@ export default function List(props: Props) {
                 }
                 let backgroundColor = 'var(--fc-fill-success)';
                 if (record.target_up === 0) {
-                  backgroundColor = 'var(--fc-fill-error)';
-                } else if (record.target_up === 1) {
-                  backgroundColor = 'var(--fc-fill-alert)';
+                  backgroundColor = 'rgb(var(--fc-fill-5-rgb) / 0.6)';
                 }
                 return (
                   <div style={{ minWidth }}>
