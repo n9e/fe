@@ -108,6 +108,8 @@ export default function adjustData(
       if (type === 'constant') {
         // definition: 常量定义的值
         joinedValue = value ?? definition ?? '';
+      } else if (type === 'textbox') {
+        joinedValue = value ?? defaultValue ?? '';
       } else if (type === 'datasource' || type === 'datasourceIdentifier') {
         // defaultValue: 数据源变量默认值
         joinedValue = value ?? defaultValue;
