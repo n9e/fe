@@ -27,20 +27,28 @@ export default function HostIdent(props: Props) {
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
   const variableRef = useRef(variable);
+  const rangeRef = useRef(range);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     variableRef.current = variable;
   });
 
+  useEffect(() => {
+    rangeRef.current = range;
+  }, [range]);
+
   // 执行查询的核心逻辑
   const executeQuery = async () => {
     const currentVariable = variableRef.current;
+    const currentRange = rangeRef.current;
+    const requestId = ++requestIdRef.current;
 
     const variableInterpolations = buildVariableInterpolations({
       variable: currentVariable,
       variables: getVariables(),
       datasourceList,
-      range,
+      range: currentRange,
     });
 
     const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
@@ -52,6 +60,9 @@ export default function HostIdent(props: Props) {
         p: 1,
         limit: 5000,
       });
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
       const list = _.uniq(_.map(res?.dat?.list, 'ident'));
       const itemOptions = _.sortBy(filterOptionsByReg(_.map(list, _.toString), formatedReg), 'value');
 
@@ -64,6 +75,9 @@ export default function HostIdent(props: Props) {
         }),
       });
     } catch (err) {
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
       const errMsg = 'Failed to fetch host idents for variable ' + currentVariable.name;
       setErrorMsg(errMsg);
       updateVariable(name, {

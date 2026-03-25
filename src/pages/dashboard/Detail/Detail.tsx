@@ -94,6 +94,7 @@ export default function DetailV2(props: IProps) {
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
+  const [, setGlobalRange] = useGlobalState('range');
   const [panelClipboard] = useGlobalState('panelClipboard');
   const [, setParamsAiAction] = useParamsAiAction();
   let { id } = useParams<URLParam>();
@@ -257,6 +258,10 @@ export default function DetailV2(props: IProps) {
     // 监听变量的 name 和 value，不监听 options（避免 options 更新时重复处理）
     JSON.stringify(_.map(variablesWithOptions, (v) => ({ name: v.name, value: v.value }))),
   ]);
+
+  useEffect(() => {
+    setGlobalRange(range);
+  }, [range, setGlobalRange]);
 
   useEffect(() => {
     // 切换仪表盘时，立即清空 variablesWithOptions，避免使用上一个仪表盘的变量

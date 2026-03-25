@@ -26,15 +26,23 @@ export default function Query(props: Props) {
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
   const variableRef = useRef(variable);
+  const rangeRef = useRef(range);
+  const requestIdRef = useRef(0);
   const dropdownOpenValueRef = useRef<any>(null);
 
   useEffect(() => {
     variableRef.current = variable;
   });
 
+  useEffect(() => {
+    rangeRef.current = range;
+  }, [range]);
+
   // 执行查询的核心逻辑
   const executeQuery = async () => {
     const currentVariable = variableRef.current;
+    const currentRange = rangeRef.current;
+    const requestId = ++requestIdRef.current;
 
     if (!currentVariable.datasource) {
       const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
@@ -46,7 +54,7 @@ export default function Query(props: Props) {
       variable: currentVariable,
       variables: getVariables(),
       datasourceList,
-      range,
+      range: currentRange,
     });
 
     const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
@@ -70,10 +78,13 @@ export default function Query(props: Props) {
         query: {
           ...(currentVariable.query ?? {}),
           query: formatedDefinition || formatedQuery, // query 是标准写法
-          range,
+          range: currentRange,
           config: currentVariable.config, // config 是 es 特有的写法
         },
       });
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
       const filteredOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
       updateVariable(name, {
         options: filteredOptions,
@@ -84,6 +95,9 @@ export default function Query(props: Props) {
         }),
       });
     } catch (error: any) {
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
       setErrorMsg(error?.message || 'Error fetching variable options');
       updateVariable(name, {
         options: [],

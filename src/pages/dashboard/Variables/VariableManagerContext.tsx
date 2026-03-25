@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useRef, useCallback } from 'react';
 import _ from 'lodash';
 
+import { useGlobalState } from '@/pages/dashboard/globalState';
+
 import { IVariable as Variable, VariableExecutionMeta, DependencyGraph } from './types';
 
 function extractDependencies(str: string, validVars?: Set<string>): string[] {
@@ -48,6 +50,64 @@ interface VariableManagerContextType {
 
 const VariableManagerContext = createContext<VariableManagerContextType | undefined>(undefined);
 
+function sortNodesByDependencies(nodes: string[], dependencyGraph: DependencyGraph, getDependencies: (node: string) => string[]) {
+  if (nodes.length === 0) {
+    return [];
+  }
+
+  const inDegree: Record<string, number> = {};
+  const queue: string[] = [];
+  const result: string[] = [];
+
+  nodes.forEach((node) => {
+    inDegree[node] = getDependencies(node).filter((dep) => nodes.includes(dep)).length;
+  });
+
+  nodes.forEach((node) => {
+    if (inDegree[node] === 0) {
+      queue.push(node);
+    }
+  });
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    result.push(current);
+
+    (dependencyGraph[current] || []).forEach((dep) => {
+      if (nodes.includes(dep)) {
+        inDegree[dep]--;
+        if (inDegree[dep] === 0) {
+          queue.push(dep);
+        }
+      }
+    });
+  }
+
+  if (result.length !== nodes.length) {
+    const cycleNodes = nodes.filter((node) => !result.includes(node));
+    throw new Error(`循环依赖检测: ${cycleNodes.join(', ')}`);
+  }
+
+  return result;
+}
+
+export function getQueryVariableExecutionOrderForRangeChange(
+  variables: Variable[],
+  registeredVariables: Map<string, Pick<VariableExecutionMeta, 'dependencies'>>,
+  dependencyGraph: DependencyGraph,
+) {
+  const queryVariableNames = variables
+    .filter((variable) => variable.type === 'query')
+    .map((variable) => variable.name)
+    .filter((name) => registeredVariables.has(name));
+
+  if (queryVariableNames.length === 0) {
+    return [];
+  }
+
+  return sortNodesByDependencies(queryVariableNames, dependencyGraph, (node) => registeredVariables.get(node)?.dependencies || []);
+}
+
 export const useVariableManager = () => {
   const context = useContext(VariableManagerContext);
   if (!context) {
@@ -67,6 +127,7 @@ export const VariableManagerProvider = ({
 }) => {
   // 注册的变量执行元数据
   const registeredVariables = useRef<Map<string, VariableExecutionMeta>>(new Map());
+  const [range] = useGlobalState('range');
   // 变量值的同步副本，用于在依赖链执行中获取最新值
   const variablesRef = useRef<Variable[]>(variables);
   // Ensure ref is synced with props during render to be available for children's effects
@@ -87,6 +148,9 @@ export const VariableManagerProvider = ({
   const pendingInitialExecution = useRef<Set<string>>(new Set());
   // 追踪正在重新执行的变量，防止并发竞争
   const reExecutingVariables = useRef<Set<string>>(new Set());
+  const rangeSignature = React.useMemo(() => JSON.stringify(range), [range]);
+  const previousRangeSignature = useRef<string>(rangeSignature);
+  const pendingRangeRefreshSignature = useRef<string | null>(null);
 
   const getVariables = useCallback(() => {
     // 在依赖链执行期间，返回 ref 中的最新值
@@ -138,44 +202,7 @@ export const VariableManagerProvider = ({
   }, []);
 
   const topologicalSort = useCallback((nodes: string[], graph: DependencyGraph): string[] => {
-    const inDegree: Record<string, number> = {};
-    const queue: string[] = [];
-    const result: string[] = [];
-
-    // 计算每个节点的入度
-    nodes.forEach((node) => {
-      inDegree[node] = registeredVariables.current.get(node)?.dependencies.filter((dep) => nodes.includes(dep)).length || 0;
-    });
-
-    // 将入度为 0 的节点加入初始队列
-    nodes.forEach((node) => {
-      if (inDegree[node] === 0) {
-        queue.push(node);
-      }
-    });
-
-    // 执行拓扑排序
-    while (queue.length > 0) {
-      const current = queue.shift()!;
-      result.push(current);
-
-      // 处理所有依赖当前变量的下游变量
-      (graph[current] || []).forEach((dep) => {
-        if (nodes.includes(dep)) {
-          inDegree[dep]--;
-          if (inDegree[dep] === 0) queue.push(dep);
-        }
-      });
-    }
-
-    // 检查是否有循环依赖
-    if (result.length !== nodes.length) {
-      const cycleNodes = nodes.filter((node) => !result.includes(node));
-      console.error('检测到循环依赖:', cycleNodes);
-      throw new Error(`循环依赖检测: ${cycleNodes.join(', ')}`);
-    }
-
-    return result;
+    return sortNodesByDependencies(nodes, graph, (node) => registeredVariables.current.get(node)?.dependencies || []);
   }, []);
 
   // 触发依赖更新
@@ -219,6 +246,26 @@ export const VariableManagerProvider = ({
     [topologicalSort],
   );
 
+  const refreshQueryVariablesForRangeChange = useCallback(async () => {
+    const executionOrder = getQueryVariableExecutionOrderForRangeChange(variables, registeredVariables.current, dependencyGraph.current);
+
+    if (executionOrder.length === 0) {
+      return;
+    }
+
+    isExecutingChain.current = true;
+    try {
+      for (const variableName of executionOrder) {
+        const meta = registeredVariables.current.get(variableName);
+        if (meta) {
+          await meta.executor();
+        }
+      }
+    } finally {
+      isExecutingChain.current = false;
+    }
+  }, [variables]);
+
   // 检查并执行初始化
   const checkAndExecuteInitialization = useCallback(() => {
     const registeredNames = new Set(registeredVariables.current.keys());
@@ -258,12 +305,23 @@ export const VariableManagerProvider = ({
               await triggerDependencyUpdate(name);
             }
           }
+
+          if (pendingRangeRefreshSignature.current && pendingRangeRefreshSignature.current !== previousRangeSignature.current) {
+            previousRangeSignature.current = pendingRangeRefreshSignature.current;
+            pendingRangeRefreshSignature.current = null;
+
+            try {
+              await refreshQueryVariablesForRangeChange();
+            } catch (error) {
+              console.error('[VariableManager] pending range refresh failed:', error);
+            }
+          }
         }
       };
 
       executeInitialVariables();
     }
-  }, [variables, triggerDependencyUpdate]);
+  }, [refreshQueryVariablesForRangeChange, triggerDependencyUpdate, variables]);
 
   // 注册变量到管理器（自动分析依赖）
   const registerVariable = useCallback(
@@ -429,6 +487,28 @@ export const VariableManagerProvider = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variablesKey]);
+
+  useEffect(() => {
+    if (previousRangeSignature.current === rangeSignature) {
+      return;
+    }
+
+    if (!initialized.current) {
+      pendingRangeRefreshSignature.current = rangeSignature;
+      return;
+    }
+
+    previousRangeSignature.current = rangeSignature;
+    pendingRangeRefreshSignature.current = null;
+
+    void (async () => {
+      try {
+        await refreshQueryVariablesForRangeChange();
+      } catch (error) {
+        console.error('[VariableManager] range refresh failed:', error);
+      }
+    })();
+  }, [rangeSignature, refreshQueryVariablesForRangeChange]);
 
   return (
     <VariableManagerContext.Provider
