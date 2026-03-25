@@ -39,7 +39,7 @@ export default function UsageDistributionChart({ data }: UsageDistributionChartP
     '20': 'var(--fc-fill-success)',
     '40': 'var(--fc-fill-success)',
     '60': 'var(--fc-fill-success)',
-    '80': 'var(--fc-fill-warning)',
+    '80': 'var(--fc-fill-alert)',
     '100': 'var(--fc-fill-error)',
   };
 
