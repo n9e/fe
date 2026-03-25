@@ -133,7 +133,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
       >
         <div className='flex min-w-0 flex-1 items-center'>
           <div className={cn('h-4.5 shrink-0 children-icon2:h-4.5 children-icon2:w-4.5', iconColor, !collapsed ? 'mr-1' : '')}>{item.icon}</div>
-          {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-l1 tracking-wide', titleClass)}>{t(item.label)}</div>}
+          {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-5 tracking-wide', titleClass)}>{t(item.label)}</div>}
         </div>
         {!collapsed && (
           <RightIcon className={cn('shrink-0 transition', isExpand ? 'rotate-90' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')} style={{ fontSize: 24 }} />
@@ -322,7 +322,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate tracking-wide', isSubTreeLayout && !isLight ? 'text-base' : 'text-l1', textColor)}>
+        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-5 tracking-wide', textColor)}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -387,7 +387,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate tracking-wide', isSubTreeLayout && !isLight ? 'text-base' : 'text-l1')}>
+        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-5 tracking-wide')}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -439,14 +439,14 @@ export default function MenuList(
           >
             <div
               className={cn(
-                'mr-4 h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
+                'mr-1 h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
                 isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
               {<IconFont type='icon-ic_search' />}
             </div>
 
-            <div className='overflow-hidden truncate tracking-wide'>{t('quickJump')} </div>
+            <div className='overflow-hidden truncate text-[13px] leading-5 tracking-wide'>{t('quickJump')} </div>
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}

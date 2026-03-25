@@ -1,4 +1,5 @@
 const ja_JP = {
+  resizeWidth: 'ドラッグしてサイドバー幅を変更',
   quickJump: 'クイックジャンプ',
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',

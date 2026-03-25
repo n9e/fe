@@ -1,4 +1,5 @@
 const zh_HK = {
+  resizeWidth: '拖拽調整側欄寬度',
   quickJump: '快捷跳轉',
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',

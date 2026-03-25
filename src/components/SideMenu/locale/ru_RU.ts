@@ -1,4 +1,5 @@
 const ru_RU = {
+  resizeWidth: 'Перетащите, чтобы изменить ширину панели',
   quickJump: 'Быстрый переход',
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',
