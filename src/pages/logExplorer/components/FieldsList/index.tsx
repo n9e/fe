@@ -66,6 +66,10 @@ export default function index(props: Props) {
   return (
     <div className='h-full min-h-0'>
       <Input
+        style={{
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
         placeholder={t('field_search_placeholder')}
         value={fieldsSearch}
         onChange={(e) => {

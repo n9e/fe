@@ -1,9 +1,12 @@
-.doris-sql-input-container-with-builder {
+.ant-input-group.ant-input-group-compact.input-group-with-form-item.doris-sql-input-container-with-builder {
   .input-group-with-form-item-label {
     border: 1px solid var(--fc-antd-border-color) !important;
     position: relative !important;
     z-index: 3 !important; // 大于 query builder 的 z-index: 2
-    border-radius: 2px !important;
+    border-radius: var(--fc-border-radius-base) !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
     overflow: unset !important;
     background-color: unset !important;
 
@@ -22,7 +25,7 @@
   }
 }
 
-.doris-sql-input-container-with-builder-unpinned {
+.ant-input-group.ant-input-group-compact.input-group-with-form-item.doris-sql-input-container-with-builder-unpinned {
   .input-group-with-form-item-label {
     border: 1px solid var(--fc-fill-primary) !important;
 
