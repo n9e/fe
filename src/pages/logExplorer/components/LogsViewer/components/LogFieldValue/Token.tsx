@@ -4,12 +4,14 @@ import { MinusCircleOutlined, PlusCircleOutlined, CopyOutlined } from '@ant-desi
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
+import purify from 'dompurify';
 
 import { copy2ClipBoard } from '@/utils';
 import IconFont from '@/components/IconFont';
 import { Link, handleNav } from '@/pages/explorer/components/Links';
 import { parseRange } from '@/components/TimeRangePicker';
 import ExistsIcon from '@/pages/explorer/components/RenderValue/ExistsIcon';
+import { getHighlightHtml, getTokenHighlights } from '@/pages/logExplorer/utils/highlight/highlight_html';
 
 import { toString } from './util';
 import { LogsViewerStateContext } from '../../index';
@@ -24,6 +26,9 @@ interface Props {
   name: string;
   value: string; // 单个 token 的值
   fieldValue: string; // 完整字段值
+  tokenStart?: number;
+  tokenEnd?: number;
+  highlightKey?: string;
   onTokenClick?: (parmas: OnValueFilterParams) => void;
   rawValue?: { [key: string]: any };
   highlight?: { [key: string]: string[] };
@@ -46,6 +51,9 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   const { segmented, parentKey, name, value, fieldValue, onTokenClick, rawValue, highlight, enableTooltip, fieldValueClassName, indexData, adjustFieldValue, showExistsAction } =
     props;
+  const highlightKey = props.highlightKey || (parentKey ? `${parentKey}.${name}` : name);
+  const tokenStart = props.tokenStart ?? 0;
+  const tokenEnd = props.tokenEnd ?? toString(fieldValue).length;
 
   const [popoverVisible, setPopoverVisible] = useState(false);
   const relatedLinks = fieldConfig?.linkArr?.filter((item) => (parentKey ? item.field === parentKey : item.field === name));
@@ -78,8 +86,16 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
     displayValue = fieldAttr?.formatMap?.params?.labelTemplate.replace('{{value}}', fieldValue);
   }
 
+  const tokenHighlights = getTokenHighlights(fieldValue, highlight?.[highlightKey], tokenStart, tokenEnd);
+
   // 可通过 adjustFieldValue 再加工一次
-  const adjustedValue = adjustFieldValue ? adjustFieldValue(displayValue, highlight?.[name]) : renderFieldValue(value);
+  const adjustedValue = adjustFieldValue ? (
+    adjustFieldValue(displayValue, tokenHighlights)
+  ) : tokenHighlights ? (
+    <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(displayValue, tokenHighlights)) }} />
+  ) : (
+    renderFieldValue(displayValue)
+  );
 
   return (
     <Popover
