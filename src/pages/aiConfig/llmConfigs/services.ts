@@ -39,10 +39,13 @@ export const deleteItem = function (id: number) {
   }).then((res) => res.dat);
 };
 
-export const testConnection = function (data: Item) {
+export const testConnection = function (data: Item): Promise<{
+  duration_ms: number;
+  success: boolean;
+  error?: string;
+}> {
   return request('/api/n9e/ai-llm-config/test', {
     method: RequestMethod.Post,
     data,
-    silence: true,
-  });
+  }).then((res) => res.dat);
 };

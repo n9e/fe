@@ -24,5 +24,10 @@ const zh_CN = {
     test_connection_success: '连接成功',
     test_connection_failure: '连接失败',
   },
+
+  tool: {
+    name: '工具名称',
+    description: '工具描述',
+  },
 };
 export default zh_CN;

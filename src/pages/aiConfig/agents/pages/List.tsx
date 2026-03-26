@@ -53,6 +53,7 @@ export default function List() {
             <div className='min-h-0 flex-shrink-0'>
               <Table
                 rowKey='id'
+                size='small'
                 pagination={pagination}
                 loading={loading}
                 dataSource={data}

@@ -35,6 +35,7 @@ export default function List() {
             </div>
             <div className='min-h-0 flex-shrink-0'>
               <Table
+                size='small'
                 rowKey='id'
                 pagination={pagination}
                 loading={loading}

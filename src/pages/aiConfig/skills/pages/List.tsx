@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Button, Tag, Empty, Dropdown, Menu, Space, Switch, Radio, Upload, Modal, Spin, message } from 'antd';
+import { Input, Button, Tag, Empty, Dropdown, Menu, Space, Switch, Radio, Upload, Modal, Spin, Collapse, Table, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CodeOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import _ from 'lodash';
@@ -230,7 +230,6 @@ export default function List() {
                   icon={<EditOutlined />}
                   onClick={() => {
                     if (activeData?.id) {
-                      console.log('activeData', activeData);
                       setEditModalState({
                         id: activeData?.id,
                         visible: true,
@@ -302,6 +301,55 @@ export default function List() {
               }}
             />
             {activeData?.id && <ResourcesTable id={activeData?.id} />}
+            <div className='mt-4'>
+              <Collapse ghost className='skills-form-collapse skills-form-collapse-compact'>
+                <Collapse.Panel key='advanced' header={<div className='text-main text-l1'>{t('form.advanced_settings')}</div>}>
+                  <Table
+                    size='small'
+                    showHeader={false}
+                    rowKey='name'
+                    dataSource={[
+                      {
+                        name: 'license',
+                        value: activeData?.license,
+                      },
+                      {
+                        name: 'compatibility',
+                        value: activeData?.compatibility,
+                      },
+                      {
+                        name: 'allowed_tools',
+                        value: activeData?.allowed_tools,
+                      },
+                    ]}
+                    columns={[
+                      {
+                        dataIndex: 'name',
+                        key: 'name',
+                        width: 120,
+                      },
+                      {
+                        dataIndex: 'value',
+                        key: 'value',
+                        render: (value, record) => {
+                          if (_.isEmpty(value)) {
+                            return '-';
+                          }
+                          if (record.name === 'allowed_tools' && _.includes(value, ' ')) {
+                            return _.map(_.split(value, ' '), (item) => {
+                              return <Tag key={item}>{item}</Tag>;
+                            });
+                          }
+                          return value;
+                        },
+                      },
+                    ]}
+                    pagination={false}
+                    bordered={false}
+                  />
+                </Collapse.Panel>
+              </Collapse>
+            </div>
           </div>
         </div>
       </PageLayout>

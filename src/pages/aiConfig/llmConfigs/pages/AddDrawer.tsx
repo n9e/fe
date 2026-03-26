@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Drawer, Form, message, Space } from 'antd';
+import { Button, Drawer, Form, Modal, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { NS } from '../constants';
@@ -18,6 +18,8 @@ export default function AddDrawer(props: Props) {
   const { visible, onOk, onClose } = props;
   const [form] = Form.useForm();
 
+  const [testLoading, setTestLoading] = React.useState(false);
+
   return (
     <Drawer
       width={700}
@@ -29,16 +31,35 @@ export default function AddDrawer(props: Props) {
         <Space>
           <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
           <Button
+            loading={testLoading}
             onClick={() => {
               form.validateFields().then((values) => {
+                setTestLoading(true);
                 testConnection(adjustSubmitValues(values))
-                  .then(() => {
-                    message.success(t('form.test_connection_success'));
-                  })
-                  .catch((res) => {
-                    if (typeof res.err === 'string') {
-                      message.error(`${t('form.test_connection_failure')}: ${res.err}`);
+                  .then((res) => {
+                    if (res.error) {
+                      Modal.error({
+                        title: t('form.test_connection_failure'),
+                        content: (
+                          <div>
+                            <div>Duration: {res.duration_ms} ms</div>
+                            <div>Error: {typeof res.error === 'string' ? res.error : JSON.stringify(res.error)}</div>
+                          </div>
+                        ),
+                      });
+                    } else {
+                      Modal.success({
+                        title: t('form.test_connection_success'),
+                        content: (
+                          <div>
+                            <div>Duration: {res.duration_ms} ms</div>
+                          </div>
+                        ),
+                      });
                     }
+                  })
+                  .finally(() => {
+                    setTestLoading(false);
                   });
               });
             }}

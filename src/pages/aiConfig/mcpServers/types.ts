@@ -25,3 +25,8 @@ export type FormValues = {
   url: string;
   headers?: { key: string; value: string }[];
 };
+
+export interface Tool {
+  name: string;
+  description: string;
+}
