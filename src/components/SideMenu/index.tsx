@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState, useContext } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -29,6 +29,30 @@ const calcUrlPath = (url: string) => {
   return urlPath;
 };
 
+/** 侧栏展开宽度（px），持久化 localStorage */
+const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx';
+const SIDE_MENU_MIN_WIDTH = 170;
+const SIDE_MENU_MAX_WIDTH = 400;
+
+function clampSideMenuWidth(px: number): number {
+  return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));
+}
+
+function readInitialSideMenuWidth(): number {
+  try {
+    const raw = localStorage.getItem(SIDE_MENU_WIDTH_STORAGE_KEY);
+    if (raw != null) {
+      const n = Number(raw);
+      if (Number.isFinite(n)) return clampSideMenuWidth(n);
+    }
+    const lang = localStorage.getItem('i18nextLng') || 'zh_CN';
+    const def = lang === 'en_US' || lang === 'ru_RU' ? 250 : 172;
+    return clampSideMenuWidth(def);
+  } catch {
+    return 172;
+  }
+}
+
 interface SideMenuProps {
   topExtra?: React.ReactElement;
   defaultLogos?: DefaultLogos;
@@ -38,7 +62,7 @@ interface SideMenuProps {
 }
 
 const SideMenu = (props: SideMenuProps) => {
-  const { i18n } = useTranslation('sideMenu');
+  const { i18n, t } = useTranslation('sideMenu');
   const { darkMode, perms, installTs } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
   if (darkMode) {
@@ -62,7 +86,10 @@ const SideMenu = (props: SideMenuProps) => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
   const [collapsedHover, setCollapsedHover] = useState<boolean>(false);
+  const [menuWidthPx, setMenuWidthPx] = useState<number>(readInitialSideMenuWidth);
+  const [isResizingMenu, setIsResizingMenu] = useState(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
+  const resizeActiveRef = useRef(false);
   const isCustomBg = sideMenuBgMode !== 'light';
   const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
   const [menus, setMenus] = useState<MenuItem[]>([]);
@@ -202,7 +229,46 @@ const SideMenu = (props: SideMenuProps) => {
 
   const hideDeprecatedMenus = installTs > V8_BETA_14_TS;
   const menuList = getMenuList(embeddedProductMenu, hideDeprecatedMenus);
-  const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDE_MENU_WIDTH_STORAGE_KEY, String(menuWidthPx));
+    } catch {
+      /* ignore */
+    }
+  }, [menuWidthPx]);
+
+  const onResizeHandleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (collapsed && !collapsedHover) return;
+      e.preventDefault();
+      e.stopPropagation();
+      resizeActiveRef.current = true;
+      setIsResizingMenu(true);
+      const startX = e.clientX;
+      const startW = menuWidthPx;
+      const onMove = (ev: MouseEvent) => {
+        if (!resizeActiveRef.current) return;
+        const delta = ev.clientX - startX;
+        setMenuWidthPx(clampSideMenuWidth(startW + delta));
+      };
+      const onUp = () => {
+        resizeActiveRef.current = false;
+        setIsResizingMenu(false);
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.body.style.removeProperty('cursor');
+        document.body.style.removeProperty('user-select');
+      };
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    },
+    [collapsed, collapsedHover, menuWidthPx],
+  );
+
+  const expandedMenuWidth = collapsedHover ? menuWidthPx : collapsed ? 64 : menuWidthPx;
 
   return (
     <div
@@ -220,14 +286,30 @@ const SideMenu = (props: SideMenuProps) => {
       >
         <div
           className={cn(
-            'z-20 flex h-full select-none flex-col justify-between border-0 border-r border-solid transition-width',
-            collapsed ? 'w-[64px]' : uncollapsedWidth,
-            collapsedHover ? `absolute ${uncollapsedWidth} shadow-mf` : '',
+            'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid',
+            !isResizingMenu && 'transition-[width] duration-200 ease-out',
+            collapsedHover ? 'absolute left-0 shadow-mf' : '',
             !IS_ENT ? 'border-fc-300' : '',
           )}
-          style={{ background: sideMenuBgColor, borderColor: 'var(--fc-border-color)' }}
+          style={{
+            width: expandedMenuWidth,
+            minWidth: expandedMenuWidth,
+            maxWidth: expandedMenuWidth,
+            background: sideMenuBgColor,
+            borderColor: isCustomBg ? 'var(--fc-border-color)' : 'var(--fc-sidemenu-border)',
+          }}
         >
-          <div className='flex flex-1 flex-col justify-between gap-8 overflow-hidden'>
+          {(!collapsed || collapsedHover) && (
+            <div
+              role='separator'
+              aria-orientation='vertical'
+              aria-label={t('resizeWidth')}
+              title={t('resizeWidth')}
+              className={cn('absolute right-0 top-0 z-30 h-full w-1 cursor-col-resize touch-none', 'hover:bg-[var(--fc-text-link)]/25 active:bg-[var(--fc-text-link)]/35')}
+              onMouseDown={onResizeHandleMouseDown}
+            />
+          )}
+          <div className='flex flex-1 flex-col justify-between gap-1 overflow-hidden'>
             <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
             <ScrollArea className='-mr-2 flex-1'>
               <MenuList

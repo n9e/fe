@@ -1,4 +1,5 @@
 const ja_JP = {
+  resizeWidth: 'ドラッグしてサイドバー幅を変更',
   quickJump: 'クイックジャンプ',
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',
@@ -59,6 +60,12 @@ const ja_JP = {
     alert_servers: 'アラートエンジン',
     about: '製品について',
     license_management: 'ライセンス管理',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 

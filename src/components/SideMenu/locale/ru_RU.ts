@@ -1,4 +1,5 @@
 const ru_RU = {
+  resizeWidth: 'Перетащите, чтобы изменить ширину панели',
   quickJump: 'Быстрый переход',
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',
@@ -59,6 +60,12 @@ const ru_RU = {
     alert_servers: 'Система оповещений',
     about: 'О продукте',
     license_management: 'Управление лицензиями',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 

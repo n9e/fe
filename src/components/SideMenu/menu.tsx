@@ -11,6 +11,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'infrastructure',
       label: 'menu.infrastructure',
+      section: 'infrastructure',
       icon: <IconFont type='icon-Menu_Infrastructure' />,
       children: [
         {
@@ -22,8 +23,30 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
+      key: 'integrations',
+      label: 'menu.integrations',
+      section: 'infrastructure',
+      icon: <IconFont type='icon-shujujicheng' />,
+      children: [
+        {
+          key: '/datasources',
+          label: 'menu.data_source',
+        },
+        {
+          key: '/components',
+          label: 'menu.built_in_components',
+        },
+        {
+          key: '/embedded-products',
+          label: 'menu.embedded_products',
+        },
+        ...embeddedProductMenu,
+      ],
+    },
+    {
       key: 'explorer',
       label: 'menu.explorer',
+      section: 'observability',
       icon: <IconFont type='icon-IndexManagement1' />,
       children: [
         {
@@ -52,6 +75,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'monitors',
       label: 'menu.monitors',
+      section: 'analysis',
       icon: <IconFont type='icon-Menu_AlarmManagement' />,
       children: [
         {
@@ -96,6 +120,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'notification',
       label: 'menu.notification',
+      section: 'analysis',
       icon: <NotificationFilled />,
       children: [
         {
@@ -127,28 +152,9 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
-      key: 'integrations',
-      label: 'menu.integrations',
-      icon: <IconFont type='icon-shujujicheng' />,
-      children: [
-        {
-          key: '/datasources',
-          label: 'menu.data_source',
-        },
-        {
-          key: '/components',
-          label: 'menu.built_in_components',
-        },
-        {
-          key: '/embedded-products',
-          label: 'menu.embedded_products',
-        },
-        ...embeddedProductMenu,
-      ],
-    },
-    {
       key: 'organization',
       label: 'menu.organization',
+      section: 'platform',
       icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
       children: [
         {
@@ -168,6 +174,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'setting',
       label: 'menu.setting',
+      section: 'platform',
       icon: <IconFont type='icon-Menu_SystemInformation' />,
       children: [
         {

@@ -1,4 +1,5 @@
 const zh_CN = {
+  resizeWidth: '拖拽调整侧栏宽度',
   quickJump: '快捷跳转',
   quickOpenClose: '打开/关闭',
   quickSearchPlaceholder: '输入内容以检索...',
@@ -59,6 +60,12 @@ const zh_CN = {
     alert_servers: '告警引擎',
     about: '关于产品',
     license_management: '证书管理',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 export default zh_CN;

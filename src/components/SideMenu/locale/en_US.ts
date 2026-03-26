@@ -1,4 +1,5 @@
 const en_US = {
+  resizeWidth: 'Drag to resize sidebar',
   quickJump: 'Quick jump',
   quickOpenClose: 'Open/Close',
   quickSearchPlaceholder: 'Search...',
@@ -60,6 +61,12 @@ const en_US = {
     alert_servers: 'Alerting engines',
     about: 'About',
     license_management: 'License Management',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 export default en_US;

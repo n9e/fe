@@ -1,4 +1,5 @@
 const zh_HK = {
+  resizeWidth: '拖拽調整側欄寬度',
   quickJump: '快捷跳轉',
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
@@ -58,6 +59,12 @@ const zh_HK = {
     alert_servers: '告警引擎',
     about: '關於產品',
     license_management: '證書管理',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 
