@@ -39,12 +39,12 @@ export default function FormCpt(props: Props) {
           </Form.Item>
         </Col>
         <Col flex='none'>
-          <Form.Item label={t('use_case')} name='use_case' rules={[{ required: true }]} initialValue='ai-chat'>
+          <Form.Item label={t('use_case')} name='use_case' rules={[{ required: true }]} initialValue='chat'>
             <Select
               options={[
                 {
                   label: 'AI Chat',
-                  value: 'ai-chat',
+                  value: 'chat',
                 },
               ]}
             />

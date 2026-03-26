@@ -1,71 +1,47 @@
 const en_US = {
-  "add": "Add",
-  "aiBtn": "AI Assistant FlashAI",
-  "cancel": "Cancel",
-  "closeTips": "The modification is not submitted, do you want to give up the modification?",
-  "confirm": "Confirm",
-  "dashboard": "Dashboard",
-  "delete": "Delete",
-  "deleteConfirm": "Are you sure you want to delete this knowledge base?",
-  "deleteSuccess": "Delete successfully",
-  "edit": "Edit",
-  "firemap": "Firemap",
-  "header": {
-    "addKnowledge": "Add Knowledge Base",
-    "close": "Close",
-    "currentSession": "Current Session",
-    "editKnowledge": "Edit Knowledge Base",
-    "foldScreen": "Fold Screen",
-    "fullScreen": "Full Screen",
-    "historyIcon": "History Session",
-    "knowledgeIcon": "Knowledge Base",
-    "newIcon": "New Session",
-    "title": "FlashAI"
+  toolbar: {
+    current_chat: 'Current Chat',
+    new_chat: 'New Chat',
+    history: 'Chat History',
   },
-  "initPage": {
-    "goConfig": "Go to configuration",
-    "hello": "Hello, I am",
-    "highlight": "FlashAI",
-    "nodata": "No available models"
+  history: {
+    untitled: 'New Chat',
+    delete_confirm: 'Delete this conversation?',
+    empty: 'No conversation history',
   },
-  "knowledgeBase": {
-    "createAt": "Create Time",
-    "form": {
-      "businessPlaceholder": "Please select the business line",
-      "dashboardPlaceholder": "Please select the dashboard",
-      "dataPlaceholder": "Please enter the knowledge base content",
-      "dataTips1": "Knowledge base is used to supplement business background information, improve the accuracy of AI analysis.",
-      "dataTips2": "For example, knowledge base can be used to explain the business meaning of indicators, describe the dependency relationship of firemap cards, or supplement historical fault records and fault processing processes.",
-      "dataTips3": "When AI analysis is performed, the model will refer to the information in the knowledge base to optimize the analysis conclusion.",
-      "namePlaceholder": "Please enter the knowledge base name",
-      "step1Title": "Knowledge Base Name",
-      "step2Title": "Effective Scope",
-      "step3Title": "Knowledge Base Content"
+  input: {
+    placeholder: 'Ask a question. Press Enter to send, Shift + Enter for a new line',
+  },
+  query: {
+    title: 'Query',
+    copied: 'Query copied',
+    copy: 'Copy',
+    execute: 'Run Query',
+    execute_disabled: 'Execution callback is not provided. Copy only.',
+  },
+  action: {
+    query_generator: 'Generate Query',
+  },
+  message: {
+    generating: 'Generating reply...',
+    hint: 'Hint',
+    stopped: 'Generation stopped',
+    request_failed: 'Request failed',
+    cancelled: 'This reply has been cancelled.',
+    retry_later: 'Please try again later.',
+    empty_response: 'No reply content',
+    thinking: 'Thinking',
+    unsupported_type: 'Unsupported content type: {{type}}',
+  },
+  empty: {
+    greeting_prefix: 'Hello, I am',
+  },
+  customContentRenderer: {
+    query: {
+      btn_copy: 'Copy',
+      btn_run: 'Run Query',
     },
-    "name": "Name",
-    "operation": "Operation",
-    "searchPlaceholder": "Please enter the name to search",
-    "target": "Effective Scope",
-    "updateAt": "Update Time",
-    "updateUser": "Update User"
   },
-  "messageList": {
-    "collect": "Collect",
-    "collectSuccess": "Collect successfully",
-    "copy": "Copy",
-    "dislike": "Dislike",
-    "like": "Like"
-  },
-  "saveSuccess": "Save successfully",
-  "tableTotal": "Total {{total}} items",
-  "userInput": {
-    "delPromptSuccess": "Delete successfully",
-    "maxLength": "Maximum input 32468 characters",
-    "modelTip": "Switch model",
-    "placeholder": "If you have any questions, please ask, shift+enter to line break",
-    "promptTip": "No favorites at the moment",
-    "send": "Send"
-  }
 };
 
 export default en_US;
