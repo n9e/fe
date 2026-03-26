@@ -46,8 +46,8 @@ function SectionHeader(props: { section: NonNullable<IMenuItem['section']>; coll
   return (
     <div
       className={cn(
-        'select-none px-3.5 text-[10px] font-normal uppercase tracking-wider',
-        isFirst ? 'mt-1' : 'mt-6',
+        'select-none px-3.5 pt-4 pb-1.5 text-[10px] font-normal uppercase tracking-[0.12em]',
+        !isFirst && 'mt-6',
         isCustomBg ? 'text-[#e6e6e8]/55' : 'text-[var(--fc-sidemenu-section-title)]',
       )}
     >
@@ -121,26 +121,36 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const collapsedActiveBg = isLight ? 'bg-[var(--fc-sidemenu-item-active-bg)]' : props.isCustomBg ? 'bg-gray-200/20' : 'bg-[#E0E2EB]';
 
+  const submenuOpen = isExpand && !collapsed && visibleChildren.length > 0;
+
   return (
     <div className='w-full'>
       <div
         onClick={() => setIsExpand(!isExpand)}
         className={cn(
-          'group flex h-9 cursor-pointer items-center justify-between rounded-md px-3.5 transition-colors transition-spacing duration-75',
+          'group flex h-8 cursor-pointer items-center justify-between rounded-md pl-3.5 pr-0 transition-colors transition-spacing duration-75',
           rowHover,
           collapsed && isActive ? collapsedActiveBg : '',
         )}
       >
         <div className='flex min-w-0 flex-1 items-center'>
-          <div className={cn('h-4.5 shrink-0 children-icon2:h-4.5 children-icon2:w-4.5', iconColor, !collapsed ? 'mr-1' : '')}>{item.icon}</div>
-          {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-5 tracking-wide', titleClass)}>{t(item.label)}</div>}
+          <div
+            className={cn(
+              'inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
+              iconColor,
+              !collapsed ? 'mr-2' : '',
+            )}
+          >
+            {item.icon}
+          </div>
+          {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-wide', titleClass)}>{t(item.label)}</div>}
         </div>
         {!collapsed && (
           <RightIcon className={cn('shrink-0 transition', isExpand ? 'rotate-90' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')} style={{ fontSize: 24 }} />
         )}
       </div>
       <div
-        className={cn('mt-1 overflow-hidden transition-height', !collapsed ? 'relative' : 'space-y-1')}
+        className={cn(submenuOpen ? 'mt-1' : 'mt-0', 'overflow-hidden transition-height', !collapsed ? 'relative' : 'space-y-0')}
         style={{
           height: !isExpand || collapsed ? 0 : visibleChildren.length * 28 + (visibleChildren.length - 1) * 4,
         }}
@@ -148,7 +158,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         {!collapsed && (
           <div
             className={cn(
-              'pointer-events-none absolute bottom-0 left-[20px] top-0 z-0 w-px',
+              'pointer-events-none absolute bottom-0 left-[22px] top-0 z-0 w-px',
               isLight && 'bg-fc-300/80',
               !isLight && props.isCustomBg && isBgBlack && 'bg-fc-500/30',
               !isLight && props.isCustomBg && !isBgBlack && 'bg-fc-300/30',
@@ -157,7 +167,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
             aria-hidden
           />
         )}
-        <div className={cn(!collapsed ? 'relative z-[1] flex flex-col gap-1 pl-[25px]' : 'space-y-1')}>
+        <div className={cn(!collapsed ? 'relative z-[1] flex flex-col gap-1 pl-[30px]' : 'space-y-0')}>
           {visibleChildren.map((c) => {
             if (c.pathType === 'absolute') {
               return (
@@ -259,7 +269,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         isSubTreeLayout ? 'h-[28px] rounded-[8px]' : 'h-9 rounded-md',
         isSubTreeLayout
           ? cn(
-              'mx-1.5 w-[calc(100%-0.75rem)] max-w-full min-w-0 pr-1.5',
+              'ml-1.5 mr-0 w-[calc(100%-0.75rem)] max-w-full min-w-0 pr-0',
               isLight && isActive && 'bg-[var(--fc-sidemenu-item-active-bg)] hover:bg-[var(--fc-sidemenu-item-active-bg)]',
               isLight && !isActive && 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]',
               isBlueTheme && isActive && 'bg-[#EEF6FE] hover:bg-[#EEF6FE]',
@@ -278,7 +288,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       onClick={() => onClick?.(item.key)}
     >
       {isSubTreeLayout ? (
-        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-0.5' aria-hidden>
+        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-2' aria-hidden>
           <span
             className={cn(
               'h-4 w-[3px] shrink-0 rounded-full',
@@ -301,7 +311,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       ) : !isSub ? (
         <div
           className={cn(
-            'h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
+            'inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
             isLight
               ? isActive
                 ? 'text-[var(--fc-sidemenu-item-active-text)]'
@@ -322,7 +332,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-5 tracking-wide', textColor)}>
+        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-wide', textColor)}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -378,16 +388,24 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
       onClick={() => onClick?.(item.key)}
     >
       {isSubTreeLayout ? (
-        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-0.5' aria-hidden>
+        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-2' aria-hidden>
           <span className='h-4 w-[3px] shrink-0 rounded-full bg-transparent' />
         </span>
       ) : !isSub ? (
-        <div className={cn('h-4.5 children-icon2:h-4.5 children-icon2:w-4.5', !collapsed ? 'mr-4' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')}>{item.icon}</div>
+        <div
+          className={cn(
+            'inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
+            !collapsed ? 'mr-4' : '',
+            isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '',
+          )}
+        >
+          {item.icon}
+        </div>
       ) : (
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-5 tracking-wide')}>
+        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-wide')}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -439,19 +457,18 @@ export default function MenuList(
           >
             <div
               className={cn(
-                'mr-1 h-4.5 children-icon2:h-4.5 children-icon2:w-4.5',
+                'mr-1 inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
                 isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
               {<IconFont type='icon-ic_search' />}
             </div>
 
-            <div className='overflow-hidden truncate text-[13px] leading-5 tracking-wide'>{t('quickJump')} </div>
+            <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-wide'>{t('quickJump')} </div>
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}
-        {/* <div className={cn('my-2 h-px w-full', isLight ? 'bg-[var(--fc-sidemenu-border)]' : props.isCustomBg ? 'bg-white/10' : 'bg-fc-400')}></div> */}
-        <div className='space-y-1'>
+        <div className='space-y-0'>
           {chunks.map((chunk, chunkIndex) => (
             <React.Fragment key={`${chunk.section ?? 'none'}-${chunkIndex}`}>
               {chunk.section ? <SectionHeader section={chunk.section} collapsed={props.collapsed} isCustomBg={props.isCustomBg} isFirst={chunkIndex === 0} /> : null}
