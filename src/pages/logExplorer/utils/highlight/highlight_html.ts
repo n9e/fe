@@ -7,6 +7,12 @@ interface HighlightPart {
   highlighted: boolean;
 }
 
+interface HighlightSegment {
+  text: string;
+  beforeText: string;
+  afterText: string;
+}
+
 function getFieldText(fieldValue: string | number | boolean | object | null | undefined) {
   if (fieldValue === null || fieldValue === undefined) {
     return '';
@@ -68,6 +74,78 @@ function parseHighlightParts(highlight: string): HighlightPart[] {
   return parts;
 }
 
+function getHighlightSegments(highlights: string[] | undefined | null): HighlightSegment[] {
+  if (!highlights || highlights.length === 0) {
+    return [];
+  }
+
+  return highlights.flatMap((highlight) => {
+    const parts = parseHighlightParts(highlight);
+
+    return parts.flatMap((part, index) => {
+      if (!part.highlighted || !part.text) {
+        return [];
+      }
+
+      const previousPart = parts[index - 1];
+      const nextPart = parts[index + 1];
+
+      return {
+        text: part.text,
+        beforeText: previousPart && !previousPart.highlighted ? previousPart.text : '',
+        afterText: nextPart && !nextPart.highlighted ? nextPart.text : '',
+      };
+    });
+  });
+}
+
+function getContextSuffix(text: string, size = 24) {
+  return text.slice(Math.max(0, text.length - size));
+}
+
+function getContextPrefix(text: string, size = 24) {
+  return text.slice(0, size);
+}
+
+function isContextCompatible(candidateContext: string, highlightContext: string, position: 'before' | 'after') {
+  if (!highlightContext || !candidateContext) {
+    return true;
+  }
+
+  if (position === 'before') {
+    return candidateContext.endsWith(highlightContext) || highlightContext.endsWith(candidateContext);
+  }
+
+  return candidateContext.startsWith(highlightContext) || highlightContext.startsWith(candidateContext);
+}
+
+function hasContextualMatch(candidateText: string, segment: HighlightSegment) {
+  let searchStart = 0;
+
+  while (searchStart <= candidateText.length) {
+    const matchIndex = candidateText.indexOf(segment.text, searchStart);
+
+    if (matchIndex === -1) {
+      return false;
+    }
+
+    const beforeContext = getContextSuffix(segment.beforeText);
+    const afterContext = getContextPrefix(segment.afterText);
+    const beforeCandidate = candidateText.slice(0, matchIndex);
+    const afterCandidate = candidateText.slice(matchIndex + segment.text.length);
+    const beforeMatched = isContextCompatible(beforeCandidate, beforeContext, 'before');
+    const afterMatched = isContextCompatible(afterCandidate, afterContext, 'after');
+
+    if (beforeMatched || afterMatched) {
+      return true;
+    }
+
+    searchStart = matchIndex + segment.text.length;
+  }
+
+  return false;
+}
+
 export function getHighlightFragments(highlights: string[] | undefined | null): string[] {
   if (!highlights || highlights.length === 0) {
     return [];
@@ -126,10 +204,23 @@ export function getTokenHighlights(
     return undefined;
   }
 
+  const exactFragments = getHighlightFragments(highlights).filter((fragment) => stripHighlightTags(fragment) === tokenText);
+  if (exactFragments.length > 0) {
+    return exactFragments;
+  }
+
   const matchedTokenHighlights = getHighlightFragmentsContainingText(tokenText, highlights);
 
   if (matchedTokenHighlights.length === 0) {
-    return undefined;
+    const contextualHighlights = Array.from(
+      new Set(
+        getHighlightSegments(highlights)
+          .filter((segment) => tokenText.includes(segment.text) && hasContextualMatch(tokenText, segment))
+          .map((segment) => `${highlightTags.pre}${segment.text}${highlightTags.post}`),
+      ),
+    );
+
+    return contextualHighlights.length > 0 ? contextualHighlights : undefined;
   }
 
   return [`${highlightTags.pre}${tokenText}${highlightTags.post}`];

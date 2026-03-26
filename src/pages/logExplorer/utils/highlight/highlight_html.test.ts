@@ -33,6 +33,18 @@ describe('highlight_html helpers', () => {
     expect(getTokenHighlights(fieldValue, highlights, 0, 5)).toEqual([`${highlightTags.pre}12345${highlightTags.post}`]);
   });
 
+  it('highlights partial matches inside a full line when surrounding context matches', () => {
+    const fieldValue = '"description": "数据库连接池耗尽 (Connection pool exhausted)！当前活跃连接 500/500，等待队列长度 1024+"';
+    const highlights = [
+      `e\": \"dev-doris-001\",\n\t"${highlightTags.pre}数据库连接池耗尽${highlightTags.post} (Connection pool exhausted)！当前活跃${highlightTags.pre}连接${highlightTags.post} 500/500，等待队列长度 1024+`,
+    ];
+
+    expect(getTokenHighlights(fieldValue, highlights, 0, fieldValue.length)).toEqual([
+      `${highlightTags.pre}数据库连接池耗尽${highlightTags.post}`,
+      `${highlightTags.pre}连接${highlightTags.post}`,
+    ]);
+  });
+
   it('highlights repeated tokens as long as the token text is contained in highlighted content', () => {
     const fieldValue = 'foo foo';
     const highlights = [`${highlightTags.pre}foo${highlightTags.post} foo`];
