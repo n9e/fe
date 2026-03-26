@@ -86,7 +86,9 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
     displayValue = fieldAttr?.formatMap?.params?.labelTemplate.replace('{{value}}', fieldValue);
   }
 
-  const tokenHighlights = getTokenHighlights(fieldValue, highlight?.[highlightKey], tokenStart, tokenEnd);
+  const topLevelHighlightKey = highlightKey.split('.')[0];
+  const highlightSource = highlight?.[highlightKey] || (topLevelHighlightKey !== highlightKey ? highlight?.[topLevelHighlightKey] : undefined);
+  const tokenHighlights = getTokenHighlights(fieldValue, highlightSource, tokenStart, tokenEnd);
 
   // 可通过 adjustFieldValue 再加工一次
   const adjustedValue = adjustFieldValue ? (

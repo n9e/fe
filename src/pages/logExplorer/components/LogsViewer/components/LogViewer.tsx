@@ -174,7 +174,16 @@ export default function LogView(props: Props) {
                       return customRenderedFieldMap[record.field];
                     }
 
-                    return <LogFieldValue name={record.field} value={val} onTokenClick={onValueFilter} rawValue={rawValue} fieldValueClassName='whitespace-pre-wrap' />;
+                    return (
+                      <LogFieldValue
+                        name={record.field}
+                        value={val}
+                        onTokenClick={onValueFilter}
+                        rawValue={rawValue}
+                        highlight={highlight}
+                        fieldValueClassName='whitespace-pre-wrap'
+                      />
+                    );
                   },
                 },
               ]}
