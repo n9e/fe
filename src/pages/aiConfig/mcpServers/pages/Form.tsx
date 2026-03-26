@@ -7,14 +7,16 @@ import { useTranslation } from 'react-i18next';
 import { SIZE } from '@/utils/constant';
 
 import { NS } from '../constants';
+import ToolsList from './ToolsList';
 
 interface Props {
+  id?: number;
   form: FormInstance;
 }
 
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
-  const { form } = props;
+  const { id, form } = props;
 
   return (
     <Form form={form} layout='vertical'>
@@ -69,6 +71,7 @@ export default function FormCpt(props: Props) {
         </Form.List>
       </Form.Item>
       <Alert message={t('form.help_title')} description={t('form.help_content')} type='info' />
+      {id && <ToolsList id={id} />}
     </Form>
   );
 }
