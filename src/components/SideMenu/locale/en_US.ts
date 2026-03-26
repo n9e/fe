@@ -1,4 +1,5 @@
 const en_US = {
+  resizeWidth: 'Drag to resize sidebar',
   quickJump: 'Quick jump',
   quickOpenClose: 'Open/Close',
   quickSearchPlaceholder: 'Search...',
@@ -65,6 +66,12 @@ const en_US = {
     ai_config_llm_configs: 'LLM Management',
     ai_config_skills: 'Skill Management',
     ai_config_mcp_servers: 'MCP Management',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 export default en_US;

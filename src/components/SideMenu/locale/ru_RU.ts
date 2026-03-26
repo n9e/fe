@@ -1,4 +1,5 @@
 const ru_RU = {
+  resizeWidth: 'Перетащите, чтобы изменить ширину панели',
   quickJump: 'Быстрый переход',
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',
@@ -64,6 +65,12 @@ const ru_RU = {
     ai_config_llm_configs: 'LLM управление',
     ai_config_skills: 'Skill управление',
     ai_config_mcp_servers: 'MCP управление',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 

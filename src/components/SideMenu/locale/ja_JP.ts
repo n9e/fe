@@ -1,4 +1,5 @@
 const ja_JP = {
+  resizeWidth: 'ドラッグしてサイドバー幅を変更',
   quickJump: 'クイックジャンプ',
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',
@@ -64,6 +65,12 @@ const ja_JP = {
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 
