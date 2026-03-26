@@ -28,7 +28,7 @@ import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard, { isEqualEventIds } from './AlertCard';
 import AlertTable from './AlertTable';
-import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
+import { useParamsAiAction } from '@/utils/useHook';
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation(NS);

@@ -27,8 +27,7 @@
     "checkJs": false,
     "sourceMap": true,
     "strictFunctionTypes": false,
-    "strictNullChecks": true,
-    "ignoreDeprecations": "6.0"
+    "strictNullChecks": true
   },
   "ts-node": {
     "esm": true

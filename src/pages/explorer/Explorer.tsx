@@ -65,6 +65,7 @@ interface IProps {
     defaultFormValues?: any;
     setDefaultFormValues?: (query: any) => void;
   };
+  sidebarRef?: React.RefObject<HTMLDivElement>;
 }
 
 function getDefaultDatasourceCate(datasourceList, defaultCate) {
@@ -106,7 +107,7 @@ function omitUndefinedDeep<T>(val: T): T {
 
 const Panel = (props: IProps) => {
   const { t } = useTranslation('explorer');
-  const { type, defaultCate, panelIdx = 0, defaultFormValuesControl } = props;
+  const { type, defaultCate, panelIdx = 0, defaultFormValuesControl, sidebarRef } = props;
   const { datasourceCateOptions, datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
   const [tabKey, setTabKey] = useGlobalState('tabKey');
   const [form] = Form.useForm();
@@ -351,6 +352,7 @@ const Panel = (props: IProps) => {
                       panelIdx={panelIdx}
                       allowReplaceHistory
                       showBuilder={false}
+                      sidebarRef={sidebarRef}
                     />
                   );
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {

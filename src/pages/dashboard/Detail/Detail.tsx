@@ -26,7 +26,7 @@ import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
 import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
 
-import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
+import { useParamsAiAction } from '@/utils/useHook';
 import PageLayout from '@/components/pageLayout';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';

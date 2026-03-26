@@ -1,71 +1,47 @@
 const zh_HK = {
-  "add": "新增",
-  "aiBtn": "AI助手 FlashAI",
-  "cancel": "取消",
-  "closeTips": "修改未提交，是否放棄修改?",
-  "confirm": "確認",
-  "dashboard": "儀表盤",
-  "delete": "刪除",
-  "deleteConfirm": "確定刪除該知識庫?",
-  "deleteSuccess": "刪除成功",
-  "edit": "編輯",
-  "firemap": "滅火圖",
-  "header": {
-    "addKnowledge": "新增知識庫",
-    "close": "關閉",
-    "currentSession": "當前會話",
-    "editKnowledge": "編輯知識庫",
-    "foldScreen": "收起",
-    "fullScreen": "全屏",
-    "historyIcon": "歷史會話",
-    "knowledgeIcon": "知識庫",
-    "newIcon": "新建會話",
-    "title": "FlashAI"
+  toolbar: {
+    current_chat: '當前會話',
+    new_chat: '新建會話',
+    history: '會話歷史',
   },
-  "initPage": {
-    "goConfig": "去配置",
-    "hello": "你好, 我是",
-    "highlight": "FlashAI",
-    "nodata": "暫無可用模型"
+  history: {
+    untitled: '新會話',
+    delete_confirm: '刪除該會話？',
+    empty: '暫無歷史會話',
   },
-  "knowledgeBase": {
-    "createAt": "創建時間",
-    "form": {
-      "businessPlaceholder": "請選擇業務線",
-      "dashboardPlaceholder": "請選擇大盤",
-      "dataPlaceholder": "請輸入知識庫內容",
-      "dataTips1": "知識庫用於補充業務背景信息，提升 AI 分析的準確性。",
-      "dataTips2": "例如知識庫可用于說明指標的業務含義、描述滅火圖卡片依賴關係，或補充歷史故障記錄、故障處理流程等內容。",
-      "dataTips3": "AI 分析時，模型將參考知識庫中的信息，優化分析結論。",
-      "namePlaceholder": "請輸入知識庫名稱",
-      "step1Title": "知識庫名稱",
-      "step2Title": "生效範圍",
-      "step3Title": "知識庫內容"
+  input: {
+    placeholder: '輸入問題，Enter 發送，Shift + Enter 換行',
+  },
+  query: {
+    title: '查詢語句',
+    copied: '已複製查詢語句',
+    copy: '複製',
+    execute: '執行查詢',
+    execute_disabled: '未傳入執行回調，僅支持複製',
+  },
+  action: {
+    query_generator: '生成查詢語句',
+  },
+  message: {
+    generating: '正在生成回覆...',
+    hint: '提示',
+    stopped: '已停止生成',
+    request_failed: '請求失敗',
+    cancelled: '本次回覆已被取消。',
+    retry_later: '請稍後重試。',
+    empty_response: '暫無回覆內容',
+    thinking: '思考過程',
+    unsupported_type: '暫不支持的內容類型：{{type}}',
+  },
+  empty: {
+    greeting_prefix: '你好，我是',
+  },
+  customContentRenderer: {
+    query: {
+      btn_copy: '複製',
+      btn_run: '執行查詢',
     },
-    "name": "名稱",
-    "operation": "操作",
-    "searchPlaceholder": "請輸入名稱搜索",
-    "target": "生效範圍",
-    "updateAt": "更新時間",
-    "updateUser": "更新人"
   },
-  "messageList": {
-    "collect": "收藏",
-    "collectSuccess": "收藏成功",
-    "copy": "複製",
-    "dislike": "點踩",
-    "like": "點讚"
-  },
-  "saveSuccess": "保存成功",
-  "tableTotal": "共 {{total}} 條",
-  "userInput": {
-    "delPromptSuccess": "刪除成功",
-    "maxLength": "最多輸入32468個字符",
-    "modelTip": "切換模型",
-    "placeholder": "有問題，盡管問，shift+enter換行",
-    "promptTip": "暫無收藏",
-    "send": "發送"
-  }
 };
 
 export default zh_HK;
