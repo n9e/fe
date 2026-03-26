@@ -12,9 +12,9 @@ import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
 
-import AiIcon from '@/components/AiChat/AiIcon';
-import AiChat, { IAiChatMessage, IAiChatMessageResponse } from '@/components/AiChat';
-import PromQLCard from '@/components/AiChat/customContentRenderer/PromQLCard';
+import AiIcon from '@/components/AiChatNG/AiIcon';
+import AiChat, { IAiChatMessage, IAiChatMessageResponse } from '@/components/AiChatNG';
+import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
 
 import { queryStringOptions } from '../constants';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
