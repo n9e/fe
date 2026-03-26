@@ -46,7 +46,7 @@ function SectionHeader(props: { section: NonNullable<IMenuItem['section']>; coll
   return (
     <div
       className={cn(
-        'select-none px-3.5 pt-4 pb-1.5 text-[10px] font-normal uppercase tracking-[0.12em]',
+        'select-none px-3.5 pt-4 pb-1 text-[10px] font-normal uppercase tracking-[0.12em]',
         !isFirst && 'mt-6',
         isCustomBg ? 'text-[#e6e6e8]/55' : 'text-[var(--fc-sidemenu-section-title)]',
       )}
@@ -266,10 +266,10 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       to={savedPath || path}
       className={cn(
         'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
-        isSubTreeLayout ? 'h-[28px] rounded-[8px]' : 'h-9 rounded-md',
+        isSubTreeLayout ? 'h-[28px] rounded-[8px]' : 'h-8 rounded-md',
         isSubTreeLayout
           ? cn(
-              'ml-1.5 mr-0 w-[calc(100%-0.75rem)] max-w-full min-w-0 pr-0',
+              'ml-1.5 mr-0 w-[calc(100%-0.375rem)] max-w-full min-w-0 pr-0',
               isLight && isActive && 'bg-[var(--fc-sidemenu-item-active-bg)] hover:bg-[var(--fc-sidemenu-item-active-bg)]',
               isLight && !isActive && 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]',
               isBlueTheme && isActive && 'bg-[#EEF6FE] hover:bg-[#EEF6FE]',
@@ -451,7 +451,7 @@ export default function MenuList(
           <div
             onClick={() => props.quickMenuRef.current.open()}
             className={cn(
-              'group relative flex h-9 cursor-pointer items-center rounded-md px-3.5 transition-colors transition-spacing duration-75',
+              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors transition-spacing duration-75',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
@@ -468,7 +468,7 @@ export default function MenuList(
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}
-        <div className='space-y-0'>
+        <div className='space-y-[2px]'>
           {chunks.map((chunk, chunkIndex) => (
             <React.Fragment key={`${chunk.section ?? 'none'}-${chunkIndex}`}>
               {chunk.section ? <SectionHeader section={chunk.section} collapsed={props.collapsed} isCustomBg={props.isCustomBg} isFirst={chunkIndex === 0} /> : null}
