@@ -457,7 +457,7 @@ export default function MenuList(
           >
             <div
               className={cn(
-                'mr-1 inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
+                'mr-2 inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
                 isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
