@@ -32,7 +32,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { esIndexMode } = useContext(CommonStateContext);
-  const { disabled, defaultFormValuesControl, renderCommonSettings, isOpenSearch } = props;
+  const { tabKey, disabled, defaultFormValuesControl, renderCommonSettings, isOpenSearch } = props;
 
   const form = Form.useFormInstance();
 
@@ -144,7 +144,7 @@ export default function index(props: Props) {
 
   return (
     <>
-      <div className={`h-full ${NAME_SPACE}-explorer-container`}>
+      <div className={`h-full ${NAME_SPACE}-explorer-container explorer-container-${tabKey}`}>
         <Form.Item name='refreshFlag' hidden>
           <div />
         </Form.Item>
@@ -190,6 +190,7 @@ export default function index(props: Props) {
           </SideBar>
           <div className='min-w-0 flex-1'>
             <Main
+              tabKey={tabKey}
               indexData={indexData}
               organizeFields={organizeFields}
               setOrganizeFields={(value) => {

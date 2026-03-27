@@ -20,6 +20,7 @@ import dslBuilder from '../../../utils/dslBuilder';
 import { getHighlightHtml } from '../../../utils/highlight';
 import { Field, Interval } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
+import { getIsAtBottom, scrollToTop } from '../../utils/tableElementMethods';
 import filteredFields, { filterOutBuiltinFields } from '../../utils/filteredFields';
 import { HandleValueFilterParams } from '../../types';
 
@@ -43,6 +44,10 @@ export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
 }
 
 interface Props {
+  tableSelector: {
+    antd: string;
+    rgd: string;
+  };
   indexData: Field[];
   rangeRef: React.MutableRefObject<
     | {
@@ -91,6 +96,7 @@ export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const queryStrRef = useRef<string>('');
   const {
+    tableSelector,
     indexData,
     rangeRef,
     snapRangeRef,
@@ -115,6 +121,8 @@ export default function index(props: Props) {
   const requestId = useMemo(() => _.uniqueId('requestId_'), []);
 
   const [options, setOptions] = useState(getOptionsFromLocalstorage(LOGS_OPTIONS_CACHE_KEY));
+  const pageLoadMode = options.pageLoadMode || 'pagination';
+  const appendRef = useRef<boolean>(false);
 
   const updateOptions = (newOptions, reload?: boolean) => {
     const mergedOptions = {
@@ -125,6 +133,7 @@ export default function index(props: Props) {
     setOptionsToLocalstorage(LOGS_OPTIONS_CACHE_KEY, mergedOptions);
     // 只有在修改了 pageLoadMode 时才重置分页参数
     if (reload) {
+      appendRef.current = false;
       setServiceParams({
         ...serviceParams,
         pageSize: DEFAULT_LOGS_PAGE_SIZE,
@@ -205,17 +214,36 @@ export default function index(props: Props) {
               __n9e_id_n9e__: _.uniqueId('log_id_'),
             };
           });
+          const nextHighlights = _.map(res.list, (item) => item.highlight || {});
+          if (appendRef.current) {
+            appendRef.current = false;
+            const mergedList = _.concat(data?.list || [], newData);
+            const mergedHighlights = _.concat(data?.highlights || [], nextHighlights);
+            return {
+              list: mergedList,
+              total: res.total,
+              hash: _.uniqueId('logs_'),
+              colWidths: calcColWidthByData(mergedList),
+              fields: filterOutBuiltinFields(getFields(mergedList, queryValues.date_field)),
+              highlights: mergedHighlights,
+            };
+          }
+          if (pageLoadMode === 'infiniteScroll') {
+            scrollToTop(tableSelector.antd, tableSelector.rgd);
+          }
+          appendRef.current = false;
           return {
             list: newData,
             total: res.total,
             hash: _.uniqueId('logs_'),
             colWidths: calcColWidthByData(newData),
             fields: filterOutBuiltinFields(getFields(newData, queryValues.date_field)),
-            highlights: _.map(res.list, (item) => item.highlight || {}),
+            highlights: nextHighlights,
           };
         })
         .catch((e: any) => {
           loadTimeRef.current = null;
+          appendRef.current = false;
           return {
             list: [],
             total: 0,
@@ -312,6 +340,7 @@ export default function index(props: Props) {
 
   useEffect(() => {
     if (refreshFlag) {
+      appendRef.current = false;
       const currentServiceParams = getServiceParams();
       if (currentServiceParams.current !== 1) {
         setServiceParams((prev) => ({
@@ -414,6 +443,7 @@ export default function index(props: Props) {
               logsHash={data?.hash}
               fields={data?.fields || []}
               showTopNSettings
+              showPageLoadMode
               options={options}
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}
@@ -515,31 +545,54 @@ export default function index(props: Props) {
                       <span>{loadTimeRef.current} ms</span>
                     </Space>
                   )}
-                  <Pagination
-                    size='small'
-                    total={data?.total}
-                    current={serviceParams.current}
-                    pageSize={serviceParams.pageSize}
-                    onChange={(current, pageSize) => {
-                      fixedRangeRef.current = true;
-                      setServiceParams((prev) => ({
-                        ...prev,
-                        current,
-                        pageSize,
-                      }));
-                    }}
-                    showTotal={(total) => {
-                      return (
-                        <Space>
-                          <span>{t(`${logExplorerNS}:logs.count`)} :</span>
-                          <span>{total}</span>
-                        </Space>
-                      );
-                    }}
-                  />
+                  {pageLoadMode === 'pagination' ? (
+                    <Pagination
+                      size='small'
+                      total={data?.total}
+                      current={serviceParams.current}
+                      pageSize={serviceParams.pageSize}
+                      onChange={(current, pageSize) => {
+                        appendRef.current = false;
+                        fixedRangeRef.current = true;
+                        setServiceParams((prev) => ({
+                          ...prev,
+                          current,
+                          pageSize,
+                        }));
+                      }}
+                      showTotal={(total) => {
+                        return (
+                          <Space>
+                            <span>{t(`${logExplorerNS}:logs.count`)} :</span>
+                            <span>{total}</span>
+                          </Space>
+                        );
+                      }}
+                    />
+                  ) : (
+                    <Space size={4}>
+                      <span>{t(`${logExplorerNS}:logs.count`)} :</span>
+                      <span>{data?.total}</span>
+                    </Space>
+                  )}
                 </Space>
               }
               onOptionsChange={updateOptions}
+              onScrollCapture={() => {
+                if (loading || pageLoadMode !== 'infiniteScroll') return;
+                const isAtBottom = getIsAtBottom(tableSelector.antd, tableSelector.rgd);
+                if (isAtBottom) {
+                  const currentServiceParams = getServiceParams();
+                  if (data && data.list.length < data.total) {
+                    appendRef.current = true;
+                    fixedRangeRef.current = true;
+                    setServiceParams((prev) => ({
+                      ...prev,
+                      current: currentServiceParams.current + 1,
+                    }));
+                  }
+                }
+              }}
               onAddToQuery={handleValueFilter}
               onRangeChange={(range) => {
                 const query = form.getFieldValue('query') || {};

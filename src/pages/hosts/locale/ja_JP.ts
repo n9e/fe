@@ -12,7 +12,7 @@ const ja_JP = {
   other_versions: 'その他のバージョン',
   no_data: 'データなし',
   search_placeholder: 'あいまい検索。複数キーワードはスペースで区切ってください',
-  cores: 'コア',
+  cores: 'Cores',
   tags_popover_title: '{{count}} 個のタグ',
   view_collects: '関連する収集設定を表示',
 
@@ -26,6 +26,11 @@ const ja_JP = {
 		3分以内にハートビートあり: 黄 <1 />
 		3分以上ハートビートなし: 赤
 	`,
+  beat_time_just_now: 'Just now',
+  beat_time_mins_ago_one: '1 min ago',
+  beat_time_mins_ago_other: '{{count}} mins ago',
+  beat_time_hours_ago_one: '1 hour ago',
+  beat_time_hours_ago_other: '{{count}} hours ago',
   mem_util: 'メモリ',
   offset: '時間オフセット',
   offset_tip: 'オフセットの計算ロジックは Nightingale 配備ホストの時刻から Categraf 配備ホストの時刻を差し引きます',

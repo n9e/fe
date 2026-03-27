@@ -12,7 +12,7 @@ const zh_HK = {
   other_versions: '其他版本',
   no_data: '無資料',
   search_placeholder: '模糊搜尋，多個關鍵字請用空格分隔',
-  cores: '核',
+  cores: 'Cores',
   tags_popover_title: '{{count}} 個標籤',
   view_collects: '查看關聯採集配置',
 
@@ -26,6 +26,11 @@ const zh_HK = {
 		3分鐘內有過心跳：黃色 <1 />
 		3分鐘內沒有心跳：紅色
 	`,
+  beat_time_just_now: 'Just now',
+  beat_time_mins_ago_one: '1 min ago',
+  beat_time_mins_ago_other: '{{count}} mins ago',
+  beat_time_hours_ago_one: '1 hour ago',
+  beat_time_hours_ago_other: '{{count}} hours ago',
   mem_util: '記憶體',
   offset: '時間偏移',
   offset_tip: '計算邏輯為用 夜鶯部署機器的時間減去 categraf 部署機器的時間',
