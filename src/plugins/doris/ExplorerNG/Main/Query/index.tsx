@@ -335,6 +335,7 @@ export default function index(props: Props) {
                 datasourceValue: datasourceValue,
                 fieldCacheKey: queryValues?.database + queryValues?.table,
               }}
+              enableLogTextSelectMenu
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
               histogram={histogramData?.data || []}

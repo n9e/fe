@@ -105,6 +105,8 @@ interface Props {
     isIndex: boolean;
     indexName: string;
   };
+  /** 为 true 时字段值不按 delimiter 分词，划选文本后弹出与点击 token 相同的菜单（与分词互斥） */
+  enableLogTextSelectMenu?: boolean;
 }
 
 interface LogsViewerState {
@@ -115,6 +117,7 @@ interface LogsViewerState {
   indexData?: Props['indexData'];
   range?: Props['range'];
   getAddToQueryInfo?: Props['getAddToQueryInfo'];
+  enableLogTextSelectMenu?: boolean;
 }
 export const LogsViewerStateContext = createContext({} as LogsViewerState);
 
@@ -162,6 +165,7 @@ export default function LogsViewer(props: Props) {
     showExistsAction,
     logClusting,
     customLogFieldRender,
+    enableLogTextSelectMenu = false,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -198,6 +202,7 @@ export default function LogsViewer(props: Props) {
         indexData: props.indexData,
         range: props.range,
         getAddToQueryInfo: props.getAddToQueryInfo,
+        enableLogTextSelectMenu,
       }}
     >
       <>
