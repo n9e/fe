@@ -12,7 +12,7 @@ const ru_RU = {
   other_versions: 'Другие версии',
   no_data: 'Нет данных',
   search_placeholder: 'Нечеткий поиск, разделяйте несколько ключевых слов пробелами',
-  cores: 'Ядра',
+  cores: 'Cores',
   tags_popover_title: '{{count}} тегов',
   view_collects: 'Показать связанные конфигурации сбора',
 
@@ -26,6 +26,11 @@ const ru_RU = {
 		Heartbeat в течение 3 минут: Желтый <1 />
 		Нет heartbeat более 3 минут: Красный
 	`,
+  beat_time_just_now: 'Just now',
+  beat_time_mins_ago_one: '1 min ago',
+  beat_time_mins_ago_other: '{{count}} mins ago',
+  beat_time_hours_ago_one: '1 hour ago',
+  beat_time_hours_ago_other: '{{count}} hours ago',
   mem_util: 'Память',
   offset: 'Смещение времени',
   offset_tip: 'Смещение рассчитывается как время развертывания Nightingale хоста минус время развертывания Categraf хоста',
