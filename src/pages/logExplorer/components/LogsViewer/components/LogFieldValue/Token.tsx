@@ -12,6 +12,7 @@ import type { ILogExtract, ILogMappingParams } from '@/pages/log/IndexPatterns/t
 import { parseRange } from '@/components/TimeRangePicker';
 import ExistsIcon from '@/pages/explorer/components/RenderValue/ExistsIcon';
 import { getHighlightHtml, getTokenHighlights } from '@/pages/logExplorer/utils/highlight/highlight_html';
+import { LOG_FIELD_SELECT_POPOVER_CLASS, LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS } from '@/pages/logExplorer/components/LogsViewer/utils/clickAway';
 
 import { toString } from './util';
 import { LogsViewerStateContext } from '../../index';
@@ -64,21 +65,7 @@ interface TokenActionMenuContentProps {
 
 function TokenActionMenuContent(props: TokenActionMenuContentProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const {
-    close,
-    name,
-    fieldValue,
-    fragmentValue,
-    showFragmentFilters,
-    onTokenClick,
-    indexInfo,
-    showExistsAction,
-    relatedLinks,
-    start,
-    end,
-    rawValue,
-    fieldConfig,
-  } = props;
+  const { close, name, fieldValue, fragmentValue, showFragmentFilters, onTokenClick, indexInfo, showExistsAction, relatedLinks, start, end, rawValue, fieldConfig } = props;
 
   return (
     <ul className='ant-dropdown-menu ant-dropdown-menu-root ant-dropdown-menu-vertical ant-dropdown-menu-light'>
@@ -295,7 +282,8 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [anchorRect, setAnchorRect] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
   const [selectedFragment, setSelectedFragment] = useState('');
-  const rootRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<HTMLSpanElement>(null);
+  const rootRef = useRef<HTMLSpanElement>(null);
 
   const relatedLinks = fieldConfig?.linkArr?.filter((item) => (parentKey ? item.field === parentKey : item.field === name));
 
@@ -344,9 +332,15 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
     setPopoverVisible(false);
   }, []);
 
+  const getPopupContainer = useCallback((triggerNode?: HTMLElement) => {
+    const host = triggerNode || hostRef.current;
+    return host?.closest(`.${LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS}`) || host?.closest('.ant-drawer-content') || document.body;
+  }, []);
+
   const handleTextSelectMouseUp = useCallback(() => {
+    const host = hostRef.current;
     const root = rootRef.current;
-    if (!root) return;
+    if (!host || !root) return;
 
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) {
@@ -372,7 +366,11 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       return;
     }
     const rect = range.getBoundingClientRect();
-    setAnchorRect({ left: rect.left, top: rect.bottom });
+    const hostRect = host.getBoundingClientRect();
+    setAnchorRect({
+      left: rect.left - hostRect.left,
+      top: rect.bottom - hostRect.top,
+    });
     setSelectedFragment(text);
     setPopoverVisible(true);
   }, []);
@@ -390,7 +388,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       const t = e.target as Node;
       if (rootRef.current?.contains(t)) return;
       const targetEl = eventTargetToElement(e.target);
-      if (targetEl?.closest('.explorer-origin-field-val-popover')) return;
+      if (targetEl?.closest(`.${LOG_FIELD_SELECT_POPOVER_CLASS}`)) return;
       setPopoverVisible(false);
     };
     document.addEventListener('mousedown', onDocMouseDown, true);
@@ -417,12 +415,8 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   if (interactionMode === 'textSelect') {
     return (
-      <>
-        <div
-          ref={rootRef}
-          className={`inline max-w-full select-text ${fieldValueClassName ?? ''}`}
-          onMouseUp={handleTextSelectMouseUp}
-        >
+      <span ref={hostRef} className='relative inline-block max-w-full align-top'>
+        <span ref={rootRef} className={`inline max-w-full select-text ${fieldValueClassName ?? ''}`} onMouseUp={handleTextSelectMouseUp}>
           <Tooltip
             title={enableTooltip ? <pre className='whitespace-pre-wrap overflow-hidden mb-0 ant-tooltip-max-height-400 overflow-y-auto'>{adjustedValue}</pre> : undefined}
             placement='topLeft'
@@ -440,24 +434,24 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                 }}
               />
             ) : (
-              <div className='inline text-hint m-0 p-0 cursor-text'>{adjustedValue}</div>
+              <span className='inline text-hint m-0 p-0 cursor-text'>{adjustedValue}</span>
             )}
           </Tooltip>
-        </div>
+        </span>
         <Popover
           visible={popoverVisible}
           onVisibleChange={(visible) => {
             setPopoverVisible(visible);
           }}
           trigger='click'
-          overlayClassName='explorer-origin-field-val-popover'
+          overlayClassName={LOG_FIELD_SELECT_POPOVER_CLASS}
           content={menuContent}
-          getPopupContainer={() => document.body}
+          getPopupContainer={getPopupContainer}
         >
           <span
             aria-hidden
             style={{
-              position: 'fixed',
+              position: 'absolute',
               left: anchorRect.left,
               top: anchorRect.top,
               width: 1,
@@ -466,7 +460,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
             }}
           />
         </Popover>
-      </>
+      </span>
     );
   }
 
@@ -479,6 +473,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       trigger={['click']}
       overlayClassName='explorer-origin-field-val-popover'
       content={menuContent}
+      getPopupContainer={getPopupContainer}
     >
       <Tooltip
         title={enableTooltip ? <pre className='whitespace-pre-wrap overflow-hidden mb-0 ant-tooltip-max-height-400 overflow-y-auto'>{adjustedValue}</pre> : undefined}

@@ -14,6 +14,7 @@ import { OnValueFilterParams } from './types';
 import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
 import LogFieldValue from './components/LogFieldValue';
+import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 
 const explorerOriginInlineCellClassName = 'inline-block mr-1 my-[2px] align-top';
 const explorerOriginBreakCellClassName = 'break-all block mr-1 my-[2px]';
@@ -407,7 +408,7 @@ function Raw(props: Props) {
       // 忽略点击发生在 ignore-click-away 内的情况
       // 还需要结合阻止事件冒泡一起使用
       const target = (event && (event as Event).target) as HTMLElement | null;
-      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-ignore-click-away')) {
+      if (shouldIgnoreLogViewerClickAway(target)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭
