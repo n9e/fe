@@ -275,6 +275,9 @@ const SideMenu = (props: SideMenuProps) => {
       id='#tailwind'
       style={{
         display: hideSideMenu ? 'none' : 'flex',
+        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+        fontFeatureSettings: 'normal',
+        WebkitFontSmoothing: 'antialiased',
       }}
     >
       <div
