@@ -5,7 +5,7 @@ import { Col, Form, Select, AutoComplete } from 'antd';
 
 import { NAME_SPACE } from '../../../../constants';
 
-import { EQUAL_OPERATORS, IN_OPERATORS, NULL_OPERATORS, BETWEEN_OPERATORS, LIKE_OPERATORS, MATCH_OPERATORS } from '../constants';
+import { EQUAL_OPERATORS, COMPARISON_OPERATORS, IN_OPERATORS, NULL_OPERATORS, BETWEEN_OPERATORS, LIKE_OPERATORS, MATCH_OPERATORS } from '../constants';
 
 interface Props {
   operator: string;
@@ -115,7 +115,7 @@ export default function FilterConfigValue(props: Props) {
       </>
     );
   }
-  if (_.includes([...EQUAL_OPERATORS, ...LIKE_OPERATORS, ...MATCH_OPERATORS], operator)) {
+  if (_.includes([...EQUAL_OPERATORS, ...COMPARISON_OPERATORS, ...LIKE_OPERATORS, ...MATCH_OPERATORS], operator)) {
     return (
       <Col span={24}>
         <Form.Item
