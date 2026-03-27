@@ -1,7 +1,6 @@
 import React, { useState, useContext, useMemo } from 'react';
 import { Popover, Space, Tooltip } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined, CopyOutlined } from '@ant-design/icons';
-import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import purify from 'dompurify';
@@ -39,9 +38,7 @@ interface Props {
 }
 
 export default function Token(props: Props) {
-  const { indexData, getAddToQueryInfo } = useContext(LogsViewerStateContext);
-
-  if (getAddToQueryInfo && (!indexData || _.isEmpty(indexData))) return null;
+  const { indexData } = useContext(LogsViewerStateContext);
   return <TokenWithContext {...props} indexData={indexData || []} />;
 }
 
@@ -64,6 +61,9 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   const indexInfo = getAddToQueryInfo
     ? useMemo(() => {
+        if (!indexData?.length) {
+          return { isIndex: false, indexName: name };
+        }
         return getAddToQueryInfo({
           parentKey,
           fieldName: name,

@@ -136,14 +136,14 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         <div className='flex min-w-0 flex-1 items-center'>
           <div
             className={cn(
-              'inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
+              'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
               iconColor,
               !collapsed ? 'mr-2' : '',
             )}
           >
             {item.icon}
           </div>
-          {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-wide', titleClass)}>{t(item.label)}</div>}
+          {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-normal', titleClass)}>{t(item.label)}</div>}
         </div>
         {!collapsed && (
           <RightIcon className={cn('shrink-0 transition', isExpand ? 'rotate-90' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')} style={{ fontSize: 24 }} />
@@ -311,7 +311,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       ) : !isSub ? (
         <div
           className={cn(
-            'inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
+            'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
             isLight
               ? isActive
                 ? 'text-[var(--fc-sidemenu-item-active-text)]'
@@ -332,7 +332,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-wide', textColor)}>
+        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-normal', textColor)}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -394,7 +394,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
       ) : !isSub ? (
         <div
           className={cn(
-            'inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
+            'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
             !collapsed ? 'mr-4' : '',
             isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '',
           )}
@@ -405,7 +405,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-wide')}>
+        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-normal')}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -457,14 +457,14 @@ export default function MenuList(
           >
             <div
               className={cn(
-                'mr-2 inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center children-icon2:h-[18px] children-icon2:w-[18px]',
+                'mr-2 inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
                 isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
               {<IconFont type='icon-ic_search' />}
             </div>
 
-            <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-wide'>{t('quickJump')} </div>
+            <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('quickJump')} </div>
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}

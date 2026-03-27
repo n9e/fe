@@ -1,45 +1,46 @@
 ---
-description: Tailwind 优先与 anti-tailwind 使用原则
+description: Tailwind 优先、Less 兜底；避免双写与深层选择器滥用
 globs:
-  - 'fe/src/**/*.{ts,tsx,less,css}'
+  - 'src/**/*.{ts,tsx,less,css}'
 alwaysApply: false
 ---
 
-# Tailwind 使用规则（Tailwind-first + minimal Less）
+# 样式：Tailwind 优先 + 少量 Less
 
-## 目标
+全局约定（颜色变量、最小改动等）见 `.cursor/rules/app.mdc`。
 
-- 页面级业务样式优先使用 Tailwind（布局、间距、字体、圆角、颜色、hover/active）。
-- Less 仅保留少量必须场景，避免样式分散和层级膨胀。
+## 原则
 
-## Tailwind 优先场景
+1. **能直接用 Tailwind 表达的**（布局、间距、排版、圆角、常见交互态）→ 用 Tailwind。
+2. **Tailwind 不划算或做不到的** → 少量 Less/CSS，选择器尽量收束在页面/模块根类名下。
+3. **同一视觉属性**不要同时被 Tailwind 与 Less 争抢（避免难排查的覆盖问题）。
 
-- 组件容器布局：`flex/grid/gap/spacing/align`。
-- 业务 UI 外观：按钮、输入框、文本、标签、状态色。
-- 局部交互态：`hover/focus/disabled`。
-- 与业务强相关、仅在当前组件使用的样式。
+## 优先用 Tailwind
 
-## anti-tailwind（不要强行用 Tailwind）的场景
+- 容器布局：`flex` / `grid` / `gap` / 内外边距 / 对齐。
+- 业务界面：按钮、表单外观、文案层级、状态色（需与主题变量一致时，用已有 Tailwind 主题映射或 CSS 变量类，不硬编码色值）。
+- 局部状态：`hover` / `focus` / `disabled` 等。
+- 仅当前组件使用的展示类样式。
 
-- 需要覆盖第三方组件深层 DOM（例如 `.ant-table-thead > tr > th`）。
-- 需要全局或跨页面复用的样式 token/动画 keyframes。
-- 需要处理浏览器兼容 hack 或复杂选择器（`:has`、多层后代/兄弟组合等）。
+## 用 Less / 普通 CSS 更合适的情况
 
-以上场景优先使用少量 Less，并要求：
+- 覆盖第三方组件内部结构（如 antd 深层节点、复杂表格头）。
+- 全局或跨多页复用的 token、keyframes、无法用工具类清晰表达的动画。
+- 强依赖复杂选择器（深层后代、兄弟组合、兼容向 hack 等）。
 
-- 选择器尽量局部化（挂在页面根类名下）。
-- 不写超长层级链，最多 3 层嵌套优先。
-- 不在 Less 里重复定义已可由 Tailwind 表达的规则。
+Less/CSS 侧要求：
 
-## 落地约束
+- 选择器尽量局部化；嵌套不宜过深（**≤3 层**为宜）。
+- 不复制一套与 Tailwind 等价的冗长规则。
 
-- 新增样式时，先问：是否可用 Tailwind 直接表达？能则不用 Less。
-- 允许在 `className` 使用必要的 antd 定向选择器（如 `[&_.ant-input-affix-wrapper]`）。
-- Tailwind 类超过可读上限时，提炼为局部常量字符串，不回退到大段 Less。
-- 修改现有页面时，优先“增量迁移”：先迁移业务块（如 toolbar、列表项），再迁移公共块。
+## 实践技巧
 
-## 评审检查点
+- 可在 `className` 中使用 antd 定向写法（如 `[&_.ant-input-affix-wrapper]`）以减少裸 Less。
+- 单处 `className` 过长时，抽成本地常量字符串或小组件，**不要**为此回到大段 Less。
+- 改旧页面时优先**增量迁移**：先动当前需求触及的区块（如工具栏、列表行），再逐步收拢公共块。
 
-- 是否出现“Tailwind 与 Less 同时控制同一属性”的冲突？
-- 是否新增了可被 Tailwind 替代的大段 Less？
-- 是否保持视觉一致并通过暗黑/亮色主题变量？
+## 自检
+
+- 是否出现 Tailwind 与 Less **同时控制同一属性**？
+- 是否新增了大段可被 Tailwind 替代的 Less？
+- 明暗主题下视觉是否与现有变量体系一致？
