@@ -32,8 +32,20 @@ import { Item, OperateType } from '../../types';
 import { getList } from '../../services';
 import VersionIcon from './VersionIcon';
 import Tags from './Tags';
+import { formatBeatTimeDisplay } from './formatBeatTimeDisplay';
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
+
+/** Fixed IP cell width sample: "IP " + longest dotted IPv4 */
+const IDENT_IP_V4_MAX_SAMPLE = 'IP 255.255.255.255';
+/** Fixed IP cell width sample: "IP " + long textual IPv6 */
+const IDENT_IP_V6_MAX_SAMPLE = 'IP ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff';
+/** Suffix for meta width: long OS + arch placeholder (cores count + t('cores') prepended in render) */
+const IDENT_META_MAX_SAMPLE_SUFFIX = 'windows aarch64';
+
+function isHostIpLikelyIpv6(hostIp: string): boolean {
+  return hostIp.trim().includes(':');
+}
 
 function Unknown() {
   const { t } = useTranslation(NS);
@@ -348,6 +360,15 @@ export default function List(props: Props) {
                 </Space>
               ),
               render: (ident, record) => {
+                const ipWidthSample = record.host_ip && isHostIpLikelyIpv6(record.host_ip) ? IDENT_IP_V6_MAX_SAMPLE : IDENT_IP_V4_MAX_SAMPLE;
+                const identIpWidth = getTextWidth(ipWidthSample);
+                const identMetaWidth = getTextWidth(`256 ${t('cores')} ${IDENT_META_MAX_SAMPLE_SUFFIX}`) + 20; // 14 的 icon + 间距 + 容错
+                const ipDisplay = record.host_ip ? `IP ${record.host_ip}` : '-';
+                const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
+                const osDisplay = record.os === '' ? '-' : record.os;
+                const archDisplay = record.arch === '' ? '-' : record.arch;
+                const metaTooltipTitle = `${coresDisplay} · ${osDisplay} · ${archDisplay}`;
+
                 return (
                   <div>
                     <div className='flex items-center'>
@@ -355,7 +376,7 @@ export default function List(props: Props) {
                         ident={ident}
                         targetNode={
                           <span
-                            className={classNames('text-main text-l1 font-bold mb-[2px] cursor-pointer hover:underline hover:text-title', {
+                            className={classNames('text-main text-l1 font-medium mb-[2px] cursor-pointer hover:underline hover:text-title', {
                               'text-soft': record.target_up === 0,
                             })}
                           >
@@ -380,26 +401,33 @@ export default function List(props: Props) {
                         </Tooltip>
                       )}
                     </div>
-                    <Space size={4}>
-                      <span>{record.host_ip ? `IP ${record.host_ip}` : '-'}</span>
-                      <Divider type='vertical' />
-                      <span>{record.cpu_num === -1 ? '-' : `${record.cpu_num}${t('cores')}`}</span>
-                      <>
-                        {record.os === '' ? (
-                          '-'
-                        ) : (
-                          <>
-                            <img className='flex' src={`/image/sys_${record.os}.svg`} alt='' />
-                            {record.os}
-                          </>
-                        )}
-                      </>
-                      <span>{record.arch === '' ? '-' : record.arch}</span>
-                      {record.cpu_num === -1 || record.os === '' || record.arch === '' ? (
-                        <Tooltip title={t('unknown_tip')}>
-                          <QuestionCircleOutlined />
+                    <Space size={4} className='flex flex-wrap items-center'>
+                      {record.host_ip ? (
+                        <Tooltip title={ipDisplay}>
+                          <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
+                            {ipDisplay}
+                          </span>
                         </Tooltip>
-                      ) : null}
+                      ) : (
+                        <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
+                          {ipDisplay}
+                        </span>
+                      )}
+                      <Divider type='vertical' />
+                      <Tooltip title={metaTooltipTitle}>
+                        <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
+                          <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
+                          {record.os === '' ? (
+                            <span className='shrink-0'>-</span>
+                          ) : (
+                            <>
+                              <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
+                              <span className='min-w-0 shrink truncate'>{record.os}</span>
+                            </>
+                          )}
+                          <span className='min-w-0 shrink truncate'>{archDisplay}</span>
+                        </div>
+                      </Tooltip>
                       <Divider type='vertical' />
                       <div
                         className={classNames('flex items-center justify-center gap-1 py-1 px-2 rounded-[4px]', {
@@ -499,16 +527,14 @@ export default function List(props: Props) {
             },
             {
               dataIndex: 'beat_time',
-              title: (
-                <Space>
-                  {t('beat_time')}
-                  {/* <Tooltip title={<Trans ns={NS} i18nKey='beat_time_tip' components={{ 1: <br /> }} />}>
-                    <QuestionCircleOutlined />
-                  </Tooltip> */}
-                </Space>
-              ),
+              title: t('beat_time'),
               render: (val, record) => {
-                const minWidth = getTextWidth(t('beat_time')) + 24;
+                const minWidth = Math.max(
+                  getTextWidth(t('beat_time')) + 24,
+                  getTextWidth(t('beat_time_just_now')),
+                  getTextWidth(t('beat_time_mins_ago', { count: 59 })),
+                  getTextWidth(t('beat_time_hours_ago', { count: 23 })),
+                );
                 if (record.cpu_num === -1 || !_.isNumber(val)) {
                   return (
                     <div style={{ minWidth }}>
@@ -520,18 +546,30 @@ export default function List(props: Props) {
                 if (record.target_up === 0) {
                   backgroundColor = 'rgb(var(--fc-fill-5-rgb) / 0.6)';
                 }
+                const nowMs = Date.now();
+                const display = formatBeatTimeDisplay(val, nowMs, t);
+                const absoluteTitle = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
+                const textBlock = (
+                  <div
+                    className={classNames('text-main', {
+                      'text-soft': record.target_up === 0,
+                    })}
+                  >
+                    {display.kind === 'relative' ? (
+                      <div>{display.relativeLabel}</div>
+                    ) : (
+                      <>
+                        <div>{display.absoluteDate}</div>
+                        <div>{display.absoluteTime}</div>
+                      </>
+                    )}
+                  </div>
+                );
                 return (
                   <div style={{ minWidth }}>
-                    <Space size={8} align='start'>
-                      <div className='w-[4px] h-[16px] rounded relative top-[2px]' style={{ backgroundColor }} />
-                      <div
-                        className={classNames('text-main', {
-                          'text-soft': record.target_up === 0,
-                        })}
-                      >
-                        <div>{moment.unix(val).format('YYYY-MM-DD')}</div>
-                        <div>{moment.unix(val).format('HH:mm:ss')}</div>
-                      </div>
+                    <Space size={8} align='center'>
+                      <div className='w-[4px] h-[16px] rounded' style={{ backgroundColor }} />
+                      {display.kind === 'relative' ? <Tooltip title={absoluteTitle}>{textBlock}</Tooltip> : textBlock}
                     </Space>
                   </div>
                 );

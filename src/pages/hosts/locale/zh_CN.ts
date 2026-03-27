@@ -12,7 +12,7 @@ const zh_CN = {
   other_versions: '其他版本',
   no_data: '无数据',
   search_placeholder: '模糊搜索，多个关键词用空格分隔',
-  cores: '核',
+  cores: 'Cores',
   tags_popover_title: '{{count}} 个标签',
   view_collects: '查看关联采集配置',
 
@@ -26,6 +26,11 @@ const zh_CN = {
     3分钟内有过心跳：黄色 <1 />
     3分钟内没有心跳：红色
   `,
+  beat_time_just_now: 'Just now',
+  beat_time_mins_ago_one: '1 min ago',
+  beat_time_mins_ago_other: '{{count}} mins ago',
+  beat_time_hours_ago_one: '1 hour ago',
+  beat_time_hours_ago_other: '{{count}} hours ago',
   mem_util: '内存',
   offset: '时间偏移',
   offset_tip: '计算逻辑为用 夜莺部署机器的时间减去categraf部署机器的时间',
