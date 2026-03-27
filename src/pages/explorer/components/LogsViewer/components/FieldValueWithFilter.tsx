@@ -3,7 +3,6 @@
  */
 
 import React, { useState, useMemo, useContext } from 'react';
-import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Space, Popover, Tooltip } from 'antd';
@@ -26,9 +25,7 @@ interface RenderValueProps {
 }
 
 export default function FieldValueWithFilter({ name, value, onValueFilter, rawValue, enableTooltip }: RenderValueProps) {
-  const { indexData, getAddToQueryInfo } = useContext(LogsViewerStateContext);
-
-  if (getAddToQueryInfo && (!indexData || _.isEmpty(indexData))) return null;
+  const { indexData } = useContext(LogsViewerStateContext);
   return <FieldValueWithFilterContext name={name} value={value} onValueFilter={onValueFilter} rawValue={rawValue} indexData={indexData || []} enableTooltip={enableTooltip} />;
 }
 
@@ -43,6 +40,9 @@ function FieldValueWithFilterContext({ name, value, onValueFilter, rawValue, ind
 
   const indexInfo = getAddToQueryInfo
     ? useMemo(() => {
+        if (!indexData?.length) {
+          return { isIndex: false, indexName: name };
+        }
         return getAddToQueryInfo(name, rawValue || {}, indexData);
       }, [name, JSON.stringify(rawValue?.___raw___), JSON.stringify(indexData)])
     : {
