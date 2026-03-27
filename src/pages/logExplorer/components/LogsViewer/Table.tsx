@@ -10,6 +10,7 @@ import NavigableDrawer from '@/components/NavigableDrawer';
 
 import { NAME_SPACE } from '../../constants';
 import { Field } from '../../types';
+import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 import getColumnsFromFields from './utils/getColumnsFromFields';
 import getFieldsFromTableData from './utils/getFieldsFromTableData';
 import RDGTable from './components/Table';
@@ -154,7 +155,7 @@ function Table(props: Props) {
     (event) => {
       // 忽略点击发生在 log viewer drawer 内的情况
       const target = (event && (event as Event).target) as HTMLElement | null;
-      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-ignore-click-away')) {
+      if (shouldIgnoreLogViewerClickAway(target)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭
