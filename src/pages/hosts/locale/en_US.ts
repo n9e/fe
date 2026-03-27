@@ -26,6 +26,11 @@ const en_US = {
 		Heartbeat within 3 minutes: Yellow <1 />
 		No heartbeat for more than 3 minutes: Red
 	`,
+  beat_time_just_now: 'Just now',
+  beat_time_mins_ago_one: '1 min ago',
+  beat_time_mins_ago_other: '{{count}} mins ago',
+  beat_time_hours_ago_one: '1 hour ago',
+  beat_time_hours_ago_other: '{{count}} hours ago',
   mem_util: 'Memory',
   offset: 'Time Offset',
   offset_tip: 'The offset is calculated as the deployment time of Nightingale host minus the deployment time of Categraf host',
