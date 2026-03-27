@@ -415,8 +415,8 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   if (interactionMode === 'textSelect') {
     return (
-      <span ref={hostRef} className='relative inline-block max-w-full align-top'>
-        <span ref={rootRef} className={`inline max-w-full select-text ${fieldValueClassName ?? ''}`} onMouseUp={handleTextSelectMouseUp}>
+      <span ref={hostRef} className='relative inline-flex max-w-full min-w-0 align-top'>
+        <span ref={rootRef} className={`inline min-w-0 max-w-full break-all select-text ${fieldValueClassName ?? ''}`} onMouseUp={handleTextSelectMouseUp}>
           <Tooltip
             title={enableTooltip ? <pre className='whitespace-pre-wrap overflow-hidden mb-0 ant-tooltip-max-height-400 overflow-y-auto'>{adjustedValue}</pre> : undefined}
             placement='topLeft'
@@ -434,7 +434,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                 }}
               />
             ) : (
-              <span className='inline text-hint m-0 p-0 cursor-text'>{adjustedValue}</span>
+              <span className='inline break-all text-hint m-0 p-0 cursor-text'>{adjustedValue}</span>
             )}
           </Tooltip>
         </span>
