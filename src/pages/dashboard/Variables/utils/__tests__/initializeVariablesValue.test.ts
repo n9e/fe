@@ -142,3 +142,92 @@ describe('textbox variable empty value', () => {
     expect(formatString('$input', data)).toBe('');
   });
 });
+
+describe('initializeVariablesValue normalization', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('converts multi string value to array', () => {
+    const result = initializeVariablesValue(
+      [
+        {
+          name: 'region',
+          definition: '',
+          type: 'query',
+          multi: true,
+          datasource: { cate: 'prometheus' },
+        } as any,
+      ],
+      { region: 'bj' },
+      { dashboardId: 1 },
+    );
+    expect(result[0].value).toEqual(['bj']);
+  });
+
+  test('converts single array value to first item', () => {
+    const result = initializeVariablesValue(
+      [
+        {
+          name: 'region',
+          definition: '',
+          type: 'query',
+          multi: false,
+          datasource: { cate: 'prometheus' },
+        } as any,
+      ],
+      { region: ['bj', 'sh'] },
+      { dashboardId: 1 },
+    );
+    expect(result[0].value).toBe('bj');
+  });
+
+  test('parses datasource numeric value from string', () => {
+    const result = initializeVariablesValue(
+      [
+        {
+          name: 'ds',
+          definition: 'prometheus',
+          type: 'datasource',
+          datasource: { cate: 'prometheus' },
+        } as any,
+      ],
+      { ds: '12' },
+      { dashboardId: 1 },
+    );
+    expect(result[0].value).toBe(12);
+  });
+
+  test('treats empty string as undefined for non-textbox variables', () => {
+    const result = initializeVariablesValue(
+      [
+        {
+          name: 'env',
+          definition: 'prod,dev',
+          type: 'custom',
+          datasource: { cate: 'prometheus' },
+        } as any,
+      ],
+      { env: '' },
+      { dashboardId: 1 },
+    );
+    expect(result[0].value).toBeUndefined();
+  });
+
+  test('does not read localStorage when __variable_value_fixed is present', () => {
+    localStorage.setItem('dashboard_v6_1_region', 'sh');
+    const result = initializeVariablesValue(
+      [
+        {
+          name: 'region',
+          definition: '',
+          type: 'query',
+          datasource: { cate: 'prometheus' },
+        } as any,
+      ],
+      { __variable_value_fixed: 'true' },
+      { dashboardId: 1 },
+    );
+    expect(result[0].value).toBeUndefined();
+  });
+});

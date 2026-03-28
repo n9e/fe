@@ -71,6 +71,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import VariableConfigs from '@/pages/variableConfigs';
 import SiteSettings from '@/pages/siteSettings';
+import DashboardVariablesE2EHarness from '@/pages/__e2e__/dashboardVariables/Harness';
 import { dynamicPackages, Entry, dynamicPages } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
@@ -150,6 +151,7 @@ export default function Content() {
   return (
     <div className='content'>
       <Switch>
+        {import.meta.env.MODE === 'e2e' && <Route path='/__e2e__/dashboard-variables' component={DashboardVariablesE2EHarness} exact />}
         <Route path='/demo' component={Demo} />
         <Route path='/overview' component={Overview} />
         <Route path='/login' component={Login} exact />

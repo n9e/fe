@@ -141,7 +141,7 @@ export default function adjustData(
           }
         }
       }
-      result[variable.name] = joinedValue;
+      result[variable.name] = joinedValue === undefined || joinedValue === null ? '' : joinedValue;
       return result;
     },
     {},
