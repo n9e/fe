@@ -32,7 +32,7 @@ export default function ResourcesTable(props: Props) {
     <>
       <div className='flex justify-between fc-toolbar mb-2'>
         <div className='text-main text-l1'>{t('resource_files')}</div>
-        <Upload
+        {/* <Upload
           name='file'
           showUploadList={false}
           accept='.md,.txt,.json,.yaml,.yml,.csv'
@@ -51,7 +51,7 @@ export default function ResourcesTable(props: Props) {
           <Button size='small' icon={<UploadOutlined />}>
             {t('upload_file')}
           </Button>
-        </Upload>
+        </Upload> */}
       </div>
       <Table
         className='fc-table'

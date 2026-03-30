@@ -10,7 +10,7 @@ import PageLayout from '@/components/pageLayout';
 import Markdown from '@/components/Markdown';
 
 import { NS } from '../constants';
-import { Item, getList, importItem, putItem, deleteItem } from '../services';
+import { Item, getList, importItem, importItemToUpdate, putItem, deleteItem } from '../services';
 import AddModal from './AddModal';
 import EditModal from './EditModal';
 import ResourcesTable from './ResourcesTable';
@@ -72,13 +72,12 @@ export default function List() {
                       <Menu.Item key='upload'>
                         <Upload
                           name='file'
-                          action='/api/n9e/ai-skills/import'
                           showUploadList={false}
-                          accept='.md'
+                          accept='.zip,.tar.gz,.tgz'
                           customRequest={(options) => {
                             const { file } = options;
                             try {
-                              importItem(file as File).then((result: any) => {
+                              importItem(file as File).then(() => {
                                 run();
                                 message.success(t('upload_file_success'));
                               });
@@ -145,7 +144,7 @@ export default function List() {
                       <Upload
                         name='file'
                         showUploadList={false}
-                        accept='.md'
+                        accept='.zip,.tar.gz,.tgz'
                         customRequest={(options) => {
                           const { file } = options;
                           try {
@@ -225,18 +224,50 @@ export default function List() {
                     }
                   }}
                 />
-                <Button
-                  size='small'
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    if (activeData?.id) {
-                      setEditModalState({
-                        id: activeData?.id,
-                        visible: true,
-                      });
-                    }
-                  }}
-                />
+
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item
+                        key='manual'
+                        onClick={() => {
+                          if (activeData?.id) {
+                            setEditModalState({
+                              id: activeData?.id,
+                              visible: true,
+                            });
+                          }
+                        }}
+                      >
+                        {t('edite_menu_1')}
+                      </Menu.Item>
+                      <Menu.Item key='upload'>
+                        <Upload
+                          name='file'
+                          showUploadList={false}
+                          accept='.zip,.tar.gz,.tgz'
+                          customRequest={(options) => {
+                            const { file } = options;
+                            try {
+                              if (activeData?.id) {
+                                importItemToUpdate(activeData.id, file as File).then(() => {
+                                  run();
+                                  message.success(t('upload_file_success'));
+                                });
+                              }
+                            } catch (error) {
+                              message.error(t('upload_file_error'));
+                            }
+                          }}
+                        >
+                          {t('edite_menu_2')}
+                        </Upload>
+                      </Menu.Item>
+                    </Menu>
+                  }
+                >
+                  <Button size='small' icon={<EditOutlined />} />
+                </Dropdown>
                 <Button
                   size='small'
                   icon={<DeleteOutlined />}

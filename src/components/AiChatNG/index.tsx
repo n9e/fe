@@ -13,8 +13,8 @@ export { default as ChatHistoryPage } from './ChatHistory';
 
 import './locale';
 
-export default function AiChat(props: IAiChatProps) {
-  const { className, onChatChange, onError } = props;
+export default function AiChat(props: IAiChatProps & { showClose?: boolean; onClose?: () => void }) {
+  const { className, onChatChange, onError, showClose, onClose } = props;
   const [activeView, setActiveView] = useState<AiChatView>('chat');
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(props.chatId);
 
@@ -38,6 +38,7 @@ export default function AiChat(props: IAiChatProps) {
         <ToolsBar
           selectedChatId={selectedChatId}
           activeView={activeView}
+          showClose={showClose}
           onCurrentChat={() => {
             setActiveView('chat');
           }}
@@ -48,6 +49,7 @@ export default function AiChat(props: IAiChatProps) {
           onViewHistory={() => {
             setActiveView('history');
           }}
+          onClose={onClose}
         />
       </div>
 

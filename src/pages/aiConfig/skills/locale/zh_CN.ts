@@ -3,6 +3,8 @@ const zh_CN = {
   create: '创建 Skill',
   create_menu_1: '手动编写',
   create_menu_2: '上传文件',
+  edite_menu_1: '手动编辑',
+  edite_menu_2: '重新上传',
   resource_files: '资源文件',
   file_name: '文件名',
   file_size: '文件大小',
