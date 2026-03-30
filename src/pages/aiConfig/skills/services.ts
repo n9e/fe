@@ -35,6 +35,15 @@ export const importItem = function (file: File) {
   }).then((res) => res.dat);
 };
 
+export const importItemToUpdate = function (id: number, file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return request(`/api/n9e/ai-skill/${id}/import`, {
+    method: RequestMethod.Put,
+    data: formData,
+  }).then((res) => res.dat);
+};
+
 export const putItem = function (id: number, data: FormValues) {
   return request(`/api/n9e/ai-skill/${id}`, {
     method: RequestMethod.Put,
