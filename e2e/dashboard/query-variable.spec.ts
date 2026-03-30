@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 import getBaseURL from '../utils/getBaseURL';
+import getAuthRequestHeaders from '../utils/getAuthRequestHeaders';
 import loginIfNeeded from '../utils/loginIfNeeded';
 
 const baseURL = getBaseURL();
-const dashboardURL = `${baseURL}/dashboards/104`;
+const dashboardURL = `${baseURL}/dashboards/794`;
 
 test('creates query variable with datasource id 1 and saves', async ({ page }) => {
   test.setTimeout(180_000);
@@ -12,11 +13,14 @@ test('creates query variable with datasource id 1 and saves', async ({ page }) =
     postLoginSelector: '.dashboard-detail-container',
   });
 
-  const dsResp = await page.request.get(`${baseURL}/api/n9e/datasource/brief`);
+  const headers = await getAuthRequestHeaders(page);
+  const dsResp = await page.request.get(`${baseURL}/api/n9e/datasource/brief`, {
+    headers,
+  });
   expect(dsResp.ok()).toBe(true);
   const dsJson = (await dsResp.json()) as any;
-  const ds1 = (dsJson?.dat || []).find((d: any) => d?.id === 1);
-  expect(ds1?.name).toBe('prom');
+  const ds1 = (dsJson?.dat || []).find((d: any) => d?.id === 639);
+  expect(ds1?.name).toBe('vm_cluster');
   expect(ds1?.plugin_type).toBe('prometheus');
 
   await page.locator('.dashboard-detail-container a').filter({ hasText: '添加变量' }).first().click();
@@ -43,7 +47,7 @@ test('creates query variable with datasource id 1 and saves', async ({ page }) =
   await expect(dropdown).toBeVisible();
   await dropdown
     .locator('.ant-select-item-option')
-    .filter({ hasText: /prom[\\s\\S]*default[\\s\\S]*Prometheus/i })
+    .filter({ hasText: /vm_cluster/i })
     .first()
     .click();
 

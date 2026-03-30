@@ -10,6 +10,7 @@ export default async function loginIfNeeded(
   },
 ) {
   const { url, username = 'root', password = 'root', postLoginSelector } = options;
+  const targetPathname = new URL(url).pathname;
 
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   const onLoginPage = await page
@@ -22,7 +23,7 @@ export default async function loginIfNeeded(
     await page.locator('#username').fill(username);
     await page.locator('#password').fill(password);
     await page.locator('form button.ant-btn-primary').click();
-    await page.waitForURL(/\/dashboards\/\d+/, { timeout: 120_000 });
+    await page.waitForURL((currentURL) => currentURL.pathname === targetPathname, { timeout: 120_000 });
     await page.waitForLoadState('domcontentloaded');
   }
 
