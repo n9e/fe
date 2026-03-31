@@ -373,6 +373,18 @@ export default function List() {
                             dataIndex: 'name',
                             key: 'name',
                             width: 120,
+                            render: (name) => {
+                              if (name === 'license') {
+                                return t('form.license');
+                              }
+                              if (name === 'compatibility') {
+                                return t('form.compatibility');
+                              }
+                              if (name === 'allowed_tools') {
+                                return t('form.allowed_tools');
+                              }
+                              return name;
+                            },
                           },
                           {
                             dataIndex: 'value',
