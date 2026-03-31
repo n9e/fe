@@ -65,7 +65,9 @@ export default function Add() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/alert-rules'>
-      <Form initialValues={initialValues} />
+      <div className='n9e h-full overflow-hidden'>
+        <Form initialValues={initialValues} />
+      </div>
     </PageLayout>
   );
 }

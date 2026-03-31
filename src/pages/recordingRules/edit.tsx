@@ -30,7 +30,7 @@ const StrategyEdit: React.FC = () => {
 
   return (
     <PageLayout title={t('title')} showBack>
-      {curStrategy.id && <OperateForm initialValues={curStrategy} type={!isClone ? 1 : 2} />}
+      <div className='n9e h-full overflow-hidden'>{curStrategy.id && <OperateForm initialValues={curStrategy} type={!isClone ? 1 : 2} />}</div>
     </PageLayout>
   );
 };

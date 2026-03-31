@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Space, Tooltip } from 'antd';
-import { PlusOutlined, HistoryOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, HistoryOutlined, CloseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 export type AiChatView = 'chat' | 'history';
@@ -32,7 +32,7 @@ export default function ToolsBar(props: IToolsBarProps) {
       <Tooltip title={t('toolbar.history')}>
         <Button size='small' type='text' icon={<HistoryOutlined />} onClick={onViewHistory} />
       </Tooltip>
-      {showClose && <Button size='small' type='text' icon={<CloseCircleOutlined />} onClick={onClose} />}
+      {showClose && <Button size='small' type='text' icon={<CloseOutlined />} onClick={onClose} />}
     </Space>
   );
 }
