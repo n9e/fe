@@ -314,8 +314,8 @@ const SideMenu = (props: SideMenuProps) => {
                 isCustomBg={isCustomBg}
                 quickMenuRef={quickMenuRef}
                 topExtra={topExtra}
-                onClick={(key) => {
-                  if (collapsed) {
+                onClick={(key, opts) => {
+                  if (collapsed && !opts?.keepCollapsed) {
                     setCollapsed(false);
                     localStorage.setItem('menuCollapsed', '0');
                   }

@@ -1,8 +1,8 @@
 /* 侧边菜单字体渲染对齐 fc-firemap，id 含 # 号须用属性选择器 */
+/* font-family 已在 theme/index.less body 上全局声明，此处仅保留 font-smoothing */
 [id="#tailwind"] aside {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
 }
 
 .quick-menu-modal {
@@ -53,6 +53,71 @@
   .ant-tooltip-arrow {
     display: none !important;
   }
+}
+
+.sidemenu-hover-panel-tooltip {
+  padding-left: 0 !important;
+
+  .ant-tooltip-inner {
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+  }
+
+  .ant-tooltip-arrow {
+    display: none !important;
+  }
+}
+
+.sidemenu-hover-panel {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  min-width: 180px;
+  max-width: 260px;
+  max-height: min(calc(100vh - 16px), 480px);
+  overflow: auto;
+  padding: 6px;
+  color: var(--fc-sidemenu-item-text);
+}
+
+.sidemenu-hover-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+}
+
+.sidemenu-hover-panel-header-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.sidemenu-hover-panel-header-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidemenu-hover-panel-divider {
+  height: 1px;
+  margin: 2px 8px 6px;
+}
+
+.sidemenu-hover-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .quick-start-modal {
