@@ -1,12 +1,13 @@
 import React from 'react';
-import { Button, Drawer, Form, Space, Spin, Modal } from 'antd';
+import { Button, Form, Space, Spin, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
 
 import { NS } from '../constants';
 import { getItem, putItem, testConnection } from '../services';
-import FormCpt from './Form';
 import { adjustFormValues, adjustSubmitValues } from '../utils/adjustFormValues';
+import FormCpt from './Form';
+import ToolsList from './ToolsList';
 
 interface Props {
   id?: number;
@@ -41,11 +42,11 @@ export default function EditDrawer(props: Props) {
   const [testLoading, setTestLoading] = React.useState(false);
 
   return (
-    <Drawer
+    <Modal
       width={600}
       title={t('form.edit_title')}
       visible={visible}
-      onClose={onClose}
+      onCancel={onClose}
       footer={
         <Space>
           <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
@@ -69,9 +70,11 @@ export default function EditDrawer(props: Props) {
                     } else {
                       Modal.success({
                         title: t('form.test_connection_success'),
+                        width: 600,
                         content: (
                           <div>
                             <div>Duration: {res.duration_ms} ms</div>
+                            {id !== undefined && <ToolsList id={id} />}
                           </div>
                         ),
                       });
@@ -104,6 +107,6 @@ export default function EditDrawer(props: Props) {
       <Spin spinning={loading}>
         <FormCpt id={id} form={form} />
       </Spin>
-    </Drawer>
+    </Modal>
   );
 }

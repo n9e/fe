@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Table, Tooltip, Modal, message } from 'antd';
+import { Button, Space, Switch, Table, Tooltip, Modal, Tag, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 
@@ -8,7 +8,7 @@ import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
 
 import { NS } from '../constants';
-import { getList, deleteItem } from '../services';
+import { getList, deleteItem, putItem } from '../services';
 import AddDrawer from './AddDrawer';
 import EditDrawer from './EditDrawer';
 
@@ -44,6 +44,12 @@ export default function List() {
                   {
                     dataIndex: 'name',
                     title: t('name'),
+                    render: (val, record) => (
+                      <Space>
+                        <span>{val}</span>
+                        {record.is_default && <Tag color='purple'>{t('is_default')}</Tag>}
+                      </Space>
+                    ),
                   },
                   {
                     dataIndex: 'description',
@@ -60,7 +66,21 @@ export default function List() {
                   {
                     dataIndex: 'enabled',
                     title: t('enabled'),
-                    render: (val) => <Switch size='small' checked={val} />,
+                    render: (val, record) => (
+                      <Switch
+                        size='small'
+                        checked={val}
+                        onChange={(checked) => {
+                          putItem(record.id, {
+                            ...record,
+                            enabled: checked,
+                          }).then(() => {
+                            message.success(t('common:success.modify'));
+                            run();
+                          });
+                        }}
+                      />
+                    ),
                   },
                   {
                     title: t('common:table.operations'),

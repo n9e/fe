@@ -8,7 +8,7 @@ import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
 
 import { NS } from '../constants';
-import { getList, deleteItem } from '../services';
+import { getList, deleteItem, putItem } from '../services';
 import AddDrawer from './AddDrawer';
 import EditDrawer from './EditDrawer';
 
@@ -37,7 +37,7 @@ export default function List() {
             <div className='fc-toolbar flex flex-wrap items-center justify-between gap-2'>
               <div />
               <Space>
-                <Button
+                {/* <Button
                   type='primary'
                   icon={<PlusOutlined />}
                   onClick={() => {
@@ -47,7 +47,7 @@ export default function List() {
                   }}
                 >
                   {t('add_btn')}
-                </Button>
+                </Button> */}
               </Space>
             </div>
             <div className='min-h-0 flex-shrink-0'>
@@ -78,8 +78,22 @@ export default function List() {
                   {
                     dataIndex: 'enabled',
                     title: t('enabled'),
-                    render: (val) => {
-                      return <Switch size='small' checked={val} />;
+                    render: (val, record) => {
+                      return (
+                        <Switch
+                          size='small'
+                          checked={val}
+                          onChange={(checked) => {
+                            putItem(record.id, {
+                              ...record,
+                              enabled: checked,
+                            }).then(() => {
+                              message.success(t('common:success.modify'));
+                              run();
+                            });
+                          }}
+                        />
+                      );
                     },
                   },
                   {

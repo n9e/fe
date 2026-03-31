@@ -13,6 +13,7 @@ export interface Item {
   updated_at: string;
   updated_by: string;
 
+  builtin: boolean;
   instructions: string;
   license?: string;
   compatibility?: string;

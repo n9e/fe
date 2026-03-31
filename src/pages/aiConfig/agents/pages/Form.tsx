@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Select, Switch } from 'antd';
+import { Form, Row, Col, Input, Select, Switch, Space, Tag } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
@@ -63,9 +63,21 @@ export default function FormCpt(props: Props) {
         <Select
           placeholder={t('form.llm_config_placeholder')}
           loading={llmConfigsLoading}
-          options={map(llmConfigs, (config) => ({ label: config.name, value: config.id }))}
+          options={map(llmConfigs, (config) => {
+            return {
+              label: (
+                <Space>
+                  <span>{config.name}</span>
+                  {config.is_default && <Tag color='purple'>{t('llm_config_is_default')}</Tag>}
+                </Space>
+              ),
+              originLabel: config.name,
+              value: config.id,
+            };
+          })}
           showSearch
           optionFilterProp='label'
+          optionLabelProp='originLabel'
         />
       </Form.Item>
       <Form.Item label={t('form.skill')} tooltip={t('form.skill_tip')} name='skill_ids'>

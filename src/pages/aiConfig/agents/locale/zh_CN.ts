@@ -3,6 +3,7 @@ const zh_CN = {
   name: '名称',
   description: '描述',
   llm_config: 'LLM 配置',
+  llm_config_is_default: '默认',
   use_case: '用途',
   enabled: '启用',
   add_btn: '新建 Agent',

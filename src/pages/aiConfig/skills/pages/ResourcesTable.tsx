@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRequest } from 'ahooks';
-import { Table, Space, Button, Upload, Modal, message } from 'antd';
-import { EyeOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { Table, Space, Button, Upload, Modal, message, Popover, Input } from 'antd';
+import { EyeOutlined, DeleteOutlined, UploadOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { NS } from '../constants';
@@ -23,10 +23,24 @@ export default function ResourcesTable(props: Props) {
   }>({
     visible: false,
   });
+  const [searchPopoverVisible, setSearchPopoverVisible] = useState(false);
+  const [searchInputValue, setSearchInputValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
 
   const { data, loading, run } = useRequest(() => getItem(id), {
     refreshDeps: [id],
   });
+
+  const filteredFiles = useMemo(() => {
+    const files = data?.files || [];
+    const keyword = searchValue.trim().toLowerCase();
+
+    if (!keyword) {
+      return files;
+    }
+
+    return files.filter((item) => item.name?.toLowerCase().includes(keyword));
+  }, [data?.files, searchValue]);
 
   return (
     <>
@@ -54,15 +68,64 @@ export default function ResourcesTable(props: Props) {
         </Upload> */}
       </div>
       <Table
-        className='fc-table'
         size='small'
         rowKey='id'
         loading={loading}
-        dataSource={data?.files}
+        dataSource={filteredFiles}
         columns={[
           {
             dataIndex: 'name',
-            title: t('file_name'),
+            title: (
+              <div className='flex items-center gap-1'>
+                <span>{t('file_name')}</span>
+                <Popover
+                  trigger='click'
+                  placement='topLeft'
+                  visible={searchPopoverVisible}
+                  onVisibleChange={setSearchPopoverVisible}
+                  content={
+                    <div className='flex items-center gap-2 w-[240px]'>
+                      <Input
+                        className='w-[200px]'
+                        size='small'
+                        value={searchInputValue}
+                        placeholder={t('search_placeholder')}
+                        allowClear
+                        onChange={(e) => {
+                          setSearchInputValue(e.target.value);
+                        }}
+                        onPressEnter={() => {
+                          setSearchValue(searchInputValue);
+                          setSearchPopoverVisible(false);
+                        }}
+                      />
+                      <Button
+                        size='small'
+                        type='primary'
+                        onClick={() => {
+                          setSearchValue(searchInputValue);
+                          setSearchPopoverVisible(false);
+                        }}
+                      >
+                        {t('common:btn.search')}
+                      </Button>
+                      <Button
+                        size='small'
+                        onClick={() => {
+                          setSearchInputValue('');
+                          setSearchValue('');
+                          setSearchPopoverVisible(false);
+                        }}
+                      >
+                        {t('common:btn.reset')}
+                      </Button>
+                    </div>
+                  }
+                >
+                  <Button size='small' type='text' style={{ color: searchValue ? 'var(--fc-primary-color)' : undefined }} icon={<SearchOutlined />} />
+                </Popover>
+              </div>
+            ),
           },
           {
             dataIndex: 'size',
@@ -118,6 +181,9 @@ export default function ResourcesTable(props: Props) {
           },
         ]}
         pagination={false}
+        scroll={{
+          y: 400,
+        }}
       />
       {resourceState.id && resourceState.name && (
         <ResourceModal visible={resourceState.visible} id={resourceState.id} name={resourceState.name} onClose={() => setResourceState({ visible: false })} />

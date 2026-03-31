@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Drawer, Form, Modal, Space } from 'antd';
+import { Button, Form, Modal, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { NS } from '../constants';
@@ -21,11 +21,11 @@ export default function AddDrawer(props: Props) {
   const [testLoading, setTestLoading] = React.useState(false);
 
   return (
-    <Drawer
+    <Modal
       width={600}
       title={t('form.add_title')}
       visible={visible}
-      onClose={onClose}
+      onCancel={onClose}
       footer={
         <Space>
           <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
@@ -81,6 +81,6 @@ export default function AddDrawer(props: Props) {
       }
     >
       <FormCpt form={form} />
-    </Drawer>
+    </Modal>
   );
 }
