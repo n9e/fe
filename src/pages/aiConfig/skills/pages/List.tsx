@@ -114,9 +114,9 @@ export default function List() {
   return (
     <>
       <PageLayout title={t('title')}>
-        <div className='n9e'>
+        <div className='n9e h-full overflow-hidden children:h-full'>
           <Spin spinning={loading}>
-            <div className='flex'>
+            <div className='flex h-full overflow-hidden'>
               <div
                 className='fc-toolbar w-[240px] flex-shrink-0 flex flex-col pr-4 mr-4'
                 style={{
