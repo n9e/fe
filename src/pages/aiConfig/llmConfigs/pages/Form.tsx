@@ -30,6 +30,11 @@ export default function FormCpt(props: Props) {
             <Switch />
           </Form.Item>
         </Col>
+        <Col flex='none'>
+          <Form.Item label={t('is_default')} tooltip={t('is_default_tip')} name='is_default' valuePropName='checked' initialValue={false}>
+            <Switch />
+          </Form.Item>
+        </Col>
       </Row>
       <Form.Item label={t('description')} name='description'>
         <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} placeholder={t('form.description_placeholder')} />

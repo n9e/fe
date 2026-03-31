@@ -8,6 +8,7 @@ export interface Item {
   name: string;
   description: string;
   enabled: boolean;
+  is_default: boolean;
   created_at: string;
   created_by: string;
   updated_at: string;

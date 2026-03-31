@@ -8,7 +8,7 @@ import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
 
 import { NS } from '../constants';
-import { getList, deleteItem } from '../services';
+import { getList, deleteItem, putItem } from '../services';
 import AddDrawer from './AddDrawer';
 import EditDrawer from './EditDrawer';
 
@@ -56,7 +56,21 @@ export default function List() {
                   {
                     dataIndex: 'enabled',
                     title: t('enabled'),
-                    render: (val) => <Switch size='small' checked={val} />,
+                    render: (val, record) => (
+                      <Switch
+                        size='small'
+                        checked={val}
+                        onChange={(checked) => {
+                          putItem(record.id, {
+                            ...record,
+                            enabled: checked,
+                          }).then(() => {
+                            message.success(t('common:success.modify'));
+                            run();
+                          });
+                        }}
+                      />
+                    ),
                   },
                   {
                     title: t('common:table.operations'),

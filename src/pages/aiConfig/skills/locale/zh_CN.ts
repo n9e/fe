@@ -13,6 +13,7 @@ const zh_CN = {
   upload_file_error: '文件上传失败',
   edit_title: '编辑 Skill',
   search_placeholder: '请输入关键字搜索',
+  builtin: '内置',
 
   form: {
     name: '名称',

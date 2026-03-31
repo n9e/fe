@@ -188,7 +188,14 @@ export default function List() {
                           }}
                         >
                           <div className='truncate'>{item.name}</div>
-                          {item.enabled === false && <Tag className='m-0'>OFF</Tag>}
+                          <Space>
+                            {item.enabled === false && <Tag className='m-0'>OFF</Tag>}
+                            {item.builtin === true && (
+                              <Tag className='m-0' color='purple'>
+                                {t('builtin')}
+                              </Tag>
+                            )}
+                          </Space>
                         </div>
                       );
                     },
