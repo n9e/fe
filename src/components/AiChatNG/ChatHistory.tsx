@@ -66,7 +66,14 @@ export default function ChatHistory(props: IChatHistoryPageProps) {
                     </div>
                     <div className='flex shrink-0 items-center gap-3'>
                       <div className='text-xs font-normal leading-8 text-hint'>{formatChatTime(chat.last_update)}</div>
-                      <Popconfirm title={t('history.delete_confirm')} onConfirm={() => handleDelete(chat)}>
+                      <Popconfirm
+                        title={<span className='whitespace-nowrap'>{t('history.delete_confirm')}</span>}
+                        overlayStyle={{ minWidth: 220 }}
+                        onConfirm={(event) => {
+                          event?.stopPropagation?.();
+                          handleDelete(chat);
+                        }}
+                      >
                         <Button
                           size='small'
                           type='text'

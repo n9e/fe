@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
@@ -13,8 +12,7 @@ import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRan
 import { getHistoryEventsById } from '@/services/warning';
 
 import AiIcon from '@/components/AiChatNG/AiIcon';
-import AiChat, { IAiChatMessage, IAiChatMessageResponse } from '@/components/AiChatNG';
-import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
+import { useAiChatContext } from '@/components/AiChatNG';
 
 import { queryStringOptions } from '../constants';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
@@ -26,6 +24,7 @@ interface IProps {
   headerExtra: HTMLDivElement | null;
   datasourceValue: number;
   form: FormInstance;
+  panelKey?: string;
   panelIdx?: number;
   showBuiltinMetrics?: boolean;
   allowReplaceHistory?: boolean;
@@ -40,7 +39,6 @@ interface IProps {
   onDefaultTypeChange?: (newMode: IMode) => void;
   defaultTime?: IRawTimeRange; // 受控的 time 和 allowReplaceHistory 的 querystring (start, end) 是互斥的
   onDefaultTimeChange?: (newRange: IRawTimeRange) => void;
-  sidebarRef?: React.RefObject<HTMLDivElement>;
 }
 
 export default function Prometheus(props: IProps) {
@@ -48,6 +46,7 @@ export default function Prometheus(props: IProps) {
     headerExtra,
     datasourceValue,
     form,
+    panelKey,
     panelIdx = 0,
     showBuiltinMetrics = true,
     allowReplaceHistory,
@@ -62,21 +61,14 @@ export default function Prometheus(props: IProps) {
     onDefaultTypeChange,
     defaultTime,
     onDefaultTimeChange,
-    sidebarRef,
   } = props;
+  const { openAiChat } = useAiChatContext();
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
   const defaultPromQL = promQL ? promQL : typeof query.prom_ql === 'string' ? query.prom_ql : '';
   const [defaultTimeState, setDefaultTimeState] = useState<undefined | IRawTimeRange>();
   const [promql, setPromql] = useState<string>(defaultPromQL);
-
-  const [aiChatState, setAiChatState] = useState<{
-    visible: boolean;
-    datasourceValue?: number;
-  }>({
-    visible: false,
-  });
 
   useEffect(() => {
     if (query.__event_id) {
@@ -161,9 +153,16 @@ export default function Prometheus(props: IProps) {
             <Button
               icon={<AiIcon />}
               onClick={() => {
-                setAiChatState({
-                  visible: true,
+                openAiChat({
+                  datasourceCate: 'prometheus',
                   datasourceValue,
+                  callbackParams: {
+                    panelKey,
+                    onExecuteQuery: (nextPromql: string) => {
+                      setPromql(nextPromql);
+                    },
+                    openedAt: Date.now(),
+                  },
                 });
               }}
             />
@@ -172,41 +171,6 @@ export default function Prometheus(props: IProps) {
         }
         showExportButton
       />
-      {aiChatState.visible &&
-        sidebarRef &&
-        sidebarRef.current &&
-        createPortal(
-          <div className='w-[420px] flex-shrink-0 bg-fc-100 fc-border h-full rounded-lg p-4'>
-            <AiChat
-              queryPageFrom={{
-                page: 'explorer',
-              }}
-              queryAction={{
-                key: 'query_generator',
-                param: {
-                  datasource_type: 'prometheus',
-                  datasource_id: aiChatState.datasourceValue,
-                },
-              }}
-              promptList={['帮我生成一条 CPU 使用率查询', '解释当前查询语句', '给我一个 Prometheus 排障建议']}
-              customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
-                if (response.content_type === 'query') {
-                  return (
-                    <PromQLCard
-                      response={response}
-                      message={message}
-                      onExecuteQuery={(promql) => {
-                        setPromql(promql);
-                      }}
-                    />
-                  );
-                }
-                return null;
-              }}
-            />
-          </div>,
-          sidebarRef.current,
-        )}
     </>
   );
 }

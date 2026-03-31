@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type AiChatPageType = 'dashboards' | 'alert_history' | 'active_alert' | 'explorer';
+export type AiChatPageType = 'dashboards' | 'alert' | 'record' | 'explorer';
 
 export interface IAiChatPageInfo {
   page: AiChatPageType;

@@ -10,6 +10,7 @@ export * from './types';
 export { default as ChatPanel } from './ChatPanel';
 export { default as ToolsBar } from './ToolsBar';
 export { default as ChatHistoryPage } from './ChatHistory';
+export { AiChatProvider, useAiChatContext } from './context';
 
 import './locale';
 
@@ -26,6 +27,19 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
     (chat?: IAiChatHistoryItem) => {
       setSelectedChatId(chat?.chat_id);
       onChatChange?.(chat);
+    },
+    [onChatChange],
+  );
+
+  const handleDeleteChat = useCallback(
+    (chat: IAiChatHistoryItem) => {
+      setSelectedChatId((previous) => {
+        if (previous === chat.chat_id) {
+          onChatChange?.(undefined);
+          return undefined;
+        }
+        return previous;
+      });
     },
     [onChatChange],
   );
@@ -65,12 +79,7 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
               setActiveView('chat');
             }}
             onError={onError}
-            onDelete={(chat) => {
-              if (selectedChatId === chat.chat_id) {
-                setSelectedChatId(undefined);
-                onChatChange?.(undefined);
-              }
-            }}
+            onDelete={handleDeleteChat}
           />
         ) : null}
       </div>

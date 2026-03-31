@@ -114,9 +114,9 @@ export default function List() {
   return (
     <>
       <PageLayout title={t('title')}>
-        <div className='n9e'>
+        <div className='n9e h-full overflow-hidden children:h-full mr-0'>
           <Spin spinning={loading}>
-            <div className='flex'>
+            <div className='flex h-full overflow-hidden'>
               <div
                 className='fc-toolbar w-[240px] flex-shrink-0 flex flex-col pr-4 mr-4'
                 style={{
@@ -195,7 +195,7 @@ export default function List() {
                   )}
                 </div>
               </div>
-              <div className='w-full min-w-0 best-looking-scroll'>
+              <div className='w-full min-w-0 best-looking-scroll pr-2'>
                 <div className='flex justify-between fc-toolbar mb-2'>
                   <div className='text-title text-l2'>{activeData?.name}</div>
                   <Space>
@@ -373,6 +373,18 @@ export default function List() {
                             dataIndex: 'name',
                             key: 'name',
                             width: 120,
+                            render: (name) => {
+                              if (name === 'license') {
+                                return t('form.license');
+                              }
+                              if (name === 'compatibility') {
+                                return t('form.compatibility');
+                              }
+                              if (name === 'allowed_tools') {
+                                return t('form.allowed_tools');
+                              }
+                              return name;
+                            },
                           },
                           {
                             dataIndex: 'value',

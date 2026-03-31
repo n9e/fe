@@ -16,15 +16,19 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Card, Space, Tooltip, Radio } from 'antd';
+import { Form, Card, Space, Tooltip, Radio, Row, Col, Button } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'lodash';
+
 import PromQLInputNG from '@/components/PromQLInputNG';
+import { useAiChatContext } from '@/components/AiChatNG';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import { IS_PLUS } from '@/utils/constant';
+import AiIcon from '@/components/AiChatNG/AiIcon';
+
 import GraphPreview from './GraphPreview';
 import PrometheusV2 from './PrometheusV2';
 import VariablesConfig from './VariablesConfig';
@@ -36,6 +40,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
   const { datasourceValue } = props;
   const { t } = useTranslation('alertRules');
   const { disabled } = useContext(FormStateContext);
+  const { openAiChat } = useAiChatContext();
   const form = Form.useFormInstance();
   const ruleConfigVersion = Form.useWatch(['rule_config', 'version']);
 
@@ -129,15 +134,34 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                 {fields.map((field) => (
                   <div key={field.key} className='alert-rule-trigger-container'>
                     <VariablesConfig prefixName={['rule_config', 'queries']} field={field} />
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'prom_ql']}
-                      validateTrigger={['onBlur']}
-                      trigger='onChange'
-                      rules={[{ required: true, message: t('promQLInput:required') }]}
-                    >
-                      <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} />
-                    </Form.Item>
+                    <Row gutter={8} wrap={false}>
+                      <Col flex='auto' className='min-w-0'>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'prom_ql']}
+                          validateTrigger={['onBlur']}
+                          trigger='onChange'
+                          rules={[{ required: true, message: t('promQLInput:required') }]}
+                        >
+                          <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} showBuiltinMetrics durationVariablesCompletion={false} />
+                        </Form.Item>
+                      </Col>
+                      <Col flex='none'>
+                        <Button
+                          icon={<AiIcon />}
+                          onClick={() => {
+                            openAiChat({
+                              datasourceCate: 'prometheus',
+                              datasourceValue,
+                              callbackParams: {
+                                queriesIndex: field.name,
+                                openedAt: Date.now(),
+                              },
+                            });
+                          }}
+                        />
+                      </Col>
+                    </Row>
                     <ChildVariablesConfigs
                       topPrefixName={['rule_config', 'queries']}
                       topField={field}
