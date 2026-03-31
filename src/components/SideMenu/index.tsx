@@ -85,7 +85,6 @@ const SideMenu = (props: SideMenuProps) => {
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
-  const [collapsedHover, setCollapsedHover] = useState<boolean>(false);
   const [menuWidthPx, setMenuWidthPx] = useState<number>(readInitialSideMenuWidth);
   const [isResizingMenu, setIsResizingMenu] = useState(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
@@ -240,7 +239,7 @@ const SideMenu = (props: SideMenuProps) => {
 
   const onResizeHandleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (collapsed && !collapsedHover) return;
+      if (collapsed) return;
       e.preventDefault();
       e.stopPropagation();
       resizeActiveRef.current = true;
@@ -265,33 +264,25 @@ const SideMenu = (props: SideMenuProps) => {
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
     },
-    [collapsed, collapsedHover, menuWidthPx],
+    [collapsed, menuWidthPx],
   );
 
-  const expandedMenuWidth = collapsedHover ? menuWidthPx : collapsed ? 64 : menuWidthPx;
+  const expandedMenuWidth = collapsed ? 64 : menuWidthPx;
 
   return (
     <div
       id='#tailwind'
       style={{
         display: hideSideMenu ? 'none' : 'flex',
-        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-        fontFeatureSettings: 'normal',
-        WebkitFontSmoothing: 'antialiased',
       }}
     >
       <div
         className={cn('relative flex h-screen shrink-0', collapsed ? 'w-[64px]' : '')}
-        onMouseEnter={() => {
-          collapsed && setCollapsedHover(true);
-        }}
-        onMouseLeave={() => setCollapsedHover(false)}
       >
-        <div
+        <aside
           className={cn(
-            'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid',
-            !isResizingMenu && 'transition-[width] duration-200 ease-out',
-            collapsedHover ? 'absolute left-0 shadow-mf' : '',
+            'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid bg-sidebar',
+            !isResizingMenu && 'transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]',
             !IS_ENT ? 'border-fc-300' : '',
           )}
           style={{
@@ -302,7 +293,7 @@ const SideMenu = (props: SideMenuProps) => {
             borderColor: isCustomBg ? 'var(--fc-border-color)' : 'var(--fc-sidemenu-border)',
           }}
         >
-          {(!collapsed || collapsedHover) && (
+          {!collapsed && (
             <div
               role='separator'
               aria-orientation='vertical'
@@ -313,17 +304,23 @@ const SideMenu = (props: SideMenuProps) => {
             />
           )}
           <div className='flex flex-1 flex-col justify-between gap-1 overflow-hidden'>
-            <SideMenuHeader collapsed={collapsed} collapsedHover={collapsedHover} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
+            <SideMenuHeader collapsed={collapsed} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
             <ScrollArea className='-mr-2 flex-1'>
               <MenuList
                 list={menus}
-                collapsed={collapsed && !collapsedHover}
+                collapsed={collapsed}
                 selectedKeys={selectedKeys}
                 sideMenuBgColor={sideMenuBgColor}
                 isCustomBg={isCustomBg}
                 quickMenuRef={quickMenuRef}
                 topExtra={topExtra}
-                onClick={onMenuClick}
+                onClick={(key) => {
+                  if (collapsed) {
+                    setCollapsed(false);
+                    localStorage.setItem('menuCollapsed', '0');
+                  }
+                  onMenuClick?.(key);
+                }}
                 isGoldTheme={isGoldTheme}
               />
             </ScrollArea>
@@ -335,7 +332,6 @@ const SideMenu = (props: SideMenuProps) => {
                 const nextCollapsed = !collapsed;
                 setCollapsed(nextCollapsed);
                 localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
-                setCollapsedHover(false);
               }}
             >
               {collapsed ? (
@@ -345,7 +341,7 @@ const SideMenu = (props: SideMenuProps) => {
               )}
             </div>
           </div>
-        </div>
+        </aside>
       </div>
 
       {IS_ENT ? <QuickStart ref={quickMenuRef} items={menus} /> : <QuickMenu ref={quickMenuRef} menuList={menus} />}

@@ -155,7 +155,7 @@ module.exports = {
         spacing: 'margin, padding',
       },
       fontFamily: {
-        default: ['Inter UI', 'PingFangSC-Regular', 'microsoft yahei ui', 'microsoft yahei', 'simsun', 'sans-serif'],
+        default: ['Inter', 'PingFangSC-Regular', 'microsoft yahei ui', 'microsoft yahei', 'simsun', 'sans-serif'],
         // 粗体需要使用 font-bolder 类名，而不是这里定义的 font-bold-family
         'bold-family': ['PingFangSC-Medium', 'Microsoft YaHei Bold'],
       },

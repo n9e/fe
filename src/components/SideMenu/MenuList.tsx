@@ -82,7 +82,9 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   let iconColor = '';
   if (isLight) {
-    iconColor = isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-text)]';
+    iconColor = isActive
+      ? 'text-[var(--fc-sidemenu-item-active-text)]'
+      : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
   } else if (isActive) {
     if (isBlueTheme) {
       iconColor = 'text-[#427AF4]';
@@ -109,12 +111,14 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const titleClass = (() => {
     if (isLight) {
-      return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-text)]';
+      return isActive
+        ? 'font-medium text-[var(--fc-sidemenu-item-active-text)]'
+        : 'text-[var(--fc-sidemenu-item-text)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
     }
     if (isActive) {
-      return props.isCustomBg ? (isBgBlack ? 'text-[#fff]' : 'text-[#ccccdc]') : 'text-title';
+      return props.isCustomBg ? (isBgBlack ? 'font-medium text-[#fff]' : 'font-medium text-[#ccccdc]') : 'font-medium text-title';
     }
-    return '';
+    return props.isCustomBg ? 'group-hover:text-[#fff]' : 'group-hover:text-title';
   })();
 
   const rowHover = isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200';
@@ -126,48 +130,50 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   return (
     <div className='w-full'>
       <div
-        onClick={() => setIsExpand(!isExpand)}
+        onClick={() => {
+          if (collapsed) {
+            otherProps.onClick?.(item.key);
+            return;
+          }
+          setIsExpand(!isExpand);
+        }}
         className={cn(
-          'group flex h-8 cursor-pointer items-center justify-between rounded-md pl-3.5 pr-0 transition-colors transition-spacing duration-75',
+          'group flex h-8 cursor-pointer items-center justify-between rounded-md px-3 transition-colors duration-75',
           rowHover,
           collapsed && isActive ? collapsedActiveBg : '',
         )}
       >
-        <div className='flex min-w-0 flex-1 items-center'>
+        <div className='flex min-w-0 flex-1 items-center gap-2.5'>
           <div
             className={cn(
               'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
               iconColor,
-              !collapsed ? 'mr-2' : '',
             )}
           >
             {item.icon}
           </div>
-          {!collapsed && <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-normal', titleClass)}>{t(item.label)}</div>}
+          {!collapsed && <span className={cn('flex-1 text-left truncate text-[13px] leading-[18px] tracking-normal', titleClass)}>{t(item.label)}</span>}
         </div>
         {!collapsed && (
           <RightIcon className={cn('shrink-0 transition', isExpand ? 'rotate-90' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')} style={{ fontSize: 24 }} />
         )}
       </div>
       <div
-        className={cn(submenuOpen ? 'mt-1' : 'mt-0', 'overflow-hidden transition-height', !collapsed ? 'relative' : 'space-y-0')}
+        className={cn(submenuOpen ? 'mt-0.5' : 'mt-0', 'overflow-hidden transition-height')}
         style={{
-          height: !isExpand || collapsed ? 0 : visibleChildren.length * 28 + (visibleChildren.length - 1) * 4,
+          height: !isExpand || collapsed ? 0 : visibleChildren.length * 30,
         }}
       >
-        {!collapsed && (
-          <div
-            className={cn(
-              'pointer-events-none absolute bottom-0 left-[22px] top-0 z-0 w-px',
-              isLight && 'bg-fc-300/80',
-              !isLight && props.isCustomBg && isBgBlack && 'bg-fc-500/30',
-              !isLight && props.isCustomBg && !isBgBlack && 'bg-fc-300/30',
-              !isLight && !props.isCustomBg && 'bg-fc-300',
-            )}
-            aria-hidden
-          />
-        )}
-        <div className={cn(!collapsed ? 'relative z-[1] flex flex-col gap-1 pl-[30px]' : 'space-y-0')}>
+        <div
+          className={cn(
+            !collapsed
+              ? cn(
+                  'ml-4 pl-3 pt-0.5 space-y-0.5 border-l',
+                  isLight ? 'border-fc-300/80' : props.isCustomBg ? (isBgBlack ? 'border-white/10' : 'border-white/20') : 'border-fc-300',
+                )
+              : 'space-y-0',
+          )}
+        >
           {visibleChildren.map((c) => {
             if (c.pathType === 'absolute') {
               return (
@@ -230,23 +236,28 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
 
   let textColor = '';
   if (isLight) {
-    textColor = isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-text)]';
+    textColor = isActive
+      ? 'font-medium text-[var(--fc-sidemenu-item-active-text)]'
+      : cn(
+          isSubTreeLayout ? 'text-[var(--fc-sidemenu-subitem-text)]' : 'text-[var(--fc-sidemenu-item-text)]',
+          'group-hover:text-[var(--fc-sidemenu-item-hover-text)]',
+        );
   } else if (isActive) {
     if (isBlueTheme) {
-      textColor = 'text-[#427AF4]';
+      textColor = 'font-medium text-[#427AF4]';
     } else if (isCustomBg) {
       if (isGoldTheme) {
-        textColor = 'text-[#333]';
+        textColor = 'font-medium text-[#333]';
       } else if (isBgBlack) {
-        textColor = 'text-[#ccccdc]';
+        textColor = 'font-medium text-[#ccccdc]';
       } else {
-        textColor = 'text-[#fff]';
+        textColor = 'font-medium text-[#fff]';
       }
     } else {
-      textColor = 'text-title';
+      textColor = 'font-medium text-title';
     }
   } else {
-    textColor = '';
+    textColor = isCustomBg ? 'group-hover:text-[#fff]' : 'group-hover:text-title';
   }
 
   const rowHover = isSubTreeLayout
@@ -265,11 +276,11 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
     <Link
       to={savedPath || path}
       className={cn(
-        'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
-        isSubTreeLayout ? 'h-[28px] rounded-[8px]' : 'h-8 rounded-md',
+        'group relative flex min-w-0 cursor-pointer items-center transition-colors duration-75',
+        isSubTreeLayout ? 'h-7 rounded-md' : 'h-8 rounded-md',
         isSubTreeLayout
           ? cn(
-              'ml-1.5 mr-0 w-[calc(100%-0.375rem)] max-w-full min-w-0 pr-0',
+              'w-full px-3',
               isLight && isActive && 'bg-[var(--fc-sidemenu-item-active-bg)] hover:bg-[var(--fc-sidemenu-item-active-bg)]',
               isLight && !isActive && 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]',
               isBlueTheme && isActive && 'bg-[#EEF6FE] hover:bg-[#EEF6FE]',
@@ -288,26 +299,25 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       onClick={() => onClick?.(item.key)}
     >
       {isSubTreeLayout ? (
-        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-2' aria-hidden>
-          <span
+        isActive && (
+          <div
             className={cn(
-              'h-4 w-[3px] shrink-0 rounded-full',
-              isActive
-                ? isLight
-                  ? 'bg-[var(--fc-sidemenu-item-active-text)]'
-                  : isBlueTheme
-                  ? 'bg-[#427AF4]'
-                  : isGoldTheme
-                  ? 'bg-[#333]'
-                  : isCustomBg
-                  ? isBgBlack
-                    ? 'bg-[#ccccdc]'
-                    : 'bg-[#fff]'
-                  : 'bg-[#6E6587]'
-                : 'bg-transparent',
+              'absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full',
+              isLight
+                ? 'bg-[var(--fc-sidemenu-item-active-text)]'
+                : isBlueTheme
+                ? 'bg-[#427AF4]'
+                : isGoldTheme
+                ? 'bg-[#333]'
+                : isCustomBg
+                ? isBgBlack
+                  ? 'bg-[#ccccdc]'
+                  : 'bg-[#fff]'
+                : 'bg-[#6E6587]',
             )}
+            aria-hidden
           />
-        </span>
+        )
       ) : !isSub ? (
         <div
           className={cn(
@@ -315,7 +325,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
             isLight
               ? isActive
                 ? 'text-[var(--fc-sidemenu-item-active-text)]'
-                : 'text-[var(--fc-sidemenu-item-icon)]'
+                : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]'
               : isActive
               ? isCustomBg
                 ? isBgBlack
@@ -332,7 +342,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-normal', textColor)}>
+        <span className={cn('flex-1 text-left truncate text-[13px] leading-[18px] tracking-normal', textColor)}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -351,7 +361,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
               <DeprecatedIcon />
             </span>
           )}
-        </div>
+        </span>
       )}
     </Link>
   );
@@ -366,7 +376,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
 
   const rowClass = isSubTreeLayout
     ? cn(
-        'mx-1.5 w-[calc(100%-0.75rem)] max-w-full min-w-0 pr-1.5',
+        'w-full px-3',
         isLight && 'text-[var(--fc-sidemenu-item-text)] hover:bg-[var(--fc-sidemenu-item-hover-bg)]',
         !isLight && isBlueTheme && 'text-main hover:bg-fc-200',
         !isLight && !isBlueTheme && isCustomBg && 'text-[#ccccdc] hover:bg-[rgba(204,204,220,0.12)]',
@@ -381,22 +391,18 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
       href={item.path}
       target={item.target}
       className={cn(
-        'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
-        isSubTreeLayout ? 'h-[28px] rounded-[8px]' : 'h-9 rounded-md',
+        'group relative flex min-w-0 cursor-pointer items-center transition-colors duration-75',
+        isSubTreeLayout ? 'h-7 rounded-md' : 'h-9 rounded-md',
         rowClass,
       )}
       onClick={() => onClick?.(item.key)}
     >
-      {isSubTreeLayout ? (
-        <span className='ml-0.5 flex h-full w-1 shrink-0 items-center justify-end pr-0.5 mr-2' aria-hidden>
-          <span className='h-4 w-[3px] shrink-0 rounded-full bg-transparent' />
-        </span>
-      ) : !isSub ? (
+      {isSubTreeLayout ? null : !isSub ? (
         <div
           className={cn(
             'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
             !collapsed ? 'mr-4' : '',
-            isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '',
+            isLight ? 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]' : '',
           )}
         >
           {item.icon}
@@ -405,7 +411,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
         !collapsed && <div className='mr-[34px]'></div>
       )}
       {!collapsed && (
-        <div className={cn('min-w-0 flex-1 overflow-hidden truncate text-[13px] leading-[18px] tracking-normal')}>
+        <span className={cn('flex-1 text-left truncate text-[13px] leading-[18px] tracking-normal')}>
           {t(item.label)}
           {item.beta && (
             <span
@@ -424,7 +430,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
               <DeprecatedIcon />
             </span>
           )}
-        </div>
+        </span>
       )}
     </a>
   );
@@ -447,11 +453,16 @@ export default function MenuList(
   return (
     <>
       <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
-        <Tooltip title={isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right'>
+        <Tooltip title={isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' disabled={props.collapsed}>
           <div
-            onClick={() => props.quickMenuRef.current.open()}
+            onClick={() => {
+              if (props.collapsed) {
+                props.onClick?.('search'); // This will trigger the expansion logic I added in SideMenu
+              }
+              props.quickMenuRef.current.open();
+            }}
             className={cn(
-              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors transition-spacing duration-75',
+              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors duration-75',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
