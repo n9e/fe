@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
@@ -13,13 +13,29 @@ import DeprecatedIcon from './DeprecatedIcon';
 interface IMenuProps {
   collapsed: boolean;
   selectedKeys?: string[];
-  onClick?: (key: any) => void;
+  onClick?: (key: any, opts?: { keepCollapsed?: boolean }) => void;
   sideMenuBgColor: string;
   isCustomBg: boolean;
   quickMenuRef: React.MutableRefObject<{ open: () => void }>;
   isGoldTheme?: boolean;
   /** 浅色默认侧栏（非自定义底、非蓝主题、非金主题） */
   isLight?: boolean;
+}
+
+function flattenMenuChildrenForHoverPanel(children: IMenuItem[]): IMenuItem[] {
+  return children
+    .flatMap((c) => {
+      if (!c) return [];
+      if (c.type === 'tabs') {
+        return (c.children || []).map((tab) => ({
+          ...tab,
+          type: undefined,
+          children: undefined,
+        }));
+      }
+      return [c];
+    })
+    .filter(Boolean) as IMenuItem[];
 }
 
 function chunkMenusBySection(items: IMenuItem[]) {
@@ -450,10 +466,55 @@ export default function MenuList(
 
   const chunks = useMemo(() => chunkMenusBySection(list), [list]);
 
+  const [activeHoverGroupKey, setActiveHoverGroupKey] = useState<string | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimerRef.current != null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  const closeHoverPanel = useCallback(() => {
+    clearCloseTimer();
+    setActiveHoverGroupKey(null);
+  }, [clearCloseTimer]);
+
+  const scheduleCloseHoverPanel = useCallback(() => {
+    clearCloseTimer();
+    closeTimerRef.current = window.setTimeout(() => {
+      setActiveHoverGroupKey(null);
+      closeTimerRef.current = null;
+    }, 150);
+  }, [clearCloseTimer]);
+
+  useEffect(() => {
+    if (!activeHoverGroupKey) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeHoverPanel();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [activeHoverGroupKey, closeHoverPanel]);
+
+  useEffect(() => {
+    if (!activeHoverGroupKey) return;
+    const onScroll = () => closeHoverPanel();
+    window.addEventListener('scroll', onScroll, true);
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+    };
+  }, [activeHoverGroupKey, closeHoverPanel]);
+
   return (
     <>
       <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
-        <Tooltip title={isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' disabled={props.collapsed}>
+        <Tooltip title={props.collapsed ? null : isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' trigger={props.collapsed ? [] : ['hover']}>
           <div
             onClick={() => {
               if (props.collapsed) {
@@ -485,7 +546,110 @@ export default function MenuList(
               {chunk.section ? <SectionHeader section={chunk.section} collapsed={props.collapsed} isCustomBg={props.isCustomBg} isFirst={chunkIndex === 0} /> : null}
               {chunk.items.map((menu) => {
                 if (menu.children?.length) {
-                  return <MenuGroup key={menu.key} item={menu} {...otherProps} isLight={isLight} />;
+                  const visibleChildren =
+                    menu.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
+                  const hoverChildren = flattenMenuChildrenForHoverPanel(visibleChildren);
+                  const hoverEnabled = props.collapsed && hoverChildren.length > 0;
+                  const open = hoverEnabled && activeHoverGroupKey === menu.key;
+
+                  const groupNode = (
+                    <div
+                      onMouseEnter={() => {
+                        if (!hoverEnabled) return;
+                        clearCloseTimer();
+                        setActiveHoverGroupKey(menu.key);
+                      }}
+                      onMouseLeave={() => {
+                        if (!hoverEnabled) return;
+                        scheduleCloseHoverPanel();
+                      }}
+                    >
+                      <MenuGroup key={menu.key} item={menu} {...otherProps} isLight={isLight} />
+                    </div>
+                  );
+
+                  if (!hoverEnabled) return groupNode;
+
+                  return (
+                    <Tooltip
+                      key={menu.key}
+                      overlayClassName='sidemenu-hover-panel-tooltip'
+                      placement='rightTop'
+                      trigger={[]}
+                      visible={open}
+                      destroyTooltipOnHide
+                      title={
+                        <div
+                          className='sidemenu-hover-panel'
+                          style={{
+                            background: props.sideMenuBgColor,
+                            borderColor: props.isCustomBg ? 'rgba(255,255,255,0.12)' : isLight ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.10)',
+                          }}
+                          onMouseEnter={() => {
+                            clearCloseTimer();
+                          }}
+                          onMouseLeave={() => {
+                            scheduleCloseHoverPanel();
+                          }}
+                        >
+                          <div className='sidemenu-hover-panel-header'>
+                            <div className='sidemenu-hover-panel-header-icon'>{menu.icon}</div>
+                            <div className='sidemenu-hover-panel-header-title'>{t(menu.label)}</div>
+                          </div>
+                          <div
+                            className='sidemenu-hover-panel-divider'
+                            style={{
+                              background: props.isCustomBg ? 'rgba(255,255,255,0.12)' : 'var(--fc-sidemenu-border)',
+                            }}
+                          />
+                          <div className='sidemenu-hover-panel-list'>
+                            {hoverChildren.map((c) => {
+                              if (c.pathType === 'absolute') {
+                                return (
+                                  <AbsoluteMenuItem
+                                    key={c.key}
+                                    item={c}
+                                    isSub
+                                    collapsed={false}
+                                    selectedKeys={props.selectedKeys}
+                                    sideMenuBgColor={props.sideMenuBgColor}
+                                    isCustomBg={props.isCustomBg}
+                                    quickMenuRef={props.quickMenuRef}
+                                    isGoldTheme={props.isGoldTheme}
+                                    isLight={isLight}
+                                    onClick={(key) => {
+                                      props.onClick?.(key, { keepCollapsed: true });
+                                      closeHoverPanel();
+                                    }}
+                                  />
+                                );
+                              }
+                              return (
+                                <MenuItem
+                                  key={c.key}
+                                  item={c}
+                                  isSub
+                                  collapsed={false}
+                                  selectedKeys={props.selectedKeys}
+                                  sideMenuBgColor={props.sideMenuBgColor}
+                                  isCustomBg={props.isCustomBg}
+                                  quickMenuRef={props.quickMenuRef}
+                                  isGoldTheme={props.isGoldTheme}
+                                  isLight={isLight}
+                                  onClick={(key) => {
+                                    props.onClick?.(key, { keepCollapsed: true });
+                                    closeHoverPanel();
+                                  }}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+                      }
+                    >
+                      {groupNode}
+                    </Tooltip>
+                  );
                 }
                 if (menu.pathType === 'absolute') {
                   return <AbsoluteMenuItem key={menu.key} item={menu} {...otherProps} isLight={isLight} />;

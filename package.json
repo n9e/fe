@@ -42,6 +42,7 @@
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@tolgee/i18next": "^6.2.7",
     "@tolgee/react": "^6.2.7",
+    "@tolgee/web": "^7.0.0",
     "@turf/bbox": "^6.5.0",
     "@turf/boolean-point-in-polygon": "^6.5.0",
     "@uiw/react-codemirror": "4.6.0",
