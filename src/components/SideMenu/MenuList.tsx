@@ -130,9 +130,15 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   return (
     <div className='w-full'>
       <div
-        onClick={() => setIsExpand(!isExpand)}
+        onClick={() => {
+          if (collapsed) {
+            otherProps.onClick?.(item.key);
+            return;
+          }
+          setIsExpand(!isExpand);
+        }}
         className={cn(
-          'group flex h-8 cursor-pointer items-center justify-between rounded-md px-3 transition-colors transition-spacing duration-75',
+          'group flex h-8 cursor-pointer items-center justify-between rounded-md px-3 transition-colors duration-75',
           rowHover,
           collapsed && isActive ? collapsedActiveBg : '',
         )}
@@ -270,7 +276,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
     <Link
       to={savedPath || path}
       className={cn(
-        'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
+        'group relative flex min-w-0 cursor-pointer items-center transition-colors duration-75',
         isSubTreeLayout ? 'h-7 rounded-md' : 'h-8 rounded-md',
         isSubTreeLayout
           ? cn(
@@ -385,7 +391,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
       href={item.path}
       target={item.target}
       className={cn(
-        'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
+        'group relative flex min-w-0 cursor-pointer items-center transition-colors duration-75',
         isSubTreeLayout ? 'h-7 rounded-md' : 'h-9 rounded-md',
         rowClass,
       )}
@@ -447,11 +453,16 @@ export default function MenuList(
   return (
     <>
       <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
-        <Tooltip title={isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right'>
+        <Tooltip title={isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' disabled={props.collapsed}>
           <div
-            onClick={() => props.quickMenuRef.current.open()}
+            onClick={() => {
+              if (props.collapsed) {
+                props.onClick?.('search'); // This will trigger the expansion logic I added in SideMenu
+              }
+              props.quickMenuRef.current.open();
+            }}
             className={cn(
-              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors transition-spacing duration-75',
+              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors duration-75',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
