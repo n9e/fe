@@ -275,9 +275,6 @@ const SideMenu = (props: SideMenuProps) => {
       id='#tailwind'
       style={{
         display: hideSideMenu ? 'none' : 'flex',
-        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-        fontFeatureSettings: 'normal',
-        WebkitFontSmoothing: 'antialiased',
       }}
     >
       <div
@@ -287,10 +284,10 @@ const SideMenu = (props: SideMenuProps) => {
         }}
         onMouseLeave={() => setCollapsedHover(false)}
       >
-        <div
+        <aside
           className={cn(
-            'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid',
-            !isResizingMenu && 'transition-[width] duration-200 ease-out',
+            'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid bg-sidebar',
+            !isResizingMenu && 'transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]',
             collapsedHover ? 'absolute left-0 shadow-mf' : '',
             !IS_ENT ? 'border-fc-300' : '',
           )}
@@ -345,7 +342,7 @@ const SideMenu = (props: SideMenuProps) => {
               )}
             </div>
           </div>
-        </div>
+        </aside>
       </div>
 
       {IS_ENT ? <QuickStart ref={quickMenuRef} items={menus} /> : <QuickMenu ref={quickMenuRef} menuList={menus} />}
