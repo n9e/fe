@@ -67,9 +67,8 @@ export default function List() {
                     title: t('description'),
                   },
                   {
-                    dataIndex: 'llm_config',
-                    title: t('llm_config'),
-                    render: (val) => val?.name,
+                    dataIndex: 'llm_config_name',
+                    title: t('llm_config_name'),
                   },
                   {
                     dataIndex: 'use_case',
