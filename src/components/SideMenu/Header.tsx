@@ -7,7 +7,6 @@ import { DefaultLogos } from './types';
 
 interface Props {
   collapsed: boolean;
-  collapsedHover: boolean;
   sideMenuBgMode: string;
   defaultLogos: DefaultLogos;
 }
@@ -26,7 +25,7 @@ const getLogoSrc = (collapsed: boolean, sideMenuBgMode: string, defaultLogos: De
 };
 
 export default function SideMenuHeader(props: Props) {
-  const { collapsed, collapsedHover, sideMenuBgMode, defaultLogos } = props;
+  const { collapsed, sideMenuBgMode, defaultLogos } = props;
   const { siteInfo } = useContext(CommonStateContext);
 
   const noCollapsedLogo = getLogoSrc(false, sideMenuBgMode, defaultLogos, siteInfo);
@@ -40,7 +39,7 @@ export default function SideMenuHeader(props: Props) {
         height={38}
         className='max-w-[120px]'
         style={{
-          display: !collapsed || collapsedHover ? 'block' : 'none',
+          display: collapsed ? 'none' : 'block',
         }}
       />
       <img
@@ -49,7 +48,7 @@ export default function SideMenuHeader(props: Props) {
         height={38}
         className='max-w-[120px]'
         style={{
-          display: !collapsed || collapsedHover ? 'none' : 'block',
+          display: collapsed ? 'block' : 'none',
         }}
       />
     </div>
