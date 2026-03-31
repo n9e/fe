@@ -52,7 +52,7 @@ export default function List() {
     return (
       <>
         <PageLayout title={t('title')}>
-          <div className='fc-page n9e'>
+          <div className='n9e'>
             <div className='bg-fc-100 rounded flex items-center justify-center'>
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}>
                 <Dropdown
@@ -114,132 +114,37 @@ export default function List() {
   return (
     <>
       <PageLayout title={t('title')}>
-        <Spin spinning={loading}>
-          <div className='fc-page n9e flex gap-4'>
-            <div className='fc-toolbar w-[240px] flex-shrink-0 flex flex-col'>
-              <div className='flex gap-2 mb-2 flex-shrink-0'>
-                <Input
-                  className='min-w-0'
-                  placeholder={t('search_placeholder')}
-                  allowClear
-                  value={searchValue}
-                  onChange={(e) => {
-                    setSearchValue(e.target.value);
-                  }}
-                />
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item
-                        key='manual'
-                        onClick={() => {
-                          setAddModalState({
-                            visible: true,
-                          });
-                        }}
-                      >
-                        {t('create_menu_1')}
-                      </Menu.Item>
-                      <Menu.Item key='upload'>
-                        <Upload
-                          name='file'
-                          showUploadList={false}
-                          accept='.zip,.tar.gz,.tgz'
-                          customRequest={(options) => {
-                            const { file } = options;
-                            try {
-                              importItem(file as File).then(() => {
-                                run();
-                                message.success(t('upload_file_success'));
-                              });
-                            } catch (error) {
-                              message.error(t('upload_file_error'));
-                            }
-                          }}
-                        >
-                          {t('create_menu_2')}
-                        </Upload>
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <Button className='flex-shrink-0' icon={<PlusOutlined />} />
-                </Dropdown>
-              </div>
-              <div className='bg-fc-100 fc-border rounded-lg h-full min-h-0 p-2 best-looking-scroll'>
-                {_.map(
-                  _.filter(data, (item) => _.includes(_.upperCase(item.name), _.upperCase(searchValue))),
-                  (item) => {
-                    return (
-                      <div
-                        key={item.id}
-                        className='flex justify-between items-center gap-2 p-2 hover:bg-fc-200 cursor-pointer rounded mb-1'
-                        style={{
-                          backgroundColor: activeData?.id === item.id ? 'rgb(var(--fc-fill-primary-rgb) / 0.1)' : undefined,
-                        }}
-                        onClick={() => {
-                          setActiveData(item);
-                        }}
-                      >
-                        <div className='truncate'>{item.name}</div>
-                        {item.enabled === false && <Tag className='m-0'>OFF</Tag>}
-                      </div>
-                    );
-                  },
-                )}
-              </div>
-            </div>
-            <div className='w-full min-w-0 p-2 best-looking-scroll'>
-              <div className='flex justify-between fc-toolbar mb-2'>
-                <div className='text-title text-l2'>{activeData?.name}</div>
-                <Space>
-                  <Switch
-                    size='small'
-                    checked={activeData?.enabled}
-                    onChange={() => {
-                      if (activeData) {
-                        const newEnabled = !activeData.enabled;
-                        putItem(activeData.id, {
-                          ..._.pick(activeData, ['name', 'description', 'instructions', 'license', 'compatibility', 'allowed_tools', 'metadata']),
-                          enabled: newEnabled,
-                        }).then(() => {
-                          message.success(t('common:success.modify'));
-                          mutate((prevData) => {
-                            if (!prevData) return prevData;
-                            return prevData.map((item) => {
-                              if (item.id === activeData.id) {
-                                return {
-                                  ...item,
-                                  enabled: newEnabled,
-                                };
-                              }
-                              return item;
-                            });
-                          });
-                          setActiveData({
-                            ...activeData,
-                            enabled: newEnabled,
-                          });
-                        });
-                      }
+        <div className='n9e'>
+          <Spin spinning={loading}>
+            <div className='flex'>
+              <div
+                className='fc-toolbar w-[240px] flex-shrink-0 flex flex-col pr-4 mr-4'
+                style={{
+                  borderRight: '1px solid var(--fc-border-color)',
+                }}
+              >
+                <div className='flex gap-2 mb-2 flex-shrink-0'>
+                  <Input
+                    className='min-w-0'
+                    placeholder={t('search_placeholder')}
+                    allowClear
+                    value={searchValue}
+                    onChange={(e) => {
+                      setSearchValue(e.target.value);
                     }}
                   />
-
                   <Dropdown
                     overlay={
                       <Menu>
                         <Menu.Item
                           key='manual'
                           onClick={() => {
-                            if (activeData?.id) {
-                              setEditModalState({
-                                id: activeData?.id,
-                                visible: true,
-                              });
-                            }
+                            setAddModalState({
+                              visible: true,
+                            });
                           }}
                         >
-                          {t('edite_menu_1')}
+                          {t('create_menu_1')}
                         </Menu.Item>
                         <Menu.Item key='upload'>
                           <Upload
@@ -249,150 +154,252 @@ export default function List() {
                             customRequest={(options) => {
                               const { file } = options;
                               try {
-                                if (activeData?.id) {
-                                  importItemToUpdate(activeData.id, file as File).then(() => {
-                                    run();
-                                    message.success(t('upload_file_success'));
-                                  });
-                                }
+                                importItem(file as File).then(() => {
+                                  run();
+                                  message.success(t('upload_file_success'));
+                                });
                               } catch (error) {
                                 message.error(t('upload_file_error'));
                               }
                             }}
                           >
-                            {t('edite_menu_2')}
+                            {t('create_menu_2')}
                           </Upload>
                         </Menu.Item>
                       </Menu>
                     }
                   >
-                    <Button size='small' icon={<EditOutlined />} />
+                    <Button className='flex-shrink-0' icon={<PlusOutlined />} />
                   </Dropdown>
-                  <Button
-                    size='small'
-                    icon={<DeleteOutlined />}
-                    onClick={() => {
-                      if (activeData) {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk: () => {
-                            deleteItem(activeData.id).then(() => {
-                              message.success(t('common:success.delete'));
-                              // 删除后用 mutate 来更新列表数据和 activeData，而不是直接调用 run 来重新获取列表数据，这样可以避免删除后 activeData 仍然存在但列表中已经没有的情况
-                              mutate((prevData) => {
-                                if (!prevData) return prevData;
-                                const newData = prevData.filter((item) => item.id !== activeData.id);
-                                // 如果删除的项是当前 activeData，则更新 activeData 为列表中的第一项或 undefined
-                                if (activeData.id === activeData.id) {
-                                  setActiveData(newData[0]);
+                </div>
+                <div className='h-full min-h-0 best-looking-scroll'>
+                  {_.map(
+                    _.filter(data, (item) => _.includes(_.upperCase(item.name), _.upperCase(searchValue))),
+                    (item) => {
+                      return (
+                        <div
+                          key={item.id}
+                          className='flex justify-between items-center gap-2 p-2 hover:bg-fc-200 cursor-pointer rounded mb-1'
+                          style={{
+                            backgroundColor: activeData?.id === item.id ? 'rgb(var(--fc-fill-primary-rgb) / 0.1)' : undefined,
+                          }}
+                          onClick={() => {
+                            setActiveData(item);
+                          }}
+                        >
+                          <div className='truncate'>{item.name}</div>
+                          {item.enabled === false && <Tag className='m-0'>OFF</Tag>}
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              </div>
+              <div className='w-full min-w-0 best-looking-scroll'>
+                <div className='flex justify-between fc-toolbar mb-2'>
+                  <div className='text-title text-l2'>{activeData?.name}</div>
+                  <Space>
+                    <Switch
+                      size='small'
+                      checked={activeData?.enabled}
+                      onChange={() => {
+                        if (activeData) {
+                          const newEnabled = !activeData.enabled;
+                          putItem(activeData.id, {
+                            ..._.pick(activeData, ['name', 'description', 'instructions', 'license', 'compatibility', 'allowed_tools', 'metadata']),
+                            enabled: newEnabled,
+                          }).then(() => {
+                            message.success(t('common:success.modify'));
+                            mutate((prevData) => {
+                              if (!prevData) return prevData;
+                              return prevData.map((item) => {
+                                if (item.id === activeData.id) {
+                                  return {
+                                    ...item,
+                                    enabled: newEnabled,
+                                  };
                                 }
-                                return newData;
+                                return item;
                               });
                             });
-                          },
-                        });
-                      }
-                    }}
-                  />
-                </Space>
-              </div>
-              {activeData?.description && <div className='text-hint'>{activeData?.description}</div>}
-              <div
-                className='my-4'
-                style={{
-                  borderBottom: '1px solid var(--fc-border-color)',
-                }}
-              />
-              <div>
-                <div className='flex justify-between fc-toolbar mb-2'>
-                  <div className='text-main text-l1'>{t('form.instructions')}</div>
-                  <Radio.Group
-                    size='small'
-                    defaultValue='formatted'
-                    onChange={(e) => {
-                      setMdFormat(e.target.value);
-                    }}
-                  >
-                    <Radio.Button value='formatted'>
-                      <EyeOutlined />
-                    </Radio.Button>
-                    <Radio.Button value='code'>
-                      <CodeOutlined />
-                    </Radio.Button>
-                  </Radio.Group>
-                </div>
-                <div>
-                  {mdFormat === 'formatted' && (
-                    <div className='bg-fc-100 fc-border rounded-lg p-4 max-h-[400px] best-looking-scroll'>
-                      <Markdown content={activeData?.instructions || ''} darkMode={darkMode} />
-                    </div>
-                  )}
-                  {mdFormat === 'code' && (
-                    <div className='bg-fc-100 fc-border rounded-lg p-4 max-h-[400px] best-looking-scroll'>
-                      <pre className='whitespace-pre-wrap break-all'>{activeData?.instructions}</pre>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div
-                className='my-4'
-                style={{
-                  borderBottom: '1px solid var(--fc-border-color)',
-                }}
-              />
-              {activeData?.id && <ResourcesTable id={activeData?.id} />}
-              <div className='mt-4'>
-                <Collapse ghost className='skills-form-collapse skills-form-collapse-compact'>
-                  <Collapse.Panel key='advanced' header={<div className='text-main text-l1'>{t('form.advanced_settings')}</div>}>
-                    <Table
-                      size='small'
-                      showHeader={false}
-                      rowKey='name'
-                      dataSource={[
-                        {
-                          name: 'license',
-                          value: activeData?.license,
-                        },
-                        {
-                          name: 'compatibility',
-                          value: activeData?.compatibility,
-                        },
-                        {
-                          name: 'allowed_tools',
-                          value: activeData?.allowed_tools,
-                        },
-                      ]}
-                      columns={[
-                        {
-                          dataIndex: 'name',
-                          key: 'name',
-                          width: 120,
-                        },
-                        {
-                          dataIndex: 'value',
-                          key: 'value',
-                          render: (value, record) => {
-                            if (_.isEmpty(value)) {
-                              return '-';
-                            }
-                            if (record.name === 'allowed_tools' && _.includes(value, ' ')) {
-                              return _.map(_.split(value, ' '), (item) => {
-                                return <Tag key={item}>{item}</Tag>;
-                              });
-                            }
-                            return value;
-                          },
-                        },
-                      ]}
-                      pagination={false}
-                      bordered={false}
+                            setActiveData({
+                              ...activeData,
+                              enabled: newEnabled,
+                            });
+                          });
+                        }
+                      }}
                     />
-                  </Collapse.Panel>
-                </Collapse>
+
+                    <Dropdown
+                      overlay={
+                        <Menu>
+                          <Menu.Item
+                            key='manual'
+                            onClick={() => {
+                              if (activeData?.id) {
+                                setEditModalState({
+                                  id: activeData?.id,
+                                  visible: true,
+                                });
+                              }
+                            }}
+                          >
+                            {t('edite_menu_1')}
+                          </Menu.Item>
+                          <Menu.Item key='upload'>
+                            <Upload
+                              name='file'
+                              showUploadList={false}
+                              accept='.zip,.tar.gz,.tgz'
+                              customRequest={(options) => {
+                                const { file } = options;
+                                try {
+                                  if (activeData?.id) {
+                                    importItemToUpdate(activeData.id, file as File).then(() => {
+                                      run();
+                                      message.success(t('upload_file_success'));
+                                    });
+                                  }
+                                } catch (error) {
+                                  message.error(t('upload_file_error'));
+                                }
+                              }}
+                            >
+                              {t('edite_menu_2')}
+                            </Upload>
+                          </Menu.Item>
+                        </Menu>
+                      }
+                    >
+                      <Button size='small' icon={<EditOutlined />} />
+                    </Dropdown>
+                    <Button
+                      size='small'
+                      icon={<DeleteOutlined />}
+                      onClick={() => {
+                        if (activeData) {
+                          Modal.confirm({
+                            title: t('common:confirm.delete'),
+                            onOk: () => {
+                              deleteItem(activeData.id).then(() => {
+                                message.success(t('common:success.delete'));
+                                // 删除后用 mutate 来更新列表数据和 activeData，而不是直接调用 run 来重新获取列表数据，这样可以避免删除后 activeData 仍然存在但列表中已经没有的情况
+                                mutate((prevData) => {
+                                  if (!prevData) return prevData;
+                                  const newData = prevData.filter((item) => item.id !== activeData.id);
+                                  // 如果删除的项是当前 activeData，则更新 activeData 为列表中的第一项或 undefined
+                                  if (activeData.id === activeData.id) {
+                                    setActiveData(newData[0]);
+                                  }
+                                  return newData;
+                                });
+                              });
+                            },
+                          });
+                        }
+                      }}
+                    />
+                  </Space>
+                </div>
+                {activeData?.description && <div className='text-hint'>{activeData?.description}</div>}
+                <div
+                  className='my-4'
+                  style={{
+                    borderBottom: '1px solid var(--fc-border-color)',
+                  }}
+                />
+                <div>
+                  <div className='flex justify-between fc-toolbar mb-2'>
+                    <div className='text-main text-l1'>{t('form.instructions')}</div>
+                    <Radio.Group
+                      size='small'
+                      defaultValue='formatted'
+                      onChange={(e) => {
+                        setMdFormat(e.target.value);
+                      }}
+                    >
+                      <Radio.Button value='formatted'>
+                        <EyeOutlined />
+                      </Radio.Button>
+                      <Radio.Button value='code'>
+                        <CodeOutlined />
+                      </Radio.Button>
+                    </Radio.Group>
+                  </div>
+                  <div>
+                    {mdFormat === 'formatted' && (
+                      <div className='bg-fc-100 fc-border rounded-lg p-4 max-h-[400px] best-looking-scroll'>
+                        <Markdown content={activeData?.instructions || ''} darkMode={darkMode} />
+                      </div>
+                    )}
+                    {mdFormat === 'code' && (
+                      <div className='bg-fc-100 fc-border rounded-lg p-4 max-h-[400px] best-looking-scroll'>
+                        <pre className='whitespace-pre-wrap break-all'>{activeData?.instructions}</pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div
+                  className='my-4'
+                  style={{
+                    borderBottom: '1px solid var(--fc-border-color)',
+                  }}
+                />
+                {activeData?.id && <ResourcesTable id={activeData?.id} />}
+                <div className='mt-4'>
+                  <Collapse ghost className='skills-form-collapse skills-form-collapse-compact'>
+                    <Collapse.Panel key='advanced' header={<div className='text-main text-l1'>{t('form.advanced_settings')}</div>}>
+                      <Table
+                        size='small'
+                        showHeader={false}
+                        rowKey='name'
+                        dataSource={[
+                          {
+                            name: 'license',
+                            value: activeData?.license,
+                          },
+                          {
+                            name: 'compatibility',
+                            value: activeData?.compatibility,
+                          },
+                          {
+                            name: 'allowed_tools',
+                            value: activeData?.allowed_tools,
+                          },
+                        ]}
+                        columns={[
+                          {
+                            dataIndex: 'name',
+                            key: 'name',
+                            width: 120,
+                          },
+                          {
+                            dataIndex: 'value',
+                            key: 'value',
+                            render: (value, record) => {
+                              if (_.isEmpty(value)) {
+                                return '-';
+                              }
+                              if (record.name === 'allowed_tools' && _.includes(value, ' ')) {
+                                return _.map(_.split(value, ' '), (item) => {
+                                  return <Tag key={item}>{item}</Tag>;
+                                });
+                              }
+                              return value;
+                            },
+                          },
+                        ]}
+                        pagination={false}
+                        bordered={false}
+                      />
+                    </Collapse.Panel>
+                  </Collapse>
+                </div>
               </div>
             </div>
-          </div>
-        </Spin>
+          </Spin>
+        </div>
       </PageLayout>
       <AddModal
         visible={addModalState.visible}
