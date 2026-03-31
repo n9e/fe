@@ -76,7 +76,7 @@
   --fc-sidemenu-border: #e5e7eb;
   --fc-sidemenu-section-title: rgba(101, 115, 134, 0.6);
   /* 对齐 fc-firemap: --sidebar-foreground: 215 14% 34% => rgb(75, 85, 99) */
-  --fc-sidemenu-item-icon: rgba(75, 85, 99, 0.4);
+  --fc-sidemenu-item-icon: rgb(75, 85, 99);
   --fc-sidemenu-item-text: rgb(75, 85, 99);
   /* 对齐 fc-firemap 子菜单默认色：text-muted-foreground => 215 14% 46% */
   --fc-sidemenu-subitem-text: rgb(101, 115, 134);
