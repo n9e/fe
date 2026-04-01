@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
+import getPlacements from 'antd/es/_util/placements';
 import { Link } from 'react-router-dom';
 
 import { RightIcon } from '@/components/BusinessGroup/components/Tree/constant';
@@ -9,6 +10,15 @@ import IconFont from '@/components/IconFont';
 import { IMenuItem } from './types';
 import { cn, getSavedPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
+
+/** 与 fc-firemap AppSidebar 一致：Radix Tooltip sideOffset=8，antd 用 rightTop 水平 offset 8px */
+const SIDE_MENU_HOVER_TOOLTIP_PLACEMENTS = (() => {
+  const base = getPlacements({ arrowPointAtCenter: false, autoAdjustOverflow: true });
+  return {
+    ...base,
+    rightTop: { ...base.rightTop, offset: [8, 0] as [number, number] },
+  };
+})();
 
 interface IMenuProps {
   collapsed: boolean;
@@ -128,11 +138,11 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   const titleClass = (() => {
     if (isLight) {
       return isActive
-        ? 'font-medium text-[var(--fc-sidemenu-item-active-text)]'
+        ? 'text-[var(--fc-sidemenu-item-active-text)]'
         : 'text-[var(--fc-sidemenu-item-text)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
     }
     if (isActive) {
-      return props.isCustomBg ? (isBgBlack ? 'font-medium text-[#fff]' : 'font-medium text-[#ccccdc]') : 'font-medium text-title';
+      return props.isCustomBg ? (isBgBlack ? 'text-[#fff]' : 'text-[#ccccdc]') : 'text-title';
     }
     return props.isCustomBg ? 'group-hover:text-[#fff]' : 'group-hover:text-title';
   })();
@@ -250,27 +260,29 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       : 'bg-[#E0E2EB]'
     : '';
 
+  const activeBold = isActive && isSubTreeLayout ? 'font-medium' : '';
+
   let textColor = '';
   if (isLight) {
     textColor = isActive
-      ? 'font-medium text-[var(--fc-sidemenu-item-active-text)]'
+      ? cn(activeBold, 'text-[var(--fc-sidemenu-item-active-text)]')
       : cn(
           isSubTreeLayout ? 'text-[var(--fc-sidemenu-subitem-text)]' : 'text-[var(--fc-sidemenu-item-text)]',
           'group-hover:text-[var(--fc-sidemenu-item-hover-text)]',
         );
   } else if (isActive) {
     if (isBlueTheme) {
-      textColor = 'font-medium text-[#427AF4]';
+      textColor = cn(activeBold, 'text-[#427AF4]');
     } else if (isCustomBg) {
       if (isGoldTheme) {
-        textColor = 'font-medium text-[#333]';
+        textColor = cn(activeBold, 'text-[#333]');
       } else if (isBgBlack) {
-        textColor = 'font-medium text-[#ccccdc]';
+        textColor = cn(activeBold, 'text-[#ccccdc]');
       } else {
-        textColor = 'font-medium text-[#fff]';
+        textColor = cn(activeBold, 'text-[#fff]');
       }
     } else {
-      textColor = 'font-medium text-title';
+      textColor = cn(activeBold, 'text-title');
     }
   } else {
     textColor = isCustomBg ? 'group-hover:text-[#fff]' : 'group-hover:text-title';
@@ -574,17 +586,21 @@ export default function MenuList(
                     <Tooltip
                       key={menu.key}
                       overlayClassName='sidemenu-hover-panel-tooltip'
+                      builtinPlacements={SIDE_MENU_HOVER_TOOLTIP_PLACEMENTS}
                       placement='rightTop'
                       trigger={[]}
                       visible={open}
                       destroyTooltipOnHide
                       title={
                         <div
-                          className='sidemenu-hover-panel'
-                          style={{
-                            background: props.sideMenuBgColor,
-                            borderColor: props.isCustomBg ? 'rgba(255,255,255,0.12)' : isLight ? 'rgba(0,0,0,0.06)' : 'rgba(0,0,0,0.10)',
-                          }}
+                          className={cn('sidemenu-hover-panel', isLight ? 'sidemenu-hover-panel--light' : 'sidemenu-hover-panel--on-dark')}
+                          style={
+                            isLight
+                              ? undefined
+                              : {
+                                  background: props.sideMenuBgColor,
+                                }
+                          }
                           onMouseEnter={() => {
                             clearCloseTimer();
                           }}
@@ -592,55 +608,63 @@ export default function MenuList(
                             scheduleCloseHoverPanel();
                           }}
                         >
-                          <div className='sidemenu-hover-panel-header'>
-                            <div className='sidemenu-hover-panel-header-icon'>{menu.icon}</div>
-                            <div className='sidemenu-hover-panel-header-title'>{t(menu.label)}</div>
+                          <div className='sidemenu-hover-panel-group-title truncate' title={t(menu.label)}>
+                            {t(menu.label)}
                           </div>
-                          <div
-                            className='sidemenu-hover-panel-divider'
-                            style={{
-                              background: props.isCustomBg ? 'rgba(255,255,255,0.12)' : 'var(--fc-sidemenu-border)',
-                            }}
-                          />
                           <div className='sidemenu-hover-panel-list'>
                             {hoverChildren.map((c) => {
+                              const isItemActive = props.selectedKeys?.includes(c.key);
+                              const itemClass = cn(
+                                'group relative flex h-7 min-w-0 cursor-pointer items-center gap-2 rounded-md px-2 text-[13px] leading-[18px] transition-colors duration-150',
+                                isItemActive
+                                  ? isLight
+                                    ? 'bg-[var(--fc-sidemenu-item-active-bg)] font-medium text-[var(--fc-sidemenu-item-active-text)]'
+                                    : props.isCustomBg
+                                    ? 'bg-[rgba(204,204,220,0.12)] font-medium text-[#e6e6e8]'
+                                    : 'bg-[#E0E2EB] font-medium text-title'
+                                  : isLight
+                                  ? 'text-[var(--fc-text-1)] hover:bg-[var(--fc-fill-3)]'
+                                  : props.isCustomBg
+                                  ? 'text-[#e6e6e8] hover:bg-[rgba(204,204,220,0.12)]'
+                                  : 'text-main hover:bg-fc-200',
+                              );
+                              const itemContent = (
+                                <>
+                                  <span className='flex-1 truncate'>{t(c.label)}</span>
+                                  {c.beta && (
+                                    <span
+                                      className={cn(
+                                        'ml-2 shrink-0 scale-75 text-[9px] leading-[15px]',
+                                        isLight
+                                          ? 'rounded-full bg-[var(--fc-sidemenu-beta-bg)] px-[6px] py-[1px] text-[var(--fc-sidemenu-beta-text)]'
+                                          : 'fc-border rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 px-[3px] py-[1px] text-yellow-700',
+                                      )}
+                                    >
+                                      Beta
+                                    </span>
+                                  )}
+                                  {c.deprecated && (
+                                    <span className='ml-1 shrink-0'>
+                                      <DeprecatedIcon />
+                                    </span>
+                                  )}
+                                </>
+                              );
+                              const handleClick = () => {
+                                props.onClick?.(c.key, { keepCollapsed: true });
+                                closeHoverPanel();
+                              };
                               if (c.pathType === 'absolute') {
                                 return (
-                                  <AbsoluteMenuItem
-                                    key={c.key}
-                                    item={c}
-                                    isSub
-                                    collapsed={false}
-                                    selectedKeys={props.selectedKeys}
-                                    sideMenuBgColor={props.sideMenuBgColor}
-                                    isCustomBg={props.isCustomBg}
-                                    quickMenuRef={props.quickMenuRef}
-                                    isGoldTheme={props.isGoldTheme}
-                                    isLight={isLight}
-                                    onClick={(key) => {
-                                      props.onClick?.(key, { keepCollapsed: true });
-                                      closeHoverPanel();
-                                    }}
-                                  />
+                                  <a key={c.key} href={c.path} target={c.target} className={itemClass} onClick={handleClick}>
+                                    {itemContent}
+                                  </a>
                                 );
                               }
                               return (
-                                <MenuItem
-                                  key={c.key}
-                                  item={c}
-                                  isSub
-                                  collapsed={false}
-                                  selectedKeys={props.selectedKeys}
-                                  sideMenuBgColor={props.sideMenuBgColor}
-                                  isCustomBg={props.isCustomBg}
-                                  quickMenuRef={props.quickMenuRef}
-                                  isGoldTheme={props.isGoldTheme}
-                                  isLight={isLight}
-                                  onClick={(key) => {
-                                    props.onClick?.(key, { keepCollapsed: true });
-                                    closeHoverPanel();
-                                  }}
-                                />
+                                <Link key={c.key} to={c.key} className={itemClass} onClick={handleClick}>
+                                  {itemContent}
+                                </Link>
                               );
                             })}
                           </div>

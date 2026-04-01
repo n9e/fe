@@ -267,7 +267,7 @@ const SideMenu = (props: SideMenuProps) => {
     [collapsed, menuWidthPx],
   );
 
-  const expandedMenuWidth = collapsed ? 64 : menuWidthPx;
+  const expandedMenuWidth = collapsed ? 56 : menuWidthPx;
 
   return (
     <div
@@ -277,7 +277,7 @@ const SideMenu = (props: SideMenuProps) => {
       }}
     >
       <div
-        className={cn('relative flex h-screen shrink-0', collapsed ? 'w-[64px]' : '')}
+        className={cn('relative flex h-screen shrink-0', collapsed ? 'w-[56px]' : '')}
       >
         <aside
           className={cn(
@@ -305,6 +305,10 @@ const SideMenu = (props: SideMenuProps) => {
           )}
           <div className='flex flex-1 flex-col justify-between gap-1 overflow-hidden'>
             <SideMenuHeader collapsed={collapsed} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
+            <div
+              className={cn('shrink-0 h-px mb-2', collapsed ? 'mx-2' : 'mx-3')}
+              style={{ background: 'hsla(240, 5%, 92%, 0.7)' }}
+            />
             <ScrollArea className='-mr-2 flex-1'>
               <MenuList
                 list={menus}
