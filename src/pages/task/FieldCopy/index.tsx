@@ -40,7 +40,7 @@ const HostCopyTitle = (props: Props) => {
     }
 
     if (_.isEmpty(tobeCopy)) {
-      message.warning(t('host.copy.empty'));
+      message.warning(t('nodata'));
       return;
     }
 
@@ -51,7 +51,7 @@ const HostCopyTitle = (props: Props) => {
       message.success(t('copy_success', { num: tobeCopy.length }));
     } else {
       Modal.warning({
-        title: t('host.copy.error'),
+        title: t('copyToClipboardFailed'),
         content: <Input.TextArea defaultValue={tobeCopyStr} />,
       });
     }

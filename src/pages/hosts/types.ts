@@ -26,7 +26,6 @@ export interface Item {
   beat_time: number;
   unixtime: number;
   update_at: number;
-  meta_info: any;
 }
 
 export interface Stats {

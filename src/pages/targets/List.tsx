@@ -126,7 +126,7 @@ export default function List(props: IProps) {
                     message.success(t('ident_copy_success', { num: tobeCopy.length }));
                   } else {
                     Modal.warning({
-                      title: t('host.copy.error'),
+                      title: t('common:copyToClipboardFailed'),
                       content: <Input.TextArea defaultValue={tobeCopyStr} />,
                     });
                   }
