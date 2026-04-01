@@ -132,7 +132,7 @@ export default function VersionsDistributionChart({ data, renderTooltip }: Versi
   const roughTicks = d3.scaleLinear().domain([0, roughMax]).range([barAreaHeight, 0]).nice().ticks(TICK_COUNT);
   const leftMargin = LABEL_EDGE_GAP + Math.max(...roughTicks.map((t) => formatTickLabel(t).length), 1) * LABEL_CHAR_WIDTH + LABEL_AXIS_GAP;
 
-  const availableWidth = svgWidth - leftMargin - RIGHT_PADDING;
+  const availableWidth = Math.max(0, Math.floor(svgWidth - leftMargin - RIGHT_PADDING));
   const maxBars = Math.max(1, Math.floor((availableWidth + BAR_GAP) / (MIN_BAR_WIDTH + BAR_GAP)));
 
   let bars: BarItem[];
@@ -158,12 +158,13 @@ export default function VersionsDistributionChart({ data, renderTooltip }: Versi
   const rawBarWidth = Math.floor((availableWidth - (n - 1) * BAR_GAP) / n);
   const barWidth = Math.min(MAX_BAR_WIDTH, Math.max(MIN_BAR_WIDTH, rawBarWidth));
   const totalBarsWidth = n * barWidth + (n - 1) * BAR_GAP;
-  const barsStartX = leftMargin + Math.floor((availableWidth - totalBarsWidth) / 2);
+  const barsStartX = Math.round(leftMargin + (availableWidth - totalBarsWidth) / 2);
 
   const maxValue = Math.max(...bars.map((b) => b.value), 1);
   const yScale = d3.scaleLinear().domain([0, maxValue]).range([barAreaHeight, 0]).nice();
   const ticks = yScale.ticks(TICK_COUNT);
-  const nicedMax = yScale.domain()[1];
+  const baselineY = Math.round(TOP_PADDING + (yScale(0) as number));
+  const plotRightX = Math.round(svgWidth - RIGHT_PADDING);
 
   return (
     <div className='relative w-full h-full'>
@@ -171,10 +172,10 @@ export default function VersionsDistributionChart({ data, renderTooltip }: Versi
         <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width={svgWidth} height={svgHeight} onMouseLeave={handleSvgMouseLeave}>
           <g>
             {ticks.map((tick) => {
-              const y = TOP_PADDING + (yScale(tick) as number);
+              const y = Math.round(TOP_PADDING + (yScale(tick) as number));
               return (
                 <g key={tick}>
-                  <line x1={leftMargin} y1={y} x2={svgWidth - RIGHT_PADDING} y2={y} style={{ stroke: darkMode ? 'var(--fc-fill-6)' : 'var(--fc-fill-3)', strokeWidth: 1 }} />
+                  <line x1={leftMargin} y1={y} x2={plotRightX} y2={y} style={{ stroke: darkMode ? 'var(--fc-fill-6)' : 'var(--fc-fill-3)', strokeWidth: 1 }} />
                   <text x={leftMargin - LABEL_AXIS_GAP} y={y + TICK_FONT_SIZE / 2 - 1} textAnchor='end' style={{ fontSize: TICK_FONT_SIZE, fill: 'var(--fc-text-4)' }}>
                     {formatTickLabel(tick)}
                   </text>
@@ -186,17 +187,18 @@ export default function VersionsDistributionChart({ data, renderTooltip }: Versi
           <g>
             {bars.map((bar, i) => {
               if (bar.value === 0) return null;
-              const x = barsStartX + i * (barWidth + BAR_GAP);
-              const totalBarH = (bar.value / nicedMax) * barAreaHeight;
-              const bodyH = Math.max(0, totalBarH - CAP_HEIGHT);
-              const capY = TOP_PADDING + (yScale(bar.value) as number);
-              const bodyY = capY + CAP_HEIGHT;
+              const x = Math.round(barsStartX + i * (barWidth + BAR_GAP));
+              const capY = Math.round(TOP_PADDING + (yScale(bar.value) as number));
+              const totalBarH = Math.max(1, baselineY - capY);
+              const capH = Math.min(CAP_HEIGHT, totalBarH);
+              const bodyH = Math.max(0, totalBarH - capH);
+              const bodyY = capY + capH;
               const isHovered = hoveredBar?.label === bar.label;
               const { color } = bar;
 
               return (
                 <g key={bar.label} style={{ cursor: renderTooltip ? 'pointer' : 'default' }} onMouseEnter={(e) => handleBarMouseEnter(bar, e)} onMouseMove={handleBarMouseMove}>
-                  <rect x={x} y={capY} width={barWidth} height={CAP_HEIGHT} style={{ fill: color }} />
+                  <rect x={x} y={capY} width={barWidth} height={capH} style={{ fill: color }} />
                   {bodyH > 0 && <rect x={x} y={bodyY} width={barWidth} height={bodyH} style={{ fill: color, fillOpacity: 0.5 }} />}
                   {isHovered && totalBarH > 0 && <rect x={x} y={capY} width={barWidth} height={totalBarH} fill='white' fillOpacity={0.15} style={{ pointerEvents: 'none' }} />}
                 </g>
