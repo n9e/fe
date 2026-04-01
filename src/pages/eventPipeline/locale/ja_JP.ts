@@ -271,6 +271,33 @@ const ja_JP = {
     timeout_max_warning: '実行待機時間は60秒を超えることはできません',
     select_host: 'マシンを選択',
   },
+  alert_shot: {
+    help: '帮助信息',
+    title: 'アラートスクリーンショット',
+    shot_type: {
+      label: '対象タイプ',
+      options: {
+        board: 'ダッシュボード',
+        url: 'URLアドレス',
+      },
+    },
+    advanced_settings: '高度な設定',
+    board_shot_opts: {
+      busi_group: 'ビジネスグループ',
+      board_id: 'ダッシュボード',
+      board_url: 'ダッシュボード URL',
+      timeout: 'タイムアウト（ミリ秒）',
+      width: '画像の幅',
+    },
+    url_shot_opts: {
+      url: 'URL アドレス',
+      headers: 'ヘッダー',
+      proxy: 'プロキシ設定',
+      insecure_skip_verify: '証明書の検証をスキップ',
+      timeout: 'タイムアウト（ミリ秒）',
+      width: '画像の幅',
+    },
+  },
 };
 
 export default ja_JP;

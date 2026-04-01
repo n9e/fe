@@ -275,6 +275,33 @@ const ru_RU = {
     timeout_max_warning: 'Время ожидания выполнения не может превышать 60 секунд',
     select_host: 'Выбрать целевую машину',
   },
+  alert_shot: {
+    help: 'Помощь',
+    title: 'Скриншот оповещения',
+    shot_type: {
+      label: 'Тип объекта',
+      options: {
+        board: 'Панель управления',
+        url: 'URL адрес',
+      },
+    },
+    advanced_settings: 'Расширенные настройки',
+    board_shot_opts: {
+      busi_group: 'Бизнес-группа',
+      board_id: 'Панель управления',
+      board_url: 'URL панели управления',
+      timeout: 'Время ожидания (мс)',
+      width: 'Ширина изображения',
+    },
+    url_shot_opts: {
+      url: 'URL адрес',
+      headers: 'Заголовки запроса',
+      proxy: 'Настройки прокси',
+      insecure_skip_verify: 'Пропустить проверку сертификата',
+      timeout: 'Время ожидания (мс)',
+      width: 'Ширина изображения',
+    },
+  },
 };
 
 export default ru_RU;
