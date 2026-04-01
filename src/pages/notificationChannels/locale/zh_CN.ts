@@ -5,6 +5,7 @@ const zh_CN = {
   ident_tip: '通知媒介的分类，例如多个钉钉通知媒介，类型都可以设置为 dingtalk。类型可以手写，并不局限在下拉列表中的选项，通知媒介和消息模板通过类型字段建立关联关系',
   note_tip: '可填写对该通知媒介的补充说明或使用场景，方便后续维护或协作时查看',
   enable_tip: '是否启用此通知媒介的配置。关闭后，该配置将暂时失效，不会再发送通知',
+  advanced_settings: '高级设置',
   variable_configuration: {
     title: '变量配置',
     contact_key: '联系方式',
@@ -25,6 +26,9 @@ const zh_CN = {
     script: 'Script 配置',
     flashduty: 'FlashDuty 配置',
     pagerduty: 'PagerDuty 配置',
+    dingtalkapp: '钉钉应用配置',
+    wecomapp: '企业微信应用配置',
+    feishuapp: '飞书应用配置',
   },
   request_type: '发送类型',
   http_request_config: {
@@ -96,6 +100,24 @@ const zh_CN = {
     timeout: '超时时间 (单位: 毫秒)',
     retry_times: '重试次数',
   },
+  dingtalkapp_request_config: {
+    app_key: '应用唯一标识',
+    app_secret: '应用密钥',
+    proxy: '代理',
+  },
+  wecomapp_request_config: {
+    corp_id: '企业ID',
+    corp_secret: '企业密钥',
+    agentid: 'agentid',
+    proxy: '代理',
+  },
+  feishuapp_request_config: {
+    app_id: '应用ID',
+    app_secret: '应用密钥',
+    receive_id_type: '接收者ID类型',
+    proxy: '代理',
+  },
+
   types_search_placeholder: '搜索类型',
   name_search_placeholder: '搜索名称',
   status_select: {
@@ -110,9 +132,12 @@ const zh_CN = {
     callback: '回调',
     email: '邮件',
     dingtalk: '钉钉',
+    dingtalkapp: '钉钉应用',
     wecom: '企业微信',
+    wecomapp: '企业微信应用',
     feishucard: '飞书卡片',
     feishu: '飞书',
+    feishuapp: '飞书应用',
     larkcard: 'Lark 卡片',
     lark: 'Lark',
     telegram: 'Telegram',
