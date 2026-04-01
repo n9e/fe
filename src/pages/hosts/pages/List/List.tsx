@@ -689,6 +689,27 @@ export default function List(props: Props) {
                 return <div style={{ minWidth }}>{val}</div>;
               },
             },
+            {
+              dataIndex: 'note',
+              title: t('note'),
+              render: (val) => {
+                const minWidth = getTextWidth(t('note')) + 24;
+                const maxWidth = 100;
+                const displayVal = val ?? '-';
+                return (
+                  <Tooltip title={displayVal === '-' ? undefined : displayVal}>
+                    <div
+                      style={{ minWidth, maxWidth }}
+                      className={classNames('truncate', {
+                        'text-soft': displayVal === '-',
+                      })}
+                    >
+                      {displayVal}
+                    </div>
+                  </Tooltip>
+                );
+              },
+            },
           ]}
         />
       </div>
