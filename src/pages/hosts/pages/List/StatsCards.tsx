@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
-import { Col, Row, Space, Empty } from 'antd';
-import { SyncOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
+import { Col, Row, Space, Empty, Tooltip } from 'antd';
+import { SyncOutlined, UpOutlined, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import classNames from 'classnames';
 
@@ -128,7 +128,14 @@ export default function StatsCards(props: Props) {
           </Col>
           <Col span={6}>
             <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative flex flex-col'>
-              <div className='mb-3 text-l1 leading-none shrink-0'>{t('memory_usage')}</div>
+              <div className='mb-3 text-l1 leading-none shrink-0'>
+                <Space size={2}>
+                  {t('memory_usage')}{' '}
+                  <Tooltip title={t('usage_tip')}>
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </Space>
+              </div>
               <div className='flex-1 min-h-0 overflow-hidden'>
                 <UsageDistributionChart data={stats?.mem_usage} chartId='mem' />
               </div>
@@ -141,7 +148,14 @@ export default function StatsCards(props: Props) {
           </Col>
           <Col span={6}>
             <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative flex flex-col'>
-              <div className='mb-3 text-l1 leading-none shrink-0'>{t('cpu_usage')}</div>
+              <div className='mb-3 text-l1 leading-none shrink-0'>
+                <Space size={2}>
+                  {t('cpu_usage')}
+                  <Tooltip title={t('usage_tip')}>
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </Space>
+              </div>
               <div className='flex-1 min-h-0 overflow-hidden'>
                 <UsageDistributionChart data={stats?.cpu_usage} chartId='cpu' />
               </div>
