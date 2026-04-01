@@ -508,12 +508,6 @@ export default function index(props: Props) {
               linesColumnFormat={(val) => {
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
-              adjustFieldValue={(formatedValue, highlightValue) => {
-                if (highlightValue) {
-                  return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlightValue)) }} />;
-                }
-                return formatedValue;
-              }}
               // state context
               fieldConfig={currentFieldConfig}
               indexData={indexData}
