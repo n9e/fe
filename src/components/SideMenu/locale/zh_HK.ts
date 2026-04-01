@@ -62,9 +62,11 @@ const zh_HK = {
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
+    insight: '業務洞察（INSIGHT）',
     observability: 'OBSERVABILITY',
-    analysis: 'ANALYSIS',
-    platform: 'PLATFORM',
+    analysis: '數據分析（ANALYSIS）',
+    platform: '平台工具（PLATFORM）',
+    system: '系統配置（SYSTEM）',
   },
 };
 
