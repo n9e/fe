@@ -153,7 +153,11 @@ export const authCallbackFeishu = function (params) {
   });
 };
 
-export const getSsoConfig = function () {
+export const getSsoConfig = function (): Promise<{
+  dat: {
+    [index: string]: string;
+  };
+}> {
   return request('/api/n9e/auth/sso-config', {
     method: RequestMethod.Get,
   });
