@@ -108,9 +108,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   let iconColor = '';
   if (isLight) {
-    iconColor = isActive
-      ? 'text-[var(--fc-sidemenu-item-active-text)]'
-      : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
+    iconColor = isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
   } else if (isActive) {
     if (isBlueTheme) {
       iconColor = 'text-[#427AF4]';
@@ -137,9 +135,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const titleClass = (() => {
     if (isLight) {
-      return isActive
-        ? 'text-[var(--fc-sidemenu-item-active-text)]'
-        : 'text-[var(--fc-sidemenu-item-text)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
+      return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-text)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
     }
     if (isActive) {
       return props.isCustomBg ? (isBgBlack ? 'text-[#fff]' : 'text-[#ccccdc]') : 'text-title';
@@ -170,14 +166,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         )}
       >
         <div className='flex min-w-0 flex-1 items-center gap-2.5'>
-          <div
-            className={cn(
-              'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
-              iconColor,
-            )}
-          >
-            {item.icon}
-          </div>
+          <div className={cn('inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]', iconColor)}>{item.icon}</div>
           {!collapsed && <span className={cn('flex-1 text-left truncate text-[13px] leading-[18px] tracking-normal', titleClass)}>{t(item.label)}</span>}
         </div>
         {!collapsed && (
@@ -193,10 +182,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         <div
           className={cn(
             !collapsed
-              ? cn(
-                  'ml-4 pl-3 pt-0.5 space-y-0.5 border-l',
-                  isLight ? 'border-fc-300/80' : props.isCustomBg ? (isBgBlack ? 'border-white/10' : 'border-white/20') : 'border-fc-300',
-                )
+              ? cn('ml-4 pl-3 pt-0.5 space-y-0.5 border-l', isLight ? 'border-fc-300/80' : props.isCustomBg ? (isBgBlack ? 'border-white/10' : 'border-white/20') : 'border-fc-300')
               : 'space-y-0',
           )}
         >
@@ -266,10 +252,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
   if (isLight) {
     textColor = isActive
       ? cn(activeBold, 'text-[var(--fc-sidemenu-item-active-text)]')
-      : cn(
-          isSubTreeLayout ? 'text-[var(--fc-sidemenu-subitem-text)]' : 'text-[var(--fc-sidemenu-item-text)]',
-          'group-hover:text-[var(--fc-sidemenu-item-hover-text)]',
-        );
+      : cn(isSubTreeLayout ? 'text-[var(--fc-sidemenu-subitem-text)]' : 'text-[var(--fc-sidemenu-item-text)]', 'group-hover:text-[var(--fc-sidemenu-item-hover-text)]');
   } else if (isActive) {
     if (isBlueTheme) {
       textColor = cn(activeBold, 'text-[#427AF4]');
@@ -418,11 +401,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
     <a
       href={item.path}
       target={item.target}
-      className={cn(
-        'group relative flex min-w-0 cursor-pointer items-center transition-colors duration-75',
-        isSubTreeLayout ? 'h-7 rounded-md' : 'h-9 rounded-md',
-        rowClass,
-      )}
+      className={cn('group relative flex min-w-0 cursor-pointer items-center transition-colors duration-75', isSubTreeLayout ? 'h-7 rounded-md' : 'h-9 rounded-md', rowClass)}
       onClick={() => onClick?.(item.key)}
     >
       {isSubTreeLayout ? null : !isSub ? (
@@ -545,7 +524,7 @@ export default function MenuList(
                 isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
-              {<IconFont type='icon-ic_search' />}
+              {<IconFont type='icon-ic_search_light' />}
             </div>
 
             <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('quickJump')} </div>
@@ -558,8 +537,7 @@ export default function MenuList(
               {chunk.section ? <SectionHeader section={chunk.section} collapsed={props.collapsed} isCustomBg={props.isCustomBg} isFirst={chunkIndex === 0} /> : null}
               {chunk.items.map((menu) => {
                 if (menu.children?.length) {
-                  const visibleChildren =
-                    menu.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
+                  const visibleChildren = menu.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
                   const hoverChildren = flattenMenuChildrenForHoverPanel(visibleChildren);
                   const hoverEnabled = props.collapsed && hoverChildren.length > 0;
                   const open = hoverEnabled && activeHoverGroupKey === menu.key;
