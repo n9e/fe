@@ -18,18 +18,19 @@ interface Props {
   gids?: string;
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  refreshFlag: string;
 }
 
 export default function StatsCards(props: Props) {
   const { t } = useTranslation(NS);
-  const { gids, collapsed, setCollapsed } = props;
+  const { gids, collapsed, setCollapsed, refreshFlag } = props;
 
   const { data: stats, loading } = useRequest(
     () => {
       return getStats({ gids });
     },
     {
-      refreshDeps: [gids],
+      refreshDeps: [gids, refreshFlag],
     },
   );
 

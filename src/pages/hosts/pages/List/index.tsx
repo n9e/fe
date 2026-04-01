@@ -86,7 +86,7 @@ export default function index() {
             }}
           />
           <div className='w-full min-w-0 flex flex-col'>
-            <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} />
+            <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
             <List
               allCollapseNode={
                 <Button
