@@ -303,13 +303,13 @@ const SideMenu = (props: SideMenuProps) => {
               onMouseDown={onResizeHandleMouseDown}
             />
           )}
-          <div className='flex flex-1 flex-col justify-between gap-1 overflow-hidden'>
+          <div className='flex flex-1 flex-col justify-between gap-0 overflow-hidden'>
             <SideMenuHeader collapsed={collapsed} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
             <div
-              className={cn('shrink-0 h-px mb-2', collapsed ? 'mx-2' : 'mx-3')}
+              className={cn('shrink-0 h-px', collapsed ? 'mx-2' : 'mx-3')}
               style={{ background: 'hsla(240, 5%, 92%, 0.7)' }}
             />
-            <ScrollArea className='-mr-2 flex-1'>
+            <ScrollArea className='-mr-2 mt-3 flex-1'>
               <MenuList
                 list={menus}
                 collapsed={collapsed}

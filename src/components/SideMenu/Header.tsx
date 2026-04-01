@@ -32,7 +32,7 @@ export default function SideMenuHeader(props: Props) {
   const collapsedLogo = getLogoSrc(true, sideMenuBgMode, defaultLogos, siteInfo);
 
   return (
-    <div className={cn('relative mt-4 h-10 w-full shrink-0 overflow-hidden transition-spacing flex', collapsed ? 'justify-center' : 'justify-start pl-3')}>
+    <div className={cn('relative mt-4 mb-3 h-10 w-full shrink-0 overflow-hidden transition-spacing flex', collapsed ? 'justify-center' : 'justify-start pl-3')}>
       <img
         src={noCollapsedLogo}
         width={120}
