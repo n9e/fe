@@ -1,9 +1,8 @@
-import React, { useRef, useState, useLayoutEffect, useContext } from 'react';
+import React, { useRef, useState, useLayoutEffect } from 'react';
 import { Button, Popover } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { Trans } from 'react-i18next';
 
-import { CommonStateContext } from '@/App';
 import { copy2ClipBoard } from '@/utils';
 
 import { NS } from '../../constants';
@@ -74,17 +73,24 @@ function calcLayout(tagWidths: number[], overflowTagWidth: number, containerWidt
 }
 
 export default function Tags(props: Props) {
-  const { darkMode } = useContext(CommonStateContext);
   const { type = 'outline', data, onTagClick } = props;
-  const bgColor = props.bgColor || (darkMode ? 'rgba(58, 46, 130, 0.5)' : 'rgb(238, 240, 255)');
-  const fontColor = props.fontColor || (darkMode ? 'rgb(164, 169, 253)' : 'rgb(92, 64, 230)');
+  const bgColor = props.bgColor || 'var(--fc-violet-3)';
+  const fontColor = props.fontColor || 'var(--fc-violet-11)';
   const containerRef = useRef<HTMLDivElement>(null);
   const tagMeasureRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const overflowMeasureRef = useRef<HTMLSpanElement | null>(null);
   const [layout, setLayout] = useState({ visibleCount: data.length, overflowCount: 0 });
 
   // fill 模式下通过 inline style 设置动态颜色（Tailwind 不支持动态值）
-  const fillStyle: React.CSSProperties | undefined = type === 'fill' ? { backgroundColor: bgColor, borderColor: bgColor, color: fontColor } : undefined;
+  const fillStyle: React.CSSProperties | undefined =
+    type === 'fill'
+      ? {
+          backgroundColor: bgColor,
+          backgroundClip: 'padding-box',
+          borderColor: bgColor,
+          color: fontColor,
+        }
+      : undefined;
 
   // tag 的 Tailwind 基础类（测量层和渲染层共用）
   // p-[6px] border border-[var(--fc-border-color)] rounded-2xl leading-none whitespace-nowrap box-border
