@@ -18,6 +18,9 @@ import SMTP from './SMTP';
 import Script from './Script';
 import Flashduty from './Flashduty';
 import Pagerduty from './Pagerduty';
+import DingtalkApp from './DingtalkApp';
+import WecomApp from './WecomApp';
+import FeishuApp from './FeishuApp';
 
 interface Props {
   initialValues?: ChannelItem;
@@ -148,6 +151,9 @@ export default function FormCpt(props: Props) {
                   <Script />
                   <Flashduty />
                   <Pagerduty />
+                  <DingtalkApp />
+                  <WecomApp />
+                  <FeishuApp />
                 </div>
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>

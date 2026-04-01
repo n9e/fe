@@ -53,9 +53,17 @@ export const NOTIFICATION_CHANNEL_TYPES = {
     logo: '/image/logos/dingtalk.png',
     type: 'http',
   },
+  dingtalkapp: {
+    logo: '/image/logos/dingtalk.png',
+    type: 'dingtalkapp',
+  },
   wecom: {
     logo: '/image/logos/wecom.png',
     type: 'http',
+  },
+  wecomapp: {
+    logo: '/image/logos/wecom.png',
+    type: 'wecomapp',
   },
   feishucard: {
     logo: '/image/logos/feishu.png',
@@ -64,6 +72,10 @@ export const NOTIFICATION_CHANNEL_TYPES = {
   feishu: {
     logo: '/image/logos/feishu.png',
     type: 'http',
+  },
+  feishuapp: {
+    logo: '/image/logos/feishu.png',
+    type: 'feishuapp',
   },
   larkcard: {
     logo: '/image/logos/feishu.png',
