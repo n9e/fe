@@ -27,27 +27,35 @@ export default function SideMenuHeader(props: Props) {
 
   const noCollapsedLogo = getLogoSrc(false, sideMenuBgMode, siteInfo);
   const collapsedLogo = getLogoSrc(true, sideMenuBgMode, siteInfo);
+  const showExpandedLogo = !collapsed || collapsedHover;
 
   return (
-    <div className={cn('relative mt-6 h-10 w-full shrink-0 overflow-hidden transition-spacing', 'pl-3.5')}>
-      <img
-        src={noCollapsedLogo}
-        width={120}
-        height={38}
-        className='max-w-[120px]'
-        style={{
-          display: !collapsed || collapsedHover ? 'block' : 'none',
-        }}
-      />
-      <img
-        src={collapsedLogo}
-        width={36}
-        height={38}
-        className='max-w-[120px]'
-        style={{
-          display: !collapsed || collapsedHover ? 'none' : 'block',
-        }}
-      />
+    <div
+      className={cn(
+        'relative mt-6 h-10 w-full shrink-0 overflow-hidden transition-spacing flex',
+        showExpandedLogo ? 'justify-start pl-2' : 'justify-center',
+      )}
+    >
+      <div className={cn(showExpandedLogo && 'pl-3.5')}>
+        <img
+          src={noCollapsedLogo}
+          width={120}
+          height={38}
+          className='max-w-[120px]'
+          style={{
+            display: showExpandedLogo ? 'block' : 'none',
+          }}
+        />
+        <img
+          src={collapsedLogo}
+          width={36}
+          height={38}
+          className='max-w-[120px]'
+          style={{
+            display: showExpandedLogo ? 'none' : 'block',
+          }}
+        />
+      </div>
     </div>
   );
 }

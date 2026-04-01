@@ -32,25 +32,32 @@ export default function SideMenuHeader(props: Props) {
   const collapsedLogo = getLogoSrc(true, sideMenuBgMode, defaultLogos, siteInfo);
 
   return (
-    <div className={cn('relative mt-4 mb-3 h-10 w-full shrink-0 overflow-hidden transition-spacing flex', collapsed ? 'justify-center' : 'justify-start pl-3')}>
-      <img
-        src={noCollapsedLogo}
-        width={120}
-        height={38}
-        className='max-w-[120px]'
-        style={{
-          display: collapsed ? 'none' : 'block',
-        }}
-      />
-      <img
-        src={collapsedLogo}
-        width={28}
-        height={30}
-        className='max-w-[120px]'
-        style={{
-          display: collapsed ? 'block' : 'none',
-        }}
-      />
+    <div
+      className={cn(
+        'relative mt-4 mb-3 h-10 w-full shrink-0 overflow-hidden transition-spacing flex',
+        collapsed ? 'justify-center' : 'justify-start pl-2',
+      )}
+    >
+      <div className={cn(!collapsed && 'pl-3.5')}>
+        <img
+          src={noCollapsedLogo}
+          width={120}
+          height={38}
+          className='max-w-[120px]'
+          style={{
+            display: collapsed ? 'none' : 'block',
+          }}
+        />
+        <img
+          src={collapsedLogo}
+          width={28}
+          height={30}
+          className='max-w-[120px]'
+          style={{
+            display: collapsed ? 'block' : 'none',
+          }}
+        />
+      </div>
     </div>
   );
 }
