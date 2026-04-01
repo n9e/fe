@@ -306,8 +306,11 @@ const SideMenu = (props: SideMenuProps) => {
           <div className='flex flex-1 flex-col justify-between gap-0 overflow-hidden'>
             <SideMenuHeader collapsed={collapsed} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
             <div
-              className={cn('shrink-0 h-px', collapsed ? 'mx-2' : 'mx-3')}
-              style={{ background: 'hsla(240, 5%, 92%, 0.7)' }}
+              className={cn(
+                'shrink-0 h-px',
+                collapsed ? 'mx-2' : 'mx-3',
+                isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]',
+              )}
             />
             <ScrollArea className='-mr-2 mt-3 flex-1'>
               <MenuList
