@@ -102,24 +102,11 @@
   color: var(--fc-text-2, #e6e6e8);
 }
 
-/* fc-firemap：分组标题 text-[11px] font-medium text-muted-foreground px-2 py-1 */
-.sidemenu-hover-panel-group-title {
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 500;
-  line-height: 16px;
-  color: var(--fc-text-4);
-}
-
-.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-group-title {
-  color: var(--fc-text-3, rgba(230, 230, 232, 0.65));
-}
-
 .sidemenu-hover-panel-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
+  gap: 10px;
+  padding: 4px 8px 2px;
 }
 
 .sidemenu-hover-panel-header-icon {
@@ -136,15 +123,29 @@
   min-width: 0;
   font-size: 13px;
   line-height: 18px;
-  font-weight: 600;
+  font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.sidemenu-hover-panel--light .sidemenu-hover-panel-header-title {
+  color: var(--fc-text-1);
+}
+
+.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-header-title {
+  color: var(--fc-text-2, #e6e6e8);
+}
+
 .sidemenu-hover-panel-divider {
   height: 1px;
-  margin: 2px 8px 6px;
+  margin: 4px 8px 6px;
+  background: var(--fc-border-color);
+  flex-shrink: 0;
+}
+
+.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-divider {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .sidemenu-hover-panel-list {

@@ -48,6 +48,61 @@ function flattenMenuChildrenForHoverPanel(children: IMenuItem[]): IMenuItem[] {
     .filter(Boolean) as IMenuItem[];
 }
 
+function getMenuGroupChildKeys(item: IMenuItem): string[] {
+  return (
+    item.children
+      ?.map((c) => {
+        if (c.type === 'tabs' && c.children?.length) {
+          return c.children.map((g) => g.key);
+        }
+        return c.key;
+      })
+      .flat()
+      .filter(Boolean) as string[]
+  ) || [];
+}
+
+function isMenuGroupActive(item: IMenuItem, selectedKeys?: string[]): boolean {
+  const keyOfChildrens = getMenuGroupChildKeys(item);
+  return Boolean(selectedKeys?.includes(item.key) || selectedKeys?.some((k) => keyOfChildrens.includes(k)));
+}
+
+function getMenuGroupIconColorClass(opts: {
+  isLight: boolean;
+  isActive: boolean;
+  isBlueTheme: boolean;
+  isCustomBg: boolean;
+  isBgBlack: boolean;
+  /** 浮层内无侧栏 row 的 group-hover */
+  forHoverPanel?: boolean;
+}): string {
+  const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, forHoverPanel } = opts;
+  const lightInactive =
+    forHoverPanel === true
+      ? 'text-[var(--fc-sidemenu-item-icon)]'
+      : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
+
+  if (isLight) {
+    return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
+  }
+  if (isActive) {
+    if (isBlueTheme) {
+      return 'text-[#427AF4]';
+    }
+    if (isCustomBg) {
+      return isBgBlack ? 'text-[#ccccdc]' : 'text-[#fff]';
+    }
+    return 'text-[#6E6587]';
+  }
+  if (isBlueTheme) {
+    return 'text-[#427AF4]';
+  }
+  if (isCustomBg) {
+    return '';
+  }
+  return 'text-[#6E6587]';
+}
+
 function chunkMenusBySection(items: IMenuItem[]) {
   const filtered = items.filter(Boolean);
   const out: { section?: IMenuItem['section']; items: IMenuItem[] }[] = [];
@@ -86,16 +141,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   const { t } = useTranslation('sideMenu');
   const { item, collapsed, selectedKeys, sideMenuBgColor, isLight, ...otherProps } = props;
   const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
-  const keyOfChildrens =
-    item.children
-      ?.map((c) => {
-        if (c.type === 'tabs' && c.children?.length) {
-          return c.children.map((g) => g.key);
-        }
-        return c.key;
-      })
-      .flat() || [];
-  const isActive = selectedKeys?.includes(item.key) || selectedKeys?.some((k) => keyOfChildrens.includes(k));
+  const isActive = isMenuGroupActive(item, selectedKeys);
   const [isExpand, setIsExpand] = useState<boolean>(false);
   const isBgBlack = sideMenuBgColor === 'rgb(24,27,31)';
   useEffect(() => {
@@ -106,32 +152,14 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const visibleChildren = item.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
 
-  let iconColor = '';
-  if (isLight) {
-    iconColor = isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
-  } else if (isActive) {
-    if (isBlueTheme) {
-      iconColor = 'text-[#427AF4]';
-    } else if (props.isCustomBg) {
-      if (isBgBlack) {
-        iconColor = 'text-[#ccccdc]';
-      } else {
-        iconColor = 'text-[#fff]';
-      }
-    } else {
-      iconColor = 'text-[#6E6587]';
-    }
-  } else {
-    if (isBlueTheme) {
-      iconColor = 'text-[#427AF4]';
-    } else {
-      if (props.isCustomBg) {
-        iconColor = '';
-      } else {
-        iconColor = 'text-[#6E6587]';
-      }
-    }
-  }
+  const iconColor = getMenuGroupIconColorClass({
+    isLight: Boolean(isLight),
+    isActive,
+    isBlueTheme,
+    isCustomBg: props.isCustomBg,
+    isBgBlack,
+    forHoverPanel: false,
+  });
 
   const titleClass = (() => {
     if (isLight) {
@@ -507,27 +535,26 @@ export default function MenuList(
       <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
         <Tooltip title={props.collapsed ? null : isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' trigger={props.collapsed ? [] : ['hover']}>
           <div
-            onClick={() => {
-              if (props.collapsed) {
-                props.onClick?.('search'); // This will trigger the expansion logic I added in SideMenu
-              }
+            onClick={(e) => {
+              e.stopPropagation();
               props.quickMenuRef.current.open();
             }}
             className={cn(
-              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors duration-75',
+              'group relative flex h-8 cursor-pointer items-center rounded-md transition-colors duration-75',
+              props.collapsed ? 'justify-center' : 'px-3.5',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
             <div
               className={cn(
-                'mr-2 inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
+                'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
+                !props.collapsed && 'mr-2',
                 isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               )}
             >
               {<IconFont type='icon-ic_search_light' />}
             </div>
-
-            <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('quickJump')} </div>
+            {!props.collapsed && <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('quickJump')} </div>}
           </div>
         </Tooltip>
         {topExtra ? React.cloneElement(topExtra, { ...props, isLight }) : null}
@@ -541,6 +568,15 @@ export default function MenuList(
                   const hoverChildren = flattenMenuChildrenForHoverPanel(visibleChildren);
                   const hoverEnabled = props.collapsed && hoverChildren.length > 0;
                   const open = hoverEnabled && activeHoverGroupKey === menu.key;
+                  const menuGroupActive = isMenuGroupActive(menu, props.selectedKeys);
+                  const hoverPanelIconClass = getMenuGroupIconColorClass({
+                    isLight,
+                    isActive: menuGroupActive,
+                    isBlueTheme,
+                    isCustomBg: props.isCustomBg,
+                    isBgBlack: props.sideMenuBgColor === 'rgb(24,27,31)',
+                    forHoverPanel: true,
+                  });
 
                   const groupNode = (
                     <div
@@ -586,9 +622,20 @@ export default function MenuList(
                             scheduleCloseHoverPanel();
                           }}
                         >
-                          <div className='sidemenu-hover-panel-group-title truncate' title={t(menu.label)}>
-                            {t(menu.label)}
+                          <div className='sidemenu-hover-panel-header'>
+                            <div
+                              className={cn(
+                                'sidemenu-hover-panel-header-icon children-icon2:h-[16px] children-icon2:w-[16px]',
+                                hoverPanelIconClass,
+                              )}
+                            >
+                              {menu.icon}
+                            </div>
+                            <div className='sidemenu-hover-panel-header-title' title={t(menu.label)}>
+                              {t(menu.label)}
+                            </div>
                           </div>
+                          <div className='sidemenu-hover-panel-divider' aria-hidden />
                           <div className='sidemenu-hover-panel-list'>
                             {hoverChildren.map((c) => {
                               const isItemActive = props.selectedKeys?.includes(c.key);
