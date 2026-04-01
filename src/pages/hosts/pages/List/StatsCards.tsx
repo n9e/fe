@@ -18,7 +18,7 @@ interface Props {
   gids?: string;
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-  refreshFlag: string;
+  refreshFlag?: string;
 }
 
 export default function StatsCards(props: Props) {

@@ -22,7 +22,7 @@ export default function index() {
   const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRows, setSelectedRows] = useState<Item[]>([]);
-  const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
+  const [refreshFlag, setRefreshFlag] = useState<string>();
 
   const [statsCollapsed, setStatsCollapsed] = useState(window.localStorage.getItem(STATS_COLLAPSED_KEY) === 'true');
   const [allCollapsed, setAllCollapsed] = useState(false);

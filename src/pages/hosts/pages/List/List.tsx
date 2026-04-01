@@ -79,7 +79,7 @@ interface Props {
   gids?: string;
   selectedRows: Item[];
   setSelectedRows: (selectedRowKeys: Item[]) => void;
-  refreshFlag: string;
+  refreshFlag?: string;
   setRefreshFlag: (refreshFlag: string) => void;
   setOperateType?: (operateType: OperateType) => void;
 }
@@ -139,10 +139,12 @@ export default function List(props: Props) {
   }, [gids, params.query, params.downtime, params.agent_versions, params.hosts]);
 
   useEffect(() => {
-    run({
-      current: tableProps.pagination.current,
-      pageSize: tableProps.pagination.pageSize,
-    });
+    if (refreshFlag) {
+      run({
+        current: tableProps.pagination.current,
+        pageSize: tableProps.pagination.pageSize,
+      });
+    }
   }, [refreshFlag]);
 
   return (
@@ -343,7 +345,7 @@ export default function List(props: Props) {
                             message.success(t('ident_copy_success', { num: tobeCopy.length }));
                           } else {
                             Modal.warning({
-                              title: t('host.copy.error'),
+                              title: t('common:copyToClipboardFailed'),
                               content: <Input.TextArea defaultValue={tobeCopyStr} />,
                             });
                           }

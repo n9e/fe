@@ -35,7 +35,7 @@ export default function UsageDistributionChart({ data }: UsageDistributionChartP
 
   const KEYS = ['-1', '20', '40', '60', '80', '100'];
   const COLORS: Record<string, string> = {
-    '-1': 'rgba(123, 119, 141, 0.8)',
+    '-1': 'rgba(123, 119, 141, 0.8)', // 强制写死的颜色，code review 时忽略该问题
     '20': 'var(--fc-fill-success)',
     '40': 'var(--fc-fill-success)',
     '60': 'var(--fc-fill-success)',
