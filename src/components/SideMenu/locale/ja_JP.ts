@@ -63,11 +63,11 @@ const ja_JP = {
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
-    insight: 'インサイト（INSIGHT）',
+    insight: 'インサイト',
     observability: 'OBSERVABILITY',
-    analysis: 'データ分析（ANALYSIS）',
-    platform: 'プラットフォーム（PLATFORM）',
-    system: 'システム（SYSTEM）',
+    analysis: 'データ分析',
+    platform: 'プラットフォーム',
+    system: 'システム',
   },
 };
 

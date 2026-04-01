@@ -63,11 +63,11 @@ const ru_RU = {
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
-    insight: 'Инсайт (INSIGHT)',
+    insight: 'Аналитика',
     observability: 'OBSERVABILITY',
-    analysis: 'Анализ данных (ANALYSIS)',
-    platform: 'Платформа (PLATFORM)',
-    system: 'Система (SYSTEM)',
+    analysis: 'Анализ данных',
+    platform: 'Платформа',
+    system: 'Система',
   },
 };
 
