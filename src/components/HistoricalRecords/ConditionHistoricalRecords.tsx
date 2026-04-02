@@ -17,9 +17,10 @@ export const setLocalQueryHistory = (localKey: string, query: QueryHistoryItem) 
   if (!query) return;
   const queryClone = _.cloneDeep(query);
   _.forEach(_.sortBy(_.keys(queryClone)), (key) => {
-    if (!queryClone[key]) return;
-    if (_.isString(queryClone[key])) {
-      queryClone[key] = _.trim(queryClone[key]);
+    const queryValue = queryClone[key];
+    if (!queryValue) return;
+    if (typeof queryValue === 'string') {
+      queryClone[key] = _.trim(queryValue);
     }
   });
   const queryStr = JSON.stringify(queryClone);
@@ -117,7 +118,7 @@ export default function index({ localKey, datasourceValue, renderItem, type = 'b
           <Input placeholder={t('query.historicalRecords.searchPlaceholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
           <div className='mt-2 max-h-[300px] overflow-y-auto'>
             {_.map(historicalRecords, (item) => {
-              if (!search || _.some(item[0], (value) => _.includes(_.toLower(value), _.toLower(search)))) {
+              if (!search || _.some(item[0], (value) => _.includes(_.toLower(String(value)), _.toLower(search)))) {
                 return renderItem(item[0], setVisible);
               }
               return null;
