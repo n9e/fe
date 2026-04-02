@@ -58,10 +58,16 @@ export function getMenuPerm() {
   return request(`/api/n9e/self/perms`, {
     method: RequestMethod.Get,
   }).then((res) => {
-    // TODO 这里是为了处理一些菜单地址不变设置为权限点，但是又希望走统一的权限控制逻辑
+    // TODO 这里是为了处理一些菜单地址不便设置为权限点，但是又希望走统一的权限控制逻辑
+    const whitelist = ['/event-pipelines-executions'];
+    let perms = _.concat(res.dat || [], whitelist);
+    // 如果存在 /embedded-products 权限点时就插入 /embedded-product 权限点，确保集成系统的详情页权限控制正常
+    if (_.includes(perms, '/embedded-products')) {
+      perms = _.concat(perms, ['/embedded-product']);
+    }
     return {
       ...(res || {}),
-      dat: _.concat(res.dat || [], ['/event-pipelines-executions']),
+      dat: perms,
     };
   });
 }
