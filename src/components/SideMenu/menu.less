@@ -1,3 +1,10 @@
+/* 侧边菜单字体渲染对齐 fc-firemap，id 含 # 号须用属性选择器 */
+/* font-family 已在 theme/index.less body 上全局声明，此处仅保留 font-smoothing */
+[id="#tailwind"] aside {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .quick-menu-modal {
   .border-b {
     box-sizing: border-box;
@@ -28,13 +35,12 @@
   padding-left: 0px !important;
 
   .ant-tooltip-inner {
-    padding: 0px 8px 8px 0px !important;
-    border-radius: 20px !important;
+    padding: 8px 0px 8px !important;
     background: none !important;
+    border-radius: 4px !important;
     border: 0 solid #6c53b1 !important;
     box-shadow: 0 0 8px 0 rgba(108, 83, 177, 0.32) !important;
-    margin-left: -4px !important;
-    background: rgba(249, 249, 249, 0.88) !important;
+    margin-left: 4px !important;
     backdrop-filter: blur(2px) !important;
     -webkit-backdrop-filter: blur(2px) !important;
     text-align: center;
@@ -48,8 +54,106 @@
   }
 }
 
+.sidemenu-hover-panel-tooltip {
+  /* 与侧栏紧贴：antd 右侧 placement 默认 padding-left，已用 !important 清零 */
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 
+  .ant-tooltip-inner {
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+  }
 
+  .ant-tooltip-arrow {
+    display: none !important;
+  }
+}
+
+.sidemenu-hover-panel {
+  /* 对齐 fc-firemap：w-[160px]、p-1、rounded-md */
+  width: 160px;
+  min-width: 160px;
+  max-width: 160px;
+  border-radius: 6px;
+  max-height: min(calc(100vh - 16px), 480px);
+  overflow: auto;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+/* 浅色侧栏：接近 shadcn popover（border + shadow-md） */
+.sidemenu-hover-panel--light {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 4px 6px -1px rgba(15, 23, 42, 0.08),
+    0 2px 4px -2px rgba(15, 23, 42, 0.06);
+  color: var(--fc-text-1);
+}
+
+/* 深色/自定义侧栏：沿用侧栏底色（由行内 style 注入） */
+.sidemenu-hover-panel--on-dark {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.28),
+    0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  color: var(--fc-text-2, #e6e6e8);
+}
+
+.sidemenu-hover-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px 2px;
+}
+
+.sidemenu-hover-panel-header-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.sidemenu-hover-panel-header-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidemenu-hover-panel--light .sidemenu-hover-panel-header-title {
+  color: var(--fc-text-1);
+}
+
+.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-header-title {
+  color: var(--fc-text-2, #e6e6e8);
+}
+
+.sidemenu-hover-panel-divider {
+  height: 1px;
+  margin: 4px 8px 6px;
+  background: var(--fc-border-color);
+  flex-shrink: 0;
+}
+
+.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-divider {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.sidemenu-hover-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* space-y-0.5 */
+}
 
 .quick-start-modal {
   .ant-modal-content {

@@ -7,7 +7,6 @@ import { DefaultLogos } from './types';
 
 interface Props {
   collapsed: boolean;
-  collapsedHover: boolean;
   sideMenuBgMode: string;
   defaultLogos: DefaultLogos;
 }
@@ -26,32 +25,39 @@ const getLogoSrc = (collapsed: boolean, sideMenuBgMode: string, defaultLogos: De
 };
 
 export default function SideMenuHeader(props: Props) {
-  const { collapsed, collapsedHover, sideMenuBgMode, defaultLogos } = props;
+  const { collapsed, sideMenuBgMode, defaultLogos } = props;
   const { siteInfo } = useContext(CommonStateContext);
 
   const noCollapsedLogo = getLogoSrc(false, sideMenuBgMode, defaultLogos, siteInfo);
   const collapsedLogo = getLogoSrc(true, sideMenuBgMode, defaultLogos, siteInfo);
 
   return (
-    <div className={cn('relative mt-4 h-10 w-full shrink-0 overflow-hidden transition-spacing', 'flex justify-center')}>
-      <img
-        src={noCollapsedLogo}
-        width={120}
-        height={38}
-        className='max-w-[120px]'
-        style={{
-          display: !collapsed || collapsedHover ? 'block' : 'none',
-        }}
-      />
-      <img
-        src={collapsedLogo}
-        width={36}
-        height={38}
-        className='max-w-[120px]'
-        style={{
-          display: !collapsed || collapsedHover ? 'none' : 'block',
-        }}
-      />
+    <div
+      className={cn(
+        'relative mt-4 mb-3 h-10 w-full shrink-0 overflow-hidden transition-spacing flex',
+        collapsed ? 'justify-center' : 'justify-start pl-2',
+      )}
+    >
+      <div className={cn(!collapsed && 'pl-3.5')}>
+        <img
+          src={noCollapsedLogo}
+          width={120}
+          height={38}
+          className='max-w-[120px]'
+          style={{
+            display: collapsed ? 'none' : 'block',
+          }}
+        />
+        <img
+          src={collapsedLogo}
+          width={28}
+          height={30}
+          className='max-w-[120px]'
+          style={{
+            display: collapsed ? 'block' : 'none',
+          }}
+        />
+      </div>
     </div>
   );
 }

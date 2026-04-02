@@ -69,9 +69,11 @@ const en_US = {
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
+    insight: 'Insight',
     observability: 'OBSERVABILITY',
-    analysis: 'ANALYSIS',
-    platform: 'PLATFORM',
+    analysis: 'Data analysis',
+    platform: 'Platform tools',
+    system: 'System',
   },
 };
 export default en_US;
