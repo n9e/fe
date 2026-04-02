@@ -10,12 +10,17 @@ import './style.less';
 
 const LIMIT = 100;
 
-export const setLocalQueryHistory = (localKey: string, query: { [index: string]: string }) => {
+type QueryHistoryItemValue = string | number | boolean | null | undefined | Array<string | number | boolean> | Record<string, unknown>;
+type QueryHistoryItem = Record<string, QueryHistoryItemValue>;
+
+export const setLocalQueryHistory = (localKey: string, query: QueryHistoryItem) => {
   if (!query) return;
   const queryClone = _.cloneDeep(query);
   _.forEach(_.sortBy(_.keys(queryClone)), (key) => {
     if (!queryClone[key]) return;
-    queryClone[key] = _.trim(queryClone[key]);
+    if (_.isString(queryClone[key])) {
+      queryClone[key] = _.trim(queryClone[key]);
+    }
   });
   const queryStr = JSON.stringify(queryClone);
   const queryHistoryStr = localStorage.getItem(localKey);
@@ -70,7 +75,7 @@ export const getLocalQueryHistory = (localKey: string) => {
       console.error(e);
     }
   }
-  const queryHistory: [{ [index: string]: string }, number][] = [];
+  const queryHistory: [QueryHistoryItem, number][] = [];
   for (const x of queryHistoryMap.entries()) {
     try {
       // 确保每个查询字符串都是有效的 JSON 字符串
@@ -90,7 +95,7 @@ export const getLocalQueryHistory = (localKey: string) => {
 interface Props {
   localKey: string;
   datasourceValue: number;
-  renderItem: (item: { [index: string]: string }, setVisible: (visible) => void) => React.ReactNode;
+  renderItem: (item: QueryHistoryItem, setVisible: (visible: boolean) => void) => React.ReactNode;
   type?: 'button' | 'text';
   children?: React.ReactNode;
 }
