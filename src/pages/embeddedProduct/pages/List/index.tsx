@@ -42,6 +42,13 @@ export default function Index() {
       },
     },
     {
+      title: t('weight'),
+      dataIndex: 'weight',
+      sorter: (a, b) => {
+        return a.weight - b.weight;
+      },
+    },
+    {
       title: t('common:table.status'),
       dataIndex: 'is_private',
       render: (val) => {
@@ -161,6 +168,7 @@ export default function Index() {
                 url: currentRecord.url,
                 is_private: currentRecord.is_private,
                 team_ids: currentRecord.team_ids,
+                weight: currentRecord.weight,
               }
             : undefined
         }

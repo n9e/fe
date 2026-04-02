@@ -12,6 +12,7 @@ const zh_CN = {
   team_visible: '指定团队可见',
   team_ids: '如下团队成员可见',
   team_ids_msg: '请选择团队',
+  weight: '排序权重',
   exitFullScreen_tip: '退出全屏受 iframe 安全限制无法控制，需要手动在 URL 里删除 viewMode=fullscreen 参数',
 };
 export default zh_CN;

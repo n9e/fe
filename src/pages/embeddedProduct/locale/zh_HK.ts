@@ -12,6 +12,7 @@ const zh_HK = {
   team_visible: '指定團隊可見',
   team_ids: '如下團隊成員可見',
   team_ids_msg: '請選擇團隊',
+  weight: '排序權重',
   exitFullScreen_tip: '退出全屏受 iframe 安全限制無法控制，需要手動在 URL 里刪除 viewMode=fullscreen 參數',
 };
 

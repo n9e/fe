@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Modal, Form, Input, Select, Radio } from 'antd';
+import { Modal, Form, Input, InputNumber, Select, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { getTeamInfoList } from '@/services/manage';
@@ -61,6 +61,9 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
         </Form.Item>
         <Form.Item name='url' label={t('url')} rules={[{ required: true, message: t('url_msg') }]}>
           <Input.TextArea />
+        </Form.Item>
+        <Form.Item name='weight' label={t('weight')} initialValue={0}>
+          <InputNumber min={0} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item name='is_private' label={t('visibility')} initialValue={false} rules={[{ required: true, message: t('visibility_msg') }]}>
           <Radio.Group>
