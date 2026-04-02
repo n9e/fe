@@ -278,7 +278,7 @@ export default function QueryBuilder(props: Props) {
                   return (
                     <span key={key}>
                       <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`datasource:es.${key}`)}:</span>
-                      <span className='pr-1'>{key === 'syntax' ? _.find(SYNTAX_OPTIONS, { value })?.label ?? value : value}</span>
+                      <span className='pr-1'>{key === 'syntax' ? _.find(SYNTAX_OPTIONS, { value: value as string })?.label ?? value : value}</span>
                     </span>
                   );
                 })}
