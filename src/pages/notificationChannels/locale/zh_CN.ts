@@ -103,19 +103,19 @@ const zh_CN = {
   dingtalkapp_request_config: {
     app_key: '应用唯一标识',
     app_secret: '应用密钥',
-    proxy: '代理',
+    alert_shot_tip: '如果需要在告警中发送图片，请按说明文档申请钉钉应用，并填写相关信息',
   },
   wecomapp_request_config: {
-    corp_id: '企业ID',
+    corp_id: '企业 ID',
     corp_secret: '企业密钥',
-    agentid: 'agentid',
-    proxy: '代理',
+    agentid: 'Agent ID',
   },
   feishuapp_request_config: {
-    app_id: '应用ID',
+    app_id: '应用 ID',
     app_secret: '应用密钥',
-    receive_id_type: '接收者ID类型',
-    proxy: '代理',
+    receive_id_type: '接收者 ID 类型',
+    alert_shot_tip: '如果需要在告警中发送图片，请按说明文档申请飞书应用，并填写相关信息',
+    lark_alert_shot_tip: '如果需要在告警中发送图片，请按说明文档申请 Lark 应用，并填写相关信息',
   },
 
   types_search_placeholder: '搜索类型',

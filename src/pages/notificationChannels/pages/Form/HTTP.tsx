@@ -1,3 +1,8 @@
+/**
+ * 历史原因 dingtalk、feishu、feishucard、lark、larkcard、wecom 这几个渠道是在放到 http 类型下
+ * 但是后面新增了一些参数需要区分，这里通过 ident 再进一步区分是哪个渠道的配置
+ */
+
 import React from 'react';
 import _ from 'lodash';
 import { Form, Row, Col, Input, Select, Space, InputNumber, Switch, Tooltip } from 'antd';
@@ -8,9 +13,13 @@ import { SIZE } from '@/utils/constant';
 
 import { NS } from '../../constants';
 
+import Dingtalk from './Dingtalk';
+import Feishu from './Feishu';
+
 export default function HTTP() {
   const { t } = useTranslation(NS);
   const names = ['request_config', 'http_request_config'];
+  const ident = Form.useWatch('ident');
   const request_type = Form.useWatch('request_type');
   const method = Form.useWatch([...names, 'method']);
   const isRequired = request_type === 'http';
@@ -175,6 +184,8 @@ export default function HTTP() {
           <Input.TextArea autoSize={{ minRows: 4 }} />
         </Form.Item>
       )}
+      {ident === 'dingtalk' && <Dingtalk />}
+      {(ident === 'feishu' || ident === 'feishucard' || ident === 'lark' || ident === 'larkcard') && <Feishu ident={ident} />}
     </div>
   );
 }

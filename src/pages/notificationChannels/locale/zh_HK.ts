@@ -5,6 +5,7 @@ const zh_HK = {
   ident_tip: '通知媒介的分類，例如多個釘釘通知媒介，類型都可以設置為 dingtalk。類型可以手寫，並不局限在下拉列表中的選項，通知媒介和消息模板通過類型字段建立關聯關係',
   note_tip: '可填寫對該通知媒介的補充說明或使用場景，方便後續維護或協作時查看',
   enable_tip: '是否啟用此通知媒介的配置。關閉後，該配置將暫時失效，不會再發送通知',
+  advanced_settings: '高級配置',
   variable_configuration: {
     title: '變量配置',
     contact_key: '聯繫方式',
@@ -25,6 +26,9 @@ const zh_HK = {
     script: 'Script 配置',
     flashduty: 'FlashDuty 配置',
     pagerduty: 'PagerDuty 配置',
+    dingtalkapp: '釘釘應用配置',
+    wecomapp: '企業微信應用配置',
+    feishuapp: '飛書應用配置',
   },
   request_type: '發送類型',
   http_request_config: {
@@ -95,6 +99,23 @@ const zh_HK = {
     proxy_tip: 'HTTP PROXY 地址，用於需要代理的場景',
     timeout: '超時時間 (單位: 毫秒)',
     retry_times: '重試次數',
+  },
+  dingtalkapp_request_config: {
+    app_key: '應用唯一標識',
+    app_secret: '應用密鑰',
+    alert_shot_tip: '如果需要在告警中發送圖片，請按說明文件申請釘釘應用，並填寫相關信息',
+  },
+  wecomapp_request_config: {
+    corp_id: '企業 ID',
+    corp_secret: '企業密鑰',
+    agentid: 'Agent ID',
+  },
+  feishuapp_request_config: {
+    app_id: '應用 ID',
+    app_secret: '應用密鑰',
+    receive_id_type: '接收者 ID 類型',
+    alert_shot_tip: '如果需要在告警中發送圖片，請按說明文件申請飛書應用，並填寫相關信息',
+    lark_alert_shot_tip: '如果需要在告警中發送圖片，請按說明文件申請 Lark 應用，並填寫相關信息',
   },
   types_search_placeholder: '搜索類型',
   name_search_placeholder: '搜索名稱',
