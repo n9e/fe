@@ -182,9 +182,7 @@ export default function FormCpt(props: Props) {
             </div>
           </Splitter.Panel>
           <Splitter.Panel>
-            <div className='p-4 best-looking-scroll h-full'>
-              <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />
-            </div>
+            <div className='p-4 best-looking-scroll h-full'>{requestType && <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />}</div>
           </Splitter.Panel>
         </Splitter>
       </div>

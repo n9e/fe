@@ -137,3 +137,16 @@ export function getEventTags() {
     return res.dat;
   });
 }
+
+export function getFeishuGroups(id: number): Promise<
+  {
+    chat_id: string;
+    name: string;
+  }[]
+> {
+  return request(`/api/n9e/feishu-visible-chats/${id}`, {
+    method: RequestMethod.Get,
+  }).then((res) => {
+    return res?.dat?.items ?? [];
+  });
+}
