@@ -19,7 +19,7 @@ export interface BaseMenuItem {
   key: string;
   label: string;
   /** 顶层分组 key，用于侧栏分区标题（连续相同 section 共用一个标题） */
-  section?: string; //'infrastructure' | 'observability' | 'analysis' | 'platform';
+  section?: string; // 'infrastructure' | 'insight' | 'observability' | 'analysis' | 'platform' | 'system';
   type?: string; // 'tabs'
   pathType?: string; // 'absolute'
   path?: string; // URL for absolute paths
