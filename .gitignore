@@ -16,3 +16,4 @@ scripts/all_locales.json
 src/plus
 public/bound
 test-results/*
+e2e/.auth/

@@ -162,17 +162,9 @@ function pickDefaultDownstreamLabel(series: MockPrometheusSeriesItem[]) {
 }
 
 function deriveLinkageData(series: MockPrometheusSeriesItem[]) {
-  const labelKeys = Array.from(
-    new Set(
-      series.flatMap((item) =>
-        Object.keys(item).filter((key) => key !== '__name__' && item[key] && !String(item[key]).includes(',')),
-      ),
-    ),
-  );
+  const labelKeys = Array.from(new Set(series.flatMap((item) => Object.keys(item).filter((key) => key !== '__name__' && item[key] && !String(item[key]).includes(',')))));
 
-  const downstreamCandidates = uniqPreserveOrder(['ident', 'instance', 'host', 'hostname', ...labelKeys]).filter((key) =>
-    labelKeys.includes(key),
-  );
+  const downstreamCandidates = uniqPreserveOrder(['ident', 'instance', 'host', 'hostname', ...labelKeys]).filter((key) => labelKeys.includes(key));
 
   for (const downstreamLabel of downstreamCandidates) {
     const downstreamValues = uniqueValues(series, downstreamLabel);

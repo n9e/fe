@@ -1,4 +1,7 @@
+import path from 'path';
 import { defineConfig } from '@playwright/test';
+
+const authFile = path.join(__dirname, 'e2e/.auth/user.json');
 
 export default defineConfig({
   testDir: 'e2e',
@@ -19,4 +22,18 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
+  projects: [
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
+      name: 'e2e',
+      dependencies: ['setup'],
+      testIgnore: /auth\.setup\.ts/,
+      use: {
+        storageState: authFile,
+      },
+    },
+  ],
 });
