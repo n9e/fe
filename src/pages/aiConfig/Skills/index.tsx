@@ -90,6 +90,41 @@ function buildFileTree(files: AISkillFile[]): TreeNode[] {
   return rootChildren;
 }
 
+// Design tokens — refined editorial palette inspired by warm, document-like surfaces.
+const tokens = {
+  // Surfaces
+  bg: '#f7f4ec', // warm cream background
+  bgRail: '#f3efe5', // slightly deeper cream for left rail
+  cardBg: '#ffffff',
+  cardBorder: '#e8e1cf', // warm subtle border
+  cardShadow: '0 1px 2px rgba(60, 50, 20, 0.04), 0 1px 3px rgba(60, 50, 20, 0.03)',
+  cardShadowLg: '0 1px 3px rgba(60, 50, 20, 0.05), 0 8px 24px -8px rgba(60, 50, 20, 0.06)',
+  divider: '#e8e1cf',
+  // Text
+  text1: '#1a1814', // near-black, slightly warm
+  text2: '#6b665a', // warm secondary
+  text3: '#9a9486', // warm tertiary
+  // Interaction
+  hover: '#efeadc',
+  focusRing: '#3b82f6',
+  // Accent for code blocks (kept dark for contrast)
+  codeBg: '#1f1d1a',
+  codeText: '#e8e3d8',
+  // Typography stacks
+  serif:
+    '"Charter", "Iowan Old Style", "Source Serif 4", "Source Serif Pro", "Sitka Text", Cambria, "Songti SC", "Noto Serif CJK SC", "Noto Serif SC", Georgia, serif',
+  sans:
+    '-apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif',
+};
+
+// Format unix timestamp (seconds) as e.g. "Apr 7, 2026"
+function formatDate(ts?: number): string {
+  if (!ts) return '-';
+  const d = new Date(ts * 1000);
+  if (isNaN(d.getTime())) return '-';
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
 export default function Skills() {
   const { t } = useTranslation('aiConfig');
   const [skills, setSkills] = useState<AISkill[]>([]);
@@ -296,27 +331,31 @@ export default function Skills() {
           }}
           title={node.name}
           style={{
-            padding: '3px 8px',
+            padding: '5px 10px',
             paddingLeft: indent + 14,
-            fontSize: 12,
-            color: isFileActive ? 'var(--fc-text-1, #333)' : 'var(--fc-text-2, #666)',
-            background: isFileActive ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
-            border: isFileActive ? '1px solid var(--ant-primary-color, #1890ff)' : '1px solid transparent',
-            borderRadius: 4,
+            marginRight: 12,
+            fontSize: 12.5,
+            color: isFileActive ? tokens.text1 : tokens.text2,
+            background: isFileActive ? tokens.cardBg : 'transparent',
+            border: isFileActive ? `1px solid ${tokens.cardBorder}` : '1px solid transparent',
+            boxShadow: isFileActive ? tokens.cardShadow : 'none',
+            borderRadius: 8,
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 8,
             cursor: 'pointer',
-            fontWeight: isFileActive ? 500 : 400,
+            fontWeight: isFileActive ? 600 : 400,
+            transition: 'background 0.15s ease, box-shadow 0.15s ease',
+            fontFamily: tokens.sans,
           }}
           onMouseEnter={(e) => {
-            if (!isFileActive) e.currentTarget.style.background = 'var(--fc-fill-1, #fafafa)';
+            if (!isFileActive) e.currentTarget.style.background = tokens.hover;
           }}
           onMouseLeave={(e) => {
             if (!isFileActive) e.currentTarget.style.background = 'transparent';
           }}
         >
-          <FileTextOutlined style={{ fontSize: 12, flexShrink: 0 }} />
+          <FileTextOutlined style={{ fontSize: 12, flexShrink: 0, color: isFileActive ? tokens.text2 : tokens.text3 }} />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{node.name}</span>
         </div>
       );
@@ -329,35 +368,39 @@ export default function Skills() {
         <div
           onClick={(e) => toggleFolder(folderKey, e)}
           style={{
-            padding: '3px 8px',
+            padding: '5px 10px',
             paddingLeft: indent,
-            fontSize: 12,
-            color: 'var(--fc-text-2, #666)',
+            marginRight: 12,
+            fontSize: 12.5,
+            color: tokens.text2,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 6,
+            gap: 8,
             cursor: 'pointer',
-            borderRadius: 4,
+            borderRadius: 8,
+            transition: 'background 0.15s ease',
+            fontFamily: tokens.sans,
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--fc-fill-1, #fafafa)';
+            e.currentTarget.style.background = tokens.hover;
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden' }}>
-            <FolderOutlined style={{ fontSize: 12, flexShrink: 0 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+            <FolderOutlined style={{ fontSize: 12, flexShrink: 0, color: tokens.text3 }} />
             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{node.name}</span>
           </div>
           <span
             style={{
-              fontSize: 8,
-              transition: 'transform 0.2s',
+              fontSize: 9,
+              transition: 'transform 0.2s ease',
               transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
               display: 'inline-flex',
               flexShrink: 0,
+              color: tokens.text3,
             }}
           >
             <DownOutlined />
@@ -390,18 +433,19 @@ export default function Skills() {
     <div
       onClick={onToggle}
       style={{
-        padding: '6px 12px',
+        padding: '8px 20px 6px',
         fontSize: 12,
         fontWeight: 500,
-        color: 'var(--fc-text-3, #999)',
+        color: tokens.text3,
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
         userSelect: 'none',
+        letterSpacing: '0.01em',
       }}
     >
-      <span style={{ fontSize: 8, transition: 'transform 0.2s', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'inline-flex' }}>
+      <span style={{ fontSize: 9, transition: 'transform 0.2s ease', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'inline-flex' }}>
         <DownOutlined />
       </span>
       {label}
@@ -415,7 +459,7 @@ export default function Skills() {
     const treeNodes = active ? buildFileTree(resourceFiles) : [];
 
     return (
-      <div key={skill.id}>
+      <div key={skill.id} style={{ marginBottom: 2 }}>
         <div
           onClick={() => {
             setSelectedId(skill.id);
@@ -423,39 +467,61 @@ export default function Skills() {
             setSelectedFileContent(null);
           }}
           style={{
-            padding: '6px 12px',
+            margin: '0 12px',
+            padding: '10px 12px',
             cursor: 'pointer',
-            borderRadius: 6,
-            background: active ? 'var(--fc-fill-2, #f0f0f0)' : 'transparent',
-            marginBottom: 1,
+            borderRadius: 10,
+            background: active ? tokens.cardBg : 'transparent',
+            border: active ? `1px solid ${tokens.cardBorder}` : '1px solid transparent',
+            boxShadow: active ? tokens.cardShadow : 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            transition: 'background 0.15s',
-            fontSize: 13,
+            transition: 'background 0.15s ease, box-shadow 0.15s ease',
+            fontSize: 14,
+            fontFamily: tokens.sans,
           }}
           onMouseEnter={(e) => {
-            if (!active) e.currentTarget.style.background = 'var(--fc-fill-1, #fafafa)';
+            if (!active) e.currentTarget.style.background = tokens.hover;
           }}
           onMouseLeave={(e) => {
             if (!active) e.currentTarget.style.background = 'transparent';
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
-            <SnippetsOutlined style={{ fontSize: 14, color: active ? 'var(--fc-text-1, #333)' : 'var(--fc-text-3, #999)', flexShrink: 0 }} />
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: active ? 500 : 400 }}>{skill.name}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
+            <SnippetsOutlined style={{ fontSize: 15, color: active ? tokens.text1 : tokens.text3, flexShrink: 0 }} />
+            <span
+              style={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                fontWeight: active ? 600 : 500,
+                color: active ? tokens.text1 : tokens.text2,
+              }}
+            >
+              {skill.name}
+            </span>
           </div>
           {active && (
             <span
               onClick={(e) => toggleExpand(skill.id, e)}
-              style={{ fontSize: 8, color: 'var(--fc-text-3, #999)', cursor: 'pointer', padding: '2px 4px', flexShrink: 0, display: 'inline-flex', transition: 'transform 0.2s', transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)' }}
+              style={{
+                fontSize: 9,
+                color: tokens.text3,
+                cursor: 'pointer',
+                padding: '4px 6px',
+                flexShrink: 0,
+                display: 'inline-flex',
+                transition: 'transform 0.2s ease',
+                transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+              }}
             >
               <DownOutlined />
             </span>
           )}
         </div>
         {active && expanded && treeNodes.length > 0 && (
-          <div style={{ paddingLeft: 22, paddingBottom: 4 }}>{treeNodes.map((node) => renderTreeNode(node, 0, skill.id))}</div>
+          <div style={{ padding: '6px 0 4px 26px' }}>{treeNodes.map((node) => renderTreeNode(node, 0, skill.id))}</div>
         )}
       </div>
     );
@@ -501,43 +567,100 @@ export default function Skills() {
     }
 
     return (
-      <div style={{ marginBottom: 20 }}>
-        <Collapse ghost style={{ marginLeft: -12, marginRight: -12 }}>
+      <div style={{ marginBottom: 24 }}>
+        <Collapse ghost style={{ marginLeft: -16, marginRight: -16, background: 'transparent' }}>
           <Collapse.Panel
-            header={
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fc-text-3, #999)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('skill.advanced_config')}</span>
-            }
+            header={<span style={{ fontSize: 12, fontWeight: 500, color: tokens.text3, letterSpacing: '0.02em' }}>{t('skill.advanced_config')}</span>}
             key='meta'
           >
             <div
               style={{
-                padding: '12px 16px',
-                background: 'var(--fc-fill-1, #fafafa)',
-                border: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                borderRadius: 6,
+                padding: '16px 20px',
+                background: tokens.cardBg,
+                border: `1px solid ${tokens.cardBorder}`,
+                borderRadius: 10,
+                boxShadow: tokens.cardShadow,
               }}
             >
               <div
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'auto 1fr',
-                  columnGap: 20,
-                  rowGap: 12,
+                  columnGap: 24,
+                  rowGap: 14,
                   fontSize: 13,
                   lineHeight: '22px',
                   alignItems: 'start',
+                  fontFamily: tokens.sans,
                 }}
               >
                 {items.map((item) => (
                   <React.Fragment key={item.label}>
-                    <span style={{ fontSize: 12, color: 'var(--fc-text-3, #999)', whiteSpace: 'nowrap', lineHeight: '22px' }}>{item.label}</span>
-                    <span style={{ wordBreak: 'break-word' }}>{item.value}</span>
+                    <span style={{ fontSize: 12, color: tokens.text3, whiteSpace: 'nowrap', lineHeight: '22px' }}>{item.label}</span>
+                    <span style={{ wordBreak: 'break-word', color: tokens.text1 }}>{item.value}</span>
                   </React.Fragment>
                 ))}
               </div>
             </div>
           </Collapse.Panel>
         </Collapse>
+      </div>
+    );
+  };
+
+  // Refined preview/code (and optional copy) toggle pill — dark when in source mode
+  const renderViewerToggle = (withCopy: boolean) => {
+    const isSource = instructionsViewMode === 'source';
+    const pillBg = isSource ? 'rgba(255,255,255,0.08)' : tokens.bgRail;
+    const pillBorder = isSource ? '1px solid rgba(255,255,255,0.12)' : `1px solid ${tokens.cardBorder}`;
+    const activeBg = isSource ? 'rgba(255,255,255,0.16)' : tokens.cardBg;
+    const activeShadow = isSource ? 'none' : '0 1px 2px rgba(60,50,20,0.08)';
+    const inactiveColor = isSource ? 'rgba(255,255,255,0.55)' : tokens.text3;
+    const activeColor = isSource ? '#f5efe1' : tokens.text1;
+
+    const btnStyle = (active: boolean): React.CSSProperties => ({
+      cursor: 'pointer',
+      padding: '5px 10px',
+      borderRadius: 6,
+      background: active ? activeBg : 'transparent',
+      boxShadow: active ? activeShadow : 'none',
+      color: active ? activeColor : inactiveColor,
+      fontSize: 13,
+      lineHeight: '16px',
+      transition: 'all 0.15s ease',
+      display: 'inline-flex',
+      alignItems: 'center',
+    });
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          gap: 2,
+          background: pillBg,
+          borderRadius: 8,
+          border: pillBorder,
+          padding: 3,
+          alignItems: 'center',
+        }}
+      >
+        <Tooltip title='Preview'>
+          <span onClick={() => setInstructionsViewMode('preview')} style={btnStyle(!isSource)}>
+            <EyeOutlined />
+          </span>
+        </Tooltip>
+        <Tooltip title='Source'>
+          <span onClick={() => setInstructionsViewMode('source')} style={btnStyle(isSource)}>
+            <CodeOutlined />
+          </span>
+        </Tooltip>
+        {withCopy && (
+          <Tooltip title='Copy'>
+            <span onClick={handleCopyContent} style={{ ...btnStyle(false), color: inactiveColor }}>
+              <CopyOutlined />
+            </span>
+          </Tooltip>
+        )}
       </div>
     );
   };
@@ -582,24 +705,133 @@ export default function Skills() {
   );
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 200px)', border: '1px solid var(--fc-border-subtle, #e8e8e8)', borderRadius: 'var(--fc-radius-md, 6px)' }}>
+    <div
+      style={{
+        display: 'flex',
+        height: 'calc(100vh - 200px)',
+        border: `1px solid ${tokens.cardBorder}`,
+        borderRadius: 14,
+        background: tokens.bg,
+        overflow: 'hidden',
+        fontFamily: tokens.sans,
+        color: tokens.text1,
+      }}
+    >
+      {/* Scoped prose styles so markdown headings/paragraphs inherit the editorial serif tone. */}
+      <style>{`
+        .skills-prose h1,
+        .skills-prose h2,
+        .skills-prose h3,
+        .skills-prose h4,
+        .skills-prose h5,
+        .skills-prose h6 {
+          font-family: ${tokens.serif};
+          color: ${tokens.text1};
+          letter-spacing: -0.01em;
+          font-weight: 600;
+          margin-top: 1.6em;
+          margin-bottom: 0.5em;
+          line-height: 1.25;
+        }
+        .skills-prose h1 { font-size: 1.85em; }
+        .skills-prose h2 { font-size: 1.4em; }
+        .skills-prose h3 { font-size: 1.15em; }
+        .skills-prose h1:first-child,
+        .skills-prose h2:first-child,
+        .skills-prose h3:first-child { margin-top: 0; }
+        .skills-prose p,
+        .skills-prose li {
+          font-family: ${tokens.serif};
+          color: ${tokens.text1};
+          line-height: 1.7;
+        }
+        .skills-prose p { margin: 0 0 1em; }
+        .skills-prose ul, .skills-prose ol { padding-left: 1.4em; margin: 0 0 1em; }
+        .skills-prose li { margin-bottom: 0.35em; }
+        .skills-prose code:not(pre code) {
+          font-family: "JetBrains Mono", "SF Mono", Monaco, Menlo, Consolas, monospace;
+          font-size: 0.88em;
+          background: ${tokens.bgRail};
+          color: #b3261e;
+          padding: 1px 6px;
+          border-radius: 4px;
+          border: 1px solid ${tokens.cardBorder};
+        }
+        .skills-prose pre {
+          background: ${tokens.codeBg};
+          color: ${tokens.codeText};
+          border-radius: 8px;
+          padding: 16px 20px;
+          overflow: auto;
+          font-size: 12.5px;
+          line-height: 1.6;
+          margin: 0.8em 0 1.2em;
+        }
+        .skills-prose pre code {
+          background: transparent;
+          color: inherit;
+          padding: 0;
+          border: 0;
+        }
+        .skills-prose blockquote {
+          margin: 1em 0;
+          padding: 0.4em 1.2em;
+          border-left: 3px solid ${tokens.cardBorder};
+          color: ${tokens.text2};
+          font-style: italic;
+        }
+        .skills-prose a { color: #3b6ea8; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+        .skills-prose hr { border: 0; border-top: 1px solid ${tokens.divider}; margin: 1.6em 0; }
+      `}</style>
       {/* Left panel */}
-      <div style={{ width: 260, borderRight: '1px solid var(--fc-border-subtle, #e8e8e8)', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--fc-border-subtle, #e8e8e8)' }}>
-          <span style={{ fontWeight: 600, fontSize: 15 }}>{t('skill.title')}</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <SearchOutlined style={{ cursor: 'pointer', fontSize: 14, color: 'var(--fc-text-2, #666)' }} onClick={() => setShowSearch(!showSearch)} />
+      <div
+        style={{
+          width: 280,
+          borderRight: `1px solid ${tokens.divider}`,
+          display: 'flex',
+          flexDirection: 'column',
+          background: tokens.bgRail,
+        }}
+      >
+        <div
+          style={{
+            padding: '18px 20px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              fontFamily: tokens.serif,
+              letterSpacing: '-0.01em',
+              color: tokens.text1,
+            }}
+          >
+            {t('skill.title')}
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <SearchOutlined style={{ cursor: 'pointer', fontSize: 15, color: tokens.text2 }} onClick={() => setShowSearch(!showSearch)} />
             <Dropdown overlay={addMenu} trigger={['click']}>
-              <PlusOutlined style={{ cursor: 'pointer', fontSize: 14, color: 'var(--fc-text-2, #666)' }} />
+              <PlusOutlined style={{ cursor: 'pointer', fontSize: 15, color: tokens.text2 }} />
             </Dropdown>
           </div>
         </div>
         {showSearch && (
-          <div style={{ padding: '8px 12px' }}>
-            <Input size='small' placeholder={t('skill.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} allowClear />
+          <div style={{ padding: '0 16px 8px' }}>
+            <Input
+              size='small'
+              placeholder={t('skill.search_placeholder')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              allowClear
+              style={{ borderRadius: 8, background: tokens.cardBg, border: `1px solid ${tokens.cardBorder}` }}
+            />
           </div>
         )}
-        <div style={{ flex: 1, overflow: 'auto', padding: '8px' }}>
+        <div style={{ flex: 1, overflow: 'auto', padding: '4px 0 16px' }}>
           {builtinSkills.length > 0 && (
             <>
               {renderSectionHeader(t('skill.builtin'), builtinCollapsed, () => setBuiltinCollapsed(!builtinCollapsed))}
@@ -617,144 +849,139 @@ export default function Skills() {
       </div>
 
       {/* Right panel */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
+      <div style={{ flex: 1, overflow: 'auto', padding: '32px 44px', background: tokens.bg }}>
         {selected ? (
           selectedFileContent ? (
-            /* File viewer mode */
+            /* ─────────────── File viewer mode ─────────────── */
             <>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={selectedFileContent.name}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                <h2
+                  style={{
+                    margin: 0,
+                    fontSize: 22,
+                    fontWeight: 600,
+                    fontFamily: tokens.serif,
+                    letterSpacing: '-0.01em',
+                    color: tokens.text1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title={selectedFileContent.name}
+                >
                   {selectedFileContent.name}
                 </h2>
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: 2,
-                    background: 'var(--fc-fill-1, #fafafa)',
-                    borderRadius: 6,
-                    border: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                    padding: 2,
-                    alignItems: 'center',
-                  }}
-                >
-                  <Tooltip title='Preview'>
-                    <span
-                      onClick={() => setInstructionsViewMode('preview')}
-                      style={{
-                        cursor: 'pointer',
-                        padding: '4px 8px',
-                        borderRadius: 4,
-                        background: instructionsViewMode === 'preview' ? '#fff' : 'transparent',
-                        boxShadow: instructionsViewMode === 'preview' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
-                        color: instructionsViewMode === 'preview' ? 'var(--fc-text-1, #333)' : 'var(--fc-text-3, #999)',
-                        fontSize: 13,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <EyeOutlined />
-                    </span>
-                  </Tooltip>
-                  <Tooltip title='Source'>
-                    <span
-                      onClick={() => setInstructionsViewMode('source')}
-                      style={{
-                        cursor: 'pointer',
-                        padding: '4px 8px',
-                        borderRadius: 4,
-                        background: instructionsViewMode === 'source' ? '#fff' : 'transparent',
-                        boxShadow: instructionsViewMode === 'source' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
-                        color: instructionsViewMode === 'source' ? 'var(--fc-text-1, #333)' : 'var(--fc-text-3, #999)',
-                        fontSize: 13,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <CodeOutlined />
-                    </span>
-                  </Tooltip>
-                  <Tooltip title='Copy'>
-                    <span
-                      onClick={handleCopyContent}
-                      style={{
-                        cursor: 'pointer',
-                        padding: '4px 8px',
-                        borderRadius: 4,
-                        color: 'var(--fc-text-3, #999)',
-                        fontSize: 13,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <CopyOutlined />
-                    </span>
-                  </Tooltip>
-                </div>
+                {renderViewerToggle(true)}
               </div>
-              <Divider style={{ margin: '0 0 16px 0' }} />
-              {fileLoading ? (
-                <div style={{ textAlign: 'center', color: 'var(--fc-text-3, #999)', padding: 40 }}>Loading...</div>
-              ) : instructionsViewMode === 'preview' ? (
-                <div style={{ minHeight: 200 }}>
-                  <Markdown content={selectedFileContent.content} />
-                </div>
-              ) : (
-                <pre
-                  style={{
-                    padding: '16px 20px',
-                    background: '#1e293b',
-                    color: '#e2e8f0',
-                    borderRadius: 8,
-                    minHeight: 200,
-                    overflow: 'auto',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                    fontSize: 13,
-                    lineHeight: '20px',
-                    fontFamily: 'Monaco, Menlo, Consolas, monospace',
-                    margin: 0,
-                  }}
-                >
-                  {selectedFileContent.content}
-                </pre>
-              )}
+              <div style={{ height: 1, background: tokens.divider, marginBottom: 24 }} />
+              <div
+                style={{
+                  background: tokens.cardBg,
+                  border: `1px solid ${tokens.cardBorder}`,
+                  borderRadius: 12,
+                  boxShadow: tokens.cardShadowLg,
+                  overflow: 'hidden',
+                }}
+              >
+                {fileLoading ? (
+                  <div style={{ textAlign: 'center', color: tokens.text3, padding: 60, fontFamily: tokens.sans }}>Loading…</div>
+                ) : instructionsViewMode === 'preview' ? (
+                  <div
+                    className='skills-prose'
+                    style={{
+                      padding: '36px 44px',
+                      minHeight: 240,
+                      fontFamily: tokens.serif,
+                      fontSize: 15.5,
+                      lineHeight: 1.7,
+                      color: tokens.text1,
+                    }}
+                  >
+                    <Markdown content={selectedFileContent.content} />
+                  </div>
+                ) : (
+                  <pre
+                    style={{
+                      padding: '28px 36px',
+                      background: tokens.codeBg,
+                      color: tokens.codeText,
+                      minHeight: 240,
+                      overflow: 'auto',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      fontSize: 13,
+                      lineHeight: '22px',
+                      fontFamily: '"JetBrains Mono", "SF Mono", Monaco, Menlo, Consolas, monospace',
+                      margin: 0,
+                    }}
+                  >
+                    {selectedFileContent.content}
+                  </pre>
+                )}
+              </div>
             </>
           ) : (
-            /* Skill detail view */
+            /* ─────────────── Skill detail view ─────────────── */
             <>
               {/* Header: name + toggle + more menu */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>{selected.name}</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Switch size='small' checked={selected.enabled === 1} onChange={() => handleToggleEnabled(selected)} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+                <h2
+                  style={{
+                    margin: 0,
+                    fontSize: 26,
+                    fontWeight: 600,
+                    fontFamily: tokens.serif,
+                    letterSpacing: '-0.02em',
+                    color: tokens.text1,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {selected.name}
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0, marginTop: 4 }}>
+                  <Switch checked={selected.enabled === 1} onChange={() => handleToggleEnabled(selected)} />
                   <Dropdown overlay={moreMenu} trigger={['click']}>
-                    <EllipsisOutlined style={{ fontSize: 20, cursor: 'pointer', color: 'var(--fc-text-2, #666)', padding: '4px' }} />
+                    <EllipsisOutlined style={{ fontSize: 20, cursor: 'pointer', color: tokens.text2, padding: 4 }} />
                   </Dropdown>
                 </div>
               </div>
 
-              {/* Added by / Invoked by */}
-              <div style={{ display: 'flex', gap: 48, marginBottom: 20, fontSize: 13 }}>
+              {/* Three metadata columns */}
+              <div style={{ display: 'flex', gap: 56, marginBottom: 26, fontSize: 13.5 }}>
                 <div>
-                  <div style={{ color: 'var(--fc-text-3, #999)', marginBottom: 4, fontSize: 12 }}>{t('skill.added_by')}</div>
-                  <div style={{ fontWeight: 500 }}>{selected.is_builtin === 1 ? 'System' : selected.created_by || '-'}</div>
+                  <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.added_by')}</div>
+                  <div style={{ fontWeight: 500, color: tokens.text1 }}>{selected.is_builtin === 1 ? 'System' : selected.created_by || '-'}</div>
                 </div>
                 <div>
-                  <div style={{ color: 'var(--fc-text-3, #999)', marginBottom: 4, fontSize: 12 }}>{t('skill.invoked_by')}</div>
-                  <div style={{ fontWeight: 500 }}>User or Agent</div>
+                  <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.last_updated')}</div>
+                  <div style={{ fontWeight: 500, color: tokens.text1 }}>{formatDate(selected.updated_at)}</div>
+                </div>
+                <div>
+                  <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.invoked_by')}</div>
+                  <div style={{ fontWeight: 500, color: tokens.text1 }}>User or Agent</div>
                 </div>
               </div>
 
               {/* Description */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
-                  <span style={{ fontSize: 12, color: 'var(--fc-text-3, #999)', fontWeight: 500 }}>{t('skill.description')}</span>
-                  <InfoCircleOutlined style={{ fontSize: 12, color: 'var(--fc-text-3, #999)' }} />
+              <div style={{ marginBottom: 22 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, color: tokens.text3, fontWeight: 500, letterSpacing: '0.01em' }}>{t('skill.description')}</span>
+                  <InfoCircleOutlined style={{ fontSize: 12, color: tokens.text3 }} />
                 </div>
-                <div style={{ fontSize: 13, lineHeight: '22px', color: 'var(--fc-text-1, #333)' }}>{selected.description || '-'}</div>
+                <div
+                  style={{
+                    fontSize: 15,
+                    lineHeight: 1.65,
+                    color: tokens.text1,
+                    fontFamily: tokens.serif,
+                    maxWidth: 760,
+                  }}
+                >
+                  {selected.description || '-'}
+                </div>
               </div>
 
-              <Divider style={{ margin: '16px 0 20px 0' }} />
+              <div style={{ height: 1, background: tokens.divider, margin: '24px 0 28px' }} />
 
               {/* Advanced config (meta info) */}
               {renderMetaInfo(selected)}
@@ -763,84 +990,48 @@ export default function Skills() {
               <div style={{ marginBottom: 24 }}>
                 <div
                   style={{
-                    border: '1px solid var(--fc-border-subtle, #e8e8e8)',
-                    borderRadius: 8,
+                    background: tokens.cardBg,
+                    border: `1px solid ${tokens.cardBorder}`,
+                    borderRadius: 12,
+                    boxShadow: tokens.cardShadowLg,
                     position: 'relative',
-                    background: instructionsViewMode === 'source' ? '#1e293b' : 'transparent',
+                    overflow: 'hidden',
                   }}
                 >
-                  {/* Toggle buttons inside the card */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 12,
-                      right: 16,
-                      zIndex: 1,
-                      display: 'flex',
-                      gap: 2,
-                      background: instructionsViewMode === 'source' ? 'rgba(255,255,255,0.1)' : 'var(--fc-fill-1, #fafafa)',
-                      borderRadius: 6,
-                      border: instructionsViewMode === 'source' ? '1px solid rgba(255,255,255,0.15)' : '1px solid var(--fc-border-subtle, #e8e8e8)',
-                      padding: 2,
-                    }}
-                  >
-                    <span
-                      onClick={() => setInstructionsViewMode('preview')}
-                      style={{
-                        cursor: 'pointer',
-                        padding: '4px 8px',
-                        borderRadius: 4,
-                        background: instructionsViewMode === 'preview' ? '#fff' : 'transparent',
-                        boxShadow: instructionsViewMode === 'preview' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
-                        color: instructionsViewMode === 'preview' ? 'var(--fc-text-1, #333)' : 'var(--fc-text-3, #999)',
-                        fontSize: 13,
-                        lineHeight: '16px',
-                        transition: 'all 0.15s',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <EyeOutlined />
-                    </span>
-                    <span
-                      onClick={() => setInstructionsViewMode('source')}
-                      style={{
-                        cursor: 'pointer',
-                        padding: '4px 8px',
-                        borderRadius: 4,
-                        background: instructionsViewMode === 'source' ? 'rgba(255,255,255,0.15)' : 'transparent',
-                        boxShadow: instructionsViewMode === 'source' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
-                        color: instructionsViewMode === 'source' ? '#e2e8f0' : 'var(--fc-text-3, #999)',
-                        fontSize: 13,
-                        lineHeight: '16px',
-                        transition: 'all 0.15s',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <CodeOutlined />
-                    </span>
-                  </div>
+                  {/* Toggle buttons */}
+                  <div style={{ position: 'absolute', top: 16, right: 20, zIndex: 1 }}>{renderViewerToggle(false)}</div>
 
-                  {/* Content */}
                   {instructionsViewMode === 'preview' ? (
-                    <div style={{ padding: '20px 24px', minHeight: 200, maxHeight: 480, overflow: 'auto' }}>
+                    <div
+                      className='skills-prose'
+                      style={{
+                        padding: '36px 44px',
+                        minHeight: 240,
+                        maxHeight: 560,
+                        overflow: 'auto',
+                        fontFamily: tokens.serif,
+                        fontSize: 15.5,
+                        lineHeight: 1.7,
+                        color: tokens.text1,
+                      }}
+                    >
                       <Markdown content={selected.instructions} />
                     </div>
                   ) : (
                     <pre
                       style={{
-                        padding: '20px 24px',
-                        minHeight: 200,
-                        maxHeight: 480,
+                        padding: '28px 36px',
+                        background: tokens.codeBg,
+                        color: tokens.codeText,
+                        minHeight: 240,
+                        maxHeight: 560,
                         overflow: 'auto',
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
                         fontSize: 13,
-                        lineHeight: '20px',
-                        fontFamily: 'Monaco, Menlo, Consolas, monospace',
+                        lineHeight: '22px',
+                        fontFamily: '"JetBrains Mono", "SF Mono", Monaco, Menlo, Consolas, monospace',
                         margin: 0,
-                        color: '#e2e8f0',
                       }}
                     >
                       {selected.instructions}

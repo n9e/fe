@@ -106,6 +106,7 @@ const zh_HK = {
     allowed_tools: '預授權工具',
     allowed_tools_placeholder: '空格分隔的工具列表，例如 Bash(git:*) Read',
     added_by: '新增者',
+    last_updated: '最後更新',
     invoked_by: '調用方式',
     delete: '卸載',
   },

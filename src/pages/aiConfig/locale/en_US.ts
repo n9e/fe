@@ -106,6 +106,7 @@ const en_US = {
     allowed_tools: 'Allowed Tools',
     allowed_tools_placeholder: 'Space-delimited tool list, e.g. Bash(git:*) Read',
     added_by: 'Added by',
+    last_updated: 'Last updated',
     invoked_by: 'Invoked by',
     delete: 'Uninstall',
   },

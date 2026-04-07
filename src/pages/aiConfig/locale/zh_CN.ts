@@ -106,6 +106,7 @@ const zh_CN = {
     allowed_tools: '预授权工具',
     allowed_tools_placeholder: '空格分隔的工具列表，例如 Bash(git:*) Read',
     added_by: '添加者',
+    last_updated: '最后更新',
     invoked_by: '调用方式',
     delete: '卸载',
   },

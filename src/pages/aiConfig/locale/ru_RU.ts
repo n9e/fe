@@ -105,6 +105,7 @@ const ru_RU = {
     allowed_tools: 'Разрешённые инструменты',
     allowed_tools_placeholder: 'Список инструментов через пробел, например Bash(git:*) Read',
     added_by: 'Добавлено',
+    last_updated: 'Обновлено',
     invoked_by: 'Вызывается',
     download: 'Скачать',
     delete: 'Удалить',

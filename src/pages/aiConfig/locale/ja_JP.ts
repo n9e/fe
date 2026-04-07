@@ -105,6 +105,7 @@ const ja_JP = {
     allowed_tools: '許可ツール',
     allowed_tools_placeholder: 'スペース区切りのツールリスト（例: Bash(git:*) Read）',
     added_by: '追加者',
+    last_updated: '最終更新',
     invoked_by: '呼び出し方法',
     download: 'ダウンロード',
     delete: 'アンインストール',
