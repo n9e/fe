@@ -109,6 +109,8 @@ const en_US = {
     last_updated: 'Last updated',
     invoked_by: 'Invoked by',
     upload_title: 'Upload skill',
+    update_title: 'Update skill',
+    update_hint: 'The uploaded file will completely replace the current skill',
     upload_drag_or_click: 'Drag and drop or click to upload',
     upload_drop_here: 'Release to upload',
     upload_uploading: 'Uploading…',
@@ -117,6 +119,9 @@ const en_US = {
     upload_req_zip: '.zip or .skill file must include a SKILL.md file',
     upload_invalid_type: 'Invalid file type. Only .md, .zip, and .skill files are supported.',
     upload_success: 'Uploaded successfully',
+    usage_tip_1: 'Skills are used when you ask a question or when a platform Agent performs a task.',
+    usage_tip_2: 'When the system detects that the current request matches a Skill\'s description and trigger conditions, it will automatically invoke the Skill to help complete the task.',
+    usage_tip_3: 'Enabling a Skill does not guarantee it will be invoked every time — whether it is used depends on the context.',
     delete: 'Uninstall',
   },
   mcp: {

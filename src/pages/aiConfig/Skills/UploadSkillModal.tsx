@@ -8,11 +8,12 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  mode?: 'upload' | 'update';
 }
 
 const ACCEPTED_EXTS = ['md', 'zip', 'skill'];
 
-export default function UploadSkillModal({ visible, onClose, onSuccess }: Props) {
+export default function UploadSkillModal({ visible, onClose, onSuccess, mode = 'upload' }: Props) {
   const { t } = useTranslation('aiConfig');
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -66,8 +67,18 @@ export default function UploadSkillModal({ visible, onClose, onSuccess }: Props)
     onClose();
   };
 
+  const isUpdate = mode === 'update';
+  const titleNode = (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+      <span>{isUpdate ? t('skill.update_title') : t('skill.upload_title')}</span>
+      {isUpdate && (
+        <span style={{ fontSize: 12, fontWeight: 'normal', color: 'var(--fc-text-4, #999)' }}>{t('skill.update_hint')}</span>
+      )}
+    </div>
+  );
+
   return (
-    <Modal title={t('skill.upload_title')} visible={visible} onCancel={handleClose} footer={null} width={560} destroyOnClose maskClosable={!uploading}>
+    <Modal title={titleNode} visible={visible} onCancel={handleClose} footer={null} width={560} destroyOnClose maskClosable={!uploading}>
       <div
         onClick={() => !uploading && inputRef.current?.click()}
         onDragOver={handleDragOver}

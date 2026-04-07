@@ -109,6 +109,8 @@ const zh_CN = {
     last_updated: '最后更新',
     invoked_by: '调用方式',
     upload_title: '上传 Skill',
+    update_title: '更新 Skill',
+    update_hint: '上传的文件将完全替换当前 Skill 的所有内容',
     upload_drag_or_click: '拖拽文件到此处，或点击上传',
     upload_drop_here: '释放鼠标完成上传',
     upload_uploading: '正在上传…',
@@ -117,6 +119,9 @@ const zh_CN = {
     upload_req_zip: '.zip 或 .skill 文件必须包含 SKILL.md',
     upload_invalid_type: '不支持的文件类型，仅支持 .md、.zip、.skill',
     upload_success: '上传成功',
+    usage_tip_1: 'Skill 会在用户提问或平台 Agent 执行任务时使用。',
+    usage_tip_2: '当系统判断当前需求与 Skill 的描述、触发条件相匹配时，会自动调用它来辅助完成任务。',
+    usage_tip_3: '启用后并不代表每次都会生效，是否调用取决于具体上下文。',
     delete: '卸载',
   },
   mcp: {

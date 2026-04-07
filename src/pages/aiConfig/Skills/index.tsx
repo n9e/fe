@@ -145,6 +145,7 @@ export default function Skills() {
   const [selectedFileContent, setSelectedFileContent] = useState<{ name: string; content: string } | null>(null);
   const [fileLoading, setFileLoading] = useState(false);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [uploadMode, setUploadMode] = useState<'upload' | 'update'>('upload');
 
   const fetchSkills = async () => {
     const data = await getAISkills(search);
@@ -412,7 +413,14 @@ export default function Skills() {
       >
         {t('skill.write')}
       </Menu.Item>
-      <Menu.Item key='upload' icon={<UploadOutlined />} onClick={() => setUploadModalVisible(true)}>
+      <Menu.Item
+        key='upload'
+        icon={<UploadOutlined />}
+        onClick={() => {
+          setUploadMode('upload');
+          setUploadModalVisible(true);
+        }}
+      >
         {t('skill.upload')}
       </Menu.Item>
     </Menu>
@@ -656,7 +664,14 @@ export default function Skills() {
 
   const moreMenu = selected ? (
     <Menu>
-      <Menu.Item key='edit' icon={<UploadOutlined />} onClick={() => setUploadModalVisible(true)}>
+      <Menu.Item
+        key='edit'
+        icon={<UploadOutlined />}
+        onClick={() => {
+          setUploadMode('update');
+          setUploadModalVisible(true);
+        }}
+      >
         {t('skill.edit')}
       </Menu.Item>
       <Menu.Item key='download' icon={<DownloadOutlined />} onClick={handleDownload}>
@@ -687,10 +702,32 @@ export default function Skills() {
   );
 
   return (
+    <>
+      {/* Usage tip — explains how skills are invoked (single compact line) */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 10,
+          alignItems: 'center',
+          padding: '8px 14px',
+          marginBottom: 10,
+          background: 'var(--fc-fill-1, #f8fafc)',
+          border: `1px solid ${tokens.cardBorder}`,
+          borderRadius: 8,
+          fontFamily: tokens.sans,
+        }}
+      >
+        <InfoCircleOutlined style={{ fontSize: 14, color: 'var(--fc-primary-color, #8162dc)', flexShrink: 0 }} />
+        <div style={{ fontSize: 12.5, lineHeight: 1.6, color: tokens.text2 }}>
+          {t('skill.usage_tip_1')}
+          {t('skill.usage_tip_2')}
+          {t('skill.usage_tip_3')}
+        </div>
+      </div>
     <div
       style={{
         display: 'flex',
-        height: 'calc(100vh - 130px)',
+        height: 'calc(100vh - 152px)',
         border: `1px solid ${tokens.cardBorder}`,
         borderRadius: 12,
         background: tokens.bg,
@@ -1040,6 +1077,7 @@ export default function Skills() {
       />
       <UploadSkillModal
         visible={uploadModalVisible}
+        mode={uploadMode}
         onClose={() => setUploadModalVisible(false)}
         onSuccess={() => {
           fetchSkills();
@@ -1047,5 +1085,6 @@ export default function Skills() {
         }}
       />
     </div>
+    </>
   );
 }
