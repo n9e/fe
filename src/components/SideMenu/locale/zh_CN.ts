@@ -64,6 +64,7 @@ const zh_CN = {
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
+    ai_config_scheduled_task: '定时任务',
   },
 };
 export default zh_CN;
