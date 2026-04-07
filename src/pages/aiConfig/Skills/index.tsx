@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, Dropdown, Menu, Switch, Empty, Tag, Divider, Collapse, Modal, Tooltip, message } from 'antd';
 import {
   PlusOutlined,
@@ -19,8 +19,9 @@ import {
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
 import Markdown from '@/components/Markdown';
-import { AISkill, AISkillFile, getAISkills, getAISkill, getAISkillFile, deleteAISkill, updateAISkill, importAISkill } from './services';
+import { AISkill, AISkillFile, getAISkills, getAISkill, getAISkillFile, deleteAISkill, updateAISkill } from './services';
 import WriteSkillModal from './WriteSkillModal';
+import UploadSkillModal from './UploadSkillModal';
 
 interface TreeNode {
   type: 'folder' | 'file';
@@ -143,7 +144,7 @@ export default function Skills() {
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
   const [selectedFileContent, setSelectedFileContent] = useState<{ name: string; content: string } | null>(null);
   const [fileLoading, setFileLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   const fetchSkills = async () => {
     const data = await getAISkills(search);
@@ -281,19 +282,6 @@ export default function Skills() {
     if (selectedId === skill.id) fetchSelectedSkill(skill.id);
   };
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      await importAISkill(formData);
-      message.success('Imported');
-      fetchSkills();
-    } catch {}
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
   const refreshSelected = () => {
     if (selectedId) fetchSelectedSkill(selectedId);
   };
@@ -424,7 +412,7 @@ export default function Skills() {
       >
         {t('skill.write')}
       </Menu.Item>
-      <Menu.Item key='upload' icon={<UploadOutlined />} onClick={() => fileInputRef.current?.click()}>
+      <Menu.Item key='upload' icon={<UploadOutlined />} onClick={() => setUploadModalVisible(true)}>
         {t('skill.upload')}
       </Menu.Item>
     </Menu>
@@ -668,14 +656,7 @@ export default function Skills() {
 
   const moreMenu = selected ? (
     <Menu>
-      <Menu.Item
-        key='edit'
-        icon={<UploadOutlined />}
-        onClick={() => {
-          setEditData(selected);
-          setModalVisible(true);
-        }}
-      >
+      <Menu.Item key='edit' icon={<UploadOutlined />} onClick={() => setUploadModalVisible(true)}>
         {t('skill.edit')}
       </Menu.Item>
       <Menu.Item key='download' icon={<DownloadOutlined />} onClick={handleDownload}>
@@ -1047,13 +1028,20 @@ export default function Skills() {
         )}
       </div>
 
-      <input ref={fileInputRef} type='file' accept='.md' style={{ display: 'none' }} onChange={handleImport} />
       <WriteSkillModal
         visible={modalVisible}
         data={editData}
         onClose={() => setModalVisible(false)}
         onOk={() => {
           setModalVisible(false);
+          fetchSkills();
+          refreshSelected();
+        }}
+      />
+      <UploadSkillModal
+        visible={uploadModalVisible}
+        onClose={() => setUploadModalVisible(false)}
+        onSuccess={() => {
           fetchSkills();
           refreshSelected();
         }}
