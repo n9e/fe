@@ -29,6 +29,7 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
       form.setFieldsValue({
         ...data,
         enabled: data.enabled === 1,
+        is_default: !!data.is_default,
         timeout: extraConfig.timeout_seconds,
         skip_tls_verify: !!extraConfig.skip_tls_verify,
         proxy: extraConfig.proxy || '',
@@ -40,7 +41,7 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
       });
     } else if (visible) {
       form.resetFields();
-      form.setFieldsValue({ enabled: true, api_type: 'openai' });
+      form.setFieldsValue({ enabled: true, is_default: false, api_type: 'openai' });
     }
   }, [visible, data]);
 
@@ -109,6 +110,7 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
       const payload = {
         ...rest,
         enabled: values.enabled ? 1 : 0,
+        is_default: !!values.is_default,
         extra_config: extraConfig,
       };
 
@@ -151,6 +153,11 @@ export default function LLMConfigDrawer({ visible, data, onClose, onOk }: Props)
           </Col>
           <Col>
             <Form.Item name='enabled' label={t('llm_config.enabled')} valuePropName='checked'>
+              <Switch />
+            </Form.Item>
+          </Col>
+          <Col>
+            <Form.Item name='is_default' label={t('llm_config.is_default')} tooltip={t('llm_config.is_default_tip')} valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>

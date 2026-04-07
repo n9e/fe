@@ -22,6 +22,7 @@ export interface AILLMConfig {
   model: string;
   extra_config: LLMExtraConfig;
   enabled: number;
+  is_default: boolean;
   created_at: number;
   created_by: string;
   updated_at: number;
