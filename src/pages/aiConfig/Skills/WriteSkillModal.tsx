@@ -72,7 +72,7 @@ export default function WriteSkillModal({ visible, data, onClose, onOk }: Props)
     >
       <Form form={form} layout='vertical'>
         <Form.Item name='name' label={t('skill.name')} rules={[{ required: true }]}>
-          <Input placeholder={t('skill.name_placeholder')} disabled={isEdit && data?.is_builtin === 1} />
+          <Input placeholder={t('skill.name_placeholder')} />
         </Form.Item>
         <Form.Item name='description' label={t('skill.description')}>
           <Input.TextArea rows={3} placeholder={t('skill.description_placeholder')} />

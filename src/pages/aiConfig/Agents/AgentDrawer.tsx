@@ -163,7 +163,7 @@ export default function AgentDrawer({ visible, data, onClose, onOk }: Props) {
         >
           <Select mode='multiple' placeholder={t('agent.skill_select_placeholder')} allowClear showSearch optionFilterProp='children'>
             {skills
-              .filter((s) => s.enabled === 1)
+              .filter((s) => !!s.enabled)
               .map((skill) => (
                 <Select.Option key={skill.id} value={skill.id}>
                   {skill.name}

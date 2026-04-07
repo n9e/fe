@@ -139,7 +139,6 @@ export default function Skills() {
   const [instructionsViewMode, setInstructionsViewMode] = useState<'preview' | 'source'>('preview');
   const [expandedSkillIds, setExpandedSkillIds] = useState<Set<number>>(new Set());
   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(new Set());
-  const [builtinCollapsed, setBuiltinCollapsed] = useState(false);
   const [customCollapsed, setCustomCollapsed] = useState(false);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
   const [selectedFileContent, setSelectedFileContent] = useState<{ name: string; content: string } | null>(null);
@@ -267,8 +266,8 @@ export default function Skills() {
     }
   };
 
-  const builtinSkills = skills.filter((s) => s.is_builtin === 1);
-  const customSkills = skills.filter((s) => s.is_builtin !== 1);
+  // Backend has no builtin/custom split — show all skills under one section.
+  const customSkills = skills;
 
   const handleDelete = async (id: number) => {
     await deleteAISkill(id);
@@ -278,7 +277,7 @@ export default function Skills() {
   };
 
   const handleToggleEnabled = async (skill: AISkill) => {
-    await updateAISkill(skill.id, { ...skill, enabled: skill.enabled === 1 ? 0 : 1 });
+    await updateAISkill(skill.id, { ...skill, enabled: !skill.enabled });
     fetchSkills();
     if (selectedId === skill.id) fetchSelectedSkill(skill.id);
   };
@@ -677,25 +676,21 @@ export default function Skills() {
       <Menu.Item key='download' icon={<DownloadOutlined />} onClick={handleDownload}>
         {t('skill.download')}
       </Menu.Item>
-      {selected.is_builtin !== 1 && (
-        <>
-          <Menu.Divider />
-          <Menu.Item
-            key='delete'
-            icon={<DeleteOutlined />}
-            danger
-            onClick={() => {
-              const id = selected.id;
-              Modal.confirm({
-                title: t('skill.delete_confirm'),
-                onOk: () => handleDelete(id),
-              });
-            }}
-          >
-            {t('skill.delete')}
-          </Menu.Item>
-        </>
-      )}
+      <Menu.Divider />
+      <Menu.Item
+        key='delete'
+        icon={<DeleteOutlined />}
+        danger
+        onClick={() => {
+          const id = selected.id;
+          Modal.confirm({
+            title: t('skill.delete_confirm'),
+            onOk: () => handleDelete(id),
+          });
+        }}
+      >
+        {t('skill.delete')}
+      </Menu.Item>
     </Menu>
   ) : (
     <Menu />
@@ -851,12 +846,6 @@ export default function Skills() {
           </div>
         )}
         <div style={{ flex: 1, overflow: 'auto', padding: '4px 0 16px' }}>
-          {builtinSkills.length > 0 && (
-            <>
-              {renderSectionHeader(t('skill.builtin'), builtinCollapsed, () => setBuiltinCollapsed(!builtinCollapsed))}
-              {!builtinCollapsed && builtinSkills.map(renderSkillItem)}
-            </>
-          )}
           {customSkills.length > 0 && (
             <>
               {renderSectionHeader(t('skill.custom'), customCollapsed, () => setCustomCollapsed(!customCollapsed))}
@@ -958,7 +947,7 @@ export default function Skills() {
                   {selected.name}
                 </h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0, marginTop: 4 }}>
-                  <Switch checked={selected.enabled === 1} onChange={() => handleToggleEnabled(selected)} />
+                  <Switch checked={!!selected.enabled} onChange={() => handleToggleEnabled(selected)} />
                   <Dropdown overlay={moreMenu} trigger={['click']}>
                     <EllipsisOutlined style={{ fontSize: 20, cursor: 'pointer', color: tokens.text2, padding: 4 }} />
                   </Dropdown>
@@ -969,7 +958,7 @@ export default function Skills() {
               <div style={{ display: 'flex', gap: 56, marginBottom: 26, fontSize: 13.5 }}>
                 <div>
                   <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.added_by')}</div>
-                  <div style={{ fontWeight: 500, color: tokens.text1 }}>{selected.is_builtin === 1 ? 'System' : selected.created_by || '-'}</div>
+                  <div style={{ fontWeight: 500, color: tokens.text1 }}>{selected.created_by || '-'}</div>
                 </div>
                 <div>
                   <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.last_updated')}</div>
@@ -1078,6 +1067,7 @@ export default function Skills() {
       <UploadSkillModal
         visible={uploadModalVisible}
         mode={uploadMode}
+        skillId={uploadMode === 'update' ? selected?.id : undefined}
         onClose={() => setUploadModalVisible(false)}
         onSuccess={() => {
           fetchSkills();

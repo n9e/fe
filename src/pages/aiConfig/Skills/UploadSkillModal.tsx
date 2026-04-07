@@ -2,18 +2,23 @@ import React, { useRef, useState } from 'react';
 import { Modal, message } from 'antd';
 import { FolderAddOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { importAISkill } from './services';
+import { importAISkill, updateImportAISkill } from './services';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
   onSuccess: () => void;
   mode?: 'upload' | 'update';
+  skillId?: number;
 }
 
-const ACCEPTED_EXTS = ['md', 'zip', 'skill'];
+// Backend accepts .zip / .tar.gz / .tgz (see ai-skill.md)
+function isAcceptedExt(name: string): boolean {
+  const lower = name.toLowerCase();
+  return lower.endsWith('.zip') || lower.endsWith('.tar.gz') || lower.endsWith('.tgz');
+}
 
-export default function UploadSkillModal({ visible, onClose, onSuccess, mode = 'upload' }: Props) {
+export default function UploadSkillModal({ visible, onClose, onSuccess, mode = 'upload', skillId }: Props) {
   const { t } = useTranslation('aiConfig');
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -21,17 +26,24 @@ export default function UploadSkillModal({ visible, onClose, onSuccess, mode = '
 
   const handleFile = async (file: File) => {
     if (!file) return;
-    const ext = file.name.split('.').pop()?.toLowerCase() || '';
-    if (!ACCEPTED_EXTS.includes(ext)) {
+    if (!isAcceptedExt(file.name)) {
       message.error(t('skill.upload_invalid_type'));
+      return;
+    }
+    if (mode === 'update' && !skillId) {
+      message.error('Missing skill id for update');
       return;
     }
     const formData = new FormData();
     formData.append('file', file);
     setUploading(true);
     try {
-      await importAISkill(formData);
-      message.success(t('skill.upload_success'));
+      if (mode === 'update' && skillId) {
+        await updateImportAISkill(skillId, formData);
+      } else {
+        await importAISkill(formData);
+      }
+      message.success(mode === 'update' ? t('skill.update_success') : t('skill.upload_success'));
       onSuccess();
       onClose();
     } catch {
@@ -119,7 +131,7 @@ export default function UploadSkillModal({ visible, onClose, onSuccess, mode = '
       <input
         ref={inputRef}
         type='file'
-        accept='.md,.zip,.skill'
+        accept='.zip,.tar.gz,.tgz,application/zip,application/gzip,application/x-gzip'
         style={{ display: 'none' }}
         onChange={(e) => {
           const file = e.target.files?.[0];

@@ -10,8 +10,7 @@ export interface AISkill {
   compatibility?: string;
   metadata?: Record<string, string>;
   allowed_tools?: string;
-  is_builtin: number;
-  enabled: number;
+  enabled: boolean;
   created_at: number;
   created_by: string;
   updated_at: number;
@@ -27,6 +26,8 @@ export interface AISkillFile {
   size: number;
   created_at: number;
   created_by: string;
+  updated_at?: number;
+  updated_by?: string;
 }
 
 export function getAISkills(search?: string) {
@@ -49,6 +50,7 @@ export function deleteAISkill(id: number) {
   return request(`/api/n9e/ai-skill/${id}`, { method: RequestMethod.Delete });
 }
 
+// POST /api/n9e/ai-skills/import — create new skill from .zip / .tar.gz / .tgz
 export function importAISkill(formData: FormData) {
   return request('/api/n9e/ai-skills/import', {
     method: RequestMethod.Post,
@@ -56,9 +58,10 @@ export function importAISkill(formData: FormData) {
   });
 }
 
-export function uploadAISkillFile(skillId: number, formData: FormData) {
-  return request(`/api/n9e/ai-skill/${skillId}/files`, {
-    method: RequestMethod.Post,
+// PUT /api/n9e/ai-skill/:id/import — replace existing skill from .zip / .tar.gz / .tgz
+export function updateImportAISkill(id: number, formData: FormData) {
+  return request(`/api/n9e/ai-skill/${id}/import`, {
+    method: RequestMethod.Put,
     data: formData,
   });
 }
