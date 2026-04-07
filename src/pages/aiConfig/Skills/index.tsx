@@ -139,7 +139,6 @@ export default function Skills() {
   const [instructionsViewMode, setInstructionsViewMode] = useState<'preview' | 'source'>('preview');
   const [expandedSkillIds, setExpandedSkillIds] = useState<Set<number>>(new Set());
   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(new Set());
-  const [customCollapsed, setCustomCollapsed] = useState(false);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
   const [selectedFileContent, setSelectedFileContent] = useState<{ name: string; content: string } | null>(null);
   const [fileLoading, setFileLoading] = useState(false);
@@ -265,9 +264,6 @@ export default function Skills() {
       saveAs(blob, `${selected.name}.md`);
     }
   };
-
-  // Backend has no builtin/custom split — show all skills under one section.
-  const customSkills = skills;
 
   const handleDelete = async (id: number) => {
     await deleteAISkill(id);
@@ -423,29 +419,6 @@ export default function Skills() {
         {t('skill.upload')}
       </Menu.Item>
     </Menu>
-  );
-
-  const renderSectionHeader = (label: string, collapsed: boolean, onToggle: () => void) => (
-    <div
-      onClick={onToggle}
-      style={{
-        padding: '8px 20px 6px',
-        fontSize: 12,
-        fontWeight: 500,
-        color: tokens.text3,
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        userSelect: 'none',
-        letterSpacing: '0.01em',
-      }}
-    >
-      <span style={{ fontSize: 9, transition: 'transform 0.2s ease', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'inline-flex' }}>
-        <DownOutlined />
-      </span>
-      {label}
-    </div>
   );
 
   const renderSkillItem = (skill: AISkill) => {
@@ -886,12 +859,7 @@ export default function Skills() {
           </div>
         )}
         <div style={{ flex: 1, overflow: 'auto', padding: '4px 0 16px' }}>
-          {customSkills.length > 0 && (
-            <>
-              {renderSectionHeader(t('skill.custom'), customCollapsed, () => setCustomCollapsed(!customCollapsed))}
-              {!customCollapsed && customSkills.map(renderSkillItem)}
-            </>
-          )}
+          {skills.map(renderSkillItem)}
           {skills.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={false} style={{ marginTop: 40 }} />}
         </div>
       </div>

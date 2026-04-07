@@ -130,6 +130,7 @@ const en_US = {
   },
   mcp: {
     title: 'MCP Servers',
+    usage_tip: 'MCP configurations connect external tools and data services. Once enabled, AI features in the platform can invoke the tools provided by the corresponding MCP Server to query external information, perform actions, and orchestrate automation — for use cases such as knowledge retrieval, ticket handling, on-call lookup, and code repository access.',
     name: 'Name',
     name_placeholder: 'Enter MCP server name',
     url: 'MCP Server URL',

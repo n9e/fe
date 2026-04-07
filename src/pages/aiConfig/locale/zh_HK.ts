@@ -130,6 +130,7 @@ const zh_HK = {
   },
   mcp: {
     title: 'MCP 管理',
+    usage_tip: 'MCP 配置用於接入外部工具和資料服務。啟用後，平台內 AI 功能可調用對應 MCP Server 提供的工具能力，用於查詢外部資訊、執行操作和聯動自動化流程，如知識檢索、工單處理、值班查詢、程式碼倉庫存取等場景。',
     name: '名稱',
     name_placeholder: '請輸入 MCP Server 名稱',
     url: 'MCP Server URL',

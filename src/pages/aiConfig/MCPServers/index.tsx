@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Switch, Popconfirm, Space, Modal, Tag, Spin, Tooltip, message } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, ApiOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PlusOutlined, ApiOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { ColumnsType } from 'antd/lib/table';
 import { MCPServer, getMCPServers, deleteMCPServer, updateMCPServer, testMCPServer, getMCPServerTools } from './services';
@@ -102,7 +102,22 @@ export default function MCPServerList() {
 
   return (
     <>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center',
+            padding: '8px 14px',
+            background: 'var(--fc-fill-1, #f8fafc)',
+            border: '1px solid var(--fc-border-color, #e5e7eb)',
+            borderRadius: 8,
+          }}
+        >
+          <InfoCircleOutlined style={{ fontSize: 14, color: 'var(--fc-primary-color, #8162dc)', flexShrink: 0 }} />
+          <div style={{ fontSize: 12.5, lineHeight: 1.6, color: 'var(--fc-text-3, #666666)' }}>{t('mcp.usage_tip')}</div>
+        </div>
         <Button
           type='primary'
           icon={<PlusOutlined />}
