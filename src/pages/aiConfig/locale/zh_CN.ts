@@ -72,9 +72,9 @@ const zh_CN = {
   },
   skill: {
     title: 'Skill 管理',
-    name: 'Skill name',
-    description: 'Description',
-    instructions: 'Instructions',
+    name: 'Skill 名称',
+    description: '描述',
+    instructions: '指令',
     is_builtin: '内置',
     enabled: '启用',
     builtin: '内置技能',

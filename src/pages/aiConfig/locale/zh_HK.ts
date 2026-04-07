@@ -73,7 +73,7 @@ const zh_HK = {
   skill: {
     title: 'Skill 管理',
     name: 'Skill name',
-    description: 'Description',
+    description: '描述',
     instructions: 'Instructions',
     is_builtin: '內建',
     enabled: '啟用',

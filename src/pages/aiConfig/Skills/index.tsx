@@ -954,7 +954,7 @@ export default function Skills() {
                 </div>
               </div>
 
-              {/* Three metadata columns */}
+              {/* Metadata columns */}
               <div style={{ display: 'flex', gap: 56, marginBottom: 26, fontSize: 13.5 }}>
                 <div>
                   <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.added_by')}</div>
@@ -963,10 +963,6 @@ export default function Skills() {
                 <div>
                   <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.last_updated')}</div>
                   <div style={{ fontWeight: 500, color: tokens.text1 }}>{formatDate(selected.updated_at)}</div>
-                </div>
-                <div>
-                  <div style={{ color: tokens.text3, marginBottom: 6, fontSize: 12, letterSpacing: '0.01em' }}>{t('skill.invoked_by')}</div>
-                  <div style={{ fontWeight: 500, color: tokens.text1 }}>User or Agent</div>
                 </div>
               </div>
 
