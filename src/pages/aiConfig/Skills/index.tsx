@@ -762,15 +762,55 @@ export default function Skills() {
         .skills-prose p { margin: 0 0 1em; }
         .skills-prose ul, .skills-prose ol { padding-left: 1.4em; margin: 0 0 1em; }
         .skills-prose li { margin-bottom: 0.35em; }
-        .skills-prose code:not(pre code) {
+        /* Block code without a language tag (rendered by Markdown component as
+           span.base-code > code, not pre/code). Force a proper code-block look. */
+        .skills-prose .base-code:not(.base-code-inline) {
+          display: block;
+          background: ${tokens.codeBg};
+          color: ${tokens.codeText};
+          padding: 18px 22px;
+          border-radius: 8px;
+          overflow: auto;
+          font-size: 12.5px;
+          line-height: 1.55;
+          margin: 0.9em 0 1.2em;
           font-family: "JetBrains Mono", "SF Mono", Monaco, Menlo, Consolas, monospace;
-          font-size: 0.88em;
+          white-space: pre;
+          tab-size: 2;
+          border: 0;
+        }
+        .skills-prose .base-code:not(.base-code-inline) code {
+          display: block;
+          background: transparent;
+          color: inherit;
+          padding: 0;
+          border: 0;
+          white-space: pre;
+          font-family: inherit;
+          font-size: inherit;
+          line-height: inherit;
+        }
+        /* Inline code pill */
+        .skills-prose .base-code-inline {
+          display: inline;
           background: var(--fc-fill-3, #f3f4f6);
           color: #c0392b;
           padding: 1px 6px;
           border-radius: 4px;
           border: 1px solid var(--fc-border-color, #e5e7eb);
+          font-family: "JetBrains Mono", "SF Mono", Monaco, Menlo, Consolas, monospace;
+          font-size: 0.88em;
+          line-height: 1.5;
         }
+        .skills-prose .base-code-inline code {
+          background: transparent;
+          color: inherit;
+          padding: 0;
+          border: 0;
+          font-family: inherit;
+          font-size: inherit;
+        }
+        /* Fallback: real <pre> blocks (syntax-highlighted with a language) */
         .skills-prose pre {
           background: ${tokens.codeBg};
           color: ${tokens.codeText};
@@ -778,8 +818,8 @@ export default function Skills() {
           padding: 16px 20px;
           overflow: auto;
           font-size: 12.5px;
-          line-height: 1.6;
-          margin: 0.8em 0 1.2em;
+          line-height: 1.55;
+          margin: 0.9em 0 1.2em;
         }
         .skills-prose pre code {
           background: transparent;
