@@ -90,27 +90,28 @@ function buildFileTree(files: AISkillFile[]): TreeNode[] {
   return rootChildren;
 }
 
-// Design tokens — refined editorial palette inspired by warm, document-like surfaces.
+// Design tokens — bound to the project's CSS variables so the page stays
+// consistent with the global theme (and supports dark mode automatically).
 const tokens = {
   // Surfaces
-  bg: '#f7f4ec', // warm cream background
-  bgRail: '#f3efe5', // slightly deeper cream for left rail
-  cardBg: '#ffffff',
-  cardBorder: '#e8e1cf', // warm subtle border
-  cardShadow: '0 1px 2px rgba(60, 50, 20, 0.04), 0 1px 3px rgba(60, 50, 20, 0.03)',
-  cardShadowLg: '0 1px 3px rgba(60, 50, 20, 0.05), 0 8px 24px -8px rgba(60, 50, 20, 0.06)',
-  divider: '#e8e1cf',
+  bg: 'var(--fc-fill-2, #ffffff)', // main / right panel — pure white
+  bgRail: 'var(--fc-fill-1, #f8fafc)', // left sidebar — subtle cool tint
+  cardBg: 'var(--fc-fill-2, #ffffff)', // selected items / instructions card
+  cardBorder: 'var(--fc-border-color, #e5e7eb)',
+  cardShadow: '0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03)',
+  cardShadowLg: '0 1px 3px rgba(15, 23, 42, 0.05), 0 8px 24px -8px rgba(15, 23, 42, 0.06)',
+  divider: 'var(--fc-fill-3, #f3f4f6)',
   // Text
-  text1: '#1a1814', // near-black, slightly warm
-  text2: '#6b665a', // warm secondary
-  text3: '#9a9486', // warm tertiary
+  text1: 'var(--fc-text-1, #1a1a1a)',
+  text2: 'var(--fc-text-3, #666666)',
+  text3: 'var(--fc-text-4, #999999)',
   // Interaction
-  hover: '#efeadc',
-  focusRing: '#3b82f6',
-  // Accent for code blocks (kept dark for contrast)
-  codeBg: '#1f1d1a',
-  codeText: '#e8e3d8',
-  // Typography stacks
+  hover: 'var(--fc-fill-3, #f3f4f6)',
+  // Accent for source-mode code blocks
+  codeBg: '#0f172a',
+  codeText: '#e2e8f0',
+  // Typography stacks — keep an editorial serif accent for headings & prose,
+  // sans for UI chrome (matches project body font).
   serif:
     '"Charter", "Iowan Old Style", "Source Serif 4", "Source Serif Pro", "Sitka Text", Cambria, "Songti SC", "Noto Serif CJK SC", "Noto Serif SC", Georgia, serif',
   sans:
@@ -708,9 +709,9 @@ export default function Skills() {
     <div
       style={{
         display: 'flex',
-        height: 'calc(100vh - 200px)',
+        height: 'calc(100vh - 130px)',
         border: `1px solid ${tokens.cardBorder}`,
-        borderRadius: 14,
+        borderRadius: 12,
         background: tokens.bg,
         overflow: 'hidden',
         fontFamily: tokens.sans,
@@ -751,11 +752,11 @@ export default function Skills() {
         .skills-prose code:not(pre code) {
           font-family: "JetBrains Mono", "SF Mono", Monaco, Menlo, Consolas, monospace;
           font-size: 0.88em;
-          background: ${tokens.bgRail};
-          color: #b3261e;
+          background: var(--fc-fill-3, #f3f4f6);
+          color: #c0392b;
           padding: 1px 6px;
           border-radius: 4px;
-          border: 1px solid ${tokens.cardBorder};
+          border: 1px solid var(--fc-border-color, #e5e7eb);
         }
         .skills-prose pre {
           background: ${tokens.codeBg};
