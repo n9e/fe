@@ -38,7 +38,7 @@ const ja_JP = {
   cluster: 'クラスター',
   full_screen: '全画面',
   exit_full_screen: '全画面を退出',
-  copyPanelTip: 'パネル設定がコピーされました。"パネルを追加" > "パネル設定をインポート" をクリックして、設定JSONを貼り付けてパネルを作成します',
+  copyPanelTip: 'パネル設定がコピーされました。"パネルを追加" > "パネルを貼り付け" をクリックして、設定JSONを貼り付けてパネルを作成します',
   batch: {
     import: '夜鶯ダッシュボード JSON をインポート',
     label: 'ダッシュボード JSON',
@@ -647,7 +647,7 @@ const ja_JP = {
     heatmap: 'ヒートマップ',
     iframe: '内蔵文書 (iframe)',
     row: 'グループ',
-    importPanel: 'グラフ設定をインポート',
+    importPanel: 'グラフをインポート',
   },
   calcs: {
     lastNotNull: '最後の非空値',
