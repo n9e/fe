@@ -66,6 +66,7 @@ const en_US = {
     ai_config_llm_configs: 'LLM Management',
     ai_config_skills: 'Skill Management',
     ai_config_mcp_servers: 'MCP Management',
+    ai_config_scheduled_task: 'Scheduled tasks',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

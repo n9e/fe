@@ -50,7 +50,7 @@ function flattenMenuChildrenForHoverPanel(children: IMenuItem[]): IMenuItem[] {
 
 function getMenuGroupChildKeys(item: IMenuItem): string[] {
   return (
-    item.children
+    (item.children
       ?.map((c) => {
         if (c.type === 'tabs' && c.children?.length) {
           return c.children.map((g) => g.key);
@@ -58,8 +58,8 @@ function getMenuGroupChildKeys(item: IMenuItem): string[] {
         return c.key;
       })
       .flat()
-      .filter(Boolean) as string[]
-  ) || [];
+      .filter(Boolean) as string[]) || []
+  );
 }
 
 function isMenuGroupActive(item: IMenuItem, selectedKeys?: string[]): boolean {
@@ -78,9 +78,7 @@ function getMenuGroupIconColorClass(opts: {
 }): string {
   const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, forHoverPanel } = opts;
   const lightInactive =
-    forHoverPanel === true
-      ? 'text-[var(--fc-sidemenu-item-icon)]'
-      : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
+    forHoverPanel === true ? 'text-[var(--fc-sidemenu-item-icon)]' : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
 
   if (isLight) {
     return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
@@ -127,7 +125,7 @@ function SectionHeader(props: { section: NonNullable<IMenuItem['section']>; coll
   return (
     <div
       className={cn(
-        'select-none px-3.5 pt-4 pb-1 text-[10px] font-normal uppercase tracking-[0.12em]',
+        'select-none px-3.5 pt-4 pb-1 text-[11px] font-normal uppercase tracking-[0.12em]',
         !isFirst && 'mt-6',
         isCustomBg ? 'text-[#e6e6e8]/55' : 'text-[var(--fc-sidemenu-section-title)]',
       )}
@@ -623,14 +621,7 @@ export default function MenuList(
                           }}
                         >
                           <div className='sidemenu-hover-panel-header'>
-                            <div
-                              className={cn(
-                                'sidemenu-hover-panel-header-icon children-icon2:h-[16px] children-icon2:w-[16px]',
-                                hoverPanelIconClass,
-                              )}
-                            >
-                              {menu.icon}
-                            </div>
+                            <div className={cn('sidemenu-hover-panel-header-icon children-icon2:h-[16px] children-icon2:w-[16px]', hoverPanelIconClass)}>{menu.icon}</div>
                             <div className='sidemenu-hover-panel-header-title' title={t(menu.label)}>
                               {t(menu.label)}
                             </div>
