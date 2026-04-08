@@ -19,6 +19,7 @@ const ja_JP = {
     group_name: 'ビジネスグループ',
     cluster: 'データソース',
     is_recovered: '回復イベントですか？',
+    severity: 'アラートの重大度',
   },
   use_case: {
     label: '用途',

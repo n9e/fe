@@ -18,6 +18,7 @@ const zh_CN = {
     group_name: '业务组',
     cluster: '数据源',
     is_recovered: '是恢复事件？',
+    severity: '告警分级',
   },
   use_case: {
     label: '用途',

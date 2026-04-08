@@ -24,7 +24,7 @@ const TagItem = (props: Props) => {
   const func = Form.useWatch([...fullName, field.name, 'func']);
   let selectOptions: {
     label: string;
-    value: string;
+    value: string | number;
   }[] = [];
 
   if (key === 'group_name') {
@@ -45,6 +45,12 @@ const TagItem = (props: Props) => {
     selectOptions = [
       { label: 'true', value: 'true' },
       { label: 'false', value: 'false' },
+    ];
+  } else if (key === 'severity') {
+    selectOptions = [
+      { label: t('common:severity.1'), value: 1 },
+      { label: t('common:severity.2'), value: 2 },
+      { label: t('common:severity.3'), value: 3 },
     ];
   }
 
@@ -71,6 +77,10 @@ const TagItem = (props: Props) => {
                         label: t(`${NS}:attribute_filters_options.is_recovered`),
                         value: 'is_recovered',
                       },
+                      {
+                        label: t(`${NS}:attribute_filters_options.severity`),
+                        value: 'severity',
+                      },
                     ]}
                     onChange={() => {
                       const newValues = _.cloneDeep(form.getFieldsValue());
@@ -88,7 +98,13 @@ const TagItem = (props: Props) => {
               <Select
                 options={_.concat(
                   [{ label: '==', value: '==' }],
-                  key !== 'is_recovered'
+                  key === 'severity'
+                    ? [
+                        { label: 'in', value: 'in' },
+                        { label: 'not in', value: 'not in' },
+                        { label: '!=', value: '!=' },
+                      ]
+                    : key !== 'is_recovered'
                     ? [
                         { label: '=~', value: '=~' },
                         { label: 'in', value: 'in' },
@@ -98,6 +114,11 @@ const TagItem = (props: Props) => {
                       ]
                     : [],
                 )}
+                onChange={() => {
+                  const newValues = _.cloneDeep(form.getFieldsValue());
+                  _.set(newValues, [...fullName, field.name, 'value'], undefined);
+                  form.setFieldsValue(newValues);
+                }}
               />
             </Form.Item>
           </Col>
@@ -107,14 +128,21 @@ const TagItem = (props: Props) => {
                 name={[field.name, 'value']}
                 rules={[{ required: true, message: t('tag.value.msg') }]}
                 getValueFromEvent={(value) => {
-                  if (_.isArray(value)) {
-                    return _.join(value, ' ');
+                  if (_.includes(['group_name', 'cluster', 'is_recovered'], key)) {
+                    if (_.isArray(value)) {
+                      return _.join(value, ' ');
+                    }
                   }
                   return value;
                 }}
                 getValueProps={(value) => {
-                  if (_.isString(value)) {
-                    return { value: _.split(value, ' ') };
+                  if (_.includes(['group_name', 'cluster', 'is_recovered'], key)) {
+                    if (_.isString(value)) {
+                      if (value === '') {
+                        return { value: [] };
+                      }
+                      return { value: _.split(value, ' ') };
+                    }
                   }
                   return { value };
                 }}
