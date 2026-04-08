@@ -19,6 +19,7 @@ const en_US = {
     group_name: 'Business group',
     cluster: 'Data source',
     is_recovered: 'Is recovered?',
+    severity: 'Alert severity',
   },
   use_case: {
     label: 'Use Case',
