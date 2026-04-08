@@ -41,7 +41,7 @@ const zh_HK = {
   cluster: '叢集',
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
-  copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
+  copyPanelTip: '圖表配置已複製。單擊 "添加圖表" > "導入圖表配置" 粘貼配置 JSON 來創建圖表',
   batch: {
     import: '導入夜鶯儀表盤 JSON',
     label: '儀表盤 JSON',
@@ -615,7 +615,6 @@ const zh_HK = {
       discardText: '放棄',
       okText: '儲存',
     },
-    noPanelToPaste: '沒有可粘貼的圖表',
     importPanel: {
       invalidJSON: '圖表配置 JSON 格式不正確',
       placeholder: '請粘貼圖表配置 JSON',
@@ -651,7 +650,6 @@ const zh_HK = {
     heatmap: '色塊圖',
     iframe: '內嵌文檔 (iframe)',
     row: '分組',
-    pastePanel: '粘貼圖表',
     importPanel: '導入圖表配置',
   },
   calcs: {
