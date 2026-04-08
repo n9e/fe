@@ -27,6 +27,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { updateDashboardConfigs as updateDashboardConfigsFunc } from '@/services/dashboardV2';
 import { Dashboard } from '@/store/dashboardInterface';
 import { CommonStateContext } from '@/App';
+import { copy2ClipBoard } from '@/utils';
 
 import {
   buildLayout,
@@ -137,7 +138,25 @@ function index(props: IProps) {
     }
   };
   const editorRef = useRef<any>(null);
-  const [, setPanelClipboard] = useGlobalState('panelClipboard');
+
+  const handleCopyPanel = async (panel: any) => {
+    const panelConfig = JSON.stringify(panel, null, 2);
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(panelConfig);
+        message.success(t('copyPanelTip'));
+        return;
+      } catch (error) {
+        // Fall back to execCommand-based copy for browsers without clipboard permission.
+      }
+    }
+
+    const copied = copy2ClipBoard(panelConfig, true);
+    if (copied) {
+      message.success(t('copyPanelTip'));
+    }
+  };
 
   return (
     <div className='dashboards-panels'>
@@ -264,7 +283,7 @@ function index(props: IProps) {
                         });
                       }}
                       onCopyClick={() => {
-                        setPanelClipboard(item);
+                        void handleCopyPanel(item);
                       }}
                       setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
                     />

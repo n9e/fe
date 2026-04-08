@@ -38,7 +38,7 @@ const ja_JP = {
   cluster: 'クラスター',
   full_screen: '全画面',
   exit_full_screen: '全画面を退出',
-  copyPanelTip: 'グラフがコピーされました。"グラフを追加"をクリックして貼り付けてください。',
+  copyPanelTip: 'パネル設定がコピーされました。"パネルを追加" > "パネル設定をインポート" をクリックして、設定JSONを貼り付けてパネルを作成します',
   batch: {
     import: '夜鶯ダッシュボード JSON をインポート',
     label: 'ダッシュボード JSON',
@@ -612,7 +612,6 @@ const ja_JP = {
       discardText: '放棄',
       okText: '保存',
     },
-    noPanelToPaste: '貼り付け可能なグラフがありません',
     importPanel: {
       invalidJSON: 'グラフ設定の JSON 形式が正しくありません',
       placeholder: 'グラフ設定の JSON を貼り付けてください',
@@ -648,7 +647,6 @@ const ja_JP = {
     heatmap: 'ヒートマップ',
     iframe: '内蔵文書 (iframe)',
     row: 'グループ',
-    pastePanel: 'グラフを貼り付け',
     importPanel: 'グラフ設定をインポート',
   },
   calcs: {

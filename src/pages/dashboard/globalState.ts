@@ -2,7 +2,6 @@ import { createGlobalState } from 'react-hooks-global-state';
 
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 
-import { IPanel } from './types';
 import { IVariable } from './Variables/types';
 
 export interface DashboardMeta {
@@ -25,7 +24,6 @@ export const { useGlobalState, getGlobalState } = createGlobalState<{
   tableFields: string[];
   displayedTableFields: string[];
   tableRefIds: string[]; // labelValuesToRows 模式下，tableRefIds 用于记录当前表格的 refId
-  panelClipboard?: IPanel;
   series?: any[];
 }>({
   dashboardMeta: {} as DashboardMeta,
@@ -39,6 +37,5 @@ export const { useGlobalState, getGlobalState } = createGlobalState<{
   tableFields: [],
   displayedTableFields: [],
   tableRefIds: [],
-  panelClipboard: undefined,
   series: undefined,
 });

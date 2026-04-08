@@ -41,7 +41,7 @@ const en_US = {
   cluster: 'Cluster',
   full_screen: 'Full screen',
   exit_full_screen: 'Exit full screen',
-  copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
+  copyPanelTip: 'Panel config copied. Click "Add panel" > "Import panel config" to paste the config JSON to create a panel',
   batch: {
     import: 'Import Nightingale dashboard JSON',
     label: 'Dashboard JSON',
@@ -608,7 +608,6 @@ const en_US = {
       discardText: 'Discard',
       okText: 'Save',
     },
-    noPanelToPaste: 'No panel to paste',
     importPanel: {
       invalidJSON: 'Invalid panel config JSON',
       placeholder: 'Paste panel config JSON here',
@@ -644,7 +643,6 @@ const en_US = {
     heatmap: 'Heatmap',
     iframe: 'Iframe',
     row: 'Row',
-    pastePanel: 'Paste panel',
     importPanel: 'Import panel config',
   },
   calcs: {

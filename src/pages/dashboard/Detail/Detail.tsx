@@ -95,7 +95,6 @@ export default function DetailV2(props: IProps) {
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
   const [, setGlobalRange] = useGlobalState('range');
-  const [panelClipboard] = useGlobalState('panelClipboard');
   const [, setParamsAiAction] = useParamsAiAction();
   let { id } = useParams<URLParam>();
   const query = queryString.parse(location.search);
@@ -385,18 +384,6 @@ export default function DetailV2(props: IProps) {
                       ...dashboard,
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
-                  } else if (type === 'pastePanel') {
-                    if (panelClipboard) {
-                      const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelClipboard, id: uuidv4() }, 'chart', false);
-                      setPanels(newPanels);
-                      scrollToLastPanel(newPanels);
-                      handleUpdateDashboardConfigs(dashboard.id, {
-                        ...dashboard,
-                        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                      });
-                    } else {
-                      message.error(t('detail.noPanelToPaste'));
-                    }
                   } else {
                     setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
                   }
