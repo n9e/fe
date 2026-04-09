@@ -286,52 +286,52 @@ export const NOTIFICATION_CHANNEL_TYPES = {
       },
     },
   },
-  feishu: {
-    logo: '/image/logos/feishu.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'access_token',
-              cname: 'Access Token',
-              type: 'string',
-            },
-            {
-              key: 'bot_name',
-              cname: 'Bot Name',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: 'https://open.feishu.cn/open-apis/bot/v2/hook/{{$params.access_token}}',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"msg_type": "interactive", "card": {"config": {"wide_screen_mode": true}, "header": {"title": {"content": "{{$tpl.title}}", "tag": "plain_text"}, "template": "{{if $event.IsRecovered}}green{{else}}red{{end}}"}, "elements": [{"tag": "markdown", "content": "{{$tpl.content}}"}]}}',
-          },
-        },
-        feishu_request_config: {
-          app_id: '',
-          app_secret: '',
-        },
-      },
-    },
-  },
+  // feishu: {
+  //   logo: '/image/logos/feishu.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'access_token',
+  //             cname: 'Access Token',
+  //             type: 'string',
+  //           },
+  //           {
+  //             key: 'bot_name',
+  //             cname: 'Bot Name',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: 'https://open.feishu.cn/open-apis/bot/v2/hook/{{$params.access_token}}',
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"msg_type": "interactive", "card": {"config": {"wide_screen_mode": true}, "header": {"title": {"content": "{{$tpl.title}}", "tag": "plain_text"}, "template": "{{if $event.IsRecovered}}green{{else}}red{{end}}"}, "elements": [{"tag": "markdown", "content": "{{$tpl.content}}"}]}}',
+  //         },
+  //       },
+  //       feishu_request_config: {
+  //         app_id: '',
+  //         app_secret: '',
+  //       },
+  //     },
+  //   },
+  // },
   feishuapp: {
     logo: '/image/logos/feishu.png',
     type: 'feishuapp',
@@ -382,52 +382,52 @@ export const NOTIFICATION_CHANNEL_TYPES = {
       },
     },
   },
-  lark: {
-    logo: '/image/logos/feishu.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'token',
-              cname: 'Token',
-              type: 'string',
-            },
-            {
-              key: 'bot_name',
-              cname: 'Bot Name',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: 'https://open.larksuite.com/open-apis/bot/v2/hook/{{$params.token}}',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"msg_type": "interactive", "card": {"config": {"wide_screen_mode": true}, "header": {"title": {"content": "{{$tpl.title}}", "tag": "plain_text"}, "template": "{{if $event.IsRecovered}}green{{else}}red{{end}}"}, "elements": [{"tag": "markdown", "content": "{{$tpl.content}}"}]}}',
-          },
-        },
-        feishu_request_config: {
-          app_id: '',
-          app_secret: '',
-        },
-      },
-    },
-  },
+  // lark: {
+  //   logo: '/image/logos/feishu.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'token',
+  //             cname: 'Token',
+  //             type: 'string',
+  //           },
+  //           {
+  //             key: 'bot_name',
+  //             cname: 'Bot Name',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: 'https://open.larksuite.com/open-apis/bot/v2/hook/{{$params.token}}',
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"msg_type": "interactive", "card": {"config": {"wide_screen_mode": true}, "header": {"title": {"content": "{{$tpl.title}}", "tag": "plain_text"}, "template": "{{if $event.IsRecovered}}green{{else}}red{{end}}"}, "elements": [{"tag": "markdown", "content": "{{$tpl.content}}"}]}}',
+  //         },
+  //       },
+  //       feishu_request_config: {
+  //         app_id: '',
+  //         app_secret: '',
+  //       },
+  //     },
+  //   },
+  // },
   telegram: {
     logo: '/image/logos/telegram.png',
     type: 'http',
