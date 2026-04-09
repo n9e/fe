@@ -19,7 +19,7 @@
  * 新版查询条件和告警条件表单
  */
 import React, { useContext } from 'react';
-import { Form, Card, Space } from 'antd';
+import { Form, Card, Space, Button } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -30,6 +30,8 @@ import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import PromQLInputNG from '@/components/PromQLInputNG';
+import { useAiChatContext } from '@/components/AiChatNG';
+import AiIcon from '@/components/AiChatNG/AiIcon';
 
 import GraphPreview from './GraphPreview';
 import AdvancedSettings from './components/AdvancedSettings';
@@ -42,6 +44,7 @@ export default function PrometheusV2(props: Props) {
   const { datasourceValue } = props;
   const { t } = useTranslation('alertRules');
   const { disabled } = useContext(FormStateContext);
+  const { openAiChat } = useAiChatContext();
   const form = Form.useFormInstance();
   const queries = Form.useWatch(['rule_config', 'queries']);
 
@@ -86,6 +89,21 @@ export default function PrometheusV2(props: Props) {
                           <PromQLInputNG readOnly={disabled} datasourceValue={datasourceValue} durationVariablesCompletion={false} />
                         </Form.Item>
                       </InputGroupWithFormItem>
+                    </div>
+                    <div className='flex-shrink-0'>
+                      <Button
+                        icon={<AiIcon />}
+                        onClick={() => {
+                          openAiChat({
+                            datasourceCate: 'prometheus',
+                            datasourceValue,
+                            callbackParams: {
+                              queriesIndex: field.name,
+                              openedAt: Date.now(),
+                            },
+                          });
+                        }}
+                      />
                     </div>
                   </div>
                   {IS_PLUS && (

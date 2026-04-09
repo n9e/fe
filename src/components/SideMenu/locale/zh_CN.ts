@@ -60,6 +60,11 @@ const zh_CN = {
     alert_servers: '告警引擎',
     about: '关于产品',
     license_management: '证书管理',
+    ai_config: 'AI 配置',
+    ai_config_agents: 'Agent 管理',
+    ai_config_llm_configs: 'LLM 管理',
+    ai_config_skills: 'Skill 管理',
+    ai_config_mcp_servers: 'MCP 管理',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
