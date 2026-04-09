@@ -36,6 +36,7 @@ export default function Add() {
           initialValues={
             {
               ...(DEFAULT_VALUES as any),
+              ...(identConfig.default_values || {}),
               ident,
               request_type: identConfig.type,
             } as ChannelItem
