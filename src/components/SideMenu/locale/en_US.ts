@@ -1,4 +1,5 @@
 const en_US = {
+  landing: 'Home',
   resizeWidth: 'Drag to resize sidebar',
   quickJump: 'Quick jump',
   quickOpenClose: 'Open/Close',

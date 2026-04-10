@@ -1,4 +1,5 @@
 const zh_HK = {
+  landing: '首頁',
   resizeWidth: '拖拽調整側欄寬度',
   quickJump: '快捷跳轉',
   quickOpenClose: '打開/關閉',
