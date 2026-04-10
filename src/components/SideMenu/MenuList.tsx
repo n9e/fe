@@ -252,7 +252,6 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
   const { t } = useTranslation('sideMenu');
   const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack, onClick, isGoldTheme, isLight } = props;
-  console.log('MenuItem', props);
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
   const savedPath = item.children ? getSavedPath(path) : item.key;
@@ -533,12 +532,11 @@ export default function MenuList(
     <>
       <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
         {IS_ENT && (
-          <div
-            onClick={() => {
-              otherProps.onClick?.('/landing');
-            }}
+          <Link
+            to='/landing'
             className={cn(
               'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors transition-spacing duration-75',
+              isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
@@ -552,7 +550,7 @@ export default function MenuList(
             </div>
 
             <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('landing')} </div>
-          </div>
+          </Link>
         )}
         <Tooltip title={props.collapsed ? null : isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' trigger={props.collapsed ? [] : ['hover']}>
           <div
