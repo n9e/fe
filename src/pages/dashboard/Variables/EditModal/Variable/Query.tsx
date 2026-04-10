@@ -194,7 +194,7 @@ export default function Query(props: Props) {
       >
         <Input placeholder='/*.hna/' />
       </Form.Item>
-      {_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql], datasourceCate) && (
+      {_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql], datasourceCate) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
@@ -211,7 +211,7 @@ export default function Query(props: Props) {
           {item?.multi && item?.allOption ? (
             <Col flex='auto'>
               <Form.Item label={t('var.allValue')} name='allValue'>
-                <Input placeholder='.*' />
+                <Input placeholder={datasourceCate === DatasourceCateEnum.mysql ? '' : '.*'} />
               </Form.Item>
             </Col>
           ) : null}
