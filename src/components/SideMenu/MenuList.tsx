@@ -454,7 +454,7 @@ export default function MenuList(
               'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
               'h-8 rounded-md',
               'px-3.5',
-              isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#ccccdc]' : 'text-main',
+              isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
             )}
           >
