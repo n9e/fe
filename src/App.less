@@ -1,6 +1,5 @@
 @import './theme/index.less';
 
-
 #root,
 .App {
   height: 100%;
@@ -143,7 +142,7 @@ input::placeholder {
 }
 
 .ant-drawer-body {
-  padding: 16px !important;
+  padding: 16px;
 }
 
 .ant-input.promql-input {
@@ -217,7 +216,7 @@ input::placeholder {
 .title-color {
   color: @text-color;
 
-  &>* {
+  & > * {
     color: @text-color;
   }
 }
@@ -229,7 +228,7 @@ input::placeholder {
 .second-color {
   color: @secondColor;
 
-  &>* {
+  & > * {
     color: @secondColor;
   }
 }
@@ -283,7 +282,6 @@ input::placeholder {
 // 当 tooltip 内容为 markdown 时，h1~h6 的颜色覆盖默认的颜色为白色
 .ant-tooltip-inner {
   .markdown-wrapper {
-
     h1,
     h2,
     h3,
@@ -385,7 +383,6 @@ input::placeholder {
 
 // antd表格排序icon特殊处理
 .ant-table-column-has-sorters .ant-table-column-sorter-inner {
-
   .ant-table-column-sorter-up,
   .ant-table-column-sorter-down {
     transition: all 0.2s;
@@ -465,7 +462,7 @@ input::placeholder {
     color: var(--fc-gold-text);
   }
 
-  .ant-table-tbody>tr:last-child>td {
+  .ant-table-tbody > tr:last-child > td {
     border-bottom: 1px solid var(--fc-primary-color);
   }
 
@@ -479,7 +476,7 @@ input::placeholder {
   }
 
   //金色背景下 黑色文字
-  .ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-icon .ant-steps-icon,
+  .ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-icon .ant-steps-icon,
   .selected-num,
   .ant-switch-inner,
   .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,

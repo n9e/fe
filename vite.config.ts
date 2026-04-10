@@ -143,7 +143,6 @@ export default defineConfig(({ mode }) => {
             'checkbox-check-color': '#6C53B1',
             'checkbox-color': 'fade(@checkbox-check-color, 10)',
             'btn-padding-horizontal-base': '12px',
-
             // 2026-03 release-23 版本
             'table-bg': 'var(--fc-fill-2)',
             'table-row-hover-bg': 'rgb(var(--fc-fill-3-rgb) / 0.65)',

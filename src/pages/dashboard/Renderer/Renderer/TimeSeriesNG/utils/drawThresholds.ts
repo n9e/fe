@@ -47,7 +47,7 @@ export default function drawThresholds(props: Props) {
     const xMax = uplot.valToPos(scaleXMax, 'x', true);
     _.forEach(
       _.filter(thresholdsSteps, (item) => {
-        return item.type !== 'base';
+        return item.type !== 'base' && item.value >= scaleYMin && item.value <= scaleYMax;
       }),
       (step) => {
         ctx.beginPath();
@@ -64,10 +64,25 @@ export default function drawThresholds(props: Props) {
     );
     if (thresholdsStyle.mode === 'line+area' || thresholdsStyle.mode === 'dashed+area') {
       _.forEach(thresholdsSteps, (step, index) => {
+        // Check if the current step is within the Y axis range
+        const currentStepInRange = step.value >= scaleYMin && step.value <= scaleYMax;
+        const nextStepInRange = index < thresholdsSteps.length - 1 && thresholdsSteps[index + 1].value >= scaleYMin && thresholdsSteps[index + 1].value <= scaleYMax;
+
+        // Skip if both current and next steps are outside the range
+        if (!currentStepInRange && !nextStepInRange) {
+          return;
+        }
+
         ctx.beginPath();
         ctx.fillStyle = Color(step.color).alpha(0.14).rgb().string();
-        const y0Value = index === 0 ? scaleYMin : step.value;
-        const y1Value = index === thresholdsSteps.length - 1 ? scaleYMax : thresholdsSteps[index + 1].value;
+
+        // Clamp y0Value and y1Value to the Y axis range
+        let y0Value = index === 0 ? scaleYMin : step.value;
+        let y1Value = index === thresholdsSteps.length - 1 ? scaleYMax : thresholdsSteps[index + 1].value;
+
+        y0Value = Math.max(scaleYMin, Math.min(scaleYMax, y0Value));
+        y1Value = Math.max(scaleYMin, Math.min(scaleYMax, y1Value));
+
         const y0 = uplot.valToPos(y0Value, 'y', true);
         const y1 = uplot.valToPos(y1Value, 'y', true);
         ctx.moveTo(xMin, y0);

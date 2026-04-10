@@ -19,6 +19,7 @@ const ru_RU = {
     group_name: 'Бизнес-группа',
     cluster: 'Источник данных',
     is_recovered: 'Это событие восстановления?',
+    severity: 'Уровень серьезности',
   },
   use_case: {
     label: 'Назначение',
