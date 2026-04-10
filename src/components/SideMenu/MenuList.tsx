@@ -537,7 +537,7 @@ export default function MenuList(
             className={cn(
               'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
               'h-8 rounded-md',
-              'px-3.5',
+              'px-3',
               isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
             )}
@@ -562,7 +562,7 @@ export default function MenuList(
             }}
             className={cn(
               'group relative flex h-8 cursor-pointer items-center rounded-md transition-colors duration-75',
-              props.collapsed ? 'justify-center' : 'px-3.5',
+              props.collapsed ? 'justify-center' : 'px-3',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >

@@ -21,14 +21,14 @@ export function formatString(str: string, data: Record<string, any>): string {
     // 1. 处理 $variableName 格式 - 智能匹配变量边界
     processedStr = processedStr.replace(/\$([a-zA-Z0-9_]+)/g, (match, varName) => {
       // 如果变量存在，直接替换
-      if (data.hasOwnProperty(varName)) {
+      if (Object.prototype.hasOwnProperty.call(data, varName)) {
         return `\${${varName}}`;
       }
 
       // 如果变量不存在，尝试匹配更短的变量名
       for (let i = varName.length - 1; i > 0; i--) {
         const shortVarName = varName.substring(0, i);
-        if (data.hasOwnProperty(shortVarName)) {
+        if (Object.prototype.hasOwnProperty.call(data, shortVarName)) {
           return `\${${shortVarName}}${varName.substring(i)}`;
         }
       }
@@ -39,7 +39,7 @@ export function formatString(str: string, data: Record<string, any>): string {
 
     // 2. 处理 [[variableName]] 格式 - 仅在变量存在时转换为 ${variableName}
     processedStr = processedStr.replace(/\[\[([a-zA-Z0-9_]+)\]\]/g, (match, varName) => {
-      if (data.hasOwnProperty(varName)) {
+      if (Object.prototype.hasOwnProperty.call(data, varName)) {
         return '${' + varName + '}';
       }
       return match;
@@ -49,7 +49,8 @@ export function formatString(str: string, data: Record<string, any>): string {
     // 仅当整个占位符内容作为 data 的键存在时才替换，避免误解析嵌套路径
     processedStr = processedStr.replace(/\$\{([^}]+)\}/g, (match, varName) => {
       if (Object.prototype.hasOwnProperty.call(data, varName)) {
-        return String(data[varName]);
+        const value = data[varName];
+        return String(value ?? '');
       }
       return match;
     });
