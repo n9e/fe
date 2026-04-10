@@ -141,4 +141,62 @@ describe('textbox variable empty value', () => {
 
     expect(formatString('$input', data)).toBe('');
   });
+
+  test('should interpolate fixed query variable empty value as empty string', () => {
+    const initialized = initializeVariablesValue(
+      [
+        {
+          name: 'ident',
+          definition: 'label_values(cpu_usage_idle, ident)',
+          type: 'query',
+          defaultValue: '1',
+          datasource: {
+            cate: 'prometheus',
+            value: '${db}',
+          },
+        },
+      ],
+      {
+        __variable_value_fixed: 'true',
+      },
+      {
+        dashboardId: 1,
+      },
+    );
+
+    const data = adjustData(initialized, {
+      datasourceList: [],
+    });
+
+    expect(formatString('ident: $ident', data)).toBe('ident: ');
+    expect(formatString('cpu_usage_idle{ident="$ident"}', data)).toBe('cpu_usage_idle{ident=""}');
+  });
+
+  test('should interpolate fixed datasource variable empty value as empty string', () => {
+    const initialized = initializeVariablesValue(
+      [
+        {
+          name: 'db',
+          definition: 'prometheus',
+          type: 'datasource',
+          defaultValue: '',
+          datasource: {
+            cate: 'prometheus',
+          },
+        },
+      ],
+      {
+        __variable_value_fixed: 'true',
+      },
+      {
+        dashboardId: 1,
+      },
+    );
+
+    const data = adjustData(initialized, {
+      datasourceList: [],
+    });
+
+    expect(formatString('${db}', data)).toBe('');
+  });
 });
