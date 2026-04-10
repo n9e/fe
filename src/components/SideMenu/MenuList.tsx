@@ -451,18 +451,20 @@ export default function MenuList(
           <Link
             to='/landing'
             className={cn(
-              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors transition-spacing duration-75',
-              isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
-              isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
+              'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
+              'h-8 rounded-md',
+              'px-3.5',
+              isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#ccccdc]' : 'text-main',
+              isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
             )}
           >
             <div
               className={cn(
                 'mr-2 inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
-                isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
+                isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '',
               )}
             >
-              <HomeOutlined />
+              <IconFont type='icon-ic_home_light' />
             </div>
 
             <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('landing')} </div>
