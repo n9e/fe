@@ -1,4 +1,5 @@
 const zh_CN = {
+  landing: '首页',
   resizeWidth: '拖拽调整侧栏宽度',
   quickJump: '快捷跳转',
   quickOpenClose: '打开/关闭',

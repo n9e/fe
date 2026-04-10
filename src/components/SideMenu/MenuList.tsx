@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import getPlacements from 'antd/es/_util/placements';
 import { Link } from 'react-router-dom';
-
+import { HomeOutlined } from '@ant-design/icons';
 import { RightIcon } from '@/components/BusinessGroup/components/Tree/constant';
 import IconFont from '@/components/IconFont';
-
+import { IS_ENT } from '@/utils/constant';
 import { IMenuItem } from './types';
 import { cn, getSavedPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
@@ -252,6 +252,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
   const { t } = useTranslation('sideMenu');
   const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack, onClick, isGoldTheme, isLight } = props;
+  console.log('MenuItem', props);
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
   const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
   const savedPath = item.children ? getSavedPath(path) : item.key;
@@ -531,6 +532,28 @@ export default function MenuList(
   return (
     <>
       <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
+        {IS_ENT && (
+          <div
+            onClick={() => {
+              otherProps.onClick?.('/landing');
+            }}
+            className={cn(
+              'group relative flex h-8 cursor-pointer items-center rounded-md px-3.5 transition-colors transition-spacing duration-75',
+              isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
+            )}
+          >
+            <div
+              className={cn(
+                'mr-2 inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
+                isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
+              )}
+            >
+              <HomeOutlined />
+            </div>
+
+            <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('landing')} </div>
+          </div>
+        )}
         <Tooltip title={props.collapsed ? null : isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' trigger={props.collapsed ? [] : ['hover']}>
           <div
             onClick={(e) => {

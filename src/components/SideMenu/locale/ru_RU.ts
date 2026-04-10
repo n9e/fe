@@ -1,4 +1,5 @@
 const ru_RU = {
+  landing: 'Главная',
   resizeWidth: 'Перетащите, чтобы изменить ширину панели',
   quickJump: 'Быстрый переход',
   quickOpenClose: 'Открыть/закрыть',
