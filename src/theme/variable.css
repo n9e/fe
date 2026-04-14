@@ -75,11 +75,15 @@
   --fc-sidemenu-bg: rgb(247, 247, 248);
   --fc-sidemenu-border: #e5e7eb;
   --fc-sidemenu-section-title: rgba(101, 115, 134, 0.6);
-  --fc-sidemenu-item-icon: rgba(101, 115, 134, 0.4);
-  --fc-sidemenu-item-text: rgb(101, 115, 134);
+  /* 对齐 fc-firemap: --sidebar-foreground: 215 14% 34% => rgb(75, 85, 99) */
+  --fc-sidemenu-item-icon: rgb(75, 85, 99);
+  --fc-sidemenu-item-text: rgb(75, 85, 99);
+  /* 对齐 fc-firemap 子菜单默认色：text-muted-foreground => 215 14% 46% */
+  --fc-sidemenu-subitem-text: rgb(101, 115, 134);
   --fc-sidemenu-item-active-bg: rgb(243, 238, 252);
   --fc-sidemenu-item-active-text: #5720B6;
-  --fc-sidemenu-item-hover-bg: #f3f4f6;
+  --fc-sidemenu-item-hover-bg: rgb(241, 241, 244);
+  --fc-sidemenu-item-hover-text: #1a1a1a;
   --fc-sidemenu-beta-bg: #ede9fe;
   --fc-sidemenu-beta-text: #6d28d9;
 
