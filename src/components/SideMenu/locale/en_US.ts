@@ -1,4 +1,5 @@
 const en_US = {
+  landing: 'Home',
   resizeWidth: 'Drag to resize sidebar',
   quickJump: 'Quick jump',
   quickOpenClose: 'Open/Close',
@@ -61,6 +62,11 @@ const en_US = {
     alert_servers: 'Alerting engines',
     about: 'About',
     license_management: 'License Management',
+    ai_config: 'AI Configuration',
+    ai_config_agents: 'Agent Management',
+    ai_config_llm_configs: 'LLM Management',
+    ai_config_skills: 'Skill Management',
+    ai_config_mcp_servers: 'MCP Management',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

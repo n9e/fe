@@ -304,8 +304,7 @@ function index(
                             onClick={() => {
                               setVisible(false);
                               if (onCopyClick) {
-                                message.info(t('copyPanelTip'));
-                                onCopyClick();
+                                void onCopyClick();
                               }
                             }}
                             key='copy_btn'

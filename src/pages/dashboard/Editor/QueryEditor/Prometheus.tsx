@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Switch, Space, Tag, Tooltip } from 'antd';
+import { Form, Row, Col, Input, Switch, Space, Tag, Tooltip, Button, Drawer } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
@@ -7,6 +7,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import { alphabet } from '@/utils/constant';
 import Resolution from '@/components/Resolution';
 import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
+import AiChat, { AiChatProvider, IAiChatMessage, IAiChatMessageResponse, useAiChatContext } from '@/components/AiChatNG';
+import AiIcon from '@/components/AiChatNG/AiIcon';
+import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
 import { useGlobalState } from '@/pages/dashboard/globalState';
@@ -15,8 +18,61 @@ import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-export default function Prometheus({ panelWidth, datasourceValue, range }) {
+function DashboardPrometheusAiChatDrawer() {
+  const form = Form.useFormInstance();
+  const { visible, datasourceCate, datasourceValue, callbackParams, closeAiChat } = useAiChatContext();
+
+  return (
+    <Drawer placement='right' width={420} visible={visible} onClose={closeAiChat} destroyOnClose bodyStyle={{ padding: 16 }}>
+      <AiChat
+        key={String(callbackParams?.openedAt ?? '')}
+        queryPageFrom={{
+          page: 'dashboards',
+        }}
+        queryAction={{
+          key: 'query_generator',
+          param: {
+            datasource_type: datasourceCate,
+            datasource_id: datasourceValue,
+          },
+        }}
+        promptList={['帮我生成一条 CPU 使用率查询', '解释当前查询语句', '给我一个 Prometheus 排障建议']}
+        customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
+          if (response.content_type === 'query') {
+            return (
+              <PromQLCard
+                response={response}
+                message={message}
+                onExecuteQuery={(promql) => {
+                  const targets = [...(form.getFieldValue('targets') || [])];
+                  const targetIndex = Number(callbackParams?.targetIndex ?? 0);
+
+                  if (!targets.length || !targets[targetIndex]) {
+                    return;
+                  }
+
+                  targets[targetIndex] = {
+                    ...targets[targetIndex],
+                    expr: promql,
+                  };
+
+                  form.setFieldsValue({
+                    targets,
+                  });
+                }}
+              />
+            );
+          }
+          return null;
+        }}
+      />
+    </Drawer>
+  );
+}
+
+function PrometheusContent({ panelWidth, datasourceValue, range }) {
   const { t } = useTranslation('dashboard');
+  const { openAiChat } = useAiChatContext();
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const varNams = _.map(variablesWithOptions, (item) => {
     return `$${item.name}`;
@@ -80,35 +136,52 @@ export default function Prometheus({ panelWidth, datasourceValue, range }) {
                     <Form.Item noStyle {...field} name={[field.name, 'refId']}>
                       <div />
                     </Form.Item>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <Form.Item
-                        label={t('query.prometheus.query')}
-                        tooltip={{
-                          overlayInnerStyle: { width: 330 },
-                          title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
-                        }}
-                        {...field}
-                        name={[field.name, 'expr']}
-                        validateTrigger={['onBlur']}
-                        rules={[
-                          {
-                            required: true,
-                            message: '',
-                          },
-                        ]}
-                        style={{ flex: 1 }}
-                      >
-                        <PromQLInputNG
-                          onChangeTrigger={['onBlur', 'onEnter']}
-                          datasourceValue={datasourceValue}
-                          variablesNames={varNams}
-                          durationVariablesCompletion
-                          showBuiltinMetrics
-                          interpolateString={(query) => {
-                            return interpolateString({
-                              query,
-                              range: range,
-                              minStep: targets?.[field.name]?.step,
+                    <div className='flex items-center gap-2'>
+                      <div className='min-w-0 flex-1'>
+                        <Form.Item
+                          label={t('query.prometheus.query')}
+                          tooltip={{
+                            overlayInnerStyle: { width: 330 },
+                            title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
+                          }}
+                          {...field}
+                          name={[field.name, 'expr']}
+                          validateTrigger={['onBlur']}
+                          rules={[
+                            {
+                              required: true,
+                              message: '',
+                            },
+                          ]}
+                          style={{ flex: 1 }}
+                        >
+                          <PromQLInputNG
+                            onChangeTrigger={['onBlur', 'onEnter']}
+                            datasourceValue={datasourceValue}
+                            variablesNames={varNams}
+                            durationVariablesCompletion
+                            showBuiltinMetrics
+                            interpolateString={(query) => {
+                              return interpolateString({
+                                query,
+                                range: range,
+                                minStep: targets?.[field.name]?.step,
+                              });
+                            }}
+                          />
+                        </Form.Item>
+                      </div>
+                      <Form.Item label=' '>
+                        <Button
+                          icon={<AiIcon />}
+                          onClick={() => {
+                            openAiChat({
+                              datasourceCate: 'prometheus',
+                              datasourceValue,
+                              callbackParams: {
+                                targetIndex: field.name,
+                                openedAt: Date.now(),
+                              },
                             });
                           }}
                         />
@@ -161,9 +234,18 @@ export default function Prometheus({ panelWidth, datasourceValue, range }) {
                 add({ expr: '', __mode__: '__query__', refId: newRefId });
               }}
             />
+            <DashboardPrometheusAiChatDrawer />
           </>
         );
       }}
     </Form.List>
+  );
+}
+
+export default function Prometheus(props) {
+  return (
+    <AiChatProvider>
+      <PrometheusContent {...props} />
+    </AiChatProvider>
   );
 }

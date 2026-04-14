@@ -1,4 +1,5 @@
 const zh_CN = {
+  landing: '首页',
   resizeWidth: '拖拽调整侧栏宽度',
   quickJump: '快捷跳转',
   quickOpenClose: '打开/关闭',
@@ -60,6 +61,11 @@ const zh_CN = {
     alert_servers: '告警引擎',
     about: '关于产品',
     license_management: '证书管理',
+    ai_config: 'AI 配置',
+    ai_config_agents: 'Agent 管理',
+    ai_config_llm_configs: 'LLM 管理',
+    ai_config_skills: 'Skill 管理',
+    ai_config_mcp_servers: 'MCP 管理',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

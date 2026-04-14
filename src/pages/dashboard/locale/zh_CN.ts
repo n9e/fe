@@ -42,7 +42,7 @@ const zh_CN = {
   cluster: '集群', // TODO: 监控仪表盘暂时使用
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
-  copyPanelTip: '图表已复制。单击 "添加图表" 进行粘贴。',
+  copyPanelTip: '图表配置已复制。单击 "添加图表" > "粘贴图表" 粘贴配置 JSON 来创建图表',
   batch: {
     import: '导入夜莺仪表盘 JSON',
     label: '仪表盘 JSON',
@@ -631,10 +631,9 @@ const zh_CN = {
       discardText: '放弃',
       okText: '保存',
     },
-    noPanelToPaste: '没有可粘贴的图表',
     importPanel: {
       invalidJSON: '图表配置 JSON 格式不正确',
-      placeholder: '请粘贴图表配置 JSON',
+      placeholder: '请粘贴图表配置 JSON，可以从图表面板右上角更多操作中点击 "拷贝" 来获取图表配置 JSON',
     },
   },
   settings: {
@@ -667,8 +666,7 @@ const zh_CN = {
     heatmap: '色块图',
     iframe: '内嵌文档 (iframe)',
     row: '分组',
-    pastePanel: '粘贴图表',
-    importPanel: '导入图表配置',
+    importPanel: '粘贴图表',
   },
   calcs: {
     lastNotNull: '最后一个非空值',

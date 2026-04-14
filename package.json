@@ -39,6 +39,7 @@
     "@fc-components/monaco-editor": "^0.1.27",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
     "@fc-plot/ts-graph": "^0.27.2",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@tolgee/i18next": "^6.2.7",
     "@tolgee/react": "^6.2.7",

@@ -35,7 +35,6 @@ import { visualizations } from '../Editor/config';
 import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink, IPanel } from '../types';
-import { useGlobalState } from '../globalState';
 import { goBack, dashboardTimeCacheKey } from './utils';
 
 interface IProps {
@@ -67,6 +66,19 @@ interface IProps {
 }
 
 const cachePageTitle = document.title || 'Nightingale';
+
+const isValidPanelConfig = (value: string) => {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as IPanel;
+    return !!parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !!parsed.type;
+  } catch (error) {
+    return false;
+  }
+};
 
 export default function Title(props: IProps) {
   const { t } = useTranslation('dashboard');
@@ -105,9 +117,26 @@ export default function Title(props: IProps) {
   const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
   const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
   const [dashboardListDropdownVisible, setDashboardListDropdownVisible] = useState(false);
-  const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
   const [importModalVisible, setImportModalVisible] = useState(false);
   const [importValue, setImportValue] = useState('');
+
+  const openImportPanelModal = async () => {
+    setImportValue('');
+    setImportModalVisible(true);
+
+    if (!navigator.clipboard?.readText) {
+      return;
+    }
+
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (isValidPanelConfig(clipboardText)) {
+        setImportValue(clipboardText);
+      }
+    } catch (error) {
+      // Clipboard read may be blocked by browser permissions. Keep the modal usable with manual paste.
+    }
+  };
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -276,20 +305,20 @@ export default function Title(props: IProps) {
                     trigger={['click']}
                     overlay={
                       <Menu>
-                        {_.map(_.concat(panelClipboard ? [{ type: 'pastePanel' }] : [], [{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => {
+                        {_.map(_.concat([{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => {
                           return (
                             <Menu.Item
                               key={item.type}
                               onClick={() => {
                                 if (item.type === 'importPanel') {
-                                  setImportModalVisible(true);
+                                  void openImportPanelModal();
                                 } else {
                                   onAddPanel(item.type);
                                 }
                               }}
                             >
                               <Space align='center' style={{ lineHeight: 1 }}>
-                                {item.type !== 'pastePanel' && item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
+                                {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
                                 {t(`visualizations.${item.type}`)}
                               </Space>
                             </Menu.Item>

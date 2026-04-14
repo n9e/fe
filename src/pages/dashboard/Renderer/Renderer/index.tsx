@@ -49,7 +49,7 @@ export interface IProps {
   onShareClick?: () => void;
   onEditClick?: (panelWidth?: number) => void;
   onDeleteClick?: () => void;
-  onCopyClick?: () => void;
+  onCopyClick?: () => void | Promise<void>;
   setAnnotationsRefreshFlag?: (flag: string) => void;
 }
 

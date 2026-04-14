@@ -15,9 +15,9 @@
  *
  */
 import React from 'react';
-import _ from 'lodash';
+
 import './style.less';
 
 export default function Demo() {
-  return <div />;
+  return <div className='p-6'></div>;
 }

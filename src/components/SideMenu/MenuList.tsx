@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import getPlacements from 'antd/es/_util/placements';
 import { Link } from 'react-router-dom';
-
+import { HomeOutlined } from '@ant-design/icons';
 import { RightIcon } from '@/components/BusinessGroup/components/Tree/constant';
 import IconFont from '@/components/IconFont';
-
+import { IS_ENT } from '@/utils/constant';
 import { IMenuItem } from './types';
 import { cn, getSavedPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
@@ -50,7 +50,7 @@ function flattenMenuChildrenForHoverPanel(children: IMenuItem[]): IMenuItem[] {
 
 function getMenuGroupChildKeys(item: IMenuItem): string[] {
   return (
-    item.children
+    (item.children
       ?.map((c) => {
         if (c.type === 'tabs' && c.children?.length) {
           return c.children.map((g) => g.key);
@@ -58,8 +58,8 @@ function getMenuGroupChildKeys(item: IMenuItem): string[] {
         return c.key;
       })
       .flat()
-      .filter(Boolean) as string[]
-  ) || [];
+      .filter(Boolean) as string[]) || []
+  );
 }
 
 function isMenuGroupActive(item: IMenuItem, selectedKeys?: string[]): boolean {
@@ -78,9 +78,7 @@ function getMenuGroupIconColorClass(opts: {
 }): string {
   const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, forHoverPanel } = opts;
   const lightInactive =
-    forHoverPanel === true
-      ? 'text-[var(--fc-sidemenu-item-icon)]'
-      : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
+    forHoverPanel === true ? 'text-[var(--fc-sidemenu-item-icon)]' : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
 
   if (isLight) {
     return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
@@ -533,6 +531,29 @@ export default function MenuList(
   return (
     <>
       <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
+        {IS_ENT && (
+          <Link
+            to='/landing'
+            className={cn(
+              'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
+              'h-8 rounded-md',
+              'px-3',
+              isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main',
+              isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
+            )}
+          >
+            <div
+              className={cn(
+                'mr-2 inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
+                isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '',
+              )}
+            >
+              <IconFont type='icon-ic_home_light' />
+            </div>
+
+            <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('landing')} </div>
+          </Link>
+        )}
         <Tooltip title={props.collapsed ? null : isMac ? t('⌘ + K') : t('Ctrl + K')} placement='right' trigger={props.collapsed ? [] : ['hover']}>
           <div
             onClick={(e) => {
@@ -540,8 +561,7 @@ export default function MenuList(
               props.quickMenuRef.current.open();
             }}
             className={cn(
-              'group relative flex h-8 cursor-pointer items-center rounded-md transition-colors duration-75',
-              props.collapsed ? 'justify-center' : 'px-3.5',
+              'group relative flex h-8 cursor-pointer items-center rounded-md px-3 transition-colors transition-spacing duration-75',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >
@@ -623,14 +643,7 @@ export default function MenuList(
                           }}
                         >
                           <div className='sidemenu-hover-panel-header'>
-                            <div
-                              className={cn(
-                                'sidemenu-hover-panel-header-icon children-icon2:h-[16px] children-icon2:w-[16px]',
-                                hoverPanelIconClass,
-                              )}
-                            >
-                              {menu.icon}
-                            </div>
+                            <div className={cn('sidemenu-hover-panel-header-icon children-icon2:h-[16px] children-icon2:w-[16px]', hoverPanelIconClass)}>{menu.icon}</div>
                             <div className='sidemenu-hover-panel-header-title' title={t(menu.label)}>
                               {t(menu.label)}
                             </div>
