@@ -68,6 +68,7 @@
     "intl-messageformat": "^10.7.18",
     "js-encrypt": "^2.3.4",
     "js-yaml": "^4.1.0",
+    "jszip": "^3.10.1",
     "jsencrypt": "^3.3.2",
     "json-2-csv": "^3.18.0",
     "lezer": "^0.13.5",

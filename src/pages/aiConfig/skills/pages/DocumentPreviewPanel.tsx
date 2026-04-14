@@ -22,7 +22,7 @@ export default function DocumentPreviewPanel(props: Props) {
   const { title, content, loading, isMarkdown, previewMode, onPreviewModeChange, extra } = props;
 
   return (
-    <div className='w-full min-w-0 best-looking-scroll pr-2'>
+    <div className='w-full h-full min-w-0 min-h-0 pr-2 flex flex-col'>
       <div className='flex justify-between items-center fc-toolbar mb-2 gap-3'>
         <div className='text-title text-l2 break-all'>{title}</div>
         <Space>
@@ -45,18 +45,18 @@ export default function DocumentPreviewPanel(props: Props) {
           )}
         </Space>
       </div>
-      <div className='bg-fc-100 fc-border rounded-lg p-4 min-h-[240px]'>
+      <div className='bg-fc-100 fc-border rounded-lg p-4 min-h-[240px] h-full flex-1 children:h-full'>
         <Spin spinning={loading}>
           {!content ? (
             <div className='min-h-[208px] flex items-center justify-center'>
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('document_empty')} />
             </div>
           ) : isMarkdown && previewMode === 'formatted' ? (
-            <div className='max-h-[calc(100vh-280px)] best-looking-scroll'>
+            <div className='h-full best-looking-scroll'>
               <Markdown content={content} />
             </div>
           ) : (
-            <div className='max-h-[calc(100vh-280px)] best-looking-scroll'>
+            <div className='h-full best-looking-scroll'>
               <pre className='whitespace-pre-wrap break-all'>{content}</pre>
             </div>
           )}

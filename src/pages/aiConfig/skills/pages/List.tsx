@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Button, Dropdown, Empty, Menu, Spin, Upload, message } from 'antd';
+import { Alert, Button, Dropdown, Empty, Menu, Popconfirm, Spin, message } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import _ from 'lodash';
 
@@ -9,12 +10,13 @@ import PageLayout from '@/components/pageLayout';
 import { NS } from '../constants';
 import { FileContent, Item, SkillDetail, deleteFile, deleteItem, getFile, getItem, getList, importItem, importItemToUpdate, putItem } from '../services';
 import { SkillTreeNode } from '../types';
-import { buildSkillTree, getSkillNodeKey, isMarkdownFile, isSkillScopedKey } from '../utils/tree';
+import { buildSkillTree, getSkillNodeKey, isMarkdownFile } from '../utils/tree';
 import AddModal from './AddModal';
 import DocumentPreviewPanel from './DocumentPreviewPanel';
 import EditModal from './EditModal';
 import SkillDetailPanel from './SkillDetailPanel';
 import SkillSidebar from './SkillSidebar';
+import UploadSkillModal from './UploadSkillModal';
 import './style.less';
 
 export default function List() {
@@ -31,6 +33,7 @@ export default function List() {
     id?: number;
   }>({ visible: false, id: undefined });
   const [mdFormat, setMdFormat] = useState<'formatted' | 'code'>('formatted');
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   const {
     data = [],
@@ -65,6 +68,9 @@ export default function List() {
 
   useEffect(() => {
     if (_.isEmpty(data)) {
+      if (loading) {
+        return;
+      }
       setSelectedNodeKey(undefined);
       setExpandedKeys([]);
       return;
@@ -74,7 +80,7 @@ export default function List() {
       const firstSkill = data[0];
       const firstNodeKey = getSkillNodeKey(firstSkill.id);
       setSelectedNodeKey(firstNodeKey);
-      setExpandedKeys([firstNodeKey]);
+      setExpandedKeys((prev) => _.uniq([...prev, firstNodeKey]));
       setMdFormat('formatted');
       loadSkillDetail(firstSkill.id);
       return;
@@ -84,7 +90,7 @@ export default function List() {
     if (!_.includes(expandedKeys, rootKey)) {
       setExpandedKeys((prev) => _.uniq([...prev, rootKey]));
     }
-  }, [data, selectedNodeKey, selectedNode, selectedSkill]);
+  }, [data, loading, selectedNodeKey, selectedNode, selectedSkill]);
 
   function syncSkillToList(skill: Item) {
     mutate((prevData) => {
@@ -97,6 +103,8 @@ export default function List() {
           return {
             ...item,
             ...skill,
+            // Keep builtin stable to avoid detail payload overwriting it unexpectedly.
+            builtin: item.builtin || skill.builtin,
           };
         }
 
@@ -147,6 +155,7 @@ export default function List() {
       message.success(t('upload_file_success'));
     } catch (_error) {
       message.error(t('upload_file_error'));
+      throw _error;
     }
   }
 
@@ -157,6 +166,7 @@ export default function List() {
       message.success(t('upload_file_success'));
     } catch (_error) {
       message.error(t('upload_file_error'));
+      throw _error;
     }
   }
 
@@ -214,14 +224,18 @@ export default function List() {
     setSelectedNodeKey(node.key);
     setExpandedKeys((prev) => {
       const rootKey = getSkillNodeKey(node.skillId);
-      const sameSkillKeys = _.filter(prev, (key) => isSkillScopedKey(key, node.skillId));
-      return _.uniq([rootKey, ...sameSkillKeys]);
+      return _.uniq([...prev, rootKey]);
     });
     loadSkillDetail(node.skillId);
   }
 
   function handleExpand(keys: string[], node: SkillTreeNode, expanded: boolean) {
-    setExpandedKeys(keys);
+    setExpandedKeys((prev) => {
+      if (expanded) {
+        return _.uniq([...prev, ...keys]);
+      }
+      return keys;
+    });
     if (expanded && node.nodeType === 'skill') {
       loadSkillDetail(node.skillId);
     }
@@ -263,19 +277,15 @@ export default function List() {
                           setAddModalState({ visible: true });
                         }}
                       >
-                        {t('create_menu_1')}
+                        {t('write_skill')}
                       </Menu.Item>
-                      <Menu.Item key='upload'>
-                        <Upload
-                          name='file'
-                          showUploadList={false}
-                          accept='.zip,.tar.gz,.tgz'
-                          customRequest={(options) => {
-                            handleImport(options.file as File);
-                          }}
-                        >
-                          {t('create_menu_2')}
-                        </Upload>
+                      <Menu.Item
+                        key='upload'
+                        onClick={() => {
+                          setUploadModalVisible(true);
+                        }}
+                      >
+                        <span>{t('upload_skill')}</span>
                       </Menu.Item>
                     </Menu>
                   }
@@ -295,6 +305,14 @@ export default function List() {
           onCancel={() => {
             setAddModalState({ visible: false });
           }}
+        />
+        <UploadSkillModal
+          title={t('upload_skill')}
+          visible={uploadModalVisible}
+          onCancel={() => {
+            setUploadModalVisible(false);
+          }}
+          onSubmit={handleImport}
         />
       </>
     );
@@ -355,17 +373,16 @@ export default function List() {
                       onPreviewModeChange={setMdFormat}
                       extra={
                         selectedNode.nodeType === 'resource-file' && selectedNode.file ? (
-                          <Button
-                            size='small'
-                            danger
-                            onClick={() => {
+                          <Popconfirm
+                            title={t('common:confirm.delete')}
+                            onConfirm={() => {
                               if (selectedNode.file) {
                                 handleDeleteResource(selectedNode.skillId, selectedNode.file.id);
                               }
                             }}
                           >
-                            {t('common:btn.delete')}
-                          </Button>
+                            <Button size='small' icon={<DeleteOutlined />} />
+                          </Popconfirm>
                         ) : undefined
                       }
                     />

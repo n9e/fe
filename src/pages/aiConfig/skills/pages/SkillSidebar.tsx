@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Dropdown, Empty, Input, Menu, Space, Tag, Tree, Upload } from 'antd';
-import { FileTextOutlined, FolderOpenOutlined, FolderOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Empty, Input, Menu, Space, Tag, Tree } from 'antd';
+import { FileTextOutlined, FolderOpenOutlined, FolderOutlined, PlusOutlined, DownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { NS } from '../constants';
 import { SkillTreeNode } from '../types';
+import UploadSkillModal from './UploadSkillModal';
 
 interface Props {
   searchValue: string;
@@ -22,6 +23,7 @@ interface Props {
 export default function SkillSidebar(props: Props) {
   const { t } = useTranslation(NS);
   const { searchValue, onSearchChange, treeData, selectedNodeKey, expandedKeys, onSelectNode, onExpand, onCreate, onImport } = props;
+  const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
 
   return (
     <div className='skills-sidebar w-[280px] min-w-[280px] flex flex-col pr-4 mr-4'>
@@ -39,19 +41,15 @@ export default function SkillSidebar(props: Props) {
           overlay={
             <Menu>
               <Menu.Item key='manual' onClick={onCreate}>
-                {t('create_menu_1')}
+                {t('write_skill')}
               </Menu.Item>
-              <Menu.Item key='upload'>
-                <Upload
-                  name='file'
-                  showUploadList={false}
-                  accept='.zip,.tar.gz,.tgz'
-                  customRequest={(options) => {
-                    onImport(options.file as File);
-                  }}
-                >
-                  {t('create_menu_2')}
-                </Upload>
+              <Menu.Item
+                key='upload'
+                onClick={() => {
+                  setUploadModalVisible(true);
+                }}
+              >
+                <span>{t('upload_skill')}</span>
               </Menu.Item>
             </Menu>
           }
@@ -67,6 +65,7 @@ export default function SkillSidebar(props: Props) {
         ) : (
           <Tree
             blockNode
+            switcherIcon={<DownOutlined />}
             selectedKeys={selectedNodeKey ? [selectedNodeKey] : []}
             expandedKeys={expandedKeys}
             treeData={treeData}
@@ -87,8 +86,12 @@ export default function SkillSidebar(props: Props) {
                   <div className='min-w-0 flex items-center justify-between gap-2 py-1'>
                     <div className='truncate font-medium'>{node.title}</div>
                     <Space size={4}>
+                      {node.builtin === true && (
+                        <Tag className='m-0' color='purple'>
+                          {t('builtin')}
+                        </Tag>
+                      )}
                       {node.enabled === false && <Tag className='m-0'>OFF</Tag>}
-                      {node.builtin === true && <Tag className='m-0'>{t('builtin')}</Tag>}
                     </Space>
                   </div>
                 );
@@ -97,7 +100,14 @@ export default function SkillSidebar(props: Props) {
               if (node.nodeType === 'directory') {
                 const isExpanded = _.includes(expandedKeys, node.key);
                 return (
-                  <div className='min-w-0 flex items-center gap-2 py-1'>
+                  <div
+                    className='min-w-0 flex items-center gap-2 py-1'
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      const nextExpandedKeys = isExpanded ? _.without(expandedKeys, node.key) : _.uniq([...expandedKeys, node.key]);
+                      onExpand(nextExpandedKeys, node, !isExpanded);
+                    }}
+                  >
                     {isExpanded ? <FolderOpenOutlined className='text-[var(--fc-text-color-secondary)]' /> : <FolderOutlined className='text-[var(--fc-text-color-secondary)]' />}
                     <span className='truncate'>{node.title}</span>
                   </div>
@@ -114,6 +124,14 @@ export default function SkillSidebar(props: Props) {
           />
         )}
       </div>
+      <UploadSkillModal
+        title={t('upload_skill')}
+        visible={uploadModalVisible}
+        onCancel={() => {
+          setUploadModalVisible(false);
+        }}
+        onSubmit={onImport}
+      />
     </div>
   );
 }

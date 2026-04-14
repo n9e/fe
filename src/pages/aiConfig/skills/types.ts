@@ -8,9 +8,9 @@ export interface Item {
   name: string;
   description: string;
   enabled: boolean;
-  created_at: string;
+  created_at: number;
   created_by: string;
-  updated_at: string;
+  updated_at: number;
   updated_by: string;
 
   builtin: boolean;
