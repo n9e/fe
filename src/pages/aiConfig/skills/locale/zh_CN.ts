@@ -1,5 +1,6 @@
 const zh_CN = {
   title: 'Skill 管理',
+  help: 'Skill 会在用户提问或平台内 AI Agent 执行任务时使用。当系统判断当前需求与 Skill 的描述、触发条件相匹配时，会自动调用它来辅助完成任务。启用后并不代表每次都会生效，是否调用取决于具体上下文。',
   create: '创建 Skill',
   create_menu_1: '手动编写',
   create_menu_2: '上传文件',
@@ -12,6 +13,7 @@ const zh_CN = {
   upload_file_success: '文件上传成功',
   upload_file_error: '文件上传失败',
   edit_title: '编辑 Skill',
+  document_empty: '暂无文档内容',
   search_placeholder: '请输入关键字搜索',
   builtin: '内置',
 

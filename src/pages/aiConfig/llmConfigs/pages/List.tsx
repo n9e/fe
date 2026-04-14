@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Table, Tooltip, Modal, Tag, message } from 'antd';
+import { Button, Space, Switch, Table, Tooltip, Modal, Tag, Alert, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 
@@ -26,7 +26,7 @@ export default function List() {
         <div className='fc-page n9e'>
           <div className='flex flex-col gap-2'>
             <div className='fc-toolbar flex flex-wrap items-center justify-between gap-2'>
-              <div />
+              <Alert message={t('help')} type='info' showIcon />
               <Space>
                 <Button type='primary' icon={<PlusOutlined />} onClick={() => setAddDrawerState({ visible: true })}>
                   {t('add_btn')}

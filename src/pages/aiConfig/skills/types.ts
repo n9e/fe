@@ -41,3 +41,27 @@ export interface FileItem {
   created_at: string;
   created_by: string;
 }
+
+export interface SkillDetail extends Item {
+  files: FileItem[];
+}
+
+export interface FileContent extends FileItem {
+  content: string;
+}
+
+export type SkillTreeNodeType = 'skill' | 'skill-doc' | 'directory' | 'resource-file';
+
+export interface SkillTreeNode {
+  key: string;
+  title: string;
+  nodeType: SkillTreeNodeType;
+  skillId: number;
+  selectable: boolean;
+  isLeaf?: boolean;
+  children?: SkillTreeNode[];
+  enabled?: boolean;
+  builtin?: boolean;
+  file?: FileItem;
+  path?: string;
+}
