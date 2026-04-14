@@ -99,8 +99,8 @@ export default function index() {
             </div>
           </div>
           <div className='w-px bg-fc-300'></div>
-          <div className='ml-4 w-full flex-1'>
-            <div className='mb-4 flex justify-between'>
+          <div className='ml-4 w-full flex-1 flex flex-col gap-4'>
+            <div className='flex justify-between'>
               <Space>
                 <Input
                   placeholder={t('name_search_placeholder')}
@@ -201,127 +201,130 @@ export default function index() {
                 </Button>
               </Space>
             </div>
-            <Table
-              size='small'
-              loading={loading}
-              rowKey='id'
-              dataSource={filteredData}
-              columns={[
-                {
-                  title: t('common:table.name'),
-                  dataIndex: 'name',
-                  render: (val, record) => {
-                    return (
-                      <Link
-                        to={{
-                          pathname: `/${NS}/edit/${record.id}`,
-                        }}
-                      >
-                        {val}
-                      </Link>
-                    );
-                  },
-                },
-                {
-                  title: t('ident'),
-                  dataIndex: 'ident',
-                  render: (val) => {
-                    const typeConfig = NOTIFICATION_CHANNEL_TYPES[val];
-                    return (
-                      <div className='flex items-center gap-2'>
-                        {typeConfig ? <img height={16} src={typeConfig?.logo} alt={val} /> : null}
-                        {typeConfig ? t(`types.${val}`) : val}
-                      </div>
-                    );
-                  },
-                },
-                {
-                  title: t('common:table.update_by'),
-                  dataIndex: 'update_by',
-                },
-                {
-                  title: t('common:table.update_at'),
-                  dataIndex: 'update_at',
-                  render: (val) => {
-                    return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
-                  },
-                },
-                {
-                  title: t('common:table.enabled'),
-                  width: 100,
-                  dataIndex: 'enable',
-                  render: (val, record) => (
-                    <Switch
-                      checked={val}
-                      size='small'
-                      onChange={(checked) => {
-                        putItem({
-                          ...record,
-                          enable: checked,
-                        }).then(() => {
-                          const newData = map(data, (item) => {
-                            if (item.id === record.id) {
-                              return {
-                                ...item,
-                                enable: checked,
-                              };
-                            }
-                            return item;
-                          });
-                          mutate(newData);
-                        });
-                      }}
-                    />
-                  ),
-                },
-                {
-                  title: t('common:table.operations'),
-                  width: 100,
-                  render: (record) => {
-                    return (
-                      <Space size={2}>
+            <div className='n9e-antd-table-height-full'>
+              <Table
+                size='small'
+                loading={loading}
+                rowKey='id'
+                dataSource={filteredData}
+                columns={[
+                  {
+                    title: t('common:table.name'),
+                    dataIndex: 'name',
+                    render: (val, record) => {
+                      return (
                         <Link
-                          className='table-operator-area-normal'
                           to={{
-                            pathname: `/${NS}/edit/${record.id}?mode=clone`,
+                            pathname: `/${NS}/edit/${record.id}`,
                           }}
-                          target='_blank'
                         >
-                          <Button size='small' type='text' className='p-0' icon={<CopyOutlined />} />
+                          {val}
                         </Link>
-                        <Tooltip title={record.enable === true ? t('delete_disable_first') : undefined}>
-                          <Button
-                            size='small'
-                            type='text'
-                            className='p-0'
-                            icon={<DeleteOutlined />}
-                            disabled={record.enable === true}
-                            onClick={() => {
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk: () => {
-                                  deleteItems([record.id]).then(() => {
-                                    message.success(t('common:success.delete'));
-                                    run();
-                                  });
-                                },
-                              });
-                            }}
-                          />
-                        </Tooltip>
-                      </Space>
-                    );
+                      );
+                    },
                   },
-                },
-              ]}
-              rowSelection={{
-                selectedRowKeys: map(selectedRows, 'id'),
-                onChange: (_selectedRowKeys, selectedRows: ChannelItem[]) => {
-                  setSelectedRows(selectedRows);
-                },
-              }}
-              pagination={pagination}
-            />
+                  {
+                    title: t('ident'),
+                    dataIndex: 'ident',
+                    render: (val) => {
+                      const typeConfig = NOTIFICATION_CHANNEL_TYPES[val];
+                      return (
+                        <div className='flex items-center gap-2'>
+                          {typeConfig ? <img height={16} src={typeConfig?.logo} alt={val} /> : null}
+                          {typeConfig ? t(`types.${val}`) : val}
+                        </div>
+                      );
+                    },
+                  },
+                  {
+                    title: t('common:table.update_by'),
+                    dataIndex: 'update_by',
+                  },
+                  {
+                    title: t('common:table.update_at'),
+                    dataIndex: 'update_at',
+                    render: (val) => {
+                      return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
+                    },
+                  },
+                  {
+                    title: t('common:table.enabled'),
+                    width: 100,
+                    dataIndex: 'enable',
+                    render: (val, record) => (
+                      <Switch
+                        checked={val}
+                        size='small'
+                        onChange={(checked) => {
+                          putItem({
+                            ...record,
+                            enable: checked,
+                          }).then(() => {
+                            const newData = map(data, (item) => {
+                              if (item.id === record.id) {
+                                return {
+                                  ...item,
+                                  enable: checked,
+                                };
+                              }
+                              return item;
+                            });
+                            mutate(newData);
+                          });
+                        }}
+                      />
+                    ),
+                  },
+                  {
+                    title: t('common:table.operations'),
+                    width: 100,
+                    render: (record) => {
+                      return (
+                        <Space size={2}>
+                          <Link
+                            className='table-operator-area-normal'
+                            to={{
+                              pathname: `/${NS}/edit/${record.id}?mode=clone`,
+                            }}
+                            target='_blank'
+                          >
+                            <Button size='small' type='text' className='p-0' icon={<CopyOutlined />} />
+                          </Link>
+                          <Tooltip title={record.enable === true ? t('delete_disable_first') : undefined}>
+                            <Button
+                              size='small'
+                              type='text'
+                              className='p-0'
+                              icon={<DeleteOutlined />}
+                              disabled={record.enable === true}
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: t('common:confirm.delete'),
+                                  onOk: () => {
+                                    deleteItems([record.id]).then(() => {
+                                      message.success(t('common:success.delete'));
+                                      run();
+                                    });
+                                  },
+                                });
+                              }}
+                            />
+                          </Tooltip>
+                        </Space>
+                      );
+                    },
+                  },
+                ]}
+                rowSelection={{
+                  selectedRowKeys: map(selectedRows, 'id'),
+                  onChange: (_selectedRowKeys, selectedRows: ChannelItem[]) => {
+                    setSelectedRows(selectedRows);
+                  },
+                }}
+                pagination={pagination}
+                scroll={{ y: 'calc(100% - 37px)' }}
+              />
+            </div>
           </div>
         </div>
       </div>
