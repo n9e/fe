@@ -322,7 +322,7 @@ export default function index() {
                   },
                 }}
                 pagination={pagination}
-                scroll={{ y: 'calc(100% - 37px)' }}
+                scroll={{ y: 'calc(100% - 42px)' }}
               />
             </div>
           </div>
