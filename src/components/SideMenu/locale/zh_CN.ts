@@ -70,11 +70,11 @@ const zh_CN = {
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
-    insight: '洞察',
+    insight: '业务洞察',
     observability: 'OBSERVABILITY',
-    analysis: '分析',
-    platform: '平台',
-    system: '系统',
+    analysis: '数据分析',
+    platform: '平台工具',
+    system: '系统配置',
   },
 };
 export default zh_CN;
