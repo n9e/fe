@@ -3,6 +3,7 @@ const en_US = {
   themeSetting: 'Theme',
   logout: 'Logout',
   docs: 'Docs',
+  viewDemo: 'View demo',
   theme: {
     title: 'Theme Setting',
     title_help: 'Setting only for current user',

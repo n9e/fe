@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Space, Drawer, Button, Tooltip } from 'antd';
-import { DownOutlined, RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
+import { SendOutlined, DownOutlined, RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
 
 import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
@@ -175,6 +175,11 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
+                  {IS_ENT && (
+                    <Button href='https://demo.flashcat.cloud/' target='_blank' icon={<SendOutlined />} size='small'>
+                      {t('viewDemo')}
+                    </Button>
+                  )}
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <Version />
 
