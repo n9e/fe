@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Card, Space, Switch, Button, Alert } from 'antd';
+import { Form, Card, Space, Switch, Button, Alert, Tag } from 'antd';
 import { PlusOutlined, CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -106,9 +106,9 @@ export default function index(props: IProps) {
             <Switch />
           </Form.Item>
           {t('trigger.exp_trigger_disable')}
+          <Tag color='purple'>{t('trigger.threshold_tip')}</Tag>
         </Space>
         <Inhibit triggersKey='triggers' />
-        <Alert type='info' message={t('trigger.threshold_tip')} />
         <Form.List {...prefixField} name={[...prefixName, 'triggers']} initialValue={initialValue}>
           {(fields, { add, remove }) => (
             <>

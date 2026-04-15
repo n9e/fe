@@ -91,7 +91,7 @@ export default function AISummary(props: Props) {
         </div>
         <div
           className={classnames({
-            'p-4 border-t border-solid border-[var(--fc-border-color)]': true,
+            'p-4 border-t border-solid border-[var(--fc-border-color)] rounded-lg': true,
             hidden: !isAdvancedVisible,
           })}
         >
