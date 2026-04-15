@@ -61,7 +61,6 @@ export default function Trigger(props: IProps) {
       <div className='mb-4'>
         <Severity field={prefixField} disabled={disabled} />
       </div>
-      <RecoverConfig {...props} />
       <div>
         <div className='mb-2'>
           <Space
@@ -79,6 +78,7 @@ export default function Trigger(props: IProps) {
             display: expanded ? 'block' : 'none',
           }}
         >
+          <RecoverConfig {...props} />
           <Joins {...props} />
         </div>
       </div>

@@ -231,9 +231,9 @@ const ja_JP = {
   },
   expired: 'アラートルールが他のユーザによって変更されました。相互に上書きされることを避けるために、ページを更新して最新の構成を確認してください。',
   relabel: {
-    title: 'イベント relabel',
+    title: 'イベント Relabel',
     help_btn: '使用説明',
-    if_tip: '選択可能、この一致条件を満たすイベントのみラベルを relabel します',
+    if_tip: '選択可能、この一致条件を満たすイベントのみラベルを Relabel します',
     target_label_tip: '新しいラベルのキー',
     replacement_tip:
       'ラベルの最終的な値。セパレータを構成した場合、このフィールドは空白にできます。正規表現を構成した場合、このフィールドには正規表現で一致した内容を使用して最終的な目標値を構築できます',
@@ -257,7 +257,7 @@ const ja_JP = {
       label: 'ラベル',
       labelFromEvent: 'アラートイベントからラベルを選択',
       btn: 'テスト',
-      result: 'relabel の結果',
+      result: 'Relabel の結果',
     },
   },
   task_tpls: {
@@ -345,6 +345,25 @@ const ja_JP = {
     title: 'イベント処理',
     name_placeholder: 'イベント処理ワークフローを選択してください',
     add_btn: 'イベント処理ワークフローを追加',
+  },
+  pipeline_configuration_ng: {
+    title: 'イベント処理',
+    select_workflow: '既存ワークフローを選択',
+    add_workflow: '新規ワークフロー',
+    add_pipeline: 'プロセッサを追加',
+    enabled: '有効',
+    save_workflow: 'ワークフローを保存',
+    save_workflow_modal_title_new: '新しいワークフローとして保存',
+    save_workflow_modal_title_edit: 'ワークフローを編集',
+    workflow_name: 'ワークフロー名',
+    workflow_name_placeholder: 'ワークフロー名を入力してください',
+    workflow_name_required: 'ワークフロー名は必須です',
+    workflow_unsaved: 'ワークフロー設定は未保存です',
+    legacy_multi_workflow_tip: '旧バージョン設定です。ワークフローは一つのみ保持することを推奨します。',
+    save_workflow_failed: 'ワークフローの保存に失敗しました',
+    reference_workflow_tip: 'ワークフロー「{{workflowName}}」を参照中です。下のプロセッサを変更すると、このワークフローを参照するすべてのルールに反映されます。',
+    no_changes: 'プロセッサ設定に変更はありません',
+    save_workflow_tip: '保存をクリックすると、イベント処理ワークフローが作成または更新されます',
   },
 };
 

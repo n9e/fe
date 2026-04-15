@@ -86,6 +86,7 @@ export const defaultValues = {
   prod: 'metric',
   cate: 'prometheus',
   enable_status: true,
+  time_zone: 'Local',
 };
 
 export const ruleTypeOptions = [
