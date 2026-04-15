@@ -3,6 +3,7 @@ const zh_HK = {
   themeSetting: '主題設置',
   logout: '退出',
   docs: '文檔',
+  viewDemo: '查看 DEMO',
   theme: {
     title: '主題配置',
     title_help: '配置僅對當前用戶生效',
