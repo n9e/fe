@@ -178,7 +178,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <Version />
 
-                  <Space className='mr-2'>
+                  <Space size={12}>
                     {rightArea}
                     {IS_ENT && (
                       <Button href='https://demo.flashcat.cloud/' target='_blank' icon={<SendOutlined />} size='small'>
