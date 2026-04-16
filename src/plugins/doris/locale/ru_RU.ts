@@ -7,6 +7,9 @@ const ru_RU = {
   current_database: 'Текущая база данных',
   table: 'Таблица',
   database_table_required: 'Пожалуйста, выберите базу данных и таблицу',
+  enrich_queries: {
+    title: 'Дополнительные запросы',
+  },
   query: {
     mode: {
       query: 'Режим запроса',
