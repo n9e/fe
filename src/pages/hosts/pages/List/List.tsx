@@ -308,6 +308,8 @@ export default function List(props: Props) {
           rowClassName={(record) => {
             return classNames('group', {
               'n9e-hosts-ng-table-row-offline': record.target_up === 0,
+              'bg-fc-400/40': record.target_up === 0 && darkMode === true,
+              'bg-fc-400/20': record.target_up === 0 && darkMode === false,
             });
           }}
           columns={[
