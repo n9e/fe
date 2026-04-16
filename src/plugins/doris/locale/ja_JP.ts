@@ -7,6 +7,9 @@ const ja_JP = {
   current_database: 'データベース',
   table: 'テーブル',
   database_table_required: 'データベースとテーブルを選択してください',
+  enrich_queries: {
+    title: 'クエリの強化',
+  },
   query: {
     mode: {
       query: 'Query モード',

@@ -6,6 +6,9 @@ const zh_HK = {
   current_database: '當前數據庫',
   table: '數據表',
   database_table_required: '請先選擇數據庫和數據表',
+  enrich_queries: {
+    title: '附加查詢',
+  },
   query: {
     mode: {
       query: 'Query 模式',
