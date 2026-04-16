@@ -64,37 +64,41 @@ export default function SkillDetailPanel(props: Props) {
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item
-                  key='upload'
-                  onClick={() => {
-                    setUploadModalVisible(true);
-                  }}
-                >
-                  <Space>
-                    <UploadOutlined />
-                    {t('upload_skill_update')}
-                  </Space>
-                </Menu.Item>
+                {item.builtin !== true && (
+                  <Menu.Item
+                    key='upload'
+                    onClick={() => {
+                      setUploadModalVisible(true);
+                    }}
+                  >
+                    <Space>
+                      <UploadOutlined />
+                      {t('upload_skill_update')}
+                    </Space>
+                  </Menu.Item>
+                )}
                 <Menu.Item key='download' onClick={handleDownload}>
                   <Space>
                     <DownloadOutlined />
                     {t('download_skill')}
                   </Space>
                 </Menu.Item>
-                <Menu.Item
-                  key='unload'
-                  onClick={() => {
-                    Modal.confirm({
-                      title: t('edite_menu_3_confirm'),
-                      onOk: onDelete,
-                    });
-                  }}
-                >
-                  <Space>
-                    <DeleteOutlined />
-                    {t('delete_skill')}
-                  </Space>
-                </Menu.Item>
+                {item.builtin !== true && (
+                  <Menu.Item
+                    key='unload'
+                    onClick={() => {
+                      Modal.confirm({
+                        title: t('edite_menu_3_confirm'),
+                        onOk: onDelete,
+                      });
+                    }}
+                  >
+                    <Space>
+                      <DeleteOutlined />
+                      {t('delete_skill')}
+                    </Space>
+                  </Menu.Item>
+                )}
               </Menu>
             }
           >

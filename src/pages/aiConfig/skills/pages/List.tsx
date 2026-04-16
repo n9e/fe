@@ -51,7 +51,14 @@ export default function List() {
   const filteredTree = useMemo(() => buildSkillTree(filteredSkills, detailMap).treeData, [filteredSkills, detailMap]);
   const selectedNode = selectedNodeKey ? allTree.nodeMap[selectedNodeKey] : undefined;
   const selectedSkill = selectedNode ? _.find(data, { id: selectedNode.skillId }) : undefined;
-  const selectedSkillData = selectedSkill ? detailMap[selectedSkill.id] || selectedSkill : undefined;
+  const selectedSkillData = selectedSkill
+    ? {
+        ...selectedSkill,
+        ...(detailMap[selectedSkill.id] || {}),
+        // List payload is the source of truth for builtin in current API contract.
+        builtin: selectedSkill.builtin,
+      }
+    : undefined;
 
   const { data: fileContent, loading: fileLoading } = useRequest<FileContent | undefined, any>(
     () => {
@@ -372,7 +379,7 @@ export default function List() {
                       previewMode={mdFormat}
                       onPreviewModeChange={setMdFormat}
                       extra={
-                        selectedNode.nodeType === 'resource-file' && selectedNode.file ? (
+                        selectedSkillData.builtin !== true && selectedNode.nodeType === 'resource-file' && selectedNode.file ? (
                           <Popconfirm
                             title={t('common:confirm.delete')}
                             onConfirm={() => {
