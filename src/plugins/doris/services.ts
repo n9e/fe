@@ -130,21 +130,20 @@ export function getDorisHistogram(data: {
 export function getDorisLogsQuery(data: {
   cate: string;
   datasource_id: number;
-  query: [
-    {
-      database: string;
-      table: string;
-      time_field: string;
-      query: string;
-      query_builder_filter?: FilterConfig[];
-      from: number;
-      to: number;
-      lines: number;
-      offset: number;
-      reverse: boolean;
-      default_field?: string;
-    },
-  ];
+  query: {
+    database: string;
+    table: string;
+    time_field: string;
+    query: string;
+    query_builder_filter?: FilterConfig[];
+    from: number;
+    to: number;
+    lines: number;
+    offset: number;
+    reverse: boolean;
+    default_field?: string;
+    highlight?: boolean;
+  }[];
 }): Promise<{
   list: { [index: string]: string }[];
   total: number;

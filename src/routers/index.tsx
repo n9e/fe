@@ -122,7 +122,8 @@ export default function Content() {
       !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token', '/alert-aggr-events'], location.pathname) &&
       !location.pathname.includes('/settings/datasource/edit/') &&
       !location.pathname.includes('/settings/infrastructure/add') &&
-      !location.pathname.includes('/settings/source/')
+      !location.pathname.includes('/settings/source/') &&
+      !location.pathname.includes('/403')
     ) {
       if (profile?.roles.indexOf('Admin') === -1) {
         // 如果没有权限则重定向到 403 页面
@@ -193,7 +194,7 @@ export default function Content() {
         <Route exact path='/alert-his-events' component={historyEvents} />
         <Route exact path='/alert-cur-events/:eventId' component={EventDetail} />
         <Route exact path='/alert-his-events/:eventId' component={EventDetail} />
-        <Route exact path='/targets' component={Targets} />
+        {/* <Route exact path='/targets' component={Targets} /> */}
 
         <Route exact path='/job-tpls' component={TaskTpl} />
         <Route exact path='/job-tpls/add' component={TaskTplAdd} />

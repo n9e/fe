@@ -22,7 +22,7 @@ const calcUrlPath = (url: string) => {
 export const TabMenu: React.FC<TabMenuProps> = ({ currentMenu, onTabChange }) => {
   const history = useHistory();
   const { t } = useTranslation('sideMenu');
-  const { perms } = useContext(CommonStateContext);
+  const { perms, darkMode } = useContext(CommonStateContext);
   const [activeTab, setActiveTab] = useState('');
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export const TabMenu: React.FC<TabMenuProps> = ({ currentMenu, onTabChange }) =>
         <div
           key={item.key}
           className={`relative px-5 h-full header-tab-menu flex items-center cursor-pointer text-sm transition-colors duration-300 ${
-            activeTab === item.key ? 'text-primary custom-tab-active bg-gray-200/20' : ''
+            activeTab === item.key ? `text-primary custom-tab-active ${darkMode ? 'bg-gray-700/20' : 'bg-gray-200/20'}` : ''
           }`}
           onClick={() => {
             setActiveTab(item.key);

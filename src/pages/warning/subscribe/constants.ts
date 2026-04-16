@@ -58,7 +58,12 @@ export const defaultColumnsConfigs = [
   },
   {
     name: 'update_by',
-    i18nKey: 'common:table.create_by',
+    i18nKey: 'common:table.username',
+    visible: false,
+  },
+  {
+    name: 'update_by_nickname',
+    i18nKey: 'common:table.nickname',
     visible: false,
   },
   {

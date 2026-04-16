@@ -1,4 +1,6 @@
 const en_US = {
+  landing: 'Home',
+  resizeWidth: 'Drag to resize sidebar',
   quickJump: 'Quick jump',
   quickOpenClose: 'Open/Close',
   quickSearchPlaceholder: 'Search...',
@@ -9,6 +11,7 @@ const en_US = {
     targets: 'Hosts',
     collects: 'Collection rules',
     network_devices: 'Network devices',
+    mobile_device: 'Mobile device',
     dashboards: 'Dashboards',
     reports: 'Reports',
     heartbeat: 'Heartbeat',
@@ -58,6 +61,18 @@ const en_US = {
     audit_log: 'Audit log',
     alert_servers: 'Alerting engines',
     about: 'About',
+    license_management: 'License Management',
+    ai_config: 'AI Configuration',
+    ai_config_agents: 'Agent Management',
+    ai_config_llm_configs: 'LLM Management',
+    ai_config_skills: 'Skill Management',
+    ai_config_mcp_servers: 'MCP Management',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 export default en_US;

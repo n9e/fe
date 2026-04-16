@@ -26,14 +26,38 @@ interface Props {
 }
 
 export default function index(props: Props) {
-  const { indexData: indexList } = useContext(LogsViewerStateContext);
+  const { indexData: indexList, enableLogTextSelectMenu } = useContext(LogsViewerStateContext);
   const { parentKey, name, value, onTokenClick, rawValue, highlight, enableTooltip, fieldValueClassName, adjustFieldValue, showExistsAction } = props;
+  const highlightKey = parentKey ? `${parentKey}.${name}` : name;
 
   const indexData = _.find(indexList, (item) => {
-    return item.field === (parentKey ? parentKey + '.' + name : name);
+    return item.field === highlightKey;
   });
 
   const { delimiters } = indexData || ({} as Field);
+
+  if (enableLogTextSelectMenu && _.isString(value)) {
+    return (
+      <Token
+        interactionMode='textSelect'
+        segmented={false}
+        name={name}
+        parentKey={parentKey}
+        value={value}
+        fieldValue={value}
+        tokenStart={0}
+        tokenEnd={value.length}
+        highlightKey={highlightKey}
+        onTokenClick={onTokenClick}
+        rawValue={rawValue}
+        highlight={highlight}
+        enableTooltip={enableTooltip}
+        fieldValueClassName={fieldValueClassName}
+        adjustFieldValue={adjustFieldValue}
+        showExistsAction={showExistsAction}
+      />
+    );
+  }
 
   if (_.isString(value) && delimiters && delimiters.length > 0) {
     const result = tokenizer(value, delimiters);
@@ -46,6 +70,9 @@ export default function index(props: Props) {
           parentKey={parentKey}
           value={value}
           fieldValue={value}
+          tokenStart={0}
+          tokenEnd={_.isString(value) ? value.length : undefined}
+          highlightKey={highlightKey}
           onTokenClick={onTokenClick}
           rawValue={rawValue}
           highlight={highlight}
@@ -68,6 +95,9 @@ export default function index(props: Props) {
                 name={name}
                 value={item.value}
                 fieldValue={value}
+                tokenStart={item.start}
+                tokenEnd={item.end}
+                highlightKey={highlightKey}
                 onTokenClick={onTokenClick}
                 rawValue={rawValue}
                 highlight={highlight}
@@ -96,6 +126,9 @@ export default function index(props: Props) {
       parentKey={parentKey}
       value={value}
       fieldValue={value}
+      tokenStart={0}
+      tokenEnd={_.isString(value) ? value.length : undefined}
+      highlightKey={highlightKey}
       onTokenClick={onTokenClick}
       rawValue={rawValue}
       highlight={highlight}

@@ -41,7 +41,7 @@ const zh_HK = {
   cluster: '叢集',
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
-  copyPanelTip: '圖表已複製。點擊 "添加圖表" 進行貼上。',
+  copyPanelTip: '圖表配置已複製。單擊 "添加圖表" > "粘貼圖表" 粘貼配置 JSON 來創建圖表',
   batch: {
     import: '導入夜鶯儀表盤 JSON',
     label: '儀表盤 JSON',
@@ -593,6 +593,8 @@ const zh_HK = {
     options_max_data_points_tip: '每條曲線最多的點數，默認為面板寬度（新增時默認為 240），計算 step = (end - start) / maxDataPoints',
     options_time: '查詢時間範圍',
     options_time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
+    copy_query: '複製查詢',
+    hide_response: '隱藏響應數據',
   },
   detail: {
     datasource_empty: '沒有數據源資訊，請先配置數據源',
@@ -613,7 +615,10 @@ const zh_HK = {
       discardText: '放棄',
       okText: '儲存',
     },
-    noPanelToPaste: '沒有可粘貼的圖表',
+    importPanel: {
+      invalidJSON: '圖表配置 JSON 格式不正確',
+      placeholder: '請粘貼圖表配置 JSON，可以從圖表面板右上角更多操作中點擊 "拷貝" 來獲取圖表配置 JSON',
+    },
   },
   settings: {
     graphTooltip: {
@@ -645,7 +650,7 @@ const zh_HK = {
     heatmap: '色塊圖',
     iframe: '內嵌文檔 (iframe)',
     row: '分組',
-    pastePanel: '粘貼圖表',
+    importPanel: '粘貼圖表',
   },
   calcs: {
     lastNotNull: '最後一個非空值',

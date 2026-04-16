@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Space, Form, message, Switch, Input, Row, Col, Select } from 'antd';
-import { DownOutlined, RightOutlined, CopyOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { EditorView } from '@codemirror/view';
-import { copy2ClipBoard } from '@/utils';
 
 import { SIZE } from '@/utils/constant';
-import { getRoles } from '@/services/manage';
+import { getRoles, getTeamInfoList } from '@/services/manage';
 import CodeMirror from '@/components/CodeMirror';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
@@ -34,7 +33,7 @@ export default function Item(props: Props) {
   const [form] = Form.useForm<SSOConfigType>();
   const [advancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
   const [roles, setRoles] = useState<string[]>([]);
-
+  const [teamList, setTeamList] = useState<{ id: number; name: string }[]>([]);
   useEffect(() => {
     getRoles()
       .then((res) => {
@@ -52,6 +51,9 @@ export default function Item(props: Props) {
       .catch(() => {
         form.setFieldsValue(item);
       });
+    getTeamInfoList().then((res) => {
+      setTeamList(res.dat);
+    });
   }, []);
 
   return (
@@ -59,9 +61,7 @@ export default function Item(props: Props) {
       {item.name === 'feishu' ? (
         <>
           <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}/callback/feishu`}>
-            <Space size={'small'}>
-              {`${window.location.origin}/callback/feishu`} <CopyOutlined onClick={() => copy2ClipBoard(`${window.location.origin}/callback/feishu`)} />
-            </Space>
+            <Input placeholder={`${window.location.origin}/callback/feishu`} />
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
             <Switch size='small' />
@@ -91,7 +91,7 @@ export default function Item(props: Props) {
             <Switch size='small' />
           </Form.Item>
           <Row gutter={SIZE}>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item label={t('dingtalk_setting.username_field')} name={['setting', 'username_field']} rules={[{ required: true }]} initialValue='userid'>
                 <Select
                   options={[
@@ -116,7 +116,7 @@ export default function Item(props: Props) {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={8}>
               <Form.Item label={t('dingtalk_setting.default_roles')} name={['setting', 'default_roles']} rules={[{ required: true }]}>
                 <Select
                   mode='multiple'
@@ -124,6 +124,21 @@ export default function Item(props: Props) {
                     return { label: item, value: item };
                   })}
                   optionFilterProp='label'
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label={t('dingtalk_setting.default_team')} name={['setting', 'default_user_groups']}>
+                <Select
+                  mode='multiple'
+                  options={_.map(teamList, (item) => {
+                    return { label: item.name, value: item.id };
+                  })}
+                  optionFilterProp='label'
+                  showSearch
+                  filterOption={(input, option) => {
+                    return option?.label ? String(option.label).toLowerCase().includes(String(input).toLowerCase()) : false;
+                  }}
                 />
               </Form.Item>
             </Col>
@@ -154,9 +169,7 @@ export default function Item(props: Props) {
       ) : item.name === 'dingtalk' ? (
         <>
           <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}/callback/dingtalk`}>
-            <Space size={'small'}>
-              {`${window.location.origin}/callback/dingtalk`} <CopyOutlined onClick={() => copy2ClipBoard(`${window.location.origin}/callback/dingtalk`)} />
-            </Space>
+            <Input placeholder={`${window.location.origin}/callback/dingtalk`} />
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
             <Switch size='small' />

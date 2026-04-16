@@ -27,6 +27,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { updateDashboardConfigs as updateDashboardConfigsFunc } from '@/services/dashboardV2';
 import { Dashboard } from '@/store/dashboardInterface';
 import { CommonStateContext } from '@/App';
+import { copy2ClipBoard } from '@/utils';
 
 import {
   buildLayout,
@@ -56,6 +57,7 @@ interface IProps {
   setDashboard: React.Dispatch<React.SetStateAction<Dashboard>>;
   annotations: any[];
   setAllowedLeave: (flag: boolean) => void;
+  setHasUnsavedChanges: (flag: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   timezone: string;
@@ -69,6 +71,10 @@ interface IProps {
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
+interface UpdateDashboardConfigsOptions {
+  configs: string;
+}
+
 const ReactGridLayout = WidthProvider(RGL);
 
 function index(props: IProps) {
@@ -76,7 +82,22 @@ function index(props: IProps) {
   const { profile, darkMode, dashboardSaveMode, perms, groupedDatasourceList } = useContext(CommonStateContext);
   const [variableConfigWithOptions] = useGlobalState('variablesWithOptions');
   const themeMode = darkMode ? 'dark' : 'light';
-  const { editable, dashboard, setDashboard, annotations, setAllowedLeave, range, timezone, setTimezone, panels, isPreview, setPanels, onShareClick, onUpdated } = props;
+  const {
+    editable,
+    dashboard,
+    setDashboard,
+    annotations,
+    setAllowedLeave,
+    setHasUnsavedChanges,
+    range,
+    timezone,
+    setTimezone,
+    panels,
+    isPreview,
+    setPanels,
+    onShareClick,
+    onUpdated,
+  } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const layoutInitialized = useRef(false);
@@ -87,7 +108,7 @@ function index(props: IProps) {
     useCSSTransforms: false,
     draggableHandle: '.dashboards-panels-item-drag-handle',
   };
-  const updateDashboardConfigs = (dashboardId, options) => {
+  const updateDashboardConfigs = (dashboardId: number, options: UpdateDashboardConfigsOptions, shouldMarkUnsaved = true): Promise<any> => {
     if (dashboardSaveMode === 'manual') {
       let configs = {} as IDashboardConfig;
       try {
@@ -95,7 +116,10 @@ function index(props: IProps) {
       } catch (e) {
         console.error(e);
       }
-      setAllowedLeave(false);
+      setHasUnsavedChanges(true);
+      if (shouldMarkUnsaved) {
+        setAllowedLeave(false);
+      }
       setDashboard((dashboard) => {
         return {
           ...dashboard,
@@ -114,7 +138,25 @@ function index(props: IProps) {
     }
   };
   const editorRef = useRef<any>(null);
-  const [, setPanelClipboard] = useGlobalState('panelClipboard');
+
+  const handleCopyPanel = async (panel: any) => {
+    const panelConfig = JSON.stringify(panel, null, 2);
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(panelConfig);
+        message.success(t('copyPanelTip'));
+        return;
+      } catch (error) {
+        // Fall back to execCommand-based copy for browsers without clipboard permission.
+      }
+    }
+
+    const copied = copy2ClipBoard(panelConfig, true);
+    if (copied) {
+      message.success(t('copyPanelTip'));
+    }
+  };
 
   return (
     <div className='dashboards-panels'>
@@ -241,7 +283,7 @@ function index(props: IProps) {
                         });
                       }}
                       onCopyClick={() => {
-                        setPanelClipboard(item);
+                        void handleCopyPanel(item);
                       }}
                       setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
                     />
@@ -279,9 +321,13 @@ function index(props: IProps) {
                   onToggle={() => {
                     const newPanels = handleRowToggle(!item.collapsed, panels, _.cloneDeep(item));
                     setPanels(newPanels);
-                    updateDashboardConfigs(dashboard.id, {
-                      configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                    })
+                    updateDashboardConfigs(
+                      dashboard.id,
+                      {
+                        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                      },
+                      false,
+                    )
                       .then((res) => {
                         onUpdated(res);
                       })

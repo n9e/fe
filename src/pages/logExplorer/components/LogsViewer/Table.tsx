@@ -10,6 +10,7 @@ import NavigableDrawer from '@/components/NavigableDrawer';
 
 import { NAME_SPACE } from '../../constants';
 import { Field } from '../../types';
+import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 import getColumnsFromFields from './utils/getColumnsFromFields';
 import getFieldsFromTableData from './utils/getFieldsFromTableData';
 import RDGTable from './components/Table';
@@ -37,7 +38,7 @@ interface Props {
     [index: string]: any;
   }[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   logsHash?: string;
   colWidths?: { [key: string]: number };
@@ -58,6 +59,16 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
+  customLogFieldRender?: (
+    key: string,
+    value: any,
+    context: {
+      rawValue: Record<string, any>;
+      highlight?: { [index: string]: string[] };
+      renderScene?: 'raw' | 'logViewer';
+      onValueFilter?: (parmas: OnValueFilterParams) => void;
+    },
+  ) => React.ReactNode | false;
 }
 
 function Table(props: Props) {
@@ -84,6 +95,7 @@ function Table(props: Props) {
     logViewerRenderCustomTagsArea,
     adjustFieldValue,
     showExistsAction,
+    customLogFieldRender,
   } = props;
   const fields = useMemo(() => {
     const resolvedFields = getFieldsFromTableData(data);
@@ -143,7 +155,7 @@ function Table(props: Props) {
     (event) => {
       // 忽略点击发生在 log viewer drawer 内的情况
       const target = (event && (event as Event).target) as HTMLElement | null;
-      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-ignore-click-away')) {
+      if (shouldIgnoreLogViewerClickAway(target)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭
@@ -226,12 +238,14 @@ function Table(props: Props) {
             id_key={id_key}
             raw_key={raw_key}
             value={data[logViewerDrawerState.currentIndex]}
+            highlight={highlights?.[logViewerDrawerState.currentIndex]}
             onValueFilter={(params) => {
               onValueFilter?.(params);
               setLogViewerDrawerState({ visible: false, currentIndex: -1 });
             }}
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
+            customLogFieldRender={customLogFieldRender}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -242,6 +256,6 @@ function Table(props: Props) {
 }
 
 export default React.memo(Table, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields'];
+  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields', 'customLogFieldRender'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

@@ -1,4 +1,6 @@
 const zh_HK = {
+  landing: '首頁',
+  resizeWidth: '拖拽調整側欄寬度',
   quickJump: '快捷跳轉',
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
@@ -57,6 +59,18 @@ const zh_HK = {
     audit_log: '審計日誌',
     alert_servers: '告警引擎',
     about: '關於產品',
+    license_management: '證書管理',
+    ai_config: 'AI 配置',
+    ai_config_agents: 'Agent 管理',
+    ai_config_llm_configs: 'LLM 管理',
+    ai_config_skills: 'Skill 管理',
+    ai_config_mcp_servers: 'MCP 管理',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 

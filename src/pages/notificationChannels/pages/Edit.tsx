@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Spin, message } from 'antd';
+import { Spin, Space, message } from 'antd';
 import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
 
-import { NS } from '../constants';
+import { NS, NOTIFICATION_CHANNEL_TYPES } from '../constants';
 import { getItem, putItem, postItems } from '../services';
 import { ChannelItem } from '../types';
 import { normalizeInitialValues, normalizeFormValues } from '../utils/normalizeValues';
@@ -20,17 +20,33 @@ export default function Add() {
   const { search } = useLocation();
   const { mode } = queryString.parse(search);
   const [data, setData] = useState<ChannelItem>();
+  const ident = (data?.ident as string) || 'callback';
+  const identConfig = NOTIFICATION_CHANNEL_TYPES[ident] ? NOTIFICATION_CHANNEL_TYPES[ident] : NOTIFICATION_CHANNEL_TYPES['callback'];
 
   useEffect(() => {
     if (id) {
-      getItem(_.toNumber(id)).then((res) => {
-        setData(normalizeInitialValues(res));
-      });
+      getItem(_.toNumber(id))
+        .then((res) => {
+          setData(normalizeInitialValues(res));
+        })
+        .catch(() => {
+          setData(undefined);
+        });
     }
   }, []);
 
   return (
-    <PageLayout title={t('title')} showBack backPath={`/${NS}`} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/media/'>
+    <PageLayout
+      title={
+        <Space className='ml-2'>
+          <img src={identConfig.logo} alt={ident} height={18} />
+          {t(`types.${ident}`)}
+        </Space>
+      }
+      showBack
+      backPath={`/${NS}`}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/media/'
+    >
       <div className='n9e'>
         {data ? (
           <Form

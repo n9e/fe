@@ -5,7 +5,7 @@ import { IVariable } from '../types';
 /**
  * 初始化变量的值
  * 从 URL 参数、localStorage 中读取变量值
- * 变量值为空时设置为 undefined，这里不设置为 null 是为了兼容 input 和 select 组件
+ * 除 textbox 外，变量值为空时设置为 undefined，这里不设置为 null 是为了兼容 input 和 select 组件
  * @param variables 变量列表
  * @param queryParams 查询参数
  * @param params 其他参数
@@ -22,6 +22,7 @@ export default function initializeVariablesValue(
   return _.map(variables, (variablesItem) => {
     if (variablesItem.type === 'constant') return variablesItem;
     const variableName = variablesItem.name;
+    const isTextbox = variablesItem.type === 'textbox';
     let variableValue = queryParams[variableName];
     // 如果没有固定 URL 参数值，则从 localStorage 读取缓存值
     if (queryParams.__variable_value_fixed === undefined) {
@@ -42,8 +43,15 @@ export default function initializeVariablesValue(
         }
       }
     }
-    // 如果值为空（null, undefined, '', []）则置为 undefined
-    if (variableValue === null || variableValue === undefined || variableValue === '' || (_.isArray(variableValue) && _.isEmpty(variableValue))) {
+    if (isTextbox) {
+      if (_.isArray(variableValue)) {
+        variableValue = variableValue[0] ?? variablesItem.defaultValue ?? '';
+      }
+      if (variableValue === null || variableValue === undefined) {
+        variableValue = variablesItem.defaultValue ?? '';
+      }
+    } else if (variableValue === null || variableValue === undefined || variableValue === '' || (_.isArray(variableValue) && _.isEmpty(variableValue))) {
+      // 如果值为空（null, undefined, '', []）则置为 undefined
       variableValue = undefined;
     } else if (variablesItem.type === 'datasource' && !_.isNaN(_.toNumber(variableValue))) {
       variableValue = _.toNumber(variableValue);

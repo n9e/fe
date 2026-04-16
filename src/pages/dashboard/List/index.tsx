@@ -119,7 +119,7 @@ export default function index() {
           allOptionLabel={t('default_filter.all')}
           allOptionTooltip={t('default_filter.all_tip')}
         />
-        <div className='fc-border dashboards-v2'>
+        <div className='fc-border rounded-lg dashboards-v2'>
           <Header
             gids={gids}
             selectRowKeys={selectRowKeys}
@@ -221,8 +221,13 @@ export default function index() {
                     render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
                   },
                   {
-                    title: t('common:table.update_by'),
+                    title: t('common:table.username'),
                     dataIndex: 'update_by',
+                    width: 100,
+                  },
+                  {
+                    title: t('common:table.nickname'),
+                    dataIndex: 'update_by_nickname',
                     width: 100,
                   },
                   {

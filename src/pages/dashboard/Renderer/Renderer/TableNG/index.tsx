@@ -35,6 +35,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 interface Props {
   themeMode?: 'dark';
   isPreview?: boolean;
+  id?: string; // dashboardID
   values: IPanel;
   series: any[];
   rangeMode?: 'lcro' | 'lcrc';
@@ -64,6 +65,7 @@ function index(props: Props) {
   const {
     themeMode,
     isPreview,
+    id: dashboardId,
     values,
     series,
     rangeMode,
@@ -78,6 +80,27 @@ function index(props: Props) {
     onCellClick,
     domLayout,
   } = props;
+
+  // 列宽缓存 key：dashboardID + panelID
+  const cacheKey = dashboardId && values?.id ? `tableNG_colWidths_${dashboardId}_${values.id}` : null;
+
+  // 从 localStorage 同步读取已缓存的（仅被用户修改过的）列宽，供 onGridReady 时恢复使用
+  const readCachedColWidths = (key: string | null): Record<string, number> => {
+    if (!key) return {};
+    try {
+      return JSON.parse(localStorage.getItem(key) || '{}');
+    } catch {
+      return {};
+    }
+  };
+
+  // useRef 不支持懒初始化，在渲染时直接同步读取初始值
+  const modifiedColWidthsRef = React.useRef<Record<string, number>>(readCachedColWidths(cacheKey));
+
+  // cacheKey 变化时（如面板切换）重新从 localStorage 加载列宽
+  React.useEffect(() => {
+    modifiedColWidthsRef.current = readCachedColWidths(cacheKey);
+  }, [cacheKey]);
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder } = custom || {};
@@ -152,8 +175,8 @@ function index(props: Props) {
               // 手动获取字段值，解决字段名包含"点"时无法正确获取的问题
               const fieldValue1 = node1.data?.[item];
               const fieldValue2 = node2.data?.[item];
-              const date1Number = fieldValue1?.value ?? null;
-              const date2Number = fieldValue2?.value ?? null;
+              const date1Number = fieldValue1?.stat ?? fieldValue1?.value ?? null;
+              const date2Number = fieldValue2?.stat ?? fieldValue2?.value ?? null;
               if (date1Number === null && date2Number === null) {
                 return 0;
               }
@@ -189,7 +212,7 @@ function index(props: Props) {
         })}
         defaultColDef={{
           flex: 1,
-          resizable: false,
+          resizable: true,
           minWidth: 100,
           sortable: true, // 启用排序功能
           cellStyle: {
@@ -211,7 +234,29 @@ function index(props: Props) {
             fontFamily: getFontFamily(siteInfo?.font_family),
           },
         }}
+        onColumnResized={(event) => {
+          // 仅在拖拽结束时保存，且只保存被修改的列宽
+          if (!event.finished || !cacheKey || !event.column) return;
+          const colId = event.column.getColId();
+          const width = event.column.getActualWidth();
+          modifiedColWidthsRef.current = {
+            ...modifiedColWidthsRef.current,
+            [colId]: width,
+          };
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify(modifiedColWidthsRef.current));
+          } catch {
+            // ignore storage errors
+          }
+        }}
         onGridReady={(params) => {
+          // 恢复缓存的列宽
+          const cachedWidths = modifiedColWidthsRef.current;
+          if (!_.isEmpty(cachedWidths)) {
+            params.api.applyColumnState({
+              state: _.map(cachedWidths, (width, colId) => ({ colId, width })),
+            });
+          }
           // 列的默认排序
           if (sortColumn && sortOrder) {
             params.api.applyColumnState({

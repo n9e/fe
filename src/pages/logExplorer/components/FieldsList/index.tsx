@@ -19,6 +19,7 @@ interface Props {
   onOperClick: (field: string, type: 'show' | 'available') => void;
   fields: Field[];
   enableStats?: boolean;
+  disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: any; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
   loading?: boolean;
@@ -50,6 +51,7 @@ export default function index(props: Props) {
     onOperClick,
     fields,
     enableStats = true,
+    disableEmptyValueClick = true,
     onValueFilter,
     fetchStats,
     loading,
@@ -64,6 +66,10 @@ export default function index(props: Props) {
   return (
     <div className='h-full min-h-0'>
       <Input
+        style={{
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
         placeholder={t('field_search_placeholder')}
         value={fieldsSearch}
         onChange={(e) => {
@@ -104,6 +110,7 @@ export default function index(props: Props) {
                           onOperClick(item.field, 'show');
                         }}
                         field={item}
+                        disableEmptyValueClick={disableEmptyValueClick}
                         onValueFilter={onValueFilter}
                         typeMap={typeMap}
                         fetchStats={fetchStats}
@@ -143,6 +150,7 @@ export default function index(props: Props) {
                       }}
                       operType='available'
                       field={item}
+                      disableEmptyValueClick={disableEmptyValueClick}
                       onValueFilter={onValueFilter}
                       typeMap={typeMap}
                       fetchStats={fetchStats}

@@ -38,7 +38,7 @@ const ja_JP = {
   cluster: 'クラスター',
   full_screen: '全画面',
   exit_full_screen: '全画面を退出',
-  copyPanelTip: 'グラフがコピーされました。"グラフを追加"をクリックして貼り付けてください。',
+  copyPanelTip: 'パネル設定がコピーされました。"パネルを追加" > "パネルを貼り付け" をクリックして、設定JSONを貼り付けてパネルを作成します',
   batch: {
     import: '夜鶯ダッシュボード JSON をインポート',
     label: 'ダッシュボード JSON',
@@ -590,6 +590,8 @@ const ja_JP = {
     options_max_data_points_tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
     options_time: '時間',
     options_time_tip: 'クエリのカスタム時間範囲を指定できます。空白のままにすると、ダッシュボードの時間範囲が使用されます',
+    copy_query: 'クエリをコピー',
+    hide_response: 'レスポンスを非表示',
   },
   detail: {
     datasource_empty: 'データソース情報がありません。まずデータソースを設定してください',
@@ -610,7 +612,10 @@ const ja_JP = {
       discardText: '放棄',
       okText: '保存',
     },
-    noPanelToPaste: '貼り付け可能なグラフがありません',
+    importPanel: {
+      invalidJSON: 'グラフ設定の JSON 形式が正しくありません',
+      placeholder: 'グラフ設定の JSON を貼り付けてください',
+    },
   },
   settings: {
     graphTooltip: {
@@ -642,7 +647,7 @@ const ja_JP = {
     heatmap: 'ヒートマップ',
     iframe: '内蔵文書 (iframe)',
     row: 'グループ',
-    pastePanel: 'グラフを貼り付け',
+    importPanel: 'グラフをインポート',
   },
   calcs: {
     lastNotNull: '最後の非空値',

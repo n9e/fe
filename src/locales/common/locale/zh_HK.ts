@@ -82,7 +82,7 @@ const zh_HK = {
     host: '機器',
     error_msg: '錯誤',
     username: '用戶名',
-    nickname: '顯示名',
+    nickname: '用戶暱稱',
   },
   datasource: {
     prod: '監控類型',

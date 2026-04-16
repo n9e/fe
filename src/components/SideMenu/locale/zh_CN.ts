@@ -1,4 +1,6 @@
 const zh_CN = {
+  landing: '首页',
+  resizeWidth: '拖拽调整侧栏宽度',
   quickJump: '快捷跳转',
   quickOpenClose: '打开/关闭',
   quickSearchPlaceholder: '输入内容以检索...',
@@ -9,6 +11,7 @@ const zh_CN = {
     targets: '机器',
     collects: '采集规则',
     network_devices: '网络设备',
+    mobile_device: '移动设备',
     dashboards: '仪表盘',
     reports: '巡检报告',
     heartbeat: '拨测',
@@ -57,6 +60,18 @@ const zh_CN = {
     audit_log: '审计日志',
     alert_servers: '告警引擎',
     about: '关于产品',
+    license_management: '证书管理',
+    ai_config: 'AI 配置',
+    ai_config_agents: 'Agent 管理',
+    ai_config_llm_configs: 'LLM 管理',
+    ai_config_skills: 'Skill 管理',
+    ai_config_mcp_servers: 'MCP 管理',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 export default zh_CN;

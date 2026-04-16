@@ -14,10 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import { Input, Modal } from 'antd';
+import { Input, Modal, Spin } from 'antd';
 import _ from 'lodash';
+import { useRequest } from 'ahooks';
+
 import { getPromData } from '../services';
 
 interface MetricsExplorer {
@@ -29,22 +31,17 @@ interface MetricsExplorer {
 }
 
 const MetricsExplorer: React.FC<MetricsExplorer> = ({ url, datasourceValue, show, updateShow, insertAtCursor }) => {
-  const [metrics, setMetrics] = useState<string[]>([]);
-  const [filteredMetrics, setFilteredMetrics] = useState<string[]>(metrics);
+  const [searchValue, setSearchValue] = useState<string>();
 
   function checkMetric(value: string) {
     insertAtCursor(value);
     updateShow(false);
   }
 
-  useEffect(() => {
-    if (show && datasourceValue) {
-      getPromData(`${url}/${datasourceValue}/api/v1/label/__name__/values`, {}).then((res) => {
-        setMetrics(res || []);
-        setFilteredMetrics(res || []);
-      });
-    }
-  }, [show, datasourceValue]);
+  const { data, loading } = useRequest(() => getPromData(`${url}/${datasourceValue}/api/v1/label/__name__/values`, {}), {
+    ready: show && !!datasourceValue,
+    refreshDeps: [datasourceValue, show],
+  });
 
   return (
     <Modal className='prom-graph-metrics-explorer-modal' width={540} visible={show} title='Metrics Explorer' footer={null} onCancel={() => updateShow(false)} getContainer={false}>
@@ -53,16 +50,26 @@ const MetricsExplorer: React.FC<MetricsExplorer> = ({ url, datasourceValue, show
         onPressEnter={(e) => {
           e.preventDefault();
           const value = e.currentTarget.value;
-          setFilteredMetrics(_.filter(metrics, (metric) => metric.includes(value)));
+          setSearchValue(value);
         }}
       />
-      <div className='prom-graph-metrics-explorer-list' onClick={(e) => checkMetric((e.target as HTMLElement).innerText)}>
-        {filteredMetrics.map((metric) => (
-          <div className='prom-graph-metrics-explorer-list-item' key={metric}>
-            {metric}
-          </div>
-        ))}
-      </div>
+      <Spin spinning={loading}>
+        <div className='prom-graph-metrics-explorer-list' onClick={(e) => checkMetric((e.target as HTMLElement).innerText)}>
+          {_.map(
+            _.filter(data, (item) => {
+              if (!searchValue) {
+                return true;
+              }
+              return _.includes(item, searchValue);
+            }),
+            (metric) => (
+              <div className='prom-graph-metrics-explorer-list-item' key={metric}>
+                {metric}
+              </div>
+            ),
+          )}
+        </div>
+      </Spin>
     </Modal>
   );
 };

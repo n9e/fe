@@ -1,7 +1,12 @@
 .promql-input-ng-container {
+  min-width: 0;
 
   .ant-input-affix-wrapper {
+    flex: 1;
+    min-width: 0;
     padding: 5px 11px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 
     &:hover {
       z-index: 2 !important; // TODO: 修复 promql 下拉层会被遮挡的问题

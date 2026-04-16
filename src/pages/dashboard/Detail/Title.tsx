@@ -20,7 +20,7 @@ import querystring from 'query-string';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, notification, Input, message, Tooltip } from 'antd';
+import { Button, Space, Dropdown, Menu, notification, Input, Modal, message, Tooltip } from 'antd';
 import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 
@@ -34,8 +34,7 @@ import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
-import { IDashboard, ILink } from '../types';
-import { useGlobalState } from '../globalState';
+import { IDashboard, ILink, IPanel } from '../types';
 import { goBack, dashboardTimeCacheKey } from './utils';
 
 interface IProps {
@@ -50,6 +49,7 @@ interface IProps {
   intervalSeconds?: number;
   setIntervalSeconds: (intervalSeconds?: number) => void;
   onAddPanel: (type: string) => void;
+  onImportPanel: (panel: IPanel) => void;
   isPreview: boolean;
   isBuiltin: boolean;
   isAuthorized: boolean;
@@ -57,13 +57,28 @@ interface IProps {
   editable: boolean;
   updateAtRef: React.MutableRefObject<number | undefined>;
   allowedLeave: boolean;
+  hasUnsavedChanges: boolean;
   setAllowedLeave: (allowed: boolean) => void;
+  setHasUnsavedChanges: (changed: boolean) => void;
   routerPromptRef: any;
   hideGoBack?: boolean;
   hideGoList?: boolean;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
+
+const isValidPanelConfig = (value: string) => {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as IPanel;
+    return !!parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !!parsed.type;
+  } catch (error) {
+    return false;
+  }
+};
 
 export default function Title(props: IProps) {
   const { t } = useTranslation('dashboard');
@@ -79,13 +94,16 @@ export default function Title(props: IProps) {
     intervalSeconds,
     setIntervalSeconds,
     onAddPanel,
+    onImportPanel,
     isPreview,
     isBuiltin,
     isAuthorized,
     editable,
     updateAtRef,
     allowedLeave,
+    hasUnsavedChanges,
     setAllowedLeave,
+    setHasUnsavedChanges,
     routerPromptRef,
     hideGoBack,
     hideGoList,
@@ -99,7 +117,26 @@ export default function Title(props: IProps) {
   const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
   const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
   const [dashboardListDropdownVisible, setDashboardListDropdownVisible] = useState(false);
-  const [panelClipboard, setPanelClipboard] = useGlobalState('panelClipboard');
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [importValue, setImportValue] = useState('');
+
+  const openImportPanelModal = async () => {
+    setImportValue('');
+    setImportModalVisible(true);
+
+    if (!navigator.clipboard?.readText) {
+      return;
+    }
+
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (isValidPanelConfig(clipboardText)) {
+        setImportValue(clipboardText);
+      }
+    } catch (error) {
+      // Clipboard read may be blocked by browser permissions. Keep the modal usable with manual paste.
+    }
+  };
 
   useEffect(() => {
     document.title = `${dashboard.name} - ${siteInfo?.page_title || cachePageTitle}`;
@@ -145,264 +182,298 @@ export default function Title(props: IProps) {
   }, [__public__, dashboard?.group_id]);
 
   return (
-    <div
-      className={`dashboard-detail-header n9e-page-header-content`}
-      style={{
-        display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
-      }}
-    >
-      <div className='dashboard-detail-header-left'>
-        {isPreview && !isBuiltin ? null : (
-          <Space>
-            {!hideGoBack && (
-              <Tooltip title={isBuiltin ? t('back_icon_tip_is_built_in') : t('back_icon_tip')}>
-                <RollbackOutlined
-                  className='back_icon'
-                  onClick={() => {
-                    if (allowedLeave) {
-                      goBack(history).catch(() => {
-                        history.push(props.gobackPath || '/dashboards');
-                      });
-                    } else {
-                      routerPromptRef.current.showPrompt();
-                    }
-                  }}
-                />
-              </Tooltip>
-            )}
-            {!hideGoList && (
-              <Space className='pr-2'>
-                <Link to={props.gobackPath || '/dashboards'} style={{ fontSize: 14 }}>
-                  {isBuiltin ? t('builtInComponents:title') : t('list')}
-                </Link>
-                {'/'}
-              </Space>
-            )}
-          </Space>
-        )}
-        {isPreview === true || __public__ === 'true' ? (
-          // 公开仪表盘不显示下拉
-          <div className='title'>{dashboard.name}</div>
-        ) : (
-          <Dropdown
-            trigger={['click']}
-            visible={dashboardListDropdownVisible}
-            onVisibleChange={(visible) => {
-              setDashboardListDropdownVisible(visible);
-            }}
-            overlay={
-              <div className='collects-payloads-dropdown-overlay p-4 bg-fc-100 fc-border rounded-[2px] n9e-base-shadow'>
-                <Input
-                  className='mb-2'
-                  placeholder={t('common:search_placeholder')}
-                  value={dashboardListDropdownSearch}
-                  onChange={(e) => {
-                    setDashboardListDropdownSearch(e.target.value);
-                  }}
-                />
-                <Menu>
-                  {_.map(
-                    _.filter(dashboardList, (item) => {
-                      return _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch));
-                    }),
-                    (item) => {
-                      return (
-                        <Menu.Item
-                          key={item.id}
-                          onClick={() => {
-                            history.push(`/dashboards/${item.ident || item.id}`);
-                            setDashboardListDropdownVisible(false);
-                            setDashboardListDropdownSearch('');
-                          }}
-                        >
-                          {item.name}
-                        </Menu.Item>
-                      );
-                    },
-                  )}
-                </Menu>
-              </div>
-            }
-          >
-            <span style={{ cursor: 'pointer' }}>
-              <span className='title'>{dashboard.name}</span> <DownOutlined />
-            </span>
-          </Dropdown>
-        )}
-      </div>
-
-      <div className='dashboard-detail-header-right'>
-        <Space>
-          {isAuthorized && dashboardSaveMode === 'manual' && !allowedLeave && (
-            <Button
-              type={allowedLeave ? 'default' : 'primary'}
-              onClick={() => {
-                if (editable) {
-                  updateDashboard(dashboard.id, {
-                    name: dashboard.name,
-                    ident: dashboard.ident,
-                    tags: dashboard.tags,
-                    note: dashboard.note,
-                  });
-                  updateDashboardConfigs(dashboard.id, {
-                    configs: JSON.stringify(dashboard.configs),
-                  }).then((res) => {
-                    updateAtRef.current = res.update_at;
-                    message.success(t('detail.saved'));
-                    setAllowedLeave(true);
-                  });
-                } else {
-                  message.warning(t('detail.expired'));
-                }
-              }}
-            >
-              {t('settings.save')}
-            </Button>
+    <>
+      <div
+        className={`dashboard-detail-header n9e-page-header-content`}
+        style={{
+          display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
+        }}
+      >
+        <div className='dashboard-detail-header-left'>
+          {isPreview && !isBuiltin ? null : (
+            <Space>
+              {!hideGoBack && (
+                <Tooltip title={isBuiltin ? t('back_icon_tip_is_built_in') : t('back_icon_tip')}>
+                  <RollbackOutlined
+                    className='back_icon'
+                    onClick={() => {
+                      if (allowedLeave) {
+                        goBack(history).catch(() => {
+                          history.push(props.gobackPath || '/dashboards');
+                        });
+                      } else {
+                        routerPromptRef.current.showPrompt();
+                      }
+                    }}
+                  />
+                </Tooltip>
+              )}
+              {!hideGoList && (
+                <Space className='pr-2'>
+                  <Link to={props.gobackPath || '/dashboards'} style={{ fontSize: 14 }}>
+                    {isBuiltin ? t('builtInComponents:title') : t('list')}
+                  </Link>
+                  {'/'}
+                </Space>
+              )}
+            </Space>
           )}
-          {dashboard.configs?.mode !== 'iframe' ? (
-            <>
-              {isAuthorized && (
-                <Dropdown
-                  trigger={['click']}
-                  overlay={
-                    <Menu>
-                      {_.map(_.concat(panelClipboard ? [{ type: 'pastePanel' }] : [], [{ type: 'row', name: 'row' }], visualizations), (item) => {
+          {isPreview === true || __public__ === 'true' ? (
+            // 公开仪表盘不显示下拉
+            <div className='title'>{dashboard.name}</div>
+          ) : (
+            <Dropdown
+              trigger={['click']}
+              visible={dashboardListDropdownVisible}
+              onVisibleChange={(visible) => {
+                setDashboardListDropdownVisible(visible);
+              }}
+              overlay={
+                <div className='collects-payloads-dropdown-overlay p-4 bg-fc-100 fc-border rounded-[2px] n9e-base-shadow'>
+                  <Input
+                    className='mb-2'
+                    placeholder={t('common:search_placeholder')}
+                    value={dashboardListDropdownSearch}
+                    onChange={(e) => {
+                      setDashboardListDropdownSearch(e.target.value);
+                    }}
+                  />
+                  <Menu>
+                    {_.map(
+                      _.filter(dashboardList, (item) => {
+                        return _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch));
+                      }),
+                      (item) => {
                         return (
                           <Menu.Item
-                            key={item.type}
+                            key={item.id}
                             onClick={() => {
-                              onAddPanel(item.type);
+                              history.push(`/dashboards/${item.ident || item.id}`);
+                              setDashboardListDropdownVisible(false);
+                              setDashboardListDropdownSearch('');
                             }}
                           >
-                            <Space align='center' style={{ lineHeight: 1 }}>
-                              {item.type !== 'pastePanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
-                              {t(`visualizations.${item.type}`)}
-                            </Space>
+                            {item.name}
                           </Menu.Item>
                         );
-                      })}
-                    </Menu>
-                  }
-                >
-                  <Button type='primary' ghost icon={<AddPanelIcon />}>
-                    {t('add_panel')}
-                  </Button>
-                </Dropdown>
-              )}
-              <TimeRangePickerWithRefresh
-                localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
-                dateFormat='YYYY-MM-DD HH:mm:ss'
-                value={range}
-                onChange={(val) => {
-                  // 更改时间范围后同步到 URL
-                  history.replace({
-                    pathname: location.pathname,
-                    search: querystring.stringify({
-                      ...querystring.parse(window.location.search),
-                      __from: moment.isMoment(val.start) ? val.start.valueOf() : val.start,
-                      __to: moment.isMoment(val.end) ? val.end.valueOf() : val.end,
-                    }),
-                  });
-                  setRange(val);
-                }}
-                intervalSeconds={intervalSeconds}
-                onIntervalSecondsChange={(val) => {
-                  const value = val > 0 ? val : undefined;
-                  history.replace({
-                    pathname: location.pathname,
-                    search: querystring.stringify({
-                      ...querystring.parse(window.location.search),
-                      __refresh: value,
-                    }),
-                  });
-                  setIntervalSeconds(value);
-                }}
-                showTimezone
-                timezone={timezone}
-                onTimezoneChange={setTimezone}
-              />
-
-              {isAuthorized && (
-                <Button
-                  icon={<SettingOutlined />}
-                  onClick={() => {
-                    FormModal({
-                      action: 'edit',
-                      initialValues: dashboard,
-                      dashboardSaveMode,
-                      onOk: (values) => {
-                        if (dashboardSaveMode === 'manual') {
-                          const dashboardConfigs: any = dashboard.configs;
-                          dashboardConfigs.graphTooltip = values.graphTooltip;
-                          dashboardConfigs.graphZoom = values.graphZoom;
-                          handleUpdateDashboardConfigs(dashboard.id, {
-                            name: values.name,
-                            ident: values.ident,
-                            tags: _.join(values.tags, ' '),
-                            note: values.note,
-                            configs: JSON.stringify(dashboardConfigs),
-                          });
-                        } else {
-                          window.location.reload();
-                        }
                       },
-                    });
-                  }}
-                />
-              )}
-              <DashboardLinks
-                editable={isAuthorized}
-                value={dashboardLinks}
-                onChange={(v) => {
-                  const dashboardConfigs: any = dashboard.configs;
-                  dashboardConfigs.links = v;
-                  handleUpdateDashboardConfigs(dashboard.id, {
-                    ...dashboard,
-                    configs: JSON.stringify(dashboardConfigs),
-                  });
-                  setDashboardLinks(v);
-                }}
-              />
-            </>
-          ) : (
-            <>
-              {isAuthorized && (
-                <Button
-                  icon={<SettingOutlined />}
-                  onClick={() => {
-                    ImportGrafanaURLFormModal({
-                      initialValues: dashboard,
-                      onOk: () => {
-                        window.location.reload();
-                      },
-                    });
-                  }}
-                />
-              )}
-            </>
+                    )}
+                  </Menu>
+                </div>
+              }
+            >
+              <span style={{ cursor: 'pointer' }}>
+                <span className='title'>{dashboard.name}</span> <DownOutlined />
+              </span>
+            </Dropdown>
           )}
-          <Tooltip title={dashboard.configs?.mode === 'iframe' ? t('embeddedDashboards:exitFullScreen_tip') : undefined}>
-            <Button
-              onClick={() => {
-                const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
-                if (!viewMode) {
-                  newQuery.viewMode = 'fullscreen';
-                  isClickTrigger.current = true;
-                }
-                history.replace({
-                  pathname: location.pathname,
-                  search: querystring.stringify(newQuery),
-                });
-                // TODO: 解决仪表盘 layout resize 问题
-                setTimeout(() => {
-                  window.dispatchEvent(new Event('resize'));
-                }, 500);
-              }}
-              icon={<FullscreenOutlined />}
-            />
-          </Tooltip>
-        </Space>
+        </div>
+
+        <div className='dashboard-detail-header-right'>
+          <Space>
+            {isAuthorized && dashboardSaveMode === 'manual' && hasUnsavedChanges && (
+              <Button
+                type={allowedLeave ? 'default' : 'primary'}
+                onClick={() => {
+                  if (editable) {
+                    updateDashboard(dashboard.id, {
+                      name: dashboard.name,
+                      ident: dashboard.ident,
+                      tags: dashboard.tags,
+                      note: dashboard.note,
+                    });
+                    updateDashboardConfigs(dashboard.id, {
+                      configs: JSON.stringify(dashboard.configs),
+                    }).then((res) => {
+                      updateAtRef.current = res.update_at;
+                      message.success(t('detail.saved'));
+                      setHasUnsavedChanges(false);
+                      setAllowedLeave(true);
+                    });
+                  } else {
+                    message.warning(t('detail.expired'));
+                  }
+                }}
+              >
+                {t('settings.save')}
+              </Button>
+            )}
+            {dashboard.configs?.mode !== 'iframe' ? (
+              <>
+                {isAuthorized && (
+                  <Dropdown
+                    trigger={['click']}
+                    overlay={
+                      <Menu>
+                        {_.map(_.concat([{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => {
+                          return (
+                            <Menu.Item
+                              key={item.type}
+                              onClick={() => {
+                                if (item.type === 'importPanel') {
+                                  void openImportPanelModal();
+                                } else {
+                                  onAddPanel(item.type);
+                                }
+                              }}
+                            >
+                              <Space align='center' style={{ lineHeight: 1 }}>
+                                {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
+                                {t(`visualizations.${item.type}`)}
+                              </Space>
+                            </Menu.Item>
+                          );
+                        })}
+                      </Menu>
+                    }
+                  >
+                    <Button type='primary' ghost icon={<AddPanelIcon />}>
+                      {t('add_panel')}
+                    </Button>
+                  </Dropdown>
+                )}
+                <TimeRangePickerWithRefresh
+                  localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
+                  dateFormat='YYYY-MM-DD HH:mm:ss'
+                  value={range}
+                  onChange={(val) => {
+                    // 更改时间范围后同步到 URL
+                    history.replace({
+                      pathname: location.pathname,
+                      search: querystring.stringify({
+                        ...querystring.parse(window.location.search),
+                        __from: moment.isMoment(val.start) ? val.start.valueOf() : val.start,
+                        __to: moment.isMoment(val.end) ? val.end.valueOf() : val.end,
+                      }),
+                    });
+                    setRange(val);
+                  }}
+                  intervalSeconds={intervalSeconds}
+                  onIntervalSecondsChange={(val) => {
+                    const value = val > 0 ? val : undefined;
+                    history.replace({
+                      pathname: location.pathname,
+                      search: querystring.stringify({
+                        ...querystring.parse(window.location.search),
+                        __refresh: value,
+                      }),
+                    });
+                    setIntervalSeconds(value);
+                  }}
+                  showTimezone
+                  timezone={timezone}
+                  onTimezoneChange={setTimezone}
+                />
+
+                {isAuthorized && (
+                  <Button
+                    icon={<SettingOutlined />}
+                    onClick={() => {
+                      FormModal({
+                        action: 'edit',
+                        initialValues: dashboard,
+                        dashboardSaveMode,
+                        onOk: (values) => {
+                          if (dashboardSaveMode === 'manual') {
+                            const dashboardConfigs: any = dashboard.configs;
+                            dashboardConfigs.graphTooltip = values.graphTooltip;
+                            dashboardConfigs.graphZoom = values.graphZoom;
+                            handleUpdateDashboardConfigs(dashboard.id, {
+                              name: values.name,
+                              ident: values.ident,
+                              tags: _.join(values.tags, ' '),
+                              note: values.note,
+                              configs: JSON.stringify(dashboardConfigs),
+                            });
+                          } else {
+                            window.location.reload();
+                          }
+                        },
+                      });
+                    }}
+                  />
+                )}
+                <DashboardLinks
+                  editable={isAuthorized}
+                  value={dashboardLinks}
+                  onChange={(v) => {
+                    const dashboardConfigs: any = dashboard.configs;
+                    dashboardConfigs.links = v;
+                    handleUpdateDashboardConfigs(dashboard.id, {
+                      ...dashboard,
+                      configs: JSON.stringify(dashboardConfigs),
+                    });
+                    setDashboardLinks(v);
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                {isAuthorized && (
+                  <Button
+                    icon={<SettingOutlined />}
+                    onClick={() => {
+                      ImportGrafanaURLFormModal({
+                        initialValues: dashboard,
+                        onOk: () => {
+                          window.location.reload();
+                        },
+                      });
+                    }}
+                  />
+                )}
+              </>
+            )}
+            <Tooltip title={dashboard.configs?.mode === 'iframe' ? t('embeddedDashboards:exitFullScreen_tip') : undefined}>
+              <Button
+                onClick={() => {
+                  const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
+                  if (!viewMode) {
+                    newQuery.viewMode = 'fullscreen';
+                    isClickTrigger.current = true;
+                  }
+                  history.replace({
+                    pathname: location.pathname,
+                    search: querystring.stringify(newQuery),
+                  });
+                  // TODO: 解决仪表盘 layout resize 问题
+                  setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                  }, 500);
+                }}
+                icon={<FullscreenOutlined />}
+              />
+            </Tooltip>
+          </Space>
+        </div>
       </div>
-    </div>
+      <Modal
+        title={t('visualizations.importPanel')}
+        visible={importModalVisible}
+        onCancel={() => {
+          setImportValue('');
+          setImportModalVisible(false);
+        }}
+        onOk={() => {
+          let parsed: IPanel | undefined;
+          try {
+            parsed = JSON.parse(importValue) as unknown as IPanel;
+          } catch (e) {
+            message.error(t('detail.importPanel.invalidJSON'));
+            return;
+          }
+          // 最小结构校验
+          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || !parsed.type) {
+            message.error(t('detail.importPanel.invalidJSON'));
+            return;
+          }
+          onImportPanel(parsed);
+          setImportValue('');
+          setImportModalVisible(false);
+        }}
+      >
+        <Input.TextArea rows={10} value={importValue} onChange={(e) => setImportValue(e.target.value)} placeholder={t('detail.importPanel.placeholder')} />
+      </Modal>
+    </>
   );
 }

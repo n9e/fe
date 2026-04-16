@@ -11,6 +11,7 @@ import './style.less';
 
 interface IProps {
   ident: string;
+  targetNode?: React.ReactNode;
 }
 
 function bytesToSize(bytes, precision) {
@@ -170,24 +171,37 @@ function Group({ name, data }) {
 
 export default function TargetMetaDrawer(props: IProps) {
   const { t } = useTranslation('targets');
-  let { ident } = props;
+  const { ident, targetNode } = props;
   const [visible, setVisible] = useState(false);
   const groupsName = ['platform', 'cpu', 'memory', 'network', 'filesystem'];
   const [information, setInformation] = useState({});
 
   return (
     <>
-      <Tooltip title={t('meta_tip')}>
-        <a
-          onClick={() => {
-            setVisible(true);
-            getTargetInformationByIdent(ident).then((res) => {
-              setInformation(res);
-            });
-          }}
-        >
-          {ident}
-        </a>
+      <Tooltip title={t('meta_tip')} placement='left'>
+        {targetNode ? (
+          <span
+            onClick={() => {
+              setVisible(true);
+              getTargetInformationByIdent(ident).then((res) => {
+                setInformation(res);
+              });
+            }}
+          >
+            {targetNode}
+          </span>
+        ) : (
+          <a
+            onClick={() => {
+              setVisible(true);
+              getTargetInformationByIdent(ident).then((res) => {
+                setInformation(res);
+              });
+            }}
+          >
+            {ident}
+          </a>
+        )}
       </Tooltip>
       <Drawer
         destroyOnClose

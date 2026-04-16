@@ -341,6 +341,7 @@ const Panel = (props: IProps) => {
                 } else if (datasourceCate === DatasourceCateEnum.prometheus) {
                   return (
                     <Prometheus
+                      panelKey={props.tabKey}
                       promQL={promql}
                       onChange={(newPromQL) => {
                         setPromql(newPromQL);

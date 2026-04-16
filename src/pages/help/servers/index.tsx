@@ -138,16 +138,14 @@ export default function Servers() {
       title={<Space>{t('title')}</Space>}
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/alert-engine/'
     >
-      <div>
-        <div className='fc-border' style={{ padding: 20 }}>
-          {profile.admin ? (
-            <div>
-              <Table bordered size='small' rowKey='id' tableLayout='fixed' loading={loading} dataSource={data} pagination={false} columns={columns} />
-            </div>
-          ) : (
-            <div>{t('unauthorized')}</div>
-          )}
-        </div>
+      <div className='n9e'>
+        {profile.admin ? (
+          <div>
+            <Table bordered size='small' rowKey='id' tableLayout='fixed' loading={loading} dataSource={data} pagination={false} columns={columns} />
+          </div>
+        ) : (
+          <div>{t('unauthorized')}</div>
+        )}
       </div>
     </PageLayout>
   );

@@ -122,7 +122,7 @@ const AlertCurEvent: React.FC = () => {
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')}>
       <div className={`n9e ${NS}`}>
-        <div className='bg-fc-100 fc-border h-full'>
+        <div className='bg-fc-100 fc-border rounded-lg h-full'>
           <div className='p-4 h-full'>
             <div className='flex flex-col h-full'>
               <div className='flex justify-between items-center mb-2'>

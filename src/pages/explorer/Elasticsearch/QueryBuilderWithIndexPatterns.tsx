@@ -295,7 +295,7 @@ export default function QueryBuilder(props: Props) {
                           {key === 'indexPattern'
                             ? _.find(indexPatterns, { id: _.toNumber(value) })?.name ?? value
                             : key === 'syntax'
-                            ? _.find(SYNTAX_OPTIONS, { value })?.label ?? value
+                            ? _.find(SYNTAX_OPTIONS, { value: value as string })?.label ?? value
                             : value}
                         </span>
                       </span>

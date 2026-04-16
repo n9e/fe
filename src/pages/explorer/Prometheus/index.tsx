@@ -3,11 +3,16 @@ import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
+import { Button, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 
+import { SIZE } from '@/utils/constant';
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
+
+import AiIcon from '@/components/AiChatNG/AiIcon';
+import { useAiChatContext } from '@/components/AiChatNG';
 
 import { queryStringOptions } from '../constants';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
@@ -19,6 +24,7 @@ interface IProps {
   headerExtra: HTMLDivElement | null;
   datasourceValue: number;
   form: FormInstance;
+  panelKey?: string;
   panelIdx?: number;
   showBuiltinMetrics?: boolean;
   allowReplaceHistory?: boolean;
@@ -40,6 +46,7 @@ export default function Prometheus(props: IProps) {
     headerExtra,
     datasourceValue,
     form,
+    panelKey,
     panelIdx = 0,
     showBuiltinMetrics = true,
     allowReplaceHistory,
@@ -55,6 +62,7 @@ export default function Prometheus(props: IProps) {
     defaultTime,
     onDefaultTimeChange,
   } = props;
+  const { openAiChat } = useAiChatContext();
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -92,55 +100,77 @@ export default function Prometheus(props: IProps) {
   }, []);
 
   return (
-    <PromGraph
-      key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
-      type={query.mode as IMode}
-      defaultType={defaultType}
-      defaultTime={defaultTimeState}
-      onTimeChange={(newRange) => {
-        let { start, end } = newRange;
-        if (moment.isMoment(start) && moment.isMoment(end)) {
-          const parsedRange = timeRangeUnix(newRange);
-          start = parsedRange.start as any;
-          end = parsedRange.end as any;
+    <>
+      <PromGraph
+        // key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
+        type={query.mode as IMode}
+        defaultType={defaultType}
+        defaultTime={defaultTimeState}
+        onTimeChange={(newRange) => {
+          let { start, end } = newRange;
+          if (moment.isMoment(start) && moment.isMoment(end)) {
+            const parsedRange = timeRangeUnix(newRange);
+            start = parsedRange.start as any;
+            end = parsedRange.end as any;
+          }
+          if (panelIdx === 0 && allowReplaceHistory) {
+            history.replace({
+              search: queryString.stringify({ ...query, start, end }),
+            });
+          }
+          if (onDefaultTimeChange) {
+            onDefaultTimeChange(newRange);
+          }
+        }}
+        promQL={promql}
+        datasourceValue={datasourceValue}
+        graphOperates={{ enabled: true }}
+        globalOperates={{ enabled: true }}
+        headerExtra={headerExtra}
+        executeQuery={() => {
+          form.validateFields();
+        }}
+        showBuiltinMetrics={showBuiltinMetrics}
+        graphStandardOptionsType={graphStandardOptionsType}
+        graphStandardOptionsPlacement='bottomRight'
+        defaultUnit={defaultUnit}
+        showGlobalMetrics={showGlobalMetrics}
+        showBuilder={showBuilder}
+        onChange={(newPromQL) => {
+          if (newPromQL) {
+            setLocalQueryHistory(`${LOCAL_KEY}-${datasourceValue}`, newPromQL);
+          }
+          onChange && onChange(newPromQL);
+        }}
+        promQLInputTooltip={promQLInputTooltip}
+        onTypeChange={(newType) => {
+          if (onDefaultTypeChange) {
+            onDefaultTypeChange(newType);
+          }
+        }}
+        extra={
+          <Space size={SIZE}>
+            <Button
+              icon={<AiIcon />}
+              onClick={() => {
+                openAiChat({
+                  datasourceCate: 'prometheus',
+                  datasourceValue,
+                  callbackParams: {
+                    panelKey,
+                    onExecuteQuery: (nextPromql: string) => {
+                      setPromql(nextPromql);
+                    },
+                    openedAt: Date.now(),
+                  },
+                });
+              }}
+            />
+            <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />
+          </Space>
         }
-        if (panelIdx === 0 && allowReplaceHistory) {
-          history.replace({
-            search: queryString.stringify({ ...query, start, end }),
-          });
-        }
-        if (onDefaultTimeChange) {
-          onDefaultTimeChange(newRange);
-        }
-      }}
-      promQL={promql}
-      datasourceValue={datasourceValue}
-      graphOperates={{ enabled: true }}
-      globalOperates={{ enabled: true }}
-      headerExtra={headerExtra}
-      executeQuery={() => {
-        form.validateFields();
-      }}
-      showBuiltinMetrics={showBuiltinMetrics}
-      graphStandardOptionsType={graphStandardOptionsType}
-      graphStandardOptionsPlacement='bottomRight'
-      defaultUnit={defaultUnit}
-      showGlobalMetrics={showGlobalMetrics}
-      showBuilder={showBuilder}
-      onChange={(newPromQL) => {
-        if (newPromQL) {
-          setLocalQueryHistory(`${LOCAL_KEY}-${datasourceValue}`, newPromQL);
-        }
-        onChange && onChange(newPromQL);
-      }}
-      promQLInputTooltip={promQLInputTooltip}
-      onTypeChange={(newType) => {
-        if (onDefaultTypeChange) {
-          onDefaultTypeChange(newType);
-        }
-      }}
-      extra={<HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />}
-      showExportButton
-    />
+        showExportButton
+      />
+    </>
   );
 }

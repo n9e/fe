@@ -1,4 +1,6 @@
 const ja_JP = {
+  landing: 'ホーム',
+  resizeWidth: 'ドラッグしてサイドバー幅を変更',
   quickJump: 'クイックジャンプ',
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',
@@ -9,6 +11,7 @@ const ja_JP = {
     targets: 'ホスト',
     collects: 'データ収集設定',
     network_devices: 'ネットワークデバイス',
+    mobile_device: 'モバイルデバイス',
     dashboards: 'ダッシュボード',
     reports: '監視レポート',
     heartbeat: 'テスト',
@@ -57,6 +60,18 @@ const ja_JP = {
     audit_log: '監査ログ',
     alert_servers: 'アラートエンジン',
     about: '製品について',
+    license_management: 'ライセンス管理',
+    ai_config: 'AI 設定',
+    ai_config_agents: 'Agent 管理',
+    ai_config_llm_configs: 'LLM 管理',
+    ai_config_skills: 'Skill 管理',
+    ai_config_mcp_servers: 'MCP 管理',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 

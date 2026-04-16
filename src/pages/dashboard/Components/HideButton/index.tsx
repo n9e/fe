@@ -1,5 +1,7 @@
 import React from 'react';
+import { Tooltip } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   value?: boolean;
@@ -7,22 +9,27 @@ interface Props {
 }
 
 export default function index(props: Props) {
+  const { t } = useTranslation('dashboard');
   const { value, onChange } = props;
 
   if (value === true) {
     return (
-      <EyeInvisibleOutlined
-        onClick={() => {
-          onChange && onChange(false);
-        }}
-      />
+      <Tooltip placement='top' title={t('query.hide_response')}>
+        <EyeInvisibleOutlined
+          onClick={() => {
+            onChange && onChange(false);
+          }}
+        />
+      </Tooltip>
     );
   }
   return (
-    <EyeOutlined
-      onClick={() => {
-        onChange && onChange(true);
-      }}
-    />
+    <Tooltip placement='top' title={t('query.hide_response')}>
+      <EyeOutlined
+        onClick={() => {
+          onChange && onChange(true);
+        }}
+      />
+    </Tooltip>
   );
 }

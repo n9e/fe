@@ -27,15 +27,28 @@ interface Props {
   raw_key: string;
   value: Record<string, any>;
   rawValue?: Record<string, any>;
+  highlight?: {
+    [index: string]: string[];
+  };
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
+  customLogFieldRender?: (
+    key: string,
+    value: any,
+    context: {
+      rawValue: Record<string, any>;
+      highlight?: { [index: string]: string[] };
+      renderScene?: 'raw' | 'logViewer';
+      onValueFilter?: (parmas: OnValueFilterParams) => void;
+    },
+  ) => React.ReactNode | false;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { fieldConfig, range, indexData } = useContext(LogsViewerStateContext);
-  const { raw_key, id_key, value, rawValue = value, onValueFilter, logViewerFilterFields, logViewerRenderCustomTagsArea } = props;
+  const { raw_key, id_key, value, rawValue = value, highlight, onValueFilter, logViewerFilterFields, logViewerRenderCustomTagsArea, customLogFieldRender } = props;
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
@@ -50,6 +63,25 @@ export default function LogView(props: Props) {
       };
     });
   }, [log]);
+  const customRenderedFieldMap = useMemo(() => {
+    return _.transform(
+      data,
+      (result, item) => {
+        const rendered = customLogFieldRender
+          ? customLogFieldRender(item.field, item.value, {
+              rawValue,
+              highlight,
+              renderScene: 'logViewer',
+              onValueFilter,
+            })
+          : false;
+        if (rendered !== false) {
+          result[item.field] = rendered;
+        }
+      },
+      {} as Record<string, React.ReactNode>,
+    );
+  }, [customLogFieldRender, data, highlight, rawValue]);
 
   const maxFieldLength = useMemo(() => {
     if (!data || data.length === 0) return 0;
@@ -138,7 +170,20 @@ export default function LogView(props: Props) {
                   dataIndex: 'value',
                   key: 'value',
                   render: (val, record) => {
-                    return <LogFieldValue name={record.field} value={val} onTokenClick={onValueFilter} rawValue={rawValue} fieldValueClassName='whitespace-pre-wrap' />;
+                    if (customRenderedFieldMap[record.field]) {
+                      return customRenderedFieldMap[record.field];
+                    }
+
+                    return (
+                      <LogFieldValue
+                        name={record.field}
+                        value={val}
+                        onTokenClick={onValueFilter}
+                        rawValue={rawValue}
+                        highlight={highlight}
+                        fieldValueClassName='whitespace-pre-wrap'
+                      />
+                    );
                   },
                 },
               ]}

@@ -254,6 +254,7 @@ function index(
                             {t('common:btn.view')}
                           </Space>
                         </Menu.Item>
+
                         <Menu.Item
                           onClick={() => {
                             setVisible(true);
@@ -303,8 +304,7 @@ function index(
                             onClick={() => {
                               setVisible(false);
                               if (onCopyClick) {
-                                message.info(t('copyPanelTip'));
-                                onCopyClick();
+                                void onCopyClick();
                               }
                             }}
                             key='copy_btn'
@@ -357,24 +357,25 @@ function index(
                             </Menu.Item>
                           </Tooltip>
                         )}
-
-                        <Menu.Item
-                          onClick={() => {
-                            setVisible(false);
-                            setTime &&
-                              setTime({
-                                ...time,
-                                refreshFlag: _.uniqueId('refreshFlag_ '),
-                              });
-                            setInspect(true);
-                          }}
-                          key='inspect_btn'
-                        >
-                          <Space>
-                            <InfoCircleOutlined />
-                            {t('inspect_btn')}
-                          </Space>
-                        </Menu.Item>
+                        {!isPreview && (
+                          <Menu.Item
+                            onClick={() => {
+                              setVisible(false);
+                              setTime &&
+                                setTime({
+                                  ...time,
+                                  refreshFlag: _.uniqueId('refreshFlag_ '),
+                                });
+                              setInspect(true);
+                            }}
+                            key='inspect_btn'
+                          >
+                            <Space>
+                              <InfoCircleOutlined />
+                              {t('inspect_btn')}
+                            </Space>
+                          </Menu.Item>
+                        )}
                         {isAuthorized && !values.repeatPanelId && (
                           <Menu.Item
                             onClick={() => {

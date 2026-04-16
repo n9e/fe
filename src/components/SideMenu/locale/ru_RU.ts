@@ -1,4 +1,6 @@
 const ru_RU = {
+  landing: 'Главная',
+  resizeWidth: 'Перетащите, чтобы изменить ширину панели',
   quickJump: 'Быстрый переход',
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',
@@ -9,6 +11,7 @@ const ru_RU = {
     targets: 'хостов',
     collects: 'Настройка сбора данных',
     network_devices: 'Сетевые устройства',
+    mobile_device: 'Мобильные устройства',
     dashboards: 'Панель мониторинга',
     reports: 'Отчёты мониторинга',
     heartbeat: 'Тестирование',
@@ -57,6 +60,18 @@ const ru_RU = {
     audit_log: 'Журнал аудита',
     alert_servers: 'Система оповещений',
     about: 'О продукте',
+    license_management: 'Управление лицензиями',
+    ai_config: 'AI настройки',
+    ai_config_agents: 'Agent управление',
+    ai_config_llm_configs: 'LLM управление',
+    ai_config_skills: 'Skill управление',
+    ai_config_mcp_servers: 'MCP управление',
+  },
+  section: {
+    infrastructure: 'INFRASTRUCTURE',
+    observability: 'OBSERVABILITY',
+    analysis: 'ANALYSIS',
+    platform: 'PLATFORM',
   },
 };
 

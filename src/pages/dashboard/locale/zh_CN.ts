@@ -42,7 +42,7 @@ const zh_CN = {
   cluster: '集群', // TODO: 监控仪表盘暂时使用
   full_screen: '全屏',
   exit_full_screen: '退出全屏',
-  copyPanelTip: '图表已复制。单击 "添加图表" 进行粘贴。',
+  copyPanelTip: '图表配置已复制。单击 "添加图表" > "粘贴图表" 粘贴配置 JSON 来创建图表',
   batch: {
     import: '导入夜莺仪表盘 JSON',
     label: '仪表盘 JSON',
@@ -609,6 +609,8 @@ const zh_CN = {
     options_max_data_points_tip: '每条曲线最多的点数，默认为面板宽度（新增时默认为 240）。用于计算 step = (end - start) / maxDataPoints',
     options_time: '查询时间范围',
     options_time_tip: '可指定查询时间范围，默认为仪表盘全局时间范围',
+    copy_query: '复制查询',
+    hide_response: '隐藏查询结果',
   },
   detail: {
     datasource_empty: '没有数据源信息，请先配置数据源',
@@ -629,7 +631,10 @@ const zh_CN = {
       discardText: '放弃',
       okText: '保存',
     },
-    noPanelToPaste: '没有可粘贴的图表',
+    importPanel: {
+      invalidJSON: '图表配置 JSON 格式不正确',
+      placeholder: '请粘贴图表配置 JSON，可以从图表面板右上角更多操作中点击 "拷贝" 来获取图表配置 JSON',
+    },
   },
   settings: {
     graphTooltip: {
@@ -661,7 +666,7 @@ const zh_CN = {
     heatmap: '色块图',
     iframe: '内嵌文档 (iframe)',
     row: '分组',
-    pastePanel: '粘贴图表',
+    importPanel: '粘贴图表',
   },
   calcs: {
     lastNotNull: '最后一个非空值',

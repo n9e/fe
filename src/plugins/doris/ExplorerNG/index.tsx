@@ -107,11 +107,22 @@ export default function index(props: Props) {
     if (queryStr === '*') {
       queryStr = '';
     }
-    if (params.operator === 'AND') {
-      queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${params.value}"`;
-    }
-    if (params.operator === 'NOT') {
-      queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${params.value}"`;
+    if (params.value === null) {
+      if (params.operator === 'AND') {
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key} IS NULL`;
+      }
+      if (params.operator === 'NOT') {
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key} IS NOT NULL`;
+      }
+    } else {
+      // 转义 value 中的双引号
+      const escapedValue = _.replace(params.value, /"/g, '\\"');
+      if (params.operator === 'AND') {
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${escapedValue}"`;
+      }
+      if (params.operator === 'NOT') {
+        queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${escapedValue}"`;
+      }
     }
     form.setFieldsValue({
       refreshFlag: undefined,

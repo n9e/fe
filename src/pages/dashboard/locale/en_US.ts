@@ -41,7 +41,7 @@ const en_US = {
   cluster: 'Cluster',
   full_screen: 'Full screen',
   exit_full_screen: 'Exit full screen',
-  copyPanelTip: 'Panel copied. Click "Add panel" to paste.',
+  copyPanelTip: 'Panel config copied. Click "Add panel" > "Paste panel" to paste the config JSON to create a panel',
   batch: {
     import: 'Import Nightingale dashboard JSON',
     label: 'Dashboard JSON',
@@ -586,6 +586,8 @@ const en_US = {
     options_max_data_points_tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
     options_time: 'Time',
     options_time_tip: 'Specify a custom time range for the query, leave blank to use the dashboard time range',
+    copy_query: 'Copy query',
+    hide_response: 'Hide response data',
   },
   detail: {
     datasource_empty: 'Please configure the data source first',
@@ -606,7 +608,10 @@ const en_US = {
       discardText: 'Discard',
       okText: 'Save',
     },
-    noPanelToPaste: 'No panel to paste',
+    importPanel: {
+      invalidJSON: 'Invalid panel config JSON',
+      placeholder: 'Paste panel config JSON here, you can get the panel config JSON by clicking "Copy" in the more actions of the panel',
+    },
   },
   settings: {
     graphTooltip: {
@@ -638,7 +643,7 @@ const en_US = {
     heatmap: 'Heatmap',
     iframe: 'Iframe',
     row: 'Row',
-    pastePanel: 'Paste panel',
+    importPanel: 'Paste panel',
   },
   calcs: {
     lastNotNull: 'Last not null value',

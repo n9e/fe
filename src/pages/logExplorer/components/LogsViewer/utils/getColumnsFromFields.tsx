@@ -20,7 +20,7 @@ export default function getColumnsFromFields(params: {
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   data?: any[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   tableColumnsWidthCacheKey?: string;
   onOpenOrganizeFieldsModal?: () => void;
@@ -103,7 +103,7 @@ export default function getColumnsFromFields(params: {
               <LogFieldValue
                 enableTooltip
                 name={item}
-                value={toString(record[item])}
+                value={record[item]}
                 onTokenClick={onValueFilter}
                 rawValue={record}
                 highlight={highlight}

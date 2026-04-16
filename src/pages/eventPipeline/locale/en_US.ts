@@ -19,6 +19,7 @@ const en_US = {
     group_name: 'Business group',
     cluster: 'Data source',
     is_recovered: 'Is recovered?',
+    severity: 'Alert severity',
   },
   use_case: {
     label: 'Use Case',
@@ -37,8 +38,8 @@ const en_US = {
     true: 'Disabled',
   },
   inputs: {
-    label: 'Inputs',
-    help: 'Input variables can be referenced in workflow processors via {{$inputs.variable_name}}',
+    label: 'Variables',
+    help: 'Input variables can be referenced in the processors below through {{$inputs.variable_name}}. For example, you can set the ident variable, and in the processor, reference it through {{$inputs.ident}} to specify the machine for script execution.',
     add_btn: 'Add Variable',
     key: 'Variable Name',
     key_required: 'Variable name cannot be empty',
@@ -239,6 +240,7 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     select_alert_event_label: 'Selected alert sample event',
     query_required: 'Query condition cannot be empty',
     sql_limit_valid: 'SQL query statement must contain LIMIT clause',
+    oracle_sql_limit_valid: 'SQL query statement must contain ROWNUM clause',
     annotation_configs: 'Data Append',
     annotation_configs_tip: 'Configure Key/Value to add query results to alert information',
     annotation_key_tip: 'Define the new field Key, it is recommended to use English letters',

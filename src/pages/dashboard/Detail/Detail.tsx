@@ -94,7 +94,7 @@ export default function DetailV2(props: IProps) {
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
-  const [panelClipboard] = useGlobalState('panelClipboard');
+  const [, setGlobalRange] = useGlobalState('range');
   const [, setParamsAiAction] = useParamsAiAction();
   let { id } = useParams<URLParam>();
   const query = queryString.parse(location.search);
@@ -119,6 +119,7 @@ export default function DetailV2(props: IProps) {
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [allowedLeave, setAllowedLeave] = useState(true);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [variablesInitialized, setVariablesInitialized] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -198,6 +199,7 @@ export default function DetailV2(props: IProps) {
       } catch (e) {
         console.error(e);
       }
+      setHasUnsavedChanges(true);
       // 如果是手动保存模式，并且没有编辑权限则不触发 RouterPrompt 提示
       if (isAuthorized) {
         setAllowedLeave(false);
@@ -226,7 +228,9 @@ export default function DetailV2(props: IProps) {
   };
   const handleVariableChange = (newValue) => {
     const dashboardConfigs: any = dashboard.configs;
-    dashboardConfigs.var = newValue;
+    dashboardConfigs.var = _.map(newValue, (item) => {
+      return _.omit(item, ['value', 'options']); // 兼容性代码，去除掉 value, options
+    });
     // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
     // if (dashboardSaveMode === 'manual') {
     //   setVariablesWithOptions(newValue);
@@ -253,6 +257,10 @@ export default function DetailV2(props: IProps) {
     // 监听变量的 name 和 value，不监听 options（避免 options 更新时重复处理）
     JSON.stringify(_.map(variablesWithOptions, (v) => ({ name: v.name, value: v.value }))),
   ]);
+
+  useEffect(() => {
+    setGlobalRange(range);
+  }, [range, setGlobalRange]);
 
   useEffect(() => {
     // 切换仪表盘时，立即清空 variablesWithOptions，避免使用上一个仪表盘的变量
@@ -340,7 +348,9 @@ export default function DetailV2(props: IProps) {
                 editable={editable}
                 updateAtRef={updateAtRef}
                 allowedLeave={allowedLeave}
+                hasUnsavedChanges={hasUnsavedChanges}
                 setAllowedLeave={setAllowedLeave}
+                setHasUnsavedChanges={setHasUnsavedChanges}
                 gobackPath={gobackPath}
                 dashboard={dashboard}
                 dashboardLinks={dashboardLinks}
@@ -374,21 +384,18 @@ export default function DetailV2(props: IProps) {
                       ...dashboard,
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
-                  } else if (type === 'pastePanel') {
-                    if (panelClipboard) {
-                      const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelClipboard, id: uuidv4() }, 'chart', false);
-                      setPanels(newPanels);
-                      scrollToLastPanel(newPanels);
-                      handleUpdateDashboardConfigs(dashboard.id, {
-                        ...dashboard,
-                        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                      });
-                    } else {
-                      message.error(t('detail.noPanelToPaste'));
-                    }
                   } else {
                     setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
                   }
+                }}
+                onImportPanel={(panelConfig) => {
+                  const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelConfig, id: uuidv4() }, 'chart', false);
+                  setPanels(newPanels);
+                  scrollToLastPanel(newPanels);
+                  handleUpdateDashboardConfigs(dashboard.id, {
+                    ...dashboard,
+                    configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                  });
                 }}
                 routerPromptRef={routerPromptRef}
                 hideGoBack={hideGoBack}
@@ -423,6 +430,7 @@ export default function DetailV2(props: IProps) {
                 setDashboard={setDashboard}
                 annotations={annotations}
                 setAllowedLeave={setAllowedLeave}
+                setHasUnsavedChanges={setHasUnsavedChanges}
                 range={range}
                 setRange={setRange}
                 timezone={timezone}
@@ -602,6 +610,7 @@ export default function DetailV2(props: IProps) {
               }).then((res) => {
                 updateAtRef.current = res.update_at;
                 message.success(t('detail.saved'));
+                setHasUnsavedChanges(false);
                 setAllowedLeave(true);
               });
             }}

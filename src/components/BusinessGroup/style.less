@@ -4,13 +4,16 @@
     padding: 0px;
     margin: 0px;
     visibility: unset !important; // 解决和 tailwindcss 的 collapse 冲突
+    border: 0 none;
 
     .collapse-btn {
       right: 0px;
     }
   }
 
+  background-color: var(--fc-fill-2);
   border: 1px solid var(--fc-border-color);
+  border-radius: var(--fc-border-radius-base);
   box-sizing: border-box;
   flex-direction: column;
   height: 100%;
@@ -75,13 +78,18 @@
     position: absolute;
     display: flex;
     align-items: center;
+    justify-content: center;
     top: 50%;
     margin-top: -29px;
-    right: -10px;
+    right: -11px;
     height: 58px;
     width: 10px;
     border-radius: 6px;
     background: var(--fc-fill-4);
+
+    &:hover {
+      background: var(--fc-fill-5);
+    }
   }
 }
 

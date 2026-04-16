@@ -14,6 +14,7 @@ import { OnValueFilterParams } from './types';
 import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
 import LogFieldValue from './components/LogFieldValue';
+import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 
 const explorerOriginInlineCellClassName = 'inline-block mr-1 my-[2px] align-top';
 const explorerOriginBreakCellClassName = 'break-all block mr-1 my-[2px]';
@@ -30,7 +31,7 @@ interface Props {
     [index: string]: any;
   }[];
   highlights?: {
-    [index: number]: string[];
+    [key: string]: string[];
   }[];
   logsHash?: string;
   /** 日志格式配置项 */
@@ -52,6 +53,16 @@ interface Props {
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
   adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
+  customLogFieldRender?: (
+    key: string,
+    value: any,
+    context: {
+      rawValue: Record<string, any>;
+      highlight?: { [index: string]: string[] };
+      renderScene?: 'raw' | 'logViewer';
+      onValueFilter?: (parmas: OnValueFilterParams) => void;
+    },
+  ) => React.ReactNode | false;
 }
 
 interface RenderValueProps {
@@ -63,7 +74,7 @@ interface RenderValueProps {
   showExistsAction?: boolean;
 }
 
-function RenderValue({ name, value, parentKey, onValueFilter, adjustFieldValue, showExistsAction }: RenderValueProps) {
+export function RenderValue({ name, value, parentKey, onValueFilter, adjustFieldValue, showExistsAction }: RenderValueProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { rawValue, highlight } = useContext(DataContext);
 
@@ -224,7 +235,7 @@ function RenderSubJSON({
 export const DataContext = React.createContext<{
   rawValue: { [index: string]: any };
   highlight: {
-    [index: number]: string[];
+    [key: string]: string[];
   };
 }>({
   rawValue: {},
@@ -252,6 +263,7 @@ function Raw(props: Props) {
     logViewerRenderCustomTagsArea,
     adjustFieldValue,
     showExistsAction,
+    customLogFieldRender,
   } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
@@ -268,6 +280,20 @@ function Raw(props: Props) {
               const val = item[key];
               const valToObj = val;
               const subJSON = _.isArray(valToObj) ? valToObj : [valToObj];
+
+              const result = customLogFieldRender
+                ? customLogFieldRender(key, val, {
+                    rawValue: item,
+                    highlight,
+                    renderScene: 'raw',
+                    onValueFilter,
+                  })
+                : false;
+
+              if (result !== false) {
+                return result;
+              }
+
               return (
                 <DataContext.Provider value={{ rawValue: item, highlight }} key={key}>
                   <div
@@ -382,7 +408,7 @@ function Raw(props: Props) {
       // 忽略点击发生在 ignore-click-away 内的情况
       // 还需要结合阻止事件冒泡一起使用
       const target = (event && (event as Event).target) as HTMLElement | null;
-      if (target && typeof target.closest === 'function' && target.closest('.log-explorer-ignore-click-away')) {
+      if (shouldIgnoreLogViewerClickAway(target)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭
@@ -456,12 +482,14 @@ function Raw(props: Props) {
             id_key={id_key}
             raw_key={raw_key}
             value={data[logViewerDrawerState.currentIndex]}
+            highlight={highlights?.[logViewerDrawerState.currentIndex]}
             onValueFilter={(params) => {
               onValueFilter?.(params);
               setLogViewerDrawerState({ visible: false, currentIndex: -1 });
             }}
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
+            customLogFieldRender={customLogFieldRender}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -472,6 +500,6 @@ function Raw(props: Props) {
 }
 
 export default React.memo(Raw, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields'];
+  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields', 'customLogFieldRender'];
   return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

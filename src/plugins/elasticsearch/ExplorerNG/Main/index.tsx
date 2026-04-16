@@ -16,6 +16,7 @@ import RawMain from './Raw';
 import QueryQueryInput from './QueryInput';
 
 interface Props {
+  tabKey: string;
   indexData: Field[];
 
   organizeFields: string[];
@@ -61,6 +62,7 @@ export default function index(props: Props) {
   const { logsDefaultRange } = useContext(CommonStateContext);
 
   const {
+    tabKey,
     indexData,
     organizeFields,
     setOrganizeFields,
@@ -74,6 +76,9 @@ export default function index(props: Props) {
     setServiceParams,
     getServiceParams,
   } = props;
+
+  const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
+  const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
   const [executeLoading, setExecuteLoading] = useState(false);
 
@@ -154,6 +159,10 @@ export default function index(props: Props) {
       </div>
 
       <RawMain
+        tableSelector={{
+          antd: logsAntdTableSelector,
+          rgd: logsRgdTableSelector,
+        }}
         indexData={indexData}
         rangeRef={rangeRef}
         snapRangeRef={snapRangeRef}

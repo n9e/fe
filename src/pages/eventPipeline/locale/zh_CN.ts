@@ -1,8 +1,8 @@
 const zh_CN = {
   title: '工作流',
-  title_add: '新增事件工作流',
-  title_edit: '编辑事件工作流',
-  title_clone: '克隆事件工作流',
+  title_add: '新增工作流',
+  title_edit: '编辑工作流',
+  title_clone: '克隆工作流',
   teams: '授权团队',
   teams_tip: '限定哪些团队成员可以查看和修改此配置，可以关联多个团队<br />例如：将配置授权给 infra-team，则只有 infra-team 团队下的成员可以访问或调整本配置。',
   basic_configuration: '基本配置',
@@ -18,6 +18,7 @@ const zh_CN = {
     group_name: '业务组',
     cluster: '数据源',
     is_recovered: '是恢复事件？',
+    severity: '告警分级',
   },
   use_case: {
     label: '用途',
@@ -36,8 +37,8 @@ const zh_CN = {
     true: '已禁用',
   },
   inputs: {
-    label: '前置输入',
-    help: '前置输入变量可在工作流处理器中通过 {{$inputs.变量名}} 引用',
+    label: '前置变量',
+    help: '前置变量可在下面处理器中通过 {{$inputs.变量名}} 引用，比如可以设置 ident 变量，在处理器中，通过 {{$inputs.ident}} 的方式引用，指定脚本执行的机器。',
     add_btn: '添加变量',
     key: '变量名',
     key_required: '变量名不能为空',
@@ -258,6 +259,7 @@ const zh_CN = {
     select_alert_event_label: '已选告警样例事件',
     query_required: '查询条件不能为空',
     sql_limit_valid: 'SQL 查询语句必须包含 LIMIT 子句',
+    oracle_sql_limit_valid: 'SQL 查询语句必须包含 ROWNUM 子句',
     annotation_configs: '数据追加',
     annotation_configs_tip: '配置 Key/Value 将数据查询结果，添加到告警信息中',
     annotation_key_tip: '定义新增字段 Key, 建议使用英文字母命名',

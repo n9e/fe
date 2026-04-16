@@ -8,6 +8,9 @@ import { useRequest } from 'ahooks';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
 import PromQLInputNG from '@/components/PromQLInputNG';
+import AiChat, { AiChatProvider, IAiChatMessage, IAiChatMessageResponse, useAiChatContext } from '@/components/AiChatNG';
+import AiIcon from '@/components/AiChatNG/AiIcon';
+import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import CronPattern from '@/components/CronPattern';
@@ -27,11 +30,57 @@ function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }
 
 const goListPath = '/recording-rules';
 
-const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
+function AiChatSidebar({ form }: { form: any }) {
+  const { visible, datasourceCate, datasourceValue, callbackParams, closeAiChat } = useAiChatContext();
+
+  if (!visible) {
+    return null;
+  }
+
+  return (
+    <div className='ml-4 w-[420px] flex-shrink-0 bg-fc-100 fc-border h-full rounded-lg p-4'>
+      <AiChat
+        key={String(callbackParams?.openedAt ?? '')}
+        showClose
+        onClose={closeAiChat}
+        queryPageFrom={{
+          page: 'record',
+        }}
+        queryAction={{
+          key: 'query_generator',
+          param: {
+            datasource_type: datasourceCate,
+            datasource_id: datasourceValue,
+          },
+        }}
+        promptList={['帮我生成一条 CPU 使用率查询', '解释当前查询语句', '给我一个 Prometheus 排障建议']}
+        customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
+          if (response.content_type === 'query') {
+            return (
+              <PromQLCard
+                response={response}
+                message={message}
+                onExecuteQuery={(promql) => {
+                  form.setFieldsValue({
+                    prom_ql: promql,
+                  });
+                }}
+              />
+            );
+          }
+          return null;
+        }}
+      />
+    </div>
+  );
+}
+
+const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
   const { t } = useTranslation('recordingRules');
   const history = useHistory(); // 创建的时候默认选中的值
   const [form] = Form.useForm();
   const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { openAiChat } = useAiChatContext();
 
   const addSubmit = () => {
     form.validateFields().then(async (values) => {
@@ -98,9 +147,9 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
   }, []);
 
   return (
-    <div>
-      <div className='fc-border p-4'>
-        <Form form={form} className='strategy-form' layout='vertical'>
+    <Form form={form} layout='vertical' className='h-full'>
+      <div className='flex h-full'>
+        <div className='flex-1 min-w-0 h-full best-looking-scroll bg-fc-100 fc-border rounded-lg p-4'>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true, message: t('group_id_required') }]}>
               <Select
@@ -133,18 +182,37 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
             <Form.Item noStyle shouldUpdate={(prevValues, curValues) => prevValues.datasource_ids !== curValues.datasource_ids}>
               {({ getFieldValue, validateFields }) => {
                 const datasourceIds = getFieldValue('datasource_ids');
+                const datasourceValue = getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus);
                 return (
-                  <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]}>
-                    <PromQLInputNG
-                      datasourceValue={getFirstDatasourceId(datasourceIds, groupedDatasourceList?.prometheus)}
-                      onChange={(val) => {
-                        if (val) {
-                          validateFields(['prom_ql']);
-                        }
-                      }}
-                      showBuiltinMetrics
-                    />
-                  </Form.Item>
+                  <div className='flex items-start gap-2'>
+                    <div className='min-w-0 flex-1'>
+                      <Form.Item label='PromQL' name='prom_ql' validateTrigger={['onBlur']} trigger='onChange' rules={[{ required: true }]}>
+                        <PromQLInputNG
+                          datasourceValue={datasourceValue}
+                          onChange={(val) => {
+                            if (val) {
+                              validateFields(['prom_ql']);
+                            }
+                          }}
+                          showBuiltinMetrics
+                        />
+                      </Form.Item>
+                    </div>
+                    <Form.Item label=' '>
+                      <Button
+                        icon={<AiIcon />}
+                        onClick={() => {
+                          openAiChat({
+                            datasourceCate: 'prometheus',
+                            datasourceValue,
+                            callbackParams: {
+                              openedAt: Date.now(),
+                            },
+                          });
+                        }}
+                      />
+                    </Form.Item>
+                  </div>
                 );
               }}
             </Form.Item>
@@ -187,10 +255,17 @@ const operateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
               </Button>
             </Form.Item>
           </Space>
-        </Form>
+        </div>
+        <AiChatSidebar form={form} />
       </div>
-    </div>
+    </Form>
   );
 };
 
-export default operateForm;
+export default function OperateFormWithAiChat(props: Props) {
+  return (
+    <AiChatProvider>
+      <OperateForm {...props} />
+    </AiChatProvider>
+  );
+}

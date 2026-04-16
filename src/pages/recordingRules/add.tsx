@@ -13,11 +13,13 @@ const StrategyAdd: React.FC = () => {
 
   return (
     <PageLayout title={t('title')} showBack>
-      <OperateForm
-        initialValues={{
-          group_id: businessGroup?.id,
-        }}
-      />
+      <div className='n9e h-full overflow-hidden'>
+        <OperateForm
+          initialValues={{
+            group_id: businessGroup?.id,
+          }}
+        />
+      </div>
     </PageLayout>
   );
 };

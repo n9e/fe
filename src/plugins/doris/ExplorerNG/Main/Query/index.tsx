@@ -4,6 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { useRequest, useGetState } from 'ahooks';
+import purify from 'dompurify';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -13,8 +14,9 @@ import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/
 import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
+import { getHighlightHtml } from '@/pages/logExplorer/utils/highlight/highlight_html';
 
-import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
+import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -62,7 +64,7 @@ export default function index(props: Props) {
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
-
+  const queryStrRef = useRef<string>('');
   const {
     tableSelector,
     indexData,
@@ -114,6 +116,8 @@ export default function index(props: Props) {
   const fixedRangeRef = useRef<boolean>(false);
   const loadTimeRef = useRef<number | null>(null);
 
+  type HighlightMap = Record<string, string[]>;
+
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field && queryValues.range) {
@@ -130,7 +134,7 @@ export default function index(props: Props) {
       }
       rangeRef.current = timeParams;
       const queryStart = Date.now();
-      return getDorisLogsQuery({
+      const reqData = {
         cate: DatasourceCateEnum.doris,
         datasource_id: datasourceValue,
         query: [
@@ -146,15 +150,18 @@ export default function index(props: Props) {
             offset: (serviceParams.current - 1) * serviceParams.pageSize,
             reverse: serviceParams.reverse,
             default_field: defaultSearchField,
+            highlight: true,
           },
         ],
-      })
+      };
+      queryStrRef.current = JSON.stringify(reqData);
+      return getDorisLogsQuery(reqData)
         .then((res) => {
           if (fixedRangeRef.current === false) {
             loadTimeRef.current = Date.now() - queryStart;
           }
           const newLogs = _.map(res.list, (item) => {
-            const normalizedItem = normalizeLogStructures(item);
+            const normalizedItem = normalizeLogStructures(_.omit(item, [HIGHLIGHT_FIELD]));
             return {
               ...(flatten(normalizedItem) || {}),
               ___raw___: normalizedItem,
@@ -163,22 +170,26 @@ export default function index(props: Props) {
           });
           if (appendRef.current) {
             appendRef.current = false;
+            const nextHighlights: HighlightMap[] = _.map(res.list, (item) => item[HIGHLIGHT_FIELD] || {});
             return {
               list: _.concat(data?.list, newLogs),
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(_.concat(data?.list, newLogs)),
+              highlights: _.concat(data?.highlights || [], nextHighlights),
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
               scrollToTop(tableSelector.antd, tableSelector.rgd);
             }
             appendRef.current = false;
+            const nextHighlights: HighlightMap[] = _.map(res.list, (item) => item[HIGHLIGHT_FIELD] || {});
             return {
               list: newLogs,
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs),
+              highlights: nextHighlights,
             };
           }
         })
@@ -205,12 +216,14 @@ export default function index(props: Props) {
     data,
     loading,
     run: fetchLogs,
+    mutate: setData,
   } = useRequest<
     {
       list: { [index: string]: string }[];
       total: number;
       hash: string;
       colWidths?: { [key: string]: number };
+      highlights?: HighlightMap[];
     },
     any
   >(service, {
@@ -266,7 +279,11 @@ export default function index(props: Props) {
     }
   };
 
-  const { data: histogramData, loading: histogramLoading } = useRequest<
+  const {
+    data: histogramData,
+    loading: histogramLoading,
+    mutate: setHistogramData,
+  } = useRequest<
     {
       data: any[];
       hash: string;
@@ -310,12 +327,22 @@ export default function index(props: Props) {
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
+              logClusting={{
+                enabled: true,
+                queryStrRef,
+                logTotal: data?.total || 0,
+                cate: DatasourceCateEnum.doris,
+                datasourceValue: datasourceValue,
+                fieldCacheKey: queryValues?.database + queryValues?.table,
+              }}
+              enableLogTextSelectMenu
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
               histogram={histogramData?.data || []}
               histogramHash={histogramData?.hash}
               loading={loading}
               logs={data?.list || []}
+              highlights={data?.highlights || []}
               logsHash={data?.hash}
               fields={_.map(indexData, 'field')}
               options={options}
@@ -392,6 +419,7 @@ export default function index(props: Props) {
                   )}
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
+                      showQuickJumper
                       size='small'
                       total={data?.total}
                       current={serviceParams.current}
@@ -522,6 +550,15 @@ export default function index(props: Props) {
                   b: (
                     <a
                       onClick={() => {
+                        setData({
+                          list: [],
+                          total: 0,
+                          hash: _.uniqueId('logs_'),
+                        });
+                        setHistogramData({
+                          data: [],
+                          hash: _.uniqueId('histogram_'),
+                        });
                         executeQuery();
                       }}
                     />

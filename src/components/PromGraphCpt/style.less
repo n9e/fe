@@ -11,6 +11,7 @@
 
   .ant-tabs-nav-wrap {
     border-left: 1px solid @border-color;
+    border-top-left-radius: var(--fc-border-radius-base) !important;
   }
 
   .ant-tabs-card>.ant-tabs-nav .ant-tabs-tab {
@@ -37,6 +38,8 @@
     border: 1px solid @border-color;
     border-top: 0 none;
     padding: 16px;
+    border-bottom-left-radius: var(--fc-border-radius-base) !important;
+    border-bottom-right-radius: var(--fc-border-radius-base) !important;
   }
 
   .ant-tabs-top>.ant-tabs-nav::before {
@@ -73,7 +76,8 @@
     padding-bottom: 16px;
 
     .ant-picker {
-      border-radius: unset
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
     }
   }
 
