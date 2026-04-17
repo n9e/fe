@@ -61,7 +61,9 @@ export default function StatsCards(props: Props) {
                       <Col span={12}>
                         <div className='rounded-lg bg-fc-50 h-[66px] flex items-center p-3'>
                           <div className='flex-1 min-w-0'>
-                            <div className='truncate'>{t('alive_count')}</div>
+                            <div className='truncate' title={t('alive_count')}>
+                              {t('alive_count')}
+                            </div>
                             <div className='font-bold text-title'>{numberToLocaleString(stats?.alive_count)}</div>
                           </div>
                           <svg width='48' height='48' viewBox='0 0 50 50' className='flex-shrink-0'>
@@ -88,7 +90,9 @@ export default function StatsCards(props: Props) {
                       <Col span={12}>
                         <div className='rounded-lg bg-fc-50 h-[66px] flex items-center p-3'>
                           <div className='flex-1 min-w-0'>
-                            <div className='truncate'>{t('dead_count')}</div>
+                            <div className='truncate' title={t('dead_count')}>
+                              {t('dead_count')}
+                            </div>
                             <div className='font-bold text-title'>{numberToLocaleString(stats?.dead_count)}</div>
                           </div>
                           <svg width='48' height='48' viewBox='0 0 50 50' className='flex-shrink-0'>
