@@ -125,7 +125,7 @@ function SectionHeader(props: { section: NonNullable<IMenuItem['section']>; coll
   return (
     <div
       className={cn(
-        'select-none px-3.5 pt-4 pb-1 text-[10px] font-normal uppercase tracking-[0.12em]',
+        'select-none px-3.5 pt-4 pb-1 text-[11px] font-normal uppercase tracking-[0.12em]',
         !isFirst && 'mt-6',
         isCustomBg ? 'text-[#e6e6e8]/55' : 'text-[var(--fc-sidemenu-section-title)]',
       )}
