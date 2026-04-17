@@ -15,3 +15,4 @@ build.sh
 scripts/all_locales.json
 src/plus
 public/bound
+.worktrees/
