@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import * as d3 from 'd3';
 import semver from 'semver';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -23,18 +22,6 @@ interface VersionsDistributionChartProps {
   renderTooltip?: (bar: BarItem) => React.ReactNode;
 }
 
-const RIGHT_PADDING = 0;
-const TOP_PADDING = 8;
-const BOTTOM_PADDING = 6;
-const BAR_GAP = 4;
-const CAP_HEIGHT = 4;
-const MIN_BAR_WIDTH = 10;
-const MAX_BAR_WIDTH = 40;
-const TICK_COUNT = 4;
-const TICK_FONT_SIZE = 12;
-const LABEL_CHAR_WIDTH = 6;
-const LABEL_AXIS_GAP = 4;
-const LABEL_EDGE_GAP = 4;
 const COLORS = [
   'rgb(95, 208, 128)',
   'rgb(87, 209, 165)',
@@ -51,20 +38,36 @@ const COLORS = [
   'rgb(40, 204, 145)',
 ];
 
+const MAX_VISIBLE_SLICES = 10;
+const START_ANGLE = -90;
+
+function polarToCartesian(cx: number, cy: number, radius: number, angle: number) {
+  const radian = (angle * Math.PI) / 180;
+  return {
+    x: cx + radius * Math.cos(radian),
+    y: cy + radius * Math.sin(radian),
+  };
+}
+
+function describeSector(cx: number, cy: number, radius: number, startAngle: number, endAngle: number) {
+  const angleDelta = endAngle - startAngle;
+  if (angleDelta >= 359.999) {
+    return `M ${cx} ${cy} m 0 ${-radius} a ${radius} ${radius} 0 1 1 0 ${radius * 2} a ${radius} ${radius} 0 1 1 0 ${-radius * 2} Z`;
+  }
+
+  const start = polarToCartesian(cx, cy, radius, startAngle);
+  const end = polarToCartesian(cx, cy, radius, endAngle);
+  const largeArcFlag = angleDelta > 180 ? 1 : 0;
+
+  return `M ${cx} ${cy} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y} Z`;
+}
+
 function sortVersionKeys(keys: string[]): string[] {
-  const withCoerced = keys.map((k) => ({ key: k, coerced: semver.coerce(k) }));
+  const withCoerced = keys.map((key) => ({ key, coerced: semver.coerce(key) }));
   const valid = withCoerced.filter((item) => item.coerced !== null);
   const invalid = withCoerced.filter((item) => item.coerced === null).map((item) => item.key);
   valid.sort((a, b) => semver.rcompare(a.coerced!, b.coerced!));
   return [...valid.map((item) => item.key), ...invalid];
-}
-
-function formatTickLabel(tick: number): string {
-  if (tick >= 1000) {
-    const k = tick / 1000;
-    return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}k`;
-  }
-  return String(tick);
 }
 
 export default function VersionsDistributionChart({ data, renderTooltip }: VersionsDistributionChartProps) {
@@ -72,40 +75,108 @@ export default function VersionsDistributionChart({ data, renderTooltip }: Versi
   const { darkMode } = useContext(CommonStateContext);
   const containerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 400, height: 120 });
+  const [size, setSize] = useState({ width: 400, height: 104 });
   const [hoveredBar, setHoveredBar] = useState<BarItem | null>(null);
 
+  const bars = useMemo(() => {
+    if (!data || Object.keys(data).length === 0) {
+      return [] as BarItem[];
+    }
+
+    const sortedKeys = sortVersionKeys(Object.keys(data));
+    const total = sortedKeys.reduce((sum, key) => sum + (data[key] ?? 0), 0) || 1;
+    const allBars: BarItem[] = sortedKeys.map((key, index) => ({
+      label: key,
+      value: data[key] ?? 0,
+      percent: (((data[key] ?? 0) / total) * 100).toFixed(2) + '%',
+      color: COLORS[index % COLORS.length],
+    }));
+
+    if (allBars.length <= MAX_VISIBLE_SLICES) {
+      return allBars.filter((item) => item.value > 0);
+    }
+
+    const visibleBars = allBars.slice(0, MAX_VISIBLE_SLICES - 1);
+    const hiddenBars = allBars.slice(MAX_VISIBLE_SLICES - 1);
+    const otherValue = hiddenBars.reduce((sum, item) => sum + item.value, 0);
+
+    return [
+      ...visibleBars,
+      {
+        label: t('other_versions'),
+        value: otherValue,
+        percent: ((otherValue / total) * 100).toFixed(2) + '%',
+        color: COLORS[(MAX_VISIBLE_SLICES - 1) % COLORS.length],
+        otherVersions: hiddenBars,
+      },
+    ].filter((item) => item.value > 0);
+  }, [data, t]);
+
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      return;
+    }
     const observer = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
-      setSize({ width: Math.max(width, 1), height: Math.max(height, 1) });
+      setSize({
+        width: Math.max(1, Math.floor(width)),
+        height: Math.max(1, Math.floor(height)),
+      });
     });
+
     observer.observe(containerRef.current);
-    return () => observer.disconnect();
+
+    return () => {
+      observer.disconnect();
+      if (tooltipRef.current) {
+        tooltipRef.current.style.display = 'none';
+      }
+      setHoveredBar(null);
+    };
   }, []);
 
-  const positionTooltip = (e: React.MouseEvent) => {
+  const moveTooltip = (clientX: number, clientY: number) => {
     if (!tooltipRef.current) return;
     tooltipRef.current.style.display = 'block';
-    (window as any).placement?.(tooltipRef.current, { left: e.clientX + 8, top: e.clientY + 16 }, 'bottom', 'start', { bound: document.body });
+    (window as any).placement?.(tooltipRef.current, { left: clientX + 8, top: clientY + 16 }, 'bottom', 'start', { bound: document.body });
   };
 
-  const handleBarMouseEnter = (bar: BarItem, e: React.MouseEvent) => {
+  const handleSliceMouseEnter = (bar: BarItem, event: React.MouseEvent<SVGPathElement>) => {
     setHoveredBar(bar);
-    positionTooltip(e);
+    moveTooltip(event.clientX, event.clientY);
   };
 
-  const handleBarMouseMove = (e: React.MouseEvent) => {
-    positionTooltip(e);
+  const handleSliceMouseMove = (event: React.MouseEvent<SVGPathElement>) => {
+    moveTooltip(event.clientX, event.clientY);
   };
 
-  const handleSvgMouseLeave = () => {
+  const handleMouseLeave = () => {
     setHoveredBar(null);
-    if (tooltipRef.current) tooltipRef.current.style.display = 'none';
+    if (tooltipRef.current) {
+      tooltipRef.current.style.display = 'none';
+    }
   };
 
-  if (!data || Object.keys(data).length === 0) {
+  const total = bars.reduce((sum, item) => sum + item.value, 0) || 1;
+  const svgWidth = Math.max(1, size.width);
+  const svgHeight = Math.max(1, size.height);
+  const radius = Math.max(0, Math.min(svgWidth, svgHeight) / 2 - 4);
+  const centerX = svgWidth / 2;
+  const centerY = svgHeight / 2;
+  let currentAngle = START_ANGLE;
+
+  const slices = bars.map((bar) => {
+    const angle = (bar.value / total) * 360;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + angle;
+    currentAngle = endAngle;
+    return {
+      ...bar,
+      path: describeSector(centerX, centerY, radius, startAngle, endAngle),
+    };
+  });
+
+  if (!bars.length) {
     return (
       <div className='relative w-full h-full'>
         <div ref={containerRef} className='absolute inset-0 flex justify-center items-center'>
@@ -115,96 +186,24 @@ export default function VersionsDistributionChart({ data, renderTooltip }: Versi
     );
   }
 
-  const svgWidth = size.width;
-  const svgHeight = size.height;
-  const barAreaHeight = svgHeight - TOP_PADDING - BOTTOM_PADDING;
-
-  const sortedKeys = sortVersionKeys(Object.keys(data));
-  const total = sortedKeys.reduce((sum, k) => sum + (data[k] ?? 0), 0) || 1;
-  const allBars: BarItem[] = sortedKeys.map((k, i) => ({
-    label: k,
-    value: data[k] ?? 0,
-    percent: (((data[k] ?? 0) / total) * 100).toFixed(2) + '%',
-    color: COLORS[i % COLORS.length],
-  }));
-
-  const roughMax = Math.max(...allBars.map((b) => b.value), 1);
-  const roughTicks = d3.scaleLinear().domain([0, roughMax]).range([barAreaHeight, 0]).nice().ticks(TICK_COUNT);
-  const leftMargin = LABEL_EDGE_GAP + Math.max(...roughTicks.map((t) => formatTickLabel(t).length), 1) * LABEL_CHAR_WIDTH + LABEL_AXIS_GAP;
-
-  const availableWidth = Math.max(0, Math.floor(svgWidth - leftMargin - RIGHT_PADDING));
-  const maxBars = Math.max(1, Math.floor((availableWidth + BAR_GAP) / (MIN_BAR_WIDTH + BAR_GAP)));
-
-  let bars: BarItem[];
-  if (allBars.length > maxBars) {
-    const visible = allBars.slice(0, maxBars - 1);
-    const hiddenBars = allBars.slice(maxBars - 1);
-    const otherValue = hiddenBars.reduce((sum, b) => sum + b.value, 0);
-    bars = [
-      ...visible,
-      {
-        label: t('other_versions'),
-        value: otherValue,
-        percent: ((otherValue / total) * 100).toFixed(2) + '%',
-        color: COLORS[(maxBars - 1) % COLORS.length],
-        otherVersions: hiddenBars,
-      },
-    ];
-  } else {
-    bars = allBars;
-  }
-
-  const n = bars.length;
-  const rawBarWidth = Math.floor((availableWidth - (n - 1) * BAR_GAP) / n);
-  const barWidth = Math.min(MAX_BAR_WIDTH, Math.max(MIN_BAR_WIDTH, rawBarWidth));
-  const totalBarsWidth = n * barWidth + (n - 1) * BAR_GAP;
-  const barsStartX = Math.round(leftMargin + (availableWidth - totalBarsWidth) / 2);
-
-  const maxValue = Math.max(...bars.map((b) => b.value), 1);
-  const yScale = d3.scaleLinear().domain([0, maxValue]).range([barAreaHeight, 0]).nice();
-  const ticks = yScale.ticks(TICK_COUNT);
-  const baselineY = Math.round(TOP_PADDING + (yScale(0) as number));
-  const plotRightX = Math.round(svgWidth - RIGHT_PADDING);
-
   return (
     <div className='relative w-full h-full'>
       <div ref={containerRef} className='absolute inset-0 overflow-hidden'>
-        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width={svgWidth} height={svgHeight} onMouseLeave={handleSvgMouseLeave}>
-          <g>
-            {ticks.map((tick) => {
-              const y = Math.round(TOP_PADDING + (yScale(tick) as number));
-              return (
-                <g key={tick}>
-                  <line x1={leftMargin} y1={y} x2={plotRightX} y2={y} style={{ stroke: darkMode ? 'var(--fc-fill-6)' : 'var(--fc-fill-3)', strokeWidth: 1 }} />
-                  <text x={leftMargin - LABEL_AXIS_GAP} y={y + TICK_FONT_SIZE / 2 - 1} textAnchor='end' style={{ fontSize: TICK_FONT_SIZE, fill: 'var(--fc-text-4)' }}>
-                    {formatTickLabel(tick)}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
-
-          <g>
-            {bars.map((bar, i) => {
-              if (bar.value === 0) return null;
-              const x = Math.round(barsStartX + i * (barWidth + BAR_GAP));
-              const capY = Math.round(TOP_PADDING + (yScale(bar.value) as number));
-              const totalBarH = Math.max(1, baselineY - capY);
-              const capH = Math.min(CAP_HEIGHT, totalBarH);
-              const bodyH = Math.max(0, totalBarH - capH);
-              const bodyY = capY + capH;
-              const isHovered = hoveredBar?.label === bar.label;
-              const { color } = bar;
-
-              return (
-                <g key={bar.label} style={{ cursor: renderTooltip ? 'pointer' : 'default' }} onMouseEnter={(e) => handleBarMouseEnter(bar, e)} onMouseMove={handleBarMouseMove}>
-                  <rect x={x} y={capY} width={barWidth} height={capH} style={{ fill: color }} />
-                  {bodyH > 0 && <rect x={x} y={bodyY} width={barWidth} height={bodyH} style={{ fill: color, fillOpacity: 0.5 }} />}
-                  {isHovered && totalBarH > 0 && <rect x={x} y={capY} width={barWidth} height={totalBarH} fill='white' fillOpacity={0.15} style={{ pointerEvents: 'none' }} />}
-                </g>
-              );
-            })}
-          </g>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width={svgWidth} height={svgHeight} onMouseLeave={handleMouseLeave}>
+          {slices.map((slice) => {
+            const isHovered = hoveredBar?.label === slice.label;
+            return (
+              <path
+                key={slice.label}
+                d={slice.path}
+                fill={slice.color}
+                opacity={isHovered ? 0.72 : 1}
+                style={{ cursor: renderTooltip ? 'pointer' : 'default' }}
+                onMouseEnter={(event) => handleSliceMouseEnter(slice, event)}
+                onMouseMove={handleSliceMouseMove}
+              />
+            );
+          })}
         </svg>
       </div>
       {ReactDOM.createPortal(

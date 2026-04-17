@@ -34,13 +34,21 @@ export default function UsageDistributionChart({ data }: UsageDistributionChartP
   }
 
   const KEYS = ['-1', '20', '40', '60', '80', '100'];
-  const COLORS: Record<string, string> = {
-    '-1': 'rgba(123, 119, 141, 0.8)', // 强制写死的颜色，code review 时忽略该问题
+  const CAP_COLORS: Record<string, string> = {
+    '-1': 'rgb(123, 119, 141)', // 强制写死的颜色，code review 时忽略该问题
     '20': 'var(--fc-fill-success)',
     '40': 'var(--fc-fill-success)',
     '60': 'var(--fc-fill-success)',
     '80': 'var(--fc-fill-alert)',
     '100': 'var(--fc-fill-error)',
+  };
+  const BODY_OPACITY: Record<string, number> = {
+    '-1': 0.3,
+    '20': 0.4,
+    '40': 0.4,
+    '60': 0.4,
+    '80': 0.4,
+    '100': 0.4,
   };
 
   const values = KEYS.map((k) => data?.[k] ?? 0);
@@ -58,13 +66,10 @@ export default function UsageDistributionChart({ data }: UsageDistributionChartP
   const bottomPadding = 19;
   const barAreaBottom = Math.max(0, svgHeight - bottomPadding);
   const capHeight = 4;
-  const capGap = 2;
+  const capGap = 0;
   const textSpace = 14;
-  const stripeHeightUnit = 2;
-  const stripeGap = 2;
   const minPlaceholderHeight = 2;
-  const maxStripeHeight = Math.max(0, barAreaBottom - textSpace - capHeight - capGap);
-  const maxStripeCount = Math.max(1, Math.floor((maxStripeHeight + stripeGap) / (stripeHeightUnit + stripeGap)));
+  const maxBarBodyHeight = Math.max(0, barAreaBottom - textSpace - capHeight - capGap);
 
   return (
     <div ref={containerRef} className='w-full h-full'>
@@ -72,30 +77,20 @@ export default function UsageDistributionChart({ data }: UsageDistributionChartP
         {KEYS.map((key, i) => {
           const value = values[i];
           const x = startX + i * (barWidth + barGap);
-          const color = COLORS[key];
+          const color = CAP_COLORS[key];
           const hasValue = value > 0;
-          // 条纹高度按 2px 条纹 + 2px 间隔离散计算，保证每条修饰条完整且间距固定
-          const targetStripeHeight = hasValue && maxStripeHeight > 0 ? (value / maxValue) * maxStripeHeight : minPlaceholderHeight;
-          const stripeCount = hasValue ? Math.max(1, Math.min(maxStripeCount, Math.round((targetStripeHeight + stripeGap) / (stripeHeightUnit + stripeGap)))) : 1;
-          const stripeHeight = stripeCount * (stripeHeightUnit + stripeGap) - stripeGap;
-          const stripeTop = barAreaBottom - stripeHeight;
-          const capY = stripeTop - capGap - capHeight;
-          const textY = hasValue ? capY - 3 : stripeTop - 3;
-
-          // 从底部向上逐条绘制完整条纹，保证底部贴齐且条纹之间固定相隔 2px
-          const stripeRects: React.ReactNode[] = [];
-          for (let stripeIndex = 0; stripeIndex < stripeCount; stripeIndex += 1) {
-            const sy = barAreaBottom - stripeHeightUnit - stripeIndex * (stripeHeightUnit + stripeGap);
-            stripeRects.push(<rect key={sy} x={x} y={sy} width={barWidth} height={stripeHeightUnit} fill={color} opacity={0.5} />);
-          }
+          const bodyHeight = hasValue && maxBarBodyHeight > 0 ? Math.max(minPlaceholderHeight, (value / maxValue) * maxBarBodyHeight) : minPlaceholderHeight;
+          const bodyTop = barAreaBottom - bodyHeight;
+          const capY = bodyTop - capGap - capHeight;
+          const textY = hasValue ? capY - 3 : bodyTop - 3;
 
           return (
             <g key={key}>
               <text x={x + barWidth / 2} y={textY} textAnchor='middle' fontSize='11' fontWeight='bold' fill='var(--fc-text-1)'>
                 {numberToLocaleString(value)}
               </text>
+              <rect x={x} y={bodyTop} width={barWidth} height={bodyHeight} fill={color} opacity={BODY_OPACITY[key]} />
               {hasValue && <rect x={x} y={capY} width={barWidth} height={capHeight} fill={color} />}
-              {stripeRects}
             </g>
           );
         })}
