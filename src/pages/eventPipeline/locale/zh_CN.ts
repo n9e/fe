@@ -96,6 +96,7 @@ const zh_CN = {
       ai_summary: 'AI 摘要生成',
       script: '脚本执行',
       event_recover: '故障自愈',
+      alert_shot: '告警截图',
     },
   },
   label_enrich: {
@@ -289,6 +290,33 @@ const zh_CN = {
     timeout_tip: '若脚本无法再等待时间内执行完，则不会等待结果获取',
     timeout_max_warning: '等待执行时间不能超过 60 秒',
     select_host: '筛选机器',
+  },
+  alert_shot: {
+    help: '<a>使用文档</a>',
+    title: '告警截图',
+    shot_type: {
+      label: '对象类型',
+      options: {
+        board: '仪表盘',
+        url: 'URL 地址',
+      },
+    },
+    advanced_settings: '高级设置',
+    board_shot_opts: {
+      busi_group: '业务组',
+      board_id: '仪表盘',
+      board_url: '仪表盘 URL',
+      timeout: '超时时间（毫秒）',
+      width: '图片宽度',
+    },
+    url_shot_opts: {
+      url: 'URL 地址',
+      headers: '请求头',
+      proxy: '代理设置',
+      insecure_skip_verify: '跳过证书校验',
+      timeout: '超时时间（毫秒）',
+      width: '图片宽度',
+    },
   },
 };
 export default zh_CN;

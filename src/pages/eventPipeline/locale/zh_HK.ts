@@ -96,6 +96,7 @@ const zh_HK = {
       inhibit_qd: '查詢數據抑制事件',
       annotation_qd: '事件附加信息豐富',
       event_recover: '故障自愈',
+      alert_shot: '告警截圖',
     },
   },
   label_enrich: {
@@ -268,6 +269,33 @@ const zh_HK = {
     timeout_tip: '若腳本無法在等待時間內執行完，則不會等待結果取得',
     timeout_max_warning: '等待執行時間不能超過 60 秒',
     select_host: '篩選機器',
+  },
+  alert_shot: {
+    help: '<a>使用文檔</a>',
+    title: '告警截圖',
+    shot_type: {
+      label: '對象類型',
+      options: {
+        board: '儀表盤',
+        url: 'URL 地址',
+      },
+    },
+    advanced_settings: '高級設置',
+    board_shot_opts: {
+      busi_group: '業務組',
+      board_id: '儀表盤',
+      board_url: '儀表盤 URL',
+      timeout: '超時時間（毫秒）',
+      width: '圖片寬度',
+    },
+    url_shot_opts: {
+      url: 'URL 地址',
+      headers: '請求頭',
+      proxy: '代理設置',
+      insecure_skip_verify: '跳過證書校驗',
+      timeout: '超時時間（毫秒）',
+      width: '圖片寬度',
+    },
   },
 };
 
