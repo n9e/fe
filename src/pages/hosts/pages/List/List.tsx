@@ -308,8 +308,7 @@ export default function List(props: Props) {
           rowClassName={(record) => {
             return classNames('group', {
               'n9e-hosts-ng-table-row-offline': record.target_up === 0,
-              'bg-fc-400/40': record.target_up === 0 && darkMode === true,
-              'bg-fc-400/20': record.target_up === 0 && darkMode === false,
+              'bg-fc-400/40': record.target_up === 0,
             });
           }}
           columns={[
@@ -380,7 +379,7 @@ export default function List(props: Props) {
                         ident={ident}
                         targetNode={
                           <span
-                            className={classNames('text-main text-l1 font-medium mb-[2px] cursor-pointer hover:underline hover:text-title', {
+                            className={classNames('text-main text-l1 font-semibold mb-[2px] cursor-pointer hover:underline hover:text-title', {
                               'text-soft': record.target_up === 0,
                             })}
                           >
