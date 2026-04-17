@@ -186,11 +186,11 @@ export const NOTIFICATION_CHANNEL_TYPES = {
       },
     },
   },
-  dingtalkapp: {
-    logo: '/image/logos/dingtalk.png',
-    type: 'dingtalkapp',
-    default_values: {},
-  },
+  // dingtalkapp: {
+  //   logo: '/image/logos/dingtalk.png',
+  //   type: 'dingtalkapp',
+  //   default_values: {},
+  // },
   wecom: {
     logo: '/image/logos/wecom.png',
     type: 'http',
@@ -235,11 +235,11 @@ export const NOTIFICATION_CHANNEL_TYPES = {
       },
     },
   },
-  wecomapp: {
-    logo: '/image/logos/wecom.png',
-    type: 'wecomapp',
-    default_values: {},
-  },
+  // wecomapp: {
+  //   logo: '/image/logos/wecom.png',
+  //   type: 'wecomapp',
+  //   default_values: {},
+  // },
   feishucard: {
     logo: '/image/logos/feishu.png',
     type: 'http',
@@ -332,10 +332,10 @@ export const NOTIFICATION_CHANNEL_TYPES = {
   //     },
   //   },
   // },
-  feishuapp: {
-    logo: '/image/logos/feishu.png',
-    type: 'feishuapp',
-  },
+  // feishuapp: {
+  //   logo: '/image/logos/feishu.png',
+  //   type: 'feishuapp',
+  // },
   larkcard: {
     logo: '/image/logos/feishu.png',
     type: 'http',
