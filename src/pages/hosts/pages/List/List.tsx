@@ -311,6 +311,15 @@ export default function List(props: Props) {
               'bg-fc-400/40': record.target_up === 0,
             });
           }}
+          onRow={(record) => {
+            if (record.target_up === 0) {
+              return {
+                title: t('host_no_heartbeat_tip'),
+              };
+            }
+
+            return {};
+          }}
           columns={[
             {
               dataIndex: 'ident',
@@ -417,20 +426,18 @@ export default function List(props: Props) {
                         </span>
                       )}
                       <Divider type='vertical' />
-                      <Tooltip title={metaTooltipTitle}>
-                        <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
-                          <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
-                          {record.os === '' ? (
-                            <span className='shrink-0'>-</span>
-                          ) : (
-                            <>
-                              <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
-                              <span className='min-w-0 shrink truncate'>{record.os}</span>
-                            </>
-                          )}
-                          <span className='min-w-0 shrink truncate'>{archDisplay}</span>
-                        </div>
-                      </Tooltip>
+                      <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
+                        <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
+                        {record.os === '' ? (
+                          <span className='shrink-0'>-</span>
+                        ) : (
+                          <>
+                            <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
+                            <span className='min-w-0 shrink truncate'>{record.os}</span>
+                          </>
+                        )}
+                        <span className='min-w-0 shrink truncate'>{archDisplay}</span>
+                      </div>
                       <Divider type='vertical' />
                       <div
                         className={classNames('flex items-center justify-center gap-1 py-1 px-2 rounded-[4px]', {

@@ -16,6 +16,7 @@ const zh_CN = {
   cores: 'Cores',
   tags_popover_title: '{{count}} 个标签',
   view_collects: '查看关联采集配置',
+  host_no_heartbeat_tip: '机器无心跳',
 
   ident: '标识',
   host_tags: '上报的标签',
