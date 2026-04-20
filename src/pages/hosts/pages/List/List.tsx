@@ -47,9 +47,20 @@ function isHostIpLikelyIpv6(hostIp: string): boolean {
   return hostIp.trim().includes(':');
 }
 
-function Unknown() {
+function Unknown({ record }: { record: Item }) {
   const { t } = useTranslation(NS);
-  return <Tooltip title={t('unknown_tip')}>Unknown</Tooltip>;
+  return (
+    <Tooltip title={t('unknown_tip')}>
+      <span
+        className={classNames({
+          'text-soft': record.target_up === 0,
+          'text-title': record.target_up !== 0,
+        })}
+      >
+        Unknown
+      </span>
+    </Tooltip>
+  );
 }
 
 function getStrokeColor(val: number) {
@@ -86,6 +97,7 @@ interface Props {
 
 export default function List(props: Props) {
   const { t, i18n } = useTranslation(NS);
+  const { t: tTargets } = useTranslation('targets');
   const { darkMode } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'hosts-ng' });
 
@@ -94,6 +106,8 @@ export default function List(props: Props) {
 
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
+  const [metaDrawerOpen, setMetaDrawerOpen] = useState(false);
+  const [metaDrawerIdent, setMetaDrawerIdent] = useState('');
 
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
@@ -268,6 +282,21 @@ export default function List(props: Props) {
           size='small'
           tableLayout='auto'
           scroll={{ x: tableProps.dataSource.length > 0 ? 'max-content' : undefined, y: 'calc(100% - 38px)' }}
+          onRow={(record) => ({
+            className: 'group cursor-pointer',
+            onClick: (e) => {
+              const el = e.target as HTMLElement;
+              if (
+                el.closest(
+                  'button, a[href], input, textarea, select, label.ant-checkbox-wrapper, .ant-checkbox-wrapper, .ant-dropdown, .ant-select, .ant-picker, .ant-table-selection-column',
+                )
+              ) {
+                return;
+              }
+              setMetaDrawerIdent(record.ident);
+              setMetaDrawerOpen(true);
+            },
+          })}
           locale={{
             emptyText:
               gids === undefined ? (
@@ -304,21 +333,6 @@ export default function List(props: Props) {
             onChange(page, pageSize) {
               localStorage.setItem('targetsListPageSize', _.toString(pageSize));
             },
-          }}
-          rowClassName={(record) => {
-            return classNames('group', {
-              'n9e-hosts-ng-table-row-offline': record.target_up === 0,
-              'bg-fc-400/40': record.target_up === 0,
-            });
-          }}
-          onRow={(record) => {
-            if (record.target_up === 0) {
-              return {
-                title: t('host_no_heartbeat_tip'),
-              };
-            }
-
-            return {};
           }}
           columns={[
             {
@@ -384,31 +398,27 @@ export default function List(props: Props) {
                 return (
                   <div>
                     <div className='flex items-center'>
-                      <TargetMetaDrawer
-                        ident={ident}
-                        targetNode={
-                          <span
-                            className={classNames('text-main text-l1 font-semibold mb-[2px] cursor-pointer hover:underline hover:text-title', {
-                              'text-soft': record.target_up === 0,
-                            })}
-                          >
-                            {ident}
-                          </span>
-                        }
-                      />
+                      <Tooltip title={tTargets('meta_tip')} placement='left'>
+                        <span
+                          className={classNames('mb-[2px]', {
+                            'text-soft': record.target_up === 0,
+                            'text-title': record.target_up !== 0,
+                          })}
+                        >
+                          {ident}
+                        </span>
+                      </Tooltip>
                       {IS_PLUS && (
                         <Tooltip title={t('view_collects')}>
                           <Button
                             className='ml-2 invisible group-hover:visible'
                             size='small'
-                            icon={
-                              <ApartmentOutlined
-                                onClick={() => {
-                                  setCollectsDrawerVisible(true);
-                                  setCollectsDrawerIdent(ident);
-                                }}
-                              />
-                            }
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCollectsDrawerVisible(true);
+                              setCollectsDrawerIdent(ident);
+                            }}
+                            icon={<ApartmentOutlined />}
                           />
                         </Tooltip>
                       )}
@@ -416,41 +426,82 @@ export default function List(props: Props) {
                     <Space size={4} className='flex flex-wrap items-center'>
                       {record.host_ip ? (
                         <Tooltip title={ipDisplay}>
-                          <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
+                          <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
                             {ipDisplay}
                           </span>
                         </Tooltip>
                       ) : (
-                        <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
+                        <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
                           {ipDisplay}
                         </span>
                       )}
                       <Divider type='vertical' />
-                      <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
-                        <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
-                        {record.os === '' ? (
-                          <span className='shrink-0'>-</span>
-                        ) : (
-                          <>
-                            <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
-                            <span className='min-w-0 shrink truncate'>{record.os}</span>
-                          </>
-                        )}
-                        <span className='min-w-0 shrink truncate'>{archDisplay}</span>
-                      </div>
-                      <Divider type='vertical' />
-                      <div
-                        className={classNames('flex items-center justify-center gap-1 py-1 px-2 rounded-[4px]', {
-                          'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
-                          'bg-alert/10': record.agent_version === '' || record.agent_version === null,
-                          'text-alert': record.agent_version === '' || record.agent_version === null,
-                          'text-soft': record.target_up === 0,
-                        })}
-                      >
-                        <VersionIcon className='text-l2 leading-none flex' />
-                        <span className='leading-none'>{record.agent_version || 'Null'}</span>
-                      </div>
+                      <Tooltip title={metaTooltipTitle}>
+                        <div className='min-w-0 flex shrink items-center gap-1 text-soft' style={{ width: identMetaWidth }}>
+                          <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
+                          {record.os === '' ? (
+                            <span className='shrink-0'>-</span>
+                          ) : (
+                            <>
+                              <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
+                              <span className='min-w-0 shrink truncate'>{record.os}</span>
+                            </>
+                          )}
+                          <span className='min-w-0 shrink truncate'>{archDisplay}</span>
+                        </div>
+                      </Tooltip>
                     </Space>
+                  </div>
+                );
+              },
+            },
+            {
+              dataIndex: 'target_up',
+              title: t('status'),
+              render: (_val, record) => {
+                const isOnline = record.target_up !== 0;
+                const label = isOnline ? t('online') : t('offline');
+                const minWidth = getTextWidth(label) + 28; // 6 圆点 + 4 间距 + 16 内边距 + 容错
+                return (
+                  <div style={{ minWidth }}>
+                    <span
+                      className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
+                        'bg-success/10 text-success': isOnline,
+                        'bg-fc-200 text-soft': !isOnline,
+                      })}
+                    >
+                      <span
+                        className={classNames('h-2 w-2 shrink-0 rounded-full', {
+                          'bg-success': isOnline,
+                          'bg-fc-400': !isOnline,
+                        })}
+                      />
+                      <span className='leading-none'>{label}</span>
+                    </span>
+                  </div>
+                );
+              },
+            },
+            {
+              dataIndex: 'agent_version',
+              title: t('agent_version_title'),
+              render: (_val, record) => {
+                const display = record.agent_version || 'Null';
+                const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(display) + 36) + 8;
+                return (
+                  <div style={{ minWidth }}>
+                    <div
+                      className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2  leading-none', {
+                        'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
+                        'bg-alert/10': record.agent_version === '' || record.agent_version === null,
+                        'text-alert': record.agent_version === '' || record.agent_version === null,
+                        'text-soft': record.target_up === 0,
+                        'text-title': record.target_up !== 0,
+                      })}
+                    >
+                      <VersionIcon className='flex leading-none' />
+                      <span className='leading-none'>{display}</span>
+                    </div>
                   </div>
                 );
               },
@@ -465,7 +516,7 @@ export default function List(props: Props) {
                   </Tooltip>
                 </Space>
               ),
-              render: (tags: string[]) => {
+              render: (tags: string[], record: Item) => {
                 const minWidth = getTextWidth(t('common:host.host_tags')) + 24; // 12 的icon宽度 + 8 的间距 + 4 的容错
                 if (_.isEmpty(tags)) {
                   return <div style={{ minWidth }}>-</div>;
@@ -475,6 +526,7 @@ export default function List(props: Props) {
                     <Tags
                       type='outline'
                       data={tags}
+                      fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
                       onTagClick={(tag) => {
                         if (!_.includes(params.query, tag)) {
                           const val = params.query ? `${params.query.trim()} ${tag}` : tag;
@@ -497,7 +549,7 @@ export default function List(props: Props) {
                   </Tooltip>
                 </Space>
               ),
-              render: (tags: string[]) => {
+              render: (tags: string[], record: Item) => {
                 const minWidth = getTextWidth(t('common:host.tags')) + 24;
                 if (_.isEmpty(tags)) {
                   return <div style={{ minWidth }}>-</div>;
@@ -507,6 +559,7 @@ export default function List(props: Props) {
                     <Tags
                       type='outline'
                       data={tags}
+                      fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
                       onTagClick={(tag) => {
                         if (!_.includes(params.query, tag)) {
                           const val = params.query ? `${params.query.trim()} ${tag}` : tag;
@@ -530,7 +583,7 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
+                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'} />
                   </div>
                 );
               },
@@ -548,7 +601,7 @@ export default function List(props: Props) {
                 if (record.cpu_num === -1 || !_.isNumber(val)) {
                   return (
                     <div style={{ minWidth }}>
-                      <Unknown />
+                      <Unknown record={record} />
                     </div>
                   );
                 }
@@ -561,8 +614,9 @@ export default function List(props: Props) {
                 const absoluteTitle = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
                 const textBlock = (
                   <div
-                    className={classNames('text-main', {
+                    className={classNames({
                       'text-soft': record.target_up === 0,
+                      'text-title': record.target_up !== 0,
                     })}
                   >
                     {display.kind === 'relative' ? (
@@ -593,15 +647,16 @@ export default function List(props: Props) {
                 if (record.cpu_num === -1 || !_.isNumber(val)) {
                   return (
                     <div style={{ minWidth }}>
-                      <Unknown />
+                      <Unknown record={record} />
                     </div>
                   );
                 }
                 return (
                   <div style={{ minWidth }} className='w-[90px] leading-none'>
                     <div
-                      className={classNames('text-main leading-[18px]', {
+                      className={classNames('leading-[18px]', {
                         'text-soft': record.target_up === 0,
+                        'text-title': record.target_up !== 0,
                       })}
                     >
                       {val.toFixed(1)} %
@@ -619,15 +674,16 @@ export default function List(props: Props) {
                 if (record.cpu_num === -1 || !_.isNumber(val)) {
                   return (
                     <div style={{ minWidth }}>
-                      <Unknown />
+                      <Unknown record={record} />
                     </div>
                   );
                 }
                 return (
                   <div style={{ minWidth }} className='w-[90px] leading-none'>
                     <div
-                      className={classNames('text-main leading-[18px]', {
+                      className={classNames('leading-[18px]', {
                         'text-soft': record.target_up === 0,
+                        'text-title': record.target_up !== 0,
                       })}
                     >
                       {val.toFixed(1)} %
@@ -652,7 +708,7 @@ export default function List(props: Props) {
                 if (record.cpu_num === -1 || !_.isNumber(val)) {
                   return (
                     <div style={{ minWidth }}>
-                      <Unknown />
+                      <Unknown record={record} />
                     </div>
                   );
                 }
@@ -671,8 +727,9 @@ export default function List(props: Props) {
                     <Space size={8} align='start'>
                       <div className='w-[4px] h-[16px] rounded relative top-[2px]' style={{ backgroundColor }} />
                       <div
-                        className={classNames('text-main', {
+                        className={classNames({
                           'text-soft': record.target_up === 0,
+                          'text-title': record.target_up !== 0,
                         })}
                       >
                         {timeFormatter(val, 'milliseconds', 2)?.text}
@@ -692,9 +749,19 @@ export default function List(props: Props) {
                   </Tooltip>
                 </Space>
               ),
-              render: (val) => {
+              render: (val, record: Item) => {
                 const minWidth = getTextWidth(t('remote_addr')) + 24;
-                return <div style={{ minWidth }}>{val}</div>;
+                return (
+                  <div
+                    style={{ minWidth }}
+                    className={classNames({
+                      'text-soft': record.target_up === 0,
+                      'text-title': record.target_up !== 0,
+                    })}
+                  >
+                    {val}
+                  </div>
+                );
               },
             },
             {
@@ -721,6 +788,15 @@ export default function List(props: Props) {
           ]}
         />
       </div>
+      <TargetMetaDrawer
+        ident={metaDrawerIdent}
+        drawerOnly
+        drawerOpen={metaDrawerOpen}
+        onDrawerOpenChange={(open) => {
+          setMetaDrawerOpen(open);
+          if (!open) setMetaDrawerIdent('');
+        }}
+      />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
     </>
   );

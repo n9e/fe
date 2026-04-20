@@ -19,6 +19,10 @@ const en_US = {
   host_no_heartbeat_tip: 'Host no heartbeat',
 
   ident: 'Identifier',
+  agent_version_title: 'Agent version',
+  status: 'Status',
+  online: 'Online',
+  offline: 'Offline',
   host_tags: 'Reported Tags',
   tags: 'Custom Tags',
   group_objs: 'Business Groups',

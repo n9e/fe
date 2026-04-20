@@ -19,6 +19,10 @@ const ru_RU = {
   host_no_heartbeat_tip: 'Хост без heartbeat',
 
   ident: 'Идентификатор',
+  agent_version_title: 'Версия агента',
+  status: 'Статус',
+  online: 'Онлайн',
+  offline: 'Офлайн',
   host_tags: 'Отправленные теги',
   tags: 'Пользовательские теги',
   group_objs: 'Бизнес-группы',
