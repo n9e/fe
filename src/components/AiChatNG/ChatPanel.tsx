@@ -333,7 +333,7 @@ export default function ChatPanel(props: IAiChatProps) {
           </Spin>
         </div>
 
-        <div className='mt-4 rounded-lg border border-fc-200 bg-fc-50'>
+        <div className='mt-4 rounded-lg border border-fc-200'>
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 8 }}
             bordered={false}

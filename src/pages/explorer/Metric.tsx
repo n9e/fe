@@ -28,6 +28,7 @@ import Explorer from './Explorer';
 import './index.less';
 
 function MetricExplorerAiChatSidebar() {
+  const { t, i18n } = useTranslation();
   const { visible, datasourceCate, datasourceValue, callbackParams, closeAiChat } = useAiChatContext();
 
   if (!visible) {
@@ -50,7 +51,11 @@ function MetricExplorerAiChatSidebar() {
             datasource_id: datasourceValue,
           },
         }}
-        promptList={['帮我生成一条 CPU 使用率查询', '解释当前查询语句', '给我一个 Prometheus 排障建议']}
+        promptList={
+          i18n.language === 'zh_CN'
+            ? ['帮我生成一个查询主机 CPU 使用率的语句', '帮我生成一个查询机器内存使用率的语句', '帮我生成一个查询机器磁盘使用率的语句']
+            : ['Generate a query for host CPU usage', 'Generate a query for memory usage', 'Generate a query for host disk usage']
+        }
         customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
           if (response.content_type === 'query') {
             return (
