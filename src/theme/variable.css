@@ -68,8 +68,8 @@
   --fc-background-color-light: rgba(250, 250, 250, 1);
   --fc-card-border: #f0f0f0;
   --fc-border-radius-base: 8px;
-  
-  
+  --fc-menu-dark-bg: rgb(24, 27, 31);
+  --fc-menu-dark-sub-bg: var(--fc-menu-dark-bg);
 
   /* 浅色侧栏（Firemap 参考，组件内 isLight 时引用） */
   --fc-sidemenu-bg: rgb(247, 247, 248);
@@ -262,6 +262,8 @@
 
   --fc-fill-2-rgb: 22 22 24;
   --fc-fill-2: rgb(var(--fc-fill-2-rgb));
+  --fc-menu-dark-bg: var(--fc-fill-2);
+  --fc-menu-dark-sub-bg: var(--fc-menu-dark-bg);
 
   --fc-fill-2-5-rgb: 27 27 29;
   --fc-fill-2-5: rgb(var(--fc-fill-2-5-rgb));
@@ -371,11 +373,9 @@
   /* 渐变色 */
   --fc-gradient-1-color: linear-gradient(90deg, #272c3c 0%, #24253b 25%, #221f33 50%, #1e1e28 75%, #181b1f 100%);
 
-  /* boxshadow*/
-  /* --fc-boxshadow-base-color: green;
-  --fc-boxshadow-hover-color: red; */
-  --fc-boxshadow-base-color: rgba(0, 0, 0, 0.28);
-  --fc-boxshadow-hover-color: rgba(0, 0, 0, 0.45);
+  /* boxshadow：深色背景上用白色半透明，避免黑阴影发灰 */
+  --fc-boxshadow-base-color: rgba(255, 255, 255, 0.1);
+  --fc-boxshadow-hover-color: rgba(255, 255, 255, 0.18);
 
   /* 新版设计色阶 2026-03-24 release-23 */
 
@@ -483,6 +483,8 @@
 }
 
 .theme-light-gold {
+  --fc-menu-dark-bg: #001529;
+  --fc-menu-dark-sub-bg: #000c17;
   --fc-fill-primary: #ffbc0d;
   --fc-primary-color: #ffbc0d;
   --fc-gold-text: #222;
@@ -492,6 +494,8 @@
 
 
 .theme-light-blue{
+  --fc-menu-dark-bg: #001529;
+  --fc-menu-dark-sub-bg: #000c17;
   --fc-fill-primary: #427AF4;
   --fc-primary-color: #427AF4;
   --fc-text-link: #2D5BCF;
