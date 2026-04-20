@@ -373,11 +373,9 @@
   /* 渐变色 */
   --fc-gradient-1-color: linear-gradient(90deg, #272c3c 0%, #24253b 25%, #221f33 50%, #1e1e28 75%, #181b1f 100%);
 
-  /* boxshadow*/
-  /* --fc-boxshadow-base-color: green;
-  --fc-boxshadow-hover-color: red; */
-  --fc-boxshadow-base-color: rgba(0, 0, 0, 0.28);
-  --fc-boxshadow-hover-color: rgba(0, 0, 0, 0.45);
+  /* boxshadow：深色背景上用白色半透明，避免黑阴影发灰 */
+  --fc-boxshadow-base-color: rgba(255, 255, 255, 0.1);
+  --fc-boxshadow-hover-color: rgba(255, 255, 255, 0.18);
 
   /* 新版设计色阶 2026-03-24 release-23 */
 
