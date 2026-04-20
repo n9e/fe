@@ -16,6 +16,7 @@ const ru_RU = {
   cores: 'Cores',
   tags_popover_title: '{{count}} тегов',
   view_collects: 'Показать связанные конфигурации сбора',
+  host_no_heartbeat_tip: 'Хост без heartbeat',
 
   ident: 'Идентификатор',
   host_tags: 'Отправленные теги',

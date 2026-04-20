@@ -22,21 +22,7 @@ interface VersionsDistributionChartProps {
   renderTooltip?: (bar: BarItem) => React.ReactNode;
 }
 
-const COLORS = [
-  'rgb(95, 208, 128)',
-  'rgb(87, 209, 165)',
-  'rgb(78, 211, 202)',
-  'rgb(89, 188, 217)',
-  'rgb(100, 165, 232)',
-  'rgb(103, 123, 238)',
-  'rgb(133, 100, 232)',
-  'rgb(110, 67, 239)',
-  'rgb(61, 89, 250)',
-  'rgb(52, 144, 240)',
-  'rgb(31, 169, 209)',
-  'rgb(78, 198, 191)',
-  'rgb(40, 204, 145)',
-];
+const COLORS = ['#3D59FA', '#5FD080', '#3490F0', '#57D1A5', '#677BEE', '#4ED3CA', '#8564E8', '#59BCD9', '#6E43EF', '#58A4F2'];
 
 const MAX_VISIBLE_SLICES = 10;
 const START_ANGLE = -90;

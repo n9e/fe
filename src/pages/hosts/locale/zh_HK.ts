@@ -16,6 +16,7 @@ const zh_HK = {
   cores: 'Cores',
   tags_popover_title: '{{count}} 個標籤',
   view_collects: '查看關聯採集配置',
+  host_no_heartbeat_tip: '機器無心跳',
 
   ident: '標識',
   host_tags: '上報的標籤',

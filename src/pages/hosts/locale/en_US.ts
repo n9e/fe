@@ -16,6 +16,7 @@ const en_US = {
   cores: 'Cores',
   tags_popover_title: '{{count}} tags',
   view_collects: 'View related collection configurations',
+  host_no_heartbeat_tip: 'Host no heartbeat',
 
   ident: 'Identifier',
   host_tags: 'Reported Tags',

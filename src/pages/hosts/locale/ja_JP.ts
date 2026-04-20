@@ -16,6 +16,7 @@ const ja_JP = {
   cores: 'Cores',
   tags_popover_title: '{{count}} 個のタグ',
   view_collects: '関連する収集設定を表示',
+  host_no_heartbeat_tip: 'ホストはハートビートなし',
 
   ident: '識別子',
   host_tags: '報告タグ',
