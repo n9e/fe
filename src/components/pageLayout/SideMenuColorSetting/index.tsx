@@ -10,7 +10,7 @@ export const getSideMenuBgColor = (color: SideMenuColors) => {
     case 'light':
       return 'var(--fc-sidemenu-bg)';
     case 'dark':
-      return 'rgb(24, 27, 31)';
+      return 'var(--fc-menu-dark-bg)';
     case 'theme':
       return THEME_COLOR;
     default:
