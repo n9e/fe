@@ -19,6 +19,10 @@ const zh_HK = {
   host_no_heartbeat_tip: '機器無心跳',
 
   ident: '標識',
+  agent_version_title: 'AGENT版本',
+  status: '狀態',
+  online: '有心跳',
+  offline: '無心跳',
   host_tags: '上報的標籤',
   tags: '自定義標籤',
   group_objs: '業務組',

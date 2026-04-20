@@ -19,6 +19,10 @@ const zh_CN = {
   host_no_heartbeat_tip: '机器无心跳',
 
   ident: '标识',
+  agent_version_title: 'AGENT版本',
+  status: '状态',
+  online: '有心跳',
+  offline: '无心跳',
   host_tags: '上报的标签',
   tags: '自定义标签',
   group_objs: '业务组',

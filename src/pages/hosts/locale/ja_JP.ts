@@ -19,6 +19,10 @@ const ja_JP = {
   host_no_heartbeat_tip: 'ホストはハートビートなし',
 
   ident: '識別子',
+  agent_version_title: 'エージェントバージョン',
+  status: 'ステータス',
+  online: 'オンライン',
+  offline: 'オフライン',
   host_tags: '報告タグ',
   tags: 'カスタムタグ',
   group_objs: '業務グループ',
