@@ -90,9 +90,7 @@ export default function Tags(props: Props) {
           borderColor: bgColor,
           color: fontColor,
         }
-      : {
-          color: fontColor,
-        };
+      : undefined;
 
   // tag 的 Tailwind 基础类（测量层和渲染层共用）
   // p-[6px] border border-[var(--fc-border-color)] rounded-2xl leading-none whitespace-nowrap box-border
