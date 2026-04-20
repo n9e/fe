@@ -212,8 +212,10 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
               className='w-full h-[32px] cursor-pointer flex items-center justify-between gap-2 px-2 fc-border rounded-lg hover:border-primary hover:ring-[3px] hover:ring-primary/10'
               onClick={() => onPromptClick(prompt)}
             >
-              <Sparkles size={14} />
-              <span className='truncate text-sm text-main'>{prompt}</span>
+              <div className='flex items-center gap-2'>
+                <Sparkles size={14} className='text-primary/80' />
+                <span className='truncate text-sm text-main'>{prompt}</span>
+              </div>
               <ArrowRightOutlined />
             </div>
           ))}
