@@ -583,7 +583,7 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'} />
+                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
                   </div>
                 );
               },
