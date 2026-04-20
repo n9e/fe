@@ -4,6 +4,7 @@ import { IOptions, IOverride, CellOptions } from '@/pages/dashboard/types';
 import { getSerieTextObj } from '@/pages/dashboard/Renderer/utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '@/pages/dashboard/Renderer/utils/getOverridePropertiesByName';
 import type { TableData } from '@/pages/dashboard/transformations/types';
+import { parseDisplayNumber } from './parseNumericValue';
 
 import { TextObject } from '../CellRenderer/types';
 
@@ -49,9 +50,10 @@ export default function getFormattedRowData(
 
       let currentValue = value;
       let textObject = {} as Omit<TextObject, 'valueDomain'>;
+      const parsedValue = parseDisplayNumber(currentValue);
 
-      if (currentValue !== null && !_.isNaN(_.toNumber(currentValue))) {
-        currentValue = _.toNumber(currentValue);
+      if (parsedValue !== null) {
+        currentValue = parsedValue;
         textObject = getSerieTextObj(currentValue, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain);
       } else {
         textObject = getSerieTextObj(value, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain, false);

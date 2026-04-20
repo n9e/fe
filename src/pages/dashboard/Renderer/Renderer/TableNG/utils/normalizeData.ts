@@ -4,6 +4,7 @@ import { TransformationPipeline, transformationsMap } from '@/pages/dashboard/tr
 import type { TableData } from '@/pages/dashboard/transformations/types';
 import type { ITransformation } from '@/pages/dashboard/types';
 import { calculateVariance, calculateStdDev } from '@/pages/dashboard/Renderer/utils/calculateField';
+import { normalizeDataPointValue } from './parseNumericValue';
 
 export default function normalizeData(
   series: {
@@ -55,7 +56,7 @@ export default function normalizeData(
             if (column === '__time') {
               row[column] = dataPoint[0];
             } else if (column === `__value_#${item.refId}`) {
-              row[column] = dataPoint[1] !== null ? _.toNumber(dataPoint[1]) : null;
+              row[column] = normalizeDataPointValue(dataPoint[1]);
             } else {
               row[column] = item.metric[column] ?? null; // 默认值为 null
             }
@@ -68,25 +69,24 @@ export default function normalizeData(
         refId,
         fields: _.map(columns, (column) => {
           const values = _.map(rows, (row) => row[column] ?? null);
+          const numericValues = _.filter(values, (value): value is number => typeof value === 'number' && Number.isFinite(value));
           let min: number | null = null;
           let max: number | null = null;
           let sum: number | null = null;
           let avg: number | null = null;
 
           if (column === `__value_#${refId}`) {
-            _.forEach(values, (value) => {
-              if (value !== null) {
-                if (min === null || value < min) {
-                  min = value;
-                }
-                if (max === null || value > max) {
-                  max = value;
-                }
-                sum = (sum || 0) + value;
+            _.forEach(numericValues, (value) => {
+              if (min === null || value < min) {
+                min = value;
               }
+              if (max === null || value > max) {
+                max = value;
+              }
+              sum = (sum || 0) + value;
             });
-            if (values.length > 0) {
-              avg = sum !== null ? sum / values.length : null;
+            if (numericValues.length > 0) {
+              avg = sum !== null ? sum / numericValues.length : null;
             }
           }
           return {
@@ -100,8 +100,8 @@ export default function normalizeData(
                 sum,
                 avg,
                 last: _.last(values),
-                variance: calculateVariance(values),
-                stdDev: calculateStdDev(values),
+                variance: calculateVariance(numericValues),
+                stdDev: calculateStdDev(numericValues),
                 count: values.length,
               },
             },
