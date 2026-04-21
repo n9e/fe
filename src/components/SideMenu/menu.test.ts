@@ -2,14 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 describe('SideMenu hover panel styles', () => {
-  it('uses the submenu text token for the hover panel header title in both themes', () => {
+  it('lets the hover panel header title inherit color from the panel root in both themes', () => {
     const lessPath = path.join(__dirname, 'menu.less');
     const content = fs.readFileSync(lessPath, 'utf8');
 
-    expect(content).toContain('.sidemenu-hover-panel--light .sidemenu-hover-panel-header-title');
-    expect(content).toContain('color: var(--fc-sidemenu-subitem-text);');
-    expect(content).toContain('.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-header-title');
-    expect(content).not.toContain('.sidemenu-hover-panel--light .sidemenu-hover-panel-header-title {\n  color: var(--fc-text-1);');
-    expect(content).not.toContain('.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-header-title {\n  color: var(--fc-text-2, #e6e6e8);');
+    expect(content).not.toMatch(/\.sidemenu-hover-panel--light\s+\.sidemenu-hover-panel-header-title\s*\{[^}]*color\s*:/);
+    expect(content).not.toMatch(/\.sidemenu-hover-panel--on-dark\s+\.sidemenu-hover-panel-header-title\s*\{[^}]*color\s*:/);
+
+    expect(content).toMatch(/\.sidemenu-hover-panel--light\s*\{[^}]*color:\s*var\(--fc-text-1\);/);
+    expect(content).toMatch(/\.sidemenu-hover-panel--on-dark\s*\{[^}]*color:\s*var\(--fc-text-2,\s*#e6e6e8\);/);
   });
 });

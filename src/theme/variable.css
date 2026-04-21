@@ -7,7 +7,7 @@
 :root {
   /* 填充色 */
   --fc-fill-1-rgb: 252 252 253;
-  --fc-fill-1: rgb(var(--fc-fill-1-rgb)); 
+  --fc-fill-1: rgb(var(--fc-fill-1-rgb));
 
   --fc-fill-2-rgb: 255 255 255;
   --fc-fill-2: rgb(var(--fc-fill-2-rgb));
@@ -46,12 +46,11 @@
   --fc-fill-error: rgb(var(--fc-fill-error-rgb));
 
   --fc-fill-gold: #ffbc0d;
-  --fc-primary-bg: #6C53B114;
-
+  --fc-primary-bg: #6c53b114;
   /* 文本 */
-  --fc-text-1: #0C1018;
-  --fc-text-2: #181C25;
-  --fc-text-3: #3F4856;
+  --fc-text-1: #0c1018;
+  --fc-text-2: #181c25;
+  --fc-text-3: #3f4856;
   --fc-text-4: #657386;
   --fc-text-5: #65738666;
   --fc-text-link: #8162dc;
@@ -82,7 +81,7 @@
   /* 对齐 fc-firemap 子菜单默认色：text-muted-foreground => 215 14% 46% */
   --fc-sidemenu-subitem-text: rgb(101, 115, 134);
   --fc-sidemenu-item-active-bg: rgb(243, 238, 252);
-  --fc-sidemenu-item-active-text: #5720B6;
+  --fc-sidemenu-item-active-text: #5720b6;
   --fc-sidemenu-item-hover-bg: rgb(241, 241, 244);
   --fc-sidemenu-item-hover-text: #1a1a1a;
   --fc-sidemenu-beta-bg: #ede9fe;
@@ -493,12 +492,11 @@
   --fc-primary-bg: #fff2cb;
 }
 
-
-.theme-light-blue{
+.theme-light-blue {
   --fc-menu-dark-bg: #001529;
   --fc-menu-dark-sub-bg: #000c17;
-  --fc-fill-primary: #427AF4;
-  --fc-primary-color: #427AF4;
-  --fc-text-link: #2D5BCF;
-  --fc-primary-bg: #EEF6FE;
+  --fc-fill-primary: #427af4;
+  --fc-primary-color: #427af4;
+  --fc-text-link: #2d5bcf;
+  --fc-primary-bg: #eef6fe;
 }
