@@ -40,6 +40,7 @@ import '../locale';
 
 // @ts-ignore
 import FeatureNotification from 'plus:/pages/FeatureNotification';
+import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 
 export { HelpLink };
 
@@ -178,7 +179,10 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <Version />
 
-                  <Space size={12}>{rightArea}</Space>
+                  <Space size={12}>
+                    {rightArea}
+                    <LayoutHeaderAiBtn />
+                  </Space>
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
