@@ -77,8 +77,12 @@ function getMenuGroupIconColorClass(opts: {
   forHoverPanel?: boolean;
 }): string {
   const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, forHoverPanel } = opts;
-  const lightInactive =
-    forHoverPanel === true ? 'text-[var(--fc-sidemenu-item-icon)]' : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
+
+  if (forHoverPanel === true) {
+    return '';
+  }
+
+  const lightInactive = 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
 
   if (isLight) {
     return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
