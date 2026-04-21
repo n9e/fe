@@ -18,7 +18,7 @@ export const tsGraphThemeColor = {
      */
     backgroundColor: {
       light: '#fff',
-      dark: 'rgb(24 27 31)',
+      dark: 'rgb(22 22 24)',
     },
     gridLineColor: {
       light: 'rgb(243,244,246)',
