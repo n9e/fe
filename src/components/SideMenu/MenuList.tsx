@@ -11,7 +11,6 @@ import { IMenuItem } from './types';
 import { cn, getSavedPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
 
-/** 与 fc-firemap AppSidebar 一致：Radix Tooltip sideOffset=8，antd 用 rightTop 水平 offset 8px */
 const SIDE_MENU_HOVER_TOOLTIP_PLACEMENTS = (() => {
   const base = getPlacements({ arrowPointAtCenter: false, autoAdjustOverflow: true });
   return {
