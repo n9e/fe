@@ -6,7 +6,7 @@ import { ColumnProps } from 'antd/es/table';
 import { CheckCircleFilled, MinusCircleFilled, WarningOutlined, MoreOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
-import { allCates } from '@/components/AdvancedWrap/utils';
+import { getCateByValue } from '@/components/AdvancedWrap/utils';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
 import Rename from '../Rename';
@@ -91,7 +91,7 @@ const TableSource = (props: IPropsType) => {
       sorter: (a, b) => localeCompare(a.plugin_type, b.plugin_type),
       defaultSortOrder: 'ascend',
       render: (val) => {
-        const finded = _.find(allCates, { value: val });
+        const finded = getCateByValue(val);
         return (
           <Space>
             <img alt={val} src={finded?.logo} height={20} />

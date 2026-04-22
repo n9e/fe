@@ -26,12 +26,17 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       onFinishFailed={() => {
         scrollToFirstError();
       }}
-      initialValues={data}
+      initialValues={{
+        http: {
+          url: 'http://localhost:18080',
+        },
+        ...data,
+      }}
       className='settings-source-form'
     >
       <Card title={t(`${action}_title`)}>
         <Name />
-        <HTTP placeholder='http://localhost:6667' />
+        <HTTP placeholder='http://localhost:18080' />
         <BasicAuth />
         <SkipTLSVerify />
         <Headers />

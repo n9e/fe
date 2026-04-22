@@ -152,6 +152,13 @@ export const baseCates: Cate[] = [
 
 export const allCates = [...baseCates, ...advancedCates];
 
+export const getCateByValue = (cate: string) => {
+  if (cate === 'iotdb') {
+    return _.find(baseCates, { value: 'iotdb' });
+  }
+  return _.find(allCates, { value: cate });
+};
+
 export const getAuthorizedDatasourceCates = (feats, isPlus, filter?: (cate: any) => boolean) => {
   let cates = baseCates;
   if (feats && isPlus) {
@@ -166,6 +173,6 @@ export const getAuthorizedDatasourceCates = (feats, isPlus, filter?: (cate: any)
 };
 
 export const getGraphProByCate = (cate: string) => {
-  const currentCate = _.find(allCates, { value: cate });
+  const currentCate = getCateByValue(cate);
   return currentCate?.graphPro;
 };
