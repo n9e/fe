@@ -5,6 +5,8 @@ const zh_CN = {
   quickOpenClose: '打开/关闭',
   quickSearchPlaceholder: '输入内容以检索...',
   quickMenus: '快捷菜单',
+  recentUsed: '近期使用',
+  personalCollection: '个人收藏',
   menu: {
     infrastructure: '基础设施',
     business_group: '业务组',
