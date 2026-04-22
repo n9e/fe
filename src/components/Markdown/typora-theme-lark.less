@@ -1,0 +1,453 @@
+/*
+ * Markdown — Lark (Feishu) inspired style
+ * Adapted for .typora-theme-lark wrapper with project CSS variables
+ * Ref: https://github.com/imageslr/typora-theme-lark
+ */
+
+/* ── Global ─────────────────────────────────────────── */
+.typora-theme-lark {
+  font-size: 13px;
+  color: var(--fc-text-2);
+  padding: 0;
+  line-height: 1.72;
+  word-break: break-word;
+  word-wrap: break-word;
+  text-align: left;
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Paragraph ──────────────────────────────────────── */
+.typora-theme-lark p {
+  font-size: 13px;
+  margin: 6px 0;
+  padding: 0;
+  line-height: 1.72;
+  color: var(--fc-text-2);
+}
+
+/* ── Headings ───────────────────────────────────────── */
+.typora-theme-lark h1,
+.typora-theme-lark h2,
+.typora-theme-lark h3,
+.typora-theme-lark h4,
+.typora-theme-lark h5,
+.typora-theme-lark h6 {
+  margin-top: 1em;
+  margin-bottom: 0.37em;
+  padding: 0;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--fc-text-1);
+}
+
+.typora-theme-lark h1 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.typora-theme-lark h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.typora-theme-lark h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.typora-theme-lark h4 {
+  font-size: 15px;
+}
+
+.typora-theme-lark h5 {
+  font-size: 14px;
+}
+
+.typora-theme-lark h6 {
+  font-size: 13px;
+  color: var(--fc-text-2);
+}
+
+.typora-theme-lark h1 .prefix,
+.typora-theme-lark h2 .prefix,
+.typora-theme-lark h3 .prefix,
+.typora-theme-lark h4 .prefix,
+.typora-theme-lark h5 .prefix,
+.typora-theme-lark h6 .prefix,
+.typora-theme-lark h1 .suffix,
+.typora-theme-lark h2 .suffix,
+.typora-theme-lark h3 .suffix,
+.typora-theme-lark h4 .suffix,
+.typora-theme-lark h5 .suffix,
+.typora-theme-lark h6 .suffix {
+  display: none;
+}
+
+/* ── Lists ──────────────────────────────────────────── */
+.typora-theme-lark ul,
+.typora-theme-lark ol {
+  margin: 6px 0;
+  padding-left: 22px;
+}
+
+/* Lark-style blue bullet dots */
+.typora-theme-lark ul {
+  list-style: none;
+}
+
+.typora-theme-lark ul>li {
+  position: relative;
+  word-wrap: break-all;
+}
+
+.typora-theme-lark ul>li::before {
+  position: absolute;
+  top: 2px;
+  content: '•';
+  color: var(--fc-text-3);
+  display: inline-block;
+  margin-left: -20px;
+  margin-right: 20px;
+  width: 0;
+  font-size: 0.8em;
+  transform: scale(1.25);
+}
+
+.typora-theme-lark ul>li li::before {
+  content: '◦';
+  transform: scale(1);
+  font-weight: 700;
+}
+
+/* Lark-style blue numbered list */
+.typora-theme-lark ol {
+  counter-reset: ol_counter;
+  list-style: none;
+}
+
+.typora-theme-lark ol>li {
+  position: relative;
+  word-wrap: break-all;
+}
+
+.typora-theme-lark ol>li::before {
+  content: counter(ol_counter) '.';
+  counter-increment: ol_counter;
+  color: var(--fc-text-3);
+  position: absolute;
+  margin-left: -22px;
+  min-width: 18px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.typora-theme-lark li+li,
+.typora-theme-lark ul ul,
+.typora-theme-lark ol ul,
+.typora-theme-lark ul ol,
+.typora-theme-lark ol ol {
+  margin-top: 4px;
+}
+
+.typora-theme-lark li {
+  line-height: 1.72;
+}
+
+.typora-theme-lark li section {
+  margin: 3px 0;
+  line-height: 1.72;
+  color: var(--fc-text-2);
+  font-weight: 400;
+}
+
+/* ── Blockquote ─────────────────────────────────────── */
+.typora-theme-lark blockquote {
+  display: block;
+  position: relative;
+  margin: 8px 0;
+  padding: 10px 14px 10px 18px;
+  border-radius: 6px;
+  background: var(--fc-fill-1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: calc(100% - 16px);
+    background: var(--fc-purple-5-color);
+    border-radius: 0;
+  }
+
+  color: var(--fc-text-1);
+  font-size: 14px;
+  line-height: 1.68;
+
+  blockquote {
+    border: none;
+    border-left: 2px solid var(--fc-fill-5);
+    border-radius: 0;
+    background: transparent;
+    padding: 2px 0 2px 10px;
+    margin: 4px 0 0;
+  }
+
+  p {
+    margin: 2px 0;
+    padding: 0;
+    color: var(--fc-text-1);
+  }
+}
+
+/* ── Links ──────────────────────────────────────────── */
+.typora-theme-lark a {
+  color: var(--fc-text-3);
+  text-decoration: none;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.typora-theme-lark a:hover {
+  text-decoration: underline;
+}
+
+/* ── Emphasis ───────────────────────────────────────── */
+.typora-theme-lark strong {
+  font-weight: 600;
+  color: inherit;
+}
+
+.typora-theme-lark em {
+  font-style: italic;
+  color: inherit;
+}
+
+.typora-theme-lark em strong {
+  font-weight: 600;
+  color: inherit;
+}
+
+.typora-theme-lark del {
+  color: var(--fc-text-3);
+  text-decoration: line-through;
+}
+
+/* ── HR ─────────────────────────────────────────────── */
+.typora-theme-lark hr {
+  margin: 12px 0;
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(90deg, var(--fc-border-base), var(--fc-border-base));
+  background-repeat: no-repeat;
+}
+
+/* ── Inline code ────────────────────────────────────── */
+.typora-theme-lark p code,
+.typora-theme-lark li code {
+  padding: 1px 6px;
+  font-size: 12px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  background-color: var(--fc-fill-3);
+  color: var(--fc-text-1);
+  border-radius: 4px;
+  margin: 0 2px;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+/* ── Code block ─────────────────────────────────────── */
+.typora-theme-lark pre {
+  margin: 8px 0;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--fc-border-base);
+  background-color: var(--fc-fill-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.typora-theme-lark pre code {
+  display: block;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--fc-text-1);
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  word-break: normal;
+}
+
+.typora-theme-lark pre code span {
+  line-height: 1.6;
+}
+
+/* ── Images ─────────────────────────────────────────── */
+.typora-theme-lark img {
+  display: block;
+  margin: 8px auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.typora-theme-lark figure {
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.typora-theme-lark figcaption {
+  margin-top: 4px;
+  text-align: center;
+  color: var(--fc-text-3);
+  font-size: 12px;
+}
+
+/* ── Tables ─────────────────────────────────────────── */
+.typora-theme-lark .table-container {
+  overflow-x: auto;
+  margin: 8px 0;
+  border-radius: 8px;
+}
+
+.typora-theme-lark table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--fc-border-base);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: left;
+  color: var(--fc-text-2);
+}
+
+.typora-theme-lark table tr th,
+.typora-theme-lark table tr td {
+  padding: 8px 10px;
+  border-right: 1px solid var(--fc-border-base);
+  border-bottom: 1px solid var(--fc-border-base);
+  color: var(--fc-text-2);
+}
+
+.typora-theme-lark table tr th:last-child,
+.typora-theme-lark table tr td:last-child {
+  border-right: none;
+}
+
+.typora-theme-lark table tr:last-child th,
+.typora-theme-lark table tr:last-child td {
+  border-bottom: none;
+}
+
+.typora-theme-lark table thead {
+  position: relative;
+}
+
+.typora-theme-lark table thead::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--fc-border-base);
+}
+
+.typora-theme-lark table thead th,
+.typora-theme-lark table tr th {
+  font-weight: 500;
+  background-color: var(--fc-fill-2);
+}
+
+.typora-theme-lark table tr:nth-child(2n) {
+  background-color: var(--fc-fill-1);
+}
+
+.typora-theme-lark table tbody tr:hover {
+  background-color: var(--fc-fill-3);
+}
+
+.typora-theme-lark table tr:first-child th:first-child,
+.typora-theme-lark table tr:first-child td:first-child {
+  border-top-left-radius: 8px;
+}
+
+.typora-theme-lark table tr:first-child th:last-child,
+.typora-theme-lark table tr:first-child td:last-child {
+  border-top-right-radius: 8px;
+}
+
+.typora-theme-lark table tr:last-child th:first-child,
+.typora-theme-lark table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.typora-theme-lark table tr:last-child th:last-child,
+.typora-theme-lark table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+.typora-theme-lark table tr th:nth-of-type(n),
+.typora-theme-lark table tr td:nth-of-type(n) {
+  min-width: 60px;
+}
+
+/* ── Footnotes ──────────────────────────────────────── */
+.typora-theme-lark .footnote-word,
+.typora-theme-lark .footnote-ref {
+  color: var(--fc-text-3);
+  font-weight: 500;
+}
+
+.typora-theme-lark .footnote-item {
+  display: flex;
+}
+
+.typora-theme-lark .footnote-num {
+  display: inline;
+  width: 10%;
+  background: none;
+  font-size: 80%;
+  opacity: 0.6;
+  line-height: 1.68;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+}
+
+.typora-theme-lark .footnote-item p {
+  display: inline;
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
+  line-height: 1.68;
+  color: var(--fc-text-3);
+  word-break: break-all;
+  width: calc(100% - 50px);
+}
+
+.typora-theme-lark sub,
+.typora-theme-lark sup {
+  line-height: 0;
+}
+
+/* ── TOC ────────────────────────────────────────────── */
+.typora-theme-lark .table-of-contents a {
+  border: none;
+  color: var(--fc-text-2);
+  font-weight: 400;
+}
+
+.typora-theme-lark .base-code-inline {
+  display: inline-block;
+}

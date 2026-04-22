@@ -6,6 +6,10 @@ const zh_HK = {
   },
   history: {
     untitled: '新會話',
+    today: '今天',
+    yesterday: '昨天',
+    earlier: '更早',
+    unknown_time: '--:--',
     delete_confirm: '刪除該會話？',
     empty: '暫無歷史會話',
   },
@@ -34,7 +38,7 @@ const zh_HK = {
     unsupported_type: '暫不支持的內容類型：{{type}}',
   },
   empty: {
-    greeting_prefix: '你好，我是',
+    greeting_prefix: '你好,我是',
   },
   customContentRenderer: {
     query: {

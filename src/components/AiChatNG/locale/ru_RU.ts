@@ -6,6 +6,10 @@ const ru_RU = {
   },
   history: {
     untitled: 'Новый чат',
+    today: 'Сегодня',
+    yesterday: 'Вчера',
+    earlier: 'Ранее',
+    unknown_time: '--:--',
     delete_confirm: 'Удалить этот диалог?',
     empty: 'История диалогов пуста',
   },

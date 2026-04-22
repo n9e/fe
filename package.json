@@ -76,6 +76,7 @@
     "lezer-promql": "^0.22.0",
     "lodash": "^4.17.21",
     "logfmt": "1.2.x",
+    "lucide-react": "^1.8.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.46",
     "numeral": "^2.0.6",

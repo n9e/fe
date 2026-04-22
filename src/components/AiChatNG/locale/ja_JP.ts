@@ -6,6 +6,10 @@ const ja_JP = {
   },
   history: {
     untitled: '新しい会話',
+    today: '今日',
+    yesterday: '昨日',
+    earlier: '過去',
+    unknown_time: '--:--',
     delete_confirm: 'この会話を削除しますか？',
     empty: '会話履歴はありません',
   },

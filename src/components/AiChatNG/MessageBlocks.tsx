@@ -1,10 +1,54 @@
 import React from 'react';
-import { Button, Collapse } from 'antd';
+import { Button, Collapse, Space } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { Sparkles } from 'lucide-react';
+
 import Markdown from '@/components/Markdown';
 import { AiChatCustomContentRenderer, EAiChatContentType, IAiChatAction, IAiChatMessage, IAiChatMessageResponse } from './types';
 import { cn } from './utils';
+
+function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
+  const fullText = `${prefix}${brand}`;
+  const textChars = React.useMemo(() => Array.from(fullText), [fullText]);
+  const prefixChars = React.useMemo(() => Array.from(prefix), [prefix]);
+  const [visibleCount, setVisibleCount] = React.useState(0);
+
+  React.useEffect(() => {
+    setVisibleCount(0);
+
+    if (!textChars.length) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setVisibleCount((prev) => {
+        if (prev >= textChars.length) {
+          window.clearInterval(timer);
+          return prev;
+        }
+
+        return prev + 1;
+      });
+    }, 90);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [textChars]);
+
+  const visiblePrefix = prefixChars.slice(0, visibleCount).join('');
+  const visibleBrand = textChars.slice(prefixChars.length, visibleCount).join('');
+  const showCursor = visibleCount < textChars.length;
+
+  return (
+    <span aria-label={fullText}>
+      <span>{visiblePrefix}</span>
+      <span className='text-primary'>{visibleBrand}</span>
+      {showCursor ? <span className='ml-0.5 inline-block h-[1em] w-[2px] animate-pulse align-[-0.1em] bg-current' aria-hidden='true' /> : null}
+    </span>
+  );
+}
 
 interface IAiChatResponseBlocksProps {
   message: IAiChatMessage;
@@ -148,34 +192,30 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
 
 export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string[]; onPromptClick: (prompt: string) => void }) {
   const { t } = useTranslation('AiChat');
+  const greetingPrefix = t('empty.greeting_prefix');
 
   return (
     <div className='w-full h-full flex flex-col items-center text-center'>
-      <div
-        className='w-[80%] h-[260px] flex justify-center items-end'
-        style={{
-          backgroundImage: 'url(/image/ai-chat/ai_chat_background.png)',
-          backgroundSize: '100% 100%',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className='mb-8 text-l6 font-bold'>
-          {t('empty.greeting_prefix')} <span className='text-primary'>FlashAI</span>
+      <div className='w-full h-[260px] flex justify-center items-end'>
+        <div className='mb-8 text-l4 font-bold'>
+          <Space align='baseline'>
+            <img src='/image/ai-chat/ai.gif' className='w-[24px] h-[24px]' />
+            <TypedGreeting prefix={greetingPrefix} brand='FlashAI' />
+          </Space>
         </div>
       </div>
       {prompts?.length ? (
-        <div className='w-[60%] mt-4 flex flex-col gap-2'>
+        <div className='w-[90%] mt-4 flex flex-col gap-2'>
           {prompts.map((prompt) => (
             <div
               key={prompt}
-              className='w-full h-[32px] cursor-pointer flex items-center justify-between px-2 rounded-lg'
-              style={{
-                backgroundColor: 'var(--fc-geekblue-1-color)',
-              }}
+              className='w-full h-[32px] cursor-pointer flex items-center justify-between gap-2 px-2 fc-border rounded-lg hover:border-primary hover:ring-[3px] hover:ring-primary/10'
               onClick={() => onPromptClick(prompt)}
             >
-              <span className='truncate text-sm text-main'>{prompt}</span>
+              <div className='flex items-center gap-2'>
+                <Sparkles size={14} className='text-primary/80' />
+                <span className='truncate text-sm text-main'>{prompt}</span>
+              </div>
               <ArrowRightOutlined />
             </div>
           ))}

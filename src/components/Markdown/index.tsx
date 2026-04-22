@@ -22,7 +22,9 @@ import classNames from 'classnames';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { CommonStateContext } from '@/App';
+
 import './index.less';
+import './typora-theme-lark.less';
 
 interface IMarkDownPros {
   content: string;
@@ -42,7 +44,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, darkMode }) =>
   const currentDarkMode = darkMode ?? useContext(CommonStateContext)?.darkMode;
 
   return (
-    <div className='markdown-wrapper' style={style}>
+    <div className='typora-theme-lark' style={style}>
       <ReactMarkdown
         remarkPlugins={[gfm]}
         children={content}

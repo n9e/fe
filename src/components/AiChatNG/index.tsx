@@ -74,6 +74,7 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
 
         {showHistory ? (
           <ChatHistory
+            selectedChatId={selectedChatId}
             onSelect={(chat) => {
               setSelectedChatId(chat.chat_id);
               setActiveView('chat');
