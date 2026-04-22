@@ -39,6 +39,17 @@ export const baseCates: Cate[] = [
     logo: '/image/logos/elasticsearch.png',
   },
   {
+    value: 'iotdb',
+    label: 'IoTDB',
+    type: ['metric'],
+    alertRule: true,
+    dashboard: true,
+    dashboardVariable: false,
+    graphPro: false,
+    alertPro: false,
+    logo: '/image/logos/iotdb.png',
+  },
+  {
     value: 'tdengine',
     label: 'TDengine',
     type: ['metric'],

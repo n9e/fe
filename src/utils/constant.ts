@@ -67,6 +67,7 @@ export enum BaseDatasourceCateEnum {
   prometheus = 'prometheus',
   elasticsearch = 'elasticsearch',
   opensearch = 'opensearch',
+  iotdb = 'iotdb',
   tdengine = 'tdengine',
   loki = 'loki',
   ck = 'ck',

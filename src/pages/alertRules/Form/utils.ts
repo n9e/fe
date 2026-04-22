@@ -360,6 +360,27 @@ export function getDefaultValuesByCate(prod, cate) {
       ...datasourceDefaultValue,
     };
   }
+  if (cate === DatasourceCateEnum.iotdb) {
+    return {
+      prod,
+      cate,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            ref: 'A',
+            interval: 1,
+            interval_unit: 'min',
+            keys: {
+              timeKey: 'time',
+              timeFormat: '2006-01-02T15:04:05',
+            },
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
+    };
+  }
   if (cate === DatasourceCateEnum.loki) {
     return {
       prod,

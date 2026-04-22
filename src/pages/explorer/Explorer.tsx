@@ -31,6 +31,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
+import { Explorer as IotDB } from '@/plugins/iotdb';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
@@ -354,6 +355,8 @@ const Panel = (props: IProps) => {
                       showBuilder={false}
                     />
                   );
+                } else if (datasourceCate === DatasourceCateEnum.iotdb) {
+                  return <IotDB datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
                   return <TDengine datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.loki) {
