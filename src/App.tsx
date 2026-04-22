@@ -38,6 +38,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
+import { AiChatProvider, AiChatContainer } from '@/components/AiChatNG';
 import HocRenderer from './components/HocRenderer';
 import HeaderMenu from './components/SideMenu';
 import Content from './routers';
@@ -335,32 +336,35 @@ function App() {
   }
 
   return (
-    <div className='App'>
-      <CommonStateContext.Provider value={commonState}>
-        <ConfigProvider locale={i18n.language == 'en_US' ? enUS : i18n.language == 'ru_RU' ? ruRU : zhCN}>
-          <Router
-            getUserConfirmation={(message, callback) => {
-              if (message === 'CUSTOM') return;
-              window.confirm(message) ? callback(true) : callback(false);
-            }}
-            basename={basePrefix}
-          >
-            <Switch>
-              <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
-              <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
-              <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
-              <>
-                {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
-                <Content />
-                <HocRenderer></HocRenderer>
-              </>
-            </Switch>
-            <Feedback />
-          </Router>
-        </ConfigProvider>
-      </CommonStateContext.Provider>
-      {/* {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />} */}
-    </div>
+    <AiChatProvider>
+      <div className='App'>
+        <CommonStateContext.Provider value={commonState}>
+          <ConfigProvider locale={i18n.language == 'en_US' ? enUS : i18n.language == 'ru_RU' ? ruRU : zhCN}>
+            <Router
+              getUserConfirmation={(message, callback) => {
+                if (message === 'CUSTOM') return;
+                window.confirm(message) ? callback(true) : callback(false);
+              }}
+              basename={basePrefix}
+            >
+              <Switch>
+                <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
+                <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
+                <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
+                <>
+                  {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
+                  <Content />
+                  <HocRenderer></HocRenderer>
+                </>
+              </Switch>
+              <Feedback />
+            </Router>
+          </ConfigProvider>
+        </CommonStateContext.Provider>
+        {/* {import.meta.env.VITE_IS_ENT !== 'true' && import.meta.env.VITE_IS_PRO === 'true' && <CustomerServiceFloatButton />} */}
+      </div>
+      <AiChatContainer />
+    </AiChatProvider>
   );
 }
 

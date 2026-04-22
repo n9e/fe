@@ -21,60 +21,10 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import PageLayout from '@/components/pageLayout';
-import AiChat, { AiChatProvider, IAiChatMessage, IAiChatMessageResponse, useAiChatContext } from '@/components/AiChatNG';
-import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
+import { useAiChatContext } from '@/components/AiChatNG';
 
 import Explorer from './Explorer';
 import './index.less';
-
-function MetricExplorerAiChatSidebar() {
-  const { t, i18n } = useTranslation();
-  const { visible, datasourceCate, datasourceValue, callbackParams, closeAiChat } = useAiChatContext();
-
-  if (!visible) {
-    return null;
-  }
-
-  return (
-    <div className='ml-4 w-[420px] flex-shrink-0 bg-fc-100 fc-border h-full rounded-lg p-4'>
-      <AiChat
-        key={String(callbackParams?.openedAt ?? '')}
-        showClose
-        onClose={closeAiChat}
-        queryPageFrom={{
-          page: 'explorer',
-        }}
-        queryAction={{
-          key: 'query_generator',
-          param: {
-            datasource_type: datasourceCate,
-            datasource_id: datasourceValue,
-          },
-        }}
-        promptList={
-          i18n.language === 'zh_CN'
-            ? ['帮我生成一个查询主机 CPU 使用率的语句', '帮我生成一个查询机器内存使用率的语句', '帮我生成一个查询机器磁盘使用率的语句']
-            : ['Generate a query for host CPU usage', 'Generate a query for memory usage', 'Generate a query for host disk usage']
-        }
-        customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
-          if (response.content_type === 'query') {
-            return (
-              <PromQLCard
-                response={response}
-                message={message}
-                onExecuteQuery={(promql) => {
-                  const onExecuteQuery = callbackParams?.onExecuteQuery as ((value: string) => void) | undefined;
-                  onExecuteQuery?.(promql);
-                }}
-              />
-            );
-          }
-          return null;
-        }}
-      />
-    </div>
-  );
-}
 
 function MetricExplorerPageContent() {
   const { t } = useTranslation('explorer');
@@ -122,7 +72,6 @@ function MetricExplorerPageContent() {
               {t('addPanel')}
             </Button>
           </div>
-          <MetricExplorerAiChatSidebar />
         </div>
       </div>
     </PageLayout>
@@ -130,11 +79,7 @@ function MetricExplorerPageContent() {
 }
 
 const MetricExplorerPage = () => {
-  return (
-    <AiChatProvider>
-      <MetricExplorerPageContent />
-    </AiChatProvider>
-  );
+  return <MetricExplorerPageContent />;
 };
 
 export default MetricExplorerPage;

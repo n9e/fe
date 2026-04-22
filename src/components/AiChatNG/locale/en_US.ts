@@ -3,6 +3,8 @@ const en_US = {
     current_chat: 'Current Chat',
     new_chat: 'New Chat',
     history: 'Chat History',
+    switch_to_drawer: 'Switch to Drawer Mode',
+    switch_to_floating: 'Switch to Floating Panel',
   },
   history: {
     untitled: 'New Chat',
@@ -39,12 +41,6 @@ const en_US = {
   },
   empty: {
     greeting_prefix: 'Hello, I am',
-  },
-  customContentRenderer: {
-    query: {
-      btn_copy: 'Copy',
-      btn_run: 'Run Query',
-    },
   },
 };
 

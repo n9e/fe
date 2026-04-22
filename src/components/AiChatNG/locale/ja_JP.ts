@@ -3,6 +3,8 @@ const ja_JP = {
     current_chat: '現在の会話',
     new_chat: '新規会話',
     history: '会話履歴',
+    switch_to_drawer: 'ドロワーモードに切り替え',
+    switch_to_floating: 'フローティングパネルに切り替え',
   },
   history: {
     untitled: '新しい会話',
@@ -39,12 +41,6 @@ const ja_JP = {
   },
   empty: {
     greeting_prefix: 'こんにちは、私は',
-  },
-  customContentRenderer: {
-    query: {
-      btn_copy: 'コピー',
-      btn_run: 'クエリを実行',
-    },
   },
 };
 

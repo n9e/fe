@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Row, Col, Input, Switch, Space, Tag, Tooltip, Button, Drawer } from 'antd';
+import { Form, Row, Col, Input, Switch, Space, Tag, Tooltip, Button } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
@@ -7,9 +7,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import { alphabet } from '@/utils/constant';
 import Resolution from '@/components/Resolution';
 import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
-import AiChat, { AiChatProvider, IAiChatMessage, IAiChatMessageResponse, useAiChatContext } from '@/components/AiChatNG';
+import { useAiChatContext } from '@/components/AiChatNG';
 import AiIcon from '@/components/AiChatNG/AiIcon';
-import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
+import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
 import { useGlobalState } from '@/pages/dashboard/globalState';
@@ -18,61 +18,11 @@ import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-function DashboardPrometheusAiChatDrawer() {
-  const form = Form.useFormInstance();
-  const { visible, datasourceCate, datasourceValue, callbackParams, closeAiChat } = useAiChatContext();
-
-  return (
-    <Drawer placement='right' width={420} visible={visible} onClose={closeAiChat} destroyOnClose bodyStyle={{ padding: 16 }}>
-      <AiChat
-        key={String(callbackParams?.openedAt ?? '')}
-        queryPageFrom={{
-          page: 'dashboards',
-        }}
-        queryAction={{
-          key: 'query_generator',
-          param: {
-            datasource_type: datasourceCate,
-            datasource_id: datasourceValue,
-          },
-        }}
-        promptList={['帮我生成一条 CPU 使用率查询', '解释当前查询语句', '给我一个 Prometheus 排障建议']}
-        customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
-          if (response.content_type === 'query') {
-            return (
-              <PromQLCard
-                response={response}
-                message={message}
-                onExecuteQuery={(promql) => {
-                  const targets = [...(form.getFieldValue('targets') || [])];
-                  const targetIndex = Number(callbackParams?.targetIndex ?? 0);
-
-                  if (!targets.length || !targets[targetIndex]) {
-                    return;
-                  }
-
-                  targets[targetIndex] = {
-                    ...targets[targetIndex],
-                    expr: promql,
-                  };
-
-                  form.setFieldsValue({
-                    targets,
-                  });
-                }}
-              />
-            );
-          }
-          return null;
-        }}
-      />
-    </Drawer>
-  );
-}
-
 function PrometheusContent({ panelWidth, datasourceValue, range }) {
   const { t } = useTranslation('dashboard');
-  const { openAiChat } = useAiChatContext();
+  const { i18n } = useTranslation();
+  const form = Form.useFormInstance();
+  const { openAiChat, callbackParams } = useAiChatContext();
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const varNams = _.map(variablesWithOptions, (item) => {
     return `$${item.name}`;
@@ -176,6 +126,37 @@ function PrometheusContent({ panelWidth, datasourceValue, range }) {
                           icon={<AiIcon />}
                           onClick={() => {
                             openAiChat({
+                              queryPageFrom: buildPageFrom({
+                                param: {
+                                  datasource_type: 'prometheus',
+                                  datasource_id: datasourceValue,
+                                },
+                              }),
+                              queryAction: {
+                                key: 'query_generator',
+                                param: {
+                                  datasource_type: 'prometheus',
+                                  datasource_id: datasourceValue,
+                                },
+                              },
+                              promptList: getExplorerPrompts(i18n.language),
+                            onExecuteQueryForQueryContent: (promql) => {
+                              const targets = [...(form.getFieldValue('targets') || [])];
+                              const targetIndex = Number(callbackParams?.targetIndex ?? 0);
+
+                              if (!targets.length || !targets[targetIndex]) {
+                                return;
+                              }
+
+                              targets[targetIndex] = {
+                                ...targets[targetIndex],
+                                expr: promql,
+                              };
+
+                              form.setFieldsValue({
+                                targets,
+                              });
+                              },
                               datasourceCate: 'prometheus',
                               datasourceValue,
                               callbackParams: {
@@ -234,7 +215,6 @@ function PrometheusContent({ panelWidth, datasourceValue, range }) {
                 add({ expr: '', __mode__: '__query__', refId: newRefId });
               }}
             />
-            <DashboardPrometheusAiChatDrawer />
           </>
         );
       }}
@@ -243,9 +223,5 @@ function PrometheusContent({ panelWidth, datasourceValue, range }) {
 }
 
 export default function Prometheus(props) {
-  return (
-    <AiChatProvider>
-      <PrometheusContent {...props} />
-    </AiChatProvider>
-  );
+  return <PrometheusContent {...props} />;
 }

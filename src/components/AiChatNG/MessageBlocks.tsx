@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
 import Markdown from '@/components/Markdown';
-import { AiChatCustomContentRenderer, EAiChatContentType, IAiChatAction, IAiChatMessage, IAiChatMessageResponse } from './types';
+import { AiChatExecuteQueryForQueryContent, EAiChatContentType, IAiChatAction, IAiChatMessage, IAiChatMessageResponse } from './types';
 import { cn } from './utils';
+import QueryContentBlock from './QueryContentBlock';
 
 function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
   const fullText = `${prefix}${brand}`;
@@ -53,7 +54,7 @@ function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
 interface IAiChatResponseBlocksProps {
   message: IAiChatMessage;
   isStreaming: boolean;
-  customContentRenderer?: AiChatCustomContentRenderer;
+  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onActionClick: (action: IAiChatAction) => void;
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
 }
@@ -98,7 +99,7 @@ export function CurStepBlock({ curStep }: { curStep: string }) {
 
 export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
   const { t } = useTranslation('AiChat');
-  const { message, isStreaming, customContentRenderer, onActionClick, maybeScrollToBottom } = props;
+  const { message, isStreaming, onExecuteQueryForQueryContent, onActionClick, maybeScrollToBottom } = props;
   const curStep = message.cur_step?.trim() || t('message.generating');
   const shouldShowCurStep = !message.is_finish && !message.err_code;
 
@@ -110,7 +111,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
 
       const datasourceType = action.param?.datasource_type;
       const datasourceId = action.param?.datasource_id;
-      const label = actionKeyMap[action.key] || action.key;
+      const label = (action.key && actionKeyMap[action.key]) || action.key || '';
 
       if (datasourceType && datasourceId) {
         return `${label} · ${datasourceType} / ${datasourceId}`;
@@ -157,18 +158,24 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
             return <MarkdownBlock key={`${response.content_type}-${index}`} response={response} />;
           case EAiChatContentType.Hint:
             return <HintBlock key={`${response.content_type}-${index}`} response={response} />;
+          case EAiChatContentType.Query:
+            return (
+              <QueryContentBlock
+                key={`${response.content_type}-${index}`}
+                query={response.content}
+                onExecute={
+                  onExecuteQueryForQueryContent
+                    ? () =>
+                        onExecuteQueryForQueryContent(response.content, {
+                          message,
+                          response,
+                        })
+                    : undefined
+                }
+              />
+            );
           default: {
-            const customNode = customContentRenderer?.({
-              message,
-              response,
-              isStreaming,
-              onExecuteAction: onActionClick,
-              maybeScrollToBottom,
-            });
-
-            return customNode ? (
-              <React.Fragment key={`${response.content_type}-${index}`}>{customNode}</React.Fragment>
-            ) : (
+            return (
               <div key={`${response.content_type}-${index}`} className='rounded-lg border border-dashed border-fc-200 px-4 py-3 text-sm text-hint'>
                 {t('message.unsupported_type', { type: response.content_type })}
               </div>
@@ -196,8 +203,8 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
 
   return (
     <div className='w-full h-full flex flex-col items-center text-center'>
-      <div className='w-full h-[260px] flex justify-center items-end'>
-        <div className='mb-8 text-l4 font-bold'>
+      <div className='w-full h-[40%] flex justify-center items-center'>
+        <div className='text-l4 font-bold'>
           <Space align='baseline'>
             <img src='/image/ai-chat/ai.gif' className='w-[24px] h-[24px]' />
             <TypedGreeting prefix={greetingPrefix} brand='FlashAI' />
@@ -225,7 +232,7 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
   );
 }
 
-export function MessageItem({ message, isStreaming, customContentRenderer, onActionClick, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
+export function MessageItem({ message, isStreaming, onExecuteQueryForQueryContent, onActionClick, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
   return (
     <div className='w-full space-y-3 shadow-sm'>
       <div className='flex justify-end'>
@@ -237,7 +244,7 @@ export function MessageItem({ message, isStreaming, customContentRenderer, onAct
         <ResponseBlocks
           message={message}
           isStreaming={isStreaming}
-          customContentRenderer={customContentRenderer}
+          onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
           onActionClick={onActionClick}
           maybeScrollToBottom={maybeScrollToBottom}
         />

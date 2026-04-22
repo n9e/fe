@@ -3,6 +3,8 @@ const ru_RU = {
     current_chat: 'Текущий чат',
     new_chat: 'Новый чат',
     history: 'История чатов',
+    switch_to_drawer: 'Переключить в режим Drawer',
+    switch_to_floating: 'Переключить в плавающую панель',
   },
   history: {
     untitled: 'Новый чат',
@@ -39,12 +41,6 @@ const ru_RU = {
   },
   empty: {
     greeting_prefix: 'Здравствуйте, я',
-  },
-  customContentRenderer: {
-    query: {
-      btn_copy: 'Копировать',
-      btn_run: 'Выполнить запрос',
-    },
   },
 };
 

@@ -3,6 +3,8 @@ const zh_CN = {
     current_chat: '当前会话',
     new_chat: '新建会话',
     history: '会话历史',
+    switch_to_drawer: '切换为抽屉模式',
+    switch_to_floating: '切换为浮窗模式',
   },
   history: {
     untitled: '新会话',
@@ -39,12 +41,6 @@ const zh_CN = {
   },
   empty: {
     greeting_prefix: '你好,我是',
-  },
-  customContentRenderer: {
-    query: {
-      btn_copy: '复制',
-      btn_run: '执行查询',
-    },
   },
 };
 

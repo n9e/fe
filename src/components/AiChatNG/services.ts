@@ -34,9 +34,24 @@ export const deleteChat = (chatId: string): Promise<void> => {
 };
 
 export const sendMessage = (data: IAiChatSendMessageRequest): Promise<IAiChatSendMessageResponse> => {
+  // 非首次会话发送消息时不再传 action.key，避免覆盖后端的会话语义推断
+  const payload: IAiChatSendMessageRequest =
+    data.chat_id && data.query.action
+      ? {
+          ...data,
+          query: {
+            ...data.query,
+            action: {
+              ...data.query.action,
+              key: '',
+            },
+          },
+        }
+      : data;
+
   return request(`${apiPrefix}/message/new`, {
     method: RequestMethod.Post,
-    data,
+    data: payload,
   }).then((res) => res?.[dataPathName]);
 };
 

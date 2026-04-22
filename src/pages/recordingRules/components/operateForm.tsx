@@ -8,9 +8,9 @@ import { useRequest } from 'ahooks';
 import { prometheusQuery } from '@/services/warning';
 import { addOrEditRecordingRule, editRecordingRule, deleteRecordingRule } from '@/services/recording';
 import PromQLInputNG from '@/components/PromQLInputNG';
-import AiChat, { AiChatProvider, IAiChatMessage, IAiChatMessageResponse, useAiChatContext } from '@/components/AiChatNG';
+import { useAiChatContext } from '@/components/AiChatNG';
 import AiIcon from '@/components/AiChatNG/AiIcon';
-import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
+import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 import DatasourceValueSelect from '@/pages/alertRules/Form/components/DatasourceValueSelect';
 import { CommonStateContext } from '@/App';
 import CronPattern from '@/components/CronPattern';
@@ -30,53 +30,9 @@ function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }
 
 const goListPath = '/recording-rules';
 
-function AiChatSidebar({ form }: { form: any }) {
-  const { visible, datasourceCate, datasourceValue, callbackParams, closeAiChat } = useAiChatContext();
-
-  if (!visible) {
-    return null;
-  }
-
-  return (
-    <div className='ml-4 w-[420px] flex-shrink-0 bg-fc-100 fc-border h-full rounded-lg p-4'>
-      <AiChat
-        key={String(callbackParams?.openedAt ?? '')}
-        showClose
-        onClose={closeAiChat}
-        queryPageFrom={{
-          page: 'record',
-        }}
-        queryAction={{
-          key: 'query_generator',
-          param: {
-            datasource_type: datasourceCate,
-            datasource_id: datasourceValue,
-          },
-        }}
-        promptList={['帮我生成一条 CPU 使用率查询', '解释当前查询语句', '给我一个 Prometheus 排障建议']}
-        customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
-          if (response.content_type === 'query') {
-            return (
-              <PromQLCard
-                response={response}
-                message={message}
-                onExecuteQuery={(promql) => {
-                  form.setFieldsValue({
-                    prom_ql: promql,
-                  });
-                }}
-              />
-            );
-          }
-          return null;
-        }}
-      />
-    </div>
-  );
-}
-
 const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
   const { t } = useTranslation('recordingRules');
+  const { i18n } = useTranslation();
   const history = useHistory(); // 创建的时候默认选中的值
   const [form] = Form.useForm();
   const { groupedDatasourceList } = useContext(CommonStateContext);
@@ -203,6 +159,25 @@ const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
                         icon={<AiIcon />}
                         onClick={() => {
                           openAiChat({
+                            queryPageFrom: buildPageFrom({
+                              param: {
+                                datasource_type: 'prometheus',
+                                datasource_id: datasourceValue,
+                              },
+                            }),
+                            queryAction: {
+                              key: 'query_generator',
+                              param: {
+                                datasource_type: 'prometheus',
+                                datasource_id: datasourceValue,
+                              },
+                            },
+                            promptList: getExplorerPrompts(i18n.language),
+                            onExecuteQueryForQueryContent: (promql) => {
+                              form.setFieldsValue({
+                                prom_ql: promql,
+                              });
+                            },
                             datasourceCate: 'prometheus',
                             datasourceValue,
                             callbackParams: {
@@ -256,16 +231,11 @@ const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
             </Form.Item>
           </Space>
         </div>
-        <AiChatSidebar form={form} />
       </div>
     </Form>
   );
 };
 
 export default function OperateFormWithAiChat(props: Props) {
-  return (
-    <AiChatProvider>
-      <OperateForm {...props} />
-    </AiChatProvider>
-  );
+  return <OperateForm {...props} />;
 }
