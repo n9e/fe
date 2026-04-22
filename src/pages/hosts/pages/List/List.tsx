@@ -427,7 +427,6 @@ export default function List(props: Props) {
                       )}
                       <Divider type='vertical' />
                       <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
-                        <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
                         {record.os === '' ? (
                           <span className='shrink-0'>-</span>
                         ) : (
@@ -436,6 +435,7 @@ export default function List(props: Props) {
                             <span className='min-w-0 shrink truncate'>{record.os}</span>
                           </>
                         )}
+                        <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
                         <span className='min-w-0 shrink truncate'>{archDisplay}</span>
                       </div>
                       <Divider type='vertical' />
