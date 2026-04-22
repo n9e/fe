@@ -5,6 +5,8 @@ const ja_JP = {
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',
   quickMenus: 'クイックメニュー',
+  recentUsed: '最近使用',
+  personalCollection: '個人コレクション',
   menu: {
     infrastructure: 'インフラストラクチャ',
     business_group: 'ビジネスグループ',

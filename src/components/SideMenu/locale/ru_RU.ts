@@ -5,6 +5,8 @@ const ru_RU = {
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',
   quickMenus: 'Быстрые меню',
+  recentUsed: 'Недавно использованные',
+  personalCollection: 'Личные коллекции',
   menu: {
     infrastructure: 'Инфраструктура',
     business_group: 'Бизнес-группа',

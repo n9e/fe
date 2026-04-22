@@ -5,6 +5,8 @@ const en_US = {
   quickOpenClose: 'Open/Close',
   quickSearchPlaceholder: 'Search...',
   quickMenus: 'Quick menus',
+  recentUsed: 'Recently used',
+  personalCollection: 'Personal collection',
   menu: {
     infrastructure: 'Infrastructure',
     business_group: 'Business group',
