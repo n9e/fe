@@ -438,7 +438,6 @@ export default function List(props: Props) {
                       <Divider type='vertical' />
                       <Tooltip title={metaTooltipTitle}>
                         <div className='min-w-0 flex shrink items-center gap-1 text-soft' style={{ width: identMetaWidth }}>
-                          <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
                           {record.os === '' ? (
                             <span className='shrink-0'>-</span>
                           ) : (
@@ -447,6 +446,7 @@ export default function List(props: Props) {
                               <span className='min-w-0 shrink truncate'>{record.os}</span>
                             </>
                           )}
+                          <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
                           <span className='min-w-0 shrink truncate'>{archDisplay}</span>
                         </div>
                       </Tooltip>
