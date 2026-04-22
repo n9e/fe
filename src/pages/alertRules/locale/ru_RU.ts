@@ -351,6 +351,25 @@ const ru_RU = {
     name_placeholder: 'Пожалуйста, выберите рабочий процесс обработки событий',
     add_btn: 'Добавить рабочий процесс обработки событий',
   },
+  pipeline_configuration_ng: {
+    title: 'Обработка событий',
+    select_workflow: 'Выбрать существующий workflow',
+    add_workflow: 'Создать workflow',
+    add_pipeline: 'Добавить процессор',
+    enabled: 'Включено',
+    save_workflow: 'Сохранить workflow',
+    save_workflow_modal_title_new: 'Сохранить как новый workflow',
+    save_workflow_modal_title_edit: 'Редактировать workflow',
+    workflow_name: 'Название workflow',
+    workflow_name_placeholder: 'Введите название workflow',
+    workflow_name_required: 'Название workflow обязательно',
+    workflow_unsaved: 'Конфигурация workflow не сохранена',
+    legacy_multi_workflow_tip: 'Устаревшая конфигурация, рекомендуется оставить только один workflow',
+    save_workflow_failed: 'Ошибка сохранения workflow',
+    reference_workflow_tip: 'Подключен workflow «{{workflowName}}». Изменения процессоров ниже применятся ко всем правилам, использующим этот workflow.',
+    no_changes: 'Конфигурация процессоров не изменилась',
+    save_workflow_tip: 'Только после нажатия кнопки сохранения workflow обработки событий будет создан или обновлен',
+  },
 };
 
 export default ru_RU;

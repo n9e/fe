@@ -30,7 +30,7 @@ export default function AddModal(props: Props) {
           });
         });
       }}
-      title={t('create_menu_1')}
+      title={t('write_skill')}
     >
       <FormCpt form={form} />
     </Modal>

@@ -36,6 +36,7 @@ import EventSettings from './EventSettings';
 import { processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
 import PipelineConfigs from './PipelineConfigs';
+import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
 
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
@@ -137,6 +138,7 @@ export default function index(props: IProps) {
   const { licenseRulesRemaining, datasourceCateOptions } = useContext(CommonStateContext);
   const disabled = type === 3;
   const containerRef = React.useRef(null);
+  const pipelineConfigsRef = React.useRef<PipelineConfigsNGRef>(null);
   // TODO: 废弃的检测，beta.5 起已经不需要
   const handleCheck = async (values) => {
     if (values.cate === 'prometheus') {
@@ -231,9 +233,10 @@ export default function index(props: IProps) {
                 </Form.Item>
                 <Base />
                 <Rule form={form} />
-                <EventSettings initialValues={initialValues} />
-                <Effective />
-                <PipelineConfigs />
+                <PipelineConfigsNG ref={pipelineConfigsRef} />
+                {/* <EventSettings initialValues={initialValues} /> */}
+                <Effective initialValues={initialValues ? processInitialValues(initialValues) : defaultValues} />
+                {/* <PipelineConfigs /> */}
                 <Notify disabled={disabled} />
               </div>
               <AffixWrapper>
@@ -246,6 +249,9 @@ export default function index(props: IProps) {
                           form
                             .validateFields()
                             .then(async (values) => {
+                              if (pipelineConfigsRef.current?.checkUnsavedAndNotify()) {
+                                return;
+                              }
                               handleCheck(values);
                               const data = processFormValues(values) as any;
                               if (type === 1) {

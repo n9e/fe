@@ -12,11 +12,12 @@ import EventsTable from './EventsTable';
 interface Props {
   type: 'processor' | 'pipeline';
   config: any;
+  size?: 'small' | 'middle' | 'large';
 }
 
 export default function TestModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { type, config } = props;
+  const { type, config, size } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [eventID, setEventID] = useState<number>();
   const [data, setData] = useState<{
@@ -32,6 +33,7 @@ export default function TestModal(props: Props) {
   return (
     <>
       <Button
+        size={size}
         onClick={() => {
           form.validateFields().then(() => {
             setVisible(true);

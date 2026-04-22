@@ -7,6 +7,9 @@ const en_US = {
   current_database: 'Database',
   table: 'Table',
   database_table_required: 'Please select database and table',
+  enrich_queries: {
+    title: 'Enrich Queries',
+  },
   query: {
     mode: {
       query: 'Query mode',

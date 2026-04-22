@@ -40,7 +40,7 @@ export default function Trigger(props: IProps) {
   const [expanded, setExpanded] = React.useState(false);
 
   return (
-    <div className='bg-fc-200 p-4'>
+    <div className='bg-fc-200 p-4 rounded-lg'>
       <Form.Item {...prefixField} name={[...prefixName, 'mode']}>
         <Radio.Group buttonStyle='solid' size='small' disabled={disabled}>
           <Radio.Button value={0}>{t('datasource:es.alert.trigger.builder')}</Radio.Button>
@@ -61,7 +61,6 @@ export default function Trigger(props: IProps) {
       <div className='mb-4'>
         <Severity field={prefixField} disabled={disabled} />
       </div>
-      <RecoverConfig {...props} />
       <div>
         <div className='mb-2'>
           <Space
@@ -79,6 +78,7 @@ export default function Trigger(props: IProps) {
             display: expanded ? 'block' : 'none',
           }}
         >
+          <RecoverConfig {...props} />
           <Joins {...props} />
         </div>
       </div>

@@ -1,5 +1,6 @@
 const en_US = {
   title: 'LLM Config',
+  help: 'LLM Configs provide model support for AI capabilities within the platform. Once enabled, they can be used for Skill calls, intelligent Q&A, alert analysis, log troubleshooting, monitoring data interpretation, and more. Setting a config as default will make it the fallback option for features that do not have a specific model assigned.',
   name: 'Name',
   description: 'Description',
   api_type: 'Provider Type',
