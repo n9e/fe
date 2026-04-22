@@ -217,9 +217,9 @@ export default function ChatPanel(props: IAiChatProps) {
   );
 
   const sendUserMessage = useCallback(
-    async (action?: IAiChatAction) => {
+    async (action?: IAiChatAction, overrideContent?: string) => {
       if (submitting) return;
-      const content = inputValue.trim();
+      const content = (overrideContent ?? inputValue).trim();
       if (!content) return;
 
       setSubmitting(true);
@@ -326,6 +326,7 @@ export default function ChatPanel(props: IAiChatProps) {
                   prompts={promptList}
                   onPromptClick={(prompt) => {
                     setInputValue(prompt);
+                    sendUserMessage(undefined, prompt);
                   }}
                 />
               )}
@@ -333,7 +334,7 @@ export default function ChatPanel(props: IAiChatProps) {
           </Spin>
         </div>
 
-        <div className='mt-4 rounded-lg border border-fc-200 bg-fc-50'>
+        <div className='mt-4 rounded-lg fc-border'>
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 8 }}
             bordered={false}

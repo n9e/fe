@@ -65,15 +65,16 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
     };
   }
   if (decimals === null) decimals = 6;
+  let valNum = val;
   if (typeof val !== 'number') {
-    val = _.toNumber(val);
+    valNum = _.toNumber(val);
   }
   const fn = getUnitFn(unit);
   if (unit) {
     const utilValObj = utilValMap[unit];
     if (utilValObj) {
       const { type, base, postfix } = utilValObj;
-      return byteConverter.format(val, {
+      return byteConverter.format(valNum, {
         type,
         base,
         decimals,
@@ -81,7 +82,7 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       });
     }
     if (fn) {
-      const formattedValue = fn(val, decimals);
+      const formattedValue = fn(valNum, decimals);
       let text = formattedValue.text;
 
       if (formattedValue.prefix) {
@@ -96,73 +97,73 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         value: formattedValue.text,
         unit: `${formattedValue.prefix || ''}${formattedValue.suffix || ''}`.trim(),
         text,
-        stat: val,
+        stat: valNum,
       };
     }
     // 2024-05-08 新增 'sishort' 单位为原 'default' 单位
     if (unit === 'default' || unit === 'sishort') {
-      return byteConverter.format(val, {
+      return byteConverter.format(valNum, {
         type: 'si',
         decimals,
       });
     }
     if (unit === 'none') {
       return {
-        value: _.round(val, decimals),
+        value: val,
         unit: '',
-        text: _.round(val, decimals),
+        text: val,
         stat: val,
       };
     }
     if (unit === 'percent') {
       return {
-        value: _.round(val, decimals),
+        value: _.round(valNum, decimals),
         unit: '%',
-        text: _.round(val, decimals) + '%',
-        stat: val,
+        text: _.round(valNum, decimals) + '%',
+        stat: valNum,
       };
     }
     if (unit === 'percentUnit') {
       return {
-        value: _.round(val * 100, decimals),
+        value: _.round(valNum * 100, decimals),
         unit: '%',
-        text: _.round(val * 100, decimals) + '%',
-        stat: val,
+        text: _.round(valNum * 100, decimals) + '%',
+        stat: valNum,
       };
     }
     if (unit === 'humantimeSeconds') {
       return {
-        value: moment.duration(val, 'seconds').humanize(),
+        value: moment.duration(valNum, 'seconds').humanize(),
         unit: '',
-        text: moment.duration(val, 'seconds').humanize(),
-        stat: val,
+        text: moment.duration(valNum, 'seconds').humanize(),
+        stat: valNum,
       };
     }
     if (unit === 'humantimeMilliseconds') {
       return {
-        value: moment.duration(val, 'milliseconds').humanize(),
+        value: moment.duration(valNum, 'milliseconds').humanize(),
         unit: '',
-        text: moment.duration(val, 'milliseconds').humanize(),
-        stat: val,
+        text: moment.duration(valNum, 'milliseconds').humanize(),
+        stat: valNum,
       };
     }
     if (_.includes(['seconds', 'milliseconds', 'microseconds', 'nanoseconds'], unit)) {
-      return timeFormatter(val, unit, decimals);
+      return timeFormatter(valNum, unit, decimals);
     }
     if (unit === 'datetimeSeconds') {
       return {
-        value: moment.unix(val).format(dateFormat),
+        value: moment.unix(valNum).format(dateFormat),
         unit: '',
-        text: moment.unix(val).format(dateFormat),
-        stat: val,
+        text: moment.unix(valNum).format(dateFormat),
+        stat: valNum,
       };
     }
     if (unit === 'datetimeMilliseconds') {
       return {
-        value: moment(val).format(dateFormat),
+        value: moment(valNum).format(dateFormat),
         unit: '',
-        text: moment(val).format(dateFormat),
-        stat: val,
+        text: moment(valNum).format(dateFormat),
+        stat: valNum,
       };
     }
     if (
@@ -195,7 +196,7 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         unit,
       )
     ) {
-      const data = byteConverter.format(val, {
+      const data = byteConverter.format(valNum, {
         type: 'si',
         decimals,
       });
@@ -208,14 +209,14 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       };
     }
     return {
-      value: _.round(val, decimals),
+      value: _.round(valNum, decimals),
       unit: unit,
-      text: _.round(val, decimals) + ' ' + unit, // 2024-07-08 值和单位组合之间添加空格，暂时用在自定义单位，后续考虑其他内置单位也添加空格
-      stat: val,
+      text: _.round(valNum, decimals) + ' ' + unit, // 2024-07-08 值和单位组合之间添加空格，暂时用在自定义单位，后续考虑其他内置单位也添加空格
+      stat: valNum,
     };
   }
   // 默认返回 SI 不带基础单位
-  return byteConverter.format(val, {
+  return byteConverter.format(valNum, {
     type: 'si',
     decimals,
   });

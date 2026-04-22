@@ -1,6 +1,6 @@
 /* 侧边菜单字体渲染对齐 fc-firemap，id 含 # 号须用属性选择器 */
 /* font-family 已在 theme/index.less body 上全局声明，此处仅保留 font-smoothing */
-[id="#tailwind"] aside {
+[id='#tailwind'] aside {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -87,19 +87,15 @@
 .sidemenu-hover-panel--light {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow:
-    0 4px 6px -1px rgba(15, 23, 42, 0.08),
-    0 2px 4px -2px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
   color: var(--fc-text-1);
 }
 
 /* 深色/自定义侧栏：沿用侧栏底色（由行内 style 注入） */
 .sidemenu-hover-panel--on-dark {
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.28),
-    0 2px 4px -2px rgba(0, 0, 0, 0.2);
-  color: var(--fc-text-2, #e6e6e8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.28), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  color: #e6e6e8;
 }
 
 .sidemenu-hover-panel-header {
@@ -127,14 +123,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.sidemenu-hover-panel--light .sidemenu-hover-panel-header-title {
-  color: var(--fc-text-1);
-}
-
-.sidemenu-hover-panel--on-dark .sidemenu-hover-panel-header-title {
-  color: var(--fc-text-2, #e6e6e8);
 }
 
 .sidemenu-hover-panel-divider {
@@ -212,7 +200,7 @@
     }
 
     .quick-menu-icon {
-      &>svg {
+      & > svg {
         width: 18px;
         height: 18px;
       }

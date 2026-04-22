@@ -6,6 +6,10 @@ const en_US = {
   },
   history: {
     untitled: 'New Chat',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    earlier: 'Earlier',
+    unknown_time: '--:--',
     delete_confirm: 'Delete this conversation?',
     empty: 'No conversation history',
   },

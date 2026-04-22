@@ -38,7 +38,7 @@ export default function FormCpt(props: Props) {
       <Form.Item label={t('form.instructions')} name='instructions' rules={[{ required: true }]}>
         <Input.TextArea autoSize={{ minRows: 6, maxRows: 12 }} placeholder={t('form.instructions_placeholder')} />
       </Form.Item>
-      <Collapse ghost className='skills-form-collapse'>
+      {/* <Collapse ghost className='skills-form-collapse'>
         <Collapse.Panel key='advanced' header={t('form.advanced_settings')}>
           <Form.Item label={t('form.license')} name='license'>
             <Input placeholder={t('form.license_placeholder')} />
@@ -82,7 +82,7 @@ export default function FormCpt(props: Props) {
             </Form.List>
           </Form.Item>
         </Collapse.Panel>
-      </Collapse>
+      </Collapse> */}
     </Form>
   );
 }
