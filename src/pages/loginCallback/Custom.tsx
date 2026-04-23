@@ -41,7 +41,7 @@ export default function Custom() {
             // receive token from liantongyun
             messageHandler = (event: MessageEvent) => {
               console.log('event', event);
-              if (event.origin === dat.customOrigin && event.data && event.data.token) {
+              if (event.data && event.data.token) {
                 // callback to get access_token and refresh_token
                 authCallbackCustom({
                   token: event.data.token,
