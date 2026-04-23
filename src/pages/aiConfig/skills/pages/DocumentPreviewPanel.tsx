@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Empty, Radio, Space, Spin } from 'antd';
+import { Empty, Radio, Space, Spin, Tooltip } from 'antd';
 import { CodeOutlined, EyeOutlined } from '@ant-design/icons';
 
 import Markdown from '@/components/Markdown';
@@ -36,10 +36,14 @@ export default function DocumentPreviewPanel(props: Props) {
               }}
             >
               <Radio.Button value='formatted'>
-                <EyeOutlined />
+                <Tooltip title={t('form.formatted_tip')} placement='top'>
+                  <EyeOutlined />
+                </Tooltip>
               </Radio.Button>
               <Radio.Button value='code'>
-                <CodeOutlined />
+                <Tooltip title={t('form.code_tip')} placement='top'>
+                  <CodeOutlined />
+                </Tooltip>
               </Radio.Button>
             </Radio.Group>
           )}
