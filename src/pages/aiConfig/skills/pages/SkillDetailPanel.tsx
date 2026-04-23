@@ -81,49 +81,53 @@ export default function SkillDetailPanel(props: Props) {
         <Space>
           {t('form.enabled')}
           <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />
-          <Dropdown
-            overlay={
-              <Menu>
-                {(item.builtin !== true || !!profile.admin) && (
-                  <Menu.Item
-                    key='upload'
-                    onClick={() => {
-                      setUploadModalVisible(true);
-                    }}
-                  >
-                    <Space>
-                      <UploadOutlined />
-                      {t('upload_skill_update')}
-                    </Space>
-                  </Menu.Item>
-                )}
-                <Menu.Item key='download' onClick={handleDownload}>
-                  <Space>
-                    <DownloadOutlined />
-                    {t('download_skill')}
-                  </Space>
-                </Menu.Item>
-                {item.builtin !== true && (
-                  <Menu.Item
-                    key='unload'
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('edite_menu_3_confirm'),
-                        onOk: onDelete,
-                      });
-                    }}
-                  >
-                    <Space>
-                      <DeleteOutlined />
-                      {t('delete_skill')}
-                    </Space>
-                  </Menu.Item>
-                )}
-              </Menu>
-            }
-          >
-            <Button size='small' icon={<EllipsisOutlined />} />
-          </Dropdown>
+          {(item.builtin !== true || !!profile.admin) && (
+            <Dropdown
+              overlay={
+                <Menu>
+                  {(item.builtin !== true || !!profile.admin) && (
+                    <Menu.Item
+                      key='upload'
+                      onClick={() => {
+                        setUploadModalVisible(true);
+                      }}
+                    >
+                      <Space>
+                        <UploadOutlined />
+                        {t('upload_skill_update')}
+                      </Space>
+                    </Menu.Item>
+                  )}
+                  {item.builtin !== true && (
+                    <>
+                      <Menu.Item key='download' onClick={handleDownload}>
+                        <Space>
+                          <DownloadOutlined />
+                          {t('download_skill')}
+                        </Space>
+                      </Menu.Item>
+                      <Menu.Item
+                        key='unload'
+                        onClick={() => {
+                          Modal.confirm({
+                            title: t('edite_menu_3_confirm'),
+                            onOk: onDelete,
+                          });
+                        }}
+                      >
+                        <Space>
+                          <DeleteOutlined />
+                          {t('delete_skill')}
+                        </Space>
+                      </Menu.Item>
+                    </>
+                  )}
+                </Menu>
+              }
+            >
+              <Button size='small' icon={<EllipsisOutlined />} />
+            </Dropdown>
+          )}
         </Space>
       </div>
       <div>
