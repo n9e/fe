@@ -24,9 +24,6 @@ import { CommonStateContext } from '@/App';
 import { addStrategy, EditStrategy } from '@/services/warning';
 import { scrollToFirstError } from '@/utils';
 import AffixWrapper from '@/components/AffixWrapper';
-import AiChat, { IAiChatMessage, IAiChatMessageResponse } from '@/components/AiChatNG';
-import PromQLCard from '@/components/AiChatNG/customContentRenderer/PromQLCard';
-import { AiChatProvider, useAiChatContext } from '@/components/AiChatNG/context';
 
 import Base from './Base';
 import Rule from './Rule';
@@ -47,87 +44,6 @@ interface IProps {
 export const FormStateContext = createContext({
   disabled: false,
 });
-
-function AlertRulesAiChatSidebar({ form }: { form: any }) {
-  const { visible, datasourceCate, datasourceValue, callbackParams, closeAiChat, setDatasourceCate, setDatasourceValue } = useAiChatContext();
-  const cate = Form.useWatch('cate', form);
-  const currentDatasourceValue = Form.useWatch('datasource_value', form);
-  const ruleConfigVersion = Form.useWatch(['rule_config', 'version'], form);
-
-  useEffect(() => {
-    setDatasourceCate(cate);
-  }, [cate, setDatasourceCate]);
-
-  useEffect(() => {
-    setDatasourceValue(currentDatasourceValue);
-  }, [currentDatasourceValue, setDatasourceValue]);
-
-  useEffect(() => {
-    if (visible && cate !== 'prometheus') {
-      closeAiChat();
-    }
-  }, [visible, cate, closeAiChat]);
-
-  if (!visible) {
-    return null;
-  }
-
-  return (
-    <div className='ml-4 w-[420px] flex-shrink-0 bg-fc-100 fc-border h-full rounded-lg p-4'>
-      <AiChat
-        key={JSON.stringify(callbackParams ?? {})}
-        showClose
-        onClose={closeAiChat}
-        queryPageFrom={{
-          page: 'alert',
-        }}
-        queryAction={{
-          key: 'query_generator',
-          param: {
-            datasource_type: datasourceCate,
-            datasource_id: datasourceValue,
-          },
-        }}
-        promptList={['帮我生成一条 CPU 使用率查询', '解释当前查询语句', '给我一个 Prometheus 排障建议']}
-        customContentRenderer={({ response, message }: { response: IAiChatMessageResponse; message: IAiChatMessage }) => {
-          if (response.content_type === 'query') {
-            return (
-              <PromQLCard
-                response={response}
-                message={message}
-                onExecuteQuery={(promql) => {
-                  const ruleConfig = form.getFieldValue('rule_config') || {};
-                  const queries = [...(ruleConfig.queries || [])];
-
-                  if (!queries.length) {
-                    return;
-                  }
-
-                  const queriesIndex = Number(callbackParams?.queriesIndex ?? 0);
-                  const nextIndex = Math.min(queriesIndex, queries.length - 1);
-                  const queryFieldName = ruleConfigVersion === 'v2' ? 'query' : 'prom_ql';
-
-                  queries[nextIndex] = {
-                    ...queries[nextIndex],
-                    [queryFieldName]: promql,
-                  };
-
-                  form.setFieldsValue({
-                    rule_config: {
-                      ...ruleConfig,
-                      queries,
-                    },
-                  });
-                }}
-              />
-            );
-          }
-          return null;
-        }}
-      />
-    </div>
-  );
-}
 
 export default function index(props: IProps) {
   const { type, initialValues, editable = true } = props;
@@ -209,81 +125,75 @@ export default function index(props: IProps) {
   }, [initialValues]);
 
   return (
-    <AiChatProvider>
-      <FormStateContext.Provider
-        value={{
-          disabled,
-        }}
-      >
-        <div className='flex h-full'>
-          <div className='flex-1 min-w-0 h-full best-looking-scroll' ref={containerRef}>
-            <Form form={form} layout='vertical' disabled={disabled}>
-              <div className='flex flex-col gap-4'>
-                {editable === false && (
-                  <Affix
-                    target={() => {
-                      return containerRef.current || window;
-                    }}
-                  >
-                    <Alert type='warning' message={t('expired')} />
-                  </Affix>
+    <FormStateContext.Provider
+      value={{
+        disabled,
+      }}
+    >
+      <div className='flex h-full'>
+        <div className='flex-1 min-w-0 h-full best-looking-scroll' ref={containerRef}>
+          <Form form={form} layout='vertical' disabled={disabled}>
+            <div className='flex flex-col gap-4'>
+              {editable === false && (
+                <Affix
+                  target={() => {
+                    return containerRef.current || window;
+                  }}
+                >
+                  <Alert type='warning' message={t('expired')} />
+                </Affix>
+              )}
+              <Form.Item name='disabled' hidden>
+                <div />
+              </Form.Item>
+              <Base />
+              <Rule form={form} />
+              <PipelineConfigsNG ref={pipelineConfigsRef} />
+              {/* <EventSettings initialValues={initialValues} /> */}
+              <Effective initialValues={initialValues ? processInitialValues(initialValues) : defaultValues} />
+              {/* <PipelineConfigs /> */}
+              <Notify disabled={disabled} />
+            </div>
+            <AffixWrapper>
+              <Card size='small' className='affix-bottom-shadow'>
+                {!disabled && (
+                  <Space>
+                    <Button
+                      type='primary'
+                      onClick={() => {
+                        form
+                          .validateFields()
+                          .then(async (values) => {
+                            handleCheck(values);
+                            const data = processFormValues(values) as any;
+                            if (type === 1) {
+                              const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                              handleMessage(res);
+                            } else {
+                              const curBusiId = initialValues?.group_id || Number(bgid);
+                              const res = await addStrategy([data], curBusiId);
+                              handleMessage(res);
+                            }
+                          })
+                          .catch((err) => {
+                            console.error(err);
+                            scrollToFirstError();
+                          });
+                      }}
+                      disabled={editable === false}
+                    >
+                      {t('common:btn.save')}
+                    </Button>
+                    <Link to='/alert-rules'>
+                      <Button>{t('common:btn.cancel')}</Button>
+                    </Link>
+                  </Space>
                 )}
-                <Form.Item name='disabled' hidden>
-                  <div />
-                </Form.Item>
-                <Base />
-                <Rule form={form} />
-                <PipelineConfigsNG ref={pipelineConfigsRef} />
-                {/* <EventSettings initialValues={initialValues} /> */}
-                <Effective initialValues={initialValues ? processInitialValues(initialValues) : defaultValues} />
-                {/* <PipelineConfigs /> */}
-                <Notify disabled={disabled} />
-              </div>
-              <AffixWrapper>
-                <Card size='small' className='affix-bottom-shadow'>
-                  {!disabled && (
-                    <Space>
-                      <Button
-                        type='primary'
-                        onClick={() => {
-                          form
-                            .validateFields()
-                            .then(async (values) => {
-                              if (pipelineConfigsRef.current?.checkUnsavedAndNotify()) {
-                                return;
-                              }
-                              handleCheck(values);
-                              const data = processFormValues(values) as any;
-                              if (type === 1) {
-                                const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                                handleMessage(res);
-                              } else {
-                                const curBusiId = initialValues?.group_id || Number(bgid);
-                                const res = await addStrategy([data], curBusiId);
-                                handleMessage(res);
-                              }
-                            })
-                            .catch((err) => {
-                              console.error(err);
-                              scrollToFirstError();
-                            });
-                        }}
-                        disabled={editable === false}
-                      >
-                        {t('common:btn.save')}
-                      </Button>
-                      <Link to='/alert-rules'>
-                        <Button>{t('common:btn.cancel')}</Button>
-                      </Link>
-                    </Space>
-                  )}
-                </Card>
-              </AffixWrapper>
-            </Form>
-          </div>
-          <AlertRulesAiChatSidebar form={form} />
+              </Card>
+            </AffixWrapper>
+          </Form>
         </div>
-      </FormStateContext.Provider>
-    </AiChatProvider>
+      </div>
+    </FormStateContext.Provider>
   );
 }
