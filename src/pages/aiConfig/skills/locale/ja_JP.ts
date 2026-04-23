@@ -32,6 +32,7 @@ const ja_JP = {
     description_placeholder: 'スキルの説明を入力してください',
     instructions: '指示',
     instructions_placeholder: 'Markdown 形式で指示を書いてください',
+    usage: '使用方法',
     advanced_settings: '詳細設定',
     license: 'ライセンス',
     license_placeholder: '例: MIT, Apache 2.0',

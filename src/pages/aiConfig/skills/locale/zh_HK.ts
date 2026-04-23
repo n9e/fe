@@ -32,6 +32,7 @@ const zh_HK = {
     description_placeholder: '請輸入 Skill 描述',
     instructions: '提示詞指令',
     instructions_placeholder: '撰寫提示詞指令，支援 Markdown 格式',
+    usage: '使用說明',
     advanced_settings: '進階設定',
     license: '授權',
     license_placeholder: '例如 MIT、Apache 2.0',

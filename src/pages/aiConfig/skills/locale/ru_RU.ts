@@ -32,6 +32,7 @@ const ru_RU = {
     description_placeholder: 'Введите описание skill',
     instructions: 'Инструкции',
     instructions_placeholder: 'Введите инструкции в формате Markdown',
+    usage: 'Использование',
     advanced_settings: 'Дополнительные настройки',
     license: 'Лицензия',
     license_placeholder: 'Например MIT или Apache 2.0',

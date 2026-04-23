@@ -50,7 +50,7 @@ export interface FileContent extends FileItem {
   content: string;
 }
 
-export type SkillTreeNodeType = 'skill' | 'skill-doc' | 'directory' | 'resource-file';
+export type SkillTreeNodeType = 'skill' | 'directory' | 'resource-file';
 
 export interface SkillTreeNode {
   key: string;
