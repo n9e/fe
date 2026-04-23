@@ -1,9 +1,13 @@
 import React from 'react';
 
-export type AiChatPageType = 'dashboards' | 'alert' | 'record' | 'explorer';
+export type AiChatPageType = 'dashboards' | 'alert' | 'record' | 'explorer' | 'alert_rule' | 'alert_history' | 'active_alert' | 'notify_tpl' | 'datasource';
 
 export interface IAiChatPageInfo {
-  page: AiChatPageType;
+  /**
+   * 当前页面 url（不含域名），仅包含 pathname + search
+   * 例如：/explorer/metric?ids=1
+   */
+  url: string;
   param?: Record<string, unknown>;
 }
 
@@ -16,8 +20,8 @@ export interface IAiChatActionParam {
 }
 
 export interface IAiChatAction {
-  key: string;
-  param: IAiChatActionParam;
+  key?: string;
+  param?: IAiChatActionParam;
 }
 
 export interface IAiChatMessageQuery {
@@ -32,6 +36,9 @@ export enum EAiChatContentType {
   Markdown = 'markdown',
   Hint = 'hint',
   Query = 'query',
+  FormSelect = 'form_select',
+  AlertRule = 'alert_rule',
+  Dashboard = 'dashboard',
 }
 
 export interface IAiChatMessageResponse {
@@ -106,15 +113,12 @@ export interface IAiChatHiddenFeature {
   header?: boolean;
 }
 
-export interface IAiChatRenderContext {
+export interface IAiChatQueryContentContext {
   message: IAiChatMessage;
   response: IAiChatMessageResponse;
-  isStreaming: boolean;
-  onExecuteAction?: (action: IAiChatAction) => void;
-  maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
 }
 
-export type AiChatCustomContentRenderer = (context: IAiChatRenderContext) => React.ReactNode;
+export type AiChatExecuteQueryForQueryContent = (query: string, context: IAiChatQueryContentContext) => void;
 
 export interface IAiChatProps {
   className?: string;
@@ -124,7 +128,9 @@ export interface IAiChatProps {
   queryAction?: IAiChatAction;
   welcomeSlot?: React.ReactNode;
   promptList?: string[];
-  customContentRenderer?: AiChatCustomContentRenderer;
+  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;
   onError?: (error: Error) => void;
 }
+
+export type AiChatMode = 'drawer' | 'floating';

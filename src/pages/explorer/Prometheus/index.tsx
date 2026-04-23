@@ -5,14 +5,16 @@ import moment from 'moment';
 import _ from 'lodash';
 import { Button, Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
+import { useTranslation } from 'react-i18next';
 
 import { SIZE } from '@/utils/constant';
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
 
-import AiIcon from '@/components/AiChatNG/AiIcon';
+import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { useAiChatContext } from '@/components/AiChatNG';
+import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 
 import { queryStringOptions } from '../constants';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
@@ -62,6 +64,7 @@ export default function Prometheus(props: IProps) {
     defaultTime,
     onDefaultTimeChange,
   } = props;
+  const { i18n } = useTranslation();
   const { openAiChat } = useAiChatContext();
   const history = useHistory();
   const { search } = useLocation();
@@ -150,20 +153,23 @@ export default function Prometheus(props: IProps) {
         }}
         extra={
           <Space size={SIZE}>
-            <Button
-              icon={<AiIcon />}
-              onClick={() => {
-                openAiChat({
-                  datasourceCate: 'prometheus',
-                  datasourceValue,
-                  callbackParams: {
-                    panelKey,
-                    onExecuteQuery: (nextPromql: string) => {
-                      setPromql(nextPromql);
-                    },
-                    openedAt: Date.now(),
-                  },
-                });
+            <AiButton
+              queryPageFrom={buildPageFrom({
+                param: {
+                  datasource_type: 'prometheus',
+                  datasource_id: datasourceValue,
+                },
+              })}
+              queryAction={{
+                key: 'query_generator',
+                param: {
+                  datasource_type: 'prometheus',
+                  datasource_id: datasourceValue,
+                },
+              }}
+              promptList={getExplorerPrompts(i18n.language)}
+              onExecuteQueryForQueryContent={(nextPromql) => {
+                setPromql(nextPromql);
               }}
             />
             <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />

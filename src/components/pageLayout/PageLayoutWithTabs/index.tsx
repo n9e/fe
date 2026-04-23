@@ -28,6 +28,8 @@ import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils';
 import { MenuMatchResult } from '@/components/SideMenu/types';
+import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
+
 import DocLink from './DocLink';
 import { TabMenu } from './TabMenu';
 import LanguageIcon from '../icons/LanguageIcon';
@@ -178,11 +180,15 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <Version />
 
-                  <Space size={12}>{rightArea}</Space>
+                  <Space size={12}>
+                    {rightArea}
+                    <FlashAiButton />
+                  </Space>
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
                   </AdvancedWrap>
+
                   <Space>
                     {/* 整合版本关闭文档链接 */}
                     {!IS_ENT && IS_PLUS && (
@@ -198,6 +204,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       </Button>
                     )}
                   </Space>
+
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <FeatureNotification />
                   </AdvancedWrap>

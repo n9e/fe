@@ -3,6 +3,8 @@ const zh_HK = {
     current_chat: '當前會話',
     new_chat: '新建會話',
     history: '會話歷史',
+    switch_to_drawer: '切換為抽屜模式',
+    switch_to_floating: '切換為浮窗模式',
   },
   history: {
     untitled: '新會話',
@@ -37,14 +39,50 @@ const zh_HK = {
     thinking: '思考過程',
     unsupported_type: '暫不支持的內容類型：{{type}}',
   },
+  form_select: {
+    title: '請先補充以下資訊後繼續：',
+    busi_group: '業務組',
+    datasource: '數據源',
+    placeholder_select: '請選擇',
+    confirm: '確定',
+  },
+  alert_rule: {
+    title: '告警規則',
+    copy: '複製',
+    copied: '已複製規則 ID',
+    duration_seconds: '持續 {{seconds}} 秒',
+    field: {
+      id: '規則 ID',
+      name: '規則名稱',
+      group: '業務組',
+      datasource: '數據源',
+      cate: '數據源類型',
+      severity: '告警級別',
+      metric: '監控指標',
+      condition: '觸發條件',
+      note: '告警內容',
+    },
+    severity: {
+      critical: 'Critical',
+      warning: 'Warning',
+      info: 'Info',
+    },
+  },
+  dashboard: {
+    title: '儀表盤',
+    copied: '已複製儀表盤 ID',
+    field: {
+      id: '儀表盤 ID',
+      name: '名稱',
+      group: '業務組',
+      datasource: '默認數據源',
+      panels_count: '面板數',
+      variables_count: '變量數',
+      tags: '標籤',
+    },
+  },
   empty: {
     greeting_prefix: '你好,我是',
-  },
-  customContentRenderer: {
-    query: {
-      btn_copy: '複製',
-      btn_run: '執行查詢',
-    },
   },
 };
 
