@@ -6,10 +6,6 @@ export function getSkillNodeKey(skillId: number) {
   return `skill:${skillId}`;
 }
 
-export function getSkillDocNodeKey(skillId: number) {
-  return `skill:${skillId}:doc`;
-}
-
 export function getSkillDirectoryNodeKey(skillId: number, path: string) {
   return `skill:${skillId}:dir:${path}`;
 }
@@ -26,10 +22,26 @@ export function isMarkdownFile(fileName: string) {
   return _.endsWith(_.toLower(fileName), '.md');
 }
 
+function isSkillMdFile(name: string) {
+  const normalized = _.toLower(_.trim(name));
+  return normalized === 'skill.md' || _.endsWith(normalized, '/skill.md');
+}
+
 function appendResourceTree(skillId: number, files: FileItem[]) {
   const tree: SkillTreeNode[] = [];
 
-  _.forEach(files, (file) => {
+  const sortedFiles = _.orderBy(
+    files,
+    [
+      (file) => {
+        return isSkillMdFile(file.name) ? 0 : 1;
+      },
+      (file) => _.toLower(file.name),
+    ],
+    ['asc', 'asc'],
+  );
+
+  _.forEach(sortedFiles, (file) => {
     const parts = _.filter(_.split(file.name, '/'));
 
     if (_.isEmpty(parts)) {
@@ -102,17 +114,7 @@ export function buildSkillTree(skills: Item[], detailMap: Record<number, SkillDe
       selectable: true,
       enabled: skill.enabled,
       builtin: skill.builtin,
-      children: [
-        {
-          key: getSkillDocNodeKey(skill.id),
-          title: 'SKILL.md',
-          nodeType: 'skill-doc',
-          skillId: skill.id,
-          selectable: true,
-          isLeaf: true,
-        },
-        ...resourceNodes,
-      ],
+      children: resourceNodes,
     };
     nodeMap[node.key] = node;
     fillNodeMap(node.children || [], nodeMap);

@@ -372,10 +372,10 @@ export default function List() {
                     />
                   ) : (
                     <DocumentPreviewPanel
-                      title={selectedNode.nodeType === 'skill-doc' ? `${selectedSkillData.name}/SKILL.md` : selectedNode.file?.name || selectedNode.title}
-                      content={selectedNode.nodeType === 'skill-doc' ? selectedSkillData.instructions : fileContent?.content}
-                      loading={selectedNode.nodeType === 'resource-file' ? fileLoading : detailLoadingMap[selectedSkillData.id]}
-                      isMarkdown={selectedNode.nodeType === 'skill-doc' || isMarkdownFile(selectedNode.file?.name || '')}
+                      title={selectedNode.file?.name || selectedNode.title}
+                      content={fileContent?.content}
+                      loading={fileLoading}
+                      isMarkdown={isMarkdownFile(selectedNode.file?.name || '')}
                       previewMode={mdFormat}
                       onPreviewModeChange={setMdFormat}
                       extra={

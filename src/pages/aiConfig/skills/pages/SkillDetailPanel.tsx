@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Collapse, Dropdown, Menu, Modal, Space, Switch, Table, Tag, message } from 'antd';
 import { DeleteOutlined, EllipsisOutlined, DownloadOutlined, UploadOutlined } from '@ant-design/icons';
@@ -6,6 +6,8 @@ import JSZip from 'jszip';
 import _ from 'lodash';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+
+import { CommonStateContext } from '@/App';
 
 import { NS } from '../constants';
 import { getFile, getItem } from '../services';
@@ -23,17 +25,27 @@ interface Props {
 
 export default function SkillDetailPanel(props: Props) {
   const { t } = useTranslation(NS);
+  const { profile } = useContext(CommonStateContext);
   const { item, onToggleEnabled, onEdit, onImport, onDelete } = props;
 
   const [previewMode, setPreviewMode] = React.useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
 
+  const getSkillMdPath = (fileName?: string) => {
+    const normalized = _.toLower(_.trim(fileName || ''));
+    if (!normalized) return undefined;
+    if (normalized === 'skill.md') return 'SKILL.md';
+    if (_.endsWith(normalized, '/skill.md')) {
+      const filePath = _.join(_.filter(_.split(fileName || '', '/')), '/');
+      return filePath || 'SKILL.md';
+    }
+    return undefined;
+  };
+
   const handleDownload = async () => {
     try {
       const skillDetail = await getItem(item.id);
       const zip = new JSZip();
-
-      zip.file('SKILL.md', skillDetail.instructions || '');
 
       const files = skillDetail.files || [];
       const fileContents = await Promise.all(
@@ -48,6 +60,13 @@ export default function SkillDetailPanel(props: Props) {
         zip.file(normalizedPath, fileContent.content || '');
       });
 
+      // Keep SKILL.md consistent with sidebar: only include if present in files.
+      const skillMdFile = _.find(fileContents, (fileContent) => !!getSkillMdPath(fileContent.name));
+      if (skillMdFile) {
+        const skillMdPath = getSkillMdPath(skillMdFile.name) || 'SKILL.md';
+        zip.file(skillMdPath, skillMdFile.content || '');
+      }
+
       const blob = await zip.generateAsync({ type: 'blob' });
       saveAs(blob, `${item.name || 'skill'}.zip`);
     } catch (_error) {
@@ -60,11 +79,12 @@ export default function SkillDetailPanel(props: Props) {
       <div className='flex justify-between fc-toolbar mb-2'>
         <div className='text-title text-l2'>{item.name}</div>
         <Space>
+          {t('form.enabled')}
           <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />
           <Dropdown
             overlay={
               <Menu>
-                {item.builtin !== true && (
+                {(item.builtin !== true || !!profile.admin) && (
                   <Menu.Item
                     key='upload'
                     onClick={() => {
@@ -124,7 +144,7 @@ export default function SkillDetailPanel(props: Props) {
       </div>
       <div className='skills-section-divider my-4' />
       <DocumentPreviewPanel
-        title={t('form.instructions')}
+        title={item.builtin === true ? t('form.usage') : t('form.instructions')}
         content={item.instructions}
         loading={false}
         isMarkdown
