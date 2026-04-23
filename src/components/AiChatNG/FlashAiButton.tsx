@@ -5,6 +5,7 @@ import type { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useTranslation } from 'react-i18next';
 
 import { IS_ENT } from '@/utils/constant';
+import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
@@ -12,7 +13,7 @@ import { IAiChatPageInfo, IAiChatAction, AiChatExecuteQueryForQueryContent } fro
 
 const FLASH_AI_BUTTON_PATH_WHITELIST = new Set(['/alert-rules', '/dashboards', '/alert-cur-events', '/alert-his-events']);
 
-export default function FlashAiButton() {
+function FlashAiButtonContent() {
   const { i18n } = useTranslation();
   const { openAiChat } = useAiChatContext();
   const location = useLocation();
@@ -40,7 +41,14 @@ export default function FlashAiButton() {
   );
 }
 
-export function AiButton(props: {
+export default function FlashAiButton() {
+  if (IS_ENT) {
+    return <LayoutHeaderAiBtn />;
+  }
+  return <FlashAiButtonContent />;
+}
+
+function AiButtonContent(props: {
   size?: SizeType;
   queryPageFrom?: IAiChatPageInfo;
   queryAction?: IAiChatAction;
@@ -49,18 +57,6 @@ export function AiButton(props: {
 }) {
   const { openAiChat } = useAiChatContext();
   const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent } = props;
-
-  if (IS_ENT) {
-    return (
-      <Button
-        icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mb-1' />}
-        size={size}
-        onClick={() => {
-          // flashcat 版本逻辑
-        }}
-      />
-    );
-  }
 
   return (
     <Button
@@ -76,4 +72,28 @@ export function AiButton(props: {
       }}
     />
   );
+}
+
+export function AiButton(props: {
+  size?: SizeType;
+  queryPageFrom?: IAiChatPageInfo;
+  queryAction?: IAiChatAction;
+  promptList?: string[];
+  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
+}) {
+  const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent } = props;
+
+  if (IS_ENT) {
+    return (
+      <Button
+        icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mb-1' />}
+        size={size}
+        onClick={() => {
+          // flashcat 版本逻辑
+        }}
+      />
+    );
+  }
+
+  return <AiButtonContent {...props} />;
 }
