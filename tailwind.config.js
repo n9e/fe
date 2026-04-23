@@ -169,6 +169,10 @@ module.exports = {
       disable: 'var(--fc-text-5)',
       link: 'var(--fc-text-link)',
       placeholder: 'var(--fc-text-placeholder)',
+      error: 'var(--fc-fill-error)',
+      alert: 'var(--fc-fill-alert)',
+      warning: 'var(--fc-fill-warning)',
+      success: 'var(--fc-fill-success)',
     }),
     screens: {
       xs: '320px',

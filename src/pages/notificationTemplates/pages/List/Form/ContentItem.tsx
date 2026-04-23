@@ -29,7 +29,7 @@ export default function ContentItem(props: Props) {
             <Form.Item {...field} name={[field.name, 'value']}>
               <HTML
                 label={
-                  <Form.Item {...field} name={[field.name, 'key']}>
+                  <Form.Item {...field} name={[field.name, 'key']} noStyle>
                     <ContentItemKey hideEdit />
                   </Form.Item>
                 }
@@ -40,7 +40,7 @@ export default function ContentItem(props: Props) {
             <Form.Item {...field} name={[field.name, 'value']}>
               <Text
                 label={
-                  <Form.Item {...field} name={[field.name, 'key']}>
+                  <Form.Item {...field} name={[field.name, 'key']} noStyle>
                     <ContentItemKey hideEdit />
                   </Form.Item>
                 }
@@ -52,7 +52,7 @@ export default function ContentItem(props: Props) {
         <Form.Item {...field} name={[field.name, 'value']} rules={[{ required: true, message: t('content.value_msg') }]}>
           <Markdown
             label={
-              <Form.Item {...field} name={[field.name, 'key']}>
+              <Form.Item {...field} name={[field.name, 'key']} noStyle>
                 <ContentItemKey />
               </Form.Item>
             }

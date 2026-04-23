@@ -28,6 +28,8 @@ import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils';
 import { MenuMatchResult } from '@/components/SideMenu/types';
+import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
+
 import DocLink from './DocLink';
 import { TabMenu } from './TabMenu';
 import LanguageIcon from '../icons/LanguageIcon';
@@ -40,7 +42,6 @@ import '../locale';
 
 // @ts-ignore
 import FeatureNotification from 'plus:/pages/FeatureNotification';
-import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 
 export { HelpLink };
 
@@ -181,12 +182,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <Space size={12}>
                     {rightArea}
-                    <LayoutHeaderAiBtn />
+                    <FlashAiButton />
                   </Space>
 
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <License />
                   </AdvancedWrap>
+
                   <Space>
                     {/* 整合版本关闭文档链接 */}
                     {!IS_ENT && IS_PLUS && (
@@ -202,6 +204,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       </Button>
                     )}
                   </Space>
+
                   <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                     <FeatureNotification />
                   </AdvancedWrap>
