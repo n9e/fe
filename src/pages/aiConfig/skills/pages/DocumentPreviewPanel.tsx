@@ -12,6 +12,7 @@ interface Props {
   content?: string;
   loading?: boolean;
   isMarkdown: boolean;
+  showHeader?: boolean;
   previewMode: 'formatted' | 'code';
   onPreviewModeChange: (mode: 'formatted' | 'code') => void;
   extra?: React.ReactNode;
@@ -19,36 +20,38 @@ interface Props {
 
 export default function DocumentPreviewPanel(props: Props) {
   const { t } = useTranslation(NS);
-  const { title, content, loading, isMarkdown, previewMode, onPreviewModeChange, extra } = props;
+  const { title, content, loading, isMarkdown, showHeader = true, previewMode, onPreviewModeChange, extra } = props;
 
   return (
     <div className='w-full h-full min-w-0 min-h-0 pr-2 flex flex-col'>
-      <div className='flex justify-between items-center fc-toolbar mb-2 gap-3'>
-        <div className='text-title text-l2 break-all'>{title}</div>
-        <Space>
-          {extra}
-          {isMarkdown && (
-            <Radio.Group
-              size='small'
-              value={previewMode}
-              onChange={(event) => {
-                onPreviewModeChange(event.target.value);
-              }}
-            >
-              <Radio.Button value='formatted'>
-                <Tooltip title={t('form.formatted_tip')} placement='top'>
-                  <EyeOutlined />
-                </Tooltip>
-              </Radio.Button>
-              <Radio.Button value='code'>
-                <Tooltip title={t('form.code_tip')} placement='top'>
-                  <CodeOutlined />
-                </Tooltip>
-              </Radio.Button>
-            </Radio.Group>
-          )}
-        </Space>
-      </div>
+      {showHeader && (
+        <div className='flex justify-between items-center fc-toolbar mb-2 gap-3'>
+          <div className='text-title text-l2 break-all'>{title}</div>
+          <Space>
+            {extra}
+            {isMarkdown && (
+              <Radio.Group
+                size='small'
+                value={previewMode}
+                onChange={(event) => {
+                  onPreviewModeChange(event.target.value);
+                }}
+              >
+                <Radio.Button value='formatted'>
+                  <Tooltip title={t('form.formatted_tip')} placement='top'>
+                    <EyeOutlined />
+                  </Tooltip>
+                </Radio.Button>
+                <Radio.Button value='code'>
+                  <Tooltip title={t('form.code_tip')} placement='top'>
+                    <CodeOutlined />
+                  </Tooltip>
+                </Radio.Button>
+              </Radio.Group>
+            )}
+          </Space>
+        </div>
+      )}
       <div className='bg-fc-100 fc-border rounded-lg p-4 min-h-[240px] h-full flex-1 children:h-full'>
         <Spin spinning={loading}>
           {!content ? (
