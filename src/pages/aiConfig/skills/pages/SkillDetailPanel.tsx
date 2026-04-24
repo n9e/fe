@@ -77,7 +77,7 @@ export default function SkillDetailPanel(props: Props) {
   return (
     <div className='w-full min-w-0 h-full pr-2 flex flex-col'>
       <div className='flex justify-between fc-toolbar mb-2'>
-        <div className='text-title text-l2'>{item.name}</div>
+        <div className='text-title text-l2'>{item.builtin === true ? t('form.usage') : item.name}</div>
         <Space>
           {t('form.enabled')}
           <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />
@@ -130,28 +130,33 @@ export default function SkillDetailPanel(props: Props) {
           )}
         </Space>
       </div>
-      <div>
-        <Space size={16}>
+      {item.builtin !== true && (
+        <>
           <div>
-            <div className='text-soft'>{t('common:table.username')}</div>
-            <div>{item.updated_by ?? '-'}</div>
+            <Space size={16}>
+              <div>
+                <div className='text-soft'>{t('common:table.username')}</div>
+                <div>{item.updated_by ?? '-'}</div>
+              </div>
+              <div>
+                <div className='text-soft'>{t('common:table.update_at')}</div>
+                <div>{item.updated_at ? moment.unix(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
+              </div>
+            </Space>
+            <div className='mt-2'>
+              <div className='text-soft'>{t('description')}</div>
+              <div>{item.description ?? '-'}</div>
+            </div>
           </div>
-          <div>
-            <div className='text-soft'>{t('common:table.update_at')}</div>
-            <div>{item.updated_at ? moment.unix(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : '-'}</div>
-          </div>
-        </Space>
-        <div className='mt-2'>
-          <div className='text-soft'>{t('description')}</div>
-          <div>{item.description ?? '-'}</div>
-        </div>
-      </div>
-      <div className='skills-section-divider my-4' />
+          <div className='skills-section-divider my-4' />
+        </>
+      )}
       <DocumentPreviewPanel
         title={item.builtin === true ? t('form.usage') : t('form.instructions')}
         content={item.instructions}
         loading={false}
         isMarkdown
+        showHeader={item.builtin !== true}
         previewMode={previewMode}
         onPreviewModeChange={(mode) => {
           setPreviewMode(mode);
