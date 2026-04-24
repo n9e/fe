@@ -260,7 +260,7 @@ export default function index({ disabled }) {
           </Space>
         </div>
 
-        <Form.List name='annotations'>
+        {/* <Form.List name='annotations'>
           {(fields, { add, remove }) => (
             <div>
               <Space align='baseline'>
@@ -302,7 +302,7 @@ export default function index({ disabled }) {
               ))}
             </div>
           )}
-        </Form.List>
+        </Form.List> */}
         {/* <div className='mt-2'>
           <AlertEventRuleTesterWithButton
             onClick={() => {
