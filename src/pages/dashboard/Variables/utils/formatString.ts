@@ -38,7 +38,8 @@ export function formatString(str: string, data: Record<string, any>): string {
     });
 
     // 2. 处理 [[variableName]] 格式 - 仅在变量存在时转换为 ${variableName}
-    processedStr = processedStr.replace(/\[\[([a-zA-Z0-9_]+)\]\]/g, (match, varName) => {
+    // 支持点号 key（如 [[__field.labels.ident]]）
+    processedStr = processedStr.replace(/\[\[([a-zA-Z0-9_.]+)\]\]/g, (match, varName) => {
       if (Object.prototype.hasOwnProperty.call(data, varName)) {
         return '${' + varName + '}';
       }
