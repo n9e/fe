@@ -11,6 +11,11 @@ export interface IAiChatPageInfo {
   param?: Record<string, unknown>;
 }
 
+export interface IAiChatAction {
+  key?: string;
+  param?: IAiChatActionParam;
+}
+
 export interface IAiChatActionParam {
   datasource_type?: string;
   datasource_id?: number;
