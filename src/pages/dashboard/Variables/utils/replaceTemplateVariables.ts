@@ -24,7 +24,8 @@ export default function replaceTemplateVariables(
   },
 ) {
   // 如果 str 为空，如果没有包含变量则直接返回
-  if (!str || !_.includes(str, '$')) {
+  // 变量格式支持：$var、${var}、[[var]]
+  if (!str || (!_.includes(str, '$') && !_.includes(str, '[['))) {
     return str;
   }
 
