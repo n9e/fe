@@ -16,6 +16,11 @@ describe('formatString', () => {
     expect(result).toBe('http://example.com?ident=dev-n9e-02&var=1');
   });
 
+  test('should handle [[__field.labels.ident]] format', () => {
+    const result = formatString('http://example.com?ident=[[__field.labels.ident]]', testData);
+    expect(result).toBe('http://example.com?ident=dev-n9e-02');
+  });
+
   test('should handle $variableName format', () => {
     const result = formatString('Hello $name, you are $age years old', testData);
     expect(result).toBe('Hello John, you are 30 years old');

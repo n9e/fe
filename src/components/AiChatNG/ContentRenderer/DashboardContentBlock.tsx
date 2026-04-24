@@ -69,12 +69,7 @@ export default function DashboardContentBlock(props: { responseContent: string }
 
   const nameNode =
     dashboardId !== undefined && dashboardName ? (
-      <a
-        className='inline-flex max-w-full items-center gap-2 text-primary hover:underline'
-        href={`/dashboards/${dashboardId}`}
-        target='_blank'
-        rel='noopener noreferrer'
-      >
+      <a className='inline-flex max-w-full items-center gap-2 text-primary hover:underline' href={`/dashboards/${dashboardId}`} target='_blank' rel='noopener noreferrer'>
         <span className='truncate'>{dashboardName}</span>
         <ExportOutlined className='shrink-0 opacity-80' />
       </a>
@@ -83,7 +78,7 @@ export default function DashboardContentBlock(props: { responseContent: string }
     );
 
   return (
-    <div className='rounded-lg border border-fc-200 bg-white px-4 py-3'>
+    <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
       <div className='text-sm font-medium text-title'>{t('dashboard.title')}</div>
 
       <div className='mt-2'>
@@ -98,4 +93,3 @@ export default function DashboardContentBlock(props: { responseContent: string }
     </div>
   );
 }
-

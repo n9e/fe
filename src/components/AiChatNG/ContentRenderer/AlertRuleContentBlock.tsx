@@ -121,7 +121,7 @@ export default function AlertRuleContentBlock(props: { responseContent: string }
   );
 
   return (
-    <div className='rounded-lg border border-fc-200 bg-white px-4 py-3'>
+    <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
       <div className='text-sm font-medium text-title'>{t('alert_rule.title')}</div>
 
       <div className='mt-2'>
