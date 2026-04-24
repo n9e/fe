@@ -29,4 +29,4 @@ sudo ./categraf --status
 
 ### 4. После успешного запуска catgraf он появится на странице списка машин. Вам нужно выбрать его и присоединить машину к вашей бизнес-группе.
 
-<img width='100%' src='/docs/categraf/image01.png' />
+<img width='100%' src='/n9e-docs/categraf/image01.png' />
