@@ -21,7 +21,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef>((_props, ref) =
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [relabelCollapsed, setRelabelCollapsed] = useState(true);
   const [activeWorkflowTabKey, setActiveWorkflowTabKey] = useState('0');
 

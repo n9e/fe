@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { SIZE } from '@/utils/constant';
 import { getItem as getWorkflowItem, getList as getWorkflowList, postItem as postWorkflow, putItem as putWorkflow } from '@/pages/eventPipeline/services';
 import { DEFAULT_VALUES, NS as EVENTPIPELINE_NS } from '@/pages/eventPipeline/constants';
+import TestModal from '@/pages/eventPipeline/pages/Form/TestModal';
 
 import Processor from './Processor';
 
@@ -56,6 +57,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const form = Form.useFormInstance();
+  const formValues = Form.useWatch([]);
   const group_id = Form.useWatch('group_id');
   const processors = Form.useWatch([...prefixNamePath, ...namePath, 'processors']);
 
@@ -284,6 +286,14 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
                     </Button>
                   </Popover>
                 </Tooltip>
+              </Col>
+              <Col flex='none'>
+                <TestModal
+                  type='pipeline'
+                  config={{
+                    processors,
+                  }}
+                />
               </Col>
               <Col flex='auto'>
                 <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.processors[0])} icon={<PlusOutlined />}>

@@ -45,8 +45,8 @@ export default function Processor(props: Props) {
       title={
         <span>
           <Tag color='purple'>{field.name}</Tag>
-          <Tag color='purple'>{t(`processor.options.${processorType}`)}</Tag>
-          <TestModal type='processor' config={processorConfig} size='small' />
+          {/* <Tag color='purple'>{t(`processor.options.${processorType}`)}</Tag> */}
+          {/* <TestModal type='processor' config={processorConfig} size='small' /> */}
         </span>
       }
       extra={
