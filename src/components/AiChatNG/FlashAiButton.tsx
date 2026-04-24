@@ -10,6 +10,7 @@ import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
 import { IAiChatPageInfo, IAiChatAction, AiChatExecuteQueryForQueryContent } from './types';
+import { useAiChatVisible, useAiExternalConfig, useAiHandleEvent, useParamsAiAction } from '../AiChat/utils/useHook';
 
 const FLASH_AI_BUTTON_PATH_WHITELIST = new Set(['/alert-rules', '/dashboards', '/alert-cur-events', '/alert-his-events']);
 
@@ -83,6 +84,11 @@ export function AiButton(props: {
 }) {
   const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent } = props;
 
+  const [aiChatVisible, setAiChatVisible] = useAiChatVisible();
+  const [aiHandleEvent, setAiHandleEvent] = useAiHandleEvent();
+  const [aiExternalConfig, setAiExternalConfig] = useAiExternalConfig();
+  const [paramsAiAction, setParamsAiAction] = useParamsAiAction();
+
   if (IS_ENT) {
     return (
       <Button
@@ -90,6 +96,17 @@ export function AiButton(props: {
         size={size}
         onClick={() => {
           // flashcat 版本逻辑
+          setAiChatVisible(true);
+          setAiHandleEvent({ onExecuteQueryForQueryContent });
+          setAiExternalConfig({
+            promptList,
+          });
+          setParamsAiAction({
+            custom: {
+              ...queryPageFrom,
+              ...queryAction,
+            } as any,
+          });
         }}
       />
     );
