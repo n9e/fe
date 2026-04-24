@@ -73,13 +73,13 @@ export default function Processor(props: Props) {
                     }}
                   />
                 )}
-                <MinusCircleOutlined
-                  onClick={() => {
-                    remove(field.name);
-                  }}
-                />
               </>
             )}
+            <MinusCircleOutlined
+              onClick={() => {
+                remove(field.name);
+              }}
+            />
           </Space>
         )
       }
