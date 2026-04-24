@@ -6,6 +6,8 @@ const en_US = {
   api_type: 'Provider Type',
   model: 'Model',
   enabled: 'Enabled',
+  is_default: 'Default',
+  is_default_tip: 'When enabled, if an agent does not have a specific LLM model configured, this model will be used as the default',
   add_btn: 'Add LLM Config',
   cannot_delete_when_enabled: 'Cannot delete an enabled LLM config',
   form: {
