@@ -27,13 +27,13 @@ export default function index(props: IProps) {
     });
     if (_.some(result, (item) => item === true)) {
       if (typeof props.children === 'function') {
-        return <div>{props.children(result, licenseExpired)}</div>;
+        return <>{props.children(result, licenseExpired)}</>;
       }
-      return <div>{props.children}</div>;
+      return <>{props.children}</>;
     }
   }
   if (typeof props.children === 'function') {
-    return <div>{props.children([false], licenseExpired)}</div>;
+    return <>{props.children([false], licenseExpired)}</>;
   }
   return null;
 }
