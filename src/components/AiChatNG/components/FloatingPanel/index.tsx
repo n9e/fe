@@ -139,7 +139,7 @@ export default function FloatingPanel(props: FloatingPanelProps) {
   });
 
   const panel = (
-    <div ref={containerRef} className={`ai-chat-floating${className ? ` ${className}` : ''}`} style={{ zIndex, ...style, ...(!visible ? { display: 'none' } : {}) }}>
+    <div ref={containerRef} className={`n9e-ai-chat-floating${className ? ` ${className}` : ''}`} style={{ zIndex, ...style, ...(!visible ? { display: 'none' } : {}) }}>
       {DIRECTIONS.map((dir) => (
         <div key={dir} className={`fp-resize-handle fp-${dir}`} onMouseDown={(e) => startResize(e, dir)} />
       ))}

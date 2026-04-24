@@ -61,14 +61,8 @@ export default function FormSelectContentBlock(props: { responseContent: string;
   const busiGroupField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'busi_group_id'), [payload?.fields]);
   const datasourceField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'datasource_id'), [payload?.fields]);
 
-  const busiGroupOptions = React.useMemo(
-    () => (busiGroupField?.candidates || []).map((c) => ({ value: c.id, label: c.name, raw: c })),
-    [busiGroupField?.candidates],
-  );
-  const datasourceOptions = React.useMemo(
-    () => (datasourceField?.candidates || []).map((c) => ({ value: c.id, label: c.name, raw: c })),
-    [datasourceField?.candidates],
-  );
+  const busiGroupOptions = React.useMemo(() => (busiGroupField?.candidates || []).map((c) => ({ value: c.id, label: c.name, raw: c })), [busiGroupField?.candidates]);
+  const datasourceOptions = React.useMemo(() => (datasourceField?.candidates || []).map((c) => ({ value: c.id, label: c.name, raw: c })), [datasourceField?.candidates]);
 
   const [busiGroupId, setBusiGroupId] = React.useState<number | undefined>(() => getDefaultCandidateId(busiGroupField?.candidates));
   const [datasourceId, setDatasourceId] = React.useState<number | undefined>(() => getDefaultCandidateId(datasourceField?.candidates));
@@ -82,27 +76,16 @@ export default function FormSelectContentBlock(props: { responseContent: string;
   }, [datasourceField?.candidates]);
 
   const selectedBusiGroupName = React.useMemo(() => busiGroupOptions.find((o) => o.value === busiGroupId)?.label, [busiGroupId, busiGroupOptions]);
-  const selectedDatasourceName = React.useMemo(
-    () => datasourceOptions.find((o) => o.value === datasourceId)?.label,
-    [datasourceId, datasourceOptions],
-  );
+  const selectedDatasourceName = React.useMemo(() => datasourceOptions.find((o) => o.value === datasourceId)?.label, [datasourceId, datasourceOptions]);
 
-  const disabled =
-    (!!busiGroupField && !busiGroupId) ||
-    (!!datasourceField && !datasourceId) ||
-    (!busiGroupField && !datasourceField) ||
-    !payload;
+  const disabled = (!!busiGroupField && !busiGroupId) || (!!datasourceField && !datasourceId) || (!busiGroupField && !datasourceField) || !payload;
 
   if (!payload || (!busiGroupField && !datasourceField)) {
-    return (
-      <div className='rounded-lg border border-dashed border-fc-200 bg-fc-50 px-4 py-3 text-sm text-hint'>
-        {t('message.unsupported_type', { type: 'form_select' })}
-      </div>
-    );
+    return <div className='rounded-lg border border-dashed border-fc-200 bg-fc-50 px-4 py-3 text-sm text-hint'>{t('message.unsupported_type', { type: 'form_select' })}</div>;
   }
 
   return (
-    <div className='rounded-lg border border-fc-200 bg-white px-4 py-3'>
+    <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
       <div className='text-sm font-medium text-title'>{t('form_select.title')}</div>
 
       <div className='mt-3 space-y-3'>
@@ -161,4 +144,3 @@ export default function FormSelectContentBlock(props: { responseContent: string;
     </div>
   );
 }
-
