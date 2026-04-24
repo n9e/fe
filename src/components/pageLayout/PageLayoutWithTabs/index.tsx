@@ -183,11 +183,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <Space size={12}>
                     {rightArea}
                     <FlashAiButton />
+                    <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
+                      <License />
+                    </AdvancedWrap>
+                    <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
+                      <FeatureNotification />
+                    </AdvancedWrap>
                   </Space>
-
-                  <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                    <License />
-                  </AdvancedWrap>
 
                   <Space>
                     {/* 整合版本关闭文档链接 */}
@@ -204,10 +206,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       </Button>
                     )}
                   </Space>
-
-                  <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                    <FeatureNotification />
-                  </AdvancedWrap>
 
                   {!IS_ENT && !IS_PLUS && (
                     <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
