@@ -32,7 +32,7 @@ const en_US = {
     description_placeholder: 'Enter skill description',
     instructions: 'Instructions',
     instructions_placeholder: 'Write instructions in Markdown',
-    usage: 'Usage',
+    usage: 'Introduction',
     advanced_settings: 'Advanced Settings',
     license: 'License',
     license_placeholder: 'For example MIT or Apache 2.0',
