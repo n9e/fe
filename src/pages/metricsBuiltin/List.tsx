@@ -156,16 +156,7 @@ export default function index() {
       render: (val, record) => {
         const recordClone = _.cloneDeep(record);
         return (
-          <Tooltip
-            overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'
-            title={
-              record.note ? (
-                <div className='theme-dark bg-transparent'>
-                  <Markdown content={record.note} darkMode />
-                </div>
-              ) : undefined
-            }
-          >
+          <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} inTooltip /> : undefined}>
             <a
               onClick={() => {
                 const curFilter = filtersRef.current?.getActive();

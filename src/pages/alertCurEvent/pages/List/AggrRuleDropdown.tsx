@@ -185,7 +185,7 @@ export default function AggrRuleDropdown(props: Props) {
             label={t('aggregate_rule')}
             name='rule'
             tooltip={{
-              title: <Markdown content={t('aggregate_rule_tip', { interpolation: { skipOnVariables: true } })} darkMode />,
+              title: <Markdown content={t('aggregate_rule_tip', { interpolation: { skipOnVariables: true } })} inTooltip />,
               overlayClassName: 'ant-tooltip-auto-width',
             }}
             rules={[{ required: true }]}
