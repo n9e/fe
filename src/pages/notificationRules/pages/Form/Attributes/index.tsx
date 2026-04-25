@@ -102,7 +102,7 @@ export default function index(props: Props) {
                         className='n9e-ant-from-item-tooltip'
                         title={
                           <div className='pt-2 px-1'>
-                            <Markdown content={t('tag.func.label_tip')} darkMode />
+                            <Markdown content={t('tag.func.label_tip')} inTooltip />
                           </div>
                         }
                         overlayClassName='ant-tooltip-max-width-400'
