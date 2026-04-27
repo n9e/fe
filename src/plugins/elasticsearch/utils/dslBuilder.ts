@@ -28,6 +28,11 @@ export default function dslBuilder(params: {
     interval: string;
     intervalkey: string;
   };
+  termsAgg?: {
+    field: string;
+    size: number;
+    name?: string;
+  };
   shouldHighlight?: boolean;
   version?: string;
 }) {
@@ -74,6 +79,21 @@ export default function dslBuilder(params: {
   }
   if (params.limit) {
     body.size = params.limit;
+  }
+  if (params.termsAgg) {
+    const aggName =
+      params.termsAgg.name ||
+      `top${params.termsAgg.size}_${String(params.termsAgg.field).replace(/[^A-Za-z0-9_]/g, '_')}`;
+    body.size = 0;
+    _.set(body, ['aggs', aggName], {
+      terms: {
+        field: params.termsAgg.field,
+        size: params.termsAgg.size,
+        order: {
+          _count: 'desc',
+        },
+      },
+    });
   }
   if (!_.isEmpty(params.sorter)) {
     body.sort = _.map(params.sorter, (item) => {
