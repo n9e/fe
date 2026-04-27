@@ -36,29 +36,43 @@ function Refresh(props: IProps, ref) {
   const intervalSecondsCache = props.localKey ? _.toNumber(window.localStorage.getItem(props.localKey)) : 0;
   const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds || intervalSecondsCache);
   const [visible, setVisible] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | undefined>();
   const removeRef = useRef(false);
 
   useEffect(() => {
+    let cancelled = false;
     if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+      clearTimeout(intervalRef.current);
+      intervalRef.current = undefined;
     }
+
     if (intervalSeconds) {
-      (function loop() {
-        if (removeRef.current) return;
-        intervalRef.current = setTimeout(function () {
+      const loop = () => {
+        if (removeRef.current || cancelled) return;
+        intervalRef.current = setTimeout(() => {
+          if (removeRef.current || cancelled) return;
           props.onRefresh();
           loop();
         }, intervalSeconds * 1000);
-      })();
+      };
+      loop();
     }
+
+    return () => {
+      cancelled = true;
+      if (intervalRef.current) {
+        clearTimeout(intervalRef.current);
+        intervalRef.current = undefined;
+      }
+    };
   }, [intervalSeconds, props.onRefresh]);
 
   useEffect(() => {
     return () => {
       removeRef.current = true;
       if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+        clearTimeout(intervalRef.current);
+        intervalRef.current = undefined;
       }
     };
   }, []);
