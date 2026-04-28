@@ -17,6 +17,9 @@ const en_US = {
   tags_popover_title: '{{count}} tags',
   view_collects: 'View related collection configurations',
   host_no_heartbeat_tip: 'Host no heartbeat',
+  expand_busi_and_overview: 'Expand business group and overview',
+  collapse_busi_and_overview: 'Collapse business group and overview',
+  explorer_selected_metrics_tip: 'View monitoring metrics of selected hosts',
 
   ident: 'Identifier',
   agent_version_title: 'Agent version',

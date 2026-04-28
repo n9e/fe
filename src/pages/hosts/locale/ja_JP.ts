@@ -17,6 +17,9 @@ const ja_JP = {
   tags_popover_title: '{{count}} 個のタグ',
   view_collects: '関連する収集設定を表示',
   host_no_heartbeat_tip: 'ホストはハートビートなし',
+  expand_busi_and_overview: '業務グループと概要を展開',
+  collapse_busi_and_overview: '業務グループと概要を折りたたむ',
+  explorer_selected_metrics_tip: '選択したホストの監視メトリクスを表示',
 
   ident: '識別子',
   agent_version_title: 'エージェントバージョン',

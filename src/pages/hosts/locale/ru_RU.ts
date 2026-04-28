@@ -17,6 +17,9 @@ const ru_RU = {
   tags_popover_title: '{{count}} тегов',
   view_collects: 'Показать связанные конфигурации сбора',
   host_no_heartbeat_tip: 'Хост без heartbeat',
+  expand_busi_and_overview: 'Развернуть бизнес-группы и обзор',
+  collapse_busi_and_overview: 'Свернуть бизнес-группы и обзор',
+  explorer_selected_metrics_tip: 'Просмотреть метрики мониторинга выбранных хостов',
 
   ident: 'Идентификатор',
   agent_version_title: 'Версия агента',
