@@ -45,6 +45,7 @@ const EmbeddedProductModal: React.FC<EmbeddedProductModalProps> = ({ open, initi
       onOk={() => {
         form.validateFields().then((values) => {
           const formattedData = {
+            weight: initialValues?.weight || 0,
             ...values,
             id: initialValues?.id || Number(values.id),
             is_private: values.is_private,

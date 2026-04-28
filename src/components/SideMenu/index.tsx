@@ -129,7 +129,9 @@ const SideMenu = (props: SideMenuProps) => {
     if (hideSideMenu) return;
     getEmbeddedProducts().then((res) => {
       if (res) {
-        const items = res.map((product) => ({
+        const items = res
+          .filter((product) => !(product.hide ?? true))
+          .map((product) => ({
           key: `${embeddedProductDetailPath}/${product.id}`,
           label: product.name,
           children: [],
