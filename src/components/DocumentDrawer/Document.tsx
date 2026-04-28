@@ -17,6 +17,8 @@ const filenameMap = {
   zh_CN: '',
   zh_HK: '_hk',
   en_US: '_en',
+  ja_JP: '_en',
+  ru_RU: '_en',
 };
 
 export default function index(props: Props) {
@@ -32,10 +34,22 @@ export default function index(props: Props) {
     if (documentPath && type === 'md') {
       fetch(`${documentPath}/${i18n.language}.md`)
         .then((res) => {
+          // 如果获取文档失败，使用 en_US 作为默认语言
+          if (res.status === 404) {
+            return fetch(`${documentPath}/en_US.md`).then((res) => res.text());
+          }
           return res.text();
         })
         .then((res) => {
           setDocument(res);
+        })
+        .catch(() => {
+          // 如果获取文档失败，使用 en_US 作为默认语言
+          return fetch(`${documentPath}/en_US.md`)
+            .then((res) => res.text())
+            .then((res) => {
+              setDocument(res);
+            });
         });
     }
   }, [documentPath, i18n.language]);

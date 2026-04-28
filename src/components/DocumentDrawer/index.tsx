@@ -28,6 +28,8 @@ const filenameMap = {
   zh_CN: '',
   zh_HK: '_hk',
   en_US: '_en',
+  ja_JP: '_en',
+  ru_RU: '_en',
 };
 
 function index(props: Props & ModalWrapProps) {

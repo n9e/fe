@@ -643,288 +643,288 @@ export const NOTIFICATION_CHANNEL_TYPES = {
       },
     },
   },
-  slackbot: {
-    logo: '/image/logos/slack.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'channel',
-              cname: 'channel',
-              type: 'string',
-            },
-            {
-              key: 'channel_name',
-              cname: 'Channel Name',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: 'https://slack.com/api/chat.postMessage',
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer <you slack bot token>',
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"channel": "#{{$params.channel}}", "text":  "{{$tpl.content}}", "mrkdwn": true}',
-          },
-        },
-      },
-    },
-  },
-  slackwebhook: {
-    logo: '/image/logos/slack.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'webhook_url',
-              cname: 'Webhook Url',
-              type: 'string',
-            },
-            {
-              key: 'bot_name',
-              cname: 'Bot Name',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: '{{$params.webhook_url}}',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"text":  "{{$tpl.content}}", "mrkdwn": true}',
-          },
-        },
-      },
-    },
-  },
-  mattermostbot: {
-    logo: '/image/logos/mattermost.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'channel_id',
-              cname: 'Channel ID',
-              type: 'string',
-            },
-            {
-              key: 'channel_name',
-              cname: 'Channel Name',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: '<your mattermost url>/api/v4/posts',
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer <you mattermost bot token>',
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"channel_id": "{{$params.channel_id}}", "message":  "{{$tpl.content}}"}',
-          },
-        },
-      },
-    },
-  },
-  mattermostwebhook: {
-    logo: '/image/logos/mattermost.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'webhook_url',
-              cname: 'Webhook Url',
-              type: 'string',
-            },
-            {
-              key: 'bot_name',
-              cname: 'Bot Name',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: '{{$params.webhook_url}}',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"text":  "{{$tpl.content}}"}',
-          },
-        },
-      },
-    },
-  },
-  discord: {
-    logo: '/image/logos/discord.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'webhook_url',
-              cname: 'Webhook Url',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: '{{$params.webhook_url}}',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"content": "{{$tpl.content}}"}',
-          },
-        },
-      },
-    },
-  },
-  jsm_alert: {
-    logo: '/image/logos/jira.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'api_key',
-              cname: 'API Key',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: 'https://api.atlassian.com/jsm/ops/integration/v2/alerts{{if $event.IsRecovered}}/{{$event.Hash}}/close?identifierType=alias{{else}}{{end}}',
-          method: 'POST',
-          headers: {
-            Authorization: 'GenieKey {{$params.api_key}}',
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{{if $event.IsRecovered}}{"note":"{{$tpl.content}}","source":"{{$event.Cluster}}"}{{else}}{"message":"{{$event.RuleName}}","description":"{{$tpl.content}}","alias":"{{$event.Hash}}","priority":"P{{$event.Severity}}","tags":[{{range $i, $v := $event.TagsJSON}}{{if $i}},{{end}}"{{$v}}"{{end}}],"details":{{jsonMarshal $event.AnnotationsJSON}},"entity":"{{$event.TargetIdent}}","source":"{{$event.Cluster}}"}{{end}}',
-          },
-        },
-      },
-    },
-  },
-  jira: {
-    logo: '/image/logos/jira.png',
-    type: 'http',
-    default_values: {
-      param_config: {
-        custom: {
-          params: [
-            {
-              key: 'project_key',
-              cname: 'Project Key',
-              type: 'string',
-            },
-          ],
-        },
-      },
-      request_type: 'http',
-      request_config: {
-        http_request_config: {
-          url: 'https://{JIRA Service Account Email}:{API Token}@api.atlassian.com/ex/jira/{CloudID}/rest/api/3/issue',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          proxy: '',
-          timeout: 10000,
-          concurrency: 5,
-          retry_times: 3,
-          retry_interval: 100,
-          request: {
-            parameters: null,
-            form: '',
-            body: '{"fields":{"project":{"key":"{{$params.project_key}}"},"issuetype":{"name":"{{if $event.IsRecovered}}Recovery{{else}}Alert{{end}}"},"summary":"{{$event.RuleName}}","description":{"type":"doc","version":1,"content":[{"type":"paragraph","content":[{"type":"text","text":"{{$tpl.content}}"}]}]},"labels":["{{join $event.TagsJSON "\\",\\""}}", "eventHash={{$event.Hash}}"]}}',
-          },
-        },
-      },
-    },
-  },
+  // slackbot: {
+  //   logo: '/image/logos/slack.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'channel',
+  //             cname: 'channel',
+  //             type: 'string',
+  //           },
+  //           {
+  //             key: 'channel_name',
+  //             cname: 'Channel Name',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: 'https://slack.com/api/chat.postMessage',
+  //         method: 'POST',
+  //         headers: {
+  //           Authorization: 'Bearer <you slack bot token>',
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"channel": "#{{$params.channel}}", "text":  "{{$tpl.content}}", "mrkdwn": true}',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // slackwebhook: {
+  //   logo: '/image/logos/slack.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'webhook_url',
+  //             cname: 'Webhook Url',
+  //             type: 'string',
+  //           },
+  //           {
+  //             key: 'bot_name',
+  //             cname: 'Bot Name',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: '{{$params.webhook_url}}',
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"text":  "{{$tpl.content}}", "mrkdwn": true}',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // mattermostbot: {
+  //   logo: '/image/logos/mattermost.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'channel_id',
+  //             cname: 'Channel ID',
+  //             type: 'string',
+  //           },
+  //           {
+  //             key: 'channel_name',
+  //             cname: 'Channel Name',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: '<your mattermost url>/api/v4/posts',
+  //         method: 'POST',
+  //         headers: {
+  //           Authorization: 'Bearer <you mattermost bot token>',
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"channel_id": "{{$params.channel_id}}", "message":  "{{$tpl.content}}"}',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // mattermostwebhook: {
+  //   logo: '/image/logos/mattermost.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'webhook_url',
+  //             cname: 'Webhook Url',
+  //             type: 'string',
+  //           },
+  //           {
+  //             key: 'bot_name',
+  //             cname: 'Bot Name',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: '{{$params.webhook_url}}',
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"text":  "{{$tpl.content}}"}',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // discord: {
+  //   logo: '/image/logos/discord.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'webhook_url',
+  //             cname: 'Webhook Url',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: '{{$params.webhook_url}}',
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"content": "{{$tpl.content}}"}',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // jsm_alert: {
+  //   logo: '/image/logos/jira.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'api_key',
+  //             cname: 'API Key',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: 'https://api.atlassian.com/jsm/ops/integration/v2/alerts{{if $event.IsRecovered}}/{{$event.Hash}}/close?identifierType=alias{{else}}{{end}}',
+  //         method: 'POST',
+  //         headers: {
+  //           Authorization: 'GenieKey {{$params.api_key}}',
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{{if $event.IsRecovered}}{"note":"{{$tpl.content}}","source":"{{$event.Cluster}}"}{{else}}{"message":"{{$event.RuleName}}","description":"{{$tpl.content}}","alias":"{{$event.Hash}}","priority":"P{{$event.Severity}}","tags":[{{range $i, $v := $event.TagsJSON}}{{if $i}},{{end}}"{{$v}}"{{end}}],"details":{{jsonMarshal $event.AnnotationsJSON}},"entity":"{{$event.TargetIdent}}","source":"{{$event.Cluster}}"}{{end}}',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // jira: {
+  //   logo: '/image/logos/jira.png',
+  //   type: 'http',
+  //   default_values: {
+  //     param_config: {
+  //       custom: {
+  //         params: [
+  //           {
+  //             key: 'project_key',
+  //             cname: 'Project Key',
+  //             type: 'string',
+  //           },
+  //         ],
+  //       },
+  //     },
+  //     request_type: 'http',
+  //     request_config: {
+  //       http_request_config: {
+  //         url: 'https://{JIRA Service Account Email}:{API Token}@api.atlassian.com/ex/jira/{CloudID}/rest/api/3/issue',
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         proxy: '',
+  //         timeout: 10000,
+  //         concurrency: 5,
+  //         retry_times: 3,
+  //         retry_interval: 100,
+  //         request: {
+  //           parameters: null,
+  //           form: '',
+  //           body: '{"fields":{"project":{"key":"{{$params.project_key}}"},"issuetype":{"name":"{{if $event.IsRecovered}}Recovery{{else}}Alert{{end}}"},"summary":"{{$event.RuleName}}","description":{"type":"doc","version":1,"content":[{"type":"paragraph","content":[{"type":"text","text":"{{$tpl.content}}"}]}]},"labels":["{{join $event.TagsJSON "\\",\\""}}", "eventHash={{$event.Hash}}"]}}',
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
   pagerduty: {
     logo: '/image/logos/pagerduty.png',
     type: 'pagerduty',
