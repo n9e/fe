@@ -15,7 +15,7 @@ import { AggrRuleType, CardType, FilterType } from '../../types';
 interface Props {
   cardList?: CardType[];
   filter: FilterType;
-  setFilter: (filter: FilterType) => void;
+  setFilter: (patch: Partial<FilterType>) => void;
   reloadRuleCards: () => void;
 }
 
@@ -34,11 +34,7 @@ export default function AggrRuleDropdown(props: Props) {
 
       // 如果当前选中的规则不在列表中，则默认选中第一个规则
       if (sortedList.length > 0 && !_.find(sortedList, (item) => item.id === filter.aggr_rule_id)) {
-        setFilter({
-          ...filter,
-          aggr_rule_id: sortedList[0].id,
-          event_ids: undefined,
-        });
+        setFilter({ aggr_rule_id: sortedList[0].id, event_ids: undefined });
       }
     });
   };
@@ -123,11 +119,7 @@ export default function AggrRuleDropdown(props: Props) {
             optionFilterProp='originLabel'
             value={filter.aggr_rule_id}
             onChange={(value) => {
-              setFilter({
-                ...filter,
-                aggr_rule_id: value,
-                event_ids: undefined,
-              });
+              setFilter({ aggr_rule_id: value, event_ids: undefined });
             }}
           />
         </InputGroupWithFormItem>
@@ -151,7 +143,6 @@ export default function AggrRuleDropdown(props: Props) {
               setEditForm(undefined);
               getList();
               setFilter({
-                ...filter,
                 aggr_rule_id: editForm ? editForm.id : addRes.dat.id,
                 event_ids: editForm ? filter.event_ids : undefined,
               });
