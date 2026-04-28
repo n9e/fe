@@ -17,6 +17,9 @@ const zh_CN = {
   tags_popover_title: '{{count}} 个标签',
   view_collects: '查看关联采集配置',
   host_no_heartbeat_tip: '机器无心跳',
+  expand_busi_and_overview: '展开业务组和概览',
+  collapse_busi_and_overview: '收起业务组和概览',
+  explorer_selected_metrics_tip: '查看已选择机器的监控指标',
 
   ident: '标识',
   host_tags: '上报的标签',

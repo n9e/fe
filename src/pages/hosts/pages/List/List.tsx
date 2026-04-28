@@ -258,7 +258,13 @@ export default function List(props: Props) {
               </Button>
             </Dropdown>
           )}
-          {explorable && <Explorer selectedIdents={selectedIdents} />}
+          {explorable && (
+            <Tooltip title={t('explorer_selected_metrics_tip')}>
+              <span>
+                <Explorer selectedIdents={selectedIdents} />
+              </span>
+            </Tooltip>
+          )}
         </Space>
       </div>
       <div className='n9e-antd-table-height-full n9e-hosts-ng-table mt-4'>
