@@ -17,6 +17,9 @@ const zh_HK = {
   tags_popover_title: '{{count}} 個標籤',
   view_collects: '查看關聯採集配置',
   host_no_heartbeat_tip: '機器無心跳',
+  expand_busi_and_overview: '展開業務組和概覽',
+  collapse_busi_and_overview: '收起業務組和概覽',
+  explorer_selected_metrics_tip: '查看已選擇機器的監控指標',
 
   ident: '標識',
   host_tags: '上報的標籤',
