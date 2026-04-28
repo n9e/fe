@@ -8,7 +8,7 @@ import { createGlobalState } from 'react-hooks-global-state';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
 import BreadCrumb from '@/components/BreadCrumb';
 import { CommonStateContext } from '@/App';
-import { allCates } from '@/components/AdvancedWrap/utils';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 
 import { getDataSourceDetailById, submitRequest } from './services';
 import Form from './Datasources/Form';
@@ -22,7 +22,7 @@ export const { useGlobalState } = createGlobalState<{
 });
 
 export default function FormCpt() {
-  const { t } = useTranslation('datasourceManage');
+  const { t, i18n } = useTranslation('datasourceManage');
   const { isPlus } = useContext(CommonStateContext);
   const history = useHistory();
   const params = useParams<{ action: string; type: string; id: string }>();
@@ -106,7 +106,7 @@ export default function FormCpt() {
                 link: '/datasources',
               },
               {
-                text: _.find(allCates, { value: type })?.label || type,
+                text: getCateDisplayLabel(_.find(allCates, { value: type }), i18n.language) || type,
               },
             ]}
           />
