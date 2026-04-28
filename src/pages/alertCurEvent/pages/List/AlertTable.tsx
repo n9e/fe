@@ -26,7 +26,7 @@ import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
 
 interface IProps {
   filter: FilterType;
-  setFilter: (filter: FilterType) => void;
+  setFilter: (patch: Partial<FilterType>) => void;
   params: any;
   refreshFlag: string;
   selectedRowKeys: number[];
@@ -114,10 +114,7 @@ export default function AlertTable(props: IProps) {
                     style={{ maxWidth: '100%' }}
                     onDoubleClick={() => {
                       if (!_.includes(filter.query, item)) {
-                        setFilter({
-                          ...filter,
-                          query: filter.query ? `${filter.query.trim()} ${item}` : item,
-                        });
+                        setFilter({ query: filter.query ? `${filter.query.trim()} ${item}` : item });
                       }
                     }}
                   >

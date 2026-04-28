@@ -1,11 +1,11 @@
-import React, { useContext, useState, useMemo, useEffect } from 'react';
+import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Input, Checkbox, Collapse, Segmented, Button, Space, Row, Col } from 'antd';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useLocation, useHistory } from 'react-router-dom';
-import { useDebounceFn } from 'ahooks';
+import { useDebounceFn, useRequest } from 'ahooks';
 import moment from 'moment';
 
 import PageLayout from '@/components/pageLayout';
@@ -23,7 +23,7 @@ import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import getProdOptions from '../../utils/getProdOptions';
 import getRequestParamsByFilter from '../../utils/getRequestParamsByFilter';
 import { ackEvents } from '../../services';
-import { CardType } from '../../types';
+import { CardType, FilterType } from '../../types';
 import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard, { isEqualEventIds } from './AlertCard';
@@ -40,71 +40,139 @@ const AlertCurEvent: React.FC = () => {
 
   const [range, setRange] = useState<IRawTimeRange>();
   const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>();
+  const rangeRef = useRef<IRawTimeRange | undefined>(range);
+  const aggrRuleCardEventIdsRef = useRef<number[] | undefined>(aggrRuleCardEventIds);
+
+  useEffect(() => {
+    rangeRef.current = range;
+  }, [range]);
+
+  useEffect(() => {
+    aggrRuleCardEventIdsRef.current = aggrRuleCardEventIds;
+  }, [aggrRuleCardEventIds]);
+
   const filter = useMemo(() => getFilterByURLQuery(query, range, aggrRuleCardEventIds), [JSON.stringify(query), range, aggrRuleCardEventIds]);
-  const setFilter = (newFilter) => {
-    history.replace({
-      pathname: location.pathname,
-      search: queryString.stringify(
-        {
-          ...query,
-          ..._.omit(newFilter, ['range', 'event_ids']), // 这里不需要传递到 URL 中
-        },
-        { arrayFormat: 'comma' },
-      ),
+
+  const [draftQuery, setDraftQuery] = useState<string>(filter.query ?? '');
+  const queryFocusedRef = useRef(false);
+  useEffect(() => {
+    if (!queryFocusedRef.current) {
+      setDraftQuery(filter.query ?? '');
+    }
+  }, [filter.query]);
+
+  const normalizeFilterForUrl = useCallback((input: FilterType) => {
+    const withoutLocalOnly = _.omit(input, ['range', 'event_ids']); // range 和 event_ids 不传递到 URL 中
+    return _.omitBy(withoutLocalOnly, (v) => {
+      if (v === undefined || v === '') return true;
+      if (Array.isArray(v) && v.length === 0) return true;
+      return false;
     });
-    setAggrRuleCardEventIds(newFilter.event_ids);
-    setRange(newFilter.range);
-  };
+  }, []);
+
+  const setFilterPatch = useCallback(
+    (patch: Partial<FilterType>) => {
+      const latestQuery = queryString.parse(history.location.search);
+      const currentFilter = getFilterByURLQuery(latestQuery, rangeRef.current, aggrRuleCardEventIdsRef.current);
+      const nextFilter = { ...currentFilter, ...patch };
+      // 只清理“本页实际管理过/正在管理的 key”，避免误删 URL 里其他同名参数
+      const prevUrlFilter = normalizeFilterForUrl(currentFilter) as Record<string, unknown>;
+      const managedKeys = _.uniq([...Object.keys(prevUrlFilter), ...Object.keys(patch)]);
+      const baseQuery = _.omit(latestQuery, managedKeys);
+
+      history.replace({
+        pathname: history.location.pathname,
+        search: queryString.stringify(
+          {
+            ...baseQuery,
+            ...normalizeFilterForUrl(nextFilter),
+          },
+          { arrayFormat: 'comma' },
+        ),
+      });
+
+      if (_.has(patch, 'event_ids')) {
+        setAggrRuleCardEventIds(nextFilter.event_ids);
+      }
+      if (_.has(patch, 'range')) {
+        setRange(nextFilter.range);
+      }
+    },
+    [history, normalizeFilterForUrl],
+  );
+
+  const { run: commitQueryDebounced } = useDebounceFn(
+    (next: string) => {
+      setFilterPatch({ query: next ? next : undefined });
+    },
+    { wait: 400 },
+  );
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [cardList, setCardList] = useState<CardType[]>();
   const params = getRequestParamsByFilter(filter);
 
-  const { run: reloadRuleCards } = useDebounceFn(
-    () => {
-      if (!filter.aggr_rule_id) {
-        setCardList([]);
-        return;
-      }
-      const requestParams: any = {
-        view_id: filter.aggr_rule_id,
-        my_groups: String(params.my_groups) === 'true',
-        ..._.omit(params, ['range', 'my_groups']),
-      };
-      if (params.range) {
-        const parsedRange = parseRange(params.range);
-        requestParams.stime = moment(parsedRange.start).unix();
-        requestParams.etime = moment(parsedRange.end).unix();
-      }
+  type RuleCardsRequestParams = {
+    view_id: number;
+    my_groups: boolean;
+    stime?: number;
+    etime?: number;
+    [k: string]: any;
+  };
+  const ruleCardsRequestParams = useMemo(() => {
+    if (!filter.aggr_rule_id) return undefined;
+    const requestParams: RuleCardsRequestParams = {
+      view_id: filter.aggr_rule_id,
+      my_groups: String(params.my_groups) === 'true',
+      ..._.omit(params, ['range', 'my_groups']),
+    };
+    if (params.range) {
+      const parsedRange = parseRange(params.range);
+      requestParams.stime = moment(parsedRange.start).unix();
+      requestParams.etime = moment(parsedRange.end).unix();
+    }
+    return requestParams;
+  }, [filter.aggr_rule_id, JSON.stringify(params)]);
 
-      getAlertCards(requestParams).then((res) => {
-        setCardList(res.dat);
-        const isValidFilterEventIds = _.every(res.dat, (item) => {
-          return !isEqualEventIds(item.event_ids, filter.event_ids);
-        });
-        if (isValidFilterEventIds) {
-          setFilter({
-            ...filter,
-            event_ids: undefined,
-          });
-        }
-      });
+  const {
+    refresh: reloadRuleCards,
+    data: ruleCardsData,
+  } = useRequest(
+    () => {
+      // ready 会保证这里不会在 undefined 时执行
+      return getAlertCards(ruleCardsRequestParams as RuleCardsRequestParams);
     },
     {
-      wait: 500,
+      ready: !!ruleCardsRequestParams,
+      debounceWait: 500,
+      refreshDeps: [refreshFlag, JSON.stringify(ruleCardsRequestParams)],
+      cacheKey: ruleCardsRequestParams ? `alertCurEvent_ruleCards_${JSON.stringify(ruleCardsRequestParams)}` : undefined,
+      onSuccess: (res) => {
+        const requestedAggrRuleId = ruleCardsRequestParams?.view_id;
+        const latestQuery = queryString.parse(history.location.search);
+        const currentFilter = getFilterByURLQuery(latestQuery, rangeRef.current, aggrRuleCardEventIdsRef.current);
+        if (!requestedAggrRuleId || currentFilter.aggr_rule_id !== requestedAggrRuleId) return;
+
+        const isValidFilterEventIds = _.every(res.dat, (item) => !isEqualEventIds(item.event_ids, aggrRuleCardEventIdsRef.current));
+        if (isValidFilterEventIds) {
+          setAggrRuleCardEventIds(undefined);
+        }
+      },
+      onError: () => {
+        // 保持旧 cardList，避免闪烁；错误提示由全局请求层处理（与仓库现有风格保持一致）
+      },
     },
   );
 
-  useEffect(() => {
-    reloadRuleCards();
-  }, [filter.aggr_rule_id, JSON.stringify(params), refreshFlag]);
+  const cardList = useMemo(() => {
+    if (!filter.aggr_rule_id) return [];
+    return ruleCardsData?.dat ?? [];
+  }, [filter.aggr_rule_id, ruleCardsData]);
 
   useEffect(() => {
     let parsedRange;
     if (filter.range) {
       parsedRange = parseRange(filter.range);
     }
-    // console.log('filter', filter);
 
     setParamsAiAction({
       page: 'alert_cur_event',
@@ -131,11 +199,8 @@ const AlertCurEvent: React.FC = () => {
                     <Segmented
                       shape='round'
                       className='whitespace-nowrap min-w-[190px]'
-                      onChange={(value: string) => {
-                        setFilter({
-                          ...filter,
-                          my_groups: value,
-                        });
+                      onChange={(value: 'true' | 'false') => {
+                        setFilterPatch({ my_groups: value });
                         localStorage.setItem(MY_GRPUPS_CACHE_KEY, value);
                       }}
                       value={filter.my_groups}
@@ -148,10 +213,7 @@ const AlertCurEvent: React.FC = () => {
                     <BusinessGroupSelectWithAll
                       value={filter.bgid}
                       onChange={(val: number) => {
-                        setFilter({
-                          ...filter,
-                          bgid: val,
-                        });
+                        setFilterPatch({ bgid: val });
                       }}
                     />
                   </Space>
@@ -160,12 +222,18 @@ const AlertCurEvent: React.FC = () => {
                     style={{ width: '320px' }}
                     prefix={<SearchOutlined />}
                     placeholder={t('search_placeholder')}
-                    value={filter.query}
+                    value={draftQuery}
+                    onFocus={() => {
+                      queryFocusedRef.current = true;
+                    }}
+                    onBlur={() => {
+                      queryFocusedRef.current = false;
+                      setDraftQuery(filter.query ?? '');
+                    }}
                     onChange={(e) => {
-                      setFilter({
-                        ...filter,
-                        query: e.target.value,
-                      });
+                      const next = e.target.value;
+                      setDraftQuery(next);
+                      commitQueryDebounced(next);
                     }}
                   />
                 </Space>
@@ -173,10 +241,7 @@ const AlertCurEvent: React.FC = () => {
                   allowClear={true}
                   value={filter.range}
                   onChange={(val) => {
-                    setFilter({
-                      ...filter,
-                      range: val,
-                    });
+                    setFilterPatch({ range: val });
                   }}
                   onRefresh={() => {
                     setRefreshFlag(_.uniqueId('refresh_'));
@@ -192,11 +257,8 @@ const AlertCurEvent: React.FC = () => {
                       <Collapse.Panel header={t('prod')} key='prod'>
                         <Checkbox.Group
                           value={filter.rule_prods}
-                          onChange={(val) => {
-                            setFilter({
-                              ...filter,
-                              rule_prods: val,
-                            });
+                          onChange={(val: string[]) => {
+                            setFilterPatch({ rule_prods: val });
                           }}
                         >
                           {_.map(getProdOptions(feats), (item) => (
@@ -217,10 +279,7 @@ const AlertCurEvent: React.FC = () => {
                         <Checkbox.Group
                           value={filter.severity}
                           onChange={(val) => {
-                            setFilter({
-                              ...filter,
-                              severity: val,
-                            });
+                            setFilterPatch({ severity: _.map(val, _.toNumber) });
                           }}
                         >
                           <Checkbox className='py-1' value={1}>
@@ -248,10 +307,7 @@ const AlertCurEvent: React.FC = () => {
                         <DatasourceCheckbox
                           value={filter.datasource_ids}
                           onChange={(val: number[]) => {
-                            setFilter({
-                              ...filter,
-                              datasource_ids: val,
-                            });
+                            setFilterPatch({ datasource_ids: val });
                           }}
                         />
                       </Collapse.Panel>
@@ -267,8 +323,8 @@ const AlertCurEvent: React.FC = () => {
                     }}
                   >
                     <div className='p-2'>
-                      <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilter} reloadRuleCards={reloadRuleCards} />
-                      <AlertCard filter={filter} setFilter={setFilter} cardList={cardList} />
+                      <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
+                      <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
                     </div>
                   </div>
                   {selectedRowKeys.length > 0 && (
@@ -319,7 +375,7 @@ const AlertCurEvent: React.FC = () => {
                   <div className='px-2 h-full min-h-0'>
                     <AlertTable
                       filter={filter}
-                      setFilter={setFilter}
+                      setFilter={setFilterPatch}
                       refreshFlag={refreshFlag}
                       selectedRowKeys={selectedRowKeys}
                       setSelectedRowKeys={setSelectedRowKeys}
