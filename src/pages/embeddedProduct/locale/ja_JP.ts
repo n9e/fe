@@ -12,6 +12,7 @@ const ja_JP = {
   team_visible: 'チーム可視',
   team_ids: '承認チーム',
   team_ids_msg: 'チームを選択してください',
+  show_in_menu: 'メニューに表示',
   exitFullScreen_tip: '全画面を退出するには、iframeのセキュリティ制限により制御できません。URLにviewMode=fullscreenパラメータを削除してください。',
 };
 

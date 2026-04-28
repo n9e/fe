@@ -12,6 +12,7 @@ const en_US = {
   team_visible: 'Team visible',
   team_ids: 'Authorized teams',
   team_ids_msg: 'Please select teams',
+  show_in_menu: 'Show in menu',
   exitFullScreen_tip: 'Exiting full screen is restricted by iframe security and cannot be controlled. You need to manually delete the viewMode=fullscreen parameter in the URL.',
 };
 export default en_US;

@@ -50,3 +50,33 @@ export const updateEmbeddedProducts = (id: string, data: EmbeddedProductParams):
     }
   });
 };
+
+export const putEmbeddedProductsWeights = (
+  data: {
+    id: number;
+    weight: number;
+  }[],
+): Promise<EmbeddedProductResponse[] | undefined> => {
+  return request('/api/n9e/embedded-products/weights', {
+    method: RequestMethod.Put,
+    data,
+  }).then((res) => {
+    try {
+      return JSON.parse(res.dat);
+    } catch (e) {
+      return undefined;
+    }
+  });
+};
+
+export const putEmbeddedProductHide = (
+  id: string,
+  data: {
+    hide: boolean;
+  },
+) => {
+  return request(`/api/n9e/embedded-product/${id}/hide`, {
+    method: RequestMethod.Put,
+    data,
+  });
+};
