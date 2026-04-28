@@ -6,6 +6,7 @@ import { advancedCates } from 'plus:/constants';
 export interface Cate {
   value: string;
   label: string;
+  label_en?: string;
   type: string[];
   alertRule: boolean; // 是否支持告警规则
   dashboard: boolean; // 是否支持仪表盘
@@ -19,6 +20,7 @@ export const baseCates: Cate[] = [
   {
     value: 'prometheus',
     label: 'Prometheus',
+    label_en: 'Prometheus',
     type: ['metric', 'anomaly'],
     alertRule: true,
     dashboard: true,
@@ -30,6 +32,7 @@ export const baseCates: Cate[] = [
   {
     value: 'elasticsearch',
     label: 'Elasticsearch',
+    label_en: 'Elasticsearch',
     type: ['logging'],
     alertRule: true,
     dashboard: true,
@@ -41,6 +44,7 @@ export const baseCates: Cate[] = [
   {
     value: 'tdengine',
     label: 'TDengine',
+    label_en: 'TDengine',
     type: ['metric'],
     alertRule: true,
     dashboard: true,
@@ -52,6 +56,7 @@ export const baseCates: Cate[] = [
   {
     value: 'loki',
     label: 'Loki',
+    label_en: 'Loki',
     type: ['logging'],
     alertRule: true,
     dashboard: false,
@@ -63,6 +68,7 @@ export const baseCates: Cate[] = [
   {
     value: 'jaeger',
     label: 'Jaeger',
+    label_en: 'Jaeger',
     type: ['tracing'],
     alertRule: false,
     dashboard: false,
@@ -74,6 +80,7 @@ export const baseCates: Cate[] = [
   {
     value: 'ck',
     label: 'ClickHouse',
+    label_en: 'ClickHouse',
     type: ['metric', 'logging'],
     alertRule: true,
     dashboard: true,
@@ -85,6 +92,7 @@ export const baseCates: Cate[] = [
   {
     value: 'opensearch',
     label: 'OpenSearch',
+    label_en: 'OpenSearch',
     type: ['logging'],
     alertRule: true,
     dashboard: true,
@@ -96,6 +104,7 @@ export const baseCates: Cate[] = [
   {
     value: 'doris',
     label: 'Doris',
+    label_en: 'Doris',
     type: ['logging'],
     alertRule: true,
     dashboard: true,
@@ -107,6 +116,7 @@ export const baseCates: Cate[] = [
   {
     value: 'mysql',
     label: 'MySQL',
+    label_en: 'MySQL',
     type: ['metric'],
     alertRule: true,
     dashboard: true,
@@ -118,6 +128,7 @@ export const baseCates: Cate[] = [
   {
     value: 'pgsql',
     label: 'PostgreSQL',
+    label_en: 'PostgreSQL',
     type: ['metric'],
     alertRule: true,
     dashboard: true,
@@ -129,6 +140,7 @@ export const baseCates: Cate[] = [
   {
     value: 'victorialogs',
     label: 'VictoriaLogs',
+    label_en: 'VictoriaLogs',
     type: ['logging'],
     alertRule: true,
     dashboard: false,
@@ -140,6 +152,14 @@ export const baseCates: Cate[] = [
 ];
 
 export const allCates = [...baseCates, ...advancedCates];
+
+export const getCateDisplayLabel = (cate: Pick<Cate, 'label' | 'label_en'> | undefined, lang?: string) => {
+  if (!cate) return '';
+  if (lang && lang !== 'zh_CN') {
+    return cate.label_en || cate.label;
+  }
+  return cate.label;
+};
 
 export const getAuthorizedDatasourceCates = (feats, isPlus, filter?: (cate: any) => boolean) => {
   let cates = baseCates;

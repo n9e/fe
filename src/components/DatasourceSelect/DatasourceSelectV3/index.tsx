@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { Select, Space, Tag } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
-import { Cate } from '@/components/AdvancedWrap/utils';
+import { Cate, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 
 import './style.less';
 
@@ -25,6 +26,7 @@ interface Props {
 
 export default function index(props: SelectProps & Props) {
   const { datasourceCateList, ajustDatasourceList, onChange, onClear } = props;
+  const { i18n } = useTranslation();
   const { datasourceList } = useContext(CommonStateContext);
   const currentDatasourceList = ajustDatasourceList ? ajustDatasourceList(datasourceList) : datasourceList;
 
@@ -42,13 +44,14 @@ export default function index(props: SelectProps & Props) {
       }}
       options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
         const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
+        const displayLabel = getCateDisplayLabel(datasourceCate, i18n.language);
         return {
           filter: item.plugin_type + item.name,
           originLabel: item.name,
           optionLabel: (
             <div>
               <Space>
-                <img src={datasourceCate?.logo} alt={datasourceCate?.label} height={16} />
+                <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
                 {item.name}
               </Space>
             </div>
@@ -56,7 +59,7 @@ export default function index(props: SelectProps & Props) {
           label: (
             <div className='flex items-center gap-2 justify-between'>
               <Space>
-                <img src={datasourceCate?.logo} alt={datasourceCate?.label} height={16} />
+                <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
                 {item.name}
                 {item.is_default && <Tag color='var(--fc-fill-primary)'>default</Tag>}
               </Space>
@@ -65,7 +68,7 @@ export default function index(props: SelectProps & Props) {
                   color: 'var(--fc-text-4)',
                 }}
               >
-                {datasourceCate?.label}
+                {displayLabel}
               </span>
             </div>
           ),
