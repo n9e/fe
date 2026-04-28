@@ -385,7 +385,6 @@ export default function List(props: Props) {
                 const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
                 const osDisplay = record.os === '' ? '-' : record.os;
                 const archDisplay = record.arch === '' ? '-' : record.arch;
-                const metaTooltipTitle = `${coresDisplay} · ${osDisplay} · ${archDisplay}`;
 
                 return (
                   <div>
@@ -421,11 +420,9 @@ export default function List(props: Props) {
                     </div>
                     <Space size={4} className='flex flex-wrap items-center'>
                       {record.host_ip ? (
-                        <Tooltip title={ipDisplay}>
-                          <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
-                            {ipDisplay}
-                          </span>
-                        </Tooltip>
+                        <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
+                          {ipDisplay}
+                        </span>
                       ) : (
                         <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
                           {ipDisplay}
@@ -438,7 +435,7 @@ export default function List(props: Props) {
                         ) : (
                           <>
                             <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
-                            <span className='min-w-0 shrink truncate'>{record.os}</span>
+                            <span className='min-w-0 shrink truncate'>{osDisplay}</span>
                           </>
                         )}
                         <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
