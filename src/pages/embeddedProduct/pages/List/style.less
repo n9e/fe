@@ -1,0 +1,46 @@
+.n9e-embedded-products-row-dragging {
+  z-index: 99999;
+  display: block;
+  background: var(--fc-fill-2);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 4px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.n9e-embedded-products-row-dragging td {
+  background: var(--fc-fill-2);
+  display: inline-block;
+  border: none;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.n9e-embedded-products-row-dragging td:nth-child(2) {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.n9e-embedded-products-row-dragging td:first-child {
+  padding-left: 12px;
+}
+
+.n9e-embedded-products-row-dragging td:last-child {
+  display: none;
+}
+
+.embedded-product-sortable-table {
+
+  .ant-table-thead>tr>th,
+  .ant-table-tbody>tr>td {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+.embedded-product-row-drag-handle {
+  cursor: grab;
+}
