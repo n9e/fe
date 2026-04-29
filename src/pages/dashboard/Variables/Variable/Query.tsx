@@ -71,12 +71,20 @@ export default function Query(props: Props) {
 
     setErrorMsg('');
     try {
+      // 对 query 对象中所有字符串字段执行变量替换，确保依赖链执行时使用最新变量值
+      // 部分数据源（如 CloudWatch query.region）的变量引用在此处提前解析
+      const interpolatedQuery: any = {};
+      if (currentVariable.query) {
+        Object.entries(currentVariable.query).forEach(([key, val]) => {
+          interpolatedQuery[key] = typeof val === 'string' ? formatString(val, variableInterpolations) : val;
+        });
+      }
       const options = await datasource({
         datasourceCate,
         datasourceValue,
         datasourceList,
         query: {
-          ...(currentVariable.query ?? {}),
+          ...interpolatedQuery,
           query: formatedDefinition || formatedQuery, // query 是标准写法
           range: currentRange,
           config: currentVariable.config, // config 是 es 特有的写法

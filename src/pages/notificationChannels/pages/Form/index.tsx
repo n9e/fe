@@ -31,6 +31,7 @@ export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const requestType = Form.useWatch('request_type', form);
+  const ident = Form.useWatch('ident', form);
 
   useEffect(() => {
     form.setFieldsValue(props.initialValues);
@@ -182,7 +183,9 @@ export default function FormCpt(props: Props) {
             </div>
           </Splitter.Panel>
           <Splitter.Panel>
-            <div className='p-4 best-looking-scroll h-full'>{requestType && <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />}</div>
+            <div className='p-4 best-looking-scroll h-full'>
+              {requestType && <Document type='iframe' documentPath={`https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usage/notify-channel/${ident}/`} />}
+            </div>
           </Splitter.Panel>
         </Splitter>
       </div>
