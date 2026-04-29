@@ -195,12 +195,13 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       const selection = window.getSelection();
       const root = rootRef.current;
       const focusInside = root && selection?.focusNode ? isNodeInside(root, selection.focusNode) : false;
+      const hasTextInRoot = root && selection ? !!getSelectionTextWithinRoot(selection, root).trim() : false;
 
-      if (!selectionStartedInsideRef.current && !focusInside) return;
+      if (!selectionStartedInsideRef.current && !focusInside && !hasTextInRoot) return;
       selectionStartedInsideRef.current = false;
 
       if (isTextSelectDebugEnabled()) {
-        console.log('[TokenTextSelect] doc-mouseup-captured', { name, focusInside });
+        console.log('[TokenTextSelect] doc-mouseup-captured', { name, focusInside, hasTextInRoot });
       }
 
       requestAnimationFrame(() => {

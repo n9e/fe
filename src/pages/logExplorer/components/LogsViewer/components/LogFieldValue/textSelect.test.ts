@@ -191,6 +191,44 @@ describe('textSelect', () => {
     });
   });
 
+  it('returns result when both endpoints are outside root but selected text includes root text', () => {
+    const anchorNode = { id: 'outer-anchor' } as unknown as Node;
+    const focusNode = { id: 'outer-focus' } as unknown as Node;
+    const commonAncestorContainer = { id: 'outer-wrapper' } as unknown as Node;
+
+    const root = {
+      contains: () => false,
+    };
+
+    const result = getTextSelectionPopoverResult({
+      host: {
+        getBoundingClientRect: () => ({ left: 20, top: 10 }),
+      },
+      root,
+      selection: {
+        rangeCount: 1,
+        anchorNode,
+        focusNode,
+        toString: () => ' [] ',
+        getRangeAt: () => ({
+          collapsed: false,
+          commonAncestorContainer,
+          getBoundingClientRect: () => ({ left: 35, bottom: 45 }),
+        }),
+      },
+      isNodeInside: (currentRoot, node) => currentRoot.contains(node),
+      selectionTextWithinRoot: '[]',
+    });
+
+    expect(result).toEqual({
+      selectedFragment: '[]',
+      anchorRect: {
+        left: 15,
+        top: 35,
+      },
+    });
+  });
+
   it('returns result when anchor is outside root but focus is inside root', () => {
     const anchorNode = { id: 'outside-anchor' } as unknown as Node;
     const focusNode = { id: 'inside-focus' } as unknown as Node;
