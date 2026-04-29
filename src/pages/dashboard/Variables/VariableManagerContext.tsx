@@ -5,7 +5,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { IVariable as Variable, VariableExecutionMeta, DependencyGraph } from './types';
 
-function extractDependencies(str: string, validVars?: Set<string>): string[] {
+export function extractDependencies(str: string, validVars?: Set<string>): string[] {
   // 正则表达式匹配$变量名格式
   // 匹配规则：
   // - 支持 $var 格式：$ 符号后跟一个或多个字母、数字、下划线
