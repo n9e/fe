@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import MDEditor from '@uiw/react-md-editor';
 
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
 
 import './style.less';
 
@@ -28,7 +29,11 @@ export default function index(props: Props) {
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
   // 去除 documentPath 结尾的 /
-  const realDocumentPath = documentPath.replace(/\/$/, '');
+  let realDocumentPath = documentPath.replace(/\/$/, '');
+
+  if (type === 'iframe' && IS_ENT) {
+    realDocumentPath = realDocumentPath.replace('https://flashcat.cloud', '');
+  }
 
   useEffect(() => {
     if (documentPath && type === 'md') {
