@@ -119,10 +119,10 @@ export function getTextSelectionPopoverResult(params: GetTextSelectionPopoverRes
   // 首选严格同字段：anchor/focus/commonAncestor 都在 root 内。
   const strictInside = anchorInside && focusInside && commonAncestorInside;
 
-  // 兼容一个常见边界：mouseup 落在字段外层包裹/margin 区域，
-  // 但实际选中的文本完全来自当前字段。
+  // 兼容常见边界：选区端点落在字段外层包裹/margin 区域，
+  // 或从字段外开始划词但选区内包含当前字段文本。
   const trimmedTextWithinRoot = selectionTextWithinRoot?.trim() || '';
-  const fallbackInside = !!trimmedTextWithinRoot && trimmedTextWithinRoot === trimmedText;
+  const fallbackInside = !!trimmedTextWithinRoot && trimmedText.includes(trimmedTextWithinRoot);
 
   if (!strictInside && !fallbackInside) {
     onDebug?.({
@@ -142,7 +142,7 @@ export function getTextSelectionPopoverResult(params: GetTextSelectionPopoverRes
   const hostRect = host.getBoundingClientRect();
 
   const result = {
-    selectedFragment: text,
+    selectedFragment: trimmedTextWithinRoot || text,
     anchorRect: {
       left: rect.left - hostRect.left,
       top: rect.bottom - hostRect.top,
