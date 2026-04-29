@@ -5,7 +5,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { IVariable as Variable, VariableExecutionMeta, DependencyGraph } from './types';
 
-function extractDependencies(str: string, validVars?: Set<string>): string[] {
+export function extractDependencies(str: string, validVars?: Set<string>): string[] {
   // 正则表达式匹配$变量名格式
   // 匹配规则：
   // - 支持 $var 格式：$ 符号后跟一个或多个字母、数字、下划线
@@ -351,6 +351,17 @@ export const VariableManagerProvider = ({
         // 分析 datasource.value 中的依赖
         if (variable.datasource?.value && typeof variable.datasource.value === 'string') {
           extractDependencies(variable.datasource.value, validVarNames).forEach((dep) => dependencySet.add(dep));
+        }
+
+        // 扫描 variable.query 对象中所有字符串字段的变量引用
+        // 部分数据源（如 CloudWatch）将变量引用存储在 query 子字段中，
+        // 如 query.region、query.namespace 等
+        if (variable.query && typeof variable.query === 'object') {
+          Object.values(variable.query).forEach((val) => {
+            if (typeof val === 'string') {
+              extractDependencies(val, validVarNames).forEach((dep) => dependencySet.add(dep));
+            }
+          });
         }
       }
 
