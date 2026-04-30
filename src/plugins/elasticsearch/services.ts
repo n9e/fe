@@ -354,3 +354,5 @@ export async function getHistogram(params: {
   ];
   return series;
 }
+
+export { getESClusterInfo, getESFieldProperties, getESFieldSample, getESAggFunctions } from '../../plus/datasource/elasticsearch/ExplorerNG/services';
