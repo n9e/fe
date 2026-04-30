@@ -17,7 +17,6 @@ export function getDatabases(data: BaseParams): Promise<string[]> {
 export function getTables(
   data: BaseParams & {
     db: string;
-    is_stable: boolean;
   },
 ): Promise<string[]> {
   return request(`/api/n9e/${getDatasourceCate(data.cate)}-tables`, {

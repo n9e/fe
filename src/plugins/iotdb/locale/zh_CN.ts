@@ -27,8 +27,7 @@ const zh_CN = {
       timeFormat_tip: '时间的格式，会根据此格式将时间转为时间戳',
     },
     schema: '元信息',
-    table: '普通表',
-    stable: '超级表',
+    table: '表',
   },
   trigger: {
     title: '告警条件',

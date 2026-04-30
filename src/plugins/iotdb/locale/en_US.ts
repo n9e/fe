@@ -27,8 +27,7 @@ const en_US = {
       timeFormat_tip: 'The format of the time, which will convert the time to a timestamp according to this format',
     },
     schema: 'Schema',
-    table: 'Table',
-    stable: 'Stable',
+    table: 'Tables',
   },
   trigger: {
     title: 'Trigger',

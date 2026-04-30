@@ -18,7 +18,7 @@ interface DataNode {
   title: string;
   key: string;
   children?: DataNode[];
-  levelType?: 'tableGroup' | 'table' | 'field';
+  levelType?: 'tables' | 'table' | 'field';
   isLeaf?: boolean;
   selectable?: boolean;
   type?: string;
@@ -63,11 +63,10 @@ export default function Meta(props: Props) {
     }
 
     try {
-      if (node.levelType === 'tableGroup' && node.database) {
+      if (node.levelType === 'tables' && node.database) {
         const tables = await getTables({
           ...baseParams,
           db: node.database,
-          is_stable: false,
         });
         setTreeData((origin) =>
           updateTreeData(
@@ -126,7 +125,7 @@ export default function Meta(props: Props) {
             {
               title: t('query.table'),
               key: `${item}.table`,
-              levelType: 'tableGroup' as const,
+              levelType: 'tables' as const,
               database: item,
               selectable: false,
             },
