@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { Resizable } from 're-resizable';
 import { Button, Tabs } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
+import { useTranslation } from 'react-i18next';
 import { DatasourceCateEnum } from '@/utils/constant';
 import AdvancedSettings from '../components/AdvancedSettings';
 import QueryBuilder from './QueryBuilder';
@@ -36,19 +37,20 @@ export const setDefaultValues = (form: FormInstance, datasourceCate: string) => 
 };
 
 export default function IotDBExplorer(props: Props) {
+  const { t } = useTranslation('db_iotdb');
   const { datasourceCate = DatasourceCateEnum.iotdb, datasourceValue, form } = props;
   const [mode, setMode] = useState<string>('table');
   const [refreshFlag, setRefreshFlag] = useState<string>();
-  const [width, setWidth] = useState(_.toNumber(localStorage.getItem('tdengine-meta-sidebar') || 200));
+  const [width, setWidth] = useState(_.toNumber(localStorage.getItem('iotdb-meta-sidebar') || 200));
 
   useEffect(() => {
     setDefaultValues(form, datasourceCate);
   }, [datasourceCate, form]);
 
   return (
-    <div className='tdengine-discover-container'>
-      <div className='tdengine-discover-query-container'>
-        <div className='tdengine-discover-meta-container'>
+    <div className='iotdb-discover-container'>
+      <div className='iotdb-discover-query-container'>
+        <div className='iotdb-discover-meta-container'>
           <Resizable
             size={{ width, height: '100%' }}
             enable={{
@@ -60,15 +62,17 @@ export default function IotDBExplorer(props: Props) {
                 curWidth = 200;
               }
               setWidth(curWidth);
-              localStorage.setItem('tdengine-meta-sidebar', curWidth.toString());
+              localStorage.setItem('iotdb-meta-sidebar', curWidth.toString());
             }}
           >
             <Meta
               datasourceCate={datasourceCate}
               datasourceValue={datasourceValue}
               onTreeNodeClick={(nodeData) => {
-                const query = form.getFieldValue(['query']);
-                query.database = nodeData.database;
+                const query = {
+                  ...(form.getFieldValue(['query']) || {}),
+                  database: nodeData.database,
+                };
                 if (nodeData.levelType === 'field') {
                   _.set(query, 'query', `select time, ${nodeData.field} from ${nodeData.table}`);
                   query.keys = {
@@ -88,7 +92,7 @@ export default function IotDBExplorer(props: Props) {
           </Resizable>
         </div>
         <div
-          className='tdengine-discover-main'
+          className='iotdb-discover-main'
           style={{
             width: `calc(100% - ${width + 8}px)`,
           }}
@@ -103,7 +107,7 @@ export default function IotDBExplorer(props: Props) {
                   setRefreshFlag(_.uniqueId('refreshFlag_'));
                 }}
               >
-                查询
+                {t('query.execute')}
               </Button>
             }
             setRefreshFlag={setRefreshFlag}

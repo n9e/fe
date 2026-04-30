@@ -15,7 +15,7 @@ const POLLING_INTERVAL = 3000;
 
 export default function ChatPanel(props: IAiChatProps) {
   const { t } = useTranslation('AiChat');
-  const { placeholder, chatId, queryPageFrom, queryAction, promptList, customContentRenderer, onChatChange, onError, welcomeSlot } = props;
+  const { placeholder, chatId, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent, onChatChange, onError, welcomeSlot } = props;
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -217,9 +217,9 @@ export default function ChatPanel(props: IAiChatProps) {
   );
 
   const sendUserMessage = useCallback(
-    async (action?: IAiChatAction) => {
+    async (action?: IAiChatAction, overrideContent?: string) => {
       if (submitting) return;
-      const content = inputValue.trim();
+      const content = (overrideContent ?? inputValue).trim();
       if (!content) return;
 
       setSubmitting(true);
@@ -304,19 +304,20 @@ export default function ChatPanel(props: IAiChatProps) {
         key={`${messageItem.chat_id}-${messageItem.seq_id}`}
         message={messageItem}
         isStreaming={streamingLocator?.chat_id === messageItem.chat_id && streamingLocator?.seq_id === messageItem.seq_id}
-        customContentRenderer={customContentRenderer}
+        onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
         onActionClick={sendUserMessage}
+        onOKForFormSelectContent={(action, overrideContent) => sendUserMessage(action, overrideContent)}
         maybeScrollToBottom={maybeScrollToBottom}
       />
     ));
-  }, [customContentRenderer, maybeScrollToBottom, messages, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
+  }, [onExecuteQueryForQueryContent, maybeScrollToBottom, messages, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
 
   return (
     <div className='flex w-full h-full min-h-0'>
       <div className='flex min-w-0 flex-1 flex-col'>
-        <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll'>
+        <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll children:h-full'>
           <Spin spinning={messagesLoading} indicator={<LoadingOutlined />}>
-            <div className='flex flex-col gap-8'>
+            <div className='h-full flex flex-col gap-8'>
               {messageItems.length ? (
                 messageItems
               ) : welcomeSlot ? (
@@ -333,7 +334,7 @@ export default function ChatPanel(props: IAiChatProps) {
           </Spin>
         </div>
 
-        <div className='mt-4 rounded-lg border border-fc-200 bg-fc-50'>
+        <div className='mt-4 rounded-lg fc-border'>
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 8 }}
             bordered={false}

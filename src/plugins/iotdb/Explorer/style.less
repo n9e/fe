@@ -1,18 +1,18 @@
 @border-color: var(--fc-border-color);
 
-.tdengine-discover-query {
+.iotdb-discover-query {
   display: flex;
   gap: 10px;
   width: 100%;
 }
-.tdengine-discover-meta-container {
+.iotdb-discover-meta-container {
   flex-shrink: 0;
   border: 1px solid @border-color;
   .ant-tree-title {
     white-space: nowrap;
   }
 }
-.tdengine-discover-container {
+.iotdb-discover-container {
   height: 100%;
   .ant-table-wrapper,.ant-spin-nested-loading,.ant-spin-container,.ant-table,.ant-table-container {
     height: 100% !important;
@@ -32,12 +32,12 @@
     }
   }
 }
-.tdengine-discover-main {
+.iotdb-discover-main {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
-.tdengine-discover-query-container {
+.iotdb-discover-query-container {
   display: flex;
   gap: 10px;
   height: 100%;
@@ -52,10 +52,10 @@
   .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab {
     border: 1px solid @border-color;
     border-left: 0 none;
-    color: #c1c1c1;
+    color: var(--fc-text-3);
   }
   .ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active {
-    border-bottom-color: #fff;
+    border-bottom-color: var(--fc-bg-1);
     border-top: 2px solid  @primary-color;
   }
   .ant-tabs-top > .ant-tabs-nav {
@@ -72,4 +72,8 @@
   .ant-tabs-top > .ant-tabs-nav::before {
     border-bottom: 1px solid @border-color;
   }
+}
+
+.iotdb-explorer-graph-settings {
+  width: 600px;
 }

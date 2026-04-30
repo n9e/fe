@@ -28,6 +28,8 @@ import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import DarkModeSelect from '@/components/DarkModeSelect';
 import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils';
 import { MenuMatchResult } from '@/components/SideMenu/types';
+import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
+
 import DocLink from './DocLink';
 import { TabMenu } from './TabMenu';
 import LanguageIcon from '../icons/LanguageIcon';
@@ -178,18 +180,17 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <Version />
 
-                  <Space className='mr-2'>
+                  <Space size={12}>
                     {rightArea}
-                    {IS_ENT && (
-                      <Button href='https://demo.flashcat.cloud/' target='_blank' icon={<SendOutlined />} size='small'>
-                        {t('viewDemo')}
-                      </Button>
-                    )}
+                    <FlashAiButton />
+                    <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
+                      <License />
+                    </AdvancedWrap>
+                    <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
+                      <FeatureNotification />
+                    </AdvancedWrap>
                   </Space>
 
-                  <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                    <License />
-                  </AdvancedWrap>
                   <Space>
                     {/* 整合版本关闭文档链接 */}
                     {!IS_ENT && IS_PLUS && (
@@ -205,9 +206,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       </Button>
                     )}
                   </Space>
-                  <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-                    <FeatureNotification />
-                  </AdvancedWrap>
 
                   {!IS_ENT && !IS_PLUS && (
                     <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>

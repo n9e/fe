@@ -7,9 +7,17 @@ import { Item, ExecutionItem } from './types';
 
 export type { Item, ExecutionItem };
 
-export const getList = function (): Promise<Item[]> {
+type SaveWorkflowPayload = {
+  group_id: number;
+  use_case: string;
+  name: string;
+  processors: Item['processors'];
+};
+
+export const getList = function (params?: { group_id: number; use_case: string }): Promise<Item[]> {
   return request('/api/n9e/event-pipelines', {
     method: RequestMethod.Get,
+    params,
   }).then((res) => res.dat ?? []);
 };
 
@@ -19,14 +27,14 @@ export const getItem = function (id: number): Promise<Item> {
   }).then((res) => res.dat);
 };
 
-export const postItem = function (data: Item) {
+export const postItem = function (data: Item | SaveWorkflowPayload) {
   return request('/api/n9e/event-pipeline', {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat);
 };
 
-export const putItem = function (data: Item) {
+export const putItem = function (data: Item | (SaveWorkflowPayload & { id: number })) {
   return request('/api/n9e/event-pipeline', {
     method: RequestMethod.Put,
     data,

@@ -3,7 +3,7 @@ import { RequestMethod } from '@/store/common';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { BaseParams } from './types';
 
-const getDatasourceCate = (cate?: string) => cate || DatasourceCateEnum.iotdb;
+const getDatasourceCate = (cate?: string) => encodeURIComponent(cate || DatasourceCateEnum.iotdb);
 
 export function getDatabases(data: BaseParams): Promise<string[]> {
   return request(`/api/n9e/${getDatasourceCate(data.cate)}-databases`, {

@@ -1,10 +1,13 @@
 const zh_HK = {
   title: 'LLM 配置',
+  help: 'LLM 配置用於為平台內 AI 能力提供模型支持。啟用後，可用於 Skill 調用及智能問答、告警分析、日誌排障、監控數據解讀等場景；設為默認後，未單獨指定模型的功能會使用該配置。',
   name: '名稱',
   description: '描述',
   api_type: '提供商類型',
   model: '模型',
   enabled: '啟用',
+  is_default: '默認',
+  is_default_tip: '打開之後，如果 agent 沒有配置 LLM 模型，將使用此模型',
   add_btn: '新建 LLM 配置',
   cannot_delete_when_enabled: '啟用狀態的 LLM 配置無法刪除',
   form: {

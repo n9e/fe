@@ -11,6 +11,9 @@ const zh_HK = {
     query_tip2: '官方文檔',
     sqlTemplates: '查詢模板',
     sqlTemplates_tip: '以下 SQL 查詢條件僅供參考，在實際使用的時候，需要將其中的 $變量 替換為實際的值',
+    sqlTemplates_load_failed: '查詢模板載入失敗',
+    previewFailed: '資料預覽失敗',
+    loadSchemaFailed: '元信息載入失敗',
     mode: {
       timeSeries: '時序值',
       raw: '日誌原文',

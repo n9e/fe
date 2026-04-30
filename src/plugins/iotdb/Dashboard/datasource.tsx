@@ -27,23 +27,19 @@ export default async function iotdbQuery(options: IOptions): Promise<Result> {
   const { time, targets, datasourceValue, queryOptionsTime } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
-  let start = moment(parsedRange.start).toISOString();
-  let end = moment(parsedRange.end).toISOString();
   const series: any[] = [];
   let refIds: string[] = [];
   if (targets && typeof datasourceValue === 'number') {
     _.forEach(targets, (target) => {
       refIds.push(target.refId);
     });
+    const effectiveRange = queryOptionsTime ? parseRange(queryOptionsTime) : parsedRange;
+    const start = moment(effectiveRange.start).toISOString();
+    const end = moment(effectiveRange.end).toISOString();
     const queryParmas = {
       cate: DatasourceCateEnum.iotdb,
       datasource_id: datasourceValue,
       query: _.map(targets, (target) => {
-        if (queryOptionsTime) {
-          const queryRange = parseRange(queryOptionsTime);
-          start = moment(queryRange.start).toISOString();
-          end = moment(queryRange.end).toISOString();
-        }
         const query: any = target.query || {};
         return {
           from: start,
@@ -62,17 +58,15 @@ export default async function iotdbQuery(options: IOptions): Promise<Result> {
       let batchQueryRes: any = {};
       if (!_.isEmpty(targets) && _.some(targets, (target) => target.query?.query)) {
         batchQueryRes = await getDsQuery(queryParmas);
-        for (let i = 0; i < batchQueryRes?.length; i++) {
+        _.forEach(batchQueryRes, (serie, i) => {
           const target = _.find(targets, (t) => t.refId === refIds[i]);
-          _.forEach(batchQueryRes, (serie) => {
-            series.push({
-              id: _.uniqueId('series_'),
-              name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
-              metric: serie.metric,
-              data: serie.values,
-            });
+          series.push({
+            id: _.uniqueId('series_'),
+            name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
+            metric: serie.metric,
+            data: serie.values,
           });
-        }
+        });
       }
       const resolveData: Result = { series };
       if (options.inspect) {
@@ -80,7 +74,7 @@ export default async function iotdbQuery(options: IOptions): Promise<Result> {
         resolveData.query.push({
           type: 'Query Range',
           request: {
-            url: `/api/${N9E_PATHNAME}/query-range-batch`,
+            url: `/api/${N9E_PATHNAME}/ds-query`,
             method: 'POST',
             data: queryParmas,
           },

@@ -5,6 +5,8 @@ const zh_CN = {
   quickOpenClose: '打开/关闭',
   quickSearchPlaceholder: '输入内容以检索...',
   quickMenus: '快捷菜单',
+  recentUsed: '近期使用',
+  personalCollection: '个人收藏',
   menu: {
     infrastructure: '基础设施',
     business_group: '业务组',
@@ -66,14 +68,15 @@ const zh_CN = {
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
+    ai_config_scheduled_task: '定时任务',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
-    insight: '业务洞察',
+    insight: '洞察',
     observability: 'OBSERVABILITY',
-    analysis: '数据分析',
-    platform: '平台工具',
-    system: '系统配置',
+    analysis: '分析',
+    platform: '平台',
+    system: '系统',
   },
 };
 export default zh_CN;

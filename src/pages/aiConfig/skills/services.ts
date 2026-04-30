@@ -3,9 +3,9 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-import { Item, FormValues, FileItem } from './types';
+import { Item, FormValues, FileItem, SkillDetail, FileContent } from './types';
 
-export type { Item, FormValues, FileItem };
+export type { Item, FormValues, FileItem, SkillDetail, FileContent };
 
 export const getList = function (): Promise<Item[]> {
   return request('/api/n9e/ai-skills', {
@@ -13,7 +13,7 @@ export const getList = function (): Promise<Item[]> {
   }).then((res) => res.dat ?? []);
 };
 
-export const getItem = function (id: number): Promise<Item & { files: FileItem[] }> {
+export const getItem = function (id: number): Promise<SkillDetail> {
   return request(`/api/n9e/ai-skill/${id}`, {
     method: RequestMethod.Get,
   }).then((res) => res.dat);
@@ -63,11 +63,7 @@ export const getFiles = function (id: number): Promise<FileItem[]> {
   }).then((res) => res.dat ?? []);
 };
 
-export const getFile = function (fileId: number): Promise<
-  FileItem & {
-    content: string;
-  }
-> {
+export const getFile = function (fileId: number): Promise<FileContent> {
   return request(`/api/n9e/ai-skill-file/${fileId}`, {
     method: RequestMethod.Get,
   }).then((res) => res.dat);

@@ -35,7 +35,7 @@ export default function Index(props: Props) {
             {data?.auth?.basic_auth_password ? '******' : '-'}
           </Col>
           <Col span={8} className='second-color'>
-            {data.http?.tls?.skip_tls_verify ? t('form.yes') : t('form.no')}
+            {data?.http?.tls?.skip_tls_verify ? t('form.yes') : t('form.no')}
           </Col>
         </Row>
       </div>

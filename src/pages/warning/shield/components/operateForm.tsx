@@ -236,7 +236,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           keyLabel={t('tag.key.label')}
           keyLabelTootip={
             <div className='pt-2 px-1'>
-              <Markdown content={t('tag.key.tip')} darkMode />
+              <Markdown content={t('tag.key.tip')} inTooltip />
             </div>
           }
         />

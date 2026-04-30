@@ -258,7 +258,13 @@ export default function List(props: Props) {
               </Button>
             </Dropdown>
           )}
-          {explorable && <Explorer selectedIdents={selectedIdents} />}
+          {explorable && (
+            <Tooltip title={t('explorer_selected_metrics_tip')}>
+              <span>
+                <Explorer selectedIdents={selectedIdents} />
+              </span>
+            </Tooltip>
+          )}
         </Space>
       </div>
       <div className='n9e-antd-table-height-full n9e-hosts-ng-table mt-4'>
@@ -308,7 +314,17 @@ export default function List(props: Props) {
           rowClassName={(record) => {
             return classNames('group', {
               'n9e-hosts-ng-table-row-offline': record.target_up === 0,
+              'bg-fc-400/40': record.target_up === 0,
             });
+          }}
+          onRow={(record) => {
+            if (record.target_up === 0) {
+              return {
+                title: t('host_no_heartbeat_tip'),
+              };
+            }
+
+            return {};
           }}
           columns={[
             {
@@ -369,7 +385,6 @@ export default function List(props: Props) {
                 const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
                 const osDisplay = record.os === '' ? '-' : record.os;
                 const archDisplay = record.arch === '' ? '-' : record.arch;
-                const metaTooltipTitle = `${coresDisplay} · ${osDisplay} · ${archDisplay}`;
 
                 return (
                   <div>
@@ -378,7 +393,7 @@ export default function List(props: Props) {
                         ident={ident}
                         targetNode={
                           <span
-                            className={classNames('text-main text-l1 font-medium mb-[2px] cursor-pointer hover:underline hover:text-title', {
+                            className={classNames('text-main text-l1 font-semibold mb-[2px] cursor-pointer hover:underline hover:text-title', {
                               'text-soft': record.target_up === 0,
                             })}
                           >
@@ -405,31 +420,27 @@ export default function List(props: Props) {
                     </div>
                     <Space size={4} className='flex flex-wrap items-center'>
                       {record.host_ip ? (
-                        <Tooltip title={ipDisplay}>
-                          <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
-                            {ipDisplay}
-                          </span>
-                        </Tooltip>
+                        <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
+                          {ipDisplay}
+                        </span>
                       ) : (
                         <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
                           {ipDisplay}
                         </span>
                       )}
                       <Divider type='vertical' />
-                      <Tooltip title={metaTooltipTitle}>
-                        <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
-                          <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
-                          {record.os === '' ? (
-                            <span className='shrink-0'>-</span>
-                          ) : (
-                            <>
-                              <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
-                              <span className='min-w-0 shrink truncate'>{record.os}</span>
-                            </>
-                          )}
-                          <span className='min-w-0 shrink truncate'>{archDisplay}</span>
-                        </div>
-                      </Tooltip>
+                      <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
+                        {record.os === '' ? (
+                          <span className='shrink-0'>-</span>
+                        ) : (
+                          <>
+                            <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
+                            <span className='min-w-0 shrink truncate'>{osDisplay}</span>
+                          </>
+                        )}
+                        <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
+                        <span className='min-w-0 shrink truncate'>{archDisplay}</span>
+                      </div>
                       <Divider type='vertical' />
                       <div
                         className={classNames('flex items-center justify-center gap-1 py-1 px-2 rounded-[4px]', {

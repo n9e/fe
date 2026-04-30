@@ -63,30 +63,46 @@ export default function index(props: Props) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              label={t('teams')}
-              tooltip={{
-                title: <Trans ns={NS} i18nKey={`${NS}:teams_tip`} components={{ br: <br /> }} />,
-                overlayClassName: 'ant-tooltip-auto-width',
-              }}
-              name='team_ids'
-              rules={[{ required: true }]}
-            >
-              <Select
-                showSearch
-                optionFilterProp='label'
-                mode='multiple'
-                options={_.map(userGroups, (item) => {
-                  return {
-                    label: item.name,
-                    value: item.id,
-                  };
-                })}
-              />
-            </Form.Item>
+            <Row gutter={SIZE}>
+              <Col flex='auto'>
+                <Form.Item
+                  label={t('teams')}
+                  tooltip={{
+                    title: <Trans ns={NS} i18nKey={`${NS}:teams_tip`} components={{ br: <br /> }} />,
+                    overlayClassName: 'ant-tooltip-auto-width',
+                  }}
+                  name='team_ids'
+                  rules={[{ required: true }]}
+                >
+                  <Select
+                    showSearch
+                    optionFilterProp='label'
+                    mode='multiple'
+                    options={_.map(userGroups, (item) => {
+                      return {
+                        label: item.name,
+                        value: item.id,
+                      };
+                    })}
+                  />
+                </Form.Item>
+              </Col>
+              <Col flex='none'>
+                <Form.Item
+                  label={t('disabled.form_label')}
+                  name='disabled'
+                  valuePropName='checked'
+                  initialValue={false}
+                  getValueFromEvent={(checked) => !checked}
+                  getValueProps={(disabled) => ({ checked: !disabled })}
+                >
+                  <Switch size='small' />
+                </Form.Item>
+              </Col>
+            </Row>
           </Col>
         </Row>
-        <Row gutter={SIZE}>
+        {/* <Row gutter={SIZE}>
           <Col span={12}>
             <Form.Item label={t('use_case.label')} name='use_case' rules={[{ required: true }]} initialValue='event_pipeline'>
               <Select
@@ -120,47 +136,31 @@ export default function index(props: Props) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Row gutter={SIZE}>
-              <Col flex='auto'>
-                <Form.Item label={t('trigger_mode.label')} name='trigger_mode' rules={[{ required: true }]} initialValue='event'>
-                  <Select
-                    options={
-                      use_case === 'firemap'
-                        ? [
-                            {
-                              label: t('trigger_mode.api'),
-                              value: 'api',
-                            },
-                          ]
-                        : [
-                            {
-                              label: t('trigger_mode.event'),
-                              value: 'event',
-                            },
-                            {
-                              label: t('trigger_mode.api'),
-                              value: 'api',
-                            },
-                          ]
-                    }
-                  />
-                </Form.Item>
-              </Col>
-              <Col flex='none'>
-                <Form.Item
-                  label={t('disabled.form_label')}
-                  name='disabled'
-                  valuePropName='checked'
-                  initialValue={false}
-                  getValueFromEvent={(checked) => !checked}
-                  getValueProps={(disabled) => ({ checked: !disabled })}
-                >
-                  <Switch size='small' />
-                </Form.Item>
-              </Col>
-            </Row>
+            <Form.Item label={t('trigger_mode.label')} name='trigger_mode' rules={[{ required: true }]} initialValue='event'>
+              <Select
+                options={
+                  use_case === 'firemap'
+                    ? [
+                        {
+                          label: t('trigger_mode.api'),
+                          value: 'api',
+                        },
+                      ]
+                    : [
+                        {
+                          label: t('trigger_mode.event'),
+                          value: 'event',
+                        },
+                        {
+                          label: t('trigger_mode.api'),
+                          value: 'api',
+                        },
+                      ]
+                }
+              />
+            </Form.Item>
           </Col>
-        </Row>
+        </Row> */}
         <Form.Item label={t('common:table.note')} name='description'>
           <Input.TextArea />
         </Form.Item>
@@ -189,7 +189,7 @@ export default function index(props: Props) {
           <Attributes disabled={disabled} name={['attribute_filters']} />
         </div>
       </Card>
-      <Card
+      {/* <Card
         className='mb-2'
         title={<Space>{t('inputs.label')}</Space>}
         bodyStyle={{
@@ -240,7 +240,7 @@ export default function index(props: Props) {
             </>
           )}
         </Form.List>
-      </Card>
+      </Card> */}
       <Form.List name='processors'>
         {(fields, { add, remove, move }) => (
           <Space direction='vertical' size={SIZE * 2} className='w-full'>

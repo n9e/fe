@@ -5,6 +5,8 @@ const ru_RU = {
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',
   quickMenus: 'Быстрые меню',
+  recentUsed: 'Недавно использованные',
+  personalCollection: 'Личные коллекции',
   menu: {
     infrastructure: 'Инфраструктура',
     business_group: 'Бизнес-группа',
@@ -66,6 +68,7 @@ const ru_RU = {
     ai_config_llm_configs: 'LLM управление',
     ai_config_skills: 'Skill управление',
     ai_config_mcp_servers: 'MCP управление',
+    ai_config_scheduled_task: 'Задачи настройки',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

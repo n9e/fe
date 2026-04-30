@@ -14,12 +14,19 @@ export default function SqlTemplates(props: Props) {
   const { t } = useTranslation('db_iotdb');
   const { cate, onSelect } = props;
   const [templates, setTemplates] = useState<{ [index: string]: string }>();
+  const [errorContent, setErrorContent] = useState('');
 
   useEffect(() => {
-    getSqlTemplate(cate).then((res) => {
-      setTemplates(res);
-    });
-  }, [cate]);
+    getSqlTemplate(cate)
+      .then((res) => {
+        setTemplates(res);
+        setErrorContent('');
+      })
+      .catch((err) => {
+        setTemplates({});
+        setErrorContent(_.get(err, 'message') || t('query.sqlTemplates_load_failed'));
+      });
+  }, [cate, t]);
 
   return (
     <Dropdown
@@ -28,6 +35,7 @@ export default function SqlTemplates(props: Props) {
       overlay={
         <div>
           <Alert message={t('query.sqlTemplates_tip')} />
+          {errorContent && <Alert className='mt-2' message={errorContent} type='error' />}
           <Menu style={{ height: 300, width: 900, overflow: 'auto' }}>
             {_.map(templates, (val, key) => {
               return (
@@ -37,7 +45,7 @@ export default function SqlTemplates(props: Props) {
                     onSelect(val);
                   }}
                 >
-                  <strong>{key}:</strong> <span style={{ color: '#999' }}>{val}</span>
+                  <strong>{key}:</strong> <span style={{ color: 'var(--fc-text-3)' }}>{val}</span>
                 </Menu.Item>
               );
             })}

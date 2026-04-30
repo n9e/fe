@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Tree, Modal, Button } from 'antd';
+import { Tree, Modal, Button, message } from 'antd';
 import _ from 'lodash';
 import type { DraggableData, DraggableEvent } from 'react-draggable';
 import Draggable from 'react-draggable';
@@ -18,8 +18,9 @@ interface DataNode {
   title: string;
   key: string;
   children?: DataNode[];
-  levelType?: 'table' | 'field';
+  levelType?: 'tableGroup' | 'table' | 'field';
   isLeaf?: boolean;
+  selectable?: boolean;
   type?: string;
   database?: string;
   table?: string;
@@ -55,89 +56,93 @@ export default function Meta(props: Props) {
     datasource_id: datasourceValue,
   };
 
-  const onLoadData = ({ key, children, pos }: any) => {
-    return new Promise<void>((resolve) => {
-      if (children) {
-        resolve();
-        return;
-      }
-      if (_.split(pos, '-')?.length === 3) {
-        const keyArr = key.split('.');
-        getTables({
+  const onLoadData = async (node: DataNode) => {
+    const { key, children } = node;
+    if (children) {
+      return;
+    }
+
+    try {
+      if (node.levelType === 'tableGroup' && node.database) {
+        const tables = await getTables({
           ...baseParams,
-          db: keyArr[0],
+          db: node.database,
           is_stable: false,
-        }).then((res) => {
-          setTreeData((origin) =>
-            updateTreeData(
-              origin,
-              key,
-              _.map(res, (item) => {
-                return {
-                  title: item,
-                  key: `${key}.${item}`,
-                  levelType: 'table',
-                  database: keyArr[0],
-                  table: item,
-                  selectable: false,
-                };
-              }),
-            ),
-          );
-          resolve();
         });
-      } else if (_.split(pos, '-')?.length === 4) {
-        getColumns({
+        setTreeData((origin) =>
+          updateTreeData(
+            origin,
+            key,
+            _.map(tables, (item) => {
+              return {
+                title: item,
+                key: `${key}.${item}`,
+                levelType: 'table',
+                database: node.database,
+                table: item,
+                selectable: false,
+              };
+            }),
+          ),
+        );
+      } else if (node.levelType === 'table' && node.database && node.table) {
+        const columns = await getColumns({
           ...baseParams,
-          db: key.split('.')[0],
-          table: key.split('.')[2],
-        }).then((res) => {
-          setTreeData((origin) =>
-            updateTreeData(
-              origin,
-              key,
-              _.map(res, (item) => {
-                return {
-                  title: `${item.name} (${item.type})`,
-                  key: `${key}.${item.name}`,
-                  isLeaf: true,
-                  levelType: 'field',
-                  database: key.split('.')[0],
-                  table: key.split('.')[2],
-                  field: item.name,
-                  type: item.type,
-                };
-              }),
-            ),
-          );
-          resolve();
+          db: node.database,
+          table: node.table,
         });
+        setTreeData((origin) =>
+          updateTreeData(
+            origin,
+            key,
+            _.map(columns, (item) => {
+              return {
+                title: `${item.name} (${item.type})`,
+                key: `${key}.${item.name}`,
+                isLeaf: true,
+                levelType: 'field',
+                database: node.database,
+                table: node.table,
+                field: item.name,
+                type: item.type,
+              };
+            }),
+          ),
+        );
       }
-    });
+    } catch (err) {
+      message.error(_.get(err, 'message') || t('query.loadSchemaFailed'));
+    }
   };
 
   useEffect(() => {
-    getDatabases(baseParams).then((res) => {
-      const databases = _.map(res, (item) => ({
-        title: item,
-        key: item,
-        selectable: false,
-        children: [
-          {
-            title: t('query.table'),
-            key: `${item}.table`,
-            database: item,
-            selectable: false,
-          },
-        ],
-      }));
-      setTreeData(databases);
-    });
+    getDatabases(baseParams)
+      .then((res) => {
+        const databases = _.map(res, (item) => ({
+          title: item,
+          key: item,
+          selectable: false,
+          children: [
+            {
+              title: t('query.table'),
+              key: `${item}.table`,
+              levelType: 'tableGroup' as const,
+              database: item,
+              selectable: false,
+            },
+          ],
+        }));
+        setTreeData(databases);
+      })
+      .catch((err) => {
+        setTreeData([]);
+        message.error(_.get(err, 'message') || t('query.loadSchemaFailed'));
+      });
   }, [datasourceCate, datasourceValue, t]);
 
   return (
-    <div className='tdengine-discover-meta-content'>
-      <div className='tdengine-discover-meta-tree'>
+    <div className='iotdb-discover-meta-content'>
+      <div className='iotdb-discover-meta-tree'>
         <Tree
           blockNode
           loadData={onLoadData}
@@ -192,7 +197,7 @@ export function MetaModal(props: Props) {
     <>
       <Modal
         width={400}
-        wrapClassName='tdengine-discover-meta-modal'
+        wrapClassName='iotdb-discover-meta-modal'
         bodyStyle={{
           padding: 10,
           height: 500,
@@ -202,7 +207,7 @@ export function MetaModal(props: Props) {
         destroyOnClose
         title={
           <div
-            className='tdengine-discover-meta-modal-title'
+            className='iotdb-discover-meta-modal-title'
             style={{
               width: '100%',
               cursor: 'move',

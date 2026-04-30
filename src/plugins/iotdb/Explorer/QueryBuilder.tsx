@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { Input, Form, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form/Form';
+import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import SqlTemplates from '../components/SqlTemplates';
@@ -15,21 +16,22 @@ interface Props {
 }
 
 export default function QueryBuilder(props: Props) {
+  const { t } = useTranslation('db_iotdb');
   const { form, extra, setRefreshFlag } = props;
 
   return (
     <div style={{ width: '100%' }}>
-      <div className='tdengine-discover-query'>
+      <div className='iotdb-discover-query'>
         <InputGroupWithFormItem
           label={
             <span>
-              查询条件{' '}
+              {t('query.query')}{' '}
               <Tooltip
                 title={
                   <span>
-                    IoTDB 查询语法可参考
+                    {t('query.query_tip1')}
                     <a target='_blank' href='https://iotdb.apache.org/UserGuide/latest-Table/API/SQL-Manual.html'>
-                      官方文档
+                      {t('query.query_tip2')}
                     </a>
                   </span>
                 }
@@ -52,8 +54,12 @@ export default function QueryBuilder(props: Props) {
         </Form.Item>
         <SqlTemplates
           onSelect={(sql) => {
+            const currentQuery = form.getFieldValue(['query']) || {};
             form.setFieldsValue({
-              query: _.set(form.getFieldValue(['query']), 'query', sql),
+              query: {
+                ...currentQuery,
+                query: sql,
+              },
             });
           }}
         />

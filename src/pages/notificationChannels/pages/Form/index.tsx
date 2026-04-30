@@ -18,6 +18,9 @@ import SMTP from './SMTP';
 import Script from './Script';
 import Flashduty from './Flashduty';
 import Pagerduty from './Pagerduty';
+import DingtalkApp from './DingtalkApp';
+import WecomApp from './WecomApp';
+import FeishuApp from './FeishuApp';
 
 interface Props {
   initialValues?: ChannelItem;
@@ -28,6 +31,7 @@ export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const [form] = Form.useForm();
   const requestType = Form.useWatch('request_type', form);
+  const ident = Form.useWatch('ident', form);
 
   useEffect(() => {
     form.setFieldsValue(props.initialValues);
@@ -148,6 +152,9 @@ export default function FormCpt(props: Props) {
                   <Script />
                   <Flashduty />
                   <Pagerduty />
+                  <DingtalkApp />
+                  <WecomApp />
+                  <FeishuApp />
                 </div>
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>
@@ -177,7 +184,7 @@ export default function FormCpt(props: Props) {
           </Splitter.Panel>
           <Splitter.Panel>
             <div className='p-4 best-looking-scroll h-full'>
-              <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />
+              {requestType && <Document type='iframe' documentPath={`https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usage/notify-channel/${ident}/`} />}
             </div>
           </Splitter.Panel>
         </Splitter>

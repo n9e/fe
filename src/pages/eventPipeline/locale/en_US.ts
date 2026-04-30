@@ -271,5 +271,32 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
     timeout_max_warning: 'Execution wait time cannot exceed 60 seconds',
     select_host: 'Select target machine',
   },
+  alert_shot: {
+    help: 'Help',
+    title: 'Alert Screenshot',
+    shot_type: {
+      label: 'Object Type',
+      options: {
+        board: 'Dashboard',
+        url: 'URL',
+      },
+    },
+    advanced_settings: 'Advanced Settings',
+    board_shot_opts: {
+      busi_group: 'Business Group',
+      board_id: 'Dashboard',
+      board_url: 'Dashboard URL',
+      timeout: 'Timeout (ms)',
+      width: 'Image Width',
+    },
+    url_shot_opts: {
+      url: 'URL',
+      headers: 'Headers',
+      proxy: 'Proxy Settings',
+      insecure_skip_verify: 'Skip Certificate Verification',
+      timeout: 'Timeout (ms)',
+      width: 'Image Width',
+    },
+  },
 };
 export default en_US;

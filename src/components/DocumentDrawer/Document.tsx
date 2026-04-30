@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import MDEditor from '@uiw/react-md-editor';
 
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
 
 import './style.less';
 
@@ -17,6 +18,8 @@ const filenameMap = {
   zh_CN: '',
   zh_HK: '_hk',
   en_US: '_en',
+  ja_JP: '_en',
+  ru_RU: '_en',
 };
 
 export default function index(props: Props) {
@@ -26,16 +29,32 @@ export default function index(props: Props) {
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
   // 去除 documentPath 结尾的 /
-  const realDocumentPath = documentPath.replace(/\/$/, '');
+  let realDocumentPath = documentPath.replace(/\/$/, '');
+
+  if (type === 'iframe' && IS_ENT) {
+    realDocumentPath = realDocumentPath.replace('https://flashcat.cloud', '');
+  }
 
   useEffect(() => {
     if (documentPath && type === 'md') {
       fetch(`${documentPath}/${i18n.language}.md`)
         .then((res) => {
+          // 如果获取文档失败，使用 en_US 作为默认语言
+          if (res.status === 404) {
+            return fetch(`${documentPath}/en_US.md`).then((res) => res.text());
+          }
           return res.text();
         })
         .then((res) => {
           setDocument(res);
+        })
+        .catch(() => {
+          // 如果获取文档失败，使用 en_US 作为默认语言
+          return fetch(`${documentPath}/en_US.md`)
+            .then((res) => res.text())
+            .then((res) => {
+              setDocument(res);
+            });
         });
     }
   }, [documentPath, i18n.language]);

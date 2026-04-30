@@ -9,7 +9,7 @@ import PageLayout from '@/components/pageLayout';
 import { NS, NOTIFICATION_CHANNEL_TYPES, DEFAULT_VALUES } from '../constants';
 import { postItems } from '../services';
 import { ChannelItem } from '../types';
-import { normalizeFormValues } from '../utils/normalizeValues';
+import { normalizeFormValues, normalizeInitialValues } from '../utils/normalizeValues';
 import Form from './Form';
 
 export default function Add() {
@@ -33,13 +33,12 @@ export default function Add() {
     >
       <div className='n9e'>
         <Form
-          initialValues={
-            {
-              ...(DEFAULT_VALUES as any),
-              ident,
-              request_type: identConfig.type,
-            } as ChannelItem
-          }
+          initialValues={normalizeInitialValues({
+            ...(DEFAULT_VALUES as any),
+            ...(identConfig.default_values || {}),
+            ident,
+            request_type: identConfig.type,
+          } as ChannelItem)}
           onOk={(values) => {
             postItems([normalizeFormValues(values)]).then(() => {
               message.success(t('common:success.add'));

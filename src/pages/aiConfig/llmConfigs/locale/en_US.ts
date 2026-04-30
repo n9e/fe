@@ -1,10 +1,13 @@
 const en_US = {
   title: 'LLM Config',
+  help: 'LLM Configs provide model support for AI capabilities within the platform. Once enabled, they can be used for Skill calls, intelligent Q&A, alert analysis, log troubleshooting, monitoring data interpretation, and more. Setting a config as default will make it the fallback option for features that do not have a specific model assigned.',
   name: 'Name',
   description: 'Description',
   api_type: 'Provider Type',
   model: 'Model',
   enabled: 'Enabled',
+  is_default: 'Default',
+  is_default_tip: 'When enabled, if an agent does not have a specific LLM model configured, this model will be used as the default',
   add_btn: 'Add LLM Config',
   cannot_delete_when_enabled: 'Cannot delete an enabled LLM config',
   form: {

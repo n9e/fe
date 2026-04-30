@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Switch, Space, Select, TimePicker, Tooltip } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useRequest } from 'ahooks';
 import moment from 'moment-timezone';
@@ -31,12 +31,39 @@ import { getTimezones } from '../../services';
 // @ts-ignore
 import ServiceCalendarWithTimeSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarWithTimeSelect';
 
-export default function index() {
+const isDefaultEffectiveTime = (effectiveTime: any) => {
+  if (!Array.isArray(effectiveTime) || effectiveTime.length !== 1) {
+    return false;
+  }
+
+  const item = effectiveTime[0];
+  if (!item) {
+    return false;
+  }
+
+  const isDefaultDays = _.isEqual(item.enable_days_of_week, ['0', '1', '2', '3', '4', '5', '6']);
+  const isDefaultStart = moment.isMoment(item.enable_stime) && item.enable_stime.format('HH:mm') === '00:00';
+  const isDefaultEnd = moment.isMoment(item.enable_etime) && item.enable_etime.format('HH:mm') === '00:00';
+
+  return isDefaultDays && isDefaultStart && isDefaultEnd;
+};
+
+const isDefaultEffectiveConfig = (initialValues: any) => {
+  if (!initialValues) {
+    return false;
+  }
+
+  return initialValues.enable_status === true && initialValues.time_zone === 'Local' && isDefaultEffectiveTime(initialValues.effective_time);
+};
+
+export default function index({ initialValues }: { initialValues: any }) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
+
+  const [collapsed, setCollapsed] = useState(() => isDefaultEffectiveConfig(initialValues));
+
   const form = Form.useFormInstance();
   const time_zone = Form.useWatch('time_zone');
-  const effective_time = Form.useWatch('effective_time'); // 监听以便实时更新本地时间显示
 
   const { data: timezones } = useRequest(() => getTimezones(), {
     refreshDeps: [],
@@ -46,11 +73,22 @@ export default function index() {
     <Card
       {...panelBaseProps}
       title={
-        <Space>
-          {t('effective_configs')}
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/effective-configuration/' />
-        </Space>
+        <>
+          <Space
+            className='cursor-pointer'
+            onClick={() => {
+              setCollapsed(!collapsed);
+            }}
+          >
+            {t('effective_configs')}
+            {collapsed ? <RightOutlined /> : <DownOutlined />}
+            {!collapsed && <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/effective-configuration/' />}
+          </Space>
+        </>
       }
+      bodyStyle={{
+        display: collapsed ? 'none' : 'block',
+      }}
     >
       <div className='mb-4'>
         <Space>

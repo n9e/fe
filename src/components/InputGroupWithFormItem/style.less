@@ -1,6 +1,20 @@
 .ant-input-group.ant-input-group-compact.input-group-with-form-item {
   display: flex !important;
 
+  >.ant-input-group-addon {
+    .ant-select {
+      margin: 0 !important;
+
+      .ant-select-selector {
+        padding: 0 !important;
+      }
+
+      .ant-select-arrow {
+        right: 2px !important;
+      }
+    }
+  }
+
   // 左侧 label（ant-input-group-addon）：右侧连接处取消圆角
   >.ant-input-group-addon:first-child {
     border-radius: var(--fc-border-radius-base) 0 0 var(--fc-border-radius-base) !important;

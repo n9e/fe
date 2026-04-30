@@ -35,6 +35,8 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
       initialValue={[
         {
           ref: 'A',
+          interval: 1,
+          interval_unit: 'min',
         },
       ]}
     >
@@ -58,7 +60,7 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
         >
           {fields.map((field) => {
             return (
-              <div key={field.key} className='bg-fc-200' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
+              <div key={field.key} className='iotdb-alert-rule-query-card bg-fc-200'>
                 <Row gutter={8}>
                   <Col flex='32px'>
                     <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
@@ -66,7 +68,7 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                     </Form.Item>
                   </Col>
                   <Col flex='auto'>
-                    <div className='tdengine-discover-query'>
+                    <div className='iotdb-alert-rule-query'>
                       <InputGroupWithFormItem
                         label={
                           <Space>
@@ -86,8 +88,8 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                           </Space>
                         }
                       >
-                        <Form.Item {...field} name={[field.name, 'query']}>
-                          <Input />
+                        <Form.Item {...field} name={[field.name, 'query']} rules={[{ required: true, message: t('query.query_msg') }]}>
+                          <Input disabled={disabled} />
                         </Form.Item>
                       </InputGroupWithFormItem>
                       <Input.Group style={{ height: 32, width: 380 }}>

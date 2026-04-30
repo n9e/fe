@@ -6,6 +6,9 @@ const zh_CN = {
   current_database: '当前数据库',
   table: '数据表',
   database_table_required: '请先选择数据库和数据表',
+  enrich_queries: {
+    title: '附加查询',
+  },
   query: {
     mode: {
       query: 'Query 模式',

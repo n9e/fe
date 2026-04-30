@@ -9,7 +9,7 @@ import { FilterType, CardType } from '../../types';
 interface Props {
   cardList?: CardType[];
   filter: FilterType;
-  setFilter: (filter: FilterType) => void;
+  setFilter: (patch: Partial<FilterType>) => void;
 }
 
 export function isEqualEventIds(arr1?: number[], arr2?: number[]) {
@@ -36,15 +36,9 @@ const AlertCard = (props: Props) => {
               }`}
               onClick={() => {
                 if (isEqualEventIds(filter.event_ids, card.event_ids)) {
-                  setFilter({
-                    ...filter,
-                    event_ids: [],
-                  });
+                  setFilter({ event_ids: [] });
                 } else {
-                  setFilter({
-                    ...filter,
-                    event_ids: card.event_ids,
-                  });
+                  setFilter({ event_ids: card.event_ids });
                 }
               }}
             >

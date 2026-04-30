@@ -27,7 +27,8 @@ import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import { IS_PLUS } from '@/utils/constant';
-import AiIcon from '@/components/AiChatNG/AiIcon';
+import { AiButton } from '@/components/AiChatNG/FlashAiButton';
+import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 
 import GraphPreview from './GraphPreview';
 import PrometheusV2 from './PrometheusV2';
@@ -39,6 +40,7 @@ import './style.less';
 export default function index(props: { datasourceCate: string; datasourceValue: number }) {
   const { datasourceValue } = props;
   const { t } = useTranslation('alertRules');
+  const { i18n } = useTranslation();
   const { disabled } = useContext(FormStateContext);
   const { openAiChat } = useAiChatContext();
   const form = Form.useFormInstance();
@@ -147,15 +149,39 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                         </Form.Item>
                       </Col>
                       <Col flex='none'>
-                        <Button
-                          icon={<AiIcon />}
-                          onClick={() => {
-                            openAiChat({
-                              datasourceCate: 'prometheus',
-                              datasourceValue,
-                              callbackParams: {
-                                queriesIndex: field.name,
-                                openedAt: Date.now(),
+                        <AiButton
+                          queryPageFrom={buildPageFrom({
+                            param: {
+                              datasource_type: 'prometheus',
+                              datasource_id: datasourceValue,
+                            },
+                          })}
+                          queryAction={{
+                            key: 'query_generator',
+                            param: {
+                              datasource_type: 'prometheus',
+                              datasource_id: datasourceValue,
+                            },
+                          }}
+                          promptList={getExplorerPrompts(i18n.language)}
+                          onExecuteQueryForQueryContent={(promql) => {
+                            const ruleConfig = form.getFieldValue('rule_config') || {};
+                            const queries = [...(ruleConfig.queries || [])];
+                            const queryFieldName = ruleConfigVersion === 'v2' ? 'query' : 'prom_ql';
+
+                            if (!queries[field.name]) {
+                              return;
+                            }
+
+                            queries[field.name] = {
+                              ...queries[field.name],
+                              [queryFieldName]: promql,
+                            };
+
+                            form.setFieldsValue({
+                              rule_config: {
+                                ...ruleConfig,
+                                queries,
                               },
                             });
                           }}

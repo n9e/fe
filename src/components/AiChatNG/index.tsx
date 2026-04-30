@@ -5,17 +5,20 @@ import ChatHistory from './ChatHistory';
 import { IAiChatHistoryItem, IAiChatProps } from './types';
 import ToolsBar, { AiChatView } from './ToolsBar';
 import { cn } from './utils';
+import { useAiChatContext } from './context';
 
 export * from './types';
 export { default as ChatPanel } from './ChatPanel';
 export { default as ToolsBar } from './ToolsBar';
 export { default as ChatHistoryPage } from './ChatHistory';
+export { default as AiChatContainer } from './AiChatContainer';
 export { AiChatProvider, useAiChatContext } from './context';
 
 import './locale';
 
 export default function AiChat(props: IAiChatProps & { showClose?: boolean; onClose?: () => void }) {
   const { className, onChatChange, onError, showClose, onClose } = props;
+  const { mode, setMode } = useAiChatContext();
   const [activeView, setActiveView] = useState<AiChatView>('chat');
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(props.chatId);
 
@@ -48,10 +51,11 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
 
   return (
     <div className={cn('flex h-full min-h-0 flex-col', className ? className : '')}>
-      <div className='mb-4 flex justify-end'>
+      <div className='ai-chat-header mb-4 flex justify-end'>
         <ToolsBar
           selectedChatId={selectedChatId}
           activeView={activeView}
+          mode={mode}
           showClose={showClose}
           onCurrentChat={() => {
             setActiveView('chat');
@@ -62,6 +66,9 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
           }}
           onViewHistory={() => {
             setActiveView('history');
+          }}
+          onToggleMode={() => {
+            setMode((previousMode) => (previousMode === 'drawer' ? 'floating' : 'drawer'));
           }}
           onClose={onClose}
         />
@@ -74,6 +81,7 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
 
         {showHistory ? (
           <ChatHistory
+            selectedChatId={selectedChatId}
             onSelect={(chat) => {
               setSelectedChatId(chat.chat_id);
               setActiveView('chat');

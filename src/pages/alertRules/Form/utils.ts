@@ -256,6 +256,7 @@ export function processInitialValues(values) {
       }),
       enrich_queries,
     },
+    pipeline_configs: values?.pipeline_configs ?? [{ enable: true }],
   };
 }
 

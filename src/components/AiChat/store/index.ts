@@ -15,6 +15,7 @@ export interface IHiddenFeature {
   closeIcon?: boolean; // 关闭按钮
   promptIcon?: boolean; // 提示词按钮
   modalSelector?: boolean; // 模型选择器
+  scheduledTask?: boolean; // 定时任务按钮
 }
 
 export interface IFiremapUrlParams {
@@ -41,7 +42,8 @@ export interface IFiremapTimestampSummary {
 }
 
 export interface ApiCreatChat {
-  page: EPageType;
+  url: string;
+  page?: EPageType;
   param?: {
     dashboard?: IDashboardAction;
     workspace_id?: number;
@@ -51,6 +53,7 @@ export interface ApiCreatChat {
     active_alert?: IActiveAlert;
     slo?: ISlo;
   };
+  cloud_assistant?: boolean;
 }
 
 export interface ApiSendMessage {
@@ -86,9 +89,13 @@ export enum EContentType {
   FiremapCheckItem = 'firemap_check_item',
   Hint = 'hint',
   Reasoning = 'reasoning',
+  Tool = 'tool',
 
   // n9e
   Query = 'query',
+  FormSelect = 'form_select',
+  AlertRule = 'alert_rule',
+  Dashboard = 'dashboard',
 }
 
 export interface IMessageParam {
@@ -98,6 +105,8 @@ export interface IMessageParam {
   workspace_id?: string;
   dashboard_id?: number;
   ts?: number;
+  param?: string;
+  result?: string;
 }
 
 export interface IMessageResponse {
@@ -112,7 +121,10 @@ export interface IMessageResponse {
 export interface IHistoryItem {
   chat_id: string;
   title: string;
+  summary?: string;
+  create_at?: number;
   last_update: number;
+  seq_id?: number;
   page_from: {
     page: string;
     param: any;
@@ -126,6 +138,7 @@ export interface IMessageDetail {
   model_id: number;
   query: IMessageQuery;
   response?: IMessageResponse[];
+  response_time?: number;
   cur_step?: string;
   is_finish?: boolean;
   feedback?: {
@@ -137,6 +150,7 @@ export interface IMessageDetail {
   err_code?: number;
   err_msg?: string;
   err_title?: string;
+  client_created_at?: number;
 }
 
 export interface IActionParams {
@@ -168,6 +182,8 @@ export interface IFiremapAction {
     key: EActionKey;
     param: IActionParams;
   };
+  /** 仅将 content 填入输入框，不自动发消息（如创建引导「AI自动创建」） */
+  prefillOnly?: boolean;
 }
 
 export interface IDashboardAction {
@@ -201,10 +217,18 @@ export interface ISloAction {
 }
 export interface IParamsAiAction {
   page?: EPageType | any;
+  url?: string;
   firemap?: IFiremapAction;
   dashboard?: IDashboardAction;
   active_alert?: IActiveAlert;
   slo?: ISloAction;
+
+  custom?: {
+    content: string;
+    action?: { key: string; param?: any };
+    /** true: 只填到输入框；false/缺省: 自动发送 */
+    prefillOnly?: boolean;
+  };
 }
 
 export enum IKnowledgeTarget {

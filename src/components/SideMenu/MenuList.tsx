@@ -11,7 +11,6 @@ import { IMenuItem } from './types';
 import { cn, getSavedPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
 
-/** 与 fc-firemap AppSidebar 一致：Radix Tooltip sideOffset=8，antd 用 rightTop 水平 offset 8px */
 const SIDE_MENU_HOVER_TOOLTIP_PLACEMENTS = (() => {
   const base = getPlacements({ arrowPointAtCenter: false, autoAdjustOverflow: true });
   return {
@@ -77,8 +76,12 @@ function getMenuGroupIconColorClass(opts: {
   forHoverPanel?: boolean;
 }): string {
   const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, forHoverPanel } = opts;
-  const lightInactive =
-    forHoverPanel === true ? 'text-[var(--fc-sidemenu-item-icon)]' : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
+
+  if (forHoverPanel === true) {
+    return '';
+  }
+
+  const lightInactive = 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]';
 
   if (isLight) {
     return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
@@ -125,7 +128,7 @@ function SectionHeader(props: { section: NonNullable<IMenuItem['section']>; coll
   return (
     <div
       className={cn(
-        'select-none px-3.5 pt-4 pb-1 text-[10px] font-normal uppercase tracking-[0.12em]',
+        'select-none px-3.5 pt-4 pb-1 text-[11px] font-normal uppercase tracking-[0.12em]',
         !isFirst && 'mt-6',
         isCustomBg ? 'text-[#e6e6e8]/55' : 'text-[var(--fc-sidemenu-section-title)]',
       )}

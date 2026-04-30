@@ -11,6 +11,9 @@ const en_US = {
     query_tip2: 'Document',
     sqlTemplates: 'SQL Templates',
     sqlTemplates_tip: 'The following SQL query conditions are for reference only. When using them in practice, you need to replace the $variable with the actual value',
+    sqlTemplates_load_failed: 'Failed to load SQL templates',
+    previewFailed: 'Failed to preview data',
+    loadSchemaFailed: 'Failed to load schema',
     mode: {
       timeSeries: 'Time series',
       raw: 'Raw logs',

@@ -27,7 +27,7 @@ export default function TableCpt(props: Props) {
   const query = Form.useWatch(['query', 'query'], form);
 
   useEffect(() => {
-    if (datasourceValue && query && refreshFlag) {
+    if (datasourceCate && datasourceValue && query && range && refreshFlag) {
       const parsedRange = parseRange(range);
       const start = moment(parsedRange.start).toISOString();
       const end = moment(parsedRange.end).toISOString();
@@ -40,12 +40,12 @@ export default function TableCpt(props: Props) {
             query,
             from: start,
             to: end,
-            keys,
+            keys: keys || {},
           },
         ],
       })
         .then((res) => {
-          const list = res?.list;
+          const list = res?.list || [];
           setErrorContent('');
           setData(list);
           setColumns(
@@ -68,7 +68,7 @@ export default function TableCpt(props: Props) {
           setRefreshFlag();
         });
     }
-  }, [JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
+  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
 
   const formatCellValue = (columnName: string, value: any) => {
     if (datasourceCate === DatasourceCateEnum.iotdb && columnName === 'time' && value !== null && value !== undefined) {
@@ -89,7 +89,7 @@ export default function TableCpt(props: Props) {
       ) : (
         <Table
           size='small'
-          rowKey='_ts'
+          rowKey={(record, index) => record.time || `${index}`}
           dataSource={data}
           columns={_.map(columns, (item) => {
             return {

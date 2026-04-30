@@ -80,7 +80,7 @@ export default function Metrics(props: Props) {
       render: (val, record) => {
         const recordClone = _.cloneDeep(record);
         return (
-          <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} /> : undefined}>
+          <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} inTooltip /> : undefined}>
             <a
               onClick={() => {
                 const label_filter = `{ident=~"${_.join(

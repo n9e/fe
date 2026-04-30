@@ -5,6 +5,8 @@ const en_US = {
   quickOpenClose: 'Open/Close',
   quickSearchPlaceholder: 'Search...',
   quickMenus: 'Quick menus',
+  recentUsed: 'Recently used',
+  personalCollection: 'Personal collection',
   menu: {
     infrastructure: 'Infrastructure',
     business_group: 'Business group',
@@ -67,6 +69,7 @@ const en_US = {
     ai_config_llm_configs: 'LLM Management',
     ai_config_skills: 'Skill Management',
     ai_config_mcp_servers: 'MCP Management',
+    ai_config_scheduled_task: 'Scheduled task',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

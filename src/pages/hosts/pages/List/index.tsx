@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
@@ -89,16 +89,18 @@ export default function index() {
             <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
             <List
               allCollapseNode={
-                <Button
-                  icon={allCollapsed ? <PanelRightCloseIcon /> : <PanelLeftCloseIcon />}
-                  onClick={() => {
-                    const newCollapsed = !allCollapsed;
-                    setAllCollapsed(newCollapsed);
-                    businessGroupRef.current?.setCollapse(newCollapsed);
-                    setStatsCollapsed(newCollapsed);
-                    window.localStorage.setItem(STATS_COLLAPSED_KEY, newCollapsed.toString());
-                  }}
-                />
+                <Tooltip title={allCollapsed ? t('expand_busi_and_overview') : t('collapse_busi_and_overview')}>
+                  <Button
+                    icon={allCollapsed ? <PanelRightCloseIcon /> : <PanelLeftCloseIcon />}
+                    onClick={() => {
+                      const newCollapsed = !allCollapsed;
+                      setAllCollapsed(newCollapsed);
+                      businessGroupRef.current?.setCollapse(newCollapsed);
+                      setStatsCollapsed(newCollapsed);
+                      window.localStorage.setItem(STATS_COLLAPSED_KEY, newCollapsed.toString());
+                    }}
+                  />
+                </Tooltip>
               }
               gids={gids}
               selectedRows={selectedRows}

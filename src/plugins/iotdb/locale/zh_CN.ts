@@ -11,6 +11,9 @@ const zh_CN = {
     query_tip2: '官方文档',
     sqlTemplates: '查询模板',
     sqlTemplates_tip: '以下 SQL 查询条件仅供参考，在实际使用的时候，需要将其中的 $变量 替换为实际的值',
+    sqlTemplates_load_failed: '查询模板加载失败',
+    previewFailed: '数据预览失败',
+    loadSchemaFailed: '元信息加载失败',
     mode: {
       timeSeries: '时序值',
       raw: '日志原文',

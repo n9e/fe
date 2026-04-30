@@ -1,0 +1,128 @@
+.n9e-ai-chat-floating {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: var(--fc-fill-2);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  // resize handles
+  .fp-resize-handle {
+    position: absolute;
+    z-index: 10;
+
+    // 边中点：显示灰色短线指示条
+    &.fp-t,
+    &.fp-b {
+      left: 0;
+      right: 0;
+      height: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: '';
+        display: block;
+        width: 36px;
+        height: 4px;
+        border-radius: 2px;
+        background: transparent;
+        transition: background 0.15s;
+      }
+
+      &:hover::after {
+        background: rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    &.fp-t {
+      top: 0;
+      cursor: n-resize;
+    }
+
+    &.fp-b {
+      bottom: 0;
+      cursor: s-resize;
+    }
+
+    &.fp-l,
+    &.fp-r {
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: '';
+        display: block;
+        width: 4px;
+        height: 36px;
+        border-radius: 2px;
+        background: transparent;
+        transition: background 0.15s;
+      }
+
+      &:hover::after {
+        background: rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    &.fp-l {
+      left: 0;
+      cursor: w-resize;
+    }
+
+    &.fp-r {
+      right: 0;
+      cursor: e-resize;
+    }
+
+    // 四角：无装饰，仅保留可点击区域，z-index 高于边，优先响应
+    &.fp-tl {
+      top: 0;
+      left: 0;
+      width: 14px;
+      height: 14px;
+      cursor: nw-resize;
+      z-index: 11;
+    }
+
+    &.fp-tr {
+      top: 0;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      cursor: ne-resize;
+      z-index: 11;
+    }
+
+    &.fp-bl {
+      bottom: 0;
+      left: 0;
+      width: 14px;
+      height: 14px;
+      cursor: sw-resize;
+      z-index: 11;
+    }
+
+    &.fp-br {
+      bottom: 0;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      cursor: se-resize;
+      z-index: 11;
+    }
+  }
+
+  // inner content fills the panel
+  >.ai-chat-container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+}

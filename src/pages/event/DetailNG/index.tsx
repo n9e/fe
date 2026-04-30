@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
 import { getESIndexPatternsWithParmas } from '@/pages/log/IndexPatterns/services';
 import { DatasourceCateEnum } from '@/utils/constant';
+import { AiButton } from '@/components/AiChatNG/FlashAiButton';
+import { getAlertEventDetailPrompts } from '@/components/AiChatNG/recommend';
 
 import EventNotifyRecords from '../EventNotifyRecords';
 import TaskTpls from '../TaskTpls';
@@ -31,7 +33,7 @@ interface Props {
 }
 
 export default function DetailNG(props: Props) {
-  const { t } = useTranslation('AlertCurEvents');
+  const { t, i18n } = useTranslation('AlertCurEvents');
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
   const { data: eventDetail, showGraph, token } = props;
@@ -94,14 +96,26 @@ export default function DetailNG(props: Props) {
           );
         } else {
           return (
-            <Link
-              to={{
-                pathname: `/alert-rules/edit/${rule_id}`,
-              }}
-              target='_blank'
-            >
-              {content}
-            </Link>
+            <Space>
+              <Link
+                to={{
+                  pathname: `/alert-rules/edit/${rule_id}`,
+                }}
+                target='_blank'
+              >
+                {content}
+              </Link>
+              <AiButton
+                size='small'
+                queryAction={{
+                  key: 'troubleshooting',
+                  param: {
+                    event_id: eventDetail.id,
+                  },
+                }}
+                promptList={getAlertEventDetailPrompts(i18n.language)}
+              />
+            </Space>
           );
         }
       },

@@ -5,6 +5,8 @@ const zh_HK = {
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
   quickMenus: '快捷選單',
+  recentUsed: '近期使用',
+  personalCollection: '個人收藏',
   menu: {
     infrastructure: '基礎設施',
     business_group: '業務組',
@@ -65,14 +67,15 @@ const zh_HK = {
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
+    ai_config_scheduled_task: '定時任務',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
-    insight: '業務洞察',
+    insight: '洞察',
     observability: 'OBSERVABILITY',
-    analysis: '數據分析',
-    platform: '平台工具',
-    system: '系統配置',
+    analysis: '分析',
+    platform: '平台',
+    system: '系統',
   },
 };
 

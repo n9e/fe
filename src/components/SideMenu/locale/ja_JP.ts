@@ -5,6 +5,8 @@ const ja_JP = {
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',
   quickMenus: 'クイックメニュー',
+  recentUsed: '最近使用',
+  personalCollection: '個人コレクション',
   menu: {
     infrastructure: 'インフラストラクチャ',
     business_group: 'ビジネスグループ',
@@ -66,6 +68,7 @@ const ja_JP = {
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
+    ai_config_scheduled_task: '定時任務',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

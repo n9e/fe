@@ -52,7 +52,7 @@ export default function StatsCards(props: Props) {
         <Row gutter={SIZE * 2}>
           <Col span={6}>
             <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative flex flex-col'>
-              <div className='mb-3 text-l1 leading-none shrink-0'>{t('count')}</div>
+              <div className='mb-3 text-[12px] font-normal text-hint leading-none shrink-0'>{t('count')}</div>
               <div className='flex-1 min-h-0 overflow-hidden'>
                 {_.isNumber(stats?.count) ? (
                   <>
@@ -61,7 +61,9 @@ export default function StatsCards(props: Props) {
                       <Col span={12}>
                         <div className='rounded-lg bg-fc-50 h-[66px] flex items-center p-3'>
                           <div className='flex-1 min-w-0'>
-                            <div className='truncate'>{t('alive_count')}</div>
+                            <div className='truncate' title={t('alive_count')}>
+                              {t('alive_count')}
+                            </div>
                             <div className='font-bold text-title'>{numberToLocaleString(stats?.alive_count)}</div>
                           </div>
                           <svg width='48' height='48' viewBox='0 0 50 50' className='flex-shrink-0'>
@@ -88,7 +90,9 @@ export default function StatsCards(props: Props) {
                       <Col span={12}>
                         <div className='rounded-lg bg-fc-50 h-[66px] flex items-center p-3'>
                           <div className='flex-1 min-w-0'>
-                            <div className='truncate'>{t('dead_count')}</div>
+                            <div className='truncate' title={t('dead_count')}>
+                              {t('dead_count')}
+                            </div>
                             <div className='font-bold text-title'>{numberToLocaleString(stats?.dead_count)}</div>
                           </div>
                           <svg width='48' height='48' viewBox='0 0 50 50' className='flex-shrink-0'>
@@ -129,7 +133,7 @@ export default function StatsCards(props: Props) {
           </Col>
           <Col span={6}>
             <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative flex flex-col'>
-              <div className='mb-3 text-l1 leading-none shrink-0'>
+              <div className='mb-3 text-[12px] font-normal text-hint leading-none shrink-0'>
                 <Space size={2}>
                   {t('memory_usage')}{' '}
                   <Tooltip title={t('usage_tip')}>
@@ -149,7 +153,7 @@ export default function StatsCards(props: Props) {
           </Col>
           <Col span={6}>
             <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative flex flex-col'>
-              <div className='mb-3 text-l1 leading-none shrink-0'>
+              <div className='mb-3 text-[12px] font-normal text-hint leading-none shrink-0'>
                 <Space size={2}>
                   {t('cpu_usage')}
                   <Tooltip title={t('usage_tip')}>
@@ -168,8 +172,8 @@ export default function StatsCards(props: Props) {
             </div>
           </Col>
           <Col span={6}>
-            <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative'>
-              <div className='mb-3 text-l1 leading-none'>{t('versions')}</div>
+            <div className='fc-border rounded-lg bg-fc-100 h-[164px] p-4 relative flex flex-col'>
+              <div className='mb-3 text-[12px] font-normal text-hint leading-none shrink-0'>{t('versions')}</div>
               <div className='flex-1 min-h-0 overflow-hidden h-[104px]'>
                 <VersionsDistributionChart
                   data={stats?.versions}
@@ -180,7 +184,7 @@ export default function StatsCards(props: Props) {
                           <div className='flex justify-between'>
                             <Space align='center'>
                               <div
-                                className='w-[6px] h-[16px] rounded-md'
+                                className='w-2 h-2 rounded-full'
                                 style={{
                                   backgroundColor: bar.color,
                                 }}
@@ -223,7 +227,7 @@ export default function StatsCards(props: Props) {
                         <div className='mb-2'>
                           <Space align='center'>
                             <div
-                              className='w-[6px] h-[16px] rounded-md'
+                              className='w-2 h-2 rounded-full'
                               style={{
                                 backgroundColor: bar.color,
                               }}

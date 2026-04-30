@@ -50,13 +50,13 @@ export default function Graph(props: Props) {
         sort: highLevelConfig.sharedSortDirection,
       },
       standardOptions: {
-        util: highLevelConfig.unit,
+        unit: highLevelConfig.unit,
       },
     },
   };
 
   useEffect(() => {
-    if (datasourceValue && query && refreshFlag) {
+    if (datasourceCate && datasourceValue && query && range && refreshFlag) {
       const parsedRange = parseRange(range);
       const start = moment(parsedRange.start).toISOString();
       const end = moment(parsedRange.end).toISOString();
@@ -70,10 +70,10 @@ export default function Graph(props: Props) {
             from: start,
             to: end,
             keys: {
-              metricKey: _.join(keys.metricKey, ' '),
-              labelKey: _.join(keys.labelKey, ' '),
-              timeKey: keys.timeKey,
-              timeFormat: keys.timeFormat,
+              metricKey: _.join(keys?.metricKey, ' '),
+              labelKey: _.join(keys?.labelKey, ' '),
+              timeKey: keys?.timeKey,
+              timeFormat: keys?.timeFormat,
             },
           },
         ],
@@ -99,12 +99,12 @@ export default function Graph(props: Props) {
           setRefreshFlag();
         });
     }
-  }, [JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
+  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
 
   return (
     <div className='explorer-graph-container'>
       <Space>
-        <div style={{ width: 600 }}>
+        <div className='iotdb-explorer-graph-settings'>
           <AdvancedSettings datasourceCate={datasourceCate} mode='graph' span={12} prefixName={['query']} expanded expandTriggerVisible={false} />
         </div>
         <Popover
@@ -119,7 +119,7 @@ export default function Graph(props: Props) {
           </Form.Item>
         </Popover>
       </Space>
-      {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
+      {errorContent && <Alert className='mb-4' message={errorContent} type='error' />}
       <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
     </div>
   );

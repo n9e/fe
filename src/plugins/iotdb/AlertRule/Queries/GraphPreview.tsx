@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Popover } from 'antd';
+import { Alert, Button, Empty, Popover } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);
+  const [errorContent, setErrorContent] = useState('');
   const [range, setRange] = useState<IRawTimeRange>({
     start: 'now-1h',
     end: 'now',
@@ -33,19 +34,19 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         sort: 'desc',
       },
       standardOptions: {
-        util: 'none',
+        unit: 'none',
       },
     },
   };
   const fetchData = () => {
-    if (datasourceValue) {
+    if (datasourceValue && query?.query) {
+      const parsedRange = parseRange(range);
+      const from = moment(parsedRange.start).toISOString();
+      const to = moment(parsedRange.end).toISOString();
       getDsQuery({
         cate,
         datasource_id: datasourceValue,
         query: _.map([query], (q) => {
-          const parsedRange = parseRange(range);
-          const from = moment(parsedRange.start).toISOString();
-          const to = moment(parsedRange.end).toISOString();
           return {
             query: q.query,
             keys: {
@@ -58,17 +59,25 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
             to,
           };
         }),
-      }).then((res) => {
-        const series = _.map(res, (item) => {
-          return {
-            id: _.uniqueId('series_'),
-            name: getSerieName(item.metric),
-            metric: item.metric,
-            data: item.values,
-          };
+      })
+        .then((res) => {
+          const series = _.map(res, (item) => {
+            return {
+              id: _.uniqueId('series_'),
+              name: getSerieName(item.metric),
+              metric: item.metric,
+              data: item.values,
+            };
+          });
+          setErrorContent('');
+          setData(series);
+        })
+        .catch((err) => {
+          setErrorContent(_.get(err, 'message') || t('query.previewFailed'));
+          setData([]);
         });
-        setData(series);
-      });
+    } else {
+      setData([]);
     }
   };
 
@@ -107,7 +116,13 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         }
         content={
           <div style={{ width: 700 }}>
-            <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
+            {errorContent ? (
+              <Alert className='mb-4' message={errorContent} type='error' />
+            ) : _.isEmpty(data) ? (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            ) : (
+              <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} />
+            )}
           </div>
         }
         trigger='click'

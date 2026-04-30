@@ -246,6 +246,36 @@ export function getFieldValues(datasourceValue, requestBody, field, n = 5) {
   });
 }
 
+export function getFieldTopTerms(
+  datasourceValue: number,
+  requestBody: any,
+  params: {
+    aggName?: string;
+    field: string;
+    size: number;
+  },
+) {
+  const aggName = params.aggName || `top${params.size}_${String(params.field).replace(/[^A-Za-z0-9_]/g, '_')}`;
+  return request(`/api/${N9E_PATHNAME}/proxy/${datasourceValue}/_msearch`, {
+    method: RequestMethod.Post,
+    data: requestBody,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((res) => {
+    const resp = _.get(res, 'responses[0]');
+    const total = _.get(resp, 'hits.total.value') ?? _.get(resp, 'hits.total') ?? 0;
+    const buckets = _.get(resp, ['aggregations', aggName, 'buckets'], []);
+    return _.map(buckets, (b) => {
+      const docCount = _.get(b, 'doc_count', 0);
+      return {
+        label: _.get(b, 'key'),
+        value: total ? docCount / total : 0,
+      };
+    });
+  });
+}
+
 export function addLogsDownloadTask(requestBody) {
   return request(`/api/${N9E_PATHNAME}/logs/download/task`, {
     method: RequestMethod.Post,
