@@ -42,6 +42,11 @@ export default function List() {
                 dataSource={data}
                 columns={[
                   {
+                    dataIndex: 'id',
+                    title: t('id'),
+                    width: 80,
+                  },
+                  {
                     dataIndex: 'name',
                     title: t('name'),
                     render: (val, record) => (

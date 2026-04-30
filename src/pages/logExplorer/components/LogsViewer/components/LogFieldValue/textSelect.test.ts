@@ -73,7 +73,7 @@ describe('textSelect', () => {
     expect(result).toBeNull();
   });
 
-  it('returns null when selection end point is outside root (cross-field guard)', () => {
+  it('returns result when selection end point is outside root but root contains selection text', () => {
     const anchorNode = { id: 'anchor' } as unknown as Node;
     const focusNode = { id: 'outer-wrapper' } as unknown as Node;
     const commonAncestorContainer = { id: 'outer-wrapper' } as unknown as Node;
@@ -104,7 +104,13 @@ describe('textSelect', () => {
       selectionTextWithinRoot: 'Fragment.',
     });
 
-    expect(result).toBeNull();
+    expect(result).toEqual({
+      selectedFragment: 'Fragment.',
+      anchorRect: {
+        left: 15,
+        top: 35,
+      },
+    });
   });
 
   it('returns result when end point is outside root but selected text is fully inside root', () => {
@@ -183,6 +189,118 @@ describe('textSelect', () => {
         top: 35,
       },
     });
+  });
+
+  it('returns result when both endpoints are outside root but selected text includes root text', () => {
+    const anchorNode = { id: 'outer-anchor' } as unknown as Node;
+    const focusNode = { id: 'outer-focus' } as unknown as Node;
+    const commonAncestorContainer = { id: 'outer-wrapper' } as unknown as Node;
+
+    const root = {
+      contains: () => false,
+    };
+
+    const result = getTextSelectionPopoverResult({
+      host: {
+        getBoundingClientRect: () => ({ left: 20, top: 10 }),
+      },
+      root,
+      selection: {
+        rangeCount: 1,
+        anchorNode,
+        focusNode,
+        toString: () => ' [] ',
+        getRangeAt: () => ({
+          collapsed: false,
+          commonAncestorContainer,
+          getBoundingClientRect: () => ({ left: 35, bottom: 45 }),
+        }),
+      },
+      isNodeInside: (currentRoot, node) => currentRoot.contains(node),
+      selectionTextWithinRoot: '[]',
+    });
+
+    expect(result).toEqual({
+      selectedFragment: '[]',
+      anchorRect: {
+        left: 15,
+        top: 35,
+      },
+    });
+  });
+
+  it('returns result when anchor is outside root but focus is inside root', () => {
+    const anchorNode = { id: 'outside-anchor' } as unknown as Node;
+    const focusNode = { id: 'inside-focus' } as unknown as Node;
+    const commonAncestorContainer = { id: 'shared-ancestor' } as unknown as Node;
+
+    const root = {
+      contains(node: Node | null) {
+        return node === focusNode || node === commonAncestorContainer;
+      },
+    };
+
+    const result = getTextSelectionPopoverResult({
+      host: {
+        getBoundingClientRect: () => ({ left: 20, top: 10 }),
+      },
+      root,
+      selection: {
+        rangeCount: 1,
+        anchorNode,
+        focusNode,
+        toString: () => 'key: value',
+        getRangeAt: () => ({
+          collapsed: false,
+          commonAncestorContainer,
+          getBoundingClientRect: () => ({ left: 35, bottom: 45 }),
+        }),
+      },
+      isNodeInside: (currentRoot, node) => currentRoot.contains(node),
+      selectionTextWithinRoot: 'value',
+    });
+
+    expect(result).toEqual({
+      selectedFragment: 'value',
+      anchorRect: {
+        left: 15,
+        top: 35,
+      },
+    });
+  });
+
+  it('returns null when focus is inside root but root contains no selection text', () => {
+    const anchorNode = { id: 'outside-anchor' } as unknown as Node;
+    const focusNode = { id: 'inside-focus' } as unknown as Node;
+    const commonAncestorContainer = { id: 'shared-ancestor' } as unknown as Node;
+
+    const root = {
+      contains(node: Node | null) {
+        return node === focusNode;
+      },
+    };
+
+    const result = getTextSelectionPopoverResult({
+      host: {
+        getBoundingClientRect: () => ({ left: 20, top: 10 }),
+      },
+      root,
+      selection: {
+        rangeCount: 1,
+        anchorNode,
+        focusNode,
+        toString: () => '   ',
+        getRangeAt: () => ({
+          collapsed: false,
+          commonAncestorContainer,
+          getBoundingClientRect: () => ({ left: 35, bottom: 45 }),
+        }),
+      },
+      isNodeInside: (currentRoot, node) => currentRoot.contains(node),
+      selectionTextWithinRoot: '',
+    });
+
+    expect(result).toBeNull();
   });
 
   it('returns null for collapsed selections', () => {
