@@ -42,6 +42,17 @@ export const baseCates: Cate[] = [
     logo: '/image/logos/elasticsearch.png',
   },
   {
+    value: 'iotdb',
+    label: 'IoTDB',
+    type: ['metric'],
+    alertRule: true,
+    dashboard: true,
+    dashboardVariable: false,
+    graphPro: false,
+    alertPro: false,
+    logo: '/image/logos/iotdb.png',
+  },
+  {
     value: 'tdengine',
     label: 'TDengine',
     label_en: 'TDengine',
@@ -151,14 +162,21 @@ export const baseCates: Cate[] = [
   },
 ];
 
-export const allCates = [...baseCates, ...advancedCates];
-
 export const getCateDisplayLabel = (cate: Pick<Cate, 'label' | 'label_en'> | undefined, lang?: string) => {
   if (!cate) return '';
   if (lang && lang !== 'zh_CN') {
     return cate.label_en || cate.label;
   }
   return cate.label;
+};
+
+export const allCates = [...baseCates, ...advancedCates];
+
+export const getCateByValue = (cate: string) => {
+  if (cate === 'iotdb') {
+    return _.find(baseCates, { value: 'iotdb' });
+  }
+  return _.find(allCates, { value: cate });
 };
 
 export const getAuthorizedDatasourceCates = (feats, isPlus, filter?: (cate: any) => boolean) => {
@@ -175,6 +193,6 @@ export const getAuthorizedDatasourceCates = (feats, isPlus, filter?: (cate: any)
 };
 
 export const getGraphProByCate = (cate: string) => {
-  const currentCate = _.find(allCates, { value: cate });
+  const currentCate = getCateByValue(cate);
   return currentCate?.graphPro;
 };

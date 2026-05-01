@@ -2,6 +2,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 
 export const helpLinkMap = {
   [DatasourceCateEnum.prometheus]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/datasource/prometheus/',
+  [DatasourceCateEnum.iotdb]: 'https://iotdb.apache.org/UserGuide/latest-Table/',
   [DatasourceCateEnum.tdengine]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/datasource/tdengine/',
   jaeger: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/datasource/jaeger/',
   [DatasourceCateEnum.zabbix]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/datasource/zabbix/',

@@ -4,7 +4,7 @@ import { Input, Button, Modal } from 'antd';
 import { useDebounce } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
-import { allCates } from '@/components/AdvancedWrap/utils';
+import { getCateByValue } from '@/components/AdvancedWrap/utils';
 import { getDataSourcePluginList } from './services';
 import SourceCards from './components/SourceCards';
 import TableSource from './components/TableSource';
@@ -28,7 +28,7 @@ export default function index() {
     getDataSourcePluginList().then((res) => {
       setPluginList(
         _.map(res, (item) => {
-          const logoSrc = _.find(allCates, { value: item.plugin_type })?.logo;
+          const logoSrc = getCateByValue(item.plugin_type)?.logo;
           return {
             name: item.plugin_type_name,
             category: item.category,

@@ -15,6 +15,7 @@ interface Props {
 
 const documentPathMap = {
   [DatasourceCateEnum.prometheus]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/time-series/metrics/prometheus/',
+  [DatasourceCateEnum.iotdb]: 'https://iotdb.apache.org/UserGuide/latest-Table/',
   [DatasourceCateEnum.tdengine]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/time-series/metrics/tdengine/',
   [DatasourceCateEnum.elasticsearch]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/elasticserch/',
   ...(proDocumentPathMap || {}),
