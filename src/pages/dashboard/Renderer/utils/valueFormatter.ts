@@ -108,10 +108,11 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       });
     }
     if (unit === 'none') {
+      const rounded = typeof val === 'number' ? _.round(val, decimals) : val;
       return {
-        value: val,
+        value: rounded,
         unit: '',
-        text: val,
+        text: rounded,
         stat: val,
       };
     }

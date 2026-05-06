@@ -135,4 +135,94 @@ describe('valueFormatter', () => {
       stat: 12.345,
     });
   });
+
+  describe('unit: none', () => {
+    test('should round value with specified decimals', () => {
+      const result = valueFormatter({ unit: 'none', decimals: 2 }, 3.14159);
+
+      expect(result).toEqual({
+        value: 3.14,
+        unit: '',
+        text: 3.14,
+        stat: 3.14159,
+      });
+    });
+
+    test('should round value with decimals=0', () => {
+      const result = valueFormatter({ unit: 'none', decimals: 0 }, 3.99);
+
+      expect(result).toEqual({
+        value: 4,
+        unit: '',
+        text: 4,
+        stat: 3.99,
+      });
+    });
+
+    test('should use default decimals (6) when decimals is not specified', () => {
+      const result = valueFormatter({ unit: 'none' }, 3.1415926535);
+
+      expect(result).toEqual({
+        value: 3.141593,
+        unit: '',
+        text: 3.141593,
+        stat: 3.1415926535,
+      });
+    });
+
+    test('should not round string values — only number type is rounded', () => {
+      const result = valueFormatter({ unit: 'none', decimals: 1 }, '3.45');
+
+      expect(result).toEqual({
+        value: '3.45',
+        unit: '',
+        text: '3.45',
+        stat: '3.45',
+      });
+    });
+
+    test('should handle null value', () => {
+      const result = valueFormatter({ unit: 'none', decimals: 2 }, null);
+
+      expect(result).toEqual({
+        value: '',
+        unit: '',
+        text: '',
+        stat: '',
+      });
+    });
+
+    test('should handle undefined value', () => {
+      const result = valueFormatter({ unit: 'none', decimals: 2 }, undefined);
+
+      expect(result).toEqual({
+        value: '',
+        unit: '',
+        text: '',
+        stat: '',
+      });
+    });
+
+    test('should handle empty string value', () => {
+      const result = valueFormatter({ unit: 'none', decimals: 2 }, '');
+
+      expect(result).toEqual({
+        value: '',
+        unit: '',
+        text: '',
+        stat: '',
+      });
+    });
+
+    test('should return the raw string for non-numeric string', () => {
+      const result = valueFormatter({ unit: 'none', decimals: 2 }, 'abc');
+
+      expect(result).toEqual({
+        value: 'abc',
+        unit: '',
+        text: 'abc',
+        stat: 'abc',
+      });
+    });
+  });
 });
