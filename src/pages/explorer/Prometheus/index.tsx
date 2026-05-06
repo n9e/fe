@@ -3,7 +3,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Space } from 'antd';
+import { Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +13,6 @@ import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRan
 import { getHistoryEventsById } from '@/services/warning';
 
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';
-import { useAiChatContext } from '@/components/AiChatNG';
 import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 
 import { queryStringOptions } from '../constants';
@@ -65,7 +64,6 @@ export default function Prometheus(props: IProps) {
     onDefaultTimeChange,
   } = props;
   const { i18n } = useTranslation();
-  const { openAiChat } = useAiChatContext();
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
