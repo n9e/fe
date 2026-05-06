@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useRequest } from 'ahooks';
 import { Col, Row, Space, Empty, Tooltip } from 'antd';
 import { SyncOutlined, UpOutlined, DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
@@ -136,7 +136,7 @@ export default function StatsCards(props: Props) {
               <div className='mb-3 text-[12px] font-normal text-hint leading-none shrink-0'>
                 <Space size={2}>
                   {t('memory_usage')}{' '}
-                  <Tooltip title={t('usage_tip')}>
+                  <Tooltip title={<Trans ns={NS} i18nKey='memory_usage_tip' components={{ br: <br /> }} />}>
                     <QuestionCircleOutlined />
                   </Tooltip>
                 </Space>
@@ -156,7 +156,17 @@ export default function StatsCards(props: Props) {
               <div className='mb-3 text-[12px] font-normal text-hint leading-none shrink-0'>
                 <Space size={2}>
                   {t('cpu_usage')}
-                  <Tooltip title={t('usage_tip')}>
+                  <Tooltip
+                    title={
+                      <Trans
+                        ns={NS}
+                        i18nKey='cpu_usage_tip'
+                        components={{
+                          br: <br />,
+                        }}
+                      />
+                    }
+                  >
                     <QuestionCircleOutlined />
                   </Tooltip>
                 </Space>
