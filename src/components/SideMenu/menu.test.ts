@@ -12,4 +12,14 @@ describe('SideMenu hover panel styles', () => {
     expect(content).toMatch(/\.sidemenu-hover-panel--light\s*\{[^}]*color:\s*var\(--fc-text-1\);/);
     expect(content).toMatch(/\.sidemenu-hover-panel--on-dark\s*\{[^}]*color:\s*#e6e6e8;/);
   });
+
+  it('defines the submenu text token used by nested menu items', () => {
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const variablePath = path.join(__dirname, '../../theme/variable.css');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+    const variableContent = fs.readFileSync(variablePath, 'utf8');
+
+    expect(menuListContent).toContain('var(--fc-sidemenu-subitem-text)');
+    expect(variableContent).toContain('--fc-sidemenu-subitem-text:');
+  });
 });
