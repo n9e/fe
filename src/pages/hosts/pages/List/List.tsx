@@ -398,7 +398,6 @@ export default function List(props: Props) {
                 const identMetaWidth = getTextWidth(`256 ${t('cores')} ${IDENT_META_MAX_SAMPLE_SUFFIX}`) + 20; // 14 的 icon + 间距 + 容错
                 const ipDisplay = record.host_ip ? `IP ${record.host_ip}` : '-';
                 const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
-                const osDisplay = record.os === '' ? '-' : record.os;
                 const archDisplay = record.arch === '' ? '-' : record.arch;
 
                 return (
@@ -431,7 +430,7 @@ export default function List(props: Props) {
                     </div>
                     <Space size={4} className='flex flex-wrap items-center'>
                       {record.host_ip ? (
-                        <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
+                        <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
                           {ipDisplay}
                         </span>
                       ) : (
@@ -440,29 +439,17 @@ export default function List(props: Props) {
                         </span>
                       )}
                       <Divider type='vertical' />
-                      <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
+                      <div className='min-w-0 flex shrink items-center gap-1 text-soft' style={{ width: identMetaWidth }}>
                         {record.os === '' ? (
                           <span className='shrink-0'>-</span>
                         ) : (
                           <>
                             <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
-                            <span className='min-w-0 shrink truncate'>{osDisplay}</span>
+                            <span className='min-w-0 shrink truncate'>{record.os}</span>
                           </>
                         )}
                         <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
                         <span className='min-w-0 shrink truncate'>{archDisplay}</span>
-                      </div>
-                      <Divider type='vertical' />
-                      <div
-                        className={classNames('flex items-center justify-center gap-1 py-1 px-2 rounded-[4px]', {
-                          'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
-                          'bg-alert/10': record.agent_version === '' || record.agent_version === null,
-                          'text-alert': record.agent_version === '' || record.agent_version === null,
-                          'text-soft': record.target_up === 0,
-                        })}
-                      >
-                        <VersionIcon className='text-l2 leading-none flex' />
-                        <span className='leading-none'>{record.agent_version || 'Null'}</span>
                       </div>
                     </Space>
                   </div>
@@ -505,7 +492,7 @@ export default function List(props: Props) {
                 return (
                   <div style={{ minWidth }}>
                     <div
-                      className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2  leading-none', {
+                      className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
                         'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
                         'bg-alert/10': record.agent_version === '' || record.agent_version === null,
                         'text-alert': record.agent_version === '' || record.agent_version === null,
