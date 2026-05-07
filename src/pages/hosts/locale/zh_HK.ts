@@ -8,7 +8,9 @@ const zh_HK = {
   dead_count: '無心跳',
   memory_usage: '記憶體使用率分佈（機器數）',
   cpu_usage: 'CPU 使用率分佈（機器數）',
-  usage_tip: '展示不同使用率區間內的機器數量',
+  memory_usage_tip:
+    '展示不同使用率區間內的機器數量<br />等價於 free 命令中 used / total 的佔比（已扣除 buffer/cache 等可回收記憶體）；具體取值在 Linux/Windows 上分別由 /proc/meminfo、GlobalMemoryStatusEx 給出，與系統監控工具顯示口徑一致',
+  cpu_usage_tip: '展示不同使用率區間內的機器數量<br />3 秒視窗內非 idle CPU 時間佔比（含 user/system/nice/iowait/irq/softirq/steal）',
   versions: '版本號分佈',
   other_versions: '其他版本',
   no_data: '未上報',

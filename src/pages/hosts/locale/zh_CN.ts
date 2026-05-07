@@ -7,8 +7,10 @@ const zh_CN = {
   alive_count: '有心跳',
   dead_count: '无心跳',
   memory_usage: '内存使用率分布（机器数）',
+  memory_usage_tip:
+    '展示不同使用率区间内的机器数量<br />等价于 free 命令中 used / total 的占比（已扣除 buffer/cache 等可回收内存）；具体取值在 Linux/Windows 上分别由 /proc/meminfo、GlobalMemoryStatusEx 给出，与系统监控工具显示口径一致',
   cpu_usage: 'CPU 使用率分布（机器数）',
-  usage_tip: '展示不同使用率区间内的机器数量',
+  cpu_usage_tip: '展示不同使用率区间内的机器数量<br />3 秒窗口内非 idle CPU 时间占比（含 user/system/nice/iowait/irq/softirq/steal）',
   versions: '版本号分布',
   other_versions: '其他版本',
   no_data: '未上报',

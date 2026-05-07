@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -13,6 +13,15 @@ function EnhancedModal(props: ModalWrapProps & IProps) {
   const { t } = useTranslation('alertRules');
   const { visible, destroy, queries, add } = props;
   const [selectedRef, setSelectedRef] = useState<string | undefined>();
+
+  // 查询统计里只有一条查询条件时，直接克隆，不弹窗选择
+  useEffect(() => {
+    if (queries.length === 1) {
+      const queryWithoutRef = _.omit(queries[0], 'ref');
+      add(queryWithoutRef);
+      destroy();
+    }
+  }, []);
   const queryOptions = _.map(queries, (item) => ({
     label: item?.ref,
     value: item?.ref,
