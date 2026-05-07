@@ -1,6 +1,7 @@
 .dashboards-panels-item-drag-handle {
   cursor: move;
 }
+
 .dashboards-panels-row {
   height: 100%;
   display: flex;
@@ -8,25 +9,34 @@
   justify-content: space-between;
   padding: 0 10px;
   background-color: var(--fc-fill-3);
-  .anticon-addpanel,.anticon-setting,.anticon-delete {
+
+  .anticon-addpanel,
+  .anticon-setting,
+  .anticon-delete {
     cursor: pointer;
     display: none;
   }
+
   &:hover {
-    .anticon-addpanel,.anticon-setting,.anticon-delete {
+
+    .anticon-addpanel,
+    .anticon-setting,
+    .anticon-delete {
       display: block;
     }
   }
 }
+
 .dashboards-panels-row-collapsed {
   background-color: unset !important;
 }
+
 .dashboards-panels-row-name {
-  cursor: pointer;
   display: flex;
   align-items: center;
   font-size: 16px;
 }
+
 .dashboards-panels-row-name-panels-count {
   color: var(--fc-text-3);
   font-size: 12px;
@@ -34,6 +44,7 @@
   font-weight: normal;
   white-space: nowrap;
 }
+
 .dashboards-panels-item-invalid {
   height: 100%;
   border: 1px solid var(--fc-border-color);

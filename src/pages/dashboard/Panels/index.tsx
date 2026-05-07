@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useContext } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import _ from 'lodash';
 import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
-import { message, Modal } from 'antd';
+import { message, Modal, Input } from 'antd';
 import RGL, { WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +36,8 @@ import {
   handleRowToggle,
   updatePanelsWithNewPanel,
   updatePanelsInsertNewPanel,
+  updatePanelsInsertNewPanelToRow,
+  isValidPanelConfig,
   panelsMergeToConfigs,
   getRowCollapsedPanels,
   getRowUnCollapsedPanels,
@@ -138,6 +140,54 @@ function index(props: IProps) {
     }
   };
   const editorRef = useRef<any>(null);
+  const [pasteModalVisible, setPasteModalVisible] = useState(false);
+  const [pasteValue, setPasteValue] = useState('');
+  const [pasteRowId, setPasteRowId] = useState<string | null>(null);
+
+  const openRowPasteModal = async (rowId: string) => {
+    setPasteRowId(rowId);
+    setPasteValue('');
+    setPasteModalVisible(true);
+    if (!navigator.clipboard?.readText) return;
+    try {
+      const text = await navigator.clipboard.readText();
+      if (isValidPanelConfig(text)) {
+        setPasteValue(text);
+      }
+    } catch {
+      // Clipboard read may be blocked by browser permissions.
+    }
+  };
+
+  const handleRowImportPanel = () => {
+    let parsed: any;
+    try {
+      parsed = JSON.parse(pasteValue);
+    } catch {
+      message.error(t('detail.importPanel.invalidJSON'));
+      return;
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || !parsed.type) {
+      message.error(t('detail.importPanel.invalidJSON'));
+      return;
+    }
+    if (!pasteRowId) return;
+    setPanels((prev) => {
+      const newPanels = updatePanelsInsertNewPanelToRow(prev, pasteRowId, { ...parsed, id: uuidv4() }, false);
+      allowUpdateDashboardConfigs.current = true;
+      updateDashboardConfigs(dashboard.id, {
+        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+      })
+        .then((res) => {
+          onUpdated(res);
+        })
+        .catch(() => {});
+      setPasteModalVisible(false);
+      setPasteValue('');
+      setPasteRowId(null);
+      return newPanels;
+    });
+  };
 
   const handleCopyPanel = async (panel: any) => {
     const panelConfig = JSON.stringify(panel, null, 2);
@@ -343,6 +393,9 @@ function index(props: IProps) {
                       initialValues: adjustInitialValues('timeseries', groupedDatasourceList, panels, variableConfigWithOptions)?.initialValues,
                     });
                   }}
+                  onPasteClick={() => {
+                    openRowPasteModal(item.id);
+                  }}
                   onEditClick={(newPanel) => {
                     const newPanels = updatePanelsWithNewPanel(panels, newPanel);
                     setPanels(newPanels);
@@ -396,6 +449,18 @@ function index(props: IProps) {
         onUpdated={onUpdated}
         editModalVariablecontainerRef={props.editModalVariablecontainerRef}
       />
+      <Modal
+        title={t('visualizations.importPanel')}
+        visible={pasteModalVisible}
+        onCancel={() => {
+          setPasteModalVisible(false);
+          setPasteValue('');
+          setPasteRowId(null);
+        }}
+        onOk={handleRowImportPanel}
+      >
+        <Input.TextArea rows={10} value={pasteValue} onChange={(e) => setPasteValue(e.target.value)} placeholder={t('detail.importPanel.placeholder')} />
+      </Modal>
     </div>
   );
 }

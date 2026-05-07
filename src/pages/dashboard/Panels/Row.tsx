@@ -15,7 +15,7 @@
  *
  */
 import React, { useState } from 'react';
-import { Space, Modal, Button, Mentions } from 'antd';
+import { Space, Modal, Button, Mentions, Dropdown, Menu } from 'antd';
 import { CaretRightOutlined, CaretDownOutlined, HolderOutlined, SettingOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -32,6 +32,7 @@ interface IProps {
   row: any;
   onToggle: () => void;
   onAddClick: () => void;
+  onPasteClick: () => void;
   onEditClick: (row: any) => void;
   onDeleteClick: (mode: 'self' | 'withPanels') => void;
 }
@@ -39,7 +40,7 @@ interface IProps {
 export default function Row(props: IProps) {
   const { t } = useTranslation('dashboard');
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
-  const { isAuthorized, name, row, onToggle, onAddClick, onEditClick, onDeleteClick } = props;
+  const { isAuthorized, name, row, onToggle, onAddClick, onPasteClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);
   const [newName, setNewName] = useState<string>();
   const [deleteVisible, setDeleteVisible] = useState(false);
@@ -51,51 +52,79 @@ export default function Row(props: IProps) {
         'dashboards-panels-row-collapsed': row.collapsed,
       })}
     >
-      <div
-        className='dashboards-panels-row-name'
-        onClick={() => {
-          onToggle();
-        }}
-      >
-        {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
-        <span className='pl-2'>
-          <span>{replaceTemplateVariables(name)}</span>
-          {!row.collapsed && (
-            <span className='ml-4 dashboards-panels-row-name-panels-count'>
-              (
-              {rowPanels > 1
-                ? t('row.panels_plural', {
-                    count: rowPanels,
-                  })
-                : t('row.panels', {
-                    count: rowPanels,
-                  })}
-              )
-            </span>
-          )}
+      <div className='dashboards-panels-row-name'>
+        <span
+          className='cursor-pointer'
+          onClick={() => {
+            onToggle();
+          }}
+        >
+          {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
+          <span className='pl-2'>
+            <span>{replaceTemplateVariables(name)}</span>
+            {!row.collapsed && (
+              <span className='ml-4 dashboards-panels-row-name-panels-count'>
+                (
+                {rowPanels > 1
+                  ? t('row.panels_plural', {
+                      count: rowPanels,
+                    })
+                  : t('row.panels', {
+                      count: rowPanels,
+                    })}
+                )
+              </span>
+            )}
+          </span>
         </span>
+        {isAuthorized && (
+          <Space className='text-[12px] ml-4'>
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu>
+                  <Menu.Item
+                    key='paste'
+                    onClick={() => {
+                      if (!row.collapsed) {
+                        onToggle();
+                      }
+                      onPasteClick();
+                    }}
+                  >
+                    {t('visualizations.importPanel')}
+                  </Menu.Item>
+                  <Menu.Item
+                    key='add'
+                    onClick={() => {
+                      if (!row.collapsed) {
+                        onToggle();
+                      }
+                      onAddClick();
+                    }}
+                  >
+                    {t('add_panel')}
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <AddPanelIcon />
+            </Dropdown>
+            <SettingOutlined
+              onClick={() => {
+                setEditVisble(true);
+                setNewName(name);
+              }}
+            />
+            <DeleteOutlined
+              onClick={() => {
+                setDeleteVisible(true);
+              }}
+            />
+          </Space>
+        )}
       </div>
-      {isAuthorized && (
-        <Space>
-          <AddPanelIcon
-            onClick={() => {
-              onAddClick();
-            }}
-          />
-          <SettingOutlined
-            onClick={() => {
-              setEditVisble(true);
-              setNewName(name);
-            }}
-          />
-          <DeleteOutlined
-            onClick={() => {
-              setDeleteVisible(true);
-            }}
-          />
-          {row.collapsed === false && <HolderOutlined className='dashboards-panels-item-drag-handle' />}
-        </Space>
-      )}
+      {isAuthorized && <Space>{row.collapsed === false && <HolderOutlined className='dashboards-panels-item-drag-handle' />}</Space>}
       <Modal
         title={t('row.edit_title')}
         visible={editVisble}
