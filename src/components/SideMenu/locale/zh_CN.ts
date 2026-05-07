@@ -10,6 +10,7 @@ const zh_CN = {
   menu: {
     infrastructure: '基础设施',
     business_group: '业务组',
+    devices: '设备列表',
     targets: '机器',
     collects: '采集规则',
     network_devices: '网络设备',
@@ -26,6 +27,7 @@ const zh_CN = {
     recording_rules: '记录规则',
     logs_explorer: '日志',
     monitors: '告警',
+    alerts_notifications: '告警通知',
     rules: '规则管理',
     alert_rules: '告警规则',
     alert_mutes: '屏蔽规则',

@@ -10,6 +10,7 @@ const en_US = {
   menu: {
     infrastructure: 'Infrastructure',
     business_group: 'Business group',
+    devices: 'Hosts',
     targets: 'Hosts',
     collects: 'Collection rules',
     network_devices: 'Network devices',
@@ -26,6 +27,7 @@ const en_US = {
     recording_rules: 'Recording rules',
     logs_explorer: 'Logs',
     monitors: 'Monitors',
+    alerts_notifications: 'Alerts & Notifications',
     rules: 'Rules',
     alert_rules: 'Alert rules',
     alert_mutes: 'Muting rules',
