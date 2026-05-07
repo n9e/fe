@@ -170,7 +170,7 @@ export default function Prometheus(props: IProps) {
                 setPromql(nextPromql);
               }}
             />
-            <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} />
+            <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} onChange={setPromql} />
           </Space>
         }
         showExportButton
