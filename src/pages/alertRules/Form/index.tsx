@@ -43,6 +43,7 @@ interface IProps {
 
 export const FormStateContext = createContext({
   disabled: false,
+  type: undefined as number | undefined,
 });
 
 export default function index(props: IProps) {
@@ -128,6 +129,7 @@ export default function index(props: IProps) {
     <FormStateContext.Provider
       value={{
         disabled,
+        type,
       }}
     >
       <div className='flex h-full'>
