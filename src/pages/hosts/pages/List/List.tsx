@@ -328,6 +328,7 @@ export default function List(props: Props) {
           }}
           rowSelection={{
             type: 'checkbox',
+            preserveSelectedRowKeys: true,
             selectedRowKeys: _.map(selectedRows, 'id'),
             onChange(_selectedRowKeys, selectedRows: Item[]) {
               setSelectedRows(selectedRows);
