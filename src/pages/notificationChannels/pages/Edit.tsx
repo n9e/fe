@@ -45,7 +45,6 @@ export default function Add() {
       }
       showBack
       backPath={`/${NS}`}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usecase/media/'
     >
       <div className='n9e'>
         {data ? (
