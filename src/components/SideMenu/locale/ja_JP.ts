@@ -10,6 +10,7 @@ const ja_JP = {
   menu: {
     infrastructure: 'インフラストラクチャ',
     business_group: 'ビジネスグループ',
+    devices: 'デバイスリスト',
     targets: 'ホスト',
     collects: 'データ収集設定',
     network_devices: 'ネットワークデバイス',
@@ -26,6 +27,7 @@ const ja_JP = {
     recording_rules: 'レコーディングルール',
     logs_explorer: 'ログ',
     monitors: 'アラート',
+    alerts_notifications: 'アラート通知',
     rules: 'ルール管理',
     alert_rules: 'アラートルール',
     alert_mutes: 'ミュートルール',

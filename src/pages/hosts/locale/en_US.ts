@@ -23,6 +23,10 @@ const en_US = {
   explorer_selected_metrics_tip: 'View monitoring metrics of selected hosts',
 
   ident: 'Identifier',
+  agent_version_title: 'Agent version',
+  status: 'Status',
+  online: 'Online',
+  offline: 'Offline',
   host_tags: 'Reported Tags',
   tags: 'Custom Tags',
   group_objs: 'Business Groups',

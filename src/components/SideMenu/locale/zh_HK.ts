@@ -10,6 +10,7 @@ const zh_HK = {
   menu: {
     infrastructure: '基礎設施',
     business_group: '業務組',
+    devices: '設備列表',
     targets: '機器',
     collects: '采集規則',
     network_devices: '網絡設備',
@@ -25,6 +26,7 @@ const zh_HK = {
     recording_rules: '記錄規則',
     logs_explorer: '日誌',
     monitors: '告警',
+    alerts_notifications: '告警通知',
     rules: '規則管理',
     alert_rules: '告警規則',
     alert_mutes: '屏蔽規則',

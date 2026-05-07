@@ -23,6 +23,10 @@ const ru_RU = {
   explorer_selected_metrics_tip: 'Просмотреть метрики мониторинга выбранных хостов',
 
   ident: 'Идентификатор',
+  agent_version_title: 'Версия агента',
+  status: 'Статус',
+  online: 'Онлайн',
+  offline: 'Офлайн',
   host_tags: 'Отправленные теги',
   tags: 'Пользовательские теги',
   group_objs: 'Бизнес-группы',

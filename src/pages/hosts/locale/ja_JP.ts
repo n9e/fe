@@ -23,6 +23,10 @@ const ja_JP = {
   explorer_selected_metrics_tip: '選択したホストの監視メトリクスを表示',
 
   ident: '識別子',
+  agent_version_title: 'エージェントバージョン',
+  status: 'ステータス',
+  online: 'オンライン',
+  offline: 'オフライン',
   host_tags: '報告タグ',
   tags: 'カスタムタグ',
   group_objs: '業務グループ',

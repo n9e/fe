@@ -148,7 +148,16 @@ export default function Tags(props: Props) {
       {/* 可见布局层 */}
       <div className='flex flex-wrap gap-0.5 content-start'>
         {data.slice(0, visibleCount).map((tag, i) => (
-          <span key={i} className={visibleTagClass} style={fillStyle} title={tag} onClick={() => onTagClick?.(tag)}>
+          <span
+            key={i}
+            className={visibleTagClass}
+            style={fillStyle}
+            title={tag}
+            onClick={(e) => {
+              e.stopPropagation();
+              onTagClick?.(tag);
+            }}
+          >
             {tag}
           </span>
         ))}
@@ -170,7 +179,14 @@ export default function Tags(props: Props) {
               <div>
                 {data.map((tag, i) => (
                   <div key={i} className='mb-1'>
-                    <div className={tagBaseClass} style={fillStyle} onClick={() => onTagClick?.(tag)}>
+                    <div
+                      className={tagBaseClass}
+                      style={fillStyle}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onTagClick?.(tag);
+                      }}
+                    >
                       {tag}
                     </div>
                   </div>
@@ -178,7 +194,13 @@ export default function Tags(props: Props) {
               </div>
             }
           >
-            <span className={`${tagBaseClass} shrink-0`} style={fillStyle}>
+            <span
+              className={`${tagBaseClass} shrink-0`}
+              style={fillStyle}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               +{overflowCount}
             </span>
           </Popover>
