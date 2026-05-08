@@ -15,6 +15,14 @@ import { NS, NOTIFICATION_CHANNEL_TYPES } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
 import { ChannelItem } from '../../types';
 
+interface Filter {
+  search?: string;
+  enable?: boolean;
+  idents?: string[];
+}
+
+const FILTER_LOCAL_STORAGE_KEY = 'notification-channels-filter';
+
 export default function index() {
   const { t } = useTranslation(NS);
   const pagination = usePagination({ PAGESIZE_KEY: 'notification-channels-pagesize' });
@@ -31,11 +39,14 @@ export default function index() {
   }, [typesSearch]);
 
   const { data, loading, run, mutate } = useRequest(getItems);
-  const [filters, setFilters] = useState<{
-    search?: string;
-    enable?: boolean;
-    idents?: string[];
-  }>();
+  let defaultFilter = {} as Filter;
+  try {
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+  } catch (e) {
+    console.error(e);
+  }
+  const [filters, setFilters] = useState<Filter>(defaultFilter);
+  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(f));
   const [selectedRows, setSelectedRows] = useState<ChannelItem[]>([]);
   const filteredData = useMemo(() => {
     return filter(data, (item) => {
@@ -107,10 +118,12 @@ export default function index() {
                   className='w-[200px]'
                   value={filters?.search}
                   onChange={(e) => {
-                    setFilters({
+                    const newFilter = {
                       ...filters,
                       search: e.target.value,
-                    });
+                    };
+                    setFilters(newFilter);
+                    saveFilter(newFilter);
                   }}
                 />
                 <Select
@@ -130,10 +143,12 @@ export default function index() {
                   ]}
                   value={filters?.enable === true ? 'enable' : filters?.enable === false ? 'disable' : undefined}
                   onChange={(val) => {
-                    setFilters({
+                    const newFilter = {
                       ...filters,
                       enable: val === 'enable' ? true : val === 'disable' ? false : undefined,
-                    });
+                    };
+                    setFilters(newFilter);
+                    saveFilter(newFilter);
                   }}
                 />
                 <Select
@@ -157,10 +172,12 @@ export default function index() {
                   })}
                   value={filters?.idents}
                   onChange={(val) => {
-                    setFilters({
+                    const newFilter = {
                       ...filters,
                       idents: val,
-                    });
+                    };
+                    setFilters(newFilter);
+                    saveFilter(newFilter);
                   }}
                 />
               </Space>

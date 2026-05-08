@@ -14,20 +14,22 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input, InputProps } from 'antd';
-import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
+
 interface IBaseSearchInputProps extends InputProps {
   onSearch?: (value: string) => unknown;
 }
 
-const BaseSearchInput: React.FC<IBaseSearchInputProps> = ({
-  onSearch,
-  ...props
-}) => {
-  const { t } = useTranslation();
+const BaseSearchInput: React.FC<IBaseSearchInputProps> = ({ onSearch, ...props }) => {
   const [value, setValue] = useState<string>('');
+
+  useEffect(() => {
+    setValue(props.value as string);
+  }, [props.value]);
+
   return (
     <Input
       prefix={<SearchOutlined />}
@@ -42,7 +44,10 @@ const BaseSearchInput: React.FC<IBaseSearchInputProps> = ({
       onPressEnter={(e) => {
         onSearch && onSearch(value);
       }}
-      {...props}
+      onBlur={(e) => {
+        onSearch && onSearch(value);
+      }}
+      {..._.omit(props, 'value')}
     />
   );
 };

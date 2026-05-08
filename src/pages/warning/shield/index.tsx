@@ -43,16 +43,33 @@ export { default as Edit } from './edit';
 const { confirm } = Modal;
 const N9E_GIDS_LOCALKEY = 'n9e_mutes_gids';
 
+interface Filter {
+  query?: string;
+  datasourceIds?: number[];
+}
+
+const FILTER_LOCAL_STORAGE_KEY = 'alert-mutes-filter';
+
 const Shield: React.FC = () => {
   const { t } = useTranslation('alertMutes');
   const history = useHistory();
   const { datasourceList, groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
-  const [query, setQuery] = useState<string>('');
+  let defaultFilter = {} as Filter;
+  try {
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+  } catch (e) {
+    console.error(e);
+  }
+  const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [datasourceIds, setDatasourceIds] = useState<number[]>();
+  const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
+  const saveFilter = (patch: Partial<Filter>) => {
+    const prev = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
+  };
   const columns: ColumnsType = _.concat(
     businessGroup.isLeaf && gids !== '-2'
       ? []
@@ -361,6 +378,7 @@ const Shield: React.FC = () => {
   const onSearchQuery = (e) => {
     let val = e.target.value;
     setQuery(val);
+    saveFilter({ query: val });
   };
 
   return (
@@ -381,9 +399,11 @@ const Shield: React.FC = () => {
                 value={datasourceIds}
                 onChange={(val) => {
                   setDatasourceIds(val);
+                  saveFilter({ datasourceIds: val });
                 }}
               />
               <Input
+                value={query}
                 onChange={onSearchQuery}
                 prefix={<SearchOutlined />}
                 placeholder={t('search_placeholder')}

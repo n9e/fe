@@ -26,8 +26,12 @@ import './index.less';
 export { default as Add } from './add';
 export { default as Edit } from './edit';
 
-const QUERY_LOCAL_STORAGE_KEY = 'alertSubscribes_filter_query';
-const DATASOURCE_IDS_LOCAL_STORAGE_KEY = 'alertSubscribes_filter_datasource_ids';
+interface Filter {
+  query?: string;
+  datasourceIds?: number[];
+}
+
+const FILTER_LOCAL_STORAGE_KEY = 'alert-subscribes-filter';
 
 const { confirm } = Modal;
 
@@ -46,20 +50,18 @@ const Subscribe = (props: Props) => {
   const { datasourceList, busiGroups } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
-  const [query, setQuery] = useState<string>(localStorage.getItem(QUERY_LOCAL_STORAGE_KEY) || '');
-  const cacheDefaultDatasourceIds = localStorage.getItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY);
-  let defaultDatasourceIds: number[] | undefined = undefined;
+  let defaultFilter = {} as Filter;
   try {
-    if (cacheDefaultDatasourceIds) {
-      const parsed = JSON.parse(cacheDefaultDatasourceIds);
-      if (_.isArray(parsed)) {
-        defaultDatasourceIds = parsed;
-      }
-    }
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
-  const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultDatasourceIds);
+  const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
+  const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
+  const saveFilter = (patch: Partial<Filter>) => {
+    const prev = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
+  };
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
 
   const columns: ColumnsType = _.concat(
@@ -401,11 +403,7 @@ const Subscribe = (props: Props) => {
             value={datasourceIds}
             onChange={(val) => {
               setDatasourceIds(val);
-              if (_.isEmpty(val)) {
-                localStorage.removeItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY);
-              } else {
-                localStorage.setItem(DATASOURCE_IDS_LOCAL_STORAGE_KEY, JSON.stringify(val));
-              }
+              saveFilter({ datasourceIds: val });
             }}
           />
           <Input
@@ -413,7 +411,7 @@ const Subscribe = (props: Props) => {
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
-              localStorage.setItem(QUERY_LOCAL_STORAGE_KEY, e.target.value);
+              saveFilter({ query: e.target.value });
             }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
