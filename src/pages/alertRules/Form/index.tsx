@@ -29,10 +29,8 @@ import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
 import Notify from './Notify';
-import EventSettings from './EventSettings';
 import { processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
-import PipelineConfigs from './PipelineConfigs';
 import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
 
 interface IProps {
