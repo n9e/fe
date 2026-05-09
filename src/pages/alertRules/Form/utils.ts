@@ -78,6 +78,7 @@ export const stringifyExpressions = (
 };
 
 export function processFormValues(values) {
+  values = _.cloneDeep(values);
   let cate = values.cate;
   if (values.prod === 'host') {
     cate = 'host';
@@ -178,6 +179,7 @@ export function processFormValues(values) {
 }
 
 export function processInitialValues(values) {
+  values = _.cloneDeep(values);
   if (values?.rule_config?.queries) {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       if (item?.keys?.labelKey !== undefined) {
