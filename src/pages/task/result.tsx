@@ -21,12 +21,16 @@ import { RollbackOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+
 import PageLayout from '@/components/pageLayout';
-import FieldCopy from './FieldCopy';
 import request from '@/utils/request';
 import api from '@/utils/api';
 import { CommonStateContext } from '@/App';
 import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
+
+import FieldCopy from './FieldCopy';
+import OutputDrawer from './OutputDrawer';
+import MetaDrawer from './MetaDrawer';
 
 interface HostItem {
   host: string;
@@ -46,6 +50,12 @@ const index = (props: any) => {
   const [hosts, setHosts] = useState<HostItem[]>([]);
   const [loading, setLoading] = useState(false);
   const AutoRefreshRef = React.useRef<any>(null);
+  const [outputDrawer, setOutputDrawer] = useState<{
+    visible: boolean;
+    host?: string;
+    outputType: 'stdout' | 'stderr';
+  }>({ visible: false, outputType: 'stdout' });
+  const [metaDrawerVisible, setMetaDrawerVisible] = useState(false);
   const getTableData = () => {
     setLoading(true);
     return request(`${api.task(curBusiId)}/${params.id}`)
@@ -138,13 +148,9 @@ const index = (props: any) => {
       render: (_text, record) => {
         return (
           <span>
-            <Link to={`/job-task/${curBusiId}/output/${params.id}/${record.host}/stdout`} target='_blank'>
-              stdout
-            </Link>
+            <a onClick={() => setOutputDrawer({ visible: true, host: record.host, outputType: 'stdout' })}>stdout</a>
             <Divider type='vertical' />
-            <a href={`/job-task/${curBusiId}/output/${params.id}/${record.host}/stderr`} target='_blank'>
-              stderr
-            </a>
+            <a onClick={() => setOutputDrawer({ visible: true, host: record.host, outputType: 'stderr' })}>stderr</a>
           </span>
         );
       },
@@ -193,15 +199,11 @@ const index = (props: any) => {
           <Row style={{ marginBottom: 20 }}>
             <Col span={18}>
               <div>
-                <a href={`/job-task/${curBusiId}/output/${taskId}/stdout`} target='_blank'>
-                  stdouts
-                </a>
+                <a onClick={() => setOutputDrawer({ visible: true, outputType: 'stdout' })}>stdouts</a>
                 <Divider type='vertical' />
-                <a href={`/job-task/${curBusiId}/output/${taskId}/stderr`} target='_blank'>
-                  stderrs
-                </a>
+                <a onClick={() => setOutputDrawer({ visible: true, outputType: 'stderr' })}>stderrs</a>
                 <Divider type='vertical' />
-                <Link to={{ pathname: `/job-tasks/${taskId}/detail` }}>{t('task.meta')}</Link>
+                <a onClick={() => setMetaDrawerVisible(true)}>{t('task.meta')}</a>
                 <Divider type='vertical' />
                 <Link to={{ pathname: '/job-tasks/add', search: `task=${taskId}` }}>{t('task.clone')}</Link>
               </div>
@@ -249,6 +251,16 @@ const index = (props: any) => {
           />
         </Card>
       </div>
+      <OutputDrawer
+        visible={outputDrawer.visible}
+        onClose={() => setOutputDrawer({ visible: false, outputType: 'stdout' })}
+        busiId={curBusiId}
+        taskId={params.id}
+        host={outputDrawer.host}
+        outputType={outputDrawer.outputType}
+        title={`${data.title} - ${outputDrawer.host ? `${outputDrawer.host} - ` : ''}${outputDrawer.outputType}`}
+      />
+      <MetaDrawer visible={metaDrawerVisible} onClose={() => setMetaDrawerVisible(false)} data={data} hosts={hosts} taskId={params.id} />
     </PageLayout>
   );
 };

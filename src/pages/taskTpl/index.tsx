@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Divider, Popconfirm, Tag, Row, Col, Input, Button, Dropdown, Menu, message, Space } from 'antd';
-import { DownOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
+import { Table, Divider, Popconfirm, Tag, Row, Col, Button, Dropdown, Menu, message, Space } from 'antd';
+import { DownOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
@@ -27,16 +27,18 @@ import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import api from '@/utils/api';
-import PageLayout, { HelpLink } from '@/components/pageLayout';
+import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
+import SearchInput from '@/components/BaseSearchInput';
 
 import { Tpl } from './interface';
 import BindTags from './bindTags';
 import UnBindTags from './unBindTags';
 
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_TPL_NODE_ID';
+const SEARCH_SESSION_KEY = 'taskTpl_query';
 
 function getTableData(options: any, gids: string | undefined, query: string) {
   if (gids) {
@@ -58,10 +60,14 @@ function getTableData(options: any, gids: string | undefined, query: string) {
 
 const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(() => sessionStorage.getItem(SEARCH_SESSION_KEY) || '');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
+  useEffect(() => {
+    sessionStorage.setItem(SEARCH_SESSION_KEY, query);
+  }, [query]);
+
   const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, gids, query), {
     refreshDeps: [gids, query],
     debounceWait: 300,
@@ -199,13 +205,13 @@ const index = (_props: any) => {
           <div className='fc-border rounded-lg p-4' style={{ flex: 1 }}>
             <Row>
               <Col span={14} className='mb-2'>
-                <Input
-                  style={{ width: 200 }}
-                  prefix={<SearchOutlined />}
+                <SearchInput
+                  className='w-[200px]'
                   value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
+                  onSearch={(val) => {
+                    setQuery(val);
                   }}
+                  allowClear
                 />
               </Col>
               {businessGroup.isLeaf && gids !== '-2' && (
