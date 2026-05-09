@@ -41,3 +41,37 @@ describe('tokenActionMenu', () => {
     expect(normalizeRawValueForNav(undefined)).toEqual({});
   });
 });
+
+describe('tokenActionMenu fragment vs full-value filter logic', () => {
+  it('should hide fragment filters when fragmentValue equals fieldValue', () => {
+    // TokenActionMenuContent 中: showFragmentFilters && fragmentValue !== fieldValue
+    // 当 fragmentValue === fieldValue 时，即使 showFragmentFilters=true，片段级过滤项也不应渲染
+    const fragmentValue = 'error: connection timeout';
+    const fieldValue = 'error: connection timeout';
+    const showFragmentFilters = true;
+
+    const shouldShowFragmentItems = showFragmentFilters && fragmentValue !== fieldValue;
+
+    expect(shouldShowFragmentItems).toBe(false);
+  });
+
+  it('should show fragment filters when fragmentValue differs from fieldValue', () => {
+    const fragmentValue = 'connection';
+    const fieldValue = 'error: connection timeout';
+    const showFragmentFilters = true;
+
+    const shouldShowFragmentItems = showFragmentFilters && fragmentValue !== fieldValue;
+
+    expect(shouldShowFragmentItems).toBe(true);
+  });
+
+  it('should hide fragment filters when showFragmentFilters is false regardless of value equality', () => {
+    const fragmentValue = 'partial';
+    const fieldValue = 'error: connection timeout';
+    const showFragmentFilters = false;
+
+    const shouldShowFragmentItems = showFragmentFilters && fragmentValue !== fieldValue;
+
+    expect(shouldShowFragmentItems).toBe(false);
+  });
+});

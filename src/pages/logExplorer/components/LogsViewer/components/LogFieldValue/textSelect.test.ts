@@ -329,4 +329,40 @@ describe('textSelect', () => {
 
     expect(result).toBeNull();
   });
+
+  it('returns full field value as selectedFragment when the entire field content is selected', () => {
+    const fullValue = 'error: connection timeout';
+    const anchorNode = { id: 'anchor' } as unknown as Node;
+    const focusNode = { id: 'focus' } as unknown as Node;
+    const commonAncestorContainer = { id: 'root-child' } as unknown as Node;
+
+    const root = {
+      contains(node: Node | null) {
+        return node === anchorNode || node === focusNode || node === commonAncestorContainer;
+      },
+    };
+
+    const result = getTextSelectionPopoverResult({
+      host: {
+        getBoundingClientRect: () => ({ left: 20, top: 10 }),
+      },
+      root,
+      selection: {
+        rangeCount: 1,
+        anchorNode,
+        focusNode,
+        toString: () => fullValue,
+        getRangeAt: () => ({
+          collapsed: false,
+          commonAncestorContainer,
+          getBoundingClientRect: () => ({ left: 35, bottom: 45 }),
+        }),
+      },
+      isNodeInside: (currentRoot, node) => currentRoot.contains(node),
+      selectionTextWithinRoot: fullValue,
+    });
+
+    expect(result).not.toBeNull();
+    expect(result!.selectedFragment).toBe(fullValue);
+  });
 });
