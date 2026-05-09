@@ -4,6 +4,7 @@ import moment from 'moment-timezone';
 import { dateTimeFormat } from '@/utils/datetime/formatter';
 
 import { uplotsMap } from '../index';
+import { shouldShowSeriesInTooltip } from './tooltipFilter';
 
 let hoveringUplotID = '';
 
@@ -215,10 +216,14 @@ export default function tooltipPlugin(options: {
           seriesIndex: number;
           seriesItem: any;
         }[] = _.slice(originData, 1);
-        valuesData = _.filter(valuesData, (item) => {
-          const value = item.values[idx];
-          // 2025-3-21 null 可能是对齐曲线补的空值，也可能是查询结果的空值（尚未遇到该情况）这里统一做不显示处理
-          return item.seriesItem.show !== false && value !== null;
+        valuesData = _.filter(valuesData, (item) => shouldShowSeriesInTooltip(item.seriesItem, item.values, idx));
+
+        // 同步控制 uPlot 光标点的显隐，与 tooltip 内容保持一致
+        const cursorPtNodes = u.over.querySelectorAll('.u-cursor-pt');
+        const visibleIdxSet = new Set(valuesData.map((item) => item.seriesIndex));
+        cursorPtNodes.forEach((pt, i) => {
+          // uPlot 在非 cursorOnePt 模式下，cursor point 按 series index 顺序排列（从 series 1 开始）
+          pt.style.display = visibleIdxSet.has(i + 1) ? '' : 'none';
         });
 
         if (graphTooltip === 'sharedTooltip' || graphTooltip === 'sharedCrosshair') {
