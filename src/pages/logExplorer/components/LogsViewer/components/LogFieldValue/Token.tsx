@@ -239,7 +239,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       name={name}
       fieldValue={fieldValue}
       fragmentValue={interactionMode === 'textSelect' ? selectedFragment : value}
-      showFragmentFilters={interactionMode === 'textSelect' ? !!selectedFragment.trim() : segmented}
+      showFragmentFilters={interactionMode === 'textSelect' ? !!selectedFragment.trim() && selectedFragment !== fieldValue : segmented}
       onTokenClick={onTokenClick}
       indexInfo={indexInfo}
       showExistsAction={showExistsAction}

@@ -70,7 +70,7 @@ export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
         <>
           {indexInfo.isIndex && (
             <>
-              {showFragmentFilters && (
+              {showFragmentFilters && fragmentValue !== fieldValue && (
                 <>
                   <li
                     className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'

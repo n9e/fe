@@ -4,7 +4,6 @@ import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { useRequest, useGetState } from 'ahooks';
-import purify from 'dompurify';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -14,7 +13,6 @@ import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/
 import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
-import { getHighlightHtml } from '@/pages/logExplorer/utils/highlight/highlight_html';
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
