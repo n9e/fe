@@ -31,7 +31,7 @@ interface Filter {
   datasourceIds?: number[];
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'alert-subscribes-filter';
+const FILTER_SESSION_STORAGE_KEY = 'alert-subscribes-filter';
 
 const { confirm } = Modal;
 
@@ -52,15 +52,15 @@ const Subscribe = (props: Props) => {
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const saveFilter = (patch: Partial<Filter>) => {
-    const prev = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
-    window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
+    const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
 

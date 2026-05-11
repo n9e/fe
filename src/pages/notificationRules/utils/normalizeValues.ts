@@ -4,6 +4,7 @@ import moment from 'moment';
 import { RuleItem } from '../types';
 
 export function normalizeFormValues(values: RuleItem): any {
+  values = _.cloneDeep(values);
   return {
     ...values,
     notify_configs: _.map(values.notify_configs, (item) => {
@@ -37,6 +38,7 @@ export function normalizeFormValues(values: RuleItem): any {
 }
 
 export function normalizeInitialValues(values: any): RuleItem {
+  values = _.cloneDeep(values);
   return {
     ...values,
     notify_configs: _.map(values.notify_configs, (item) => {

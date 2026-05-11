@@ -33,7 +33,7 @@ interface Filter {
   disabled?: 0 | 1;
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
+const FILTER_SESSION_STORAGE_KEY = 'alert-rules-filter';
 const includesProm = (datasourceList: any[], ids?: number[]) => {
   return _.some(ids, (id) => {
     return _.some(datasourceList, (item) => {
@@ -59,12 +59,12 @@ export default function AlertRules(props: Props) {
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
   const [filter, setFilter] = useState<Filter>(defaultFilter);
-  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(f));
+  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(f));
   const [queryValue, setQueryValue] = useState<string | undefined>(defaultFilter.search);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);

@@ -27,7 +27,12 @@ const BaseSearchInput: React.FC<IBaseSearchInputProps> = ({ onSearch, ...props }
   const [value, setValue] = useState<string>('');
 
   useEffect(() => {
-    setValue(props.value as string);
+    if (props.value === undefined || props.value === null) {
+      setValue('');
+      return;
+    }
+
+    setValue(typeof props.value === 'string' ? props.value : String(props.value));
   }, [props.value]);
 
   return (

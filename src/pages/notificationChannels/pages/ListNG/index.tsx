@@ -21,7 +21,7 @@ interface Filter {
   idents?: string[];
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'notification-channels-filter';
+const FILTER_SESSION_STORAGE_KEY = 'notification-channels-filter';
 
 export default function index() {
   const { t } = useTranslation(NS);
@@ -41,12 +41,12 @@ export default function index() {
   const { data, loading, run, mutate } = useRequest(getItems);
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
   const [filters, setFilters] = useState<Filter>(defaultFilter);
-  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(f));
+  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(f));
   const [selectedRows, setSelectedRows] = useState<ChannelItem[]>([]);
   const filteredData = useMemo(() => {
     return filter(data, (item) => {

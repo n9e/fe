@@ -26,7 +26,7 @@ interface Filter {
   datasourceIds?: number[];
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'recording-rules-filter';
+const FILTER_SESSION_STORAGE_KEY = 'recording-rules-filter';
 
 const { confirm } = Modal;
 const pageSizeOptionsDefault = ['30', '50', '100', '300'];
@@ -49,7 +49,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
@@ -60,8 +60,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const [loading, setLoading] = useState(false);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const saveFilter = (patch: Partial<Filter>) => {
-    const prev = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
-    window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
+    const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
 
   useEffect(() => {

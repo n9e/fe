@@ -60,6 +60,7 @@
     "color": "^4.0.1",
     "d3": "^4.10.0",
     "d3-hexbin": "^0.2.2",
+    "dagre": "^0.8.5",
     "diff": "^4.0.2",
     "dompurify": "^2.4.4",
     "exceljs": "^4.4.0",
@@ -117,6 +118,7 @@
   },
   "devDependencies": {
     "@rollup/pluginutils": "^4.1.1",
+    "@types/dagre": "^0.7.54",
     "@types/echarts": "^4.9.7",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",

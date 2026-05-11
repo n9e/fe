@@ -20,7 +20,7 @@ interface Filter {
   search?: string;
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'notification-rules-filter';
+const FILTER_SESSION_STORAGE_KEY = 'notification-rules-filter';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -28,12 +28,12 @@ export default function List() {
   const [loading, setLoading] = useState(false);
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
   const [filter, setFilter] = useState<Filter>(defaultFilter);
-  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(f));
+  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(f));
   const [data, setData] = useState<RuleItem[]>([]);
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const filteredData = useMemo(() => {
