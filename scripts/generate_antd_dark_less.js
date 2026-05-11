@@ -50,8 +50,8 @@ function saveLess(filePath, filename, callback) {
         'table-header-bg': 'var(--fc-fill-2-5)',
         'table-header-color': 'var(--fc-text-3)',
         'table-header-sort-bg': 'var(--fc-fill-2-5)',
-        'table-body-sort-bg': 'rgb(var(--fc-fill-5-rgb) / 0.1)',
-        'table-row-hover-bg': 'var(--fc-fill-2-5)',
+        'table-body-sort-bg': 'var(--fc-fill-2-5)',
+        'table-row-hover-bg': 'rgb(var(--fc-fill-5-rgb) / 0.2)',
         'table-selected-row-color': 'inherit',
         // Keep Less color functions compile-safe; runtime CSS vars are patched in theme/default.less.
         'table-selected-row-bg': 'rgba(228, 228, 231, 0.15)',
