@@ -354,6 +354,8 @@ const en_US = {
   pipeline_configuration_ng: {
     title: 'Event processing',
     select_workflow: 'Select existing workflow',
+    select_workflow_tooltip:
+      'Reuse existing event processing workflows in the current business group, allowing multiple alert rules to share the same set of processors. You can also select "Create workflow" to maintain processors independently for this rule.',
     add_workflow: 'Create workflow',
     add_pipeline: 'Add processor',
     enabled: 'Enabled',

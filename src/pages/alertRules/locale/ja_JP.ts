@@ -349,6 +349,8 @@ const ja_JP = {
   pipeline_configuration_ng: {
     title: 'イベント処理',
     select_workflow: '既存ワークフローを選択',
+    select_workflow_tooltip:
+      '現在の業務グループの既存イベント処理ワークフローを再利用し、複数のアラートルールで同じプロセッサセットを共有できます。また、この入口で「新規ワークフロー」を選択して、本ルールのプロセッサを独立して管理することもできます。',
     add_workflow: '新規ワークフロー',
     add_pipeline: 'プロセッサを追加',
     enabled: '有効',

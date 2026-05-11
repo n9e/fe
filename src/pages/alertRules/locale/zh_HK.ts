@@ -350,6 +350,7 @@ const zh_HK = {
   pipeline_configuration_ng: {
     title: '事件處理',
     select_workflow: '選擇已有工作流',
+    select_workflow_tooltip: '複用當前業務組已有的事件處理工作流，讓多條告警規則共用同一套處理器。也可在此入口選擇「新建工作流」以獨立維護本規則的處理器。',
     add_workflow: '新建工作流',
     add_pipeline: '添加處理器',
     enabled: '啟用',
