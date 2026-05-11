@@ -13,11 +13,12 @@ interface Props {
   type: 'processor' | 'pipeline';
   config: any;
   size?: 'small' | 'middle' | 'large';
+  disabled?: boolean;
 }
 
 export default function TestModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { type, config, size } = props;
+  const { type, config, size, disabled } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [eventID, setEventID] = useState<number>();
   const [data, setData] = useState<{
@@ -33,6 +34,7 @@ export default function TestModal(props: Props) {
   return (
     <>
       <Button
+        disabled={disabled}
         size={size}
         onClick={() => {
           form.validateFields().then(() => {

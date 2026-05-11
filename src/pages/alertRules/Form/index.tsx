@@ -148,7 +148,7 @@ export default function index(props: IProps) {
               </Form.Item>
               <Base />
               <Rule form={form} />
-              <PipelineConfigsNG ref={pipelineConfigsRef} />
+              <PipelineConfigsNG ref={pipelineConfigsRef} initialValues={initialValues ? processInitialValues(initialValues) : defaultValues} />
               {/* <EventSettings initialValues={initialValues} /> */}
               <Effective initialValues={initialValues ? processInitialValues(initialValues) : defaultValues} />
               {/* <PipelineConfigs /> */}
