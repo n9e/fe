@@ -68,9 +68,14 @@ mark {
     visibility: collapse;
   }
 
-  .ant-table-cell-fix-left,
-  .ant-table-cell-fix-right {
+  .ant-table-tbody .ant-table-cell-fix-left,
+  .ant-table-tbody .ant-table-cell-fix-right {
     background: inherit;
+  }
+
+  .ant-table-thead > tr > th.ant-table-cell-fix-left,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right {
+    background: var(--fc-fill-2-5);
   }
 
   .ant-table-thead > tr > th,
