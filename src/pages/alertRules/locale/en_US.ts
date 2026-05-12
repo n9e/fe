@@ -373,5 +373,8 @@ const en_US = {
     no_changes: 'Processor configuration has no changes',
     save_workflow_tip: 'Only after clicking save will the event workflow be created or updated',
   },
+  enrich_queries: {
+    tip: "When an alert is triggered, the enrich query will be executed and the results will be written to the event's extra_info (formatted string) and extra_info_map (raw key-value pairs) fields. You can reference them in notification templates using {{ .ExtraInfo }} or {{ .ExtraInfoMap }}",
+  },
 };
 export default en_US;

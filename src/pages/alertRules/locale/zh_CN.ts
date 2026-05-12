@@ -58,6 +58,9 @@ const zh_CN = {
   callbacks: '回调地址',
   callbacks_tip: '支持配置变量，变量使用方式可参考 <a>变量引用</a> 文档',
   override_global_webhook: '覆盖全局回调',
+  enrich_queries: {
+    tip: '告警触发时会执行附加查询，将查询结果写入事件的 extra_info（格式化字符串）和 extra_info_map（原始键值对）字段，可在通知模板中通过 {{ .ExtraInfo }} 或 {{ .ExtraInfoMap }}',
+  },
   override_global_webhook_tip: '此开关开启之后，告警事件只会发给本规则的回调地址，不会再发给全局的回调地址',
   annotations: '附加信息',
   annotationsOptions: {

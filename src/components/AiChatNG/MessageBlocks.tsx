@@ -231,7 +231,7 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
         <div className='text-l4 font-bold'>
           <Space align='baseline'>
             <img src='/image/ai-chat/ai.gif' className='w-[24px] h-[24px]' />
-            <TypedGreeting prefix={greetingPrefix} brand='FlashAI' />
+            <TypedGreeting prefix={greetingPrefix} brand='NightingaleAI' />
           </Space>
         </div>
       </div>
@@ -256,14 +256,7 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
   );
 }
 
-export function MessageItem({
-  message,
-  isStreaming,
-  onExecuteQueryForQueryContent,
-  onActionClick,
-  onOKForFormSelectContent,
-  maybeScrollToBottom,
-}: IAiChatResponseBlocksProps) {
+export function MessageItem({ message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
   return (
     <div className='w-full space-y-3 shadow-sm'>
       <div className='flex justify-end'>

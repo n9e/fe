@@ -35,6 +35,7 @@ interface Props {
   workflowId?: number;
   workflowEnabled: boolean;
   isMultiWorkflow?: boolean;
+  collapsed?: boolean;
   remove: () => void;
 }
 
@@ -46,7 +47,7 @@ export interface WorkflowItemRef {
 
 const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const { t } = useTranslation('alertRules');
-  const { field, namePath = [], prefixNamePath = [], workflowId, workflowEnabled, isMultiWorkflow, remove } = props;
+  const { field, namePath = [], prefixNamePath = [], workflowId, workflowEnabled, isMultiWorkflow, collapsed = false, remove } = props;
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [saveWorkflowName, setSaveWorkflowName] = useState('');
   const [savingWorkflow, setSavingWorkflow] = useState(false);
@@ -63,6 +64,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const { data: workflowList } = useRequest(() => getWorkflowList({ group_id, use_case: 'alert_rule' }), {
     cacheKey: 'workflow-list',
     refreshDeps: [group_id],
+    ready: !collapsed && group_id !== undefined,
   });
 
   const { data: item, loading } = useRequest(

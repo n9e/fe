@@ -38,6 +38,9 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
             <div className='mb-2'>
               <Space>
                 {t('enrich_queries.title')}
+                <Tooltip title={t('alertRules:enrich_queries.tip')}>
+                  <InfoCircleOutlined />
+                </Tooltip>
                 <PlusCircleOutlined
                   onClick={() => {
                     EnhancedModal({

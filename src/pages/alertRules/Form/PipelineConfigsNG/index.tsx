@@ -141,6 +141,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
                           workflowId={workflowId}
                           workflowEnabled={workflowEnabled}
                           isMultiWorkflow={isMultiWorkflow}
+                          collapsed={collapsed}
                           remove={() => {
                             remove(field.name);
                           }}
@@ -165,6 +166,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
                     prefixNamePath={['pipeline_configs']}
                     workflowId={workflowId}
                     workflowEnabled={workflowEnabled}
+                    collapsed={collapsed}
                     remove={() => {
                       remove(field.name);
                     }}

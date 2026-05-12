@@ -58,6 +58,9 @@ const zh_HK = {
   callbacks: '回撥地址',
   callbacks_tip: '支持配置變數，變數使用方式可參考 <a>變數引用</a> 文檔',
   override_global_webhook: '覆蓋全局回調',
+  enrich_queries: {
+    tip: '告警觸發時會執行附加查詢，將查詢結果寫入事件的 extra_info（格式化字符串）和 extra_info_map（原始鍵值對）字段，可在通知模板中通過 {{ .ExtraInfo }} 或 {{ .ExtraInfoMap }}',
+  },
   override_global_webhook_tip: '此開關開啟之後，告警事件只會發給本規則的回調地址，不會再發給全局的回調地址',
   annotations: '附加資訊',
   annotationsOptions: {
