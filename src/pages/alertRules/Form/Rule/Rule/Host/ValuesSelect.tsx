@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { Select, Form, Spin, AutoComplete } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import { getBusiGroups } from '@/services/common';
@@ -13,6 +14,7 @@ interface IProps {
 }
 
 export default function ValuesSelect(props: IProps) {
+  const { t } = useTranslation('alertRules');
   const { queryKey, queryOp, field } = props;
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasourceList = _.reduce(
@@ -55,12 +57,20 @@ export default function ValuesSelect(props: IProps) {
     if (queryKey === 'group_ids') {
       getBusiGroups().then((res) => {
         setOptions(
-          _.map(res?.dat || [], (item) => {
-            return {
-              id: item.id,
-              name: item.name,
-            };
-          }),
+          _.concat(
+            [
+              {
+                id: 0,
+                name: t('common:not_grouped'),
+              },
+            ],
+            _.map(res?.dat || [], (item) => {
+              return {
+                id: item.id,
+                name: item.name,
+              };
+            }),
+          ),
         );
       });
     } else if (queryKey === 'hosts') {
