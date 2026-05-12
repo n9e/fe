@@ -307,7 +307,7 @@ const Shield: React.FC = () => {
       },
     ],
   );
-  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-mutes-table-pagesize', defaultPageSize: 30, pageSizeOptions: ['30', '50', '100', '300'] });
+  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-mutes-table-pagesize' });
 
   useEffect(() => {
     getList();

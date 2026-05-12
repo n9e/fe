@@ -264,7 +264,7 @@ const index = (_props: any) => {
                 {
                   ...tableProps.pagination,
                   showSizeChanger: true,
-                  pageSizeOptions: ['10', '50', '100', '500', '1000'],
+                  pageSizeOptions: ['10', '15', '50', '100', '500', '1000'],
                   showTotal: (total) => {
                     return i18n.language == 'en' ? `Total ${total} items` : `共 ${total} 条`;
                   },

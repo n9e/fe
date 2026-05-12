@@ -345,7 +345,7 @@ const Subscribe = (props: Props) => {
           },
         ],
   );
-  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-subscribes-table-pagesize', defaultPageSize: 30, pageSizeOptions: ['30', '50', '100', '300'] });
+  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-subscribes-table-pagesize' });
 
   const filterData = () => {
     const res = _.filter(data, (item: subscribeItem) => {
