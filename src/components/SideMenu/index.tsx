@@ -319,17 +319,6 @@ const SideMenu = (props: SideMenuProps) => {
       >
         {t('profile', { ns: 'pageLayout' })}
       </Menu.Item>
-      {!IS_ENT && (
-        <Menu.Item
-          key='theme'
-          icon={<SettingOutlined />}
-          onClick={() => {
-            setThemeVisible(true);
-          }}
-        >
-          {t('themeSetting', { ns: 'pageLayout' })}
-        </Menu.Item>
-      )}
       <Menu.Divider />
       <Menu.Item
         key='logout'
@@ -421,22 +410,20 @@ const SideMenu = (props: SideMenuProps) => {
               />
             </ScrollArea>
           </div>
-          <div className={cn('shrink-0 px-2 py-2', collapsed ? 'flex justify-center' : '')}>
+          <div className={cn('shrink-0 px-2 py-1', collapsed ? 'flex justify-center' : '')}>
             <div className={cn('side-menu-tool-list', collapsed ? 'side-menu-tool-list-collapsed' : '')}>
-              {!IS_ENT && (
-                <Tooltip title={collapsed ? t('themeSetting', { ns: 'pageLayout' }) : undefined} placement='right'>
-                  <button
-                    type='button'
-                    className={cn('side-menu-tool-button', isCustomBg ? 'side-menu-tool-button-on-dark' : '')}
-                    onClick={() => {
-                      setThemeVisible(true);
-                    }}
-                  >
-                    <SettingOutlined />
-                  </button>
-                </Tooltip>
-              )}
-              {!IS_ENT && <span className={cn('side-menu-tool-divider', isCustomBg ? 'side-menu-tool-divider-on-dark' : '')} />}
+              <Tooltip title={collapsed ? t('themeSetting', { ns: 'pageLayout' }) : undefined} placement='right'>
+                <button
+                  type='button'
+                  className={cn('side-menu-tool-button', isCustomBg ? 'side-menu-tool-button-on-dark' : '')}
+                  onClick={() => {
+                    setThemeVisible(true);
+                  }}
+                >
+                  <SettingOutlined />
+                </button>
+              </Tooltip>
+              {!collapsed && <span className={cn('side-menu-tool-divider', isCustomBg ? 'side-menu-tool-divider-on-dark' : '')} />}
               <Dropdown overlay={languageMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
                 <Tooltip title={collapsed ? i18nMap[i18n.language] || i18n.language : undefined} placement='right'>
                   <button type='button' className={cn('side-menu-tool-button side-menu-language-button', isCustomBg ? 'side-menu-tool-button-on-dark' : '')}>

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Tooltip } from 'antd';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 import { cn } from '@/components/menu/SideMenu/utils';
 import { CommonStateContext } from '@/App';
@@ -44,9 +44,9 @@ export default function SideMenuHeader(props: Props) {
       <div style={{ display: collapsed ? 'none' : 'block' }}>
         <img
           src={noCollapsedLogo}
-          width={120}
-          height={38}
-          className='max-w-[120px]'
+          width={108}
+          height={34}
+          className='max-w-[108px]'
           style={{
             display: collapsed ? 'none' : 'block',
           }}
@@ -61,7 +61,7 @@ export default function SideMenuHeader(props: Props) {
           )}
           onClick={onToggleCollapse}
         >
-          {collapsed ? <MenuUnfoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' /> : <MenuFoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />}
+          {collapsed ? <PanelLeftOpen size={16} strokeWidth={1.8} /> : <PanelLeftClose size={16} strokeWidth={1.8} />}
         </button>
       </Tooltip>
     </div>

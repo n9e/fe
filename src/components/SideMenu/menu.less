@@ -42,13 +42,14 @@
 .side-menu-tool-list {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  margin-bottom: 0;
 }
 
 .side-menu-tool-list-collapsed {
   flex-direction: column;
   align-items: center;
+  gap: 6px;
 }
 
 .side-menu-tool-divider {
@@ -93,8 +94,11 @@
 }
 
 .side-menu-tool-list-collapsed .side-menu-tool-button {
-  width: 36px;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
   padding: 0;
+  font-size: 15px;
 }
 
 .side-menu-language-button {
