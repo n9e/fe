@@ -50,6 +50,9 @@ const ja_JP = {
     copy_json: 'JSONをコピー',
   },
   datasource: {},
+  alert: {
+    query_warning_no_time:
+      'クエリ条件で _time（時間フィールド）を使用して時間範囲を明確に制限することを強く推奨します。そうしない場合、<b>ストレージ負荷の異常やアラートクエリのタイムアウト</b>などの問題が発生する可能性があります',
+  },
 };
-
 export default ja_JP;

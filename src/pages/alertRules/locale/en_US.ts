@@ -123,6 +123,7 @@ const en_US = {
       name: 'Alert rule',
       result: 'Result',
       errmsg: 'Error message',
+      force_overwrite: 'Force overwrite same name',
     },
     import_builtin: 'Import built-in alert rules',
     import_prometheus: 'Import Prometheus alert rules',

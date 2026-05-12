@@ -121,6 +121,7 @@ const zh_CN = {
       name: '告警规则',
       result: '导入结果',
       errmsg: '错误信息',
+      force_overwrite: '强制覆盖同名',
     },
     import_builtin: '导入内置告警规则',
     import_prometheus: '导入 Prometheus 告警规则',

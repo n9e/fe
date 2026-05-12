@@ -121,6 +121,7 @@ const zh_HK = {
       name: '告警規則',
       result: '匯入結果',
       errmsg: '錯誤資訊',
+      force_overwrite: '強制覆蓋同名',
     },
     import_builtin: '匯入內置告警規則',
     import_prometheus: '匯入 Prometheus 告警規則',

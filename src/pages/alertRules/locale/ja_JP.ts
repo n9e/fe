@@ -122,6 +122,7 @@ const ja_JP = {
       name: 'アラートルール',
       result: 'インポート結果',
       errmsg: 'エラー情報',
+      force_overwrite: '同名の場合は強制上書き',
     },
     import_builtin: '内蔵アラートルールをインポート',
     import_prometheus: 'Prometheus アラートルールをインポート',
