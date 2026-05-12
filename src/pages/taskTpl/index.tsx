@@ -106,31 +106,27 @@ const index = (_props: any) => {
     }
   }
 
+  const showBusinessGroup = !(businessGroup.isLeaf && gids !== '-2');
   const columns: ColumnProps<Tpl>[] = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
-      {
-        title: 'ID',
-        dataIndex: 'id',
-      },
       {
         title: t('tpl.title'),
         dataIndex: 'title',
         render: (text, record) => {
-          return <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>;
+          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
+          return (
+            <div className='flex flex-col gap-0.5'>
+              <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>
+              <span className='text-soft text-xs inline-flex items-center gap-2'>
+                <span>ID: {record.id}</span>
+                {showBusinessGroup && groupName && <span>{groupName}</span>}
+              </span>
+            </div>
+          );
         },
       },
+    ] as any,
+    [
       {
         title: t('tpl.tags'),
         dataIndex: 'tags',
