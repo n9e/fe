@@ -3,6 +3,7 @@ const ja_JP = {
   themeSetting: 'テーマ設定',
   logout: 'ログアウト',
   docs: 'ドキュメント',
+  docsCenter: 'ドキュメントセンター',
   viewDemo: 'デモを見る',
   theme: {
     title: 'テーマ設定',

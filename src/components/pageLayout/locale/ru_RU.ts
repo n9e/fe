@@ -3,6 +3,7 @@ const ru_RU = {
   themeSetting: 'Настройка темы',
   logout: 'Выйти',
   docs: 'Документация',
+  docsCenter: 'Центр документации',
   viewDemo: 'Демо',
   theme: {
     title: 'Настройка темы',

@@ -3,6 +3,7 @@ const zh_CN = {
   themeSetting: '主题设置',
   logout: '退出',
   docs: '文档',
+  docsCenter: '文档中心',
   viewDemo: '查看 DEMO',
   theme: {
     title: '主题配置',

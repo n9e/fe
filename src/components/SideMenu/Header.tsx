@@ -1,4 +1,6 @@
 import React, { useContext } from 'react';
+import { Tooltip } from 'antd';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 
 import { cn } from '@/components/menu/SideMenu/utils';
 import { CommonStateContext } from '@/App';
@@ -9,6 +11,8 @@ interface Props {
   collapsed: boolean;
   sideMenuBgMode: string;
   defaultLogos: DefaultLogos;
+  onToggleCollapse: () => void;
+  toggleTitle: string;
 }
 
 const getLogoSrc = (collapsed: boolean, sideMenuBgMode: string, defaultLogos: DefaultLogos, siteInfo?: any) => {
@@ -25,20 +29,19 @@ const getLogoSrc = (collapsed: boolean, sideMenuBgMode: string, defaultLogos: De
 };
 
 export default function SideMenuHeader(props: Props) {
-  const { collapsed, sideMenuBgMode, defaultLogos } = props;
+  const { collapsed, sideMenuBgMode, defaultLogos, onToggleCollapse, toggleTitle } = props;
   const { siteInfo } = useContext(CommonStateContext);
 
   const noCollapsedLogo = getLogoSrc(false, sideMenuBgMode, defaultLogos, siteInfo);
-  const collapsedLogo = getLogoSrc(true, sideMenuBgMode, defaultLogos, siteInfo);
 
   return (
     <div
       className={cn(
-        'relative mt-4 mb-3 h-10 w-full shrink-0 overflow-hidden transition-spacing flex',
-        collapsed ? 'justify-center' : 'justify-start pl-2',
+        'relative mt-4 mb-3 flex h-10 w-full shrink-0 items-center overflow-hidden transition-spacing',
+        collapsed ? 'justify-center px-2' : 'justify-between pl-5 pr-2',
       )}
     >
-      <div className={cn(!collapsed && 'pl-3.5')}>
+      <div style={{ display: collapsed ? 'none' : 'block' }}>
         <img
           src={noCollapsedLogo}
           width={120}
@@ -48,16 +51,19 @@ export default function SideMenuHeader(props: Props) {
             display: collapsed ? 'none' : 'block',
           }}
         />
-        <img
-          src={collapsedLogo}
-          width={28}
-          height={30}
-          className='max-w-[120px]'
-          style={{
-            display: collapsed ? 'block' : 'none',
-          }}
-        />
       </div>
+      <Tooltip title={toggleTitle} placement='right'>
+        <button
+          type='button'
+          className={cn(
+            'flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-transparent p-0 transition-colors',
+            sideMenuBgMode === 'light' ? 'text-hint hover:bg-fc-200 hover:text-title' : 'text-[#fff] hover:bg-gray-200/20',
+          )}
+          onClick={onToggleCollapse}
+        >
+          {collapsed ? <MenuUnfoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' /> : <MenuFoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />}
+        </button>
+      </Tooltip>
     </div>
   );
 }

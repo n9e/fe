@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Dropdown, Menu, Drawer, Tooltip } from 'antd';
+import { DownOutlined, LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
-import { IS_ENT } from '@/utils/constant';
+import SideMenuColorSetting from '@/components/pageLayout/SideMenuColorSetting';
+import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
+import { Logout } from '@/services/login';
+import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
@@ -21,8 +25,10 @@ import MenuList from './MenuList';
 import QuickStart from 'plus:/components/quickStart';
 import QuickMenu from './QuickMenu';
 import { MenuItem, DefaultLogos } from './types';
+import { getSidebarProfileDisplay } from './profile';
 import './menu.less';
 import './locale';
+import '@/components/pageLayout/locale';
 
 const calcUrlPath = (url: string) => {
   const urlPath = url.split('?')[0];
@@ -33,6 +39,13 @@ const calcUrlPath = (url: string) => {
 const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx';
 const SIDE_MENU_MIN_WIDTH = 170;
 const SIDE_MENU_MAX_WIDTH = 400;
+const i18nMap: Record<string, string> = {
+  zh_CN: '简体',
+  zh_HK: '繁體',
+  en_US: 'En',
+  ja_JP: '日本語',
+  ru_RU: 'Русский',
+};
 
 function clampSideMenuWidth(px: number): number {
   return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));
@@ -62,8 +75,9 @@ interface SideMenuProps {
 }
 
 const SideMenu = (props: SideMenuProps) => {
-  const { i18n, t } = useTranslation('sideMenu');
-  const { darkMode, perms, installTs } = useContext(CommonStateContext);
+  const { i18n, t } = useTranslation(['sideMenu', 'pageLayout']);
+  const history = useHistory();
+  const { darkMode, perms, installTs, profile, i18nList } = useContext(CommonStateContext);
   let { sideMenuBgMode } = useContext(CommonStateContext);
   if (darkMode) {
     sideMenuBgMode = 'dark';
@@ -87,6 +101,7 @@ const SideMenu = (props: SideMenuProps) => {
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
   const [menuWidthPx, setMenuWidthPx] = useState<number>(readInitialSideMenuWidth);
   const [isResizingMenu, setIsResizingMenu] = useState(false);
+  const [themeVisible, setThemeVisible] = useState(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const resizeActiveRef = useRef(false);
   const isCustomBg = sideMenuBgMode !== 'light';
@@ -270,6 +285,72 @@ const SideMenu = (props: SideMenuProps) => {
   );
 
   const expandedMenuWidth = collapsed ? 56 : menuWidthPx;
+  const toggleCollapsed = () => {
+    const nextCollapsed = !collapsed;
+    setCollapsed(nextCollapsed);
+    localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
+  };
+  const profileDisplay = getSidebarProfileDisplay(profile);
+  const languageMenu = (
+    <Menu className='side-menu-tool-menu'>
+      {Object.keys(i18nMap)
+        .filter((el) => (i18nList ? i18nList.includes(el) : true))
+        .map((el) => (
+          <Menu.Item
+            key={el}
+            onClick={() => {
+              i18n.changeLanguage(el);
+              localStorage.setItem('language', el);
+            }}
+          >
+            {i18nMap[el]}
+          </Menu.Item>
+        ))}
+    </Menu>
+  );
+  const profileMenu = (
+    <Menu className='side-menu-profile-menu'>
+      <Menu.Item
+        key='profile'
+        icon={<UserOutlined />}
+        onClick={() => {
+          history.push('/account/profile/info');
+        }}
+      >
+        {t('profile', { ns: 'pageLayout' })}
+      </Menu.Item>
+      {!IS_ENT && (
+        <Menu.Item
+          key='theme'
+          icon={<SettingOutlined />}
+          onClick={() => {
+            setThemeVisible(true);
+          }}
+        >
+          {t('themeSetting', { ns: 'pageLayout' })}
+        </Menu.Item>
+      )}
+      <Menu.Divider />
+      <Menu.Item
+        key='logout'
+        icon={<LogoutOutlined />}
+        onClick={() => {
+          Logout().then((res) => {
+            localStorage.removeItem(AccessTokenKey);
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('curBusiId');
+            if (res.dat && typeof res.dat === 'string') {
+              window.location.href = res.dat;
+            } else {
+              history.push('/login');
+            }
+          });
+        }}
+      >
+        {t('logout', { ns: 'pageLayout' })}
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div
@@ -306,7 +387,13 @@ const SideMenu = (props: SideMenuProps) => {
             />
           )}
           <div className='flex flex-1 flex-col justify-between gap-0 overflow-hidden'>
-            <SideMenuHeader collapsed={collapsed} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
+            <SideMenuHeader
+              collapsed={collapsed}
+              sideMenuBgMode={sideMenuBgMode}
+              defaultLogos={defaultLogos}
+              onToggleCollapse={toggleCollapsed}
+              toggleTitle={collapsed ? t('expand') : t('collapse')}
+            />
             <div
               className={cn(
                 'shrink-0 h-px',
@@ -334,26 +421,87 @@ const SideMenu = (props: SideMenuProps) => {
               />
             </ScrollArea>
           </div>
-          <div className='mx-2 my-2 shrink-0'>
-            <div
-              className={cn('flex h-10 cursor-pointer items-center justify-center rounded', isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200')}
-              onClick={() => {
-                const nextCollapsed = !collapsed;
-                setCollapsed(nextCollapsed);
-                localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
-              }}
-            >
-              {collapsed ? (
-                <MenuUnfoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />
-              ) : (
-                <MenuFoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />
+          <div className={cn('shrink-0 px-2 py-2', collapsed ? 'flex justify-center' : '')}>
+            <div className={cn('side-menu-tool-list', collapsed ? 'side-menu-tool-list-collapsed' : '')}>
+              {!IS_ENT && (
+                <Tooltip title={collapsed ? t('themeSetting', { ns: 'pageLayout' }) : undefined} placement='right'>
+                  <button
+                    type='button'
+                    className={cn('side-menu-tool-button', isCustomBg ? 'side-menu-tool-button-on-dark' : '')}
+                    onClick={() => {
+                      setThemeVisible(true);
+                    }}
+                  >
+                    <SettingOutlined />
+                  </button>
+                </Tooltip>
               )}
+              {!IS_ENT && <span className={cn('side-menu-tool-divider', isCustomBg ? 'side-menu-tool-divider-on-dark' : '')} />}
+              <Dropdown overlay={languageMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
+                <Tooltip title={collapsed ? i18nMap[i18n.language] || i18n.language : undefined} placement='right'>
+                  <button type='button' className={cn('side-menu-tool-button side-menu-language-button', isCustomBg ? 'side-menu-tool-button-on-dark' : '')}>
+                    <LanguageIcon />
+                    {!collapsed && <span>{i18nMap[i18n.language] || i18n.language}</span>}
+                  </button>
+                </Tooltip>
+              </Dropdown>
             </div>
+          </div>
+          <div
+            className={cn(
+              'shrink-0 border-0 border-t border-solid px-2 py-2',
+              isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]',
+            )}
+          >
+            <Dropdown overlay={profileMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
+              <button
+                type='button'
+                className={cn(
+                  'flex w-full cursor-pointer items-center rounded border-0 bg-transparent p-0 text-left transition-colors',
+                  collapsed ? 'h-10 justify-center' : 'h-12 gap-2 px-2',
+                  isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200',
+                )}
+              >
+                <span className='side-menu-profile-avatar'>
+                  {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
+                </span>
+                {!collapsed && (
+                  <>
+                    <span className='min-w-0 flex-1'>
+                      <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
+                      {profileDisplay.detail && <span className='block truncate text-[11px] leading-4 text-hint'>{profileDisplay.detail}</span>}
+                    </span>
+                    <DownOutlined className='text-[10px] text-hint' />
+                  </>
+                )}
+              </button>
+            </Dropdown>
           </div>
         </aside>
       </div>
 
       {IS_ENT ? <QuickStart ref={quickMenuRef} items={menus} /> : <QuickMenu ref={quickMenuRef} menuList={menus} />}
+      <Drawer
+        closable={false}
+        visible={themeVisible}
+        onClose={() => {
+          setThemeVisible(false);
+        }}
+      >
+        <div>
+          <div>
+            <div className='text-lg font-semibold dark:text-slate-50 text-l1'>{t('theme.title', { ns: 'pageLayout' })}</div>
+            <div className='text-sm text-hint mt-1'>{t('theme.title_help', { ns: 'pageLayout' })}</div>
+          </div>
+          <div className='mt-6'>
+            <span className='font-semibold'>{t('theme.sideMenu', { ns: 'pageLayout' })}</span>{' '}
+            <span className='ml-2 text-hint'>{t('theme.sideMenu_help', { ns: 'pageLayout' })}</span>
+          </div>
+          <div className='m-2'>
+            <SideMenuColorSetting />
+          </div>
+        </div>
+      </Drawer>
     </div>
   );
 };

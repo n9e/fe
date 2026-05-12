@@ -3,6 +3,7 @@ const en_US = {
   themeSetting: 'Theme',
   logout: 'Logout',
   docs: 'Docs',
+  docsCenter: 'Docs center',
   viewDemo: 'View demo',
   theme: {
     title: 'Theme Setting',
