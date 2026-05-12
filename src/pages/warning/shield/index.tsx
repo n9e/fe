@@ -34,6 +34,8 @@ import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
 
+import DeleteMutesModal from './DeleteMutesModal';
+
 import './locale';
 import './index.less';
 
@@ -53,7 +55,8 @@ const FILTER_SESSION_STORAGE_KEY = 'alert-mutes-filter';
 const Shield: React.FC = () => {
   const { t } = useTranslation('alertMutes');
   const history = useHistory();
-  const { datasourceList, groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, businessGroup, busiGroups, profile } = useContext(CommonStateContext);
+  const [deleteMutesModalVisible, setDeleteMutesModalVisible] = useState<boolean>(false);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   let defaultFilter = {} as Filter;
   try {
@@ -412,20 +415,41 @@ const Shield: React.FC = () => {
                 }}
               />
             </Space>
-            {businessGroup.isLeaf && gids !== '-2' && (
-              <div className='header-right'>
-                <Button
-                  type='primary'
-                  className='add'
-                  onClick={() => {
-                    history.push('/alert-mutes/add');
-                  }}
-                >
-                  {t('common:btn.add')}
-                </Button>
-              </div>
-            )}
+            <div className='header-right'>
+              <Space>
+                {profile?.admin && (
+                  <Button
+                    onClick={() => {
+                      setDeleteMutesModalVisible(true);
+                    }}
+                  >
+                    {t('delete_mutes.title')}
+                  </Button>
+                )}
+                {businessGroup.isLeaf && gids !== '-2' && (
+                  <Button
+                    type='primary'
+                    className='add'
+                    onClick={() => {
+                      history.push('/alert-mutes/add');
+                    }}
+                  >
+                    {t('common:btn.add')}
+                  </Button>
+                )}
+              </Space>
+            </div>
           </div>
+          <DeleteMutesModal
+            visible={deleteMutesModalVisible}
+            onOk={() => {
+              setDeleteMutesModalVisible(false);
+              refreshList();
+            }}
+            onCancel={() => {
+              setDeleteMutesModalVisible(false);
+            }}
+          />
           <Table
             className='mt-2'
             size='small'

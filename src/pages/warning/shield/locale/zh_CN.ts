@@ -45,5 +45,22 @@ const zh_CN = {
   preview_muted_save_and_delete: '保存并删除相关事件',
   expired: '已过期',
   quick_mute: '快速屏蔽',
+  delete_mutes: {
+    title: '屏蔽清理',
+    alert_message: '一旦删除将无法找回，请谨慎操作！',
+    group_ids: '业务组筛选',
+    group_placeholder: '请选择业务组',
+    group_placeholder_admin: '不选则清理全部业务组',
+    group_admin_extra: '管理员留空表示清理所有业务组',
+    group_required: '请至少选择一个业务组',
+    timestamp: '时间筛选',
+    timestamp_options: {
+      1: '1 个月之前',
+      3: '3 个月之前',
+      6: '6 个月之前',
+      12: '1 年之前',
+    },
+    submitted: '清理任务已提交，后台异步执行中',
+  },
 };
 export default zh_CN;

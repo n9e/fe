@@ -45,5 +45,22 @@ const en_US = {
   preview_muted_save_and_delete: 'Save and delete related events',
   expired: 'Expired',
   quick_mute: 'Quick Mute',
+  delete_mutes: {
+    title: 'Clean Mutes',
+    alert_message: 'Once deleted, cannot be recovered. Please proceed with caution!',
+    group_ids: 'Business Group Filter',
+    group_placeholder: 'Please select business group',
+    group_placeholder_admin: 'Leave empty to clean all business groups',
+    group_admin_extra: 'Admin leaving empty means cleaning all business groups',
+    group_required: 'Please select at least one business group',
+    timestamp: 'Time Filter',
+    timestamp_options: {
+      1: '1 month ago',
+      3: '3 months ago',
+      6: '6 months ago',
+      12: '1 year ago',
+    },
+    submitted: 'Cleanup task submitted, running asynchronously in the background',
+  },
 };
 export default en_US;
