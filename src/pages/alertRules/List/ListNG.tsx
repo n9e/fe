@@ -110,27 +110,41 @@ export default function AlertRules(props: Props) {
         },
       },
     ],
-    hideBusinessGroupColumn
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
       {
-        title: t('table.cate'),
-        dataIndex: 'cate',
-        render: (val) => {
-          let logoSrc = _.find(allCates, { value: val })?.logo;
-          if (val === 'host') {
+        title: t('table.name'),
+        dataIndex: 'name',
+        sorter: (a, b) => {
+          return localeCompare(a.name, b.name);
+        },
+        render: (data, record) => {
+          let logoSrc = _.find(allCates, { value: record.cate })?.logo;
+          if (record.cate === 'host') {
             logoSrc = '/image/logos/host.png';
           }
-          return <img alt={val} src={logoSrc} height={20} />;
+          const groupName = !hideBusinessGroupColumn ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
+          return (
+            <div className='flex flex-col gap-0.5'>
+              <Link
+                className='table-text'
+                to={{
+                  pathname: `/alert-rules/edit/${record.id}`,
+                }}
+                target={linkTarget}
+              >
+                {data}
+              </Link>
+              <span className='text-soft text-xs inline-flex items-center gap-2'>
+                {logoSrc && <img alt={record.cate} src={logoSrc} height={14} />}
+                {groupName && <span>{groupName}</span>}
+                {_.map(record.severities, (severity) => (
+                  <Tag key={severity} color={priorityColor[severity - 1]} style={{ marginRight: 0 }}>
+                    S{severity}
+                  </Tag>
+                ))}
+              </span>
+            </div>
+          );
         },
       },
       {
@@ -150,55 +164,6 @@ export default function AlertRules(props: Props) {
                 }),
               )}
             />
-          );
-        },
-      },
-      {
-        title: t('table.name'),
-        dataIndex: 'name',
-        sorter: (a, b) => {
-          return localeCompare(a.name, b.name);
-        },
-        render: (data, record) => {
-          return (
-            <Link
-              className='table-text'
-              to={{
-                pathname: `/alert-rules/edit/${record.id}`,
-              }}
-              target={linkTarget}
-            >
-              {data}
-            </Link>
-          );
-        },
-      },
-      {
-        title: t('table.severity'),
-        dataIndex: 'severities',
-        render: (data) => {
-          return (
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 4,
-              }}
-            >
-              {_.map(data, (severity) => {
-                return (
-                  <Tag
-                    key={severity}
-                    color={priorityColor[severity - 1]}
-                    style={{
-                      marginRight: 0,
-                    }}
-                  >
-                    S{severity}
-                  </Tag>
-                );
-              })}
-            </div>
           );
         },
       },

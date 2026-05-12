@@ -25,23 +25,13 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
-    name: 'cate',
-    i18nKey: 'table.cate',
-    visible: true,
-  },
-  {
-    name: 'datasource_ids',
-    i18nKey: 'table.datasource_ids',
-    visible: false,
-  },
-  {
     name: 'name',
     i18nKey: 'table.name',
     visible: true,
   },
   {
-    name: 'severities',
-    i18nKey: 'table.severity',
+    name: 'datasource_ids',
+    i18nKey: 'table.datasource_ids',
     visible: false,
   },
   {
