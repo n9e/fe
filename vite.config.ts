@@ -148,10 +148,10 @@ export default defineConfig(({ mode }) => {
             'table-header-bg': 'var(--fc-fill-2-5)',
             'table-header-color': 'var(--fc-text-3)',
             'table-header-sort-bg': 'var(--fc-fill-2-5)',
-            'table-body-sort-bg': 'var(--fc-fill-2-5)',
+            'table-body-sort-bg': 'rgb(var(--fc-fill-5-rgb) / 0.1)',
             'table-row-hover-bg': 'rgb(var(--fc-fill-5-rgb) / 0.2)',
             'table-selected-row-color': 'inherit',
-            // Keep Less color functions compile-safe; runtime CSS vars are patched in theme/default.less.
+            // AntD calls color functions on selected/border tokens; patch runtime CSS vars in theme/default.less.
             'table-selected-row-bg': 'rgba(228, 228, 231, 0.15)',
             'table-body-selected-sort-bg': '@table-selected-row-bg',
             'table-selected-row-hover-bg': 'rgba(228, 228, 231, 0.25)',
