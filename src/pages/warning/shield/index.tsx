@@ -53,46 +53,38 @@ const Shield: React.FC = () => {
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [datasourceIds, setDatasourceIds] = useState<number[]>();
+  const showBusinessGroup = !(businessGroup.isLeaf && gids !== '-2');
   const columns: ColumnsType = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
       {
         title: t('note'),
         dataIndex: 'note',
         render: (data, record: any) => {
+          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
+          let logoSrc = _.find(allCates, { value: record.cate })?.logo;
+          if (record.cate === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
           return (
-            <Link
-              to={{
-                pathname: `/alert-mutes/edit/${record.id}`,
-                search: `?bgid=${record.group_id}`,
-              }}
-            >
-              {data}
-            </Link>
+            <div className='flex flex-col gap-0.5'>
+              <Link
+                to={{
+                  pathname: `/alert-mutes/edit/${record.id}`,
+                  search: `?bgid=${record.group_id}`,
+                }}
+              >
+                {data}
+              </Link>
+              <span className='text-soft text-xs inline-flex items-center gap-1'>
+                {logoSrc && <img alt={record.cate} src={logoSrc} height={14} />}
+                {showBusinessGroup && groupName && <span>{groupName}</span>}
+              </span>
+            </div>
           );
         },
       },
-      {
-        title: t('common:datasource.type'),
-        dataIndex: 'cate',
-        render: (val) => {
-          let logoSrc = _.find(allCates, { value: val })?.logo;
-          if (val === 'host') {
-            logoSrc = '/image/logos/host.png';
-          }
-          return <img alt={val} src={logoSrc} height={20} />;
-        },
-      },
+    ] as any,
+    [
       {
         title: t('common:datasource.id'),
         dataIndex: 'datasource_ids',
