@@ -32,6 +32,7 @@ export default function EditDrawer(props: Props) {
       refreshDeps: [id],
       onSuccess(data) {
         if (data) {
+          form.resetFields();
           form.setFieldsValue(adjustFormValues(data));
         }
       },
