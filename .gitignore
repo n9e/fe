@@ -17,3 +17,4 @@ src/plus
 public/bound
 .worktrees/
 coverage/
+.playwright-mcp/

@@ -1,0 +1,20 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 1400.59 826.089" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="gradient" filter="url(#filter0_f_0_17)">
+<ellipse id="Ellipse 1378" cx="997.631" cy="342.095" rx="261.164" ry="200.299" fill="var(--fill-0, #C1BCFF)"/>
+<ellipse id="Ellipse 1379" cx="402.959" cy="388.485" rx="261.164" ry="200.299" fill="var(--fill-0, #C1BCFF)"/>
+<ellipse id="Ellipse 1380" opacity="0.2" cx="370.404" cy="397.489" rx="203.288" ry="155.819" fill="var(--fill-0, #E705C5)"/>
+<ellipse id="Ellipse 1385" cx="646.759" cy="394.216" rx="203.288" ry="155.819" fill="var(--fill-0, #DEB5FF)"/>
+<ellipse id="Ellipse 1381" cx="470.962" cy="542.392" rx="185.202" ry="141.901" fill="var(--fill-0, #C173FF)"/>
+<ellipse id="Ellipse 1383" cx="594.671" cy="483.994" rx="185.202" ry="141.901" fill="var(--fill-0, #C173FF)"/>
+<ellipse id="Ellipse 1384" cx="973.395" cy="410.041" rx="225.353" ry="172.738" fill="var(--fill-0, #AAEBFF)"/>
+<ellipse id="Ellipse 1382" cx="392.83" cy="410.046" rx="67.2804" ry="34.6567" fill="var(--fill-0, #FF8789)"/>
+<ellipse id="Ellipse 1386" cx="392.83" cy="396.944" rx="67.2804" ry="34.6567" fill="var(--fill-0, #FF91DC)"/>
+</g>
+<defs>
+<filter id="filter0_f_0_17" x="0" y="0" width="1400.59" height="826.089" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="70.8977" result="effect1_foregroundBlur_0_17"/>
+</filter>
+</defs>
+</svg>

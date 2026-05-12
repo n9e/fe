@@ -71,6 +71,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import VariableConfigs from '@/pages/variableConfigs';
 import SiteSettings from '@/pages/siteSettings';
+import Landing from '@/pages/landing';
 import { dynamicPackages, Entry, dynamicPages } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
@@ -225,6 +226,8 @@ export default function Content() {
 
         {import.meta.env.VITE_IS_ENT !== 'true' && <Route exact path='/system/site-settings' component={SiteSettings} />}
 
+        <Route exact path='/landing' component={Landing} />
+
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />
         ))}
@@ -235,7 +238,7 @@ export default function Content() {
           <RouteWithSubRoutes key={i} {...route} />
         ))}
         <Route path='/' exact>
-          <Redirect to={siteInfo?.home_page_url || '/metric/explorer'} />
+          <Redirect to={siteInfo?.home_page_url || '/landing'} />
         </Route>
         <Route path='/403' component={Page403} />
         <Route path='/404' component={NotFound} />
