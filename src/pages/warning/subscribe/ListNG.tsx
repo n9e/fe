@@ -63,35 +63,30 @@ const Subscribe = (props: Props) => {
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
 
   const columns: ColumnsType = _.concat(
-    hideBusinessGroupColumn
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
       {
         title: t('note'),
         dataIndex: 'note',
         render: (data, record: any) => {
+          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
           return (
-            <Link
-              to={{
-                pathname: `/alert-subscribes/edit/${record.id}`,
-                state: record,
-              }}
-              target={linkTarget}
-            >
-              {data}
-            </Link>
+            <div className='flex flex-col gap-0.5'>
+              <Link
+                to={{
+                  pathname: `/alert-subscribes/edit/${record.id}`,
+                  state: record,
+                }}
+                target={linkTarget}
+              >
+                {data}
+              </Link>
+              {!hideBusinessGroupColumn && groupName && <span className='text-soft text-xs'>{groupName}</span>}
+            </div>
           );
         },
       },
+    ] as any,
+    [
       {
         title: t('common:datasource.id'),
         dataIndex: 'datasource_ids',
