@@ -74,33 +74,28 @@ const index = (_props: any) => {
     refreshDeps: [gids, query, mine, days, refreshFlag],
     defaultPageSize: pagination.pageSize,
   });
+  const showBusinessGroup = !(businessGroup.isLeaf && gids !== '-2');
   const columns: ColumnProps<DataItem>[] = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
-      {
-        title: 'ID',
-        dataIndex: 'id',
-        width: 100,
-      },
       {
         title: t('task.title'),
         dataIndex: 'title',
-        width: 200,
+        width: 240,
         render: (text, record) => {
-          return <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>;
+          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
+          return (
+            <div className='flex flex-col gap-0.5'>
+              <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>
+              <span className='text-soft text-xs inline-flex items-center gap-2'>
+                <span>ID: {record.id}</span>
+                {showBusinessGroup && groupName && <span>{groupName}</span>}
+              </span>
+            </div>
+          );
         },
       },
+    ] as any,
+    [
       {
         title: t('table.operations'),
         width: 150,
