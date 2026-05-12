@@ -83,6 +83,7 @@ const zh_CN = {
         hosts: '机器标识',
       },
       preview: '机器预览',
+      group_ids_ungrouped: '未归组',
     },
     trigger: {
       title: '告警条件',

@@ -83,6 +83,7 @@ const zh_HK = {
         hosts: '機器標識',
       },
       preview: '機器預覽',
+      group_ids_ungrouped: '未歸組',
     },
     trigger: {
       title: '告警條件',

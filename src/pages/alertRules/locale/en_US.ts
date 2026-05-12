@@ -85,6 +85,7 @@ const en_US = {
         hosts: 'Host idents',
       },
       preview: 'Preview',
+      group_ids_ungrouped: 'Ungrouped',
     },
     trigger: {
       title: 'Triggers',

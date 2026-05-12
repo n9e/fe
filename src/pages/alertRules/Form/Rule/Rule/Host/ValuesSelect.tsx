@@ -2,9 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { Select, Form, Spin, AutoComplete } from 'antd';
 import { useDebounceFn } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { getBusiGroups } from '@/services/common';
 import { getTargetTags, getMonObjectList } from '@/services/targets';
+
+const UNGROUPED_BUSI_GROUP_ID = 0;
 
 interface IProps {
   queryKey: string;
@@ -14,6 +17,7 @@ interface IProps {
 
 export default function ValuesSelect(props: IProps) {
   const { queryKey, queryOp, field } = props;
+  const { t } = useTranslation('alertRules');
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const datasourceList = _.reduce(
     groupedDatasourceList,
@@ -54,14 +58,18 @@ export default function ValuesSelect(props: IProps) {
   useEffect(() => {
     if (queryKey === 'group_ids') {
       getBusiGroups().then((res) => {
-        setOptions(
-          _.map(res?.dat || [], (item) => {
+        setOptions([
+          {
+            id: UNGROUPED_BUSI_GROUP_ID,
+            name: t('host.query.group_ids_ungrouped'),
+          },
+          ..._.map(res?.dat || [], (item) => {
             return {
               id: item.id,
               name: item.name,
             };
           }),
-        );
+        ]);
       });
     } else if (queryKey === 'hosts') {
       fetchHosts();

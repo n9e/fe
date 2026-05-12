@@ -84,6 +84,7 @@ const ja_JP = {
         hosts: 'ホスト識別',
       },
       preview: 'ホストプレビュー',
+      group_ids_ungrouped: '未グループ化',
     },
     trigger: {
       title: 'アラート条件',
