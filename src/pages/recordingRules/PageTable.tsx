@@ -6,13 +6,14 @@ import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 import _ from 'lodash';
 import RefreshIcon from '@/components/RefreshIcon';
-import { DownOutlined, MoreOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { getBusiGroupsRecordingRules, updateRecordingRules } from '@/services/recording';
 import SearchInput from '@/components/BaseSearchInput';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
@@ -206,28 +207,28 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       {
         title: t('common:table.operations'),
         dataIndex: 'operator',
-        width: 80,
+        width: 64,
         render: (data, record) => {
           return (
             <Dropdown
+              overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
                   <Menu.Item>
-                    <Button
-                      type='link'
-                      className='p-0 h-auto'
+                    <TableActionButton
+                      actionIcon='copy'
                       onClick={() => {
                         handleClickEdit(record.id, true);
                       }}
                     >
                       {t('common:btn.clone')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
+                  <Menu.Divider />
                   <Menu.Item>
-                    <Button
-                      type='link'
+                    <TableActionButton
+                      actionIcon='delete'
                       danger
-                      className='p-0 h-auto'
                       onClick={() => {
                         confirm({
                           title: t('common:confirm.delete'),
@@ -243,12 +244,12 @@ const PageTable: React.FC<Props> = ({ gids }) => {
                       }}
                     >
                       {t('common:btn.delete')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button type='text' icon={<MoreOutlined />} />
+              <TableActionTrigger />
             </Dropdown>
           );
         },

@@ -18,11 +18,12 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Table, Space, message, Modal, Dropdown, Menu } from 'antd';
-import { SettingOutlined, MoreOutlined } from '@ant-design/icons';
+import { SettingOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { getVariableConfigs, VariableConfig, postVariableConfigs, deleteVariableConfigs, putVariableConfigs, getRSAConfig, RASConfig } from './services';
 import FormModal from './FormModal';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import './locale';
 
 export default function index() {
@@ -110,16 +111,16 @@ export default function index() {
             },
             {
               title: t('common:table.operations'),
-              width: 80,
+              width: 64,
               render: (record) => {
                 return (
                   <Dropdown
+                    overlayClassName='fc-table-action-dropdown'
                     overlay={
                       <Menu>
                         <Menu.Item>
-                          <Button
-                            type='link'
-                            className='p-0 h-auto'
+                          <TableActionButton
+                            actionIcon='copy'
                             onClick={() => {
                               FormModal({
                                 title: t('common:btn.clone'),
@@ -135,12 +136,11 @@ export default function index() {
                             }}
                           >
                             {t('common:btn.clone')}
-                          </Button>
+                          </TableActionButton>
                         </Menu.Item>
                         <Menu.Item>
-                          <Button
-                            type='link'
-                            className='p-0 h-auto'
+                          <TableActionButton
+                            actionIcon='edit'
                             onClick={() => {
                               FormModal({
                                 title: t('common:btn.edit'),
@@ -156,13 +156,13 @@ export default function index() {
                             }}
                           >
                             {t('common:btn.edit')}
-                          </Button>
+                          </TableActionButton>
                         </Menu.Item>
+                        <Menu.Divider />
                         <Menu.Item>
-                          <Button
-                            type='link'
+                          <TableActionButton
+                            actionIcon='delete'
                             danger
-                            className='p-0 h-auto'
                             onClick={() => {
                               Modal.confirm({
                                 title: t('common:confirm.delete'),
@@ -176,12 +176,12 @@ export default function index() {
                             }}
                           >
                             {t('common:btn.delete')}
-                          </Button>
+                          </TableActionButton>
                         </Menu.Item>
                       </Menu>
                     }
                   >
-                    <Button type='text' icon={<MoreOutlined />} />
+                    <TableActionTrigger />
                   </Dropdown>
                 );
               },

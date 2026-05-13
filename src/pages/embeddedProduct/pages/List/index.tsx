@@ -3,7 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { Space, Table, Button, Modal, Tag, message, Switch, Dropdown, Menu } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { MenuOutlined, MoreOutlined } from '@ant-design/icons';
+import { MenuOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
@@ -12,6 +12,7 @@ import { arrayMoveImmutable } from 'array-move';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 import { NS, DETAIL_PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
@@ -132,29 +133,29 @@ export default function Index() {
       {
         title: t('common:table.operations'),
         dataIndex: 'operator',
-        width: 80,
+        width: 64,
         render: (_val, record: EmbeddedProductResponse) => {
           return (
             <Dropdown
+              overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
                   <Menu.Item>
-                    <Button
-                      type='link'
-                      className='p-0 h-auto'
+                    <TableActionButton
+                      actionIcon='edit'
                       onClick={() => {
                         setCurrentRecord(record);
                         setModalVisible(true);
                       }}
                     >
                       {t('common:btn.edit')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
+                  <Menu.Divider />
                   <Menu.Item>
-                    <Button
-                      type='link'
+                    <TableActionButton
+                      actionIcon='delete'
                       danger
-                      className='p-0 h-auto'
                       onClick={() => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
@@ -169,12 +170,12 @@ export default function Index() {
                       }}
                     >
                       {t('common:btn.delete')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button type='text' icon={<MoreOutlined />} />
+              <TableActionTrigger />
             </Dropdown>
           );
         },

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { message, Table, Modal, Button, Space, Popconfirm, Tooltip, Dropdown, Menu } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { CheckCircleFilled, MinusCircleFilled, WarningOutlined, MoreOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import { allCates } from '@/components/AdvancedWrap/utils';
@@ -11,6 +11,7 @@ import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
 import Rename from '../Rename';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus, getServerClusters } from '../../services';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 // @ts-ignore
 import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
 // @ts-ignore
@@ -191,61 +192,64 @@ const TableSource = (props: IPropsType) => {
 
     {
       title: t('common:table.operations'),
-      width: 100,
+      width: 64,
       render: (record) => {
         return (
-          <Space>
-            <Popconfirm
-              placement='topLeft'
-              title={record.status === 'enabled' ? t('confirm.disable') : t('confirm.enable')}
-              onConfirm={() => {
-                updateDataSourceStatus({
-                  id: record.id,
-                  status: record.status === 'enabled' ? 'disabled' : 'enabled',
-                }).then(() => {
-                  message.success(record.status === 'enabled' ? t('success.disable') : t('success.enable'));
-                  setRefresh((oldVal) => !oldVal);
-                });
-              }}
-            >
-              <a>{record.status === 'enabled' ? t('disable') : t('enable')}</a>
-            </Popconfirm>
-
-            {record.status === 'disabled' && (
-              <Button
-                type='link'
-                size='small'
-                danger
-                onClick={() => {
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk() {
-                      deleteDataSourceById(record.id).then(() => {
-                        message.success(t('common:success.delete'));
+          <Dropdown
+            overlayClassName='fc-table-action-dropdown'
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <Popconfirm
+                    placement='topLeft'
+                    title={record.status === 'enabled' ? t('confirm.disable') : t('confirm.enable')}
+                    onConfirm={() => {
+                      updateDataSourceStatus({
+                        id: record.id,
+                        status: record.status === 'enabled' ? 'disabled' : 'enabled',
+                      }).then(() => {
+                        message.success(record.status === 'enabled' ? t('success.disable') : t('success.enable'));
                         setRefresh((oldVal) => !oldVal);
                       });
-                    },
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </Button>
-            )}
-
-            {record.plugin_type === 'cloudwatch' && (
-              <Dropdown
-                overlay={
-                  <Menu>
+                    }}
+                  >
+                    <TableActionButton actionIcon='settings'>{record.status === 'enabled' ? t('disable') : t('enable')}</TableActionButton>
+                  </Popconfirm>
+                </Menu.Item>
+                {record.plugin_type === 'cloudwatch' && (
+                  <Menu.Item>
+                    <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' />
+                  </Menu.Item>
+                )}
+                {record.status === 'disabled' && (
+                  <>
+                    <Menu.Divider />
                     <Menu.Item>
-                      <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' />
+                      <TableActionButton
+                        danger
+                        actionIcon='delete'
+                        onClick={() => {
+                          Modal.confirm({
+                            title: t('common:confirm.delete'),
+                            onOk() {
+                              deleteDataSourceById(record.id).then(() => {
+                                message.success(t('common:success.delete'));
+                                setRefresh((oldVal) => !oldVal);
+                              });
+                            },
+                          });
+                        }}
+                      >
+                        {t('common:btn.delete')}
+                      </TableActionButton>
                     </Menu.Item>
-                  </Menu>
-                }
-              >
-                <Button type='link' icon={<MoreOutlined />} />
-              </Dropdown>
-            )}
-          </Space>
+                  </>
+                )}
+              </Menu>
+            }
+          >
+            <TableActionTrigger />
+          </Dropdown>
         );
       },
     },

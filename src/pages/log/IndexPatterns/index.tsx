@@ -27,9 +27,10 @@ import { getESIndexPatterns, deleteESIndexPattern, putESIndexPattern } from './s
 import FormModal from './FormModal';
 import { IndexPattern } from './types';
 import './locale';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import EditField from './EditField';
 import { useQuery } from '@/utils';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 export default function Servers() {
   const { t } = useTranslation('es-index-patterns');
@@ -142,16 +143,16 @@ export default function Servers() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 80,
+                    width: 64,
                     render: (record) => {
                       return (
                         <Dropdown
+                          overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>
                               <Menu.Item>
-                                <Button
-                                  type='link'
-                                  className='p-0 h-auto'
+                                <TableActionButton
+                                  actionIcon='settings'
                                   onClick={() => {
                                     if (record) {
                                       EditField({
@@ -177,12 +178,11 @@ export default function Servers() {
                                   }}
                                 >
                                   {t('common:btn.config')}
-                                </Button>
+                                </TableActionButton>
                               </Menu.Item>
                               <Menu.Item>
-                                <Button
-                                  type='link'
-                                  className='p-0 h-auto'
+                                <TableActionButton
+                                  actionIcon='edit'
                                   onClick={() => {
                                     FormModal({
                                       mode: 'edit',
@@ -196,13 +196,13 @@ export default function Servers() {
                                   }}
                                 >
                                   {t('common:btn.edit')}
-                                </Button>
+                                </TableActionButton>
                               </Menu.Item>
+                              <Menu.Divider />
                               <Menu.Item>
-                                <Button
-                                  type='link'
+                                <TableActionButton
+                                  actionIcon='delete'
                                   danger
-                                  className='p-0 h-auto'
                                   onClick={() => {
                                     Modal.confirm({
                                       title: t('common:confirm.delete'),
@@ -216,12 +216,12 @@ export default function Servers() {
                                   }}
                                 >
                                   {t('common:btn.delete')}
-                                </Button>
+                                </TableActionButton>
                               </Menu.Item>
                             </Menu>
                           }
                         >
-                          <Button type='text' icon={<MoreOutlined />} />
+                          <TableActionTrigger />
                         </Dropdown>
                       );
                     },

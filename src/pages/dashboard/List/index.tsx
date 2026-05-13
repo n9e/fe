@@ -20,7 +20,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Tag, Modal, Space, Button, Dropdown, Menu, message, Tooltip } from 'antd';
-import { FundViewOutlined, EditOutlined, ShareAltOutlined, MoreOutlined } from '@ant-design/icons';
+import { FundViewOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,7 @@ import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard,
 import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getBusiGroups } from '@/components/BusinessGroup';
@@ -313,16 +314,17 @@ export default function index() {
                   },
                   {
                     title: t('common:table.operations'),
+                    width: 64,
                     render: (text: string, record: DashboardType) => {
                       return (
                         <Dropdown
+                          overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>
                               {gids !== '-1' && (
                                 <Menu.Item>
-                                  <Button
-                                    type='link'
-                                    className='p-0 h-auto'
+                                  <TableActionButton
+                                    actionIcon='edit'
                                     onClick={() => {
                                       FormModal({
                                         action: 'edit',
@@ -335,14 +337,13 @@ export default function index() {
                                     }}
                                   >
                                     {t('common:btn.edit')}
-                                  </Button>
+                                  </TableActionButton>
                                 </Menu.Item>
                               )}
                               {gids && gids !== '-1' && (
                                 <Menu.Item>
-                                  <Button
-                                    type='link'
-                                    className='p-0 h-auto'
+                                  <TableActionButton
+                                    actionIcon='copy'
                                     onClick={async () => {
                                       Modal.confirm({
                                         title: t('common:confirm.clone'),
@@ -357,13 +358,12 @@ export default function index() {
                                     }}
                                   >
                                     {t('common:btn.clone')}
-                                  </Button>
+                                  </TableActionButton>
                                 </Menu.Item>
                               )}
                               <Menu.Item>
-                                <Button
-                                  type='link'
-                                  className='p-0 h-auto'
+                                <TableActionButton
+                                  actionIcon='open'
                                   onClick={async () => {
                                     const exportData = await getDashboard(record.id);
                                     Export({
@@ -372,35 +372,37 @@ export default function index() {
                                   }}
                                 >
                                   {t('common:btn.export')}
-                                </Button>
+                                </TableActionButton>
                               </Menu.Item>
                               {gids !== '-1' && (
-                                <Menu.Item>
-                                  <Button
-                                    danger
-                                    type='link'
-                                    className='p-0 h-auto'
-                                    onClick={async () => {
-                                      Modal.confirm({
-                                        title: t('common:confirm.delete'),
-                                        onOk: async () => {
-                                          await removeDashboards([record.id]);
-                                          message.success(t('common:success.delete'));
-                                          setRefreshKey(_.uniqueId('refreshKey_'));
-                                        },
+                                <>
+                                  <Menu.Divider />
+                                  <Menu.Item>
+                                    <TableActionButton
+                                      danger
+                                      actionIcon='delete'
+                                      onClick={async () => {
+                                        Modal.confirm({
+                                          title: t('common:confirm.delete'),
+                                          onOk: async () => {
+                                            await removeDashboards([record.id]);
+                                            message.success(t('common:success.delete'));
+                                            setRefreshKey(_.uniqueId('refreshKey_'));
+                                          },
 
-                                        onCancel() {},
-                                      });
-                                    }}
-                                  >
-                                    {t('common:btn.delete')}
-                                  </Button>
-                                </Menu.Item>
+                                          onCancel() {},
+                                        });
+                                      }}
+                                    >
+                                      {t('common:btn.delete')}
+                                    </TableActionButton>
+                                  </Menu.Item>
+                                </>
                               )}
                             </Menu>
                           }
                         >
-                          <Button type='link' icon={<MoreOutlined />} />
+                          <TableActionTrigger />
                         </Dropdown>
                       );
                     },
