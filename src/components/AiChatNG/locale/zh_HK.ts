@@ -31,6 +31,8 @@ const zh_HK = {
   message: {
     generating: '正在生成回覆...',
     hint: '提示',
+    no_llm_title: '當前環境沒有大模型配置',
+    no_llm_content: '請前往<a>LLM管理</a>頁面添加大模型配置',
     stopped: '已停止生成',
     request_failed: '請求失敗',
     cancelled: '本次回覆已被取消。',

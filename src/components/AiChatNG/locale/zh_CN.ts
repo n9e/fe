@@ -31,6 +31,8 @@ const zh_CN = {
   message: {
     generating: '正在生成回复...',
     hint: '提示',
+    no_llm_title: '当前环境没有大模型配置',
+    no_llm_content: '请前往<a>LLM管理</a>页面添加大模型配置',
     stopped: '已停止生成',
     request_failed: '请求失败',
     cancelled: '本次回复已被取消。',

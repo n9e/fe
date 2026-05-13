@@ -31,6 +31,8 @@ const en_US = {
   message: {
     generating: 'Generating reply...',
     hint: 'Hint',
+    no_llm_title: 'No LLM configured in the current environment',
+    no_llm_content: 'Please go to the <a>LLM Management</a> page to add a LLM configuration',
     stopped: 'Generation stopped',
     request_failed: 'Request failed',
     cancelled: 'This reply has been cancelled.',

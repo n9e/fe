@@ -4,6 +4,7 @@ import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { copy2ClipBoard } from '@/utils';
+import { NAME_SPACE } from '../constants';
 
 interface IAlertRulePayload {
   cate?: string;
@@ -63,7 +64,7 @@ function RowItem(props: { label: string; value: React.ReactNode }) {
 }
 
 export default function AlertRuleContentBlock(props: { responseContent: string }) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const payload = React.useMemo(() => safeParsePayload(props.responseContent), [props.responseContent]);
 
   const severityLevelName = React.useMemo(() => {
