@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Form } from 'antd';
-import { useTranslation } from 'react-i18next';
-
-import { NAME_SPACE } from '../../../constants';
+import { useSize } from 'ahooks';
 
 import Table from './Table';
 import Timeseries from './Timeseries';
@@ -26,6 +24,8 @@ export default function index(props: Props) {
   const { tableSelector, setExecuteLoading, executeQuery, timeseriesKeys } = props;
 
   const sqlVizType = Form.useWatch(['query', 'sqlVizType']);
+  const timeSeriesEleRef = useRef<HTMLDivElement>(null);
+  const timeSeriesEleSize = useSize(timeSeriesEleRef);
 
   return (
     <>
@@ -33,7 +33,11 @@ export default function index(props: Props) {
         <div />
       </Form.Item>
       {sqlVizType === 'table' && <Table tableSelector={tableSelector} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} executeQuery={executeQuery} />}
-      {sqlVizType === 'timeseries' && <Timeseries setExecuteLoading={setExecuteLoading} />}
+      {sqlVizType === 'timeseries' && (
+        <div ref={timeSeriesEleRef} className='w-full h-full min-h-0 flex flex-col'>
+          {timeSeriesEleSize?.width && <Timeseries width={timeSeriesEleSize.width} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} timeseriesKeys={timeseriesKeys} />}
+        </div>
+      )}
     </>
   );
 }
