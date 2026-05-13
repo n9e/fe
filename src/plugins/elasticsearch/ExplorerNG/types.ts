@@ -52,6 +52,6 @@ export interface FieldSampleParams {
 }
 
 export interface ClusterInfo {
-  supportsSQL: boolean;
+  is_sql_supported: boolean;
   version?: string;
 }

@@ -1,8 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
-import { Form, Row, Col, Button, Segmented, Dropdown, Menu } from 'antd';
+import { Form, Row, Col, Button, Segmented, Dropdown, Menu, Badge } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { SIZE, DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
@@ -96,11 +95,25 @@ export default function index(props: Props) {
     return localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY) === 'true';
   });
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
+  const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+  const [timeseriesKeys, setTimeseriesKeys] = useState<{
+    value: string[];
+    label: string[];
+  }>({
+    value: [],
+    label: [],
+  });
+
+  const queryInputRef = useRef<any>(null);
 
   const form = Form.useFormInstance();
   const syntax = Form.useWatch(['query', 'syntax'], form);
   const isSQLMode = syntax === 'sql';
-  const isQueryMode = syntax === 'kuery' || syntax === 'lucene';
+
+  // 切换模式时重置 loading 状态，避免 RawMain 遗留的 loading 状态
+  useEffect(() => {
+    setExecuteLoading(false);
+  }, [isSQLMode]);
 
   useEffect(() => {
     if (datasourceValue) {
@@ -108,7 +121,8 @@ export default function index(props: Props) {
         .then((info) => {
           setSupportsSQL(info?.is_sql_supported ?? false);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error('getESClusterInfo failed:', err);
           setSupportsSQL(false);
         });
     }
@@ -126,7 +140,7 @@ export default function index(props: Props) {
   });
 
   // Segmented 受控值：query 模式统一映射为 'query'，SQL 模式映射为 'sql'
-  const segmentedValue = isQueryMode ? 'query' : 'sql';
+  const segmentedValue = isSQLMode ? 'sql' : 'query';
 
   return (
     <div className='flex flex-col h-full'>
@@ -162,7 +176,7 @@ export default function index(props: Props) {
                   ),
                   value: 'query',
                 },
-                ...(supportsSQL ? [{ label: 'SQL', value: 'sql' }] : []),
+                ...(IS_PLUS && supportsSQL ? [{ label: 'SQL', value: 'sql' }] : []),
               ]}
               onChange={(val) => {
                 if (val === 'sql') {
@@ -181,6 +195,7 @@ export default function index(props: Props) {
           <Col flex='auto' style={{ minWidth: 0 }}>
             {isSQLMode ? (
               <SQLQueryInput
+                ref={queryInputRef}
                 snapRangeRef={snapRangeRef}
                 executeQuery={executeQuery}
                 queryBuilderPinned={queryBuilderPinned}
@@ -212,19 +227,22 @@ export default function index(props: Props) {
             </Form.Item>
           </Col>
           <Col flex='none'>
-            <Button
-              type='primary'
-              onClick={() => {
-                snapRangeRef.current = {
-                  from: undefined,
-                  to: undefined,
-                };
-                executeQuery();
-              }}
-              loading={executeLoading}
-            >
-              {t(`${logExplorerNS}:execute`)}
-            </Button>
+            <Badge dot={isContentChangedDotVisible}>
+              <Button
+                type='primary'
+                onClick={() => {
+                  setIsContentChangedDotVisible(false);
+                  snapRangeRef.current = {
+                    from: undefined,
+                    to: undefined,
+                  };
+                  executeQuery();
+                }}
+                loading={executeLoading}
+              >
+                {t(`${logExplorerNS}:execute`)}
+              </Button>
+            </Badge>
           </Col>
           <Col flex='none'>
             <MainMoreOperations />
@@ -247,10 +265,19 @@ export default function index(props: Props) {
               }
             }}
             onExecute={(values) => {
-              // TODO: SQL execution API not yet designed
+              setIsContentChangedDotVisible(false);
+              setTimeseriesKeys({
+                value: values?.value_key || [],
+                label: values?.label_key || [],
+              });
             }}
-            onPreviewSQL={() => {
-              // SQL 已由 QueryBuilderCpt 写入表单，此处无需额外处理
+            onPreviewSQL={(values) => {
+              queryInputRef.current?.focus();
+              setIsContentChangedDotVisible(true);
+              setTimeseriesKeys({
+                value: values?.value_key || [],
+                label: values?.label_key || [],
+              });
             }}
           />
         )}
@@ -264,7 +291,7 @@ export default function index(props: Props) {
           }}
           setExecuteLoading={setExecuteLoading}
           executeQuery={executeQuery}
-          timeseriesKeys={queryValues?.keys || { value: [], label: [] }}
+          timeseriesKeys={timeseriesKeys.value.length || timeseriesKeys.label.length ? timeseriesKeys : queryValues?.keys || { value: [], label: [] }}
         />
       ) : (
         <RawMain

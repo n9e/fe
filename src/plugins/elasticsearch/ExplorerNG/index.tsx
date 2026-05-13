@@ -68,7 +68,17 @@ export default function index(props: Props) {
         const queryValues = values.query;
 
         // SQL 模式：执行逻辑待后端接口设计完成后实现
+        // SQL 模式：保存缓存和历史记录后触发查询
         if (queryValues.syntax === 'sql') {
+          if (defaultFormValuesControl?.setDefaultFormValues) {
+            defaultFormValuesControl.setDefaultFormValues({
+              datasourceCate: values.datasourceCate,
+              datasourceValue: values.datasourceValue,
+              query: _.omit(queryValues, 'refreshFlag'),
+            });
+          }
+          setLocalQueryHistory(`${QUERY_CACHE_KEY}-${values.datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
+
           form.setFieldsValue({ refreshFlag: _.uniqueId('refreshFlag_') });
           return;
         }
