@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Input, Select, Space, Table, Button, Modal, Switch, message, Tooltip } from 'antd';
-import { NotificationOutlined, PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Input, Select, Space, Table, Button, Modal, Switch, message, Tooltip, Dropdown, Menu } from 'antd';
+import { NotificationOutlined, PlusOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { map, upperCase, includes, filter } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -277,40 +277,45 @@ export default function index() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 100,
+                    width: 80,
                     render: (record) => {
                       return (
-                        <Space size={2}>
-                          <Link
-                            className='table-operator-area-normal'
-                            to={{
-                              pathname: `/${NS}/edit/${record.id}?mode=clone`,
-                            }}
-                            target='_blank'
-                          >
-                            <Button size='small' type='text' className='p-0' icon={<CopyOutlined />} />
-                          </Link>
-                          <Tooltip title={record.enable === true ? t('delete_disable_first') : undefined}>
-                            <Button
-                              size='small'
-                              type='text'
-                              className='p-0'
-                              icon={<DeleteOutlined />}
-                              disabled={record.enable === true}
-                              onClick={() => {
-                                Modal.confirm({
-                                  title: t('common:confirm.delete'),
-                                  onOk: () => {
-                                    deleteItems([record.id]).then(() => {
-                                      message.success(t('common:success.delete'));
-                                      run();
-                                    });
-                                  },
-                                });
-                              }}
-                            />
-                          </Tooltip>
-                        </Space>
+                        <Dropdown
+                          overlay={
+                            <Menu>
+                              <Menu.Item>
+                                <Link to={{ pathname: `/${NS}/edit/${record.id}?mode=clone` }} target='_blank'>
+                                  {t('common:btn.clone')}
+                                </Link>
+                              </Menu.Item>
+                              <Menu.Item>
+                                <Tooltip title={record.enable === true ? t('delete_disable_first') : undefined}>
+                                  <Button
+                                    type='link'
+                                    danger
+                                    className='p-0 h-auto'
+                                    disabled={record.enable === true}
+                                    onClick={() => {
+                                      Modal.confirm({
+                                        title: t('common:confirm.delete'),
+                                        onOk: () => {
+                                          deleteItems([record.id]).then(() => {
+                                            message.success(t('common:success.delete'));
+                                            run();
+                                          });
+                                        },
+                                      });
+                                    }}
+                                  >
+                                    {t('common:btn.delete')}
+                                  </Button>
+                                </Tooltip>
+                              </Menu.Item>
+                            </Menu>
+                          }
+                        >
+                          <Button type='text' icon={<MoreOutlined />} />
+                        </Dropdown>
                       );
                     },
                   },

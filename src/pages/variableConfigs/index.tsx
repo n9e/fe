@@ -17,8 +17,8 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Table, Space, message, Popconfirm } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
+import { Button, Input, Table, Space, message, Modal, Dropdown, Menu } from 'antd';
+import { SettingOutlined, MoreOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { getVariableConfigs, VariableConfig, postVariableConfigs, deleteVariableConfigs, putVariableConfigs, getRSAConfig, RASConfig } from './services';
@@ -110,64 +110,79 @@ export default function index() {
             },
             {
               title: t('common:table.operations'),
-              width: 140,
+              width: 80,
               render: (record) => {
                 return (
-                  <Space>
-                    <Button
-                      size='small'
-                      type='link'
-                      style={{ padding: 0 }}
-                      onClick={() => {
-                        FormModal({
-                          title: t('common:btn.clone'),
-                          rsaConfig,
-                          data: record,
-                          onOk: (values) => {
-                            return postVariableConfigs(values).then(() => {
-                              fetchData();
-                              message.success(t('common:success.clone'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.clone')}
-                    </Button>
-                    <Button
-                      size='small'
-                      type='link'
-                      style={{ padding: 0 }}
-                      onClick={() => {
-                        FormModal({
-                          title: t('common:btn.edit'),
-                          rsaConfig,
-                          data: record,
-                          onOk: (values) => {
-                            return putVariableConfigs(record.id, values).then(() => {
-                              fetchData();
-                              message.success(t('common:success.edit'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.edit')}
-                    </Button>
-                    <Popconfirm
-                      title={t('common:confirm.delete')}
-                      onConfirm={() => {
-                        deleteVariableConfigs(record.id).then(() => {
-                          message.success(t('common:success.delete'));
-                          fetchData();
-                        });
-                      }}
-                    >
-                      <Button size='small' type='link' danger style={{ padding: 0 }}>
-                        {t('common:btn.delete')}
-                      </Button>
-                    </Popconfirm>
-                  </Space>
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            className='p-0 h-auto'
+                            onClick={() => {
+                              FormModal({
+                                title: t('common:btn.clone'),
+                                rsaConfig,
+                                data: record,
+                                onOk: (values) => {
+                                  return postVariableConfigs(values).then(() => {
+                                    fetchData();
+                                    message.success(t('common:success.clone'));
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.clone')}
+                          </Button>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            className='p-0 h-auto'
+                            onClick={() => {
+                              FormModal({
+                                title: t('common:btn.edit'),
+                                rsaConfig,
+                                data: record,
+                                onOk: (values) => {
+                                  return putVariableConfigs(record.id, values).then(() => {
+                                    fetchData();
+                                    message.success(t('common:success.edit'));
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.edit')}
+                          </Button>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            danger
+                            className='p-0 h-auto'
+                            onClick={() => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk: () => {
+                                  deleteVariableConfigs(record.id).then(() => {
+                                    message.success(t('common:success.delete'));
+                                    fetchData();
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </Button>
+                        </Menu.Item>
+                      </Menu>
+                    }
+                  >
+                    <Button type='text' icon={<MoreOutlined />} />
+                  </Dropdown>
                 );
               },
             },

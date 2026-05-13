@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Space, Table, Button, Modal, Tag, message, Switch } from 'antd';
+import { Space, Table, Button, Modal, Tag, message, Switch, Dropdown, Menu } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { MenuOutlined } from '@ant-design/icons';
+import { MenuOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
@@ -132,38 +132,50 @@ export default function Index() {
       {
         title: t('common:table.operations'),
         dataIndex: 'operator',
-        width: 120,
+        width: 80,
         render: (_val, record: EmbeddedProductResponse) => {
           return (
-            <Space>
-              <a
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentRecord(record);
-                  setModalVisible(true);
-                }}
-              >
-                {t('common:btn.edit')}
-              </a>
-              <a
-                className='table-operator-area-warning'
-                onClick={(e) => {
-                  e.preventDefault();
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk: () => {
-                      return deleteEmbeddedProducts(String(record.id)).then(() => {
-                        message.success(t('common:success.delete'));
-                        fetchData();
-                        eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
-                      });
-                    },
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </a>
-            </Space>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Button
+                      type='link'
+                      className='p-0 h-auto'
+                      onClick={() => {
+                        setCurrentRecord(record);
+                        setModalVisible(true);
+                      }}
+                    >
+                      {t('common:btn.edit')}
+                    </Button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Button
+                      type='link'
+                      danger
+                      className='p-0 h-auto'
+                      onClick={() => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            return deleteEmbeddedProducts(String(record.id)).then(() => {
+                              message.success(t('common:success.delete'));
+                              fetchData();
+                              eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                            });
+                          },
+                        });
+                      }}
+                    >
+                      {t('common:btn.delete')}
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type='text' icon={<MoreOutlined />} />
+            </Dropdown>
           );
         },
       },

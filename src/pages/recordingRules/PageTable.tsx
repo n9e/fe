@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
-import { Button, Modal, message, Dropdown, Table, Switch, Select, Space, Tag } from 'antd';
+import { Button, Modal, message, Dropdown, Table, Switch, Select, Space, Tag, Menu } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
 import _ from 'lodash';
 import RefreshIcon from '@/components/RefreshIcon';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, MoreOutlined } from '@ant-design/icons';
 import { getBusiGroupsRecordingRules, updateRecordingRules } from '@/services/recording';
 import SearchInput from '@/components/BaseSearchInput';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
@@ -206,36 +206,50 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       {
         title: t('common:table.operations'),
         dataIndex: 'operator',
+        width: 80,
         render: (data, record) => {
           return (
-            <div className='table-operator-area'>
-              <div
-                className='table-operator-area-normal'
-                onClick={() => {
-                  handleClickEdit(record.id, true);
-                }}
-              >
-                {t('common:btn.clone')}
-              </div>
-              <div
-                className='table-operator-area-warning'
-                onClick={() => {
-                  confirm({
-                    title: t('common:confirm.delete'),
-                    onOk: () => {
-                      deleteRecordingRule([record.id], record.group_id).then(() => {
-                        message.success(t('common:success.delete'));
-                        refreshList();
-                      });
-                    },
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Button
+                      type='link'
+                      className='p-0 h-auto'
+                      onClick={() => {
+                        handleClickEdit(record.id, true);
+                      }}
+                    >
+                      {t('common:btn.clone')}
+                    </Button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Button
+                      type='link'
+                      danger
+                      className='p-0 h-auto'
+                      onClick={() => {
+                        confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteRecordingRule([record.id], record.group_id).then(() => {
+                              message.success(t('common:success.delete'));
+                              refreshList();
+                            });
+                          },
 
-                    onCancel() {},
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </div>
-            </div>
+                          onCancel() {},
+                        });
+                      }}
+                    >
+                      {t('common:btn.delete')}
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type='text' icon={<MoreOutlined />} />
+            </Dropdown>
           );
         },
       },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Space, Button, Switch, Modal, Input, message } from 'antd';
-import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Space, Button, Switch, Modal, Input, message, Dropdown, Menu } from 'antd';
+import { NotificationOutlined, SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -181,41 +181,42 @@ export default function List() {
             },
             {
               title: t('common:table.operations'),
-              width: 100,
+              width: 80,
               render: (record) => {
                 return (
-                  <Space>
-                    <Link
-                      className='table-operator-area-normal'
-                      to={{
-                        pathname: `/${NS}/edit/${record.id}?mode=clone`,
-                      }}
-                      target='_blank'
-                    >
-                      {t('common:btn.clone')}
-                    </Link>
-                    <Button
-                      size='small'
-                      type='link'
-                      danger
-                      style={{
-                        padding: 0,
-                      }}
-                      onClick={() => {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk: () => {
-                            deleteItems([record.id]).then(() => {
-                              message.success(t('common:success.delete'));
-                              fetchData();
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Space>
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.Item>
+                          <Link to={{ pathname: `/${NS}/edit/${record.id}?mode=clone` }} target='_blank'>
+                            {t('common:btn.clone')}
+                          </Link>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <Button
+                            type='link'
+                            danger
+                            className='p-0 h-auto'
+                            onClick={() => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk: () => {
+                                  deleteItems([record.id]).then(() => {
+                                    message.success(t('common:success.delete'));
+                                    fetchData();
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </Button>
+                        </Menu.Item>
+                      </Menu>
+                    }
+                  >
+                    <Button type='text' icon={<MoreOutlined />} />
+                  </Dropdown>
                 );
               },
             },

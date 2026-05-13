@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Popconfirm, Space, Table, Tag, message } from 'antd';
+import { Button, Input, Modal, Dropdown, Menu, Table, Tag, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -27,7 +27,7 @@ import { getESIndexPatterns, deleteESIndexPattern, putESIndexPattern } from './s
 import FormModal from './FormModal';
 import { IndexPattern } from './types';
 import './locale';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import EditField from './EditField';
 import { useQuery } from '@/utils';
 
@@ -142,66 +142,87 @@ export default function Servers() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 160,
+                    width: 80,
                     render: (record) => {
                       return (
-                        <Space>
-                          <a
-                            onClick={() => {
-                              if (record) {
-                                EditField({
-                                  id: record.id,
-                                  datasourceList,
-                                  onOk(values, name) {
-                                    console.log('values', values);
-                                    const newFieldConfig = {
-                                      ...values,
-                                      version: 2,
-                                    };
-                                    putESIndexPattern(record.id, {
-                                      ..._.omit(record, ['fieldConfig', 'id']),
-                                      fields_format: JSON.stringify(newFieldConfig),
-                                      name,
-                                    }).then(() => {
-                                      fetchData();
-                                      message.success(t('common:success.save'));
+                        <Dropdown
+                          overlay={
+                            <Menu>
+                              <Menu.Item>
+                                <Button
+                                  type='link'
+                                  className='p-0 h-auto'
+                                  onClick={() => {
+                                    if (record) {
+                                      EditField({
+                                        id: record.id,
+                                        datasourceList,
+                                        onOk(values, name) {
+                                          console.log('values', values);
+                                          const newFieldConfig = {
+                                            ...values,
+                                            version: 2,
+                                          };
+                                          putESIndexPattern(record.id, {
+                                            ..._.omit(record, ['fieldConfig', 'id']),
+                                            fields_format: JSON.stringify(newFieldConfig),
+                                            name,
+                                          }).then(() => {
+                                            fetchData();
+                                            message.success(t('common:success.save'));
+                                          });
+                                        },
+                                      });
+                                    }
+                                  }}
+                                >
+                                  {t('common:btn.config')}
+                                </Button>
+                              </Menu.Item>
+                              <Menu.Item>
+                                <Button
+                                  type='link'
+                                  className='p-0 h-auto'
+                                  onClick={() => {
+                                    FormModal({
+                                      mode: 'edit',
+                                      initialValues: record,
+                                      indexPatterns: data,
+                                      datasourceList: groupedDatasourceList.elasticsearch,
+                                      onOk: () => {
+                                        fetchData();
+                                      },
                                     });
-                                  },
-                                });
-                              }
-                            }}
-                          >
-                            {t('common:btn.config')}
-                          </a>
-                          <a
-                            onClick={() => {
-                              FormModal({
-                                mode: 'edit',
-                                initialValues: record,
-                                indexPatterns: data,
-                                datasourceList: groupedDatasourceList.elasticsearch,
-                                onOk: () => {
-                                  fetchData();
-                                },
-                              });
-                            }}
-                          >
-                            {t('common:btn.edit')}
-                          </a>
-                          <Popconfirm
-                            title={t('common:confirm.delete')}
-                            onConfirm={() => {
-                              deleteESIndexPattern(record.id).then(() => {
-                                message.success(t('common:success.delete'));
-                                fetchData();
-                              });
-                            }}
-                          >
-                            <Button type='link' style={{ padding: 0 }} danger>
-                              {t('common:btn.delete')}
-                            </Button>
-                          </Popconfirm>
-                        </Space>
+                                  }}
+                                >
+                                  {t('common:btn.edit')}
+                                </Button>
+                              </Menu.Item>
+                              <Menu.Item>
+                                <Button
+                                  type='link'
+                                  danger
+                                  className='p-0 h-auto'
+                                  onClick={() => {
+                                    Modal.confirm({
+                                      title: t('common:confirm.delete'),
+                                      onOk: () => {
+                                        deleteESIndexPattern(record.id).then(() => {
+                                          message.success(t('common:success.delete'));
+                                          fetchData();
+                                        });
+                                      },
+                                    });
+                                  }}
+                                >
+                                  {t('common:btn.delete')}
+                                </Button>
+                              </Menu.Item>
+                            </Menu>
+                          }
+                        >
+                          <Button type='text' icon={<MoreOutlined />} />
+                        </Dropdown>
                       );
                     },
                   },

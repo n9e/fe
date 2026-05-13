@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Tag, Input, Modal, Drawer, Select } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Space, Table, Button, Tag, Input, Modal, Drawer, Select, Dropdown, Menu } from 'antd';
+import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -227,54 +227,69 @@ export default function List() {
           },
           {
             title: t('common:table.operations'),
-            width: 200,
+            width: 80,
             render: (item: Item) => {
               return (
-                <Space>
-                  <a
-                    onClick={() => {
-                      setEventPipelineDrawerState({
-                        visible: true,
-                        action: 'clone',
-                        data: _.omit(item, 'id'),
-                      });
-                    }}
-                  >
-                    {t('common:btn.clone')}
-                  </a>
-                  <a
-                    onClick={() => {
-                      setEventPipelineDrawerState({
-                        visible: true,
-                        action: 'edit',
-                        id: item.id,
-                      });
-                    }}
-                  >
-                    {t('common:btn.edit')}
-                  </a>
-                  <Button
-                    type='link'
-                    size='small'
-                    style={{
-                      padding: 0,
-                    }}
-                    danger
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteItems([item.id]).then(() => {
-                            featchData();
-                          });
-                        },
-                      });
-                    }}
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                  <Link to={`/event-pipelines-executions?pipeline_id=${item.id}`}>{t('executions.title')}</Link>
-                </Space>
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item>
+                        <Button
+                          type='link'
+                          className='p-0 h-auto'
+                          onClick={() => {
+                            setEventPipelineDrawerState({
+                              visible: true,
+                              action: 'clone',
+                              data: _.omit(item, 'id'),
+                            });
+                          }}
+                        >
+                          {t('common:btn.clone')}
+                        </Button>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <Button
+                          type='link'
+                          className='p-0 h-auto'
+                          onClick={() => {
+                            setEventPipelineDrawerState({
+                              visible: true,
+                              action: 'edit',
+                              id: item.id,
+                            });
+                          }}
+                        >
+                          {t('common:btn.edit')}
+                        </Button>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <Button
+                          type='link'
+                          danger
+                          className='p-0 h-auto'
+                          onClick={() => {
+                            Modal.confirm({
+                              title: t('common:confirm.delete'),
+                              onOk: () => {
+                                deleteItems([item.id]).then(() => {
+                                  featchData();
+                                });
+                              },
+                            });
+                          }}
+                        >
+                          {t('common:btn.delete')}
+                        </Button>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <Link to={`/event-pipelines-executions?pipeline_id=${item.id}`}>{t('executions.title')}</Link>
+                      </Menu.Item>
+                    </Menu>
+                  }
+                >
+                  <Button type='text' icon={<MoreOutlined />} />
+                </Dropdown>
               );
             },
           },
