@@ -13,8 +13,6 @@ export const getSideMenuBgColor = (color: SideMenuColors) => {
       return 'var(--fc-menu-dark-bg)';
     case 'theme':
       return THEME_COLOR;
-    case 'gold':
-      return 'var(--fc-menu-dark-bg)';
     default:
       return THEME_COLOR;
   }

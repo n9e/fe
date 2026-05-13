@@ -132,7 +132,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <Version />
 
-                  <Space size={12}>
+                  <div className='page-header-action-group'>
                     {rightArea}
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
@@ -140,9 +140,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <FeatureNotification />
                     </AdvancedWrap>
-                  </Space>
 
-                  <Space size={8} className='page-layout-sticky-actions'>
                     <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
                       <Tooltip title={t('docsCenter')}>
                         <span className='inline-flex items-center gap-1'>
@@ -152,14 +150,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       </Tooltip>
                     </Button>
                     <FlashAiButton alwaysVisible />
-                  </Space>
 
                   {!IS_ENT && !IS_PLUS && (
                     <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
                       <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
                     </Button>
                   )}
-
+                  </div>
                 </div>
                 {sessionStorage.getItem('menuHide') === '1' && <Space className='mr-2'>{rightArea}</Space>}
               </div>

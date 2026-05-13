@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next';
 
 import PromQLInput from '@/components/PromQLInput';
 import { copy2ClipBoard } from '@/utils';
+import { NAME_SPACE } from '../constants';
 
 export default function QueryContentBlock(props: { query: string; onExecute?: () => void }) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const { query, onExecute } = props;
   const canExecute = Boolean(onExecute);
 
@@ -48,4 +49,3 @@ export default function QueryContentBlock(props: { query: string; onExecute?: ()
     </div>
   );
 }
-

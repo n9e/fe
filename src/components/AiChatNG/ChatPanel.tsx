@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import IconFont from '@/components/IconFont';
 
 import { cancelMessage, createChat, getMessageDetail, getMessageHistory, sendMessage } from './services';
+import { NAME_SPACE } from './constants';
 import { EmptyConversation, MessageItem } from './MessageBlocks';
 import { IAiChatAction, IAiChatHistoryItem, IAiChatMessage, IAiChatMessageLocator, IAiChatProps } from './types';
 import { buildStreamingMessage, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
@@ -14,7 +15,7 @@ import { useAiChatStream } from './useStream';
 const POLLING_INTERVAL = 3000;
 
 export default function ChatPanel(props: IAiChatProps) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const { placeholder, chatId, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent, onChatChange, onError, welcomeSlot } = props;
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);

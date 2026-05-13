@@ -26,8 +26,9 @@
   }
 }
 
-.side-menu-profile-menu {
-  min-width: 220px;
+.side-menu-profile-menu,
+.side-menu-profile-submenu {
+  min-width: 168px;
 
   .ant-dropdown-menu-submenu-title,
   .ant-dropdown-menu-item {
@@ -38,61 +39,27 @@
     display: flex;
     align-items: center;
   }
-}
 
-.side-menu-profile-control-item {
-  height: auto !important;
-  padding: 0 !important;
-
-  &:hover {
-    background: var(--fc-fill-2) !important;
+  .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title {
+    color: var(--fc-text-1) !important;
   }
-}
 
-.side-menu-profile-theme-control {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 12px;
-  color: var(--fc-text-1);
-  cursor: pointer;
-}
-
-.side-menu-profile-theme-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-
-  .anticon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    font-size: 14px;
+  .ant-dropdown-menu-item-active,
+  .ant-dropdown-menu-submenu-active > .ant-dropdown-menu-submenu-title,
+  .ant-dropdown-menu-submenu-title:hover {
+    background: var(--fc-fill-3) !important;
+    color: var(--fc-text-1) !important;
   }
-}
 
-.side-menu-profile-control-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  width: 100%;
-}
+  .ant-dropdown-menu-submenu-arrow {
+    color: var(--fc-text-3) !important;
+  }
 
-.side-menu-profile-control-value {
-  min-width: 0;
-  margin-left: auto;
-  color: var(--fc-text-3);
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.side-menu-profile-theme-arrow {
-  color: var(--fc-text-3);
-  font-size: 10px;
-  margin-left: 0;
+  .anticon,
+  svg {
+    color: inherit;
+  }
 }
 
 .side-menu-profile-language-icon {
@@ -100,14 +67,6 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
-}
-
-.side-menu-profile-theme-blue-swatch {
-  display: inline-block;
-  width: 12px;
-  height: 8px;
-  border-radius: 8px;
-  background: #427af4;
 }
 
 .side-menu-collapsed-section-divider {
@@ -135,6 +94,10 @@
 .side-menu-profile-trigger {
   min-width: 0;
   flex: 1 1 auto;
+}
+
+.side-menu-profile-detail-on-dark {
+  color: rgba(255, 255, 255, 0.68);
 }
 
 .side-menu-collapsed-logo-toggle {

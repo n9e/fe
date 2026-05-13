@@ -21,26 +21,36 @@
     .page-header-right-area {
       display: flex;
       align-items: center;
+      gap: 12px;
 
-      .ant-space > .ant-space-item > .ant-btn {
-        display: inline-flex;
+      .page-layout-intro-container:empty {
+        display: none;
+      }
+
+      .page-header-action-group {
+        display: flex;
         align-items: center;
-        justify-content: center;
-        height: 28px;
-        min-height: 28px;
-        line-height: 1;
-        vertical-align: middle;
+        gap: 12px;
 
-        .anticon {
+        .ant-btn {
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          height: 28px;
+          min-height: 28px;
           line-height: 1;
+          vertical-align: middle;
+
+          .anticon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+          }
         }
       }
 
       .page-layout-doc-center-btn {
-        margin-left: 16px;
         border: 1px solid var(--fc-border-color);
         border-radius: 8px;
         padding: 0 10px;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Collapse, Space } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
 import Markdown from '@/components/Markdown';
@@ -11,6 +11,7 @@ import QueryContentBlock from './ContentRenderer/QueryContentBlock';
 import FormSelectContentBlock from './ContentRenderer/FormSelectContentBlock';
 import AlertRuleContentBlock from './ContentRenderer/AlertRuleContentBlock';
 import DashboardContentBlock from './ContentRenderer/DashboardContentBlock';
+import { NAME_SPACE } from './constants';
 
 function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
   const fullText = `${prefix}${brand}`;
@@ -74,7 +75,7 @@ export function ThinkingBlock({ title, content }: { title: string; content: stri
 }
 
 export function HintBlock({ response }: { response: IAiChatMessageResponse }) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
 
   return (
     <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
@@ -102,7 +103,7 @@ export function CurStepBlock({ curStep }: { curStep: string }) {
 }
 
 export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const { message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom } = props;
   const curStep = message.cur_step?.trim() || t('message.generating');
   const shouldShowCurStep = !message.is_finish && !message.err_code;
@@ -131,6 +132,24 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
   );
 
   if (message.err_code && message.err_code !== 0) {
+    if (message.err_code === 409) {
+      return (
+        <div className='rounded-lg border border-error/20 bg-error/10 px-4 py-3'>
+          <div className='text-sm font-medium text-title'>{t('message.no_llm_title')}</div>
+          <div className='mt-1 text-sm text-main'>
+            {
+              <Trans
+                ns={NAME_SPACE}
+                i18nKey='message.no_llm_content'
+                components={{
+                  a: <a href='/ai-config/llm-configs' target='_blank' />,
+                }}
+              />
+            }
+          </div>
+        </div>
+      );
+    }
     return (
       <div className='rounded-lg border border-error/20 bg-error/10 px-4 py-3'>
         <div className='text-sm font-medium text-title'>{message.err_title || (message.err_code === -2 ? t('message.stopped') : t('message.request_failed'))}</div>
@@ -222,7 +241,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
 }
 
 export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string[]; onPromptClick: (prompt: string) => void }) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const greetingPrefix = t('empty.greeting_prefix');
 
   return (

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { NAME_SPACE } from '../constants';
 
 type FieldKey = 'busi_group_id' | 'datasource_id' | string;
 
@@ -55,7 +56,7 @@ export interface IFormSelectConfirmResult {
 }
 
 export default function FormSelectContentBlock(props: { responseContent: string; onConfirm: (result: IFormSelectConfirmResult) => void }) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const payload = React.useMemo(() => safeParsePayload(props.responseContent), [props.responseContent]);
 
   const busiGroupField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'busi_group_id'), [payload?.fields]);

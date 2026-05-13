@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Dropdown, Menu, Tooltip } from 'antd';
+import { Dropdown, Menu } from 'antd';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Sun } from 'lucide-react';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
-import IconFont from '@/components/IconFont';
+import { DarkModeMenuItems } from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
@@ -79,9 +79,8 @@ const SideMenu = (props: SideMenuProps) => {
   const { i18n, t } = useTranslation(['sideMenu', 'pageLayout', 'DarkModeSelect']);
   const history = useHistory();
   const commonState = useContext(CommonStateContext);
-  const { darkMode, perms, installTs, profile, i18nList, setDarkMode, setSideMenuBgMode } = commonState;
-  const { sideMenuBgMode: rawSideMenuBgMode } = commonState;
-  let sideMenuBgMode = rawSideMenuBgMode;
+  const { darkMode, perms, installTs, profile, i18nList } = commonState;
+  let { sideMenuBgMode } = commonState;
   if (darkMode) {
     sideMenuBgMode = 'dark';
   }
@@ -97,8 +96,7 @@ const SideMenu = (props: SideMenuProps) => {
     onMenuClick,
     isGoldTheme,
   } = props;
-  const effectiveGoldTheme = Boolean(isGoldTheme || rawSideMenuBgMode === 'gold');
-  const sideMenuBgColor = getSideMenuBgColor(effectiveGoldTheme ? 'gold' : (sideMenuBgMode as any));
+  const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
   const location = useLocation();
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
@@ -294,63 +292,8 @@ const SideMenu = (props: SideMenuProps) => {
     localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
   };
   const profileDisplay = getSidebarProfileDisplay(profile);
-  const themeState = commonState as any;
-  const currentThemeKey = themeState.isThemeBlue ? 'light-blue' : themeState.isMcDonalds ? 'light-gold' : darkMode ? 'dark' : 'light';
-  const currentThemeLabel = t(currentThemeKey, { ns: 'DarkModeSelect' });
-  const currentLangLabel = i18nMap[i18n.language] || i18n.language;
-  const setTheme = (key: string) => {
-    const updateBodyTheme = (mode: 0 | 1 | 2 | 3) => {
-      const classNameMap = ['theme-light', 'theme-dark', 'theme-light theme-light-gold', 'theme-light theme-light-blue'];
-      document.body.className = classNameMap[mode];
-      localStorage.setItem('n9e-dark-mode', String(mode));
-      localStorage.setItem('defaultDarkForceUseTimeStamp', String(new Date().getTime()));
-    };
-
-    if (key.startsWith('menu-')) {
-      let color = key.split('-')[1];
-      if (color === 'system') {
-        color = themeState.defaultMenuBgMode || 'theme';
-      }
-      setSideMenuBgMode(color);
-      themeState.setIsMcDonalds?.(false);
-      themeState.setIsThemeBlue?.(false);
-      setDarkMode(false);
-      updateBodyTheme(0);
-      return;
-    }
-
-    if (key === 'light-blue') {
-      themeState.setIsMcDonalds?.(false);
-      themeState.setIsThemeBlue?.(true);
-      setSideMenuBgMode('light');
-      setDarkMode(false);
-      updateBodyTheme(3);
-    } else if (key === 'light-gold') {
-      themeState.setIsMcDonalds?.(true);
-      themeState.setIsThemeBlue?.(false);
-      setSideMenuBgMode('dark');
-      setDarkMode(false);
-      updateBodyTheme(2);
-    } else if (key === 'light') {
-      themeState.setIsMcDonalds?.(false);
-      themeState.setIsThemeBlue?.(false);
-      setDarkMode(false);
-      updateBodyTheme(0);
-    } else if (key === 'dark') {
-      themeState.setIsMcDonalds?.(false);
-      themeState.setIsThemeBlue?.(false);
-      setDarkMode(true);
-      updateBodyTheme(1);
-    } else if (key === 'system') {
-      const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      themeState.setIsMcDonalds?.(false);
-      themeState.setIsThemeBlue?.(false);
-      setDarkMode(systemDarkMode);
-      updateBodyTheme(systemDarkMode ? 1 : 0);
-    }
-  };
   const profileMenu = (
-    <Menu className='side-menu-profile-menu' selectedKeys={[i18n.language, currentThemeKey]}>
+    <Menu className='side-menu-profile-menu'>
       <Menu.Item
         key='profile'
         icon={<UserOutlined />}
@@ -363,71 +306,21 @@ const SideMenu = (props: SideMenuProps) => {
       <Menu.Divider />
       <Menu.SubMenu
         key='theme'
+        popupClassName='side-menu-profile-submenu'
         icon={<Sun size={14} strokeWidth={1.8} />}
-        title={
-          <span className='side-menu-profile-control-title'>
-            <span>{t('themeSetting', { ns: 'pageLayout' })}</span>
-            <span className='side-menu-profile-control-value'>{currentThemeLabel}</span>
-          </span>
-        }
+        title={t('themeSetting', { ns: 'pageLayout' })}
       >
-        {themeState.McDonaldsEnable && (
-          <Menu.Item key='light-gold' icon={<IconFont type='icon-mcdonalds' style={{ color: 'var(--fc-fill-gold)' }} />} onClick={() => setTheme('light-gold')}>
-            {t('light-gold', { ns: 'DarkModeSelect' })}
-          </Menu.Item>
-        )}
-        {themeState.themeBlueEnable && (
-          <Menu.Item
-            key='light-blue'
-            icon={<span className='side-menu-profile-theme-blue-swatch' />}
-            onClick={() => {
-              setTheme('light-blue');
-            }}
-          >
-            {t('light-blue', { ns: 'DarkModeSelect' })}
-          </Menu.Item>
-        )}
-        <Menu.SubMenu
-          key='light'
-          icon={<Sun size={14} strokeWidth={1.8} />}
-          title={t('light', { ns: 'DarkModeSelect' })}
-          onTitleClick={() => {
-            setTheme('light');
-          }}
-        >
-          <Menu.ItemGroup title={t('config', { ns: 'DarkModeSelect' })}>
-            {['light', 'dark', 'theme', 'default'].map((color) => (
-              <Menu.Item
-                key={color === 'default' ? 'menu-system' : `menu-${color}`}
-                onClick={() => {
-                  setTheme(color === 'default' ? 'menu-system' : `menu-${color}`);
-                }}
-              >
-                {t(`aboutProduct:${color}`)}
-              </Menu.Item>
-            ))}
-          </Menu.ItemGroup>
-        </Menu.SubMenu>
-        <Menu.Item key='dark' icon={<Moon size={14} strokeWidth={1.8} />} onClick={() => setTheme('dark')}>
-          {t('dark', { ns: 'DarkModeSelect' })}
-        </Menu.Item>
-        <Menu.Item key='system' icon={<Monitor size={14} strokeWidth={1.8} />} onClick={() => setTheme('system')}>
-          {t('system', { ns: 'DarkModeSelect' })}
-        </Menu.Item>
+        <DarkModeMenuItems />
       </Menu.SubMenu>
       <Menu.SubMenu
         key='language'
+        popupClassName='side-menu-profile-submenu'
         icon={
           <span className='side-menu-profile-language-icon'>
             <LanguageIcon />
           </span>
         }
-        title={
-          <span className='side-menu-profile-control-title'>
-            <span>{t('language', { ns: 'pageLayout' })}</span>
-            <span className='side-menu-profile-control-value'>{currentLangLabel}</span>
-          </span>
-        }
+        title={t('language', { ns: 'pageLayout' })}
       >
         {Object.keys(i18nMap)
           .filter((el) => (i18nList ? i18nList.includes(el) : true))
@@ -530,7 +423,7 @@ const SideMenu = (props: SideMenuProps) => {
                   }
                   onMenuClick?.(key);
                 }}
-                isGoldTheme={effectiveGoldTheme}
+                isGoldTheme={isGoldTheme}
               />
             </ScrollArea>
           </div>
@@ -547,7 +440,7 @@ const SideMenu = (props: SideMenuProps) => {
                   className={cn(
                     'side-menu-profile-trigger flex cursor-pointer items-center rounded border-0 bg-transparent p-0 text-left transition-colors',
                     collapsed ? 'h-10 justify-center' : 'h-12 gap-2 px-2',
-                    isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200',
+                    isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200',
                   )}
                 >
                   <span className='side-menu-profile-avatar'>
@@ -557,7 +450,7 @@ const SideMenu = (props: SideMenuProps) => {
                     <>
                       <span className='min-w-0 flex-1'>
                         <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
-                        {profileDisplay.detail && <span className='block truncate text-[11px] leading-4 text-hint'>{profileDisplay.detail}</span>}
+                        {profileDisplay.detail && <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>}
                       </span>
                     </>
                   )}
