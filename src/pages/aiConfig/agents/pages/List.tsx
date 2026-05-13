@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Menu, Space, Switch, Table, Tooltip, Modal, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
@@ -11,6 +11,7 @@ import { NS } from '../constants';
 import { getList, deleteItem, putItem } from '../services';
 import AddDrawer from './AddDrawer';
 import EditDrawer from './EditDrawer';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -97,17 +98,16 @@ export default function List() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 80,
+                    width: 64,
                     render: (record) => {
                       return (
                         <Dropdown
+                          overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>
                               <Menu.Item>
-                                <Button
-                                  type='link'
-                                  className='p-0 h-auto'
-                                  icon={<EditOutlined />}
+                                <TableActionButton
+                                  actionIcon='edit'
                                   onClick={() => {
                                     setEditDrawerState({
                                       visible: true,
@@ -116,14 +116,13 @@ export default function List() {
                                   }}
                                 >
                                   {t('common:btn.edit')}
-                                </Button>
+                                </TableActionButton>
                               </Menu.Item>
+                              <Menu.Divider />
                               <Menu.Item>
                                 <Tooltip title={record.enable === true ? t('cannot_delete_when_enabled') : undefined}>
-                                  <Button
-                                    type='link'
-                                    className='p-0 h-auto'
-                                    icon={<DeleteOutlined />}
+                                  <TableActionButton
+                                    actionIcon='delete'
                                     danger
                                     disabled={record.enable === true}
                                     onClick={() => {
@@ -139,13 +138,13 @@ export default function List() {
                                     }}
                                   >
                                     {t('common:btn.delete')}
-                                  </Button>
+                                  </TableActionButton>
                                 </Tooltip>
                               </Menu.Item>
                             </Menu>
                           }
                         >
-                          <Button type='text' icon={<MoreOutlined />} />
+                          <TableActionTrigger />
                         </Dropdown>
                       );
                     },

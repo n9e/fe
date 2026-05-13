@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useRequest } from 'ahooks';
 import { Table, Space, Button, Upload, Modal, message, Popover, Input, Dropdown, Menu } from 'antd';
-import { EyeOutlined, DeleteOutlined, UploadOutlined, SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { UploadOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { NS } from '../constants';
 import { getItem, uploadFile, deleteFile } from '../services';
 import ResourceModal from './ResourceModal';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 interface Props {
   id: number;
@@ -145,29 +146,27 @@ export default function ResourcesTable(props: Props) {
           },
           {
             title: t('common:table.operations'),
-            width: 80,
+            width: 64,
             render: (record) => {
               return (
                 <Dropdown
+                  overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>
                       <Menu.Item>
-                        <Button
-                          type='link'
-                          className='p-0 h-auto'
-                          icon={<EyeOutlined />}
+                        <TableActionButton
+                          actionIcon='view'
                           onClick={() => {
                             setResourceState({ visible: true, id: record.id, name: record.name });
                           }}
                         >
                           {t('common:btn.view')}
-                        </Button>
+                        </TableActionButton>
                       </Menu.Item>
+                      <Menu.Divider />
                       <Menu.Item>
-                        <Button
-                          type='link'
-                          className='p-0 h-auto'
-                          icon={<DeleteOutlined />}
+                        <TableActionButton
+                          actionIcon='delete'
                           danger
                           onClick={() => {
                             Modal.confirm({
@@ -182,12 +181,12 @@ export default function ResourcesTable(props: Props) {
                           }}
                         >
                           {t('common:btn.delete')}
-                        </Button>
+                        </TableActionButton>
                       </Menu.Item>
                     </Menu>
                   }
                 >
-                  <Button type='text' icon={<MoreOutlined />} />
+                  <TableActionTrigger />
                 </Dropdown>
               );
             },
