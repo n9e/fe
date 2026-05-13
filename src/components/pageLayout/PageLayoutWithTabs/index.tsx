@@ -149,7 +149,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         </span>
                       </Tooltip>
                     </Button>
-                    <FlashAiButton alwaysVisible />
+                    <FlashAiButton />
 
                   {!IS_ENT && !IS_PLUS && (
                     <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
