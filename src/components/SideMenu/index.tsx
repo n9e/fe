@@ -48,6 +48,9 @@ const i18nMap: Record<string, string> = {
   ru_RU: 'Русский',
 };
 
+/** 侧栏语言菜单展示顺序（不依赖 Object.keys 插入顺序） */
+const SIDE_MENU_I18N_ORDER = ['zh_CN', 'zh_HK', 'en_US', 'ja_JP', 'ru_RU'] as const;
+
 function clampSideMenuWidth(px: number): number {
   return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));
 }
@@ -286,6 +289,16 @@ const SideMenu = (props: SideMenuProps) => {
   );
 
   const expandedMenuWidth = collapsed ? 56 : menuWidthPx;
+
+  const visibleLocaleCodes = useMemo(() => {
+    const ordered = SIDE_MENU_I18N_ORDER.filter((code) => i18nMap[code] != null);
+    if (i18nList == null || i18nList.length === 0) {
+      return ordered;
+    }
+    const allowed = new Set(i18nList);
+    return ordered.filter((code) => allowed.has(code));
+  }, [i18nList]);
+
   const toggleCollapsed = () => {
     const nextCollapsed = !collapsed;
     setCollapsed(nextCollapsed);
@@ -322,19 +335,17 @@ const SideMenu = (props: SideMenuProps) => {
         }
         title={t('language', { ns: 'pageLayout' })}
       >
-        {Object.keys(i18nMap)
-          .filter((el) => (i18nList ? i18nList.includes(el) : true))
-          .map((el) => (
-            <Menu.Item
-              key={el}
-              onClick={() => {
-                i18n.changeLanguage(el);
-                localStorage.setItem('language', el);
-              }}
-            >
-              {i18nMap[el]}
-            </Menu.Item>
-          ))}
+        {visibleLocaleCodes.map((code) => (
+          <Menu.Item
+            key={code}
+            onClick={() => {
+              i18n.changeLanguage(code);
+              localStorage.setItem('language', code);
+            }}
+          >
+            {i18nMap[code]}
+          </Menu.Item>
+        ))}
       </Menu.SubMenu>
       <Menu.Divider />
       <Menu.Item
@@ -434,7 +445,7 @@ const SideMenu = (props: SideMenuProps) => {
             )}
           >
             <div className='side-menu-profile-row'>
-              <Dropdown overlay={profileMenu} trigger={['hover']} placement={collapsed ? 'topRight' : 'topLeft'}>
+              <Dropdown overlay={profileMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
                 <button
                   type='button'
                   className={cn(
