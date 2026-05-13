@@ -17,7 +17,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, Button, Table, Tooltip, Dropdown, Menu } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
 import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -28,6 +27,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
 import { SeverityColor } from './index';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -130,10 +130,11 @@ export default function TableCpt(props: IProps) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 80,
+      width: 64,
       render(value, record) {
         return (
           <Dropdown
+            overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
                 <Menu.Item>
@@ -146,10 +147,8 @@ export default function TableCpt(props: IProps) {
                 </Menu.Item>
                 {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
                   <Menu.Item>
-                    <Button
-                      style={{ padding: 0 }}
-                      size='small'
-                      type='link'
+                    <TableActionButton
+                      actionIcon='permission'
                       onClick={() => {
                         history.push({
                           pathname: '/alert-mutes/add',
@@ -164,15 +163,14 @@ export default function TableCpt(props: IProps) {
                       }}
                     >
                       {t('shield')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
+                <Menu.Divider />
                 <Menu.Item>
-                  <Button
-                    style={{ padding: 0 }}
-                    size='small'
-                    type='link'
+                  <TableActionButton
                     danger
+                    actionIcon='delete'
                     onClick={() =>
                       deleteAlertEventsModal(
                         [record.id],
@@ -185,12 +183,12 @@ export default function TableCpt(props: IProps) {
                     }
                   >
                     {t('common:btn.delete')}
-                  </Button>
+                  </TableActionButton>
                 </Menu.Item>
               </Menu>
             }
           >
-            <Button type='link' icon={<MoreOutlined />} />
+            <TableActionTrigger />
           </Dropdown>
         );
       },

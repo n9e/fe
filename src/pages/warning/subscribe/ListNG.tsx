@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, Input, Table, message, Modal, Space, Switch, Tag, Dropdown, Menu, Tooltip } from 'antd';
-import { ExclamationCircleOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } fr
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import './locale';
 import './index.less';
+import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 
 export { default as Add } from './add';
 export { default as Edit } from './edit';
@@ -279,35 +280,39 @@ const Subscribe = (props: Props) => {
             title: t('common:table.operations'),
             dataIndex: 'operation',
             fixed: 'right',
+            width: 64,
             render: (text: string, record: subscribeItem) => {
               return (
                 <Dropdown
+                  overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>
                       <Menu.Item>
-                        <Link
+                        <TableActionLink
+                          actionIcon='edit'
                           to={{
                             pathname: `/alert-subscribes/edit/${record.id}`,
                           }}
                         >
                           {t('common:btn.edit')}
-                        </Link>
+                        </TableActionLink>
                       </Menu.Item>
                       <Menu.Item>
-                        <Link
+                        <TableActionLink
+                          actionIcon='copy'
                           to={{
                             pathname: `/alert-subscribes/edit/${record.id}`,
                             search: 'mode=clone',
                           }}
                         >
                           {t('common:btn.clone')}
-                        </Link>
+                        </TableActionLink>
                       </Menu.Item>
+                      <Menu.Divider />
                       <Menu.Item>
-                        <Button
+                        <TableActionButton
                           danger
-                          type='link'
-                          className='p-0 h-auto'
+                          actionIcon='delete'
                           onClick={async () => {
                             confirm({
                               title: t('common:confirm.delete'),
@@ -328,12 +333,12 @@ const Subscribe = (props: Props) => {
                           }}
                         >
                           {t('common:btn.delete')}
-                        </Button>
+                        </TableActionButton>
                       </Menu.Item>
                     </Menu>
                   }
                 >
-                  <Button type='link' icon={<MoreOutlined />} />
+                  <TableActionTrigger />
                 </Dropdown>
               );
             },

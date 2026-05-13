@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, Button, Table, Dropdown, Menu, Space } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -20,6 +19,7 @@ import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS, EVENTS_TABLE_PAGESIZE_CACHE_KEY } from '../../constants';
 import { FilterType } from '../../types';
 import EventDetailDrawer from './EventDetailDrawer';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -186,14 +186,12 @@ export default function AlertTable(props: IProps) {
     {
       title: t('common:table.operations'),
       fixed: 'right' as const,
+      width: 64,
       render(record) {
         return (
-          <div
-            style={{
-              minWidth: getTextWidth(t('common:table.operations')),
-            }}
-          >
+          <div>
             <Dropdown
+              overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
                   {IS_PLUS && (
@@ -208,10 +206,8 @@ export default function AlertTable(props: IProps) {
                   )}
                   {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
                     <Menu.Item>
-                      <Button
-                        style={{ padding: 0 }}
-                        size='small'
-                        type='link'
+                      <TableActionButton
+                        actionIcon='permission'
                         onClick={() => {
                           history.push({
                             pathname: '/alert-mutes/add',
@@ -226,15 +222,14 @@ export default function AlertTable(props: IProps) {
                         }}
                       >
                         {t('shield')}
-                      </Button>
+                      </TableActionButton>
                     </Menu.Item>
                   )}
+                  <Menu.Divider />
                   <Menu.Item>
-                    <Button
-                      style={{ padding: 0 }}
-                      size='small'
-                      type='link'
+                    <TableActionButton
                       danger
+                      actionIcon='delete'
                       onClick={() =>
                         deleteAlertEventsModal(
                           [record.id],
@@ -247,12 +242,12 @@ export default function AlertTable(props: IProps) {
                       }
                     >
                       {t('common:btn.delete')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button type='link' icon={<MoreOutlined />} />
+              <TableActionTrigger />
             </Dropdown>
           </div>
         );

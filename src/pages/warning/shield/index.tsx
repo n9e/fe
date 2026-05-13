@@ -17,11 +17,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag, Dropdown, Menu } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 import Tags from '@/components/Tags';
 import PageLayout from '@/components/pageLayout';
@@ -246,16 +247,16 @@ const Shield: React.FC = () => {
         title: t('common:table.operations'),
         dataIndex: 'operation',
         fixed: 'right',
-        width: 80,
+        width: 64,
         render: (text: undefined, record: shieldItem) => {
           return (
             <Dropdown
+              overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
                   <Menu.Item>
-                    <Button
-                      type='link'
-                      className='p-0 h-auto'
+                    <TableActionButton
+                      actionIcon='copy'
                       onClick={() => {
                         history.push({
                           pathname: `/alert-mutes/edit/${record.id}`,
@@ -264,13 +265,13 @@ const Shield: React.FC = () => {
                       }}
                     >
                       {t('common:btn.clone')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
+                  <Menu.Divider />
                   <Menu.Item>
-                    <Button
-                      type='link'
+                    <TableActionButton
+                      actionIcon='delete'
                       danger
-                      className='p-0 h-auto'
                       onClick={() => {
                         confirm({
                           title: t('common:confirm.delete'),
@@ -291,12 +292,12 @@ const Shield: React.FC = () => {
                       }}
                     >
                       {t('common:btn.delete')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button type='text' icon={<MoreOutlined />} />
+              <TableActionTrigger />
             </Dropdown>
           );
         },

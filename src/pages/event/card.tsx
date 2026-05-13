@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle, useContext } from 'react';
 import { Button, Row, Col, Drawer, Tag, Table, Dropdown, Menu, Tooltip } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
 import { useHistory, Link } from 'react-router-dom';
 import { ReactNode } from 'react-markdown/lib/react-markdown';
 import _, { throttle } from 'lodash';
@@ -14,6 +13,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { SeverityColor, deleteAlertEventsModal } from './index';
 import CardLeft from './cardLeft';
 import './index.less';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 // @ts-ignore
 import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
@@ -171,10 +171,11 @@ function Card(props: Props, ref) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operate',
-      width: 80,
+      width: 64,
       render(value, record) {
         return (
           <Dropdown
+            overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
                 <Menu.Item>
@@ -187,10 +188,8 @@ function Card(props: Props, ref) {
                 </Menu.Item>
                 {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
                   <Menu.Item>
-                    <Button
-                      style={{ padding: 0 }}
-                      size='small'
-                      type='link'
+                    <TableActionButton
+                      actionIcon='permission'
                       onClick={() => {
                         history.push({
                           pathname: '/alert-mutes/add',
@@ -205,15 +204,14 @@ function Card(props: Props, ref) {
                       }}
                     >
                       {t('shield')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
+                <Menu.Divider />
                 <Menu.Item>
-                  <Button
-                    style={{ padding: 0 }}
-                    size='small'
-                    type='link'
+                  <TableActionButton
                     danger
+                    actionIcon='delete'
                     onClick={() =>
                       deleteAlertEventsModal(
                         [record.id],
@@ -226,12 +224,12 @@ function Card(props: Props, ref) {
                     }
                   >
                     {t('common:btn.delete')}
-                  </Button>
+                  </TableActionButton>
                 </Menu.Item>
               </Menu>
             }
           >
-            <Button type='link' icon={<MoreOutlined />} />
+            <TableActionTrigger />
           </Dropdown>
         );
       },

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
@@ -21,6 +21,7 @@ import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawe
 import usePagination from '@/components/usePagination';
 import { getEventById } from '@/pages/alertCurEvent/services';
 import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEventsModal';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
@@ -184,14 +185,12 @@ const Event = (props: Props) => {
       {
         title: t('common:table.operations'),
         fixed: 'right' as const,
+        width: 64,
         render(record) {
           return (
-            <div
-              style={{
-                minWidth: getTextWidth(t('common:table.operations')),
-              }}
-            >
+            <div>
               <Dropdown
+                overlayClassName='fc-table-action-dropdown'
                 overlay={
                   <Menu>
                     {IS_PLUS && (
@@ -206,10 +205,8 @@ const Event = (props: Props) => {
                     )}
                     {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
                       <Menu.Item>
-                        <Button
-                          style={{ padding: 0 }}
-                          size='small'
-                          type='link'
+                        <TableActionButton
+                          actionIcon='permission'
                           onClick={() => {
                             history.push({
                               pathname: '/alert-mutes/add',
@@ -224,34 +221,35 @@ const Event = (props: Props) => {
                           }}
                         >
                           {t('shield')}
-                        </Button>
+                        </TableActionButton>
                       </Menu.Item>
                     )}
                     {!hideDeleteEventButton && (
-                      <Menu.Item>
-                        <Button
-                          style={{ padding: 0 }}
-                          size='small'
-                          type='link'
-                          danger
-                          onClick={() =>
-                            deleteAlertEventsModal(
-                              [record.id],
-                              () => {
-                                setRefreshFlag(_.uniqueId('refresh_'));
-                              },
-                              t,
-                            )
-                          }
-                        >
-                          {t('common:btn.delete')}
-                        </Button>
-                      </Menu.Item>
+                      <>
+                        <Menu.Divider />
+                        <Menu.Item>
+                          <TableActionButton
+                            danger
+                            actionIcon='delete'
+                            onClick={() =>
+                              deleteAlertEventsModal(
+                                [record.id],
+                                () => {
+                                  setRefreshFlag(_.uniqueId('refresh_'));
+                                },
+                                t,
+                              )
+                            }
+                          >
+                            {t('common:btn.delete')}
+                          </TableActionButton>
+                        </Menu.Item>
+                      </>
                     )}
                   </Menu>
                 }
               >
-                <Button type='link' icon={<MoreOutlined />} />
+                <TableActionTrigger />
               </Dropdown>
             </div>
           );

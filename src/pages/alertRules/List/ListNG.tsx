@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Space, Select, Input, Button, Table, Tooltip, Tag, Modal, Switch, message, Dropdown, Menu } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, SearchOutlined, InfoCircleOutlined, WarningFilled, CheckCircleFilled, MoreOutlined } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, InfoCircleOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
@@ -13,6 +13,7 @@ import { priorityColor } from '@/utils/constant';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
+import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
@@ -313,33 +314,37 @@ export default function AlertRules(props: Props) {
           {
             title: t('common:table.operations'),
             fixed: 'right',
-            width: 80,
+            width: 64,
             render: (record: any) => {
               const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
               return (
                 <Dropdown
+                  overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>
                       <Menu.Item>
-                        <Link
+                        <TableActionLink
+                          actionIcon='copy'
                           to={{
                             pathname: `/alert-rules/edit/${record.id}?mode=clone`,
                           }}
                           target='_blank'
                         >
                           {t('common:btn.clone')}
-                        </Link>
+                        </TableActionLink>
                       </Menu.Item>
                       {record.cate === 'prometheus' && anomalyEnabled === true && (
                         <Menu.Item>
-                          <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
+                          <TableActionLink actionIcon='ai' to={{ pathname: `/alert-rules/brain/${record.id}` }}>
+                            {t('brain_result_btn')}
+                          </TableActionLink>
                         </Menu.Item>
                       )}
+                      <Menu.Divider />
                       <Menu.Item>
-                        <Button
-                          type='link'
+                        <TableActionButton
+                          actionIcon='delete'
                           danger
-                          className='p-0 h-auto'
                           onClick={() => {
                             Modal.confirm({
                               title: t('common:confirm.delete'),
@@ -355,12 +360,12 @@ export default function AlertRules(props: Props) {
                           }}
                         >
                           {t('common:btn.delete')}
-                        </Button>
+                        </TableActionButton>
                       </Menu.Item>
                     </Menu>
                   }
                 >
-                  <Button type='text' icon={<MoreOutlined />} />
+                  <TableActionTrigger />
                 </Dropdown>
               );
             },
