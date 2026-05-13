@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Tag, Input, Modal, Drawer, Select, Dropdown, Menu } from 'antd';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 
 import usePagination from '@/components/usePagination';
 
@@ -13,6 +12,7 @@ import { Item, getList, deleteItems } from '../../services';
 import Add from '../Add';
 import Edit from '../Edit';
 import MoreOperations from './MoreOperations';
+import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -227,16 +227,16 @@ export default function List() {
           },
           {
             title: t('common:table.operations'),
-            width: 80,
+            width: 64,
             render: (item: Item) => {
               return (
                 <Dropdown
+                  overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>
                       <Menu.Item>
-                        <Button
-                          type='link'
-                          className='p-0 h-auto'
+                        <TableActionButton
+                          actionIcon='copy'
                           onClick={() => {
                             setEventPipelineDrawerState({
                               visible: true,
@@ -246,12 +246,11 @@ export default function List() {
                           }}
                         >
                           {t('common:btn.clone')}
-                        </Button>
+                        </TableActionButton>
                       </Menu.Item>
                       <Menu.Item>
-                        <Button
-                          type='link'
-                          className='p-0 h-auto'
+                        <TableActionButton
+                          actionIcon='edit'
                           onClick={() => {
                             setEventPipelineDrawerState({
                               visible: true,
@@ -261,13 +260,18 @@ export default function List() {
                           }}
                         >
                           {t('common:btn.edit')}
-                        </Button>
+                        </TableActionButton>
                       </Menu.Item>
                       <Menu.Item>
-                        <Button
-                          type='link'
+                        <TableActionLink actionIcon='open' to={`/event-pipelines-executions?pipeline_id=${item.id}`}>
+                          {t('executions.title')}
+                        </TableActionLink>
+                      </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Item>
+                        <TableActionButton
+                          actionIcon='delete'
                           danger
-                          className='p-0 h-auto'
                           onClick={() => {
                             Modal.confirm({
                               title: t('common:confirm.delete'),
@@ -280,15 +284,12 @@ export default function List() {
                           }}
                         >
                           {t('common:btn.delete')}
-                        </Button>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <Link to={`/event-pipelines-executions?pipeline_id=${item.id}`}>{t('executions.title')}</Link>
+                        </TableActionButton>
                       </Menu.Item>
                     </Menu>
                   }
                 >
-                  <Button type='text' icon={<MoreOutlined />} />
+                  <TableActionTrigger />
                 </Dropdown>
               );
             },

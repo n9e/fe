@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Input, Select, Space, Table, Button, Modal, Switch, message, Tooltip, Dropdown, Menu } from 'antd';
-import { NotificationOutlined, PlusOutlined, MoreOutlined } from '@ant-design/icons';
+import { NotificationOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { map, upperCase, includes, filter } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,7 @@ import { Import, Export } from '@/components/ExportImport';
 import { NS, NOTIFICATION_CHANNEL_TYPES } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
 import { ChannelItem } from '../../types';
+import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 
 export default function index() {
   const { t } = useTranslation(NS);
@@ -277,23 +278,24 @@ export default function index() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 80,
+                    width: 64,
                     render: (record) => {
                       return (
                         <Dropdown
+                          overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>
                               <Menu.Item>
-                                <Link to={{ pathname: `/${NS}/edit/${record.id}?mode=clone` }} target='_blank'>
+                                <TableActionLink actionIcon='copy' to={{ pathname: `/${NS}/edit/${record.id}?mode=clone` }} target='_blank'>
                                   {t('common:btn.clone')}
-                                </Link>
+                                </TableActionLink>
                               </Menu.Item>
+                              <Menu.Divider />
                               <Menu.Item>
                                 <Tooltip title={record.enable === true ? t('delete_disable_first') : undefined}>
-                                  <Button
-                                    type='link'
+                                  <TableActionButton
+                                    actionIcon='delete'
                                     danger
-                                    className='p-0 h-auto'
                                     disabled={record.enable === true}
                                     onClick={() => {
                                       Modal.confirm({
@@ -308,13 +310,13 @@ export default function index() {
                                     }}
                                   >
                                     {t('common:btn.delete')}
-                                  </Button>
+                                  </TableActionButton>
                                 </Tooltip>
                               </Menu.Item>
                             </Menu>
                           }
                         >
-                          <Button type='text' icon={<MoreOutlined />} />
+                          <TableActionTrigger />
                         </Dropdown>
                       );
                     },

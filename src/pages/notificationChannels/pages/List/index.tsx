@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Table, Space, Button, Switch, Modal, Input, message, Dropdown, Menu } from 'antd';
-import { NotificationOutlined, SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -13,6 +13,7 @@ import { Import, Export } from '@/components/ExportImport';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
 import { NS } from '../../constants';
 import { ChannelItem } from '../../types';
+import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -181,22 +182,23 @@ export default function List() {
             },
             {
               title: t('common:table.operations'),
-              width: 80,
+              width: 64,
               render: (record) => {
                 return (
                   <Dropdown
+                    overlayClassName='fc-table-action-dropdown'
                     overlay={
                       <Menu>
                         <Menu.Item>
-                          <Link to={{ pathname: `/${NS}/edit/${record.id}?mode=clone` }} target='_blank'>
+                          <TableActionLink actionIcon='copy' to={{ pathname: `/${NS}/edit/${record.id}?mode=clone` }} target='_blank'>
                             {t('common:btn.clone')}
-                          </Link>
+                          </TableActionLink>
                         </Menu.Item>
+                        <Menu.Divider />
                         <Menu.Item>
-                          <Button
-                            type='link'
+                          <TableActionButton
+                            actionIcon='delete'
                             danger
-                            className='p-0 h-auto'
                             onClick={() => {
                               Modal.confirm({
                                 title: t('common:confirm.delete'),
@@ -210,12 +212,12 @@ export default function List() {
                             }}
                           >
                             {t('common:btn.delete')}
-                          </Button>
+                          </TableActionButton>
                         </Menu.Item>
                       </Menu>
                     }
                   >
-                    <Button type='text' icon={<MoreOutlined />} />
+                    <TableActionTrigger />
                   </Dropdown>
                 );
               },
