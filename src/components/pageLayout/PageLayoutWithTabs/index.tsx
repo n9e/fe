@@ -143,7 +143,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </AdvancedWrap>
                   </Space>
 
-                  <span className='page-layout-doc-divider' />
                   <Space>
                     <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
                       <Tooltip title={t('docsCenter')}>

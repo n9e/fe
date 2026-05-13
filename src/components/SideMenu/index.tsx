@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Dropdown, Menu, Drawer, Tooltip } from 'antd';
-import { DownOutlined, LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { Dropdown, Menu, Tooltip } from 'antd';
+import { DownOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
+import DarkModeSelect from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
-import SideMenuColorSetting from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
 import { AccessTokenKey, IS_ENT } from '@/utils/constant';
@@ -78,7 +78,8 @@ const SideMenu = (props: SideMenuProps) => {
   const { i18n, t } = useTranslation(['sideMenu', 'pageLayout']);
   const history = useHistory();
   const { darkMode, perms, installTs, profile, i18nList } = useContext(CommonStateContext);
-  let { sideMenuBgMode } = useContext(CommonStateContext);
+  const { sideMenuBgMode: rawSideMenuBgMode } = useContext(CommonStateContext);
+  let sideMenuBgMode = rawSideMenuBgMode;
   if (darkMode) {
     sideMenuBgMode = 'dark';
   }
@@ -94,14 +95,14 @@ const SideMenu = (props: SideMenuProps) => {
     onMenuClick,
     isGoldTheme,
   } = props;
-  const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
+  const effectiveGoldTheme = Boolean(isGoldTheme || rawSideMenuBgMode === 'gold');
+  const sideMenuBgColor = getSideMenuBgColor(effectiveGoldTheme ? 'gold' : (sideMenuBgMode as any));
   const location = useLocation();
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
   const [menuWidthPx, setMenuWidthPx] = useState<number>(readInitialSideMenuWidth);
   const [isResizingMenu, setIsResizingMenu] = useState(false);
-  const [themeVisible, setThemeVisible] = useState(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const resizeActiveRef = useRef(false);
   const isCustomBg = sideMenuBgMode !== 'light';
@@ -406,23 +407,15 @@ const SideMenu = (props: SideMenuProps) => {
                   }
                   onMenuClick?.(key);
                 }}
-                isGoldTheme={isGoldTheme}
+                isGoldTheme={effectiveGoldTheme}
               />
             </ScrollArea>
           </div>
           <div className={cn('shrink-0 px-2 py-1', collapsed ? 'flex justify-center' : '')}>
             <div className={cn('side-menu-tool-list', collapsed ? 'side-menu-tool-list-collapsed' : '')}>
-              <Tooltip title={collapsed ? t('themeSetting', { ns: 'pageLayout' }) : undefined} placement='right'>
-                <button
-                  type='button'
-                  className={cn('side-menu-tool-button', isCustomBg ? 'side-menu-tool-button-on-dark' : '')}
-                  onClick={() => {
-                    setThemeVisible(true);
-                  }}
-                >
-                  <SettingOutlined />
-                </button>
-              </Tooltip>
+              <div className={cn('side-menu-dark-mode-select', isCustomBg ? 'side-menu-dark-mode-select-on-dark' : '')}>
+                <DarkModeSelect />
+              </div>
               {!collapsed && <span className={cn('side-menu-tool-divider', isCustomBg ? 'side-menu-tool-divider-on-dark' : '')} />}
               <Dropdown overlay={languageMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
                 <Tooltip title={collapsed ? i18nMap[i18n.language] || i18n.language : undefined} placement='right'>
@@ -468,27 +461,6 @@ const SideMenu = (props: SideMenuProps) => {
       </div>
 
       {IS_ENT ? <QuickStart ref={quickMenuRef} items={menus} /> : <QuickMenu ref={quickMenuRef} menuList={menus} />}
-      <Drawer
-        closable={false}
-        visible={themeVisible}
-        onClose={() => {
-          setThemeVisible(false);
-        }}
-      >
-        <div>
-          <div>
-            <div className='text-lg font-semibold dark:text-slate-50 text-l1'>{t('theme.title', { ns: 'pageLayout' })}</div>
-            <div className='text-sm text-hint mt-1'>{t('theme.title_help', { ns: 'pageLayout' })}</div>
-          </div>
-          <div className='mt-6'>
-            <span className='font-semibold'>{t('theme.sideMenu', { ns: 'pageLayout' })}</span>{' '}
-            <span className='ml-2 text-hint'>{t('theme.sideMenu_help', { ns: 'pageLayout' })}</span>
-          </div>
-          <div className='m-2'>
-            <SideMenuColorSetting />
-          </div>
-        </div>
-      </Drawer>
     </div>
   );
 };

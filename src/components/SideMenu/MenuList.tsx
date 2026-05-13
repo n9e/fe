@@ -585,6 +585,7 @@ export default function MenuList(
           {chunks.map((chunk, chunkIndex) => (
             <React.Fragment key={`${chunk.section ?? 'none'}-${chunkIndex}`}>
               {chunk.section ? <SectionHeader section={chunk.section} collapsed={props.collapsed} isCustomBg={props.isCustomBg} isFirst={chunkIndex === 0} /> : null}
+              {props.collapsed && chunkIndex > 0 ? <div className={cn('side-menu-collapsed-section-divider', props.isCustomBg ? 'side-menu-collapsed-section-divider-on-dark' : '')} /> : null}
               {chunk.items.map((menu) => {
                 if (menu.children?.length) {
                   const visibleChildren = menu.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
