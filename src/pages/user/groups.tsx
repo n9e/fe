@@ -21,11 +21,12 @@ import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tag, Dropdown, Menu } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, PlusSquareOutlined, MoreOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
 import { ColumnsType } from 'antd/lib/table';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import { useTranslation } from 'react-i18next';
 import { listToTree } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
@@ -113,15 +114,15 @@ const Resource: React.FC = () => {
     ...userColumn,
     {
       title: t('common:table.operations'),
-      width: 80,
+      width: 64,
       render: (text: string, record) => (
         <Dropdown
+          overlayClassName='fc-table-action-dropdown'
           overlay={
             <Menu>
               <Menu.Item>
-                <Button
-                  type='link'
-                  className='p-0 h-auto'
+                <TableActionButton
+                  actionIcon='delete'
                   danger
                   onClick={() => {
                     let params = {
@@ -140,12 +141,12 @@ const Resource: React.FC = () => {
                   }}
                 >
                   {t('common:btn.delete')}
-                </Button>
+                </TableActionButton>
               </Menu.Item>
             </Menu>
           }
         >
-          <Button type='text' icon={<MoreOutlined />} />
+          <TableActionTrigger />
         </Dropdown>
       ),
     },

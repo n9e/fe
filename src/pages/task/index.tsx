@@ -17,12 +17,13 @@
 import React, { useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Table, Checkbox, Row, Col, Input, Select, Button, Space, Dropdown, Menu } from 'antd';
-import { SearchOutlined, CodeOutlined, MoreOutlined } from '@ant-design/icons';
+import { SearchOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
+import { TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
@@ -98,22 +99,27 @@ const index = (_props: any) => {
     [
       {
         title: t('table.operations'),
-        width: 80,
+        width: 64,
         render: (_text, record) => {
           return (
             <Dropdown
+              overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
                   <Menu.Item>
-                    <Link to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>{t('task.clone')}</Link>
+                    <TableActionLink actionIcon='copy' to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>
+                      {t('task.clone')}
+                    </TableActionLink>
                   </Menu.Item>
                   <Menu.Item>
-                    <Link to={{ pathname: `/job-tasks/${record.id}/detail` }}>{t('task.meta')}</Link>
+                    <TableActionLink actionIcon='view' to={{ pathname: `/job-tasks/${record.id}/detail` }}>
+                      {t('task.meta')}
+                    </TableActionLink>
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button type='text' icon={<MoreOutlined />} />
+              <TableActionTrigger />
             </Dropdown>
           );
         },

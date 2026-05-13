@@ -20,12 +20,13 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { Button, Table, Input, message, Row, Col, Modal, Space, Dropdown, Menu } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, MoreOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
 import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys, getDefaultBusiness } from '@/components/BusinessGroup';
@@ -69,15 +70,15 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: 80,
+      width: 64,
       render: (text: string, record) => (
         <Dropdown
+          overlayClassName='fc-table-action-dropdown'
           overlay={
             <Menu>
               <Menu.Item>
-                <Button
-                  type='link'
-                  className='p-0 h-auto'
+                <TableActionButton
+                  actionIcon='delete'
                   danger={memberList.length > 1}
                   disabled={memberList.length <= 1}
                   onClick={() => {
@@ -102,12 +103,12 @@ const Resource: React.FC = () => {
                   }}
                 >
                   {t('common:btn.delete')}
-                </Button>
+                </TableActionButton>
               </Menu.Item>
             </Menu>
           }
         >
-          <Button type='text' icon={<MoreOutlined />} />
+          <TableActionTrigger />
         </Dropdown>
       ),
     },

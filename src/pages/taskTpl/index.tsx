@@ -17,12 +17,13 @@
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Modal, Tag, Row, Col, Input, Button, Dropdown, Menu, message, Space } from 'antd';
-import { DownOutlined, SearchOutlined, CodeOutlined, MoreOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
+import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
@@ -153,26 +154,33 @@ const index = (_props: any) => {
       },
       {
         title: t('table.operations'),
-        width: 80,
+        width: 64,
         render: (_text, record) => {
           return (
             <Dropdown
+              overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
                   <Menu.Item>
-                    <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
+                    <TableActionLink actionIcon='run' to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>
+                      {t('task.create')}
+                    </TableActionLink>
                   </Menu.Item>
                   <Menu.Item>
-                    <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.edit')}</Link>
+                    <TableActionLink actionIcon='edit' to={{ pathname: `/job-tpls/${record.id}/modify` }}>
+                      {t('common:btn.edit')}
+                    </TableActionLink>
                   </Menu.Item>
                   <Menu.Item>
-                    <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
+                    <TableActionLink actionIcon='copy' to={{ pathname: `/job-tpls/${record.id}/clone` }}>
+                      {t('common:btn.clone')}
+                    </TableActionLink>
                   </Menu.Item>
+                  <Menu.Divider />
                   <Menu.Item>
-                    <Button
-                      type='link'
+                    <TableActionButton
+                      actionIcon='delete'
                       danger
-                      className='p-0 h-auto'
                       onClick={() => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
@@ -188,12 +196,12 @@ const index = (_props: any) => {
                       }}
                     >
                       {t('common:btn.delete')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button type='text' icon={<MoreOutlined />} />
+              <TableActionTrigger />
             </Dropdown>
           );
         },

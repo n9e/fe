@@ -18,11 +18,12 @@ import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { Button, Input, message, Row, Modal, Table, Space, Dropdown, Menu } from 'antd';
-import { SearchOutlined, UserOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import UserInfoModal from './component/createModal';
 import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
@@ -127,26 +128,28 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 80 : 40,
+      width: 64,
       render: (text: string, record) => {
         return (
           <Dropdown
+            overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
                 {_.includes(perms, '/users/put') && (
                   <Menu.Item onClick={() => handleClick(ActionType.EditUser, record.id)}>
-                    <Button className='p-0 h-auto' type='link'>
+                    <TableActionButton actionIcon='edit'>
                       {t('common:btn.edit')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
                 {_.includes(perms, '/users/put') && (
                   <Menu.Item onClick={() => handleClick(ActionType.Reset, record.id)}>
-                    <Button className='p-0 h-auto' type='link'>
+                    <TableActionButton actionIcon='settings'>
                       {t('account:password.reset')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
+                {_.includes(perms, '/users/del') && <Menu.Divider />}
                 {_.includes(perms, '/users/del') && (
                   <Menu.Item
                     onClick={() => {
@@ -162,15 +165,15 @@ const Resource: React.FC = () => {
                       });
                     }}
                   >
-                    <Button danger type='link' className='p-0 h-auto'>
+                    <TableActionButton actionIcon='delete' danger>
                       {t('common:btn.delete')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
               </Menu>
             }
           >
-            <Button type='link' icon={<MoreOutlined />} />
+            <TableActionTrigger />
           </Dropdown>
         );
       },
