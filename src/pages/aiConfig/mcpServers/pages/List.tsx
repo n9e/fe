@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Table, Tooltip, Modal, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Menu, Space, Switch, Table, Tooltip, Modal, message } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, MoreOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
@@ -74,31 +74,45 @@ export default function List() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 100,
+                    width: 80,
                     render: (record) => (
-                      <Space size={2}>
-                        <Button size='small' type='text' className='p-0' icon={<EditOutlined />} onClick={() => setEditDrawerState({ visible: true, id: record.id })} />
-                        <Tooltip title={record.enabled === true ? t('cannot_delete_when_enabled') : undefined}>
-                          <Button
-                            size='small'
-                            type='text'
-                            className='p-0'
-                            icon={<DeleteOutlined />}
-                            disabled={record.enabled === true}
-                            onClick={() => {
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk: () => {
-                                  deleteItem(record.id).then(() => {
-                                    message.success(t('common:success.delete'));
-                                    run();
-                                  });
-                                },
-                              });
-                            }}
-                          />
-                        </Tooltip>
-                      </Space>
+                      <Dropdown
+                        overlay={
+                          <Menu>
+                            <Menu.Item>
+                              <Button type='link' className='p-0 h-auto' icon={<EditOutlined />} onClick={() => setEditDrawerState({ visible: true, id: record.id })}>
+                                {t('common:btn.edit')}
+                              </Button>
+                            </Menu.Item>
+                            <Menu.Item>
+                              <Tooltip title={record.enabled === true ? t('cannot_delete_when_enabled') : undefined}>
+                                <Button
+                                  type='link'
+                                  className='p-0 h-auto'
+                                  icon={<DeleteOutlined />}
+                                  danger
+                                  disabled={record.enabled === true}
+                                  onClick={() => {
+                                    Modal.confirm({
+                                      title: t('common:confirm.delete'),
+                                      onOk: () => {
+                                        deleteItem(record.id).then(() => {
+                                          message.success(t('common:success.delete'));
+                                          run();
+                                        });
+                                      },
+                                    });
+                                  }}
+                                >
+                                  {t('common:btn.delete')}
+                                </Button>
+                              </Tooltip>
+                            </Menu.Item>
+                          </Menu>
+                        }
+                      >
+                        <Button type='text' icon={<MoreOutlined />} />
+                      </Dropdown>
                     ),
                   },
                 ]}

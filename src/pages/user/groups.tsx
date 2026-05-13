@@ -20,8 +20,8 @@ import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tag } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tag, Dropdown, Menu } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, PlusSquareOutlined, MoreOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
 import { User, Team, UserType, ActionType, TeamInfo } from '@/store/manageInterface';
@@ -113,30 +113,40 @@ const Resource: React.FC = () => {
     ...userColumn,
     {
       title: t('common:table.operations'),
-      width: '100px',
+      width: 80,
       render: (text: string, record) => (
-        <Button
-          type='link'
-          className='p-0'
-          danger
-          onClick={() => {
-            let params = {
-              ids: [record.id],
-            };
-            confirm({
-              title: t('common:confirm.delete'),
-              onOk: () => {
-                deleteMember(teamId, params).then((_) => {
-                  message.success(t('common:success.delete'));
-                  handleClose('updateMember');
-                });
-              },
-              onCancel: () => {},
-            });
-          }}
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item>
+                <Button
+                  type='link'
+                  className='p-0 h-auto'
+                  danger
+                  onClick={() => {
+                    let params = {
+                      ids: [record.id],
+                    };
+                    confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        deleteMember(teamId, params).then((_) => {
+                          message.success(t('common:success.delete'));
+                          handleClose('updateMember');
+                        });
+                      },
+                      onCancel: () => {},
+                    });
+                  }}
+                >
+                  {t('common:btn.delete')}
+                </Button>
+              </Menu.Item>
+            </Menu>
+          }
         >
-          {t('common:btn.delete')}
-        </Button>
+          <Button type='text' icon={<MoreOutlined />} />
+        </Dropdown>
       ),
     },
   ];

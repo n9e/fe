@@ -19,8 +19,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import classNames from 'classnames';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
-import { Button, Table, Input, message, Row, Col, Modal, Space } from 'antd';
-import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Table, Input, message, Row, Col, Modal, Space, Dropdown, Menu } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, MoreOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
@@ -69,35 +69,46 @@ const Resource: React.FC = () => {
     },
     {
       title: t('common:table.operations'),
-      width: '100px',
+      width: 80,
       render: (text: string, record) => (
-        <Button
-          type='link'
-          danger={memberList.length > 1}
-          disabled={memberList.length <= 1}
-          onClick={() => {
-            if (memberList.length <= 1) return;
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item>
+                <Button
+                  type='link'
+                  className='p-0 h-auto'
+                  danger={memberList.length > 1}
+                  disabled={memberList.length <= 1}
+                  onClick={() => {
+                    if (memberList.length <= 1) return;
 
-            const params = [
-              {
-                user_group_id: record['user_group'].id,
-                busi_group_id: teamId,
-              },
-            ];
-            confirm({
-              title: t('common:confirm.delete'),
-              onOk: () => {
-                deleteBusinessTeamMember(teamId, params).then(() => {
-                  message.success(t('common:success.delete'));
-                  getTeamList();
-                });
-              },
-              onCancel: () => {},
-            });
-          }}
+                    const params = [
+                      {
+                        user_group_id: record['user_group'].id,
+                        busi_group_id: teamId,
+                      },
+                    ];
+                    confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        deleteBusinessTeamMember(teamId, params).then(() => {
+                          message.success(t('common:success.delete'));
+                          getTeamList();
+                        });
+                      },
+                      onCancel: () => {},
+                    });
+                  }}
+                >
+                  {t('common:btn.delete')}
+                </Button>
+              </Menu.Item>
+            </Menu>
+          }
         >
-          {t('common:btn.delete')}
-        </Button>
+          <Button type='text' icon={<MoreOutlined />} />
+        </Dropdown>
       ),
     },
   ];

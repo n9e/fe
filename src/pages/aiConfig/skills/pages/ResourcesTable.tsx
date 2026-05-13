@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useRequest } from 'ahooks';
-import { Table, Space, Button, Upload, Modal, message, Popover, Input } from 'antd';
-import { EyeOutlined, DeleteOutlined, UploadOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Space, Button, Upload, Modal, message, Popover, Input, Dropdown, Menu } from 'antd';
+import { EyeOutlined, DeleteOutlined, UploadOutlined, SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { NS } from '../constants';
@@ -145,37 +145,50 @@ export default function ResourcesTable(props: Props) {
           },
           {
             title: t('common:table.operations'),
-            width: 100,
+            width: 80,
             render: (record) => {
               return (
-                <Space size={2}>
-                  <Button
-                    size='small'
-                    type='text'
-                    className='p-0'
-                    icon={<EyeOutlined />}
-                    onClick={() => {
-                      setResourceState({ visible: true, id: record.id, name: record.name });
-                    }}
-                  />
-                  <Button
-                    size='small'
-                    type='text'
-                    className='p-0'
-                    icon={<DeleteOutlined />}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteFile(record.id).then(() => {
-                            message.success(t('common:success.delete'));
-                            run();
-                          });
-                        },
-                      });
-                    }}
-                  />
-                </Space>
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item>
+                        <Button
+                          type='link'
+                          className='p-0 h-auto'
+                          icon={<EyeOutlined />}
+                          onClick={() => {
+                            setResourceState({ visible: true, id: record.id, name: record.name });
+                          }}
+                        >
+                          {t('common:btn.view')}
+                        </Button>
+                      </Menu.Item>
+                      <Menu.Item>
+                        <Button
+                          type='link'
+                          className='p-0 h-auto'
+                          icon={<DeleteOutlined />}
+                          danger
+                          onClick={() => {
+                            Modal.confirm({
+                              title: t('common:confirm.delete'),
+                              onOk: () => {
+                                deleteFile(record.id).then(() => {
+                                  message.success(t('common:success.delete'));
+                                  run();
+                                });
+                              },
+                            });
+                          }}
+                        >
+                          {t('common:btn.delete')}
+                        </Button>
+                      </Menu.Item>
+                    </Menu>
+                  }
+                >
+                  <Button type='text' icon={<MoreOutlined />} />
+                </Dropdown>
               );
             },
           },
