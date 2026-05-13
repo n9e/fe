@@ -65,10 +65,82 @@ mark {
   }
 }
 
-// 2026-03 release-23 版本 强制给表格添加边框和圆角
-.ant-table-container {
-  border: 1px solid var(--fc-border-color) !important;
-  border-radius: 8px !important;
+// 2026-05 table design
+.ant-table-wrapper {
+  .ant-table-container {
+    border: 1px solid var(--fc-border-color) !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+  }
+
+  tr.ant-table-measure-row {
+    visibility: collapse;
+  }
+
+  .ant-table-tbody .ant-table-cell-fix-left,
+  .ant-table-tbody .ant-table-cell-fix-right {
+    background: inherit;
+  }
+
+  .ant-table-thead > tr > th.ant-table-cell-fix-left,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right {
+    background: var(--fc-fill-2-5);
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td,
+  .ant-table tfoot > tr > th,
+  .ant-table tfoot > tr > td {
+    border-bottom-color: var(--fc-border-color);
+  }
+
+  .ant-table.ant-table-bordered {
+    > .ant-table-title,
+    > .ant-table-footer,
+    > .ant-table-container {
+      border-color: var(--fc-border-color);
+    }
+
+    > .ant-table-container {
+      > .ant-table-content,
+      > .ant-table-header,
+      > .ant-table-body,
+      > .ant-table-summary {
+        > table {
+          > thead > tr > th,
+          > tbody > tr > td,
+          > tfoot > tr > th,
+          > tfoot > tr > td {
+            border-right-color: var(--fc-border-color);
+          }
+        }
+      }
+
+      > .ant-table-content,
+      > .ant-table-header {
+        > table {
+          border-top-color: var(--fc-border-color);
+        }
+      }
+    }
+  }
+
+  .ant-table-tbody > tr.ant-table-row-selected > td {
+    color: inherit;
+    background: rgb(var(--fc-fill-5-rgb) / 0.15);
+  }
+
+  .ant-table-tbody > tr.ant-table-row-selected:hover > td {
+    background: rgb(var(--fc-fill-5-rgb) / 0.25);
+  }
+
+  .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-column-sort {
+    background: rgb(var(--fc-fill-5-rgb) / 0.15);
+  }
+
+  .ant-table-tbody > tr.ant-table-row-selected:hover > td.ant-table-column-sort {
+    background: rgb(var(--fc-fill-5-rgb) / 0.25);
+  }
 }
 
 /* antd */

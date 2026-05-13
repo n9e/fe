@@ -1,14 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Dropdown, Menu, Tooltip } from 'antd';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
+import IconFont from '@/components/IconFont';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
-import { IS_ENT } from '@/utils/constant';
+import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
+import { Logout } from '@/services/login';
+import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
@@ -21,8 +26,10 @@ import MenuList from './MenuList';
 import QuickStart from 'plus:/components/quickStart';
 import QuickMenu from './QuickMenu';
 import { MenuItem, DefaultLogos } from './types';
+import { getSidebarProfileDisplay } from './profile';
 import './menu.less';
 import './locale';
+import '@/components/pageLayout/locale';
 
 const calcUrlPath = (url: string) => {
   const urlPath = url.split('?')[0];
@@ -33,6 +40,13 @@ const calcUrlPath = (url: string) => {
 const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx';
 const SIDE_MENU_MIN_WIDTH = 170;
 const SIDE_MENU_MAX_WIDTH = 400;
+const i18nMap: Record<string, string> = {
+  zh_CN: '简体中文',
+  zh_HK: '繁體中文',
+  en_US: 'English',
+  ja_JP: '日本語',
+  ru_RU: 'Русский',
+};
 
 function clampSideMenuWidth(px: number): number {
   return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));
@@ -62,9 +76,12 @@ interface SideMenuProps {
 }
 
 const SideMenu = (props: SideMenuProps) => {
-  const { i18n, t } = useTranslation('sideMenu');
-  const { darkMode, perms, installTs } = useContext(CommonStateContext);
-  let { sideMenuBgMode } = useContext(CommonStateContext);
+  const { i18n, t } = useTranslation(['sideMenu', 'pageLayout', 'DarkModeSelect']);
+  const history = useHistory();
+  const commonState = useContext(CommonStateContext);
+  const { darkMode, perms, installTs, profile, i18nList, setDarkMode, setSideMenuBgMode } = commonState;
+  const { sideMenuBgMode: rawSideMenuBgMode } = commonState;
+  let sideMenuBgMode = rawSideMenuBgMode;
   if (darkMode) {
     sideMenuBgMode = 'dark';
   }
@@ -80,7 +97,8 @@ const SideMenu = (props: SideMenuProps) => {
     onMenuClick,
     isGoldTheme,
   } = props;
-  const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
+  const effectiveGoldTheme = Boolean(isGoldTheme || rawSideMenuBgMode === 'gold');
+  const sideMenuBgColor = getSideMenuBgColor(effectiveGoldTheme ? 'gold' : (sideMenuBgMode as any));
   const location = useLocation();
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
@@ -270,6 +288,182 @@ const SideMenu = (props: SideMenuProps) => {
   );
 
   const expandedMenuWidth = collapsed ? 56 : menuWidthPx;
+  const toggleCollapsed = () => {
+    const nextCollapsed = !collapsed;
+    setCollapsed(nextCollapsed);
+    localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
+  };
+  const profileDisplay = getSidebarProfileDisplay(profile);
+  const themeState = commonState as any;
+  const currentThemeKey = themeState.isThemeBlue ? 'light-blue' : themeState.isMcDonalds ? 'light-gold' : darkMode ? 'dark' : 'light';
+  const currentThemeLabel = t(currentThemeKey, { ns: 'DarkModeSelect' });
+  const currentLangLabel = i18nMap[i18n.language] || i18n.language;
+  const setTheme = (key: string) => {
+    const updateBodyTheme = (mode: 0 | 1 | 2 | 3) => {
+      const classNameMap = ['theme-light', 'theme-dark', 'theme-light theme-light-gold', 'theme-light theme-light-blue'];
+      document.body.className = classNameMap[mode];
+      localStorage.setItem('n9e-dark-mode', String(mode));
+      localStorage.setItem('defaultDarkForceUseTimeStamp', String(new Date().getTime()));
+    };
+
+    if (key.startsWith('menu-')) {
+      let color = key.split('-')[1];
+      if (color === 'system') {
+        color = themeState.defaultMenuBgMode || 'theme';
+      }
+      setSideMenuBgMode(color);
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(false);
+      updateBodyTheme(0);
+      return;
+    }
+
+    if (key === 'light-blue') {
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(true);
+      setSideMenuBgMode('light');
+      setDarkMode(false);
+      updateBodyTheme(3);
+    } else if (key === 'light-gold') {
+      themeState.setIsMcDonalds?.(true);
+      themeState.setIsThemeBlue?.(false);
+      setSideMenuBgMode('dark');
+      setDarkMode(false);
+      updateBodyTheme(2);
+    } else if (key === 'light') {
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(false);
+      updateBodyTheme(0);
+    } else if (key === 'dark') {
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(true);
+      updateBodyTheme(1);
+    } else if (key === 'system') {
+      const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(systemDarkMode);
+      updateBodyTheme(systemDarkMode ? 1 : 0);
+    }
+  };
+  const profileMenu = (
+    <Menu className='side-menu-profile-menu' selectedKeys={[i18n.language, currentThemeKey]}>
+      <Menu.Item
+        key='profile'
+        icon={<UserOutlined />}
+        onClick={() => {
+          history.push('/account/profile/info');
+        }}
+      >
+        {t('profile', { ns: 'pageLayout' })}
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.SubMenu
+        key='theme'
+        icon={<Sun size={14} strokeWidth={1.8} />}
+        title={
+          <span className='side-menu-profile-control-title'>
+            <span>{t('themeSetting', { ns: 'pageLayout' })}</span>
+            <span className='side-menu-profile-control-value'>{currentThemeLabel}</span>
+          </span>
+        }
+      >
+        {themeState.McDonaldsEnable && (
+          <Menu.Item key='light-gold' icon={<IconFont type='icon-mcdonalds' style={{ color: 'var(--fc-fill-gold)' }} />} onClick={() => setTheme('light-gold')}>
+            {t('light-gold', { ns: 'DarkModeSelect' })}
+          </Menu.Item>
+        )}
+        {themeState.themeBlueEnable && (
+          <Menu.Item
+            key='light-blue'
+            icon={<span className='side-menu-profile-theme-blue-swatch' />}
+            onClick={() => {
+              setTheme('light-blue');
+            }}
+          >
+            {t('light-blue', { ns: 'DarkModeSelect' })}
+          </Menu.Item>
+        )}
+        <Menu.SubMenu
+          key='light'
+          icon={<Sun size={14} strokeWidth={1.8} />}
+          title={t('light', { ns: 'DarkModeSelect' })}
+          onTitleClick={() => {
+            setTheme('light');
+          }}
+        >
+          <Menu.ItemGroup title={t('config', { ns: 'DarkModeSelect' })}>
+            {['light', 'dark', 'theme', 'default'].map((color) => (
+              <Menu.Item
+                key={color === 'default' ? 'menu-system' : `menu-${color}`}
+                onClick={() => {
+                  setTheme(color === 'default' ? 'menu-system' : `menu-${color}`);
+                }}
+              >
+                {t(`aboutProduct:${color}`)}
+              </Menu.Item>
+            ))}
+          </Menu.ItemGroup>
+        </Menu.SubMenu>
+        <Menu.Item key='dark' icon={<Moon size={14} strokeWidth={1.8} />} onClick={() => setTheme('dark')}>
+          {t('dark', { ns: 'DarkModeSelect' })}
+        </Menu.Item>
+        <Menu.Item key='system' icon={<Monitor size={14} strokeWidth={1.8} />} onClick={() => setTheme('system')}>
+          {t('system', { ns: 'DarkModeSelect' })}
+        </Menu.Item>
+      </Menu.SubMenu>
+      <Menu.SubMenu
+        key='language'
+        icon={
+          <span className='side-menu-profile-language-icon'>
+            <LanguageIcon />
+          </span>
+        }
+        title={
+          <span className='side-menu-profile-control-title'>
+            <span>{t('language', { ns: 'pageLayout' })}</span>
+            <span className='side-menu-profile-control-value'>{currentLangLabel}</span>
+          </span>
+        }
+      >
+        {Object.keys(i18nMap)
+          .filter((el) => (i18nList ? i18nList.includes(el) : true))
+          .map((el) => (
+            <Menu.Item
+              key={el}
+              onClick={() => {
+                i18n.changeLanguage(el);
+                localStorage.setItem('language', el);
+              }}
+            >
+              {i18nMap[el]}
+            </Menu.Item>
+          ))}
+      </Menu.SubMenu>
+      <Menu.Divider />
+      <Menu.Item
+        key='logout'
+        icon={<LogoutOutlined />}
+        onClick={() => {
+          Logout().then((res) => {
+            localStorage.removeItem(AccessTokenKey);
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('curBusiId');
+            if (res.dat && typeof res.dat === 'string') {
+              window.location.href = res.dat;
+            } else {
+              history.push('/login');
+            }
+          });
+        }}
+      >
+        {t('logout', { ns: 'pageLayout' })}
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div
@@ -306,7 +500,13 @@ const SideMenu = (props: SideMenuProps) => {
             />
           )}
           <div className='flex flex-1 flex-col justify-between gap-0 overflow-hidden'>
-            <SideMenuHeader collapsed={collapsed} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
+            <SideMenuHeader
+              collapsed={collapsed}
+              sideMenuBgMode={sideMenuBgMode}
+              defaultLogos={defaultLogos}
+              onToggleCollapse={toggleCollapsed}
+              toggleTitle={collapsed ? t('expand') : t('collapse')}
+            />
             <div
               className={cn(
                 'shrink-0 h-px',
@@ -330,24 +530,39 @@ const SideMenu = (props: SideMenuProps) => {
                   }
                   onMenuClick?.(key);
                 }}
-                isGoldTheme={isGoldTheme}
+                isGoldTheme={effectiveGoldTheme}
               />
             </ScrollArea>
           </div>
-          <div className='mx-2 my-2 shrink-0'>
-            <div
-              className={cn('flex h-10 cursor-pointer items-center justify-center rounded', isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200')}
-              onClick={() => {
-                const nextCollapsed = !collapsed;
-                setCollapsed(nextCollapsed);
-                localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
-              }}
-            >
-              {collapsed ? (
-                <MenuUnfoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />
-              ) : (
-                <MenuFoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />
-              )}
+          <div
+            className={cn(
+              'side-menu-footer shrink-0 border-0 border-t border-solid px-2',
+              isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]',
+            )}
+          >
+            <div className='side-menu-profile-row'>
+              <Dropdown overlay={profileMenu} trigger={['hover']} placement={collapsed ? 'topRight' : 'topLeft'}>
+                <button
+                  type='button'
+                  className={cn(
+                    'side-menu-profile-trigger flex cursor-pointer items-center rounded border-0 bg-transparent p-0 text-left transition-colors',
+                    collapsed ? 'h-10 justify-center' : 'h-12 gap-2 px-2',
+                    isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200',
+                  )}
+                >
+                  <span className='side-menu-profile-avatar'>
+                    {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
+                  </span>
+                  {!collapsed && (
+                    <>
+                      <span className='min-w-0 flex-1'>
+                        <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
+                        {profileDisplay.detail && <span className='block truncate text-[11px] leading-4 text-hint'>{profileDisplay.detail}</span>}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </Dropdown>
             </div>
           </div>
         </aside>

@@ -1,6 +1,8 @@
 const ru_RU = {
   landing: 'Главная',
   resizeWidth: 'Перетащите, чтобы изменить ширину панели',
+  collapse: 'Свернуть боковую панель',
+  expand: 'Развернуть боковую панель',
   quickJump: 'Быстрый переход',
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',

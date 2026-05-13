@@ -14,12 +14,17 @@ import { useAiChatVisible, useAiExternalConfig, useAiHandleEvent, useParamsAiAct
 
 const FLASH_AI_BUTTON_PATH_WHITELIST = new Set(['/alert-rules', '/dashboards', '/alert-cur-events', '/alert-his-events']);
 
-function FlashAiButtonContent() {
+interface FlashAiButtonProps {
+  alwaysVisible?: boolean;
+}
+
+function FlashAiButtonContent(props: FlashAiButtonProps) {
+  const { alwaysVisible } = props;
   const { i18n } = useTranslation();
   const { openAiChat } = useAiChatContext();
   const location = useLocation();
 
-  if (!FLASH_AI_BUTTON_PATH_WHITELIST.has(location.pathname)) {
+  if (!alwaysVisible && !FLASH_AI_BUTTON_PATH_WHITELIST.has(location.pathname)) {
     return null;
   }
 
@@ -42,11 +47,11 @@ function FlashAiButtonContent() {
   );
 }
 
-export default function FlashAiButton() {
+export default function FlashAiButton(props: FlashAiButtonProps) {
   if (IS_ENT) {
     return <LayoutHeaderAiBtn />;
   }
-  return <FlashAiButtonContent />;
+  return <FlashAiButtonContent {...props} />;
 }
 
 function AiButtonContent(props: {

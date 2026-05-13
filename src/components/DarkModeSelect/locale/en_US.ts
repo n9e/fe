@@ -1,4 +1,5 @@
 const en_US = {
+  config: 'Menu options',
   light: 'Light',
   dark: 'Dark',
   system: 'System',

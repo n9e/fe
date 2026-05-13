@@ -1,8 +1,10 @@
 const en_US = {
   profile: 'Profile',
   themeSetting: 'Theme',
+  language: 'Language',
   logout: 'Logout',
   docs: 'Docs',
+  docsCenter: 'Docs center',
   viewDemo: 'View demo',
   theme: {
     title: 'Theme Setting',

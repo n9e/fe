@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Menu, Dropdown, Button, Space } from 'antd';
+import type { DropDownProps } from 'antd/lib/dropdown';
 import Icon from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { CommonStateContext } from '@/App';
@@ -59,14 +60,31 @@ const MODE_ICON = {
   dark: <DarkIcon />,
 };
 
-export default function DarkModeSelect() {
+interface DarkModeSelectProps {
+  align?: DropDownProps['align'];
+  children?: ReactNode;
+  getPopupContainer?: DropDownProps['getPopupContainer'];
+  overlayClassName?: string;
+  placement?: DropDownProps['placement'];
+  trigger?: DropDownProps['trigger'];
+}
+
+export default function DarkModeSelect(props: DarkModeSelectProps) {
+  const { align, children, getPopupContainer, overlayClassName, placement, trigger } = props;
   const { darkMode, setDarkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('DarkModeSelect');
+  const selectedThemeKey = darkMode ? 'dark' : 'light';
 
   return (
     <Dropdown
+      align={align}
+      getPopupContainer={getPopupContainer}
+      overlayClassName={overlayClassName}
+      placement={placement}
+      trigger={trigger}
       overlay={
         <Menu
+          selectedKeys={[selectedThemeKey]}
           items={[
             {
               label: (
@@ -108,9 +126,11 @@ export default function DarkModeSelect() {
         />
       }
     >
-      <Button size='small' type='text'>
-        {MODE_ICON[darkMode ? 'dark' : 'light']}
-      </Button>
+      {children || (
+        <Button size='small' type='text'>
+          {MODE_ICON[darkMode ? 'dark' : 'light']}
+        </Button>
+      )}
     </Dropdown>
   );
 }

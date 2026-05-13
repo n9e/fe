@@ -18,24 +18,20 @@ import React, { ReactNode, useContext, useState, useEffect, useLayoutEffect } fr
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Menu, Dropdown, Space, Drawer, Button, Tooltip } from 'antd';
-import { SendOutlined, DownOutlined, RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Space, Button, Tooltip } from 'antd';
+import { RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
 
-import { Logout } from '@/services/login';
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
-import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
-import DarkModeSelect from '@/components/DarkModeSelect';
+import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils';
 import { MenuMatchResult } from '@/components/SideMenu/types';
 import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
 
 import DocLink from './DocLink';
 import { TabMenu } from './TabMenu';
-import LanguageIcon from '../icons/LanguageIcon';
 import DocIcon from '../icons/DocIcon';
 import Version from '../Version';
-import SideMenuColorSetting from '../SideMenuColorSetting';
 import HelpLink from '../HelpLink';
 import '../index.less';
 import '../locale';
@@ -58,24 +54,18 @@ interface IPageLayoutProps {
   tabGroup?: string;
 }
 
-const i18nMap = {
-  zh_CN: '简体',
-  zh_HK: '繁體',
-  en_US: 'En',
-  ja_JP: '日本語',
-  ru_RU: 'Русский',
-};
+const DEFAULT_DOCUMENT_URL = '/docs/content/flashcat/overview/';
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { profile, siteInfo, i18nList } = useContext(CommonStateContext);
+  const { siteInfo } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
-  const [themeVisible, setThemeVisible] = useState(false);
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = getCurrentMenuList();
+  const documentUrl = doc || siteInfo?.document_url || DEFAULT_DOCUMENT_URL;
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
@@ -98,44 +88,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       }, 1000);
     }
   }, [i18n.language]);
-
-  const menu = (
-    <Menu>
-      <Menu.Item
-        onClick={() => {
-          history.push('/account/profile/info');
-        }}
-      >
-        {t('profile')}
-      </Menu.Item>
-      {!IS_ENT && (
-        <Menu.Item
-          onClick={() => {
-            setThemeVisible(true);
-          }}
-        >
-          {t('themeSetting')}
-        </Menu.Item>
-      )}
-      <Menu.Item
-        onClick={() => {
-          Logout().then((res) => {
-            localStorage.removeItem(AccessTokenKey);
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('curBusiId');
-            // 如果 res.dat 是一个字符串，表示重定向 URL，则直接跳转到该 URL
-            if (res.dat && typeof res.dat === 'string') {
-              window.location.href = res.dat;
-            } else {
-              history.push('/login');
-            }
-          });
-        }}
-      >
-        {t('logout')}
-      </Menu.Item>
-    </Menu>
-  );
 
   return (
     <div className={'page-wrapper'}>
@@ -182,7 +134,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <Space size={12}>
                     {rightArea}
-                    <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
                     </AdvancedWrap>
@@ -191,20 +142,16 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </AdvancedWrap>
                   </Space>
 
-                  <Space>
-                    {/* 整合版本关闭文档链接 */}
-                    {!IS_ENT && IS_PLUS && (
-                      <Button
-                        target='_blank'
-                        href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}
-                        size='small'
-                        type='text'
-                      >
-                        <Tooltip title={t('docs')}>
+                  <Space size={8} className='page-layout-sticky-actions'>
+                    <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
+                      <Tooltip title={t('docsCenter')}>
+                        <span className='inline-flex items-center gap-1'>
                           <DocIcon className='text-[12px]' />
-                        </Tooltip>
-                      </Button>
-                    )}
+                          <span>{t('docsCenter')}</span>
+                        </span>
+                      </Tooltip>
+                    </Button>
+                    <FlashAiButton alwaysVisible />
                   </Space>
 
                   {!IS_ENT && !IS_PLUS && (
@@ -213,40 +160,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </Button>
                   )}
 
-                  <Dropdown
-                    overlay={
-                      <Menu
-                        onSelect={({ key }) => {
-                          i18n.changeLanguage(key);
-                          localStorage.setItem('language', key);
-                        }}
-                        selectable
-                      >
-                        {Object.keys(i18nMap)
-                          .filter((el) => {
-                            return i18nList ? i18nList.includes(el) : true;
-                          })
-                          .map((el) => {
-                            return <Menu.Item key={el}>{i18nMap[el]}</Menu.Item>;
-                          })}
-                      </Menu>
-                    }
-                  >
-                    <Button size='small' type='text' style={{ marginLeft: 12 }} id='i18n-btn'>
-                      <LanguageIcon className='text-[12px]' />
-                    </Button>
-                  </Dropdown>
-
-                  <div style={{ marginRight: 12 }}>
-                    <DarkModeSelect />
-                  </div>
-                  <Dropdown overlay={menu} trigger={['click']}>
-                    <span className='avator' style={{ cursor: 'pointer' }}>
-                      <img src={profile.portrait || '/image/avatar1.png'} />
-                      <span className='display-name'>{profile.nickname || profile.username}</span>
-                      <DownOutlined />
-                    </span>
-                  </Dropdown>
                 </div>
                 {sessionStorage.getItem('menuHide') === '1' && <Space className='mr-2'>{rightArea}</Space>}
               </div>
@@ -256,26 +169,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
       )}
 
       {children && children}
-      <Drawer
-        closable={false}
-        visible={themeVisible}
-        onClose={() => {
-          setThemeVisible(false);
-        }}
-      >
-        <div>
-          <div>
-            <div className='text-lg font-semibold dark:text-slate-50 text-l1'>{t('theme.title')}</div>
-            <div className='text-sm text-hint mt-1'>{t('theme.title_help')}</div>
-          </div>
-          <div className='mt-6'>
-            <span className='font-semibold'>{t('theme.sideMenu')}</span> <span className='ml-2 text-hint'>{t('theme.sideMenu_help')}</span>
-          </div>
-          <div className='m-2'>
-            <SideMenuColorSetting />
-          </div>
-        </div>
-      </Drawer>
     </div>
   );
 };
