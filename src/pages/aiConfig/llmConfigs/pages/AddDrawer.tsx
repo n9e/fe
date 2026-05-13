@@ -21,11 +21,11 @@ export default function AddDrawer(props: Props) {
   const [testLoading, setTestLoading] = useState(false);
 
   useEffect(() => {
-    return () => {
+    if (!visible) {
       form.resetFields();
       setTestLoading(false);
-    };
-  }, []);
+    }
+  }, [visible, form]);
 
   return (
     <Drawer
