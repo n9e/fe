@@ -4,7 +4,8 @@ import { Button, Dropdown, Menu, Form, Drawer } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
-import RecordingRuleForm, { ActionButtons } from '@/plus/pages/recordingRules/components/OperateForm';
+// @ts-ignore
+import RecordingRuleForm, { ActionButtons } from 'plus:/pages/recordingRules/components/OperateForm';
 
 import { NAME_SPACE } from '../../constants';
 
