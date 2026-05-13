@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Dropdown, Menu, Tooltip } from 'antd';
-import { DownOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, RightOutlined, UserOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
-import DarkModeSelect from '@/components/DarkModeSelect';
+import DarkModeSelect, { BrightIcon } from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
@@ -40,9 +40,9 @@ const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx';
 const SIDE_MENU_MIN_WIDTH = 170;
 const SIDE_MENU_MAX_WIDTH = 400;
 const i18nMap: Record<string, string> = {
-  zh_CN: '简体',
-  zh_HK: '繁體',
-  en_US: 'En',
+  zh_CN: '简体中文',
+  zh_HK: '繁體中文',
+  en_US: 'English',
   ja_JP: '日本語',
   ru_RU: 'Русский',
 };
@@ -75,7 +75,7 @@ interface SideMenuProps {
 }
 
 const SideMenu = (props: SideMenuProps) => {
-  const { i18n, t } = useTranslation(['sideMenu', 'pageLayout']);
+  const { i18n, t } = useTranslation(['sideMenu', 'pageLayout', 'DarkModeSelect']);
   const history = useHistory();
   const { darkMode, perms, installTs, profile, i18nList } = useContext(CommonStateContext);
   const { sideMenuBgMode: rawSideMenuBgMode } = useContext(CommonStateContext);
@@ -292,25 +292,10 @@ const SideMenu = (props: SideMenuProps) => {
     localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
   };
   const profileDisplay = getSidebarProfileDisplay(profile);
-  const languageMenu = (
-    <Menu className='side-menu-tool-menu'>
-      {Object.keys(i18nMap)
-        .filter((el) => (i18nList ? i18nList.includes(el) : true))
-        .map((el) => (
-          <Menu.Item
-            key={el}
-            onClick={() => {
-              i18n.changeLanguage(el);
-              localStorage.setItem('language', el);
-            }}
-          >
-            {i18nMap[el]}
-          </Menu.Item>
-        ))}
-    </Menu>
-  );
+  const currentThemeLabel = t(darkMode ? 'dark' : 'light', { ns: 'DarkModeSelect' });
+  const currentLangLabel = i18nMap[i18n.language] || i18n.language;
   const profileMenu = (
-    <Menu className='side-menu-profile-menu'>
+    <Menu className='side-menu-profile-menu' selectedKeys={[i18n.language]}>
       <Menu.Item
         key='profile'
         icon={<UserOutlined />}
@@ -320,6 +305,58 @@ const SideMenu = (props: SideMenuProps) => {
       >
         {t('profile', { ns: 'pageLayout' })}
       </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key='theme' className='side-menu-profile-control-item'>
+        <DarkModeSelect
+          placement='bottomLeft'
+          align={{ offset: [224, -40] }}
+          trigger={['hover']}
+          overlayClassName='side-menu-profile-theme-dropdown'
+          getPopupContainer={(node) => node.parentElement || document.body}
+        >
+          <div
+            className='side-menu-profile-theme-control'
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <span className='side-menu-profile-theme-label'>
+              <BrightIcon />
+              <span>{t('themeSetting', { ns: 'pageLayout' })}</span>
+            </span>
+            <span className='side-menu-profile-control-value'>{currentThemeLabel}</span>
+            <RightOutlined className='side-menu-profile-theme-arrow' />
+          </div>
+        </DarkModeSelect>
+      </Menu.Item>
+      <Menu.SubMenu
+        key='language'
+        icon={
+          <span className='side-menu-profile-language-icon'>
+            <LanguageIcon />
+          </span>
+        }
+        title={
+          <span className='side-menu-profile-control-title'>
+            <span>{t('language', { ns: 'pageLayout' })}</span>
+            <span className='side-menu-profile-control-value'>{currentLangLabel}</span>
+          </span>
+        }
+      >
+        {Object.keys(i18nMap)
+          .filter((el) => (i18nList ? i18nList.includes(el) : true))
+          .map((el) => (
+            <Menu.Item
+              key={el}
+              onClick={() => {
+                i18n.changeLanguage(el);
+                localStorage.setItem('language', el);
+              }}
+            >
+              {i18nMap[el]}
+            </Menu.Item>
+          ))}
+      </Menu.SubMenu>
       <Menu.Divider />
       <Menu.Item
         key='logout'
@@ -411,51 +448,36 @@ const SideMenu = (props: SideMenuProps) => {
               />
             </ScrollArea>
           </div>
-          <div className={cn('shrink-0 px-2 py-1', collapsed ? 'flex justify-center' : '')}>
-            <div className={cn('side-menu-tool-list', collapsed ? 'side-menu-tool-list-collapsed' : '')}>
-              <div className={cn('side-menu-dark-mode-select', isCustomBg ? 'side-menu-dark-mode-select-on-dark' : '')}>
-                <DarkModeSelect />
-              </div>
-              {!collapsed && <span className={cn('side-menu-tool-divider', isCustomBg ? 'side-menu-tool-divider-on-dark' : '')} />}
-              <Dropdown overlay={languageMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
-                <Tooltip title={collapsed ? i18nMap[i18n.language] || i18n.language : undefined} placement='right'>
-                  <button type='button' className={cn('side-menu-tool-button side-menu-language-button', isCustomBg ? 'side-menu-tool-button-on-dark' : '')}>
-                    <LanguageIcon />
-                    {!collapsed && <span>{i18nMap[i18n.language] || i18n.language}</span>}
-                  </button>
-                </Tooltip>
-              </Dropdown>
-            </div>
-          </div>
           <div
             className={cn(
-              'shrink-0 border-0 border-t border-solid px-2 py-2',
+              'side-menu-footer shrink-0 border-0 border-t border-solid px-2',
               isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]',
             )}
           >
-            <Dropdown overlay={profileMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
-              <button
-                type='button'
-                className={cn(
-                  'flex w-full cursor-pointer items-center rounded border-0 bg-transparent p-0 text-left transition-colors',
-                  collapsed ? 'h-10 justify-center' : 'h-12 gap-2 px-2',
-                  isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200',
-                )}
-              >
-                <span className='side-menu-profile-avatar'>
-                  {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
-                </span>
-                {!collapsed && (
-                  <>
-                    <span className='min-w-0 flex-1'>
-                      <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
-                      {profileDisplay.detail && <span className='block truncate text-[11px] leading-4 text-hint'>{profileDisplay.detail}</span>}
-                    </span>
-                    <DownOutlined className='text-[10px] text-hint' />
-                  </>
-                )}
-              </button>
-            </Dropdown>
+            <div className='side-menu-profile-row'>
+              <Dropdown overlay={profileMenu} trigger={['hover']} placement={collapsed ? 'topRight' : 'topLeft'}>
+                <button
+                  type='button'
+                  className={cn(
+                    'side-menu-profile-trigger flex cursor-pointer items-center rounded border-0 bg-transparent p-0 text-left transition-colors',
+                    collapsed ? 'h-10 justify-center' : 'h-12 gap-2 px-2',
+                    isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200',
+                  )}
+                >
+                  <span className='side-menu-profile-avatar'>
+                    {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
+                  </span>
+                  {!collapsed && (
+                    <>
+                      <span className='min-w-0 flex-1'>
+                        <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
+                        {profileDisplay.detail && <span className='block truncate text-[11px] leading-4 text-hint'>{profileDisplay.detail}</span>}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </Dropdown>
+            </div>
           </div>
         </aside>
       </div>

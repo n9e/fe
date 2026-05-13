@@ -134,7 +134,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <Space size={12}>
                     {rightArea}
-                    <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
                     </AdvancedWrap>
@@ -143,7 +142,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </AdvancedWrap>
                   </Space>
 
-                  <Space>
+                  <Space size={8} className='page-layout-sticky-actions'>
                     <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
                       <Tooltip title={t('docsCenter')}>
                         <span className='inline-flex items-center gap-1'>
@@ -152,6 +151,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         </span>
                       </Tooltip>
                     </Button>
+                    <FlashAiButton alwaysVisible />
                   </Space>
 
                   {!IS_ENT && !IS_PLUS && (

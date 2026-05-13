@@ -1,6 +1,7 @@
 const ja_JP = {
   profile: '個人情報',
   themeSetting: 'テーマ設定',
+  language: '言語',
   logout: 'ログアウト',
   docs: 'ドキュメント',
   docsCenter: 'ドキュメントセンター',

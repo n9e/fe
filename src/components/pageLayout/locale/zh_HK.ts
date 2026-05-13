@@ -1,6 +1,7 @@
 const zh_HK = {
   profile: '個人信息',
   themeSetting: '主題設置',
+  language: '語言',
   logout: '退出',
   docs: '文檔',
   docsCenter: '文檔中心',
