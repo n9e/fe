@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Space, Select, Input, Button, Table, Tooltip, Tag, Modal, Switch, message } from 'antd';
+import { Space, Select, Input, Button, Table, Tooltip, Tag, Modal, Switch, message, Dropdown, Menu } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, SearchOutlined, InfoCircleOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, InfoCircleOutlined, WarningFilled, CheckCircleFilled, MoreOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
@@ -313,48 +313,55 @@ export default function AlertRules(props: Props) {
           {
             title: t('common:table.operations'),
             fixed: 'right',
+            width: 80,
             render: (record: any) => {
               const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
               return (
-                <Space>
-                  <Link
-                    className='table-operator-area-normal'
-                    to={{
-                      pathname: `/alert-rules/edit/${record.id}?mode=clone`,
-                    }}
-                    target='_blank'
-                  >
-                    {t('common:btn.clone')}
-                  </Link>
-                  <Button
-                    size='small'
-                    type='link'
-                    danger
-                    style={{
-                      padding: 0,
-                    }}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteStrategy([record.id], record.group_id).then(() => {
-                            message.success(t('common:success.delete'));
-                            fetchData();
-                          });
-                        },
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item>
+                        <Link
+                          to={{
+                            pathname: `/alert-rules/edit/${record.id}?mode=clone`,
+                          }}
+                          target='_blank'
+                        >
+                          {t('common:btn.clone')}
+                        </Link>
+                      </Menu.Item>
+                      {record.cate === 'prometheus' && anomalyEnabled === true && (
+                        <Menu.Item>
+                          <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
+                        </Menu.Item>
+                      )}
+                      <Menu.Item>
+                        <Button
+                          type='link'
+                          danger
+                          className='p-0 h-auto'
+                          onClick={() => {
+                            Modal.confirm({
+                              title: t('common:confirm.delete'),
+                              onOk: () => {
+                                deleteStrategy([record.id], record.group_id).then(() => {
+                                  message.success(t('common:success.delete'));
+                                  fetchData();
+                                });
+                              },
 
-                        onCancel() {},
-                      });
-                    }}
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                  {record.cate === 'prometheus' && anomalyEnabled === true && (
-                    <div>
-                      <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
-                    </div>
-                  )}
-                </Space>
+                              onCancel() {},
+                            });
+                          }}
+                        >
+                          {t('common:btn.delete')}
+                        </Button>
+                      </Menu.Item>
+                    </Menu>
+                  }
+                >
+                  <Button type='text' icon={<MoreOutlined />} />
+                </Dropdown>
               );
             },
           },

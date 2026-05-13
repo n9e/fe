@@ -15,9 +15,9 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag } from 'antd';
+import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag, Dropdown, Menu } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined, MoreOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -246,54 +246,58 @@ const Shield: React.FC = () => {
         title: t('common:table.operations'),
         dataIndex: 'operation',
         fixed: 'right',
+        width: 80,
         render: (text: undefined, record: shieldItem) => {
           return (
-            <>
-              <div className='table-operator-area'>
-                <div
-                  className='table-operator-area-normal'
-                  style={{
-                    cursor: 'pointer',
-                    display: 'inline-block',
-                  }}
-                  onClick={() => {
-                    history.push({
-                      pathname: `/alert-mutes/edit/${record.id}`,
-                      search: `?mode=clone&bgid=${record.group_id}`,
-                    });
-                  }}
-                >
-                  {t('common:btn.clone')}
-                </div>
-                <div
-                  className='table-operator-area-warning'
-                  style={{
-                    cursor: 'pointer',
-                    display: 'inline-block',
-                  }}
-                  onClick={() => {
-                    confirm({
-                      title: t('common:confirm.delete'),
-                      icon: <ExclamationCircleOutlined />,
-                      onOk: () => {
-                        deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
-                          refreshList();
-                          if (res.err) {
-                            message.success(res.err);
-                          } else {
-                            message.success(t('common:success.delete'));
-                          }
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Button
+                      type='link'
+                      className='p-0 h-auto'
+                      onClick={() => {
+                        history.push({
+                          pathname: `/alert-mutes/edit/${record.id}`,
+                          search: `?mode=clone&bgid=${record.group_id}`,
                         });
-                      },
+                      }}
+                    >
+                      {t('common:btn.clone')}
+                    </Button>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Button
+                      type='link'
+                      danger
+                      className='p-0 h-auto'
+                      onClick={() => {
+                        confirm({
+                          title: t('common:confirm.delete'),
+                          icon: <ExclamationCircleOutlined />,
+                          onOk: () => {
+                            deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
+                              refreshList();
+                              if (res.err) {
+                                message.success(res.err);
+                              } else {
+                                message.success(t('common:success.delete'));
+                              }
+                            });
+                          },
 
-                      onCancel() {},
-                    });
-                  }}
-                >
-                  {t('common:btn.delete')}
-                </div>
-              </div>
-            </>
+                          onCancel() {},
+                        });
+                      }}
+                    >
+                      {t('common:btn.delete')}
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type='text' icon={<MoreOutlined />} />
+            </Dropdown>
           );
         },
       },

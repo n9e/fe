@@ -16,8 +16,8 @@
  */
 import React, { useContext, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Divider, Checkbox, Row, Col, Input, Select, Button, Space } from 'antd';
-import { SearchOutlined, CodeOutlined } from '@ant-design/icons';
+import { Table, Checkbox, Row, Col, Input, Select, Button, Space, Dropdown, Menu } from 'antd';
+import { SearchOutlined, CodeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
@@ -98,14 +98,23 @@ const index = (_props: any) => {
     [
       {
         title: t('table.operations'),
-        width: 150,
+        width: 80,
         render: (_text, record) => {
           return (
-            <span>
-              <Link to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>{t('task.clone')}</Link>
-              <Divider type='vertical' />
-              <Link to={{ pathname: `/job-tasks/${record.id}/detail` }}>{t('task.meta')}</Link>
-            </span>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Link to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>{t('task.clone')}</Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Link to={{ pathname: `/job-tasks/${record.id}/detail` }}>{t('task.meta')}</Link>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type='text' icon={<MoreOutlined />} />
+            </Dropdown>
           );
         },
       },

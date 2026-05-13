@@ -78,6 +78,30 @@ mark {
     background: var(--fc-fill-2-5);
   }
 
+  .ant-table-thead > tr > th {
+    .ant-table-column-sorter,
+    .ant-table-filter-trigger {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    }
+
+    &:hover {
+      .ant-table-column-sorter,
+      .ant-table-filter-trigger {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    .ant-table-column-sorter:has(.ant-table-column-sorter-up.active),
+    .ant-table-column-sorter:has(.ant-table-column-sorter-down.active),
+    .ant-table-filter-trigger.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
   .ant-table-thead > tr > th,
   .ant-table-tbody > tr > td,
   .ant-table tfoot > tr > th,

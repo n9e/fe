@@ -16,8 +16,8 @@
  */
 import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Divider, Popconfirm, Tag, Row, Col, Input, Button, Dropdown, Menu, message, Space } from 'antd';
-import { DownOutlined, SearchOutlined, CodeOutlined } from '@ant-design/icons';
+import { Table, Modal, Tag, Row, Col, Input, Button, Dropdown, Menu, message, Space } from 'antd';
+import { DownOutlined, SearchOutlined, CodeOutlined, MoreOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
@@ -153,30 +153,48 @@ const index = (_props: any) => {
       },
       {
         title: t('table.operations'),
-        width: 220,
+        width: 80,
         render: (_text, record) => {
           return (
-            <span>
-              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
-              <Divider type='vertical' />
-              <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.edit')}</Link>
-              <Divider type='vertical' />
-              <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
-              <Divider type='vertical' />
-              <Popconfirm
-                title={<div style={{ width: 100 }}>{t('common:confirm.delete')}</div>}
-                onConfirm={() => {
-                  request(`${api.tasktpl(record.group_id)}/${record.id}`, {
-                    method: 'DELETE',
-                  }).then(() => {
-                    message.success(t('msg.delete.success'));
-                    refresh();
-                  });
-                }}
-              >
-                <a style={{ color: 'red' }}>{t('common:btn.delete')}</a>
-              </Popconfirm>
-            </span>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item>
+                    <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.edit')}</Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Button
+                      type='link'
+                      danger
+                      className='p-0 h-auto'
+                      onClick={() => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            return request(`${api.tasktpl(record.group_id)}/${record.id}`, {
+                              method: 'DELETE',
+                            }).then(() => {
+                              message.success(t('msg.delete.success'));
+                              refresh();
+                            });
+                          },
+                        });
+                      }}
+                    >
+                      {t('common:btn.delete')}
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type='text' icon={<MoreOutlined />} />
+            </Dropdown>
           );
         },
       },
