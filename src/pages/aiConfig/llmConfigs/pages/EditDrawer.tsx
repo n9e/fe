@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Drawer, Form, Space, Spin, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
@@ -39,7 +39,14 @@ export default function EditDrawer(props: Props) {
     },
   );
 
-  const [testLoading, setTestLoading] = React.useState(false);
+  const [testLoading, setTestLoading] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      form.resetFields();
+      setTestLoading(false);
+    };
+  }, []);
 
   return (
     <Drawer
