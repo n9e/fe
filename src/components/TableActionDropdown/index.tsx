@@ -72,6 +72,6 @@ export function TableActionLink({ actionIcon, className, children, ...rest }: Ta
   );
 }
 
-export function TableActionTrigger() {
-  return <Button type='text' icon={<MoreVertical size={16} />} />;
-}
+export const TableActionTrigger = React.forwardRef<HTMLElement, ButtonProps>(function TableActionTrigger({ type = 'text', icon, ...rest }, ref) {
+  return <Button ref={ref as any} type={type} icon={icon || <MoreVertical size={16} />} {...rest} />;
+});
