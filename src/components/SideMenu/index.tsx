@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Dropdown, Menu, Tooltip } from 'antd';
-import { LogoutOutlined, RightOutlined, UserOutlined } from '@ant-design/icons';
-import { Sun } from 'lucide-react';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
-import DarkModeSelect from '@/components/DarkModeSelect';
+import IconFont from '@/components/IconFont';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
@@ -78,8 +78,9 @@ interface SideMenuProps {
 const SideMenu = (props: SideMenuProps) => {
   const { i18n, t } = useTranslation(['sideMenu', 'pageLayout', 'DarkModeSelect']);
   const history = useHistory();
-  const { darkMode, perms, installTs, profile, i18nList } = useContext(CommonStateContext);
-  const { sideMenuBgMode: rawSideMenuBgMode } = useContext(CommonStateContext);
+  const commonState = useContext(CommonStateContext);
+  const { darkMode, perms, installTs, profile, i18nList, setDarkMode, setSideMenuBgMode } = commonState;
+  const { sideMenuBgMode: rawSideMenuBgMode } = commonState;
   let sideMenuBgMode = rawSideMenuBgMode;
   if (darkMode) {
     sideMenuBgMode = 'dark';
@@ -293,10 +294,63 @@ const SideMenu = (props: SideMenuProps) => {
     localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
   };
   const profileDisplay = getSidebarProfileDisplay(profile);
-  const currentThemeLabel = t(darkMode ? 'dark' : 'light', { ns: 'DarkModeSelect' });
+  const themeState = commonState as any;
+  const currentThemeKey = themeState.isThemeBlue ? 'light-blue' : themeState.isMcDonalds ? 'light-gold' : darkMode ? 'dark' : 'light';
+  const currentThemeLabel = t(currentThemeKey, { ns: 'DarkModeSelect' });
   const currentLangLabel = i18nMap[i18n.language] || i18n.language;
+  const setTheme = (key: string) => {
+    const updateBodyTheme = (mode: 0 | 1 | 2 | 3) => {
+      const classNameMap = ['theme-light', 'theme-dark', 'theme-light theme-light-gold', 'theme-light theme-light-blue'];
+      document.body.className = classNameMap[mode];
+      localStorage.setItem('n9e-dark-mode', String(mode));
+      localStorage.setItem('defaultDarkForceUseTimeStamp', String(new Date().getTime()));
+    };
+
+    if (key.startsWith('menu-')) {
+      let color = key.split('-')[1];
+      if (color === 'system') {
+        color = themeState.defaultMenuBgMode || 'theme';
+      }
+      setSideMenuBgMode(color);
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(false);
+      updateBodyTheme(0);
+      return;
+    }
+
+    if (key === 'light-blue') {
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(true);
+      setSideMenuBgMode('light');
+      setDarkMode(false);
+      updateBodyTheme(3);
+    } else if (key === 'light-gold') {
+      themeState.setIsMcDonalds?.(true);
+      themeState.setIsThemeBlue?.(false);
+      setSideMenuBgMode('dark');
+      setDarkMode(false);
+      updateBodyTheme(2);
+    } else if (key === 'light') {
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(false);
+      updateBodyTheme(0);
+    } else if (key === 'dark') {
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(true);
+      updateBodyTheme(1);
+    } else if (key === 'system') {
+      const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      themeState.setIsMcDonalds?.(false);
+      themeState.setIsThemeBlue?.(false);
+      setDarkMode(systemDarkMode);
+      updateBodyTheme(systemDarkMode ? 1 : 0);
+    }
+  };
   const profileMenu = (
-    <Menu className='side-menu-profile-menu' selectedKeys={[i18n.language]}>
+    <Menu className='side-menu-profile-menu' selectedKeys={[i18n.language, currentThemeKey]}>
       <Menu.Item
         key='profile'
         icon={<UserOutlined />}
@@ -307,29 +361,60 @@ const SideMenu = (props: SideMenuProps) => {
         {t('profile', { ns: 'pageLayout' })}
       </Menu.Item>
       <Menu.Divider />
-      <Menu.Item key='theme' className='side-menu-profile-control-item'>
-        <DarkModeSelect
-          placement='bottomLeft'
-          align={{ offset: [224, -40] }}
-          trigger={['hover']}
-          overlayClassName='side-menu-profile-theme-dropdown'
-          getPopupContainer={(node) => node.parentElement || document.body}
-        >
-          <div
-            className='side-menu-profile-theme-control'
-            onClick={(e) => {
-              e.stopPropagation();
+      <Menu.SubMenu
+        key='theme'
+        icon={<Sun size={14} strokeWidth={1.8} />}
+        title={
+          <span className='side-menu-profile-control-title'>
+            <span>{t('themeSetting', { ns: 'pageLayout' })}</span>
+            <span className='side-menu-profile-control-value'>{currentThemeLabel}</span>
+          </span>
+        }
+      >
+        {themeState.McDonaldsEnable && (
+          <Menu.Item key='light-gold' icon={<IconFont type='icon-mcdonalds' style={{ color: 'var(--fc-fill-gold)' }} />} onClick={() => setTheme('light-gold')}>
+            {t('light-gold', { ns: 'DarkModeSelect' })}
+          </Menu.Item>
+        )}
+        {themeState.themeBlueEnable && (
+          <Menu.Item
+            key='light-blue'
+            icon={<span className='side-menu-profile-theme-blue-swatch' />}
+            onClick={() => {
+              setTheme('light-blue');
             }}
           >
-            <span className='side-menu-profile-theme-label'>
-              <Sun size={14} strokeWidth={1.8} />
-              <span>{t('themeSetting', { ns: 'pageLayout' })}</span>
-            </span>
-            <span className='side-menu-profile-control-value'>{currentThemeLabel}</span>
-            <RightOutlined className='side-menu-profile-theme-arrow' />
-          </div>
-        </DarkModeSelect>
-      </Menu.Item>
+            {t('light-blue', { ns: 'DarkModeSelect' })}
+          </Menu.Item>
+        )}
+        <Menu.SubMenu
+          key='light'
+          icon={<Sun size={14} strokeWidth={1.8} />}
+          title={t('light', { ns: 'DarkModeSelect' })}
+          onTitleClick={() => {
+            setTheme('light');
+          }}
+        >
+          <Menu.ItemGroup title={t('config', { ns: 'DarkModeSelect' })}>
+            {['light', 'dark', 'theme', 'default'].map((color) => (
+              <Menu.Item
+                key={color === 'default' ? 'menu-system' : `menu-${color}`}
+                onClick={() => {
+                  setTheme(color === 'default' ? 'menu-system' : `menu-${color}`);
+                }}
+              >
+                {t(`aboutProduct:${color}`)}
+              </Menu.Item>
+            ))}
+          </Menu.ItemGroup>
+        </Menu.SubMenu>
+        <Menu.Item key='dark' icon={<Moon size={14} strokeWidth={1.8} />} onClick={() => setTheme('dark')}>
+          {t('dark', { ns: 'DarkModeSelect' })}
+        </Menu.Item>
+        <Menu.Item key='system' icon={<Monitor size={14} strokeWidth={1.8} />} onClick={() => setTheme('system')}>
+          {t('system', { ns: 'DarkModeSelect' })}
+        </Menu.Item>
+      </Menu.SubMenu>
       <Menu.SubMenu
         key='language'
         icon={
