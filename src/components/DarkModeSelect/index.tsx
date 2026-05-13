@@ -52,7 +52,7 @@ const BrightSvg = () => (
   </svg>
 );
 
-export const BrightIcon = (props: Partial<CustomIconComponentProps>) => <Icon component={BrightSvg} {...props} />;
+const BrightIcon = (props: Partial<CustomIconComponentProps>) => <Icon component={BrightSvg} {...props} />;
 
 const MODE_ICON = {
   system: <ComputerIcon />,

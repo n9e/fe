@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } 
 import { useHistory, useLocation } from 'react-router-dom';
 import { Dropdown, Menu, Tooltip } from 'antd';
 import { LogoutOutlined, RightOutlined, UserOutlined } from '@ant-design/icons';
+import { Sun } from 'lucide-react';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
-import DarkModeSelect, { BrightIcon } from '@/components/DarkModeSelect';
+import DarkModeSelect from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
@@ -321,7 +322,7 @@ const SideMenu = (props: SideMenuProps) => {
             }}
           >
             <span className='side-menu-profile-theme-label'>
-              <BrightIcon />
+              <Sun size={14} strokeWidth={1.8} />
               <span>{t('themeSetting', { ns: 'pageLayout' })}</span>
             </span>
             <span className='side-menu-profile-control-value'>{currentThemeLabel}</span>
