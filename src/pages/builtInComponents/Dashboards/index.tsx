@@ -2,7 +2,7 @@ import React, { useState, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { Table, Space, Button, Input, Dropdown, Menu, Modal, Tag, message } from 'antd';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useDebounceEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
@@ -10,6 +10,7 @@ import usePagination from '@/components/usePagination';
 import Export from '@/pages/dashboard/List/Export';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { HelpLink } from '@/components/pageLayout';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import { getPayloads, deletePayloads } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
@@ -205,14 +206,16 @@ export default function index(props: Props) {
           },
           {
             title: t('common:table.operations'),
-            width: 100,
+            width: 64,
             render: (record) => {
               return (
                 <Dropdown
+                  overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>
                       <Menu.Item>
-                        <a
+                        <TableActionButton
+                          actionIcon='open'
                           onClick={() => {
                             Import({
                               data: formatBeautifyJson(record.content),
@@ -221,10 +224,11 @@ export default function index(props: Props) {
                           }}
                         >
                           {t('import_to_buisGroup')}
-                        </a>
+                        </TableActionButton>
                       </Menu.Item>
                       <Menu.Item>
-                        <a
+                        <TableActionButton
+                          actionIcon='open'
                           onClick={() => {
                             Export({
                               data: formatBeautifyJson(record.content, 'array'),
@@ -232,12 +236,13 @@ export default function index(props: Props) {
                           }}
                         >
                           {t('common:btn.export')}
-                        </a>
+                        </TableActionButton>
                       </Menu.Item>
                       {record.updated_by !== 'system' && (
                         <AuthorizationWrapper allowedPerms={['/components/put']}>
                           <Menu.Item>
-                            <a
+                            <TableActionButton
+                              actionIcon='edit'
                               onClick={() => {
                                 PayloadFormModal({
                                   darkMode,
@@ -252,37 +257,39 @@ export default function index(props: Props) {
                               }}
                             >
                               {t('common:btn.edit')}
-                            </a>
+                            </TableActionButton>
                           </Menu.Item>
                         </AuthorizationWrapper>
                       )}
                       {record.updated_by !== 'system' && (
                         <AuthorizationWrapper allowedPerms={['/components/del']}>
-                          <Menu.Item>
-                            <Button
-                              type='link'
-                              danger
-                              className='p-0 h-auto'
-                              onClick={() => {
-                                Modal.confirm({
-                                  title: t('common:confirm.delete'),
-                                  onOk() {
-                                    deletePayloads([record.id]).then(() => {
-                                      fetchData();
-                                    });
-                                  },
-                                });
-                              }}
-                            >
-                              {t('common:btn.delete')}
-                            </Button>
-                          </Menu.Item>
+                          <>
+                            <Menu.Divider />
+                            <Menu.Item>
+                              <TableActionButton
+                                danger
+                                actionIcon='delete'
+                                onClick={() => {
+                                  Modal.confirm({
+                                    title: t('common:confirm.delete'),
+                                    onOk() {
+                                      deletePayloads([record.id]).then(() => {
+                                        fetchData();
+                                      });
+                                    },
+                                  });
+                                }}
+                              >
+                                {t('common:btn.delete')}
+                              </TableActionButton>
+                            </Menu.Item>
+                          </>
                         </AuthorizationWrapper>
                       )}
                     </Menu>
                   }
                 >
-                  <Button type='link' icon={<MoreOutlined />} />
+                  <TableActionTrigger />
                 </Dropdown>
               );
             },

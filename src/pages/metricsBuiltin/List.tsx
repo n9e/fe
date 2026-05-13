@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu, Tag } from 'antd';
-import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 
 import { CommonStateContext } from '@/App';
@@ -33,6 +33,7 @@ import { getMenuPerm } from '@/services/common';
 import Collapse from '@/pages/monitor/object/metricViews/components/Collapse';
 import { getComponents, Component } from '@/pages/builtInComponents/services';
 import { getDefaultDatasourceValue } from '@/utils';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 import { getMetrics, Record, Filter, getTypes, getCollectors, deleteMetrics, buildLabelFilterAndExpression } from './services';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
@@ -269,14 +270,17 @@ export default function index() {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
+      width: 64,
       render: (data, record: any) => {
         return (
           <Dropdown
+            overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
                 {actionAuth.add && (
                   <Menu.Item>
-                    <a
+                    <TableActionButton
+                      actionIcon='copy'
                       onClick={() => {
                         setFormDrawerData({
                           open: true,
@@ -287,12 +291,13 @@ export default function index() {
                       }}
                     >
                       {t('common:btn.clone')}
-                    </a>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
                 {actionAuth.edit && record.updated_by !== 'system' && (
                   <Menu.Item>
-                    <a
+                    <TableActionButton
+                      actionIcon='edit'
                       onClick={() => {
                         setFormDrawerData({
                           open: true,
@@ -303,34 +308,37 @@ export default function index() {
                       }}
                     >
                       {t('common:btn.edit')}
-                    </a>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
                 {actionAuth.delete && record.updated_by !== 'system' && (
-                  <Menu.Item>
-                    <Button
-                      danger
-                      type='link'
-                      className='p-0 h-auto'
-                      onClick={() => {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk() {
-                            deleteMetrics([record.id]).then(() => {
-                              message.success(t('common:success.delete'));
-                              setRefreshFlag(_.uniqueId('refreshFlag_'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Menu.Item>
+                  <>
+                    <Menu.Divider />
+                    <Menu.Item>
+                      <TableActionButton
+                        danger
+                        actionIcon='delete'
+                        onClick={() => {
+                          Modal.confirm({
+                            title: t('common:confirm.delete'),
+                            onOk() {
+                              deleteMetrics([record.id]).then(() => {
+                                message.success(t('common:success.delete'));
+                                setRefreshFlag(_.uniqueId('refreshFlag_'));
+                              });
+                            },
+                          });
+                        }}
+                      >
+                        {t('common:btn.delete')}
+                      </TableActionButton>
+                    </Menu.Item>
+                  </>
                 )}
                 {record.expression_type === 'metric_name' && (
                   <Menu.Item>
-                    <a
+                    <TableActionButton
+                      actionIcon='search'
                       onClick={() => {
                         setNewMetricExplorerDrawerState((prev) => {
                           return {
@@ -342,13 +350,13 @@ export default function index() {
                       }}
                     >
                       {t('laset_over_time')}
-                    </a>
+                    </TableActionButton>
                   </Menu.Item>
                 )}
               </Menu>
             }
           >
-            <Button type='link' icon={<MoreOutlined />} />
+            <TableActionTrigger />
           </Dropdown>
         );
       },

@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu, Tag } from 'antd';
-import { DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -33,6 +33,7 @@ import FormModal from './components/FormModal';
 import Export from '@/pages/metricsBuiltin/components/Export';
 import Import from '@/pages/metricsBuiltin/components/Import';
 import { HelpLink } from '@/components/pageLayout';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
 interface Props {
   component: string;
@@ -142,9 +143,11 @@ export default function index(props: Props) {
     {
       title: t('common:table.operations'),
       dataIndex: 'operator',
+      width: 64,
       render: (data, record: any) => {
         return (
           <Dropdown
+            overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
                 {actionAuth.add && (
@@ -159,10 +162,10 @@ export default function index(props: Props) {
                         setRefreshFlag(_.uniqueId('refreshFlag_'));
                       }}
                     >
-                      <a>{t('common:btn.clone')}</a>
-                    </FormModal>
-                  </Menu.Item>
-                )}
+                    <TableActionButton actionIcon='copy'>{t('common:btn.clone')}</TableActionButton>
+                  </FormModal>
+                </Menu.Item>
+              )}
                 {actionAuth.edit && record.updated_by !== 'system' && (
                   <Menu.Item>
                     <FormModal
@@ -175,16 +178,17 @@ export default function index(props: Props) {
                         setRefreshFlag(_.uniqueId('refreshFlag_'));
                       }}
                     >
-                      <a>{t('common:btn.edit')}</a>
-                    </FormModal>
-                  </Menu.Item>
-                )}
-                {actionAuth.delete && record.updated_by !== 'system' && (
+                    <TableActionButton actionIcon='edit'>{t('common:btn.edit')}</TableActionButton>
+                  </FormModal>
+                </Menu.Item>
+              )}
+              {actionAuth.delete && record.updated_by !== 'system' && (
+                <>
+                  <Menu.Divider />
                   <Menu.Item>
-                    <Button
+                    <TableActionButton
                       danger
-                      type='link'
-                      className='p-0 h-auto'
+                      actionIcon='delete'
                       onClick={() => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
@@ -198,13 +202,14 @@ export default function index(props: Props) {
                       }}
                     >
                       {t('common:btn.delete')}
-                    </Button>
+                    </TableActionButton>
                   </Menu.Item>
-                )}
+                </>
+              )}
               </Menu>
             }
           >
-            <Button type='link' icon={<MoreOutlined />} />
+            <TableActionTrigger />
           </Dropdown>
         );
       },
