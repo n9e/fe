@@ -1,14 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import { useHistory, useLocation } from 'react-router-dom';
+import { Dropdown, Menu } from 'antd';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { Sun } from 'lucide-react';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
+import { DarkModeMenuItems } from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
-import { IS_ENT } from '@/utils/constant';
+import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
+import { Logout } from '@/services/login';
+import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
@@ -21,8 +26,10 @@ import MenuList from './MenuList';
 import QuickStart from 'plus:/components/quickStart';
 import QuickMenu from './QuickMenu';
 import { MenuItem, DefaultLogos } from './types';
+import { getSidebarProfileDisplay } from './profile';
 import './menu.less';
 import './locale';
+import '@/components/pageLayout/locale';
 
 const calcUrlPath = (url: string) => {
   const urlPath = url.split('?')[0];
@@ -33,6 +40,13 @@ const calcUrlPath = (url: string) => {
 const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx';
 const SIDE_MENU_MIN_WIDTH = 170;
 const SIDE_MENU_MAX_WIDTH = 400;
+const i18nMap: Record<string, string> = {
+  zh_CN: '简体中文',
+  zh_HK: '繁體中文',
+  en_US: 'English',
+  ja_JP: '日本語',
+  ru_RU: 'Русский',
+};
 
 function clampSideMenuWidth(px: number): number {
   return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));
@@ -62,9 +76,11 @@ interface SideMenuProps {
 }
 
 const SideMenu = (props: SideMenuProps) => {
-  const { i18n, t } = useTranslation('sideMenu');
-  const { darkMode, perms, installTs } = useContext(CommonStateContext);
-  let { sideMenuBgMode } = useContext(CommonStateContext);
+  const { i18n, t } = useTranslation(['sideMenu', 'pageLayout', 'DarkModeSelect']);
+  const history = useHistory();
+  const commonState = useContext(CommonStateContext);
+  const { darkMode, perms, installTs, profile, i18nList } = commonState;
+  let { sideMenuBgMode } = commonState;
   if (darkMode) {
     sideMenuBgMode = 'dark';
   }
@@ -270,6 +286,77 @@ const SideMenu = (props: SideMenuProps) => {
   );
 
   const expandedMenuWidth = collapsed ? 56 : menuWidthPx;
+  const toggleCollapsed = () => {
+    const nextCollapsed = !collapsed;
+    setCollapsed(nextCollapsed);
+    localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
+  };
+  const profileDisplay = getSidebarProfileDisplay(profile);
+  const profileMenu = (
+    <Menu className='side-menu-profile-menu'>
+      <Menu.Item
+        key='profile'
+        icon={<UserOutlined />}
+        onClick={() => {
+          history.push('/account/profile/info');
+        }}
+      >
+        {t('profile', { ns: 'pageLayout' })}
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.SubMenu
+        key='theme'
+        popupClassName='side-menu-profile-submenu'
+        icon={<Sun size={14} strokeWidth={1.8} />}
+        title={t('themeSetting', { ns: 'pageLayout' })}
+      >
+        <DarkModeMenuItems />
+      </Menu.SubMenu>
+      <Menu.SubMenu
+        key='language'
+        popupClassName='side-menu-profile-submenu'
+        icon={
+          <span className='side-menu-profile-language-icon'>
+            <LanguageIcon />
+          </span>
+        }
+        title={t('language', { ns: 'pageLayout' })}
+      >
+        {Object.keys(i18nMap)
+          .filter((el) => (i18nList ? i18nList.includes(el) : true))
+          .map((el) => (
+            <Menu.Item
+              key={el}
+              onClick={() => {
+                i18n.changeLanguage(el);
+                localStorage.setItem('language', el);
+              }}
+            >
+              {i18nMap[el]}
+            </Menu.Item>
+          ))}
+      </Menu.SubMenu>
+      <Menu.Divider />
+      <Menu.Item
+        key='logout'
+        icon={<LogoutOutlined />}
+        onClick={() => {
+          Logout().then((res) => {
+            localStorage.removeItem(AccessTokenKey);
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('curBusiId');
+            if (res.dat && typeof res.dat === 'string') {
+              window.location.href = res.dat;
+            } else {
+              history.push('/login');
+            }
+          });
+        }}
+      >
+        {t('logout', { ns: 'pageLayout' })}
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div
@@ -306,7 +393,13 @@ const SideMenu = (props: SideMenuProps) => {
             />
           )}
           <div className='flex flex-1 flex-col justify-between gap-0 overflow-hidden'>
-            <SideMenuHeader collapsed={collapsed} sideMenuBgMode={sideMenuBgMode} defaultLogos={defaultLogos} />
+            <SideMenuHeader
+              collapsed={collapsed}
+              sideMenuBgMode={sideMenuBgMode}
+              defaultLogos={defaultLogos}
+              onToggleCollapse={toggleCollapsed}
+              toggleTitle={collapsed ? t('expand') : t('collapse')}
+            />
             <div
               className={cn(
                 'shrink-0 h-px',
@@ -334,20 +427,35 @@ const SideMenu = (props: SideMenuProps) => {
               />
             </ScrollArea>
           </div>
-          <div className='mx-2 my-2 shrink-0'>
-            <div
-              className={cn('flex h-10 cursor-pointer items-center justify-center rounded', isCustomBg ? 'text-[#fff] hover:bg-gray-200/20' : 'text-title hover:bg-fc-200')}
-              onClick={() => {
-                const nextCollapsed = !collapsed;
-                setCollapsed(nextCollapsed);
-                localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
-              }}
-            >
-              {collapsed ? (
-                <MenuUnfoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />
-              ) : (
-                <MenuFoldOutlined className='h-4 w-4 children-icon:h-4 children-icon:w-4' />
-              )}
+          <div
+            className={cn(
+              'side-menu-footer shrink-0 border-0 border-t border-solid px-2',
+              isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]',
+            )}
+          >
+            <div className='side-menu-profile-row'>
+              <Dropdown overlay={profileMenu} trigger={['hover']} placement={collapsed ? 'topRight' : 'topLeft'}>
+                <button
+                  type='button'
+                  className={cn(
+                    'side-menu-profile-trigger flex cursor-pointer items-center rounded border-0 bg-transparent p-0 text-left transition-colors',
+                    collapsed ? 'h-10 justify-center' : 'h-12 gap-2 px-2',
+                    isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200',
+                  )}
+                >
+                  <span className='side-menu-profile-avatar'>
+                    {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
+                  </span>
+                  {!collapsed && (
+                    <>
+                      <span className='min-w-0 flex-1'>
+                        <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
+                        {profileDisplay.detail && <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </Dropdown>
             </div>
           </div>
         </aside>

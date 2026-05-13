@@ -1,6 +1,8 @@
 const ja_JP = {
   landing: 'ホーム',
   resizeWidth: 'ドラッグしてサイドバー幅を変更',
+  collapse: 'サイドバーを折りたたむ',
+  expand: 'サイドバーを展開',
   quickJump: 'クイックジャンプ',
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',

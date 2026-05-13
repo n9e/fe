@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Menu, Dropdown, Button, Space } from 'antd';
+import { Menu, Dropdown, Button } from 'antd';
+import type { DropDownProps } from 'antd/lib/dropdown';
 import Icon from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { CommonStateContext } from '@/App';
@@ -59,58 +60,57 @@ const MODE_ICON = {
   dark: <DarkIcon />,
 };
 
-export default function DarkModeSelect() {
-  const { darkMode, setDarkMode } = useContext(CommonStateContext);
+interface DarkModeSelectProps {
+  align?: DropDownProps['align'];
+  children?: ReactNode;
+  getPopupContainer?: DropDownProps['getPopupContainer'];
+  overlayClassName?: string;
+  placement?: DropDownProps['placement'];
+  trigger?: DropDownProps['trigger'];
+}
+
+export function DarkModeMenuItems() {
+  const { setDarkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('DarkModeSelect');
 
   return (
+    <>
+      <Menu.Item key='light' icon={<BrightIcon />} onClick={() => setDarkMode(false)}>
+        {t('light')}
+      </Menu.Item>
+      <Menu.Item key='dark' icon={<DarkIcon />} onClick={() => setDarkMode(true)}>
+        {t('dark')}
+      </Menu.Item>
+      <Menu.Item key='system' icon={<ComputerIcon />} onClick={() => setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)}>
+        {t('system')}
+      </Menu.Item>
+    </>
+  );
+}
+
+export default function DarkModeSelect(props: DarkModeSelectProps) {
+  const { align, children, getPopupContainer, overlayClassName, placement, trigger } = props;
+  const { darkMode } = useContext(CommonStateContext);
+  const selectedThemeKey = darkMode ? 'dark' : 'light';
+
+  return (
     <Dropdown
+      align={align}
+      getPopupContainer={getPopupContainer}
+      overlayClassName={overlayClassName}
+      placement={placement}
+      trigger={trigger}
       overlay={
-        <Menu
-          items={[
-            {
-              label: (
-                <Space>
-                  <BrightIcon />
-                  <span>{t('light')}</span>
-                </Space>
-              ),
-              key: 'light',
-            },
-            {
-              label: (
-                <Space>
-                  <DarkIcon />
-                  <span>{t('dark')}</span>
-                </Space>
-              ),
-              key: 'dark',
-            },
-            {
-              label: (
-                <Space>
-                  <ComputerIcon />
-                  <span>{t('system')}</span>
-                </Space>
-              ),
-              key: 'system',
-            },
-          ]}
-          onClick={({ key }) => {
-            if (key === 'light') {
-              setDarkMode(false);
-            } else if (key === 'dark') {
-              setDarkMode(true);
-            } else if (key === 'system') {
-              setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-            }
-          }}
-        />
+        <Menu selectedKeys={[selectedThemeKey]}>
+          <DarkModeMenuItems />
+        </Menu>
       }
     >
-      <Button size='small' type='text'>
-        {MODE_ICON[darkMode ? 'dark' : 'light']}
-      </Button>
+      {children || (
+        <Button size='small' type='text'>
+          {MODE_ICON[darkMode ? 'dark' : 'light']}
+        </Button>
+      )}
     </Dropdown>
   );
 }
