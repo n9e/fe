@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import getPlacements from 'antd/es/_util/placements';
 import { Link } from 'react-router-dom';
-import { HomeOutlined } from '@ant-design/icons';
+import { House } from 'lucide-react';
+
 import { RightIcon } from '@/components/BusinessGroup/components/Tree/constant';
 import IconFont from '@/components/IconFont';
 import { IS_ENT } from '@/utils/constant';
+
 import { IMenuItem } from './types';
 import { cn, getSavedPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
@@ -568,13 +570,9 @@ export default function MenuList(
             )}
           >
             <div
-              className={cn(
-                'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center',
-                !props.collapsed && 'mr-2',
-                isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '',
-              )}
+              className={cn('inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center', !props.collapsed && 'mr-2', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')}
             >
-              <HomeOutlined style={{ fontSize: 16 }} />
+              <House strokeWidth={1} />
             </div>
             {!props.collapsed && <div className='overflow-hidden truncate text-[13px] leading-[18px] tracking-normal'>{t('landing')} </div>}
           </Link>

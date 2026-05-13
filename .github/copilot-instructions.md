@@ -39,6 +39,11 @@ src/
 
 - 异步请求须有错误处理（`try/catch`、`.catch`、`onError` 等，与现有模式一致）。
 
+## 弹窗与表单状态
+
+- 弹窗、抽屉等临时容器组件在卸载时，必须显式清理表单数据和本地状态（如 `form.resetFields()`、loading、临时选择值），避免再次打开时回显旧数据。
+- 注意 `form.setFieldsValue` 是增量更新：未传入的字段会保留原值。需要全量覆盖场景时，先重置表单（如 `form.resetFields()`）再设置新值。
+
 ## 样式与颜色
 
 - 颜色、主题相关值使用 `src/theme/variable.css`（及现有主题体系）中的变量，避免魔法色值。

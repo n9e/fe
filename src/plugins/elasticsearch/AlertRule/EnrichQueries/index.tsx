@@ -7,11 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
 import EnhancedModal from '@/pages/alertRules/Form/components/EnhancedModal';
 
+// @ts-ignore
+import EnrichQueryValuesMaxLen from 'plus:/parcels/AlertRule/NotifyExtra/EnrichQueryValuesMaxLen';
+
 import Query from './Query';
 import GraphPreview from './GraphPreview';
 import './style.less';
-// @ts-ignore
-import EnrichQueryValuesMaxLen from '@/plus/parcels/AlertRule/NotifyExtra/EnrichQueryValuesMaxLen';
 
 interface IProps {
   disabled?: boolean;
