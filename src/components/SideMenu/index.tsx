@@ -306,8 +306,18 @@ const SideMenu = (props: SideMenuProps) => {
     localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
   };
   const profileDisplay = getSidebarProfileDisplay(profile);
+  const profileMenuClassName = cn('side-menu-profile-menu', isCustomBg ? 'side-menu-profile-menu-on-dark' : '');
+  const profileSubmenuClassName = cn('side-menu-profile-submenu', isCustomBg ? 'side-menu-profile-menu-on-dark' : '');
   const profileMenu = (
-    <Menu className='side-menu-profile-menu' selectable={false} onClick={() => setProfileMenuOpen(false)}>
+    <Menu
+      className={profileMenuClassName}
+      selectable={false}
+      onClick={({ key }) => {
+        if (!['theme', 'language'].includes(String(key))) {
+          setProfileMenuOpen(false);
+        }
+      }}
+    >
       <Menu.Item
         key='profile'
         icon={<UserOutlined />}
@@ -320,21 +330,23 @@ const SideMenu = (props: SideMenuProps) => {
       <Menu.Divider />
       <Menu.SubMenu
         key='theme'
-        popupClassName='side-menu-profile-submenu'
+        popupClassName={profileSubmenuClassName}
         icon={<Sun size={14} strokeWidth={1.8} />}
         title={t('themeSetting', { ns: 'pageLayout' })}
+        onTitleClick={({ domEvent }) => domEvent.stopPropagation()}
       >
         <DarkModeMenuItems />
       </Menu.SubMenu>
       <Menu.SubMenu
         key='language'
-        popupClassName='side-menu-profile-submenu'
+        popupClassName={profileSubmenuClassName}
         icon={
           <span className='side-menu-profile-language-icon'>
             <LanguageIcon />
           </span>
         }
         title={t('language', { ns: 'pageLayout' })}
+        onTitleClick={({ domEvent }) => domEvent.stopPropagation()}
       >
         {visibleLocaleCodes.map((code) => (
           <Menu.Item
@@ -448,7 +460,7 @@ const SideMenu = (props: SideMenuProps) => {
             <div className='side-menu-profile-row'>
               <Dropdown
                 overlay={profileMenu}
-                trigger={['hover']}
+                trigger={['click']}
                 placement={collapsed ? 'topRight' : 'topLeft'}
                 visible={profileMenuOpen}
                 onVisibleChange={setProfileMenuOpen}
