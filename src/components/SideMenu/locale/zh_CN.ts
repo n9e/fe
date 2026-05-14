@@ -13,7 +13,7 @@ const zh_CN = {
     infrastructure: '基础设施',
     business_group: '业务组',
     devices: '设备列表',
-    targets: '机器',
+    targets: '机器列表',
     collects: '采集规则',
     network_devices: '网络设备',
     mobile_device: '移动设备',
