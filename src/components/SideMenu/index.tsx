@@ -106,6 +106,7 @@ const SideMenu = (props: SideMenuProps) => {
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
   const [menuWidthPx, setMenuWidthPx] = useState<number>(readInitialSideMenuWidth);
   const [isResizingMenu, setIsResizingMenu] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const resizeActiveRef = useRef(false);
   const isCustomBg = sideMenuBgMode !== 'light';
@@ -306,7 +307,7 @@ const SideMenu = (props: SideMenuProps) => {
   };
   const profileDisplay = getSidebarProfileDisplay(profile);
   const profileMenu = (
-    <Menu className='side-menu-profile-menu'>
+    <Menu className='side-menu-profile-menu' selectable={false} onClick={() => setProfileMenuOpen(false)}>
       <Menu.Item
         key='profile'
         icon={<UserOutlined />}
@@ -445,7 +446,13 @@ const SideMenu = (props: SideMenuProps) => {
             )}
           >
             <div className='side-menu-profile-row'>
-              <Dropdown overlay={profileMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
+              <Dropdown
+                overlay={profileMenu}
+                trigger={['hover']}
+                placement={collapsed ? 'topRight' : 'topLeft'}
+                visible={profileMenuOpen}
+                onVisibleChange={setProfileMenuOpen}
+              >
                 <button
                   type='button'
                   className={cn(
