@@ -307,8 +307,10 @@ const SideMenu = (props: SideMenuProps) => {
     localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
   };
   const profileDisplay = getSidebarProfileDisplay(profile);
-  const profileMenuClassName = cn('side-menu-profile-menu', isCustomBg ? 'side-menu-profile-menu-on-dark' : '');
-  const profileSubmenuClassName = cn('side-menu-profile-submenu', isCustomBg ? 'side-menu-profile-menu-on-dark' : '');
+  const profilePopupThemeClassName =
+    effectiveSideMenuBgMode === 'theme' ? 'side-menu-profile-menu-on-theme' : effectiveSideMenuBgMode === 'dark' ? 'side-menu-profile-menu-on-dark' : '';
+  const profileMenuClassName = cn('side-menu-profile-menu', profilePopupThemeClassName);
+  const profileSubmenuClassName = cn('side-menu-profile-submenu', profilePopupThemeClassName);
   const profileMenu = (
     <Menu
       className={profileMenuClassName}
