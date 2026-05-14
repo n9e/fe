@@ -8,7 +8,7 @@ export default function DocLink({ link }: { link: string }) {
   const { t } = useTranslation();
   return (
     <Button
-      className='document-open-button'
+      className='document-open-button page-layout-header-button'
       size='small'
       type='default'
       icon={<IconFont type='icon-ic_book_one' />}
