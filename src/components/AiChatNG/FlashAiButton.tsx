@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
+import { useLocation } from 'react-router-dom';
 import type { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useTranslation } from 'react-i18next';
 
@@ -11,9 +12,21 @@ import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend
 import { IAiChatPageInfo, IAiChatAction, AiChatExecuteQueryForQueryContent } from './types';
 import { useAiChatVisible, useAiExternalConfig, useAiHandleEvent, useParamsAiAction } from '../AiChat/utils/useHook';
 
-function FlashAiButtonContent() {
+const FLASH_AI_BUTTON_PATH_WHITELIST = new Set(['/alert-rules', '/dashboards', '/alert-cur-events', '/alert-his-events']);
+
+interface FlashAiButtonProps {
+  alwaysVisible?: boolean;
+}
+
+function FlashAiButtonContent(props: FlashAiButtonProps) {
+  const { alwaysVisible } = props;
   const { i18n } = useTranslation();
   const { openAiChat } = useAiChatContext();
+  const location = useLocation();
+
+  if (!alwaysVisible && !FLASH_AI_BUTTON_PATH_WHITELIST.has(location.pathname)) {
+    return null;
+  }
 
   return (
     <Button
@@ -34,11 +47,11 @@ function FlashAiButtonContent() {
   );
 }
 
-export default function FlashAiButton() {
+export default function FlashAiButton(props: FlashAiButtonProps) {
   if (IS_ENT) {
     return <LayoutHeaderAiBtn />;
   }
-  return <FlashAiButtonContent />;
+  return <FlashAiButtonContent {...props} />;
 }
 
 function AiButtonContent(props: {

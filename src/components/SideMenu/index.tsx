@@ -99,16 +99,18 @@ const SideMenu = (props: SideMenuProps) => {
     onMenuClick,
     isGoldTheme,
   } = props;
-  const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
+  const effectiveSideMenuBgMode = isGoldTheme ? 'dark' : sideMenuBgMode;
+  const sideMenuBgColor = getSideMenuBgColor(effectiveSideMenuBgMode as any);
   const location = useLocation();
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
   const [collapsed, setCollapsed] = useState<boolean>(Number(localStorage.getItem('menuCollapsed')) === 1);
   const [menuWidthPx, setMenuWidthPx] = useState<number>(readInitialSideMenuWidth);
   const [isResizingMenu, setIsResizingMenu] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const resizeActiveRef = useRef(false);
-  const isCustomBg = sideMenuBgMode !== 'light';
+  const isCustomBg = effectiveSideMenuBgMode !== 'light';
   const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const hideSideMenu = useMemo(() => {
@@ -305,8 +307,20 @@ const SideMenu = (props: SideMenuProps) => {
     localStorage.setItem('menuCollapsed', nextCollapsed ? '1' : '0');
   };
   const profileDisplay = getSidebarProfileDisplay(profile);
+  const profilePopupThemeClassName =
+    effectiveSideMenuBgMode === 'theme' ? 'side-menu-profile-menu-on-theme' : effectiveSideMenuBgMode === 'dark' ? 'side-menu-profile-menu-on-dark' : '';
+  const profileMenuClassName = cn('side-menu-profile-menu', profilePopupThemeClassName);
+  const profileSubmenuClassName = cn('side-menu-profile-submenu', profilePopupThemeClassName);
   const profileMenu = (
-    <Menu className='side-menu-profile-menu'>
+    <Menu
+      className={profileMenuClassName}
+      selectable={false}
+      onClick={({ key }) => {
+        if (!['theme', 'language'].includes(String(key))) {
+          setProfileMenuOpen(false);
+        }
+      }}
+    >
       <Menu.Item
         key='profile'
         icon={<UserOutlined />}
@@ -319,21 +333,23 @@ const SideMenu = (props: SideMenuProps) => {
       <Menu.Divider />
       <Menu.SubMenu
         key='theme'
-        popupClassName='side-menu-profile-submenu'
+        popupClassName={profileSubmenuClassName}
         icon={<Sun size={14} strokeWidth={1.8} />}
         title={t('themeSetting', { ns: 'pageLayout' })}
+        onTitleClick={({ domEvent }) => domEvent.stopPropagation()}
       >
-        <DarkModeMenuItems />
+        <DarkModeMenuItems popupClassName={profileSubmenuClassName} />
       </Menu.SubMenu>
       <Menu.SubMenu
         key='language'
-        popupClassName='side-menu-profile-submenu'
+        popupClassName={profileSubmenuClassName}
         icon={
           <span className='side-menu-profile-language-icon'>
             <LanguageIcon />
           </span>
         }
         title={t('language', { ns: 'pageLayout' })}
+        onTitleClick={({ domEvent }) => domEvent.stopPropagation()}
       >
         {visibleLocaleCodes.map((code) => (
           <Menu.Item
@@ -382,6 +398,7 @@ const SideMenu = (props: SideMenuProps) => {
         <aside
           className={cn(
             'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid bg-sidebar',
+            collapsed ? 'side-menu-collapsed-panel' : '',
             !isResizingMenu && 'transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]',
             !IS_ENT ? 'border-fc-300' : '',
           )}
@@ -406,7 +423,7 @@ const SideMenu = (props: SideMenuProps) => {
           <div className='flex flex-1 flex-col justify-between gap-0 overflow-hidden'>
             <SideMenuHeader
               collapsed={collapsed}
-              sideMenuBgMode={sideMenuBgMode}
+              sideMenuBgMode={effectiveSideMenuBgMode}
               defaultLogos={defaultLogos}
               onToggleCollapse={toggleCollapsed}
               toggleTitle={collapsed ? t('expand') : t('collapse')}
@@ -445,7 +462,13 @@ const SideMenu = (props: SideMenuProps) => {
             )}
           >
             <div className='side-menu-profile-row'>
-              <Dropdown overlay={profileMenu} trigger={['click']} placement={collapsed ? 'topRight' : 'topLeft'}>
+              <Dropdown
+                overlay={profileMenu}
+                trigger={['click']}
+                placement={collapsed ? 'topRight' : 'topLeft'}
+                visible={profileMenuOpen}
+                onVisibleChange={setProfileMenuOpen}
+              >
                 <button
                   type='button'
                   className={cn(
