@@ -16,7 +16,7 @@ export default function Version() {
 
   if (!isPlus) {
     return (
-      <div style={{ marginRight: 16 }}>
+      <div>
         <Tooltip
           title={
             versions.newVersion ? (

@@ -141,6 +141,12 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       <FeatureNotification />
                     </AdvancedWrap>
 
+                    {!IS_ENT && !IS_PLUS && (
+                      <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
+                        <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
+                      </Button>
+                    )}
+                    <FlashAiButton />
                     <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
                       <Tooltip title={t('docsCenter')}>
                         <span className='inline-flex items-center gap-1'>
@@ -163,13 +169,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         </span>
                       </Tooltip>
                     </Button>
-                    <FlashAiButton />
-
-                    {!IS_ENT && !IS_PLUS && (
-                      <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
-                        <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
-                      </Button>
-                    )}
                   </div>
                 </div>
                 {sessionStorage.getItem('menuHide') === '1' && <Space className='mr-2'>{rightArea}</Space>}
