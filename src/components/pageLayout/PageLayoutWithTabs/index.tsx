@@ -149,13 +149,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         </span>
                       </Tooltip>
                     </Button>
-                    <FlashAiButton alwaysVisible />
+                    <FlashAiButton />
 
-                  {!IS_ENT && !IS_PLUS && (
-                    <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
-                      <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
-                    </Button>
-                  )}
+                    {!IS_ENT && !IS_PLUS && (
+                      <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
+                        <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
+                      </Button>
+                    )}
                   </div>
                 </div>
                 {sessionStorage.getItem('menuHide') === '1' && <Space className='mr-2'>{rightArea}</Space>}
