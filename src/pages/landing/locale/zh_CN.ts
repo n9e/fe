@@ -96,7 +96,7 @@ const zh_CN = {
     ai: {
       title: 'AI 智能化',
       description: '大模型与智能体',
-      links: ['如何配置 LLM 模型？', '如何使用 Agent 自动分析告警？'],
+      links: ['如何添加数据源？', '如何使用 Agent 自动分析告警？'],
     },
   },
   aiAssistant: {

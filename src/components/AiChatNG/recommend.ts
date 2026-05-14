@@ -125,11 +125,11 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
     default:
       return {
         promptList: isZhCN(lang)
-          ? ['如何使用仪表盘可视化业务指标？', '如何配置我的第一条告警规则？', '如何配置 LLM 模型？']
+          ? ['如何使用仪表盘可视化业务指标？', '如何配置我的第一条告警规则？', '如何添加数据源？']
           : [
               'How to visualize business metrics with dashboards?',
               'How to configure my first alert rule?',
-              'How to configure an LLM model?',
+              'How to add a data source?',
             ],
       };
   }
