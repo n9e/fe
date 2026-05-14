@@ -54,7 +54,8 @@ interface IPageLayoutProps {
   tabGroup?: string;
 }
 
-const DEFAULT_DOCUMENT_URL = '/docs/content/flashcat/overview/';
+const DEFAULT_DOCUMENT_URL_ENT = '/docs/content/flashcat/overview/';
+const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/?ask_ai=1';
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
@@ -65,7 +66,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = getCurrentMenuList();
-  const fallbackDocUrl = siteInfo?.document_url || DEFAULT_DOCUMENT_URL;
+  const documentUrl = doc || siteInfo?.document_url || (IS_ENT ? DEFAULT_DOCUMENT_URL_ENT : DEFAULT_DOCUMENT_URL);
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
@@ -133,7 +134,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <div className='page-header-action-group'>
                     {rightArea}
-                    {IS_ENT && <DocLink link={doc || fallbackDocUrl} />}
+                    {IS_ENT && <DocLink link={documentUrl} />}
                     <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
@@ -143,7 +144,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </AdvancedWrap>
 
                     {!IS_ENT && IS_PLUS && (
-                      <Button target='_blank' href={fallbackDocUrl} size='small' type='text'>
+                      <Button target='_blank' href={documentUrl} size='small' type='text'>
                         <Tooltip title={t('docs')}>
                           <DocIcon className='text-[12px]' />
                         </Tooltip>
