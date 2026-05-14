@@ -276,6 +276,7 @@ const ja_JP = {
     title: '閾値判定',
     builder: 'シンプルモード',
     code: '式モード',
+    expr_invalid: '式の構文が不正です',
     label: '関連ラベル',
     exp_trigger_disable: '閾値判定を有効にする',
     advanced_settings: {

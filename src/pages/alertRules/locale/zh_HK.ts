@@ -277,6 +277,7 @@ const zh_HK = {
     title: '閾值判斷',
     builder: '簡單模式',
     code: '表達式模式',
+    expr_invalid: '表達式語法錯誤',
     label: '關聯 Label',
     exp_trigger_disable: '啟用閾值判斷',
     advanced_settings: {

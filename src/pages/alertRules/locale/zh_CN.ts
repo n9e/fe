@@ -277,6 +277,7 @@ const zh_CN = {
     title: '阈值判断',
     builder: '简单模式',
     code: '表达式模式',
+    expr_invalid: '表达式语法错误',
     label: '关联 Label',
     exp_trigger_disable: '启用阈值判断',
     advanced_settings: {
