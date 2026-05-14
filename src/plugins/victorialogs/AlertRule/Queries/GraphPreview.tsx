@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 
@@ -21,7 +21,7 @@ export default function GraphPreview({ datasourceValue, query }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [errorContent, setErrorContent] = useState('');
-  const [range] = useState<IRawTimeRange>({
+  const [range, setRange] = useState<IRawTimeRange>({
     start: 'now-1h',
     end: 'now',
   });
@@ -102,6 +102,7 @@ export default function GraphPreview({ datasourceValue, query }) {
                   })}
                 />
               </InputGroupWithFormItem>
+              <TimeRangePicker value={range} onChange={setRange} />
             </Space>
           </div>
         }
