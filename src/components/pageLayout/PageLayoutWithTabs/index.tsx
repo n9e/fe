@@ -122,7 +122,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
-                  {IS_ENT && doc && <DocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
@@ -138,6 +137,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       <FeatureNotification />
                     </AdvancedWrap>
 
+                    {IS_ENT && doc && <DocLink link={doc} />}
                     {!IS_ENT && IS_PLUS && (
                       <Button
                         target='_blank'
