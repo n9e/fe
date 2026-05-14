@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Space, Button, Tooltip } from 'antd';
-import { RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
+import { RollbackOutlined, HistoryOutlined, GithubOutlined } from '@ant-design/icons';
 
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
@@ -146,6 +146,20 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                         <span className='inline-flex items-center gap-1'>
                           <DocIcon className='text-[12px]' />
                           <span>{t('docsCenter')}</span>
+                        </span>
+                      </Tooltip>
+                    </Button>
+                    <Button
+                      target='_blank'
+                      href='https://github.com/ccfos/nightingale/issues'
+                      size='small'
+                      type='text'
+                      className='page-layout-doc-center-btn'
+                    >
+                      <Tooltip title={t('submitIssue')}>
+                        <span className='inline-flex items-center gap-1'>
+                          <GithubOutlined className='text-[12px]' />
+                          <span>{t('submitIssue')}</span>
                         </span>
                       </Tooltip>
                     </Button>

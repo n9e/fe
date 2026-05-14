@@ -5,6 +5,7 @@ const zh_HK = {
   logout: '退出',
   docs: '文檔',
   docsCenter: '文檔中心',
+  submitIssue: '提交問題',
   viewDemo: '查看 DEMO',
   theme: {
     title: '主題配置',

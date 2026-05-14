@@ -5,6 +5,7 @@ const ja_JP = {
   logout: 'ログアウト',
   docs: 'ドキュメント',
   docsCenter: 'ドキュメントセンター',
+  submitIssue: '問題を報告',
   viewDemo: 'デモを見る',
   theme: {
     title: 'テーマ設定',

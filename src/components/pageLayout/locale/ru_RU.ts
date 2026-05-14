@@ -5,6 +5,7 @@ const ru_RU = {
   logout: 'Выйти',
   docs: 'Документация',
   docsCenter: 'Центр документации',
+  submitIssue: 'Сообщить о проблеме',
   viewDemo: 'Демо',
   theme: {
     title: 'Настройка темы',

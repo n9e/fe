@@ -5,6 +5,7 @@ const en_US = {
   logout: 'Logout',
   docs: 'Docs',
   docsCenter: 'Docs center',
+  submitIssue: 'Submit issue',
   viewDemo: 'View demo',
   theme: {
     title: 'Theme Setting',

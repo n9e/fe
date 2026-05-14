@@ -5,6 +5,7 @@ const zh_CN = {
   logout: '退出',
   docs: '文档',
   docsCenter: '文档中心',
+  submitIssue: '提交问题',
   viewDemo: '查看 DEMO',
   theme: {
     title: '主题配置',
