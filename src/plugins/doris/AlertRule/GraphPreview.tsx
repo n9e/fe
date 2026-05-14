@@ -1,8 +1,11 @@
-import React, { useRef, useState } from 'react';
-import { Button, Popover, Table } from 'antd';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { Button, Popover, Table, Select, Space } from 'antd';
 import _ from 'lodash';
+import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-
+import { CommonStateContext } from '@/App';
+import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import getTextWidth from '@/utils/getTextWidth';
 
 import { logQuery } from '../services';
@@ -24,16 +27,30 @@ export default function GraphPreview({
   offset?: string;
 }) {
   const { t } = useTranslation('db_doris');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [columnsKeys, setColumnsKeys] = useState<string[]>([]);
+  const [range, setRange] = useState<IRawTimeRange>({
+    start: 'now-1h',
+    end: 'now',
+  });
+  const [datasourceId, setDatasourceId] = useState<number>(datasourceValue);
   const fetchData = () => {
-    if (datasourceValue) {
+    if (datasourceId) {
+      if (!sql) {
+        setData([]);
+        setColumnsKeys([]);
+        return;
+      }
+      const parsedRange = parseRange(range);
+      const from = moment(parsedRange.start).unix();
+      const to = moment(parsedRange.end).unix();
       logQuery({
         cate,
-        datasource_id: datasourceValue,
-        query: [{ sql, database, interval, offset }],
+        datasource_id: datasourceId,
+        query: [{ sql, database, interval, offset, from, to }],
       })
         .then((res) => {
           setData(res.list || []);
@@ -46,6 +63,16 @@ export default function GraphPreview({
     }
   };
 
+  useEffect(() => {
+    if (visible) {
+      fetchData();
+    }
+  }, [visible, JSON.stringify(range), datasourceId]);
+
+  useEffect(() => {
+    setDatasourceId(datasourceValue);
+  }, [datasourceValue]);
+
   return (
     <div ref={divRef}>
       <Popover
@@ -53,8 +80,44 @@ export default function GraphPreview({
         visible={visible}
         onVisibleChange={(visible) => {
           setVisible(visible);
+          if (!visible) {
+            setData([]);
+            setColumnsKeys([]);
+          }
         }}
-        title={t('common:btn.data_preview')}
+        title={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                lineHeight: '32px',
+              }}
+            >
+              {t('common:btn.data_preview')}
+            </div>
+            <Space>
+              <InputGroupWithFormItem label={t('common:datasource.name')}>
+                <Select
+                  className='w-[200px]'
+                  value={datasourceId}
+                  onChange={setDatasourceId}
+                  options={_.map(groupedDatasourceList[cate], (item) => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  })}
+                />
+              </InputGroupWithFormItem>
+              <TimeRangePicker value={range} onChange={setRange} />
+            </Space>
+          </div>
+        }
         content={
           <div style={{ width: 980 }}>
             <Table
@@ -92,7 +155,6 @@ export default function GraphPreview({
           ghost
           onClick={() => {
             if (!visible) {
-              fetchData();
               setVisible(true);
             }
           }}
