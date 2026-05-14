@@ -278,6 +278,7 @@ const en_US = {
     title: 'Threshold Judgment',
     builder: 'Builder',
     code: 'Code',
+    expr_invalid: 'Expression syntax is invalid',
     label: 'Label',
     exp_trigger_disable: 'Enable Threshold Judgment',
     advanced_settings: {
