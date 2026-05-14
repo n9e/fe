@@ -65,7 +65,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = getCurrentMenuList();
-  const documentUrl = doc || siteInfo?.document_url || DEFAULT_DOCUMENT_URL;
+  const fallbackDocUrl = siteInfo?.document_url || DEFAULT_DOCUMENT_URL;
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
@@ -133,6 +133,8 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <div className='page-header-action-group'>
                     {rightArea}
+                    {IS_ENT && <DocLink link={doc || fallbackDocUrl} />}
+                    <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
                     </AdvancedWrap>
@@ -140,20 +142,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       <FeatureNotification />
                     </AdvancedWrap>
 
-                    {IS_ENT && <DocLink link={documentUrl} />}
                     {!IS_ENT && IS_PLUS && (
-                      <Button
-                        target='_blank'
-                        href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}
-                        size='small'
-                        type='text'
-                      >
+                      <Button target='_blank' href={fallbackDocUrl} size='small' type='text'>
                         <Tooltip title={t('docs')}>
                           <DocIcon className='text-[12px]' />
                         </Tooltip>
                       </Button>
                     )}
-                    <FlashAiButton />
 
                     {!IS_ENT && !IS_PLUS && (
                       <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
