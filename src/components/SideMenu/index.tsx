@@ -99,7 +99,8 @@ const SideMenu = (props: SideMenuProps) => {
     onMenuClick,
     isGoldTheme,
   } = props;
-  const sideMenuBgColor = getSideMenuBgColor(isGoldTheme ? 'dark' : (sideMenuBgMode as any));
+  const effectiveSideMenuBgMode = isGoldTheme ? 'dark' : sideMenuBgMode;
+  const sideMenuBgColor = getSideMenuBgColor(effectiveSideMenuBgMode as any);
   const location = useLocation();
   const query = querystring.parse(location.search);
   const [selectedKeys, setSelectedKeys] = useState<string[]>();
@@ -109,7 +110,7 @@ const SideMenu = (props: SideMenuProps) => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const resizeActiveRef = useRef(false);
-  const isCustomBg = sideMenuBgMode !== 'light';
+  const isCustomBg = effectiveSideMenuBgMode !== 'light';
   const [embeddedProductMenu, setEmbeddedProductMenu] = useState<MenuItem[]>([]);
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const hideSideMenu = useMemo(() => {
@@ -420,7 +421,7 @@ const SideMenu = (props: SideMenuProps) => {
           <div className='flex flex-1 flex-col justify-between gap-0 overflow-hidden'>
             <SideMenuHeader
               collapsed={collapsed}
-              sideMenuBgMode={sideMenuBgMode}
+              sideMenuBgMode={effectiveSideMenuBgMode}
               defaultLogos={defaultLogos}
               onToggleCollapse={toggleCollapsed}
               toggleTitle={collapsed ? t('expand') : t('collapse')}
