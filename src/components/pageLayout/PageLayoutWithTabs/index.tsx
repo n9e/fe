@@ -125,7 +125,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
-                  {IS_ENT && doc && <DocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
@@ -141,14 +140,19 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       <FeatureNotification />
                     </AdvancedWrap>
 
-                    <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
-                      <Tooltip title={t('docsCenter')}>
-                        <span className='inline-flex items-center gap-1'>
+                    {IS_ENT && <DocLink link={documentUrl} />}
+                    {!IS_ENT && IS_PLUS && (
+                      <Button
+                        target='_blank'
+                        href={siteInfo?.document_url || 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/'}
+                        size='small'
+                        type='text'
+                      >
+                        <Tooltip title={t('docs')}>
                           <DocIcon className='text-[12px]' />
-                          <span>{t('docsCenter')}</span>
-                        </span>
-                      </Tooltip>
-                    </Button>
+                        </Tooltip>
+                      </Button>
+                    )}
                     <FlashAiButton />
 
                     {!IS_ENT && !IS_PLUS && (
