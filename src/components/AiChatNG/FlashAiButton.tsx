@@ -47,13 +47,14 @@ function AiButtonContent(props: {
   queryAction?: IAiChatAction;
   promptList?: string[];
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
+  children?: React.ReactNode;
 }) {
   const { openAiChat } = useAiChatContext();
-  const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent } = props;
+  const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent, children } = props;
 
   return (
     <Button
-      icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mb-1' />}
+      icon={<img src='/image/ai-chat/ai.gif' className={`w-[14px] h-[14px] mb-1 ${children ? 'mr-2' : ''}`} />}
       size={size}
       onClick={() => {
         openAiChat({
@@ -63,7 +64,9 @@ function AiButtonContent(props: {
           onExecuteQueryForQueryContent,
         });
       }}
-    />
+    >
+      {children}
+    </Button>
   );
 }
 
@@ -73,8 +76,9 @@ export function AiButton(props: {
   queryAction?: IAiChatAction;
   promptList?: string[];
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
+  children?: React.ReactNode;
 }) {
-  const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent } = props;
+  const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent, children } = props;
 
   const [aiChatVisible, setAiChatVisible] = useAiChatVisible();
   const [aiHandleEvent, setAiHandleEvent] = useAiHandleEvent();
@@ -84,7 +88,7 @@ export function AiButton(props: {
   if (IS_ENT) {
     return (
       <Button
-        icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mb-1' />}
+        icon={<img src='/image/ai-chat/ai.gif' className={`w-[14px] h-[14px] mb-1 ${children ? 'mr-2' : ''}`} />}
         size={size}
         onClick={() => {
           // flashcat 版本逻辑
@@ -100,7 +104,9 @@ export function AiButton(props: {
             } as any,
           });
         }}
-      />
+      >
+        {children}
+      </Button>
     );
   }
 
