@@ -29,7 +29,7 @@ function FlashAiButtonContent() {
         });
       }}
     >
-      FlashAI
+      Nightingale AI
     </Button>
   );
 }
