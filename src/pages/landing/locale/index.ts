@@ -5,7 +5,7 @@ import ja_JP from './ja_JP';
 import ru_RU from './ru_RU';
 
 const resources = {
-  landing: {
+  'n9e-landing': {
     zh_CN,
     en_US,
     zh_HK,
