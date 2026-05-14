@@ -226,7 +226,7 @@ export default function Content() {
 
         {import.meta.env.VITE_IS_ENT !== 'true' && <Route exact path='/system/site-settings' component={SiteSettings} />}
 
-        <Route exact path='/landing' component={Landing} />
+        {!IS_ENT && <Route exact path='/landing' component={Landing} />}
 
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />
