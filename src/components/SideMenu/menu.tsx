@@ -13,7 +13,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'infrastructure',
       label: 'menu.infrastructure',
-      icon: <IconFont type='icon-Menu_Infrastructure' />,
+      icon: <IconFont type='icon-nav_devicelist_light' />,
       children: [
         {
           key: 'devices',
@@ -26,7 +26,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'explorer',
       label: 'menu.explorer',
-      icon: <IconFont type='icon-IndexManagement1' />,
+      icon: <IconFont type='icon-nav_metrics_light' />,
       children: [
         {
           key: 'metrics',
@@ -54,7 +54,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'alerts_notifications',
       label: 'menu.alerts_notifications',
-      icon: <IconFont type='icon-Menu_AlarmManagement' />,
+      icon: <IconFont type='icon-nav_alerts_light' />,
       children: [
         {
           key: 'rules',
@@ -124,7 +124,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'integrations',
       label: 'menu.integrations',
-      icon: <IconFont type='icon-shujujicheng' />,
+      icon: <IconFont type='icon-nav_infrastructure_light' />,
       children: [
         {
           key: '/datasources',
@@ -144,7 +144,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'organization',
       label: 'menu.organization',
-      icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
+      icon: <IconFont type='icon-nav_organization_light' />,
       children: [
         {
           key: '/users',
@@ -163,7 +163,7 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'setting',
       label: 'menu.setting',
-      icon: <IconFont type='icon-Menu_SystemInformation' />,
+      icon: <IconFont type='icon-nav_system_light' />,
       children: [
         {
           key: 'ai-config',

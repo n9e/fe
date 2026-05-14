@@ -1,6 +1,8 @@
 const zh_CN = {
   landing: '首页',
   resizeWidth: '拖拽调整侧栏宽度',
+  collapse: '收起侧栏',
+  expand: '展开侧栏',
   quickJump: '快捷跳转',
   quickOpenClose: '打开/关闭',
   quickSearchPlaceholder: '输入内容以检索...',
@@ -11,7 +13,7 @@ const zh_CN = {
     infrastructure: '基础设施',
     business_group: '业务组',
     devices: '设备列表',
-    targets: '机器',
+    targets: '机器列表',
     collects: '采集规则',
     network_devices: '网络设备',
     mobile_device: '移动设备',

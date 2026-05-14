@@ -45,5 +45,16 @@ const en_US = {
   preview_muted_save_and_delete: 'Save and delete related events',
   expired: 'Expired',
   quick_mute: 'Quick Mute',
+  delete_mutes: {
+    title: 'Mute Rule Cleanup',
+    alert_message: 'Once deleted, data cannot be recovered. Please proceed with caution!',
+    timestamp: 'Time Filter',
+    timestamp_options: {
+      1: '1 month ago',
+      3: '3 months ago',
+      6: '6 months ago',
+      12: '1 year ago',
+    },
+  },
 };
 export default en_US;

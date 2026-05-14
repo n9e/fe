@@ -16,3 +16,5 @@ scripts/all_locales.json
 src/plus
 public/bound
 .worktrees/
+coverage/
+.playwright-mcp/

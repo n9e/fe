@@ -1,6 +1,8 @@
 const zh_HK = {
   landing: '首頁',
   resizeWidth: '拖拽調整側欄寬度',
+  collapse: '收起側欄',
+  expand: '展開側欄',
   quickJump: '快捷跳轉',
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
@@ -11,7 +13,7 @@ const zh_HK = {
     infrastructure: '基礎設施',
     business_group: '業務組',
     devices: '設備列表',
-    targets: '機器',
+    targets: '機器列表',
     collects: '采集規則',
     network_devices: '網絡設備',
     dashboards: '儀表盤',

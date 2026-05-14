@@ -58,6 +58,9 @@ const zh_CN = {
   callbacks: '回调地址',
   callbacks_tip: '支持配置变量，变量使用方式可参考 <a>变量引用</a> 文档',
   override_global_webhook: '覆盖全局回调',
+  enrich_queries: {
+    tip: '告警触发时会执行附加查询，将查询结果写入事件的 extra_info（格式化字符串）和 extra_info_map（原始键值对）字段，可在通知模板中通过 {{ .ExtraInfo }} 或 {{ .ExtraInfoMap }}',
+  },
   override_global_webhook_tip: '此开关开启之后，告警事件只会发给本规则的回调地址，不会再发给全局的回调地址',
   annotations: '附加信息',
   annotationsOptions: {
@@ -121,6 +124,7 @@ const zh_CN = {
       name: '告警规则',
       result: '导入结果',
       errmsg: '错误信息',
+      force_overwrite: '强制覆盖同名',
     },
     import_builtin: '导入内置告警规则',
     import_prometheus: '导入 Prometheus 告警规则',
@@ -273,6 +277,7 @@ const zh_CN = {
     title: '阈值判断',
     builder: '简单模式',
     code: '表达式模式',
+    expr_invalid: '表达式语法错误',
     label: '关联 Label',
     exp_trigger_disable: '启用阈值判断',
     advanced_settings: {
@@ -350,6 +355,7 @@ const zh_CN = {
   pipeline_configuration_ng: {
     title: '事件处理',
     select_workflow: '选择已有工作流',
+    select_workflow_tooltip: '复用当前业务组已有的事件处理工作流，让多条告警规则共用同一套处理器。也可在此入口选择"新建工作流"以独立维护本规则的处理器。',
     add_workflow: '新建工作流',
     add_pipeline: '添加处理器',
     enabled: '启用',

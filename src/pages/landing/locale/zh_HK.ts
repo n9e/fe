@@ -1,0 +1,98 @@
+const zh_HK = {
+  pageTitle: '歡迎使用 Nightingale',
+  hero: {
+    badge: '開源 · 一站式監控告警平台',
+    highlight: '讓監控更簡單、更智慧',
+    description: '指標 · 日誌一體化採集與分析，告警治理、可視化大盤、智慧助手開箱即用，雲原生友好。',
+    primaryAction: '查看文檔',
+    secondaryAction: '我要問 AI',
+  },
+  matrix: {
+    headerKicker: '功能矩陣',
+    headerSubtitle: '從數據採集、集成到統一觀測與告警通知，構建一體化可觀測平台',
+    scenarioTag: '場景 · 統一告警',
+    observabilityTag: '平台 · 統一觀測',
+    notificationTag: '觸達 · 通知媒介',
+    collectionTag: '數據 · 統一採集',
+    integrationTag: '數據 · 統一集成',
+    infrastructureTag: '企業服務基礎設施',
+    dataIngestArrow: '數據 · 統一接入',
+    alertEventArrow: '告警事件',
+    scenario: {
+      businessGroups: { title: '業務組', description: '多租戶與資源隔離' },
+      alertGovernance: { title: '告警治理', description: '規則 · 遮蔽 · 訂閱' },
+      eventHistory: { title: '歷史事件', description: '全量事件回溯分析' },
+      aiAssistant: { title: 'AI 智慧化', description: '大模型驅動的智慧化能力' },
+    },
+    observability: {
+      dashboard: '儀表盤',
+      metricExplorer: '指標分析',
+      logExplorer: '日誌分析',
+      alertRules: '告警規則',
+      alertMutes: '告警遮蔽',
+      alertSubscribes: '告警訂閱',
+      objectExplorer: '監控對象',
+      recordingRules: '記錄規則',
+    },
+    collection: {
+      description: 'all-in-one 開源採集器',
+      footer: '統一採集 metrics / logs',
+    },
+    infrastructure: {
+      components: '基礎組件',
+      microservice: '微服務',
+      apiFunctions: '介面/功能',
+      endpoints: '端',
+      publicCloud: '公有雲',
+      privateCloud: '私有雲',
+      containers: '容器/虛機',
+      devices: '設備',
+      network: '網路',
+    },
+    notification: {
+      rules: { title: '通知規則', description: '精細化分派路由' },
+      templates: { title: '通知模板', description: '統一訊息樣式' },
+      channels: { title: '通知媒介', description: '多渠道觸達' },
+      users: { title: '用戶與團隊', description: '接收人組織管理' },
+    },
+    footnotes: {
+      scenario: ['多租戶業務組隔離', '告警規則 · 屏蔽 · 訂閱', 'AI 大模型輔助分析'],
+      observability: '一體化可觀測平台能力',
+      integration: '主流開源數據源',
+      notification: ['通知中心', '通知與訂閱'],
+    },
+  },
+  quickStart: {
+    title: '快速上手',
+    viewAll: '查看全部文檔',
+    askAi: 'AI 解答',
+    ingest: {
+      title: '統一接入',
+      description: '快速完成部署與數據接入',
+      links: ['如何使用 Docker Compose 快速部署 Nightingale？', '如何用 Categraf 採集主機和中間件數據？'],
+    },
+    observe: {
+      title: '統一觀測',
+      description: '一體化指標、日誌、鏈路分析',
+      links: ['如何使用儀表盤可視化業務指標？', '如何在指標分析中編寫 PromQL 查詢？'],
+    },
+    alert: {
+      title: '告警治理',
+      description: '告警規則配置與通知觸達',
+      links: ['如何配置我的第一條告警規則？', '如何接入企業 IM 實現告警通知？'],
+    },
+    ai: {
+      title: 'AI 智慧化',
+      description: '大模型與智慧體',
+      links: ['如何配置 LLM 模型？', '如何使用 Agent 自動分析告警？'],
+    },
+  },
+  aiAssistant: {
+    title: 'Nightingale AI 智慧助手',
+    description: '基於大語言模型，自然語言完成平台操作、查詢數據、分析告警根因。',
+    capabilities: ['自然語言查詢', '告警根因分析', 'PromQL / LogQL 生成', '文檔智慧問答'],
+    action: '立即體驗 AI 助手',
+  },
+};
+
+export default zh_HK;

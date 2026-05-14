@@ -31,6 +31,8 @@ const ja_JP = {
   message: {
     generating: '応答を生成中...',
     hint: 'ヒント',
+    no_llm_title: '現在の環境には大規模言語モデルの設定がありません',
+    no_llm_content: '大規模言語モデルの設定を追加するには、<a>LLM管理</a>ページに移動してください',
     stopped: '生成を停止しました',
     request_failed: 'リクエストに失敗しました',
     cancelled: '今回の応答はキャンセルされました。',

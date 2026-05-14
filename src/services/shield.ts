@@ -77,3 +77,10 @@ export const alertMuteTryrun = (data: { event_id: number; config: any }) => {
     data,
   });
 };
+
+export const deleteAlertMutes = (data: { timestamp: number; group_ids?: number[] }) => {
+  return request('/api/n9e/alert-mutes', {
+    method: RequestMethod.Delete,
+    data,
+  });
+};

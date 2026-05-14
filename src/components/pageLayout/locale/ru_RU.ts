@@ -1,8 +1,10 @@
 const ru_RU = {
   profile: 'Профиль',
   themeSetting: 'Настройка темы',
+  language: 'Язык',
   logout: 'Выйти',
   docs: 'Документация',
+  docsCenter: 'Центр документации',
   viewDemo: 'Демо',
   theme: {
     title: 'Настройка темы',

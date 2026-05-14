@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Drawer, Form, Modal, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,14 @@ export default function AddDrawer(props: Props) {
   const { visible, onOk, onClose } = props;
   const [form] = Form.useForm();
 
-  const [testLoading, setTestLoading] = React.useState(false);
+  const [testLoading, setTestLoading] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      form.resetFields();
+      setTestLoading(false);
+    }
+  }, [visible, form]);
 
   return (
     <Drawer

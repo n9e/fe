@@ -119,6 +119,7 @@ export default function index() {
           idents={_.map(selectedRows, 'ident')}
           reloadList={() => {
             setRefreshFlag(_.uniqueId('refreshFlag_'));
+            setSelectedRows([]);
           }}
         />
       )}

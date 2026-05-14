@@ -123,6 +123,7 @@ const en_US = {
       name: 'Alert rule',
       result: 'Result',
       errmsg: 'Error message',
+      force_overwrite: 'Force overwrite same name',
     },
     import_builtin: 'Import built-in alert rules',
     import_prometheus: 'Import Prometheus alert rules',
@@ -277,6 +278,7 @@ const en_US = {
     title: 'Threshold Judgment',
     builder: 'Builder',
     code: 'Code',
+    expr_invalid: 'Expression syntax is invalid',
     label: 'Label',
     exp_trigger_disable: 'Enable Threshold Judgment',
     advanced_settings: {
@@ -354,6 +356,8 @@ const en_US = {
   pipeline_configuration_ng: {
     title: 'Event processing',
     select_workflow: 'Select existing workflow',
+    select_workflow_tooltip:
+      'Reuse existing event processing workflows in the current business group, allowing multiple alert rules to share the same set of processors. You can also select "Create workflow" to maintain processors independently for this rule.',
     add_workflow: 'Create workflow',
     add_pipeline: 'Add processor',
     enabled: 'Enabled',
@@ -369,6 +373,9 @@ const en_US = {
     reference_workflow_tip: 'Referenced workflow "{{workflowName}}". Changes below will affect all rules that reference this workflow.',
     no_changes: 'Processor configuration has no changes',
     save_workflow_tip: 'Only after clicking save will the event workflow be created or updated',
+  },
+  enrich_queries: {
+    tip: "When an alert is triggered, the enrich query will be executed and the results will be written to the event's extra_info (formatted string) and extra_info_map (raw key-value pairs) fields. You can reference them in notification templates using {{ .ExtraInfo }} or {{ .ExtraInfoMap }}",
   },
 };
 export default en_US;

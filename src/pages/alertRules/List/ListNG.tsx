@@ -34,7 +34,7 @@ interface Filter {
   disabled?: 0 | 1;
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'alert-rules-filter';
+const FILTER_SESSION_STORAGE_KEY = 'alert-rules-filter';
 const includesProm = (datasourceList: any[], ids?: number[]) => {
   return _.some(ids, (id) => {
     return _.some(datasourceList, (item) => {
@@ -58,8 +58,15 @@ export default function AlertRules(props: Props) {
   const { t } = useTranslation('alertRules');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
-  const [filter, setFilter] = useState<Filter>({} as Filter);
-  const [queryValue, setQueryValue] = useState<string | undefined>();
+  let defaultFilter = {} as Filter;
+  try {
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+  } catch (e) {
+    console.error(e);
+  }
+  const [filter, setFilter] = useState<Filter>(defaultFilter);
+  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(f));
+  const [queryValue, setQueryValue] = useState<string | undefined>(defaultFilter.search);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
@@ -376,6 +383,7 @@ export default function AlertRules(props: Props) {
     (search) => {
       const newFilter = { ...filter, search };
       setFilter(newFilter);
+      saveFilter(newFilter);
     },
     {
       wait: 500,
@@ -441,7 +449,7 @@ export default function AlertRules(props: Props) {
                 datasourceIds: val,
               };
               setFilter(newFilter);
-              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+              saveFilter(newFilter);
             }}
           />
           <Select
@@ -455,7 +463,7 @@ export default function AlertRules(props: Props) {
                 severities: val,
               };
               setFilter(newFilter);
-              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+              saveFilter(newFilter);
             }}
             dropdownMatchSelectWidth={false}
           >
@@ -493,7 +501,7 @@ export default function AlertRules(props: Props) {
                 disabled: val,
               };
               setFilter(newFilter);
-              window.sessionStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+              saveFilter(newFilter);
             }}
           />
         </Space>

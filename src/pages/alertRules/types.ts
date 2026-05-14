@@ -28,6 +28,8 @@ export interface AlertRuleType<T> {
   severities: number[];
   update_at: number;
   update_by: number;
+
+  cur_event_count: number;
 }
 
 export enum AlertRuleStatus {

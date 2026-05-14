@@ -1,7 +1,7 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useRequest } from 'ahooks';
 import { Space, Spin, Switch, Dropdown, Menu, Button, Form, Row, Col, Tag, Tooltip, Modal, Input, Popover, message, Alert } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -35,6 +35,7 @@ interface Props {
   workflowId?: number;
   workflowEnabled: boolean;
   isMultiWorkflow?: boolean;
+  collapsed?: boolean;
   remove: () => void;
 }
 
@@ -46,7 +47,7 @@ export interface WorkflowItemRef {
 
 const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const { t } = useTranslation('alertRules');
-  const { field, namePath = [], prefixNamePath = [], workflowId, workflowEnabled, isMultiWorkflow, remove } = props;
+  const { field, namePath = [], prefixNamePath = [], workflowId, workflowEnabled, isMultiWorkflow, collapsed = false, remove } = props;
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [saveWorkflowName, setSaveWorkflowName] = useState('');
   const [savingWorkflow, setSavingWorkflow] = useState(false);
@@ -57,13 +58,13 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const form = Form.useFormInstance();
-  const formValues = Form.useWatch([]);
   const group_id = Form.useWatch('group_id');
   const processors = Form.useWatch([...prefixNamePath, ...namePath, 'processors']);
 
   const { data: workflowList } = useRequest(() => getWorkflowList({ group_id, use_case: 'alert_rule' }), {
     cacheKey: 'workflow-list',
     refreshDeps: [group_id],
+    ready: !collapsed && group_id !== undefined,
   });
 
   const { data: item, loading } = useRequest(
@@ -210,44 +211,53 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
               }}
             />
           </span>
-          <Dropdown
-            overlay={
-              <Menu className='max-h-64 overflow-y-auto overflow-x-hidden'>
-                <Menu.Item
-                  key='add'
-                  onClick={() => {
-                    // 删除 pipeline_configs 中对应项的 workflow_id，并重置 processors
-                    const currentValues = _.cloneDeep(form.getFieldsValue());
-                    _.unset(currentValues, [...prefixNamePath, ...namePath, 'pipeline_id']);
-                    _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], [DEFAULT_VALUES.processors[0]]);
-                    form.setFieldsValue(currentValues);
-                  }}
-                >
-                  {t('pipeline_configuration_ng.add_workflow')}
-                </Menu.Item>
-                {_.map(workflowList, (workflow) => {
-                  return (
-                    <Menu.Item
-                      key={workflow.id}
-                      disabled={workflow.id === workflowId}
-                      onClick={() => {
-                        // 更新 pipeline_configs 中对应项的 workflow_id，并重置 processors
-                        const currentValues = _.cloneDeep(form.getFieldsValue());
-                        _.set(currentValues, [...prefixNamePath, ...namePath, 'pipeline_id'], workflow.id);
-                        _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], []);
-                        form.setFieldsValue(currentValues);
-                      }}
-                    >
-                      {workflow.name}
-                    </Menu.Item>
-                  );
-                })}
-              </Menu>
-            }
-          >
-            <Button size='small'>{t('pipeline_configuration_ng.select_workflow')}</Button>
-          </Dropdown>
-          {workflowId && item?.name && <Tag color='orange'>{t('pipeline_configuration_ng.reference_workflow_tip', { workflowName: item.name })}</Tag>}
+          {_.get(workflowList, 'length', 0) > 0 && (
+            <Dropdown
+              overlay={
+                <Menu className='max-h-64 overflow-y-auto overflow-x-hidden'>
+                  <Menu.Item
+                    key='add'
+                    onClick={() => {
+                      // 删除 pipeline_configs 中对应项的 workflow_id，并重置 processors
+                      const currentValues = _.cloneDeep(form.getFieldsValue());
+                      _.unset(currentValues, [...prefixNamePath, ...namePath, 'pipeline_id']);
+                      _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], [DEFAULT_VALUES.processors[0]]);
+                      form.setFieldsValue(currentValues);
+                    }}
+                  >
+                    {t('pipeline_configuration_ng.add_workflow')}
+                  </Menu.Item>
+                  {_.map(workflowList, (workflow) => {
+                    return (
+                      <Menu.Item
+                        key={workflow.id}
+                        disabled={workflow.id === workflowId}
+                        onClick={() => {
+                          // 更新 pipeline_configs 中对应项的 workflow_id，并重置 processors
+                          const currentValues = _.cloneDeep(form.getFieldsValue());
+                          _.set(currentValues, [...prefixNamePath, ...namePath, 'pipeline_id'], workflow.id);
+                          _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], []);
+                          form.setFieldsValue(currentValues);
+                        }}
+                      >
+                        {workflow.name}
+                      </Menu.Item>
+                    );
+                  })}
+                </Menu>
+              }
+            >
+              <Button size='small'>
+                <Space>
+                  {t('pipeline_configuration_ng.select_workflow')}
+                  <Tooltip title={t('pipeline_configuration_ng.select_workflow_tooltip')}>
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </Space>
+              </Button>
+            </Dropdown>
+          )}
+          {workflowId !== undefined && item?.name && <Tag color='orange'>{t('pipeline_configuration_ng.reference_workflow_tip', { workflowName: item.name })}</Tag>}
         </Space>
       </div>
       <Form.List {...resetField} name={[...namePath, 'processors']}>
@@ -289,6 +299,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
               </Col>
               <Col flex='none'>
                 <TestModal
+                  disabled={!canSaveWorkflow}
                   type='pipeline'
                   config={{
                     processors,

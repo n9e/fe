@@ -36,6 +36,7 @@ import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink, IPanel } from '../types';
 import { goBack, dashboardTimeCacheKey } from './utils';
+import { isValidPanelConfig } from '../Panels/utils';
 
 interface IProps {
   dashboard: IDashboard;
@@ -66,19 +67,6 @@ interface IProps {
 }
 
 const cachePageTitle = document.title || 'Nightingale';
-
-const isValidPanelConfig = (value: string) => {
-  if (!value) {
-    return false;
-  }
-
-  try {
-    const parsed = JSON.parse(value) as IPanel;
-    return !!parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !!parsed.type;
-  } catch (error) {
-    return false;
-  }
-};
 
 export default function Title(props: IProps) {
   const { t } = useTranslation('dashboard');

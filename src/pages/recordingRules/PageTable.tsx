@@ -22,6 +22,13 @@ interface Props {
   gids?: string;
 }
 
+interface Filter {
+  query?: string;
+  datasourceIds?: number[];
+}
+
+const FILTER_SESSION_STORAGE_KEY = 'recording-rules-filter';
+
 const { confirm } = Modal;
 const pageSizeOptionsDefault = ['30', '50', '100', '300'];
 const exportIgnoreAttrsObj = {
@@ -41,12 +48,22 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<strategyItem[]>([]);
   const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
-  const [query, setQuery] = useState<string>('');
+  let defaultFilter = {} as Filter;
+  try {
+    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+  } catch (e) {
+    console.error(e);
+  }
+  const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
   const [currentStrategyData, setCurrentStrategyData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [datasourceIds, setDatasourceIds] = useState<number[]>();
+  const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
+  const saveFilter = (patch: Partial<Filter>) => {
+    const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
+  };
 
   useEffect(() => {
     getRecordingRules();
@@ -379,6 +396,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             value={datasourceIds}
             onChange={(val) => {
               setDatasourceIds(val);
+              saveFilter({ datasourceIds: val });
             }}
           >
             {_.map(groupedDatasourceList?.prometheus, (item) => (
@@ -387,7 +405,15 @@ const PageTable: React.FC<Props> = ({ gids }) => {
               </Select.Option>
             ))}
           </Select>
-          <SearchInput placeholder={t('search_placeholder')} onSearch={setQuery} allowClear />
+          <SearchInput
+            placeholder={t('search_placeholder')}
+            value={query}
+            onSearch={(val) => {
+              setQuery(val);
+              saveFilter({ query: val });
+            }}
+            allowClear
+          />
         </Space>
         {businessGroup.isLeaf && gids !== '-2' && (
           <div className='strategy-table-search-right'>

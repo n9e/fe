@@ -31,11 +31,6 @@ export default function AggrRuleDropdown(props: Props) {
     return getAggrRules().then((res) => {
       const sortedList = _.sortBy(res.dat, 'cate');
       setAggrRuleList(sortedList);
-
-      // 如果当前选中的规则不在列表中，则默认选中第一个规则
-      if (sortedList.length > 0 && !_.find(sortedList, (item) => item.id === filter.aggr_rule_id)) {
-        setFilter({ aggr_rule_id: sortedList[0].id, event_ids: undefined });
-      }
     });
   };
 

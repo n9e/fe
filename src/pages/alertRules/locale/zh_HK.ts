@@ -58,6 +58,9 @@ const zh_HK = {
   callbacks: '回撥地址',
   callbacks_tip: '支持配置變數，變數使用方式可參考 <a>變數引用</a> 文檔',
   override_global_webhook: '覆蓋全局回調',
+  enrich_queries: {
+    tip: '告警觸發時會執行附加查詢，將查詢結果寫入事件的 extra_info（格式化字符串）和 extra_info_map（原始鍵值對）字段，可在通知模板中通過 {{ .ExtraInfo }} 或 {{ .ExtraInfoMap }}',
+  },
   override_global_webhook_tip: '此開關開啟之後，告警事件只會發給本規則的回調地址，不會再發給全局的回調地址',
   annotations: '附加資訊',
   annotationsOptions: {
@@ -121,6 +124,7 @@ const zh_HK = {
       name: '告警規則',
       result: '匯入結果',
       errmsg: '錯誤資訊',
+      force_overwrite: '強制覆蓋同名',
     },
     import_builtin: '匯入內置告警規則',
     import_prometheus: '匯入 Prometheus 告警規則',
@@ -273,6 +277,7 @@ const zh_HK = {
     title: '閾值判斷',
     builder: '簡單模式',
     code: '表達式模式',
+    expr_invalid: '表達式語法錯誤',
     label: '關聯 Label',
     exp_trigger_disable: '啟用閾值判斷',
     advanced_settings: {
@@ -350,6 +355,7 @@ const zh_HK = {
   pipeline_configuration_ng: {
     title: '事件處理',
     select_workflow: '選擇已有工作流',
+    select_workflow_tooltip: '複用當前業務組已有的事件處理工作流，讓多條告警規則共用同一套處理器。也可在此入口選擇「新建工作流」以獨立維護本規則的處理器。',
     add_workflow: '新建工作流',
     add_pipeline: '添加處理器',
     enabled: '啟用',

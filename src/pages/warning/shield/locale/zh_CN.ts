@@ -45,5 +45,16 @@ const zh_CN = {
   preview_muted_save_and_delete: '保存并删除相关事件',
   expired: '已过期',
   quick_mute: '快速屏蔽',
+  delete_mutes: {
+    title: '屏蔽规则清理',
+    alert_message: '一旦删除将无法找回，请谨慎操作！',
+    timestamp: '时间筛选',
+    timestamp_options: {
+      1: '1 个月之前',
+      3: '3 个月之前',
+      6: '6 个月之前',
+      12: '1 年之前',
+    },
+  },
 };
 export default zh_CN;

@@ -50,5 +50,8 @@ const zh_CN = {
     copy_json: '复制 JSON',
   },
   datasource: {},
+  alert: {
+    query_warning_no_time: '强烈建议在查询条件中使用 _time (时间字段) 明确限制时间范围，否则可能导致：<b>存储负载异常，告警查询超时</b>等问题',
+  },
 };
 export default zh_CN;

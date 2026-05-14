@@ -16,7 +16,7 @@ interface Props {
   setExplorerDrawerData: (data: Record) => void;
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'hosts-metricsBuiltin-filter';
+const FILTER_SESSION_STORAGE_KEY = 'hosts-metricsBuiltin-filter';
 
 export default function Metrics(props: Props) {
   const { selectedIdents, setExplorerDrawerData } = props;
@@ -26,8 +26,8 @@ export default function Metrics(props: Props) {
     typ: 'Linux',
   } as Filter;
   try {
-    if (window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY)) {
-      defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    if (window.localStorage.getItem(FILTER_SESSION_STORAGE_KEY)) {
+      defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     }
   } catch (e) {
     console.error(e);
@@ -119,7 +119,7 @@ export default function Metrics(props: Props) {
     (query) => {
       const newFilter = { ...filter, query };
       setFilter(newFilter);
-      window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+      window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
     },
     {
       wait: 500,
@@ -151,7 +151,7 @@ export default function Metrics(props: Props) {
               onChange={(val) => {
                 const newFilter = { ...filter, typ: val };
                 setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+                window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
               }}
               options={_.map(typesList, (item) => {
                 return {
@@ -180,7 +180,7 @@ export default function Metrics(props: Props) {
               onChange={(val) => {
                 const newFilter = { ...filter, collector: val };
                 setFilter(newFilter);
-                window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+                window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
               }}
               options={_.map(collectorsList, (item) => {
                 return {

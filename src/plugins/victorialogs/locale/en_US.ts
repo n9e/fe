@@ -50,5 +50,9 @@ const en_US = {
     copy_json: 'Copy JSON',
   },
   datasource: {},
+  alert: {
+    query_warning_no_time:
+      'It is strongly recommended to use _time (time field) in the query conditions to explicitly limit the time range, otherwise it may lead to issues such as: <b>abnormal storage load, alert query timeout</b>',
+  },
 };
 export default en_US;

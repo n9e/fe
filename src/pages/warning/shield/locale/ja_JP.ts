@@ -46,6 +46,17 @@ const ja_JP = {
   preview_muted_save_and_delete: '保存して関連イベントを削除',
   expired: '期限切れ',
   quick_mute: 'クイックミュート',
+  delete_mutes: {
+    title: 'スクリーンルールクリーンアップ',
+    alert_message: '一度削除すると復元できません。慎重に操作してください！',
+    timestamp: '時間フィルター',
+    timestamp_options: {
+      1: '1ヶ月前',
+      3: '3ヶ月前',
+      6: '6ヶ月前',
+      12: '1年前',
+    },
+  },
 };
 
 export default ja_JP;

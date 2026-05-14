@@ -14,25 +14,28 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Checkbox, Row, Col, Input, Select, Button, Space, Dropdown, Menu } from 'antd';
-import { SearchOutlined, CodeOutlined } from '@ant-design/icons';
+import { Table, Checkbox, Row, Col, Select, Button, Space, Dropdown, Menu } from 'antd';
+import { CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
-import { TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
+import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 
 import request from '@/utils/request';
+import api from '@/utils/api';
 import { RequestMethod } from '@/store/common';
-import PageLayout, { HelpLink } from '@/components/pageLayout';
+import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import RefreshIcon from '@/components/RefreshIcon';
 import usePagination from '@/components/usePagination';
+import SearchInput from '@/components/BaseSearchInput';
+import MetaDrawer from './MetaDrawer';
 
 interface DataItem {
   id: number;
@@ -40,6 +43,16 @@ interface DataItem {
 }
 
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_NODE_ID';
+
+const FILTER_SESSION_KEY = 'task_filter';
+
+function getDefaultFilter() {
+  try {
+    return JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
 
 function getTableData(options: any, gids: string | undefined, query: string, mine: boolean, days: number) {
   if (gids) {
@@ -63,18 +76,49 @@ function getTableData(options: any, gids: string | undefined, query: string, min
 
 const index = (_props: any) => {
   const history = useHistory();
-  const { t, i18n } = useTranslation('common');
-  const [query, setQuery] = useState('');
-  const [mine, setMine] = useState(true);
-  const [days, setDays] = useState(7);
+  const { t } = useTranslation('common');
+  const defaultFilter = getDefaultFilter();
+  const [query, setQuery] = useState(defaultFilter.query || '');
+  const [mine, setMine] = useState(defaultFilter.mine !== undefined ? defaultFilter.mine : true);
+  const [days, setDays] = useState(defaultFilter.days || 7);
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('task-refresh-'));
+  const [metaDrawerVisible, setMetaDrawerVisible] = useState(false);
+  const [metaDrawerLoading, setMetaDrawerLoading] = useState(false);
+  const [metaDrawerData, setMetaDrawerData] = useState<any>({});
+  const [metaDrawerHosts, setMetaDrawerHosts] = useState<any[]>([]);
+  const [metaDrawerTaskId, setMetaDrawerTaskId] = useState<string>('');
   const pagination = usePagination({ PAGESIZE_KEY: 'job-tasks-pagesize' });
+
+  useEffect(() => {
+    window.sessionStorage.setItem(FILTER_SESSION_KEY, JSON.stringify({ query, mine, days }));
+  }, [query, mine, days]);
+
   const { tableProps } = useAntdTable((options) => getTableData(options, gids, query, mine, days), {
     refreshDeps: [gids, query, mine, days, refreshFlag],
     defaultPageSize: pagination.pageSize,
   });
+
+  const handleOpenMetaDrawer = (record: any) => {
+    setMetaDrawerTaskId(String(record.id));
+    setMetaDrawerData({});
+    setMetaDrawerHosts([]);
+    setMetaDrawerLoading(true);
+    setMetaDrawerVisible(true);
+    request(`${api.task(businessGroup.id!)}/${record.id}`)
+      .then((data) => {
+        setMetaDrawerData({
+          ...data.dat.meta,
+        });
+        setMetaDrawerHosts(data.dat.hosts);
+      })
+      .catch(() => {})
+      .finally(() => {
+        setMetaDrawerLoading(false);
+      });
+  };
+
   const showBusinessGroup = !(businessGroup.isLeaf && gids !== '-2');
   const columns: ColumnProps<DataItem>[] = _.concat(
     [
@@ -112,9 +156,9 @@ const index = (_props: any) => {
                     </TableActionLink>
                   </Menu.Item>
                   <Menu.Item>
-                    <TableActionLink actionIcon='view' to={{ pathname: `/job-tasks/${record.id}/detail` }}>
+                    <TableActionButton actionIcon='view' onClick={() => handleOpenMetaDrawer(record)}>
                       {t('task.meta')}
-                    </TableActionLink>
+                    </TableActionButton>
                   </Menu.Item>
                 </Menu>
               }
@@ -158,13 +202,12 @@ const index = (_props: any) => {
                       setRefreshFlag(_.uniqueId('task-refresh-'));
                     }}
                   />
-                  <Input
-                    style={{ width: 200, marginRight: 10 }}
-                    prefix={<SearchOutlined />}
-                    defaultValue={query}
-                    onPressEnter={(e) => {
-                      setQuery(e.currentTarget.value);
+                  <SearchInput
+                    value={query}
+                    onSearch={(val) => {
+                      setQuery(val);
                     }}
+                    allowClear
                   />
                   <Select
                     style={{ marginRight: 10 }}
@@ -218,6 +261,14 @@ const index = (_props: any) => {
           <BlankBusinessPlaceholder text={t('task')}></BlankBusinessPlaceholder>
         )}
       </div>
+      <MetaDrawer
+        visible={metaDrawerVisible}
+        loading={metaDrawerLoading}
+        onClose={() => setMetaDrawerVisible(false)}
+        data={metaDrawerData}
+        hosts={metaDrawerHosts}
+        taskId={metaDrawerTaskId}
+      />
     </PageLayout>
   );
 };

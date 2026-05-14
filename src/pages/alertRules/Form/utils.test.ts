@@ -1,3 +1,12 @@
+jest.mock('lodash', () => {
+  const actual = jest.requireActual('lodash');
+  return {
+    __esModule: true,
+    default: actual,
+    ...actual,
+  };
+});
+
 import _ from 'lodash';
 import { processInitialValues, parseTimeToValueAndUnit } from './utils';
 
@@ -5,9 +14,9 @@ import { processInitialValues, parseTimeToValueAndUnit } from './utils';
 
 jest.mock('moment', () => {
   const mockVal = { format: jest.fn().mockReturnValue('00:00') };
-  const mockMoment: any = jest.fn(() => mockVal);
-  mockMoment.fn = jest.fn();
-  return mockMoment;
+  const mockFn: any = jest.fn(() => mockVal);
+  mockFn.fn = jest.fn();
+  return { __esModule: true, default: mockFn, fn: mockFn.fn };
 });
 
 jest.mock('@/components/TimeRangePicker', () => ({
@@ -38,11 +47,7 @@ jest.mock('../constants', () => ({
   DATASOURCE_ALL: 0,
 }));
 
-jest.mock(
-  'plus:/parcels/AlertRule/utils',
-  () => ({}),
-  { virtual: true },
-);
+jest.mock('plus:/parcels/AlertRule/utils', () => ({}), { virtual: true });
 
 // ---------- parseTimeToValueAndUnit 单元测试 ----------
 
@@ -84,7 +89,7 @@ describe('processInitialValues', () => {
       rule_config: {
         queries: [{ interval: 600 }],
       },
-    };
+    } as const;
     const inputClone = _.cloneDeep(input);
 
     processInitialValues(input);
@@ -101,7 +106,7 @@ describe('processInitialValues', () => {
       rule_config: {
         queries: [{ interval: 600 }],
       },
-    };
+    } as const;
 
     const result1 = processInitialValues(input);
     const result2 = processInitialValues(input);
@@ -174,11 +179,7 @@ describe('processInitialValues', () => {
   it('应正确处理多个 queries', () => {
     const result = processInitialValues({
       rule_config: {
-        queries: [
-          { interval: 600 },
-          { interval: 30 },
-          { interval: 3600 },
-        ],
+        queries: [{ interval: 600 }, { interval: 30 }, { interval: 3600 }],
       },
     });
     expect(result.rule_config.queries[0]).toMatchObject({ interval: 10, interval_unit: 'min' });
@@ -243,9 +244,6 @@ describe('processInitialValues', () => {
 
   it('应将 callbacks 字符串数组转换为 {url} 对象数组', () => {
     const result = processInitialValues({ callbacks: ['http://a.com', 'http://b.com'] });
-    expect(result.callbacks).toEqual([
-      { url: 'http://a.com' },
-      { url: 'http://b.com' },
-    ]);
+    expect(result.callbacks).toEqual([{ url: 'http://a.com' }, { url: 'http://b.com' }]);
   });
 });

@@ -39,7 +39,7 @@ interface Props {
   component: string;
 }
 
-const FILTER_LOCAL_STORAGE_KEY = 'metricsBuiltin-filter';
+const FILTER_SESSION_STORAGE_KEY = 'metricsBuiltin-filter';
 
 export default function index(props: Props) {
   const { component } = props;
@@ -49,7 +49,7 @@ export default function index(props: Props) {
   const [selectedRows, setSelectedRows] = useState<Record[]>([]);
   let defaultFilter = {} as Filter;
   try {
-    defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_LOCAL_STORAGE_KEY) || '{}');
+    defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
   } catch (e) {
     console.error(e);
   }
@@ -224,7 +224,7 @@ export default function index(props: Props) {
     (query) => {
       const newFilter = { ...filter, query };
       setFilter(newFilter);
-      window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+      window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
     },
     {
       wait: 500,
@@ -267,7 +267,7 @@ export default function index(props: Props) {
             onChange={(val) => {
               const newFilter = { ...filter, collector: val };
               setFilter(newFilter);
-              window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+              window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
             }}
             options={_.map(collectorsList, (item) => {
               return {
@@ -287,7 +287,7 @@ export default function index(props: Props) {
             onChange={(val) => {
               const newFilter = { ...filter, unit: val };
               setFilter(newFilter);
-              window.localStorage.setItem(FILTER_LOCAL_STORAGE_KEY, JSON.stringify(newFilter));
+              window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
             }}
             options={buildUnitOptions()}
             showSearch

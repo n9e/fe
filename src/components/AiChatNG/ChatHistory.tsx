@@ -4,6 +4,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { MessageSquare } from 'lucide-react';
 
+import { NAME_SPACE } from './constants';
 import { deleteChat, getChatHistory } from './services';
 import { IAiChatHistoryItem } from './types';
 import { cn } from './utils';
@@ -47,7 +48,7 @@ function formatHistoryItemTime(timestamp: number | undefined, t: (key: string) =
 }
 
 export default function ChatHistory(props: IChatHistoryPageProps) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const { selectedChatId, onSelect, onDelete, onError } = props;
   const [history, setHistory] = React.useState<IAiChatHistoryItem[]>([]);
   const [loading, setLoading] = React.useState(false);
