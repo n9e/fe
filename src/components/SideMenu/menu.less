@@ -45,7 +45,6 @@
     color: var(--fc-text-1) !important;
   }
 
-  .ant-dropdown-menu-item-active,
   .ant-dropdown-menu-item:hover,
   .ant-dropdown-menu-submenu-title:hover {
     background: var(--fc-fill-3) !important;
@@ -81,7 +80,6 @@
     background: transparent !important;
   }
 
-  .ant-dropdown-menu-item-active,
   .ant-dropdown-menu-item:hover,
   .ant-dropdown-menu-submenu-title:hover {
     background: rgba(255, 255, 255, 0.1) !important;
@@ -152,18 +150,19 @@
     opacity: 0;
     transform: scale(0.88);
   }
+}
 
-  &:hover,
-  &:focus {
-    .side-menu-collapsed-logo {
-      opacity: 0;
-      transform: scale(0.88);
-    }
+.side-menu-collapsed-panel:hover,
+.side-menu-collapsed-logo-row:hover,
+.side-menu-collapsed-logo-toggle:focus {
+  .side-menu-collapsed-logo {
+    opacity: 0;
+    transform: scale(0.88);
+  }
 
-    .side-menu-collapsed-logo-icon {
-      opacity: 1;
-      transform: scale(1);
-    }
+  .side-menu-collapsed-logo-icon {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
