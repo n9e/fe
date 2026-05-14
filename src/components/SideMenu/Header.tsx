@@ -6,6 +6,8 @@ import { CommonStateContext } from '@/App';
 
 import { DefaultLogos } from './types';
 
+const lightCollapseButtonClass = 'text-[var(--fc-sidemenu-item-icon)] hover:bg-[var(--fc-sidemenu-item-hover-bg)] hover:text-[var(--fc-sidemenu-item-hover-text)]';
+
 interface Props {
   collapsed: boolean;
   sideMenuBgMode: string;
@@ -36,13 +38,13 @@ export default function SideMenuHeader(props: Props) {
 
   if (collapsed) {
     return (
-      <div className='relative my-1.5 flex h-10 w-full shrink-0 items-center justify-center px-2'>
+      <div className='side-menu-collapsed-logo-row relative my-1.5 flex h-10 w-full shrink-0 items-center justify-center px-2'>
         <Tooltip title={toggleTitle} placement='right'>
           <button
             type='button'
             className={cn(
               'side-menu-collapsed-logo-toggle flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-transparent p-0 transition-colors',
-              sideMenuBgMode === 'light' ? 'text-hint hover:bg-fc-200 hover:text-title' : 'text-[#fff] hover:bg-gray-200/20',
+              sideMenuBgMode === 'light' ? lightCollapseButtonClass : 'text-[#fff] hover:bg-gray-200/20',
             )}
             onClick={onToggleCollapse}
           >
@@ -64,7 +66,7 @@ export default function SideMenuHeader(props: Props) {
           type='button'
           className={cn(
             'side-menu-header-collapse-button flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-transparent p-0 transition-colors',
-            sideMenuBgMode === 'light' ? 'text-hint hover:bg-fc-200 hover:text-title' : 'text-[#fff]/70 hover:bg-gray-200/20 hover:text-[#fff]',
+            sideMenuBgMode === 'light' ? lightCollapseButtonClass : 'text-[#fff]/70 hover:bg-gray-200/20 hover:text-[#fff]',
           )}
           onClick={onToggleCollapse}
         >

@@ -69,7 +69,11 @@ interface DarkModeSelectProps {
   trigger?: DropDownProps['trigger'];
 }
 
-export function DarkModeMenuItems() {
+interface DarkModeMenuItemsProps {
+  popupClassName?: string;
+}
+
+export function DarkModeMenuItems(_props: DarkModeMenuItemsProps = {}) {
   const { setDarkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('DarkModeSelect');
 
