@@ -6,6 +6,7 @@ const zh_HK = {
   docs: '文檔',
   docsCenter: '文檔中心',
   viewDemo: '查看 DEMO',
+  submit_issue: '提交問題',
   theme: {
     title: '主題配置',
     title_help: '配置僅對當前用戶生效',

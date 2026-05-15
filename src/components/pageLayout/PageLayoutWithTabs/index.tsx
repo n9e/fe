@@ -18,8 +18,8 @@ import React, { ReactNode, useContext, useState, useEffect, useLayoutEffect } fr
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Space, Button, Tooltip } from 'antd';
-import { RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Space, Button } from 'antd';
+import { RollbackOutlined, HistoryOutlined, GithubOutlined } from '@ant-design/icons';
 
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
@@ -30,7 +30,6 @@ import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
 
 import DocLink from './DocLink';
 import { TabMenu } from './TabMenu';
-import DocIcon from '../icons/DocIcon';
 import Version from '../Version';
 import HelpLink from '../HelpLink';
 import '../index.less';
@@ -130,11 +129,20 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   <span className='page-layout-intro-container'>{introIcon}</span>
-                  <Version />
-
                   <div className='page-header-action-group'>
                     {rightArea}
-                    {IS_ENT && <DocLink link={documentUrl} />}
+                    <Version />
+                    {!IS_ENT && !IS_PLUS && (
+                      <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
+                        <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
+                      </Button>
+                    )}
+                    <DocLink link={documentUrl} />
+                    {!IS_ENT && !IS_PLUS && (
+                      <Button target='_blank' href='https://github.com/ccfos/nightingale/issues' size='small' icon={<GithubOutlined />}>
+                        {t('submit_issue')}
+                      </Button>
+                    )}
                     <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
@@ -142,20 +150,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <FeatureNotification />
                     </AdvancedWrap>
-
-                    {!IS_ENT && IS_PLUS && (
-                      <Button target='_blank' href={documentUrl} size='small' type='text' rel='noopener'>
-                        <Tooltip title={t('docs')}>
-                          <DocIcon className='text-[12px]' />
-                        </Tooltip>
-                      </Button>
-                    )}
-
-                    {!IS_ENT && !IS_PLUS && (
-                      <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
-                        <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
-                      </Button>
-                    )}
                   </div>
                 </div>
                 {sessionStorage.getItem('menuHide') === '1' && <Space className='mr-2'>{rightArea}</Space>}

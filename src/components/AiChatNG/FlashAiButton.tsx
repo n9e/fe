@@ -17,7 +17,7 @@ function FlashAiButtonContent() {
 
   return (
     <Button
-      icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mr-2 mb-1' />}
+      icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mr-2' />}
       size='small'
       onClick={() => {
         const url = getCurrentPageUrl();
