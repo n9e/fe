@@ -26,49 +26,16 @@
   }
 }
 
-.side-menu-profile-menu,
 .side-menu-profile-submenu {
-  min-width: 168px;
 
-  .ant-dropdown-menu-submenu-title,
-  .ant-dropdown-menu-item {
-    font-size: 13px;
-  }
-
-  .ant-dropdown-menu-submenu-title {
-    display: flex;
-    align-items: center;
-  }
-
-  .ant-dropdown-menu-item,
-  .ant-dropdown-menu-submenu-title {
-    color: var(--fc-text-1) !important;
-  }
-
-  .ant-dropdown-menu-item:hover,
-  .ant-dropdown-menu-submenu-title:hover {
-    background: var(--fc-fill-3) !important;
-    color: var(--fc-text-1) !important;
-  }
-
-  .ant-dropdown-menu-submenu-arrow {
-    color: var(--fc-text-3) !important;
-  }
-
-  .anticon,
-  svg {
-    color: inherit;
-  }
-}
-
-.side-menu-profile-submenu {
   .ant-dropdown-menu-item-active:not(:hover),
   .ant-dropdown-menu-submenu-title.ant-dropdown-menu-item-active:not(:hover),
-  .ant-dropdown-menu-submenu-active > .ant-dropdown-menu-submenu-title:not(:hover) {
+  .ant-dropdown-menu-submenu-active>.ant-dropdown-menu-submenu-title:not(:hover) {
     background: transparent !important;
   }
 }
 
+// 侧边菜单个人中心菜单，深色/自定义主题时使用专门的样式以提升对比度和可读性
 .side-menu-profile-menu-on-dark {
   background: var(--fc-menu-dark-bg, rgb(22 22 24)) !important;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -101,7 +68,76 @@
   .ant-dropdown-menu-item-divider {
     background: rgba(255, 255, 255, 0.14) !important;
   }
+
+  .ant-dropdown-menu-item-group-title {
+    color: rgba(255, 255, 255, 0.58) !important;
+  }
+
+  .anticon {
+    color: inherit !important;
+  }
 }
+
+.side-menu-profile-menu-on-theme {
+  background: rgb(108, 83, 177) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 16px 40px rgba(69, 45, 130, 0.32);
+
+  .ant-dropdown-menu {
+    background: rgb(108, 83, 177) !important;
+  }
+
+  .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .ant-dropdown-menu-item-group-title {
+    color: rgba(255, 255, 255, 0.62) !important;
+  }
+
+  .ant-dropdown-menu-item:not(:hover),
+  .ant-dropdown-menu-submenu-title:not(:hover) {
+    background: transparent !important;
+  }
+
+  .ant-dropdown-menu-item:hover,
+  .ant-dropdown-menu-submenu-title:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #fff !important;
+  }
+
+  .ant-dropdown-menu-submenu-arrow {
+    color: rgba(255, 255, 255, 0.62) !important;
+  }
+
+  .ant-dropdown-menu-item-divider {
+    background: rgba(255, 255, 255, 0.16) !important;
+  }
+}
+
+.side-menu-profile-menu.side-menu-profile-menu-on-theme,
+.side-menu-profile-submenu.side-menu-profile-menu-on-theme {
+
+  .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title,
+  .ant-dropdown-menu-title-content,
+  .ant-dropdown-menu-item-icon,
+  .anticon,
+  svg {
+    color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .ant-dropdown-menu-item:hover,
+  .ant-dropdown-menu-submenu-title:hover {
+    color: #fff !important;
+  }
+
+  .ant-dropdown-menu-submenu-arrow {
+    color: rgba(255, 255, 255, 0.62) !important;
+  }
+}
+
 
 .side-menu-profile-language-icon {
   display: inline-flex;
@@ -378,7 +414,7 @@
     }
 
     .quick-menu-icon {
-      & > svg {
+      &>svg {
         width: 18px;
         height: 18px;
       }
