@@ -5,6 +5,8 @@ import type { DropDownProps } from 'antd/lib/dropdown';
 import Icon from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { CommonStateContext } from '@/App';
+import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
+import { SIDE_MENU_COLORS, SideMenuColors } from '@/components/pageLayout/SideMenuColorSetting/types';
 import './locale';
 
 const ComputerSvg = () => (
@@ -73,15 +75,28 @@ interface DarkModeMenuItemsProps {
   popupClassName?: string;
 }
 
-export function DarkModeMenuItems(_props: DarkModeMenuItemsProps = {}) {
-  const { setDarkMode } = useContext(CommonStateContext);
+export function DarkModeMenuItems(props: DarkModeMenuItemsProps = {}) {
+  const { popupClassName } = props;
+  const { setDarkMode, setSideMenuBgMode } = useContext(CommonStateContext);
   const { t } = useTranslation('DarkModeSelect');
 
   return (
     <>
-      <Menu.Item key='light' icon={<BrightIcon />} onClick={() => setDarkMode(false)}>
-        {t('light')}
-      </Menu.Item>
+      <Menu.SubMenu key='light' icon={<BrightIcon />} title={t('light')} popupClassName={popupClassName}>
+        <Menu.ItemGroup title={t('light_menu_title')}>
+          {(Object.entries(SIDE_MENU_COLORS) as [SideMenuColors, string][]).map(([colorKey]) => (
+            <Menu.Item
+              key={`light-${colorKey}`}
+              onClick={() => {
+                setDarkMode(false);
+                setSideMenuBgMode(colorKey);
+              }}
+            >
+              {renderColorDiv(colorKey, t)}
+            </Menu.Item>
+          ))}
+        </Menu.ItemGroup>
+      </Menu.SubMenu>
       <Menu.Item key='dark' icon={<DarkIcon />} onClick={() => setDarkMode(true)}>
         {t('dark')}
       </Menu.Item>
@@ -94,8 +109,8 @@ export function DarkModeMenuItems(_props: DarkModeMenuItemsProps = {}) {
 
 export default function DarkModeSelect(props: DarkModeSelectProps) {
   const { align, children, getPopupContainer, overlayClassName, placement, trigger } = props;
-  const { darkMode } = useContext(CommonStateContext);
-  const selectedThemeKey = darkMode ? 'dark' : 'light';
+  const { darkMode, sideMenuBgMode } = useContext(CommonStateContext);
+  const selectedThemeKey = darkMode ? 'dark' : `light-${sideMenuBgMode}`;
 
   return (
     <Dropdown
@@ -118,3 +133,25 @@ export default function DarkModeSelect(props: DarkModeSelectProps) {
     </Dropdown>
   );
 }
+
+const renderColorDiv = (color, t, defaultColor?) => {
+  return (
+    <div className='flex items-center' key={color}>
+      <div>
+        <div className='mr-2 flex h-3 w-4 cursor-default overflow-hidden border border-solid border-fc-400'>
+          <div
+            className={'h-full w-1 shrink-0 border-0 border-r border-solid border-fc-300'}
+            style={{
+              background: getSideMenuBgColor(color === 'default' ? defaultColor || 'theme' : color),
+            }}
+          ></div>
+          <div className='flex h-full w-full flex-1 flex-col justify-center space-y-1 bg-fc-50 px-2'>
+            <div className='h-3 rounded bg-fc-100'></div>
+            <div className='h-3 rounded bg-fc-100'></div>
+          </div>
+        </div>
+      </div>
+      {t('light_menu_map.' + color)}
+    </div>
+  );
+};
