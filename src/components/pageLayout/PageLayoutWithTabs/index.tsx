@@ -18,8 +18,8 @@ import React, { ReactNode, useContext, useState, useEffect, useLayoutEffect } fr
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Space, Button, Tooltip } from 'antd';
-import { RollbackOutlined, HistoryOutlined } from '@ant-design/icons';
+import { Space, Button } from 'antd';
+import { RollbackOutlined, HistoryOutlined, GithubOutlined } from '@ant-design/icons';
 
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
@@ -30,7 +30,6 @@ import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
 
 import DocLink from './DocLink';
 import { TabMenu } from './TabMenu';
-import DocIcon from '../icons/DocIcon';
 import Version from '../Version';
 import HelpLink from '../HelpLink';
 import '../index.less';
@@ -54,7 +53,8 @@ interface IPageLayoutProps {
   tabGroup?: string;
 }
 
-const DEFAULT_DOCUMENT_URL = '/docs/content/flashcat/overview/';
+const DEFAULT_DOCUMENT_URL_ENT = '/docs/content/flashcat/overview/';
+const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/?ask_ai=1';
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
@@ -65,7 +65,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = getCurrentMenuList();
-  const documentUrl = doc || siteInfo?.document_url || DEFAULT_DOCUMENT_URL;
+  const documentUrl = doc || siteInfo?.document_url || (IS_ENT ? DEFAULT_DOCUMENT_URL_ENT : DEFAULT_DOCUMENT_URL);
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
@@ -125,37 +125,31 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
-                  {IS_ENT && doc && <DocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   <span className='page-layout-intro-container'>{introIcon}</span>
-                  <Version />
-
                   <div className='page-header-action-group'>
                     {rightArea}
+                    <Version />
+                    {!IS_ENT && !IS_PLUS && (
+                      <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
+                        <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
+                      </Button>
+                    )}
+                    <DocLink link={documentUrl} />
+                    {!IS_ENT && !IS_PLUS && (
+                      <Button target='_blank' href='https://github.com/ccfos/nightingale/issues' size='small' icon={<GithubOutlined />}>
+                        {t('submit_issue')}
+                      </Button>
+                    )}
+                    <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
                     </AdvancedWrap>
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <FeatureNotification />
                     </AdvancedWrap>
-
-                    <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
-                      <Tooltip title={t('docsCenter')}>
-                        <span className='inline-flex items-center gap-1'>
-                          <DocIcon className='text-[12px]' />
-                          <span>{t('docsCenter')}</span>
-                        </span>
-                      </Tooltip>
-                    </Button>
-                    <FlashAiButton alwaysVisible />
-
-                  {!IS_ENT && !IS_PLUS && (
-                    <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
-                      <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
-                    </Button>
-                  )}
                   </div>
                 </div>
                 {sessionStorage.getItem('menuHide') === '1' && <Space className='mr-2'>{rightArea}</Space>}

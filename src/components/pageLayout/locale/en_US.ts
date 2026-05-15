@@ -6,6 +6,7 @@ const en_US = {
   docs: 'Docs',
   docsCenter: 'Docs center',
   viewDemo: 'View demo',
+  submit_issue: 'Submit issue',
   theme: {
     title: 'Theme Setting',
     title_help: 'Setting only for current user',

@@ -84,7 +84,7 @@ const zh_HK = {
     ai: {
       title: 'AI 智慧化',
       description: '大模型與智慧體',
-      links: ['如何配置 LLM 模型？', '如何使用 Agent 自動分析告警？'],
+      links: ['如何添加數據源？', '如何使用 Agent 自動分析告警？'],
     },
   },
   aiAssistant: {

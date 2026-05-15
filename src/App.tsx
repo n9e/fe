@@ -33,7 +33,6 @@ import { getBusiGroups, getDatasourceBriefList, getMenuPerm, getInstallDate } fr
 import { getLicense } from '@/components/AdvancedWrap';
 import { getVersions } from '@/components/pageLayout/Version/services';
 import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } from '@/components/BusinessGroup';
-import Feedback from '@/components/Feedback';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
@@ -357,7 +356,6 @@ function App() {
                   <HocRenderer></HocRenderer>
                 </>
               </Switch>
-              <Feedback />
             </Router>
           </ConfigProvider>
         </CommonStateContext.Provider>

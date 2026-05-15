@@ -18,6 +18,7 @@ const en_US = {
     tip: 'Fields that can be used in the notification medium, referenced by $tpl.{{contentKey}}',
     prompt: 'The content has been modified. Do you want to discard the changes?',
     value_msg: 'Please enter the field content',
+    ai_generate: 'AI Generate',
   },
   preview: {
     select_events: 'Select alarm events',

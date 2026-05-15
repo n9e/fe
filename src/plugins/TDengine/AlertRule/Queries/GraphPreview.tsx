@@ -1,15 +1,18 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Button, Popover } from 'antd';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { Button, Popover, Select, Space } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getDsQuery } from '../../services';
 import { getSerieName } from '../../utils';
 
 export default function GraphPreview({ cate, datasourceValue, query }) {
   const { t } = useTranslation('db_tdengine');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -17,6 +20,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
     start: 'now-1h',
     end: 'now',
   });
+  const [datasourceId, setDatasourceId] = useState<number>(datasourceValue);
   const lineGraphProps = {
     custom: {
       drawStyle: 'lines',
@@ -38,10 +42,10 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
     },
   };
   const fetchData = () => {
-    if (datasourceValue) {
+    if (datasourceId) {
       getDsQuery({
         cate,
-        datasource_id: datasourceValue,
+        datasource_id: datasourceId,
         query: _.map([query], (q) => {
           const parsedRange = parseRange(range);
           const from = moment(parsedRange.start).toISOString();
@@ -75,7 +79,11 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
     if (visible) {
       fetchData();
     }
-  }, [JSON.stringify(range)]);
+  }, [JSON.stringify(range), datasourceId]);
+
+  useEffect(() => {
+    setDatasourceId(datasourceValue);
+  }, [datasourceValue]);
 
   return (
     <div ref={divRef}>
@@ -90,6 +98,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
             <div
@@ -99,9 +108,22 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
             >
               {t('datasource:es.alert.query.preview')}
             </div>
-            <div>
+            <Space>
+              <InputGroupWithFormItem label={t('common:datasource.name')}>
+                <Select
+                  className='w-[200px]'
+                  value={datasourceId}
+                  onChange={setDatasourceId}
+                  options={_.map(groupedDatasourceList[cate], (item) => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  })}
+                />
+              </InputGroupWithFormItem>
               <TimeRangePicker value={range} onChange={setRange} />
-            </div>
+            </Space>
           </div>
         }
         content={
