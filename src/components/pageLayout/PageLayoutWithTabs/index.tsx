@@ -144,7 +144,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </AdvancedWrap>
 
                     {!IS_ENT && IS_PLUS && (
-                      <Button target='_blank' href={documentUrl} size='small' type='text'>
+                      <Button target='_blank' href={documentUrl} size='small' type='text' rel='noopener'>
                         <Tooltip title={t('docs')}>
                           <DocIcon className='text-[12px]' />
                         </Tooltip>
