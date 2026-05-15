@@ -20,18 +20,31 @@ function isZhCN(lang?: string) {
   return (lang || '').toLowerCase() === 'zh_cn';
 }
 
-function matchPageTypeByUrl(url: string): 'dashboards' | 'alert_rule' | 'alert_history' | 'active_alert' | undefined {
+type PageType =
+  | 'dashboards'
+  | 'alert_rule'
+  | 'alert_history'
+  | 'active_alert'
+  | 'targets'
+  | 'notification_rules'
+  | 'notification_channels'
+  | 'self_healing';
+
+function matchPageTypeByUrl(url: string): PageType | undefined {
   const pathname = (url.split('?')[0] || '').toLowerCase();
   if (pathname.startsWith('/dashboards')) return 'dashboards';
   if (pathname.startsWith('/alert-rules')) return 'alert_rule';
   if (pathname.startsWith('/alert-his-events') || pathname.startsWith('/history-events')) return 'alert_history';
   if (pathname.startsWith('/alert-cur-events') || pathname.startsWith('/alert-cur-event')) return 'active_alert';
+  if (pathname.startsWith('/targets')) return 'targets';
+  if (pathname.startsWith('/notification-rules')) return 'notification_rules';
+  if (pathname.startsWith('/notification-channels')) return 'notification_channels';
+  if (pathname.startsWith('/job-tpls') || pathname.startsWith('/job-tasks')) return 'self_healing';
   return undefined;
 }
 
-export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendConfig | undefined {
+export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendConfig {
   const pageType = matchPageTypeByUrl(url);
-  if (!pageType) return undefined;
 
   switch (pageType) {
     case 'dashboards':
@@ -43,13 +56,12 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
       };
     case 'alert_rule':
       return {
-        queryAction: { key: 'creation' },
         promptList: isZhCN(lang)
-          ? ['创建一条 CPU 使用率超过 80% 的告警规则', '创建一条主机失联的告警规则', '创建一条机器磁盘使用率超过 85% 的告警规则']
+          ? ['创建一条 CPU 使用率超过 80% 的告警规则', '为什么某个告警规则没有发出告警', '这个告警为什么会触发']
           : [
               'Create a CPU usage alert rule with a threshold above 80%',
-              'Create a host down alert rule based on target heartbeat loss',
-              'Create a disk usage alert rule with a threshold above 85%',
+              'Why did a certain alert rule not fire',
+              'Why did this alert trigger',
             ],
       };
     case 'alert_history':
@@ -70,8 +82,56 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
               'Group current active alerts by severity and busi group',
             ],
       };
+    case 'targets':
+      return {
+        promptList: isZhCN(lang)
+          ? ['我刚装的机器为什么没出现 / 显示 unknown？', '这台机器为什么失联了？', '如何部署 categraf 采集器']
+          : [
+              'I just installed a machine but it does not appear / shows unknown, why?',
+              'Why did this machine go offline?',
+              'How to deploy the categraf collector',
+            ],
+      };
+    case 'notification_rules':
+      return {
+        promptList: isZhCN(lang)
+          ? ['这条规则保存后会命中哪些事件？', '为什么我这条告警没发出通知？', '为什么测试能收到但实际发不出通知？']
+          : [
+              'Which events will this rule match after saving?',
+              'Why did my alert not send a notification?',
+              'Why can the test receive but real notifications fail?',
+            ],
+      };
+    case 'notification_channels':
+      return {
+        promptList: isZhCN(lang)
+          ? ['检查一下这条媒介配置的是否正确', '飞书 / 钉钉 / 企微怎么 @ 到具体的人？', '我有个 v6/v7 老脚本 / 老媒介配置，v8 升级后字段对不上，帮我看看怎么改']
+          : [
+              'Check whether this channel is configured correctly',
+              'How to @ a specific person in Feishu / DingTalk / WeCom?',
+              'I have an old v6/v7 script or channel config that no longer matches v8 fields, help me fix it',
+            ],
+      };
+    case 'self_healing':
+      return {
+        promptList: isZhCN(lang)
+          ? ['帮我写一个磁盘清理 / 服务重启 / OOM dump 自愈脚本', '自愈脚本怎么从 stdin 拿告警字段？', '我最近哪些告警频繁触发？有没有适合自愈的场景推荐？']
+          : [
+              'Write a self-healing script for disk cleanup / service restart / OOM dump',
+              'How does a self-healing script read alert fields from stdin?',
+              'Which alerts fired most frequently recently? Any scenarios suitable for self-healing?',
+            ],
+      };
     default:
-      return undefined;
+      return {
+        promptList: isZhCN(lang)
+          ? ['如何使用仪表盘可视化业务指标？', '如何配置我的第一条告警规则？', '如何添加数据源？']
+          : [
+              'How to visualize business metrics with dashboards?',
+              'How to configure my first alert rule?',
+              'How to add a data source?',
+            ],
+      };
   }
 }
 

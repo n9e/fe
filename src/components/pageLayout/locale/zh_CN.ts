@@ -6,6 +6,7 @@ const zh_CN = {
   docs: '文档',
   docsCenter: '文档中心',
   viewDemo: '查看 DEMO',
+  submit_issue: '提交问题',
   theme: {
     title: '主题配置',
     title_help: '配置仅对当前用户生效',

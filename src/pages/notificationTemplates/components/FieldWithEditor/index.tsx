@@ -7,6 +7,7 @@ import CodeMirror from '@/components/CodeMirror';
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { getNotifyTplPrompts } from '@/components/AiChatNG/recommend';
 
+import { NS } from '../../constants';
 import './style.less';
 
 interface IProps {
@@ -33,7 +34,7 @@ export const generateRules = (limitSize) => {
 };
 
 export default function FieldWithEditor(props: IProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation(NS);
   const { label, titleExtra, value, onChange, extensions, previewResult, scrolling = true } = props;
 
   return (
@@ -49,7 +50,9 @@ export default function FieldWithEditor(props: IProps) {
                   key: 'notify_template_generator',
                 }}
                 promptList={getNotifyTplPrompts(i18n.language)}
-              />
+              >
+                {t('content.ai_generate')}
+              </AiButton>
             </div>
           </div>
           <div>{titleExtra}</div>

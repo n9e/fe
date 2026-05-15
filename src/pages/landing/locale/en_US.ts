@@ -96,7 +96,7 @@ const en_US = {
     ai: {
       title: 'AI Intelligence',
       description: 'LLM and agents',
-      links: ['How to configure an LLM model?', 'How to use Agents to analyze alerts?'],
+      links: ['How to add a data source?', 'How to use Agents to analyze alerts?'],
     },
   },
   aiAssistant: {

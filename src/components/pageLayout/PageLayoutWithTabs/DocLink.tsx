@@ -16,6 +16,7 @@ export default function DocLink({ link }: { link: string }) {
       icon={<IconFont type='icon-ic_book_one' />}
       href={href}
       target='_blank'
+      rel='noopener'
     >
       {t('common:document_title')}
     </Button>
