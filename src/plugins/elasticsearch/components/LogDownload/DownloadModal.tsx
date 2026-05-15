@@ -9,6 +9,8 @@ interface IProps {
   queryData: any;
 }
 
+const MAX_DOWNLOAD_COUNT = 65535;
+
 export default function DownloadModal(props: IProps) {
   const { t } = useTranslation('explorer');
   const { queryData } = props;
@@ -19,6 +21,7 @@ export default function DownloadModal(props: IProps) {
 
   useEffect(() => {
     if (queryData && downloadVisible) {
+      const total = Number(queryData.total) || 0;
       form.setFieldsValue({
         ...queryData,
         cate: queryData.datasourceCate,
@@ -27,7 +30,7 @@ export default function DownloadModal(props: IProps) {
           format: 'json',
           time_sort: 'asc',
           countType: 'custom',
-          count: 0,
+          count: Math.min(total || MAX_DOWNLOAD_COUNT, MAX_DOWNLOAD_COUNT),
         },
       });
     }
@@ -77,7 +80,7 @@ export default function DownloadModal(props: IProps) {
         }}
         centered
       >
-        <Form layout='vertical' form={form} initialValues={{ config: { format: 'json', count: 0 } }}>
+        <Form layout='vertical' form={form} initialValues={{ config: { format: 'json', count: MAX_DOWNLOAD_COUNT } }}>
           <Form.Item name={'cate'} hidden>
             <Input />
           </Form.Item>
@@ -134,7 +137,7 @@ export default function DownloadModal(props: IProps) {
               {() => {
                 const curCountType = form.getFieldValue(['config', 'countType']);
                 return curCountType === 'all' ? null : (
-                  <Form.Item name={['config', 'count']} rules={[{ required: true, type: 'number', min: 1, max: 65535, message: t('log.log_download.custom_validated') }]}>
+                  <Form.Item name={['config', 'count']} rules={[{ required: true, type: 'number', min: 1, max: MAX_DOWNLOAD_COUNT, message: t('log.log_download.custom_validated', { maxCount: MAX_DOWNLOAD_COUNT }) }]}>
                     <InputNumber size='small' style={{ marginTop: '32px' }} />
                   </Form.Item>
                 );
