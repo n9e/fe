@@ -1,29 +1,24 @@
 import React from 'react';
-import { Menu, Dropdown, Space, Drawer, Button, Tooltip, Divider } from 'antd';
-import DocumentDrawer from '@/components/DocumentDrawer';
+import { Button } from 'antd';
 import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 import { IS_ENT } from '@/utils/constant';
 
 export default function DocLink({ link }: { link: string }) {
   const { t } = useTranslation();
+  const href = IS_ENT ? link.replace('https://flashcat.cloud', '') : link;
+
   return (
-    <>
-      <Divider type='vertical' style={{ margin: '0 0 0 12px' }} />
-      <Button
-        className='document-open-button'
-        type='link'
-        icon={<IconFont type='icon-ic_book_one' />}
-        onClick={() =>
-          DocumentDrawer({
-            title: t('common:page_help'),
-            type: 'iframe',
-            documentPath: link,
-          })
-        }
-      >
-        {t('common:document_title')}
-      </Button>
-    </>
+    <Button
+      className='document-open-button page-layout-header-button'
+      size='small'
+      type='default'
+      icon={<IconFont type='icon-ic_book_one' />}
+      href={href}
+      target='_blank'
+      rel='noopener'
+    >
+      {t('common:document_title')}
+    </Button>
   );
 }

@@ -126,7 +126,6 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
-                  {IS_ENT && doc && <DocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
@@ -135,6 +134,8 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
 
                   <div className='page-header-action-group'>
                     {rightArea}
+                    {IS_ENT && <DocLink link={documentUrl} />}
+                    <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
                     </AdvancedWrap>
@@ -142,15 +143,13 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                       <FeatureNotification />
                     </AdvancedWrap>
 
-                    <Button target='_blank' href={documentUrl} size='small' type='text' className='page-layout-doc-center-btn'>
-                      <Tooltip title={t('docsCenter')}>
-                        <span className='inline-flex items-center gap-1'>
+                    {!IS_ENT && IS_PLUS && (
+                      <Button target='_blank' href={documentUrl} size='small' type='text' rel='noopener'>
+                        <Tooltip title={t('docs')}>
                           <DocIcon className='text-[12px]' />
-                          <span>{t('docsCenter')}</span>
-                        </span>
-                      </Tooltip>
-                    </Button>
-                    <FlashAiButton />
+                        </Tooltip>
+                      </Button>
+                    )}
 
                     {!IS_ENT && !IS_PLUS && (
                       <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
