@@ -25,21 +25,6 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
-    name: 'nickname',
-    i18nKey: 'account:profile.nickname',
-    visible: true,
-  },
-  {
-    name: 'email',
-    i18nKey: 'account:profile.email',
-    visible: false,
-  },
-  {
-    name: 'phone',
-    i18nKey: 'account:profile.phone',
-    visible: false,
-  },
-  {
     name: 'roles',
     i18nKey: 'account:profile.role',
     visible: true,

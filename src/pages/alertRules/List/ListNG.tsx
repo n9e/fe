@@ -11,7 +11,7 @@ import moment from 'moment';
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
-import { allCates } from '@/components/AdvancedWrap/utils';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
 import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
@@ -55,7 +55,7 @@ interface Props {
 }
 
 export default function AlertRules(props: Props) {
-  const { t } = useTranslation('alertRules');
+  const { t, i18n } = useTranslation('alertRules');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   let defaultFilter = {} as Filter;
@@ -126,7 +126,9 @@ export default function AlertRules(props: Props) {
           return localeCompare(a.name, b.name);
         },
         render: (data, record) => {
-          let logoSrc = _.find(allCates, { value: record.cate })?.logo;
+          const cate = _.find(allCates, { value: record.cate });
+          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+          let logoSrc = cate?.logo;
           if (record.cate === 'host') {
             logoSrc = '/image/logos/host.png';
           }
@@ -142,8 +144,9 @@ export default function AlertRules(props: Props) {
               >
                 {data}
               </Link>
-              <span className='text-soft text-xs inline-flex items-center gap-2'>
+              <span className='text-soft text-xs inline-flex items-center gap-2 flex-wrap'>
                 {logoSrc && <img alt={record.cate} src={logoSrc} height={14} />}
+                {cateLabel && <span>{cateLabel}</span>}
                 {groupName && <span>{groupName}</span>}
                 {_.map(record.severities, (severity) => (
                   <Tag key={severity} color={priorityColor[severity - 1]} style={{ marginRight: 0 }}>

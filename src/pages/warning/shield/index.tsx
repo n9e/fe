@@ -33,7 +33,7 @@ import RefreshIcon from '@/components/RefreshIcon';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
-import { allCates } from '@/components/AdvancedWrap/utils';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import DeleteMutesModal from './components/DeleteMutesModal';
 
 import './locale';
@@ -53,7 +53,7 @@ interface Filter {
 const FILTER_SESSION_STORAGE_KEY = 'alert-mutes-filter';
 
 const Shield: React.FC = () => {
-  const { t } = useTranslation('alertMutes');
+  const { t, i18n } = useTranslation('alertMutes');
   const history = useHistory();
   const { datasourceList, groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
@@ -81,7 +81,9 @@ const Shield: React.FC = () => {
         dataIndex: 'note',
         render: (data, record: any) => {
           const groupName = _.find(busiGroups, { id: record.group_id })?.name;
-          let logoSrc = _.find(allCates, { value: record.cate })?.logo;
+          const cate = _.find(allCates, { value: record.cate });
+          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+          let logoSrc = cate?.logo;
           if (record.cate === 'host') {
             logoSrc = '/image/logos/host.png';
           }
@@ -95,8 +97,9 @@ const Shield: React.FC = () => {
               >
                 {data}
               </Link>
-              <span className='text-soft text-xs inline-flex items-center gap-1'>
+              <span className='text-soft text-xs inline-flex items-center gap-2 flex-wrap'>
                 {logoSrc && <img alt={record.cate} src={logoSrc} height={14} />}
+                {cateLabel && <span>{cateLabel}</span>}
                 {showBusinessGroup && groupName && <span>{groupName}</span>}
               </span>
             </div>

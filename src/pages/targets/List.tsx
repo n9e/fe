@@ -46,8 +46,9 @@ export interface ITargetProps {
   id: number;
   cluster: string;
   group_id: number;
-  group_objs: object[] | null;
+  group_objs: { name: string }[] | null;
   ident: string;
+  host_ip?: string;
   note: string;
   tags: string[];
   beat_time: number;
@@ -96,7 +97,7 @@ export default function List(props: IProps) {
     {
       title: (
         <Space>
-          {t('common:table.ident')}
+          {t('host_ip')}
           <Dropdown
             trigger={['click']}
             overlay={
@@ -148,28 +149,36 @@ export default function List(props: IProps) {
       ),
       dataIndex: 'ident',
       className: 'n9e-hosts-table-column-ident',
-      render: (text) => {
+      render: (text, record: ITargetProps) => {
+        const groupNames = _.map(record.group_objs, 'name');
         return (
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <TargetMetaDrawer ident={text} />
-            {import.meta.env['VITE_IS_PRO'] && (
-              <Tooltip title='查看关联采集配置'>
-                <ApartmentOutlined
-                  onClick={() => {
-                    setCollectsDrawerVisible(true);
-                    setCollectsDrawerIdent(text);
-                  }}
-                />
-              </Tooltip>
-            )}
+          <div className='flex flex-col gap-0.5'>
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <TargetMetaDrawer ident={text} targetNode={record.host_ip || text} />
+              {import.meta.env['VITE_IS_PRO'] && (
+                <Tooltip title='查看关联采集配置'>
+                  <ApartmentOutlined
+                    onClick={() => {
+                      setCollectsDrawerVisible(true);
+                      setCollectsDrawerIdent(text);
+                    }}
+                  />
+                </Tooltip>
+              )}
+            </div>
+            <span className='text-soft text-xs inline-flex items-center gap-2 flex-wrap'>
+              {record.host_ip && record.host_ip !== text && <span>{text}</span>}
+              {!_.isEmpty(groupNames) ? <span>{groupNames.join(' / ')}</span> : <span>{t('common:not_grouped')}</span>}
+              {record.note && <span>{record.note}</span>}
+            </span>
           </div>
         );
       },
@@ -178,13 +187,7 @@ export default function List(props: IProps) {
 
   _.forEach(columnsConfigs, (item) => {
     if (!item.visible) return;
-    if (item.name === 'host_ip') {
-      columns.push({
-        title: t('host_ip'),
-        dataIndex: 'host_ip',
-        className: 'n9e-hosts-table-column-ip',
-      });
-    }
+    if (item.name === 'host_ip' || item.name === 'group_obj') return;
     if (item.name === 'host_tags') {
       columns.push({
         title: (
@@ -266,33 +269,6 @@ export default function List(props: IProps) {
           return (
             tagArr && (
               <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
-            )
-          );
-        },
-      });
-    }
-    if (item.name === 'group_obj') {
-      columns.push({
-        title: t('group_obj'),
-        dataIndex: 'group_objs',
-        className: 'n9e-hosts-table-column-tags',
-        ellipsis: {
-          showTitle: false,
-        },
-        render(tagArr) {
-          if (_.isEmpty(tagArr)) return t('common:not_grouped');
-          const content =
-            tagArr &&
-            tagArr.map((item) => (
-              <Tag color='purple' key={item.name}>
-                {item.name}
-              </Tag>
-            ));
-          return (
-            tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body}>
                 {content}
               </Tooltip>
             )
