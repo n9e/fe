@@ -91,6 +91,7 @@ const en_US = {
       event_update: 'Event update',
       event_drop: 'Event drop',
       ai_summary: 'AI summary',
+      ai_runner: 'AI Runner',
       label_enrich: 'Event label enrich',
       script: 'Run script',
       inhibit: 'Event inhibit',
@@ -171,6 +172,21 @@ Please provide a summary within 100 characters, focusing on:
 3. Possible impact
 4. Simple handling suggestion
 The summary should be concise and help O&M staff quickly understand the alert situation.`,
+  },
+  ai_runner: {
+    llm_config_id: 'Model',
+    llm_config_id_placeholder: 'Select a configured LLM',
+    llm_config_id_required: 'Please select a model',
+    description: 'Task description',
+    description_placeholder:
+      'Describe the task for the AI in natural language. Supports event template variables, e.g. {{ .event.RuleName }} / {{ .event.Severity }} / {{ .event.TriggerValue }}.',
+    description_tip:
+      'Supports Go template syntax. You may reference {{ .event.* }} fields (RuleName, Severity, TriggerValue, TagsMap, ...) and {{ .Inputs }}. When the event context is empty (manual/scheduled triggers), template variables render to empty strings without error. If the task description explicitly asks the AI to write results back, the AI will call the set_event_annotation tool; otherwise the event is left untouched.',
+    description_required: 'Please enter the task description',
+    timeout_seconds: 'Execution timeout',
+    timeout_seconds_required: 'Please enter the timeout',
+    timeout_seconds_tip:
+      'In seconds. If the AI call exceeds this value, the node terminates immediately and is marked as failed. Other workflow nodes are not affected. Default: 180s.',
   },
   script: {
     timeout: 'Timeout (ms)',

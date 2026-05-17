@@ -1,4 +1,4 @@
-export type ProcessorType = 'relabel' | 'label_enrich' | 'callback' | 'ai_summary';
+export type ProcessorType = 'relabel' | 'label_enrich' | 'callback' | 'ai_summary' | 'ai_runner';
 
 export type BaseItem = {
   id: number;
@@ -83,7 +83,18 @@ export type AISummaryItem = BaseItem & {
   }[];
 };
 
-export type Item = RelabelItem | LabelEnrichItem | CallbackItem | AISummaryItem;
+export type AIRunnerItem = BaseItem & {
+  processors: {
+    type: 'ai_runner';
+    config: {
+      llm_config_id: number;
+      description: string;
+      timeout_seconds: number;
+    };
+  }[];
+};
+
+export type Item = RelabelItem | LabelEnrichItem | CallbackItem | AISummaryItem | AIRunnerItem;
 
 export type ExecutionItem = {
   id: string;

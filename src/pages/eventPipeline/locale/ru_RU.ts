@@ -91,6 +91,7 @@ const ru_RU = {
       event_update: 'Обновление события',
       event_drop: 'Отбрасывание события',
       ai_summary: 'AI Резюме',
+      ai_runner: 'AI Runner',
       label_enrich: 'Обогащение меток события',
       script: 'Обработка скрипта',
       inhibit: 'Подавление событий',

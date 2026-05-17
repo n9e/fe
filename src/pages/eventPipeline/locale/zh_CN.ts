@@ -94,6 +94,7 @@ const zh_CN = {
       annotation_qd: '事件附加信息丰富（基于查询）',
       callback: 'Webhook 回调',
       ai_summary: 'AI 摘要生成',
+      ai_runner: 'AI Runner',
       script: '脚本执行',
       event_recover: '故障自愈',
       alert_shot: '告警截图',
@@ -190,6 +191,22 @@ const zh_CN = {
 1. 点击 "Custom Params" 旁的 + 按钮
 2. 在"参数名"栏输入参数名（如：temperature）
 3. 在"参数值"栏输入对应值（如：0.7）`,
+  },
+  ai_runner: {
+    llm_config_id: '选择模型',
+    llm_config_id_placeholder: '请选择系统中已配置的 LLM',
+    llm_config_id_required: '请选择模型',
+    description: '任务描述',
+    description_placeholder: `请用自然语言描述要 AI 完成的任务，可使用事件模板变量，例如：
+当前告警 {{ .event.RuleName }}（严重级别 {{ .event.Severity }}）触发，
+请基于已注册的 skill 与内置 tool 调查根因，
+并将分析结论通过 set_event_annotation 工具写入 annotations.ai_runner_result。`,
+    description_tip:
+      '支持 Go 模板语法，可引用 {{ .event.* }}（如 RuleName、Severity、TriggerValue、TagsMap 等）、{{ .Inputs }}。事件上下文为空时模板变量会被渲染为空字符串，不会报错。当任务描述明确要求写回 annotations 时，AI 会调用 set_event_annotation 工具完成写入；未提及则保持事件原样。',
+    description_required: '请输入任务描述',
+    timeout_seconds: '执行超时时间',
+    timeout_seconds_required: '请输入超时时间',
+    timeout_seconds_tip: '单位秒。AI 调用耗时超过该值时该节点立即终止并标记为失败，工作流其他节点不受影响。默认 180 秒。',
   },
   script: {
     timeout: '超时时间（单位毫秒）',

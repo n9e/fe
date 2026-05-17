@@ -91,6 +91,7 @@ const ja_JP = {
       event_update: 'イベント更新',
       event_drop: 'イベント破棄',
       ai_summary: 'AI要約',
+      ai_runner: 'AI Runner',
       label_enrich: 'イベントラベルの充実化',
       script: 'スクリプト処理',
       inhibit: 'イベント抑制',

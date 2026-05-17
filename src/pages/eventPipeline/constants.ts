@@ -10,6 +10,11 @@ export const DEFAULT_PROCESSOR_CONFIG_MAP = {
   event_update: {
     timeout: 10000,
   },
+  ai_runner: {
+    // AI Runner 默认超时 180s（与后端 DefaultAIRunnerTimeoutSeconds 一致），
+    // llm_config_id / description 留给用户填。
+    timeout_seconds: 180,
+  },
 };
 export const DEFAULT_VALUES = {
   processors: [

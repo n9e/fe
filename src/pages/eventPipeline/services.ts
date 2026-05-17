@@ -105,3 +105,16 @@ export const getExecutionById = function (id: string): Promise<ExecutionItem> {
     params: { exec_id: id },
   }).then((res) => res.dat);
 };
+
+export type LLMConfigBrief = {
+  id: number;
+  name: string;
+  model: string;
+};
+
+// AI Runner 表单的"模型"下拉用。后端 /ai-llm-configs/briefs 已过滤掉 disabled。
+export function getLLMConfigBriefs(): Promise<LLMConfigBrief[]> {
+  return request('/api/n9e/ai-llm-configs/briefs', {
+    method: RequestMethod.Get,
+  }).then((res) => res.dat ?? []);
+}

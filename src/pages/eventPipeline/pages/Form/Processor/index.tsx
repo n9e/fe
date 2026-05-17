@@ -18,6 +18,7 @@ import Relabel from './Relabel';
 import Callback from './Callback';
 import EventDrop from './EventDrop';
 import AISummary from './AISummary';
+import AIRunner from './AIRunner';
 
 interface Props {
   disabled?: boolean;
@@ -102,7 +103,7 @@ export default function NotifyConfig(props: Props) {
         }
       >
         <Select
-          options={_.map(_.concat(['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary'], IS_PLUS ? PlusOptions : []), (item) => {
+          options={_.map(_.concat(['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary', 'ai_runner'], IS_PLUS ? PlusOptions : []), (item) => {
             return {
               label: t(`processor.options.${item}`),
               value: item,
@@ -125,6 +126,7 @@ export default function NotifyConfig(props: Props) {
       {processorType === 'event_update' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
       {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} />}
+      {processorType === 'ai_runner' && <AIRunner field={field} namePath={[field.name, 'config']} />}
       <PlusProcessor processorType={processorType} field={field} />
 
       <TestModal type='processor' config={processorConfig} />

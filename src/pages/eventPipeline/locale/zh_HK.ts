@@ -90,6 +90,7 @@ const zh_HK = {
       event_update: '事件更新',
       event_drop: '事件丟棄',
       ai_summary: 'AI 摘要',
+      ai_runner: 'AI Runner',
       label_enrich: '事件標籤豐富',
       script: '腳本處理',
       inhibit: '事件抑制',
