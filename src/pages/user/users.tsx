@@ -53,14 +53,14 @@ const Resource: React.FC = () => {
     {
       title: t('account:profile.username'),
       dataIndex: 'username',
+      width: 260,
       ellipsis: true,
       sorter: true,
       render: (text: string, record) => {
-        const secondary = _.compact([record.nickname, record.email, record.phone]);
         return (
           <div className='flex flex-col gap-0.5'>
-            <span>{text}</span>
-            {secondary.length > 0 && <span className='text-soft text-xs'>{secondary.join(' · ')}</span>}
+            <span>{record.nickname || text}</span>
+            <span className='text-soft text-xs'>{text}</span>
           </div>
         );
       },
