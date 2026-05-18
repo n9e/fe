@@ -35,6 +35,7 @@ export default function index(props: Props) {
   const { tabKey, disabled, defaultFormValuesControl, renderCommonSettings, isOpenSearch } = props;
 
   const form = Form.useFormInstance();
+  const datasourceValue = Form.useWatch('datasourceValue', form);
 
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
@@ -65,6 +66,22 @@ export default function index(props: Props) {
     setTimeout(() => {
       form.validateFields().then((values) => {
         const queryValues = values.query;
+
+        // SQL 模式：执行逻辑待后端接口设计完成后实现
+        // SQL 模式：保存缓存和历史记录后触发查询
+        if (queryValues.syntax === 'sql') {
+          if (defaultFormValuesControl?.setDefaultFormValues) {
+            defaultFormValuesControl.setDefaultFormValues({
+              datasourceCate: values.datasourceCate,
+              datasourceValue: values.datasourceValue,
+              query: _.omit(queryValues, 'refreshFlag'),
+            });
+          }
+          setLocalQueryHistory(`${QUERY_CACHE_KEY}-${values.datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
+
+          form.setFieldsValue({ refreshFlag: _.uniqueId('refreshFlag_') });
+          return;
+        }
 
         if (!intervalFixedRef.current && queryValues.range) {
           const { start, end } = parseRange(queryValues.range);
@@ -151,6 +168,18 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'filters']} hidden>
           <div />
         </Form.Item>
+        <Form.Item name={['query', 'syntax']} hidden>
+          <div />
+        </Form.Item>
+        <Form.Item name={['query', 'sql']} hidden>
+          <div />
+        </Form.Item>
+        <Form.Item name={['query', 'sqlVizType']} hidden>
+          <div />
+        </Form.Item>
+        <Form.Item name={['query', 'keys']} hidden>
+          <div />
+        </Form.Item>
         <div className='h-full flex'>
           <SideBar ns={NAME_SPACE}>
             {renderCommonSettings({
@@ -192,6 +221,7 @@ export default function index(props: Props) {
             <Main
               tabKey={tabKey}
               indexData={indexData}
+              datasourceValue={datasourceValue}
               organizeFields={organizeFields}
               setOrganizeFields={(value) => {
                 const datasourceValue = form.getFieldValue('datasourceValue');
