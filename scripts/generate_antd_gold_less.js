@@ -52,7 +52,7 @@ function saveLess(filePath, filename, callback) {
         'table-header-bg': 'var(--fc-fill-2-5)',
         'table-header-color': 'var(--fc-text-3)',
         'table-header-sort-bg': 'var(--fc-fill-2-5)',
-        'table-body-sort-bg': 'var(--fc-fill-2-5)',
+        'table-body-sort-bg': 'var(--fc-fill-2)',
         'table-row-hover-bg': 'rgb(var(--fc-fill-5-rgb) / 0.2)',
         'table-selected-row-color': 'inherit',
         // AntD calls color functions on selected/border tokens; patch runtime CSS vars in theme/default.less.
