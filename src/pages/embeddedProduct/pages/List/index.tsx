@@ -132,9 +132,11 @@ export default function Index() {
         title: t('common:table.operations'),
         dataIndex: 'operator',
         width: 64,
+      fixed: 'right' as const,
         render: (_val, record: EmbeddedProductResponse) => {
           return (
             <Dropdown
+              trigger={['hover', 'click']}
               overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
@@ -237,6 +239,7 @@ export default function Index() {
           pagination={false}
           dataSource={data}
           columns={columns}
+          scroll={{ x: 'max-content' }}
           onRow={(record) => {
             return {
               onDoubleClick: () => {

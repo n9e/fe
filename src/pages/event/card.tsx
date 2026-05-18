@@ -172,9 +172,11 @@ function Card(props: Props, ref) {
       title: t('common:table.operations'),
       dataIndex: 'operate',
       width: 64,
+      fixed: 'right' as const,
       render(value, record) {
         return (
           <Dropdown
+            trigger={['hover', 'click']}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
@@ -339,6 +341,7 @@ function Card(props: Props, ref) {
           }}
           dataSource={drawerList}
           columns={columns}
+          scroll={{ x: 'max-content' }}
           pagination={{
             defaultPageSize: 30,
             showSizeChanger: true,

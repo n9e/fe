@@ -147,9 +147,11 @@ export default function ResourcesTable(props: Props) {
           {
             title: t('common:table.operations'),
             width: 64,
+      fixed: 'right' as const,
             render: (record) => {
               return (
                 <Dropdown
+                  trigger={['hover', 'click']}
                   overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>
@@ -194,6 +196,7 @@ export default function ResourcesTable(props: Props) {
         ]}
         pagination={false}
         scroll={{
+          x: 'max-content',
           y: 400,
         }}
       />

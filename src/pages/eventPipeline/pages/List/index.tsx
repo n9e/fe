@@ -157,6 +157,7 @@ export default function List() {
       <Table
         size='small'
         rowKey='id'
+        scroll={{ x: 'max-content' }}
         columns={[
           {
             title: t('common:table.name'),
@@ -227,9 +228,11 @@ export default function List() {
           {
             title: t('common:table.operations'),
             width: 64,
+      fixed: 'right' as const,
             render: (item: Item) => {
               return (
                 <Dropdown
+                  trigger={['hover', 'click']}
                   overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>

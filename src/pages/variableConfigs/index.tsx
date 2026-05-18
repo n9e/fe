@@ -89,6 +89,7 @@ export default function index() {
           className='mt-2'
           rowKey='id'
           size='small'
+          scroll={{ x: 'max-content' }}
           columns={[
             {
               dataIndex: 'ckey',
@@ -112,9 +113,11 @@ export default function index() {
             {
               title: t('common:table.operations'),
               width: 64,
+      fixed: 'right' as const,
               render: (record) => {
                 return (
                   <Dropdown
+                    trigger={['hover', 'click']}
                     overlayClassName='fc-table-action-dropdown'
                     overlay={
                       <Menu>

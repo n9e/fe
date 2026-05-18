@@ -114,8 +114,10 @@ const Resource: React.FC = () => {
     {
       title: t('common:table.operations'),
       width: 64,
+      fixed: 'right' as const,
       render: (text: string, record) => (
         <Dropdown
+          trigger={['hover', 'click']}
           overlayClassName='fc-table-action-dropdown'
           overlay={
             <Menu>
@@ -406,7 +408,7 @@ const Resource: React.FC = () => {
                 </Button>
               </Row>
 
-              <Table className='mt-2' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} pagination={pagination} />
+              <Table className='mt-2' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} pagination={pagination} scroll={{ x: 'max-content' }} />
             </div>
           ) : (
             <div className='blank-busi-holder'>

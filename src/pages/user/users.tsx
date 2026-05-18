@@ -138,9 +138,11 @@ const Resource: React.FC = () => {
     {
       title: t('common:table.operations'),
       width: 64,
+      fixed: 'right' as const,
       render: (text: string, record) => {
         return (
           <Dropdown
+            trigger={['hover', 'click']}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
@@ -306,6 +308,7 @@ const Resource: React.FC = () => {
           rowKey='id'
           columns={ajustColumns(userColumns, columnsConfigs)}
           {...tableProps}
+          scroll={{ x: 'max-content' }}
           pagination={{
             ...tableProps.pagination,
             ...pagination,

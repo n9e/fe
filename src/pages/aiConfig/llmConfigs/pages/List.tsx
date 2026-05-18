@@ -41,6 +41,7 @@ export default function List() {
                 pagination={pagination}
                 loading={loading}
                 dataSource={data}
+                scroll={{ x: 'max-content' }}
                 columns={[
                   {
                     dataIndex: 'id',
@@ -91,8 +92,10 @@ export default function List() {
                   {
                     title: t('common:table.operations'),
                     width: 64,
+      fixed: 'right' as const,
                     render: (record) => (
                       <Dropdown
+                        trigger={['hover', 'click']}
                         overlayClassName='fc-table-action-dropdown'
                         overlay={
                           <Menu>

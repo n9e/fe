@@ -155,9 +155,11 @@ export default function index(props: Props) {
           {
             title: t('common:table.operations'),
             width: 64,
+      fixed: 'right' as const,
             render: (record) => {
               return (
                 <Dropdown
+                  trigger={['hover', 'click']}
                   overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>
@@ -236,6 +238,7 @@ export default function index(props: Props) {
             },
           },
         ]}
+        scroll={{ x: 'max-content' }}
         pagination={pagination}
       />
     </>

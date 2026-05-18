@@ -217,9 +217,11 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         title: t('common:table.operations'),
         dataIndex: 'operator',
         width: 64,
+      fixed: 'right' as const,
         render: (data, record) => {
           return (
             <Dropdown
+              trigger={['hover', 'click']}
               overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
@@ -434,6 +436,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         className='mt-2'
         size='small'
         rowKey='id'
+        scroll={{ x: 'max-content' }}
         pagination={{
           total: currentStrategyData.length,
           showQuickJumper: true,

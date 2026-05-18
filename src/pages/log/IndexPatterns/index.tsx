@@ -116,6 +116,7 @@ export default function Servers() {
                 tableLayout='fixed'
                 loading={loading}
                 dataSource={_.filter(data, (item) => _.includes(_.toLower(item.name), _.toLower(search)))}
+                scroll={{ x: 'max-content' }}
                 pagination={false}
                 columns={[
                   {
@@ -144,9 +145,11 @@ export default function Servers() {
                   {
                     title: t('common:table.operations'),
                     width: 64,
+      fixed: 'right' as const,
                     render: (record) => {
                       return (
                         <Dropdown
+                          trigger={['hover', 'click']}
                           overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>

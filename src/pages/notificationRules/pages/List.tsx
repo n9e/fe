@@ -205,9 +205,11 @@ export default function List() {
             {
               title: t('common:table.operations'),
               width: 64,
+      fixed: 'right' as const,
               render: (record) => {
                 return (
                   <Dropdown
+                    trigger={['hover', 'click']}
                     overlayClassName='fc-table-action-dropdown'
                     overlay={
                       <Menu>
@@ -249,6 +251,7 @@ export default function List() {
               },
             },
           ]}
+          scroll={{ x: 'max-content' }}
           pagination={pagination}
         />
       </div>

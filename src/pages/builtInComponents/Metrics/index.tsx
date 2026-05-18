@@ -144,9 +144,11 @@ export default function index(props: Props) {
       title: t('common:table.operations'),
       dataIndex: 'operator',
       width: 64,
+      fixed: 'right' as const,
       render: (data, record: any) => {
         return (
           <Dropdown
+            trigger={['hover', 'click']}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
@@ -423,6 +425,7 @@ export default function index(props: Props) {
         rowKey='id'
         {...tableProps}
         columns={ajustColumns(columns, columnsConfigs)}
+        scroll={{ x: 'max-content' }}
         pagination={{
           ...pagination,
           ...tableProps.pagination,

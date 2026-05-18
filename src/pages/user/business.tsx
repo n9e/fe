@@ -71,8 +71,10 @@ const Resource: React.FC = () => {
     {
       title: t('common:table.operations'),
       width: 64,
+      fixed: 'right' as const,
       render: (text: string, record) => (
         <Dropdown
+          trigger={['hover', 'click']}
           overlayClassName='fc-table-action-dropdown'
           overlay={
             <Menu>
@@ -337,6 +339,7 @@ const Resource: React.FC = () => {
                 rowKey='id'
                 columns={teamMemberColumns}
                 dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
+                scroll={{ x: 'max-content' }}
                 loading={memberLoading}
                 pagination={pagination}
               />

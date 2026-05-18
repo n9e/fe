@@ -306,9 +306,11 @@ export default function index() {
                   {
                     title: t('common:table.operations'),
                     width: 64,
+      fixed: 'right' as const,
                     render: (text: string, record: DashboardType) => {
                       return (
                         <Dropdown
+                          trigger={['hover', 'click']}
                           overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>
@@ -404,6 +406,7 @@ export default function index() {
             )}
             rowKey='id'
             size='small'
+            scroll={{ x: 'max-content' }}
             rowSelection={{
               selectedRowKeys: selectRowKeys,
               onChange: (selectedRowKeys: number[]) => {

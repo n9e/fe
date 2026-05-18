@@ -131,9 +131,11 @@ export default function TableCpt(props: IProps) {
       title: t('common:table.operations'),
       dataIndex: 'operate',
       width: 64,
+      fixed: 'right' as const,
       render(value, record) {
         return (
           <Dropdown
+            trigger={['hover', 'click']}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
@@ -242,6 +244,7 @@ export default function TableCpt(props: IProps) {
           rowKey={(record) => record.id}
           columns={columns}
           {...tableProps}
+          scroll={{ x: 'max-content' }}
           rowClassName={(record: { severity: number; is_recovered: number }) => {
             return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
           }}

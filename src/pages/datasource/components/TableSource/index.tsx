@@ -193,9 +193,11 @@ const TableSource = (props: IPropsType) => {
     {
       title: t('common:table.operations'),
       width: 64,
+      fixed: 'right' as const,
       render: (record) => {
         return (
           <Dropdown
+            trigger={['hover', 'click']}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
@@ -284,6 +286,7 @@ const TableSource = (props: IPropsType) => {
         size='small'
         className='settings-data-source-list'
         rowKey='id'
+        scroll={{ x: 'max-content' }}
         dataSource={_.filter(tableData, (item) => {
           if (searchVal) {
             return _.includes(item.name, searchVal);

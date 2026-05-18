@@ -158,9 +158,11 @@ const index = (_props: any) => {
       {
         title: t('table.operations'),
         width: 64,
+      fixed: 'right' as const,
         render: (_text, record) => {
           return (
             <Dropdown
+              trigger={['hover', 'click']}
               overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
@@ -279,6 +281,7 @@ const index = (_props: any) => {
               rowKey='id'
               columns={columns}
               {...(tableProps as any)}
+              scroll={{ x: 'max-content' }}
               rowSelection={{
                 selectedRowKeys: selectedIds,
                 onChange: (selectedRowKeys) => {
