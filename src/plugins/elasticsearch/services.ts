@@ -405,4 +405,5 @@ export function esSQLDsQuery(data: {
   });
 }
 
-export { getESFieldProperties, getESFieldSample, getESAggFunctions } from '../../plus/datasource/elasticsearch/ExplorerNG/services';
+// @ts-ignore
+export { getESFieldProperties, getESFieldSample, getESAggFunctions } from 'plus:/datasource/elasticsearch/ExplorerNG/services';
