@@ -57,6 +57,11 @@ const ja_JP = {
       12: '1年前',
     },
   },
+  filter_disabled: {
+    placeholder: 'フィルターを選択',
+    0: '有効',
+    1: '無効',
+  },
 };
 
 export default ja_JP;

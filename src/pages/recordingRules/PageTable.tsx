@@ -24,6 +24,7 @@ interface Props {
 interface Filter {
   query?: string;
   datasourceIds?: number[];
+  disabled?: 0 | 1;
 }
 
 const FILTER_SESSION_STORAGE_KEY = 'recording-rules-filter';
@@ -59,6 +60,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const [currentStrategyData, setCurrentStrategyData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
+  const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
   const saveFilter = (patch: Partial<Filter>) => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
@@ -70,7 +72,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
 
   useEffect(() => {
     filterData();
-  }, [query, datasourceIds, currentStrategyDataAll]);
+  }, [query, datasourceIds, filterDisabled, currentStrategyDataAll]);
 
   const getRecordingRules = async () => {
     if (!gids) {
@@ -96,7 +98,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
           return _.includes(datasourceIds, id);
         }) ||
           datasourceIds?.length === 0 ||
-          !datasourceIds)
+          !datasourceIds) &&
+        (filterDisabled === undefined || item.disabled === filterDisabled)
       );
     });
     setCurrentStrategyData(res || []);
@@ -398,6 +401,19 @@ const PageTable: React.FC<Props> = ({ gids }) => {
               saveFilter({ query: val });
             }}
             allowClear
+          />
+          <Select
+            allowClear
+            placeholder={t('filter_disabled.placeholder')}
+            options={[
+              { label: t('filter_disabled.0'), value: 0 },
+              { label: t('filter_disabled.1'), value: 1 },
+            ]}
+            value={filterDisabled}
+            onChange={(val) => {
+              setFilterDisabled(val);
+              saveFilter({ disabled: val });
+            }}
           />
         </Space>
         {businessGroup.isLeaf && gids !== '-2' && (
