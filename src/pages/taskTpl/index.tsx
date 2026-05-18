@@ -41,6 +41,7 @@ import UnBindTags from './unBindTags';
 
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_TPL_NODE_ID';
 const SEARCH_SESSION_KEY = 'taskTpl_query';
+const TASK_TPL_TABLE_SCROLL_X = 1052;
 
 function getTableData(options: any, gids: string | undefined, query: string) {
   if (gids) {
@@ -120,6 +121,7 @@ const index = (_props: any) => {
       {
         title: t('tpl.title'),
         dataIndex: 'title',
+        width: 360,
         render: (text, record) => {
           const groupName = _.find(busiGroups, { id: record.group_id })?.name;
           return (
@@ -138,6 +140,7 @@ const index = (_props: any) => {
       {
         title: t('tpl.tags'),
         dataIndex: 'tags',
+        width: 280,
         render: (text) => {
           return <TableTags data={text} maxVisible={2} maxTagWidth={160} onTagClick={handleTagClick} />;
         },
@@ -145,12 +148,12 @@ const index = (_props: any) => {
       {
         title: t('tpl.creator'),
         dataIndex: 'create_by',
-        width: 100,
+        width: 120,
       },
       {
         title: t('tpl.last_updated'),
         dataIndex: 'update_at',
-        width: 160,
+        width: 180,
         render: (text) => {
           return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
         },
@@ -158,7 +161,7 @@ const index = (_props: any) => {
       {
         title: t('table.operations'),
         width: 64,
-      fixed: 'right' as const,
+        fixed: 'right' as const,
         render: (_text, record) => {
           return (
             <Dropdown
@@ -223,7 +226,7 @@ const index = (_props: any) => {
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
         {gids ? (
-          <div className='fc-border rounded-lg p-4' style={{ flex: 1 }}>
+          <div className='fc-border rounded-lg p-4' style={{ flex: 1, minWidth: 0 }}>
             <Row>
               <Col span={14} className='mb-2'>
                 <SearchInput
@@ -281,7 +284,7 @@ const index = (_props: any) => {
               rowKey='id'
               columns={columns}
               {...(tableProps as any)}
-              scroll={{ x: 'max-content' }}
+              scroll={{ x: TASK_TPL_TABLE_SCROLL_X }}
               rowSelection={{
                 selectedRowKeys: selectedIds,
                 onChange: (selectedRowKeys) => {

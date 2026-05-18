@@ -142,9 +142,22 @@ const index = (_props: any) => {
     ] as any,
     [
       {
+        title: t('task.creator'),
+        dataIndex: 'create_by',
+        width: 100,
+      },
+      {
+        title: t('task.created'),
+        dataIndex: 'create_at',
+        width: 160,
+        render: (text) => {
+          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+        },
+      },
+      {
         title: t('table.operations'),
         width: 64,
-      fixed: 'right' as const,
+        fixed: 'right' as const,
         render: (_text, record) => {
           return (
             <Dropdown
@@ -168,19 +181,6 @@ const index = (_props: any) => {
               <TableActionTrigger />
             </Dropdown>
           );
-        },
-      },
-      {
-        title: t('task.creator'),
-        dataIndex: 'create_by',
-        width: 100,
-      },
-      {
-        title: t('task.created'),
-        dataIndex: 'create_at',
-        width: 160,
-        render: (text) => {
-          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
         },
       },
     ],
