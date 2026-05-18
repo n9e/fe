@@ -1,9 +1,10 @@
 import React, { useContext, useMemo, useState, useEffect } from 'react';
-import { Form, Row, Col, Space, Input, Tooltip, InputNumber, Select, Alert } from 'antd';
+import { Form, Row, Col, Space, Input, Tooltip, InputNumber, Select, Alert, Button } from 'antd';
 import { InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { SqlMonacoEditor } from '@fc-components/monaco-editor';
+import { WandSparkles } from 'lucide-react';
 
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -95,7 +96,21 @@ export default function index(props: IProps) {
             }
           >
             <Form.Item {...field} name={[...path, 'sql']}>
-              <SqlMonacoEditor disabled={disabled} maxHeight={200} placeholder={t('query.query_placeholder')} theme={darkMode ? 'dark' : 'light'} enableAutocomplete={true} />
+              <SqlMonacoEditor
+                disabled={disabled}
+                maxHeight={200}
+                placeholder={t('query.query_placeholder')}
+                theme={darkMode ? 'dark' : 'light'}
+                enableAutocomplete={true}
+                enableFormat
+                renderFormatButton={() => {
+                  return (
+                    <Tooltip title={t('common:format_sql')}>
+                      <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
+                    </Tooltip>
+                  );
+                }}
+              />
             </Form.Item>
           </InputGroupWithFormItem>
         </Col>
