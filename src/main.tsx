@@ -16,6 +16,7 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Table } from 'antd';
 import { i18nInit } from './i18n'; // loaded and initialized first
 import App from './App';
 import { I18nextProvider } from 'react-i18next';
@@ -23,6 +24,9 @@ import { initTheme } from './utils/darkMode';
 
 // 在页面渲染前初始化主题，避免样式闪烁
 initTheme();
+
+// 2026-05 table 设计规范：点击循环改为 降序 → 升序 → 取消
+Table.defaultProps = { ...Table.defaultProps, sortDirections: ['descend', 'ascend'] };
 
 ReactDOM.render(
   <I18nextProvider i18n={i18nInit}>
