@@ -191,6 +191,7 @@ export default function AlertTable(props: IProps) {
         return (
           <div>
             <Dropdown
+              trigger={['hover', 'click']}
               overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>
@@ -225,7 +226,7 @@ export default function AlertTable(props: IProps) {
                       </TableActionButton>
                     </Menu.Item>
                   )}
-                  <Menu.Divider />
+                  {(IS_PLUS || !_.includes(['firemap', 'northstar'], record?.rule_prod)) && <Menu.Divider />}
                   <Menu.Item>
                     <TableActionButton
                       danger

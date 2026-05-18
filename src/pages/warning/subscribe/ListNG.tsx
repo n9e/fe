@@ -273,6 +273,7 @@ const Subscribe = (props: Props) => {
             render: (text: string, record: subscribeItem) => {
               return (
                 <Dropdown
+                  trigger={['hover', 'click']}
                   overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>

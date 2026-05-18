@@ -273,6 +273,7 @@ const Shield: React.FC = () => {
         render: (text: undefined, record: shieldItem) => {
           return (
             <Dropdown
+              trigger={['hover', 'click']}
               overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>

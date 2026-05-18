@@ -190,6 +190,7 @@ const Event = (props: Props) => {
           return (
             <div>
               <Dropdown
+                trigger={['hover', 'click']}
                 overlayClassName='fc-table-action-dropdown'
                 overlay={
                   <Menu>
