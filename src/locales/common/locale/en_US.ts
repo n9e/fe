@@ -172,6 +172,7 @@ const en_US = {
   disabling: 'Disabling',
   select_event: 'Select an alert event',
   click_to_view_doc: 'Click to view documentation',
+  format_sql: 'Format SQL',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

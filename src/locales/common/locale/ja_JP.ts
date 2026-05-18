@@ -172,6 +172,7 @@ const ja_JP = {
   disabling: '無効化中',
   select_event: 'アラートイベントを選択',
   click_to_view_doc: 'クリックしてドキュメントを表示します',
+  format_sql: 'SQLをフォーマット',
 
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',

@@ -1,9 +1,10 @@
 import React, { useImperativeHandle, forwardRef, useContext } from 'react';
-import { Space, Form } from 'antd';
+import { Space, Form, Button, Tooltip } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { SqlMonacoEditor } from '@fc-components/monaco-editor';
+import { WandSparkles } from 'lucide-react';
 
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -83,7 +84,15 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
               className='bg-fc-100 z-0'
               maxHeight={200}
               theme={darkMode ? 'dark' : 'light'}
-              enableAutocomplete={true}
+              enableAutocomplete
+              enableFormat
+              renderFormatButton={() => {
+                return (
+                  <Tooltip title={t('common:format_sql')}>
+                    <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
+                  </Tooltip>
+                );
+              }}
               onEnter={() => {
                 snapRangeRef.current = {
                   from: undefined,
