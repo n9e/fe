@@ -70,7 +70,14 @@ mark {
 
   .ant-table-tbody .ant-table-cell-fix-left,
   .ant-table-tbody .ant-table-cell-fix-right {
-    background: inherit;
+    background: var(--fc-fill-2);
+  }
+
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left.ant-table-cell-row-hover,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right.ant-table-cell-row-hover {
+    background: rgb(var(--fc-fill-5-rgb) / 0.2);
   }
 
   .ant-table-thead > tr > th.ant-table-cell-fix-left,
