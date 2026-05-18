@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Dropdown, Menu, Space } from 'antd';
+import { Tag, Table, Dropdown, Menu, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -32,6 +32,7 @@ interface IProps {
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
   setRefreshFlag: (refreshFlag: string) => void;
+  eventColumnExpanded: boolean;
 }
 
 function formatDuration(ms: number) {
@@ -58,7 +59,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, eventColumnExpanded } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
@@ -75,10 +76,13 @@ export default function AlertTable(props: IProps) {
       render(title, record) {
         const currentDatasourceCate = _.find(allCates, { value: record.cate });
         const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
+        const tags = record.tags || [];
+        const visibleTags = eventColumnExpanded ? tags : tags.slice(0, 3);
+        const hiddenTagsCount = eventColumnExpanded ? 0 : Math.max(tags.length - visibleTags.length, 0);
 
         return (
-          <div className='max-w-[60vw]'>
-            <div className='mb-2'>
+          <div className='alert-event-content max-w-[60vw]'>
+            <div className='alert-event-title mb-2'>
               <Space>
                 {currentDatasourceCate && currentDatasource ? (
                   <Space>
@@ -106,8 +110,8 @@ export default function AlertTable(props: IProps) {
                 </a>
               </Space>
             </div>
-            <div>
-              {_.map(record.tags, (item) => {
+            <div className={`alert-event-tags ${eventColumnExpanded ? 'is-expanded' : 'is-collapsed'}`}>
+              {_.map(visibleTags, (item) => {
                 return (
                   <Tag
                     key={item}
@@ -130,6 +134,7 @@ export default function AlertTable(props: IProps) {
                   </Tag>
                 );
               })}
+              {hiddenTagsCount > 0 && <Tag className='alert-event-more-tag'>+{hiddenTagsCount}</Tag>}
             </div>
           </div>
         );

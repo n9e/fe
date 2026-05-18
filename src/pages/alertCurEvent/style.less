@@ -108,6 +108,75 @@
     text-overflow: unset !important;
   }
 
+  .alert-event-summary-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
+    > :first-child {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .alert-event-expand-btn {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+
+    .ant-btn-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .alert-event-content {
+    min-width: 0;
+  }
+
+  .alert-event-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .alert-event-tags {
+    display: flex;
+    gap: 4px;
+
+    &.is-expanded {
+      flex-wrap: wrap;
+    }
+
+    &.is-collapsed {
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+
+    .ant-tag {
+      display: inline-flex;
+      align-items: center;
+      max-width: 240px;
+      margin-right: 0;
+      margin-bottom: 0;
+
+      > div {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .alert-event-more-tag {
+      flex: none;
+      color: var(--fc-text-3);
+      background: var(--fc-fill-2-5);
+    }
+  }
+
   .ant-table table {
     border-collapse: collapse !important;
 

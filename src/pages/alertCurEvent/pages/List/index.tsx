@@ -1,6 +1,7 @@
 import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Input, Checkbox, Collapse, Segmented, Button, Space, Row, Col } from 'antd';
+import { Input, Checkbox, Collapse, Segmented, Button, Space, Tooltip } from 'antd';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
+import { ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -109,6 +110,7 @@ const AlertCurEvent: React.FC = () => {
   );
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(false);
   const params = getRequestParamsByFilter(filter);
 
   type RuleCardsRequestParams = {
@@ -323,7 +325,20 @@ const AlertCurEvent: React.FC = () => {
                     }}
                   >
                     <div className='p-2'>
-                      <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
+                      <div className='alert-event-summary-toolbar'>
+                        <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
+                        <Tooltip title={eventColumnExpanded ? t('common:btn.collapse') : t('common:btn.expand')}>
+                          <Button
+                            type='text'
+                            size='small'
+                            className='alert-event-expand-btn'
+                            icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
+                            onClick={() => {
+                              setEventColumnExpanded(!eventColumnExpanded);
+                            }}
+                          />
+                        </Tooltip>
+                      </div>
                       <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
                     </div>
                   </div>
@@ -381,6 +396,7 @@ const AlertCurEvent: React.FC = () => {
                       setSelectedRowKeys={setSelectedRowKeys}
                       params={params}
                       setRefreshFlag={setRefreshFlag}
+                      eventColumnExpanded={eventColumnExpanded}
                     />
                   </div>
                 </div>
