@@ -1,0 +1,50 @@
+.fc-table-tags {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.fc-table-tag {
+  display: inline-block;
+  height: 22px;
+  max-width: 160px;
+  padding: 0 8px;
+  overflow: hidden;
+  color: var(--fc-text-2);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  background: var(--fc-fill-2-5);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 4px;
+  cursor: default;
+}
+
+.fc-table-tag-overflow {
+  color: var(--fc-text-3);
+  cursor: pointer;
+  background: var(--fc-fill-3);
+}
+
+.fc-table-tag-clickable {
+  cursor: pointer;
+}
+
+.fc-table-tag-clickable:hover,
+.fc-table-tag-overflow:hover {
+  color: var(--fc-text-1);
+  background: var(--fc-fill-3);
+  border-color: var(--fc-border-color-hover, var(--fc-border-color));
+}
+
+.fc-table-tags-popover-content {
+  display: flex;
+  max-width: 360px;
+  flex-wrap: wrap;
+  gap: 6px;
+}

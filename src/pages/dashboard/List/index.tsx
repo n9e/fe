@@ -34,6 +34,7 @@ import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
+import TableTags from '@/components/TableTags';
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getBusiGroups } from '@/components/BusinessGroup';
@@ -181,33 +182,23 @@ export default function index() {
                     dataIndex: 'tags',
                     className: 'tags-column',
                     render: (text: string) => (
-                      <>
-                        {_.map(_.split(text, ' '), (tag, index) => {
-                          return tag ? (
-                            <Tag
-                              color='purple'
-                              key={index}
-                              style={{
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => {
-                                const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
-                                if (queryItem.includes(tag)) return;
-                                setsearchVal((searchVal) => {
-                                  if (searchVal) {
-                                    sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, searchVal + ' ' + tag);
-                                    return searchVal + ' ' + tag;
-                                  }
-                                  sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tag);
-                                  return tag;
-                                });
-                              }}
-                            >
-                              {tag}
-                            </Tag>
-                          ) : null;
-                        })}
-                      </>
+                      <TableTags
+                        data={_.compact(_.split(text, ' '))}
+                        maxVisible={2}
+                        maxTagWidth={160}
+                        onTagClick={(tag) => {
+                          const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
+                          if (queryItem.includes(tag)) return;
+                          setsearchVal((searchVal) => {
+                            if (searchVal) {
+                              sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, searchVal + ' ' + tag);
+                              return searchVal + ' ' + tag;
+                            }
+                            sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tag);
+                            return tag;
+                          });
+                        }}
+                      />
                     ),
                   },
                   {

@@ -24,6 +24,7 @@ import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
+import TableTags from '@/components/TableTags';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
@@ -138,11 +139,7 @@ const index = (_props: any) => {
         title: t('tpl.tags'),
         dataIndex: 'tags',
         render: (text) => {
-          return _.map(text, (item) => (
-            <Tag color='purple' key={item} onClick={() => handleTagClick(item)}>
-              {item}
-            </Tag>
-          ));
+          return <TableTags data={text} maxVisible={2} maxTagWidth={160} onTagClick={handleTagClick} />;
         },
       },
       {

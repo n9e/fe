@@ -32,7 +32,7 @@ import usePagination from '@/components/usePagination';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
-import Tags from './component/Tags';
+import TableTags from '@/components/TableTags';
 import './index.less';
 import './locale';
 
@@ -71,21 +71,25 @@ const Resource: React.FC = () => {
     {
       title: t('account:profile.role'),
       dataIndex: 'roles',
+      width: 120,
       render: (text: []) => text.join(', '),
     },
     {
       title: t('user.busi_groups'),
       dataIndex: 'busi_groups',
+      width: 160,
       render: (value) => {
         return (
-          <Tags
+          <TableTags
             data={value}
-            tagLinkTo={(item) => {
-              return {
-                pathname: '/busi-groups',
-                search: `?id=${item.id}`,
-              };
-            }}
+            maxVisible={1}
+            maxTagWidth={110}
+            getKey={(item) => item.id}
+            getLabel={(item) => item.name}
+            getLinkTo={(item) => ({
+              pathname: '/busi-groups',
+              search: `?id=${item.id}`,
+            })}
           />
         );
       },
@@ -93,16 +97,19 @@ const Resource: React.FC = () => {
     {
       title: t('user.user_groups'),
       dataIndex: 'user_groups',
+      width: 160,
       render: (value) => {
         return (
-          <Tags
+          <TableTags
             data={value}
-            tagLinkTo={(item) => {
-              return {
-                pathname: '/user-groups',
-                search: `?id=${item.id}`,
-              };
-            }}
+            maxVisible={1}
+            maxTagWidth={110}
+            getKey={(item) => item.id}
+            getLabel={(item) => item.name}
+            getLinkTo={(item) => ({
+              pathname: '/user-groups',
+              search: `?id=${item.id}`,
+            })}
           />
         );
       },
@@ -110,6 +117,7 @@ const Resource: React.FC = () => {
     {
       title: t('common:table.create_at'),
       dataIndex: 'create_at',
+      width: 170,
       render: (text) => {
         return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
       },
@@ -118,6 +126,7 @@ const Resource: React.FC = () => {
     {
       title: t('user.last_active_time'),
       dataIndex: 'last_active_time',
+      width: 170,
       render: (text) => {
         if (!text) {
           return '-';

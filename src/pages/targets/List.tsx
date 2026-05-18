@@ -20,6 +20,7 @@ import TargetMetaDrawer from './TargetMetaDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
 import HostsSelect from './components/HostsSelect';
+import TableTags from '@/components/TableTags';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -204,30 +205,20 @@ export default function List(props: IProps) {
           showTitle: false,
         },
         render(tagArr) {
-          const content =
-            tagArr &&
-            tagArr.map((item) => (
-              <Tag
-                color='purple'
-                key={item}
-                onClick={(e) => {
-                  if (!tableQueryContent.includes(item)) {
-                    isAddTagToQueryInput.current = true;
-                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
-                    setTableQueryContent(val);
-                    setSearchVal(val);
-                  }
-                }}
-              >
-                {item}
-              </Tag>
-            ));
           return (
-            tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
-            )
+            <TableTags
+              data={tagArr}
+              maxVisible={2}
+              maxTagWidth={120}
+              onTagClick={(item) => {
+                if (!tableQueryContent.includes(item)) {
+                  isAddTagToQueryInput.current = true;
+                  const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
+                  setTableQueryContent(val);
+                  setSearchVal(val);
+                }
+              }}
+            />
           );
         },
       });

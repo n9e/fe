@@ -13,6 +13,7 @@ import Add from '../Add';
 import Edit from '../Edit';
 import MoreOperations from './MoreOperations';
 import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
+import TableTags from '@/components/TableTags';
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -209,9 +210,7 @@ export default function List() {
             title: t('teams'),
             dataIndex: 'team_names',
             render: (val) => {
-              return _.map(val, (item) => {
-                return <Tag key={item}>{item}</Tag>;
-              });
+              return <TableTags data={val} maxVisible={2} maxTagWidth={160} />;
             },
           },
           {

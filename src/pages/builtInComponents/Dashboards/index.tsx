@@ -11,6 +11,7 @@ import Export from '@/pages/dashboard/List/Export';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { HelpLink } from '@/components/pageLayout';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
+import TableTags from '@/components/TableTags';
 import { getPayloads, deletePayloads } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
@@ -161,29 +162,17 @@ export default function index(props: Props) {
             render: (val) => {
               const tags = _.compact(_.split(val, ' '));
               return (
-                <Space size={0}>
-                  {_.map(tags, (tag, idx) => {
-                    return (
-                      <Tag
-                        key={idx}
-                        color='purple'
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          const queryItem = _.compact(_.split(filter.query, ' '));
-                          if (_.includes(queryItem, tag)) return;
-                          setFilter((filter) => {
-                            return {
-                              ...filter,
-                              query: filter.query ? filter.query + ' ' + tag : tag,
-                            };
-                          });
-                        }}
-                      >
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </Space>
+                <TableTags
+                  data={tags}
+                  onTagClick={(tag) => {
+                    const queryItem = _.compact(_.split(filter.query, ' '));
+                    if (_.includes(queryItem, tag)) return;
+                    setFilter((filter) => ({
+                      ...filter,
+                      query: filter.query ? filter.query + ' ' + tag : tag,
+                    }));
+                  }}
+                />
               );
             },
           },

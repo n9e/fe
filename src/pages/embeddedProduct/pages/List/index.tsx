@@ -13,6 +13,7 @@ import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
+import TableTags from '@/components/TableTags';
 
 import { NS, DETAIL_PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
@@ -71,10 +72,7 @@ export default function Index() {
         title: t('team_ids'),
         dataIndex: 'team_ids',
         render: (val) => {
-          return _.map(val, (item) => {
-            const name = _.find(userGroups, { id: item })?.name;
-            return <Tag key={item}>{name || item}</Tag>;
-          });
+          return <TableTags data={val} maxVisible={2} maxTagWidth={160} getKey={(item) => item} getLabel={(item) => _.find(userGroups, { id: item })?.name || item} />;
         },
       },
       {

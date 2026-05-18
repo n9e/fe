@@ -26,6 +26,7 @@ import { CommonStateContext } from '@/App';
 import Markdown from '@/components/Markdown';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
+import TableTags from '@/components/TableTags';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
@@ -232,11 +233,7 @@ export default function index() {
       dataIndex: 'extra_fields',
       render: (val) => {
         return (
-          <Space wrap size={[0, 2]}>
-            {_.map(val, (item) => {
-              return <Tag key={item.name}>{`${item.name}: ${item.value}`}</Tag>;
-            })}
-          </Space>
+          <TableTags data={_.map(val, (item) => `${item.name}: ${item.value}`)} maxVisible={2} maxTagWidth={180} />
         );
       },
     },

@@ -31,6 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { listToTree } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
 import Tree from '@/components/BusinessGroup/components/Tree';
+import TableTags from '@/components/TableTags';
 import './index.less';
 import './locale';
 import usePagination from '@/components/usePagination';
@@ -103,9 +104,7 @@ const Resource: React.FC = () => {
       dataIndex: 'busi_groups',
       render: (text: string, record) => {
         if (_.isEmpty(record.busi_groups)) return '-';
-        return _.map(record.busi_groups, (item) => {
-          return <Tag key={item.id}>{item.name}</Tag>;
-        });
+        return <TableTags data={record.busi_groups || []} maxVisible={2} maxTagWidth={140} getKey={(item) => item.id} getLabel={(item) => item.name} />;
       },
     },
   ];

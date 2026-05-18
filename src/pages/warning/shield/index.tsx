@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
-import Tags from '@/components/Tags';
+import TableTags from '@/components/TableTags';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
@@ -114,8 +114,8 @@ const Shield: React.FC = () => {
         render(value, record: any) {
           if (!value) return '-';
           return (
-            <Tags
-              width={70}
+            <TableTags
+              maxTagWidth={120}
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';

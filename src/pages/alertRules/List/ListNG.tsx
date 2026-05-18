@@ -17,7 +17,7 @@ import { TableActionButton, TableActionLink, TableActionTrigger } from '@/compon
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
-import Tags from '@/components/Tags';
+import TableTags from '@/components/TableTags';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -164,8 +164,8 @@ export default function AlertRules(props: Props) {
         render(value) {
           if (!value) return '';
           return (
-            <Tags
-              width={70}
+            <TableTags
+              maxTagWidth={120}
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';
@@ -182,55 +182,14 @@ export default function AlertRules(props: Props) {
         title: t('table.append_tags'),
         dataIndex: 'append_tags',
         render(value) {
-          return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(value, (item) => {
-                return (
-                  <Tooltip key={item} title={item}>
-                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
-                      <div
-                        style={{
-                          maxWidth: 'max-content',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {item}
-                      </div>
-                    </Tag>
-                  </Tooltip>
-                );
-              })}
-            </div>
-          );
+          return <TableTags data={value} maxVisible={2} maxTagWidth={180} />;
         },
       },
       {
         title: t('table.notify_groups_obj'),
         dataIndex: 'notify_groups_obj',
         render: (data) => {
-          return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(data, (user) => {
-                const val = user.nickname || user.username || user.name;
-                return (
-                  <Tooltip key={val} title={val}>
-                    <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
-                      <div
-                        style={{
-                          maxWidth: 'max-content',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {val}
-                      </div>
-                    </Tag>
-                  </Tooltip>
-                );
-              })}
-            </div>
-          );
+          return <TableTags data={_.map(data, (user) => user.nickname || user.username || user.name)} maxVisible={2} maxTagWidth={160} />;
         },
       },
       {
@@ -238,28 +197,15 @@ export default function AlertRules(props: Props) {
         dataIndex: 'notify_rule_ids',
         render: (data) => {
           return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(data, (id) => {
-                const val = _.find(notificationRules, { id })?.name || id;
-                return (
-                  <Link to={`/${notificationRulesNS}/edit/${id}`} key={val} target='_blank'>
-                    <Tooltip title={val}>
-                      <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
-                        <div
-                          style={{
-                            maxWidth: 'max-content',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {val}
-                        </div>
-                      </Tag>
-                    </Tooltip>
-                  </Link>
-                );
-              })}
-            </div>
+            <TableTags
+              data={data}
+              maxVisible={2}
+              maxTagWidth={160}
+              getKey={(id) => id}
+              getLabel={(id) => _.find(notificationRules, { id })?.name || id}
+              getLinkTo={(id) => `/${notificationRulesNS}/edit/${id}`}
+              linkTarget='_blank'
+            />
           );
         },
       },

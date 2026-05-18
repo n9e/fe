@@ -11,6 +11,7 @@ import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
+import TableTags from '@/components/TableTags';
 import { RuleType } from './types';
 import Import from './Import';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -206,29 +207,17 @@ export default function index(props: Props) {
             render: (val) => {
               const tags = _.compact(_.split(val, ' '));
               return (
-                <Space size={0}>
-                  {_.map(tags, (tag, idx) => {
-                    return (
-                      <Tag
-                        key={idx}
-                        color='purple'
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          const queryItem = _.compact(_.split(filter.query, ' '));
-                          if (_.includes(queryItem, tag)) return;
-                          setFilter((filter) => {
-                            return {
-                              ...filter,
-                              query: filter.query ? filter.query + ' ' + tag : tag,
-                            };
-                          });
-                        }}
-                      >
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </Space>
+                <TableTags
+                  data={tags}
+                  onTagClick={(tag) => {
+                    const queryItem = _.compact(_.split(filter.query, ' '));
+                    if (_.includes(queryItem, tag)) return;
+                    setFilter((filter) => ({
+                      ...filter,
+                      query: filter.query ? filter.query + ' ' + tag : tag,
+                    }));
+                  }}
+                />
               );
             },
           },

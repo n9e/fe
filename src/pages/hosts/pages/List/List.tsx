@@ -31,7 +31,7 @@ import { NS } from '../../constants';
 import { Item, OperateType } from '../../types';
 import { getList } from '../../services';
 import VersionIcon from './VersionIcon';
-import Tags from './Tags';
+import TableTags from '@/components/TableTags';
 import { formatBeatTimeDisplay } from './formatBeatTimeDisplay';
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
@@ -524,10 +524,10 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags
-                      type='outline'
+                    <TableTags
                       data={tags}
-                      fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
+                      maxVisible={2}
+                      maxTagWidth={120}
                       onTagClick={(tag) => {
                         if (!_.includes(params.query, tag)) {
                           const val = params.query ? `${params.query.trim()} ${tag}` : tag;
@@ -557,10 +557,10 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags
-                      type='outline'
+                    <TableTags
                       data={tags}
-                      fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
+                      maxVisible={2}
+                      maxTagWidth={120}
                       onTagClick={(tag) => {
                         if (!_.includes(params.query, tag)) {
                           const val = params.query ? `${params.query.trim()} ${tag}` : tag;
@@ -584,7 +584,7 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
+                    <TableTags data={groupNames} maxVisible={2} maxTagWidth={120} />
                   </div>
                 );
               },

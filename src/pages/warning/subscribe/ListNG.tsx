@@ -13,7 +13,7 @@ import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
-import Tags from '@/components/Tags';
+import TableTags from '@/components/TableTags';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -96,8 +96,8 @@ const Subscribe = (props: Props) => {
         render(value) {
           if (!value) return '-';
           return (
-            <Tags
-              width={70}
+            <TableTags
+              maxTagWidth={120}
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';
@@ -182,7 +182,7 @@ const Subscribe = (props: Props) => {
         title: t('user_groups'),
         dataIndex: 'user_groups',
         render: (data) => {
-          return <Tags width={110} data={_.map(data, 'name')} />;
+          return <TableTags data={_.map(data, 'name')} maxVisible={2} maxTagWidth={140} />;
         },
       },
       {
@@ -190,28 +190,15 @@ const Subscribe = (props: Props) => {
         dataIndex: 'notify_rule_ids',
         render: (data) => {
           return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(data, (id) => {
-                const val = _.find(notificationRules, { id })?.name || id;
-                return (
-                  <Link to={`/${notificationRulesNS}/edit/${id}`} key={val} target='_blank'>
-                    <Tooltip title={val}>
-                      <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
-                        <div
-                          style={{
-                            maxWidth: 'max-content',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {val}
-                        </div>
-                      </Tag>
-                    </Tooltip>
-                  </Link>
-                );
-              })}
-            </div>
+            <TableTags
+              data={data}
+              maxVisible={2}
+              maxTagWidth={160}
+              getKey={(id) => id}
+              getLabel={(id) => _.find(notificationRules, { id })?.name || id}
+              getLinkTo={(id) => `/${notificationRulesNS}/edit/${id}`}
+              linkTarget='_blank'
+            />
           );
         },
       },

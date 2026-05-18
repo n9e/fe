@@ -14,6 +14,7 @@ import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
+import TableTags from '@/components/TableTags';
 import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
@@ -177,16 +178,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         dataIndex: 'append_tags',
         render: (data) => {
           const array = data || [];
-          return (
-            (array.length &&
-              array.map((tag: string, index: number) => {
-                return (
-                  <Tag color='purple' key={index}>
-                    {tag}
-                  </Tag>
-                );
-              })) || <div></div>
-          );
+          return <TableTags data={array} maxVisible={2} maxTagWidth={160} emptyText={<div />} />;
         },
       },
       {
