@@ -121,6 +121,26 @@ export default function indexCpt(props: Props) {
           });
           executeQuery();
         }
+      } else if (!queryValues.index_pattern && data.length > 0) {
+        const firstPattern = data[0];
+        let fieldConfig;
+
+        try {
+          if (firstPattern.fields_format) {
+            fieldConfig = standardizeFieldConfig(JSON.parse(firstPattern.fields_format));
+          }
+        } catch (error) {
+          console.warn(error);
+        }
+
+        queryValues.index_pattern = firstPattern.id;
+        queryValues.date_field = firstPattern.time_field;
+        queryValues.index = firstPattern.name;
+        queryValues.allow_hide_system_indices = firstPattern.allow_hide_system_indices;
+        form.setFieldsValue({
+          query: queryValues,
+          fieldConfig,
+        });
       }
     },
   });
