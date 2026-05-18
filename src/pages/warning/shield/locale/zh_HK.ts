@@ -56,6 +56,11 @@ const zh_HK = {
       12: '1 年之前',
     },
   },
+  filter_disabled: {
+    placeholder: '啟用狀態',
+    0: '啟用',
+    1: '未啟用',
+  },
 };
 
 export default zh_HK;

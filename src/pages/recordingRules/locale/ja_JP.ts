@@ -13,6 +13,11 @@ const ja_JP = {
   append_tags_msg1: 'タグの長さは 64 文字以下にしてください',
   append_tags_msg2: 'タグの形式は key=value です。key はアルファベットまたはアンダースコアで始まり、アルファベット、数字、アンダースコアで構成されます',
   append_tags_placeholder: 'タグの形式は key=value です。改行または空白で区切ってください',
+  filter_disabled: {
+    placeholder: 'フィルターを選択',
+    0: '有効',
+    1: '無効',
+  },
   batch: {
     must_select_one: 'どのルールも選択されていません',
     import: {

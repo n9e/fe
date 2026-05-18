@@ -58,5 +58,10 @@ const en_US = {
   notify_configs: 'Notification settings',
   and: 'And',
   btn_add_rule: 'Add rule',
+  filter_disabled: {
+    placeholder: 'Enabled status',
+    0: 'Enabled',
+    1: 'Disabled',
+  },
 };
 export default en_US;

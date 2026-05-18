@@ -13,6 +13,11 @@ const en_US = {
   append_tags_msg1: 'Tag length should be less than or equal to 64 bits',
   append_tags_msg2: 'Tag format should be key=value. And the key starts with a letter or underscore, and is composed of letters, numbers and underscores.',
   append_tags_placeholder: 'Tag format is key=value, use Enter or Space to separate',
+  filter_disabled: {
+    placeholder: 'Enabled status',
+    0: 'Enabled',
+    1: 'Disabled',
+  },
   batch: {
     must_select_one: 'No rule selected',
     import: {

@@ -58,6 +58,11 @@ const zh_HK = {
   notify_configs: '通知配置',
   and: '且',
   btn_add_rule: '添加規則',
+  filter_disabled: {
+    placeholder: '啟用狀態',
+    0: '啟用',
+    1: '未啟用',
+  },
 };
 
 export default zh_HK;

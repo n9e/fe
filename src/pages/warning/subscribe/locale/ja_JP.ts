@@ -58,6 +58,11 @@ const ja_JP = {
   notify_configs: '通知設定',
   and: 'および',
   btn_add_rule: 'ルールを追加',
+  filter_disabled: {
+    placeholder: 'フィルターを選択',
+    0: '有効',
+    1: '無効',
+  },
 };
 
 export default ja_JP;

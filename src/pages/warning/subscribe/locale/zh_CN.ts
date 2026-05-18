@@ -58,5 +58,10 @@ const zh_CN = {
   notify_configs: '通知配置',
   and: '且',
   btn_add_rule: '添加规则',
+  filter_disabled: {
+    placeholder: '启用状态',
+    0: '启用',
+    1: '未启用',
+  },
 };
 export default zh_CN;

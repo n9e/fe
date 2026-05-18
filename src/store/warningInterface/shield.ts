@@ -29,6 +29,7 @@ export interface shieldItem {
   periodic_mutes: any[];
   prod: string;
   note?: string;
+  disabled: 0 | 1;
 }
 
 export interface IshieldState {

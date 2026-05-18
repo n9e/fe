@@ -56,5 +56,10 @@ const en_US = {
       12: '1 year ago',
     },
   },
+  filter_disabled: {
+    placeholder: 'Enabled status',
+    0: 'Enabled',
+    1: 'Disabled',
+  },
 };
 export default en_US;
