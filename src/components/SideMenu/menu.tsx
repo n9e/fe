@@ -2,6 +2,7 @@
  * 这是开源版的菜单配置，专业版和企业版的配置在其他对应的仓库文件里
  */
 import React from 'react';
+import { RobotOutlined } from '@ant-design/icons';
 
 import IconFont from '@/components/IconFont';
 
@@ -142,6 +143,18 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
+      key: 'ai-config',
+      label: 'menu.ai_config',
+      type: 'tabs',
+      icon: <RobotOutlined />,
+      children: [
+        { key: '/ai-config/agents', label: 'menu.ai_config_agents' },
+        { key: '/ai-config/llm-configs', label: 'menu.ai_config_llm_configs' },
+        { key: '/ai-config/skills', label: 'menu.ai_config_skills' },
+        { key: '/ai-config/mcp-servers', label: 'menu.ai_config_mcp_servers' },
+      ],
+    },
+    {
       key: 'organization',
       label: 'menu.organization',
       icon: <IconFont type='icon-nav_organization_light' />,
@@ -165,17 +178,6 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       label: 'menu.setting',
       icon: <IconFont type='icon-nav_system_light' />,
       children: [
-        {
-          key: 'ai-config',
-          label: 'menu.ai_config',
-          type: 'tabs',
-          children: [
-            { key: '/ai-config/agents', label: 'menu.ai_config_agents' },
-            { key: '/ai-config/llm-configs', label: 'menu.ai_config_llm_configs' },
-            { key: '/ai-config/skills', label: 'menu.ai_config_skills' },
-            { key: '/ai-config/mcp-servers', label: 'menu.ai_config_mcp_servers' },
-          ],
-        },
         {
           key: '/system/site-settings',
           label: 'menu.site_setting',
