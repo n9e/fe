@@ -272,7 +272,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                 }}
               />
             ) : (
-              <span className='inline break-all text-hint m-0 p-0 cursor-text'>{adjustedValue}</span>
+              <span className='inline break-all text-main m-0 p-0 cursor-text'>{adjustedValue}</span>
             )}
           </Tooltip>
         </span>
@@ -330,7 +330,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
             }}
           />
         ) : (
-          <div className={`inline text-hint m-0 p-0 cursor-pointer hover:underline ${fieldValueClassName ?? ''}`}>{adjustedValue}</div>
+          <div className={`inline text-main m-0 p-0 cursor-pointer hover:underline ${fieldValueClassName ?? ''}`}>{adjustedValue}</div>
         )}
       </Tooltip>
     </Popover>
