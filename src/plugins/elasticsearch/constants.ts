@@ -26,6 +26,6 @@ export const QUERY_CACHE_PICK_KEYS = ['mode', 'index', 'index_pattern', 'syntax'
 
 export const NG_SQL_LOGS_OPTIONS_CACHE_KEY = `ng-${NAME_SPACE}-sql-logs-options`;
 export const NG_SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY = `ng-${NAME_SPACE}-sql-logs-table-columns-width`;
-export const QUERY_BUILDER_PINNED_CACHE_KEY = `ng-${NAME_SPACE}-query-builder-pinned`;
+export const QUERY_BUILDER_PINNED_CACHE_KEY = `ng-${NAME_SPACE}-query-builder-pinned-state`;
 export const SQL_CACHE_KEY = `ng-${NAME_SPACE}-sql-history-records`;
 export const DATE_TYPE_LIST = ['date', 'date_nanos'];
