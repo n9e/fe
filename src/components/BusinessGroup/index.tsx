@@ -6,7 +6,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, Input, Popover, Space, Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
@@ -157,7 +158,7 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
             setCollapse(!collapse);
           }}
         >
-          {!collapse ? <LeftOutlined /> : <RightOutlined />}
+          {!collapse ? <PanelLeftClose size={14} strokeWidth={1.8} /> : <PanelLeftOpen size={14} strokeWidth={1.8} />}
         </div>
         <div className='flex flex-col h-full overflow-hidden'>
           {renderHeadExtra && renderHeadExtra()}

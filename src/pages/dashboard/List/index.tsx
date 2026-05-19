@@ -19,8 +19,9 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Tag, Modal, Space, Button, Dropdown, Menu, message, Tooltip } from 'antd';
-import { FundViewOutlined, EditOutlined, ShareAltOutlined, MoreOutlined } from '@ant-design/icons';
+import { Table, Modal, Space, message, Tooltip } from 'antd';
+import { FundViewOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { Copy, Download, Pencil, Trash2 } from 'lucide-react';
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +37,7 @@ import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/compon
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getBusiGroups } from '@/components/BusinessGroup';
+import { TableActionDropdown, TableTags, TableUserCell } from '@/components/TableDesign';
 
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
@@ -180,33 +182,22 @@ export default function index() {
                     dataIndex: 'tags',
                     className: 'tags-column',
                     render: (text: string) => (
-                      <>
-                        {_.map(_.split(text, ' '), (tag, index) => {
-                          return tag ? (
-                            <Tag
-                              color='purple'
-                              key={index}
-                              style={{
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => {
-                                const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
-                                if (queryItem.includes(tag)) return;
-                                setsearchVal((searchVal) => {
-                                  if (searchVal) {
-                                    sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, searchVal + ' ' + tag);
-                                    return searchVal + ' ' + tag;
-                                  }
-                                  sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tag);
-                                  return tag;
-                                });
-                              }}
-                            >
-                              {tag}
-                            </Tag>
-                          ) : null;
-                        })}
-                      </>
+                      <TableTags
+                        data={_.filter(_.split(text, ' '), Boolean)}
+                        onClick={(tag) => {
+                          const tagText = _.toString(tag);
+                          const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
+                          if (queryItem.includes(tagText)) return;
+                          setsearchVal((searchVal) => {
+                            if (searchVal) {
+                              sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, `${searchVal} ${tagText}`);
+                              return `${searchVal} ${tagText}`;
+                            }
+                            sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tagText);
+                            return tagText;
+                          });
+                        }}
+                      />
                     ),
                   },
                   {
@@ -224,6 +215,7 @@ export default function index() {
                     title: t('common:table.username'),
                     dataIndex: 'update_by',
                     width: 100,
+                    render: (value: string, record: DashboardType) => <TableUserCell username={value} nickname={(record as any).update_by_nickname} />,
                   },
                   {
                     title: t('common:table.nickname'),
@@ -313,95 +305,83 @@ export default function index() {
                   },
                   {
                     title: t('common:table.operations'),
+                    width: 64,
+                    align: 'center',
+                    fixed: 'right',
                     render: (text: string, record: DashboardType) => {
                       return (
-                        <Dropdown
-                          overlay={
-                            <Menu>
-                              {gids !== '-1' && (
-                                <Menu.Item>
-                                  <Button
-                                    type='link'
-                                    className='p-0 h-auto'
-                                    onClick={() => {
-                                      FormModal({
-                                        action: 'edit',
-                                        initialValues: record,
-                                        busiId: businessGroup.id,
-                                        onOk: () => {
-                                          setRefreshKey(_.uniqueId('refreshKey_'));
-                                        },
-                                      });
-                                    }}
-                                  >
-                                    {t('common:btn.edit')}
-                                  </Button>
-                                </Menu.Item>
-                              )}
-                              {gids && gids !== '-1' && (
-                                <Menu.Item>
-                                  <Button
-                                    type='link'
-                                    className='p-0 h-auto'
-                                    onClick={async () => {
-                                      Modal.confirm({
-                                        title: t('common:confirm.clone'),
-                                        onOk: async () => {
-                                          await cloneDashboard(record.group_id, record.id);
-                                          message.success(t('common:success.clone'));
-                                          setRefreshKey(_.uniqueId('refreshKey_'));
-                                        },
-
-                                        onCancel() {},
-                                      });
-                                    }}
-                                  >
-                                    {t('common:btn.clone')}
-                                  </Button>
-                                </Menu.Item>
-                              )}
-                              <Menu.Item>
-                                <Button
-                                  type='link'
-                                  className='p-0 h-auto'
-                                  onClick={async () => {
-                                    const exportData = await getDashboard(record.id);
-                                    Export({
-                                      data: exportDataStringify(exportData),
+                        <TableActionDropdown
+                          items={_.compact([
+                            gids !== '-1'
+                              ? {
+                                  key: 'edit',
+                                  label: t('common:btn.edit'),
+                                  icon: <Pencil size={16} />,
+                                  onClick: () => {
+                                    FormModal({
+                                      action: 'edit',
+                                      initialValues: record,
+                                      busiId: businessGroup.id,
+                                      onOk: () => {
+                                        setRefreshKey(_.uniqueId('refreshKey_'));
+                                      },
                                     });
-                                  }}
-                                >
-                                  {t('common:btn.export')}
-                                </Button>
-                              </Menu.Item>
-                              {gids !== '-1' && (
-                                <Menu.Item>
-                                  <Button
-                                    danger
-                                    type='link'
-                                    className='p-0 h-auto'
-                                    onClick={async () => {
-                                      Modal.confirm({
-                                        title: t('common:confirm.delete'),
-                                        onOk: async () => {
-                                          await removeDashboards([record.id]);
-                                          message.success(t('common:success.delete'));
-                                          setRefreshKey(_.uniqueId('refreshKey_'));
-                                        },
+                                  },
+                                }
+                              : undefined,
+                            gids && gids !== '-1'
+                              ? {
+                                  key: 'clone',
+                                  label: t('common:btn.clone'),
+                                  icon: <Copy size={16} />,
+                                  onClick: () => {
+                                    Modal.confirm({
+                                      title: t('common:confirm.clone'),
+                                      onOk: async () => {
+                                        await cloneDashboard(record.group_id, record.id);
+                                        message.success(t('common:success.clone'));
+                                        setRefreshKey(_.uniqueId('refreshKey_'));
+                                      },
 
-                                        onCancel() {},
-                                      });
-                                    }}
-                                  >
-                                    {t('common:btn.delete')}
-                                  </Button>
-                                </Menu.Item>
-                              )}
-                            </Menu>
-                          }
-                        >
-                          <Button type='link' icon={<MoreOutlined />} />
-                        </Dropdown>
+                                      onCancel() {},
+                                    });
+                                  },
+                                }
+                              : undefined,
+                            {
+                              key: 'export',
+                              label: t('common:btn.export'),
+                              icon: <Download size={16} />,
+                              onClick: async () => {
+                                const exportData = await getDashboard(record.id);
+                                Export({
+                                  data: exportDataStringify(exportData),
+                                });
+                              },
+                            },
+                            gids !== '-1'
+                              ? {
+                                  key: 'delete',
+                                  label: t('common:btn.delete'),
+                                  icon: <Trash2 size={16} />,
+                                  danger: true,
+                                  dividerBefore: true,
+                                  onClick: () => {
+                                    Modal.confirm({
+                                      title: t('common:confirm.delete'),
+                                      onOk: async () => {
+                                        await removeDashboards([record.id]);
+                                        message.success(t('common:success.delete'));
+                                        setRefreshKey(_.uniqueId('refreshKey_'));
+                                      },
+
+                                      onCancel() {},
+                                    });
+                                  },
+                                }
+                              : undefined,
+                          ])}
+                        />
                       );
                     },
                   },
@@ -418,6 +398,7 @@ export default function index() {
               },
             }}
             pagination={pagination}
+            scroll={{ x: 'max-content' }}
           />
         </div>
       </div>

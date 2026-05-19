@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
-import { Button, Modal, message, Dropdown, Table, Switch, Select, Space, Tag } from 'antd';
+import { Button, Modal, message, Dropdown, Table, Switch, Select, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
@@ -7,12 +7,14 @@ import moment from 'moment';
 import _ from 'lodash';
 import RefreshIcon from '@/components/RefreshIcon';
 import { DownOutlined } from '@ant-design/icons';
+import { Copy, Trash2 } from 'lucide-react';
 import { getBusiGroupsRecordingRules, updateRecordingRules } from '@/services/recording';
 import SearchInput from '@/components/BaseSearchInput';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import { TableActionDropdown, TablePrimaryCell, TableTags, TableUserCell } from '@/components/TableDesign';
 import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
@@ -115,6 +117,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const refreshList = () => {
     getRecordingRules();
   };
+  const getBusiGroupName = (id?: number) => _.find(busiGroups, { id })?.name;
 
   const columns: ColumnType<strategyItem>[] = _.concat(
     businessGroup.isLeaf && gids !== '-2'
@@ -125,7 +128,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             dataIndex: 'group_id',
             width: 100,
             render: (id) => {
-              return _.find(busiGroups, { id })?.name;
+              return getBusiGroupName(id);
             },
           },
         ] as any),
@@ -134,21 +137,14 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         title: t('common:datasource.name'),
         dataIndex: 'datasource_ids',
         render: (data) => {
-          return _.map(
+          return <TableTags data={_.map(
             _.filter(data, (item) => {
               return _.find(groupedDatasourceList.prometheus, { id: item });
             }),
             (item) => {
-              if (item === 0) {
-                return (
-                  <Tag color='purple' key={item}>
-                    $all
-                  </Tag>
-                );
-              }
-              return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
+              return item === 0 ? '$all' : _.find(groupedDatasourceList.prometheus, { id: item })?.name!;
             },
-          );
+          )} />;
         },
       },
       {
@@ -158,7 +154,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
           return localeCompare(a.name, b.name);
         },
         render: (data, record) => {
-          return (
+          const nameContent = (
             <div
               className='table-active-text'
               onClick={() => {
@@ -167,6 +163,12 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             >
               {data}
             </div>
+          );
+          return (
+            <TablePrimaryCell
+              primary={nameContent}
+              secondary={businessGroup.isLeaf && gids !== '-2' ? getBusiGroupName(record.group_id) : undefined}
+            />
           );
         },
       },
@@ -178,17 +180,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         title: t('append_tags'),
         dataIndex: 'append_tags',
         render: (data) => {
-          const array = data || [];
-          return (
-            (array.length &&
-              array.map((tag: string, index: number) => {
-                return (
-                  <Tag color='purple' key={index}>
-                    {tag}
-                  </Tag>
-                );
-              })) || <div></div>
-          );
+          return <TableTags data={data || []} />;
         },
       },
       {
@@ -198,6 +190,11 @@ const PageTable: React.FC<Props> = ({ gids }) => {
           return a.update_at - b.update_at;
         },
         render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      {
+        title: t('common:table.username'),
+        dataIndex: 'update_by',
+        render: (value) => <TableUserCell username={value} />,
       },
       {
         title: t('disabled'),
@@ -226,36 +223,43 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       {
         title: t('common:table.operations'),
         dataIndex: 'operator',
+        width: 64,
+        align: 'center',
+        fixed: 'right',
         render: (data, record) => {
           return (
-            <div className='table-operator-area'>
-              <div
-                className='table-operator-area-normal'
-                onClick={() => {
-                  handleClickEdit(record.id, true);
-                }}
-              >
-                {t('common:btn.clone')}
-              </div>
-              <div
-                className='table-operator-area-warning'
-                onClick={() => {
-                  confirm({
-                    title: t('common:confirm.delete'),
-                    onOk: () => {
-                      deleteRecordingRule([record.id], record.group_id).then(() => {
-                        message.success(t('common:success.delete'));
-                        refreshList();
-                      });
-                    },
+            <TableActionDropdown
+              items={[
+                {
+                  key: 'clone',
+                  label: t('common:btn.clone'),
+                  icon: <Copy size={16} />,
+                  onClick: () => {
+                    handleClickEdit(record.id, true);
+                  },
+                },
+                {
+                  key: 'delete',
+                  label: t('common:btn.delete'),
+                  icon: <Trash2 size={16} />,
+                  danger: true,
+                  dividerBefore: true,
+                  onClick: () => {
+                    confirm({
+                      title: t('common:confirm.delete'),
+                      onOk: () => {
+                        deleteRecordingRule([record.id], record.group_id).then(() => {
+                          message.success(t('common:success.delete'));
+                          refreshList();
+                        });
+                      },
 
-                    onCancel() {},
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </div>
-            </div>
+                      onCancel() {},
+                    });
+                  },
+                },
+              ]}
+            />
           );
         },
       },
@@ -463,6 +467,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
           },
         }}
         columns={columns}
+        scroll={{ x: 'max-content' }}
       />
       {isModalVisible && <EditModal isModalVisible={isModalVisible} editModalFinish={editModalFinish} />}
     </div>

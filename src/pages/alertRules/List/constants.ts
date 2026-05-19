@@ -32,7 +32,7 @@ export const defaultColumnsConfigs = [
   {
     name: 'datasource_ids',
     i18nKey: 'table.datasource_ids',
-    visible: false,
+    visible: true,
   },
   {
     name: 'name',
@@ -42,7 +42,7 @@ export const defaultColumnsConfigs = [
   {
     name: 'severities',
     i18nKey: 'table.severity',
-    visible: false,
+    visible: true,
   },
   {
     name: 'append_tags',
@@ -72,7 +72,7 @@ export const defaultColumnsConfigs = [
   {
     name: 'update_by_nickname',
     i18nKey: 'common:table.nickname',
-    visible: true,
+    visible: false,
   },
   {
     name: 'disabled',

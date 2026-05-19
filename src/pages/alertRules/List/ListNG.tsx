@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Space, Select, Input, Button, Table, Tooltip, Tag, Modal, Switch, message } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { EyeOutlined, SearchOutlined, InfoCircleOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
+import { Copy, Sparkles, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
@@ -16,7 +17,7 @@ import RefreshIcon from '@/components/RefreshIcon';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
-import Tags from '@/components/Tags';
+import { TableActionDropdown, TablePrimaryCell, TableTags, TableUserCell } from '@/components/TableDesign';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -80,6 +81,7 @@ export default function AlertRules(props: Props) {
     },
   });
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
+  const getBusiGroupName = (id?: number) => _.find(busiGroups, { id })?.name;
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
     [
       {
@@ -98,6 +100,7 @@ export default function AlertRules(props: Props) {
         render: (val, record) => {
           return (
             <a
+              className={`fc-table-status-cell ${val > 0 ? 'is-active' : 'is-normal'}`}
               onClick={() => {
                 setEventsDrawerProps({
                   ...eventsDrawerProps,
@@ -106,12 +109,9 @@ export default function AlertRules(props: Props) {
                   rid: record.id,
                 });
               }}
-              style={{
-                fontSize: 20,
-                color: val > 0 ? '#e6522c' : '#00a700',
-              }}
             >
               {val > 0 ? <WarningFilled /> : <CheckCircleFilled />}
+              <span>{val > 0 ? t('common:abnormal', '异常') : t('common:normal', '正常')}</span>
             </a>
           );
         },
@@ -124,7 +124,7 @@ export default function AlertRules(props: Props) {
             title: t('common:business_group'),
             dataIndex: 'group_id',
             render: (id) => {
-              return _.find(busiGroups, { id })?.name;
+              return getBusiGroupName(id);
             },
           },
         ] as any),
@@ -145,19 +145,7 @@ export default function AlertRules(props: Props) {
         dataIndex: 'datasource_ids',
         render(value) {
           if (!value) return '';
-          return (
-            <Tags
-              width={70}
-              data={_.compact(
-                _.map(value, (item) => {
-                  if (item === 0) return '$all';
-                  const name = _.find(datasourceList, { id: item })?.name;
-                  if (!name) return '';
-                  return name;
-                }),
-              )}
-            />
-          );
+          return <TableTags data={_.compact(_.map(value, (item) => (item === 0 ? '$all' : _.find(datasourceList, { id: item })?.name)))} />;
         },
       },
       {
@@ -167,7 +155,7 @@ export default function AlertRules(props: Props) {
           return localeCompare(a.name, b.name);
         },
         render: (data, record) => {
-          return (
+          const nameLink = (
             <Link
               className='table-text'
               to={{
@@ -177,6 +165,12 @@ export default function AlertRules(props: Props) {
             >
               {data}
             </Link>
+          );
+          return (
+            <TablePrimaryCell
+              primary={nameLink}
+              secondary={hideBusinessGroupColumn ? getBusiGroupName(record.group_id) : undefined}
+            />
           );
         },
       },
@@ -213,27 +207,7 @@ export default function AlertRules(props: Props) {
         title: t('table.append_tags'),
         dataIndex: 'append_tags',
         render(value) {
-          return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(value, (item) => {
-                return (
-                  <Tooltip key={item} title={item}>
-                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
-                      <div
-                        style={{
-                          maxWidth: 'max-content',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {item}
-                      </div>
-                    </Tag>
-                  </Tooltip>
-                );
-              })}
-            </div>
-          );
+          return <TableTags data={value} />;
         },
       },
       {
@@ -307,6 +281,7 @@ export default function AlertRules(props: Props) {
       {
         title: t('common:table.username'),
         dataIndex: 'update_by',
+        render: (value, record) => <TableUserCell username={value} nickname={(record as any).update_by_nickname} />,
       },
       {
         title: t('common:table.nickname'),
@@ -354,49 +329,52 @@ export default function AlertRules(props: Props) {
           },
           {
             title: t('common:table.operations'),
+            width: 64,
+            align: 'center',
             fixed: 'right',
-            render: (record: any) => {
+            render: (_data, record: any) => {
               const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
               return (
-                <Space>
-                  <Link
-                    className='table-operator-area-normal'
-                    to={{
-                      pathname: `/alert-rules/edit/${record.id}?mode=clone`,
-                    }}
-                    target='_blank'
-                  >
-                    {t('common:btn.clone')}
-                  </Link>
-                  <Button
-                    size='small'
-                    type='link'
-                    danger
-                    style={{
-                      padding: 0,
-                    }}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteStrategy([record.id], record.group_id).then(() => {
-                            message.success(t('common:success.delete'));
-                            fetchData();
-                          });
-                        },
+                <TableActionDropdown
+                  items={_.compact([
+                    {
+                      key: 'clone',
+                      label: (
+                        <Link to={{ pathname: `/alert-rules/edit/${record.id}?mode=clone` }} target='_blank'>
+                          {t('common:btn.clone')}
+                        </Link>
+                      ),
+                      icon: <Copy size={16} />,
+                    },
+                    record.cate === 'prometheus' && anomalyEnabled === true
+                      ? {
+                          key: 'brain',
+                          label: <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>,
+                          icon: <Sparkles size={16} />,
+                        }
+                      : undefined,
+                    {
+                      key: 'delete',
+                      label: t('common:btn.delete'),
+                      icon: <Trash2 size={16} />,
+                      danger: true,
+                      dividerBefore: true,
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteStrategy([record.id], record.group_id).then(() => {
+                              message.success(t('common:success.delete'));
+                              fetchData();
+                            });
+                          },
 
-                        onCancel() {},
-                      });
-                    }}
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                  {record.cate === 'prometheus' && anomalyEnabled === true && (
-                    <div>
-                      <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
-                    </div>
-                  )}
-                </Space>
+                          onCancel() {},
+                        });
+                      },
+                    },
+                  ])}
+                />
               );
             },
           },
