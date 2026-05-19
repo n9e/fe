@@ -18,6 +18,7 @@ const ru_RU = {
   unit: 'Единица',
   page_help: 'Инструкция',
   document_title: 'Документация',
+  product_document_title: 'Документация продукта',
   more_document_link: 'Больше документов',
   and: 'И',
   yes: 'Да',

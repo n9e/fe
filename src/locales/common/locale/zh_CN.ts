@@ -18,6 +18,7 @@ const zh_CN = {
   unit: '单位',
   page_help: '使用说明',
   document_title: '说明文档',
+  product_document_title: '产品文档',
   more_document_link: '更多文档',
   and: '且',
   yes: '是',
