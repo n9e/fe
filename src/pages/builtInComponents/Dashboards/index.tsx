@@ -16,6 +16,7 @@ import PayloadFormModal from '../components/PayloadFormModal';
 import { pathname } from '../constants';
 import Import from './Import';
 import { formatBeautifyJson, formatBeautifyJsons } from '../utils';
+import { TableTags } from '@/components/TableDesign';
 
 interface Props {
   component_id: number;
@@ -160,29 +161,20 @@ export default function index(props: Props) {
             render: (val) => {
               const tags = _.compact(_.split(val, ' '));
               return (
-                <Space size={0}>
-                  {_.map(tags, (tag, idx) => {
-                    return (
-                      <Tag
-                        key={idx}
-                        color='purple'
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          const queryItem = _.compact(_.split(filter.query, ' '));
-                          if (_.includes(queryItem, tag)) return;
-                          setFilter((filter) => {
-                            return {
-                              ...filter,
-                              query: filter.query ? filter.query + ' ' + tag : tag,
-                            };
-                          });
-                        }}
-                      >
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </Space>
+                <TableTags
+                  data={tags}
+                  onClick={(tag) => {
+                    if (!_.isString(tag)) return;
+                    const queryItem = _.compact(_.split(filter.query, ' '));
+                    if (_.includes(queryItem, tag)) return;
+                    setFilter((filter) => {
+                      return {
+                        ...filter,
+                        query: filter.query ? filter.query + ' ' + tag : tag,
+                      };
+                    });
+                  }}
+                />
               );
             },
           },
@@ -209,6 +201,8 @@ export default function index(props: Props) {
             render: (record) => {
               return (
                 <Dropdown
+                  trigger={['click']}
+                  placement='bottomRight'
                   overlay={
                     <Menu>
                       <Menu.Item>

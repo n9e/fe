@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Space, Table, Button, Modal, Tag, message, Switch } from 'antd';
+import { Space, Table, Button, Modal, message, Switch } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { MenuOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -12,17 +12,11 @@ import { arrayMoveImmutable } from 'array-move';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
+import { TableTags } from '@/components/TableDesign';
 
 import { NS, DETAIL_PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
-import {
-  getEmbeddedProducts,
-  addEmbeddedProducts,
-  updateEmbeddedProducts,
-  putEmbeddedProductsWeights,
-  deleteEmbeddedProducts,
-  putEmbeddedProductHide,
-} from '../../services';
+import { getEmbeddedProducts, addEmbeddedProducts, updateEmbeddedProducts, putEmbeddedProductsWeights, deleteEmbeddedProducts, putEmbeddedProductHide } from '../../services';
 import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 
 import './style.less';
@@ -70,10 +64,7 @@ export default function Index() {
         title: t('team_ids'),
         dataIndex: 'team_ids',
         render: (val) => {
-          return _.map(val, (item) => {
-            const name = _.find(userGroups, { id: item })?.name;
-            return <Tag key={item}>{name || item}</Tag>;
-          });
+          return <TableTags data={_.map(val, (item) => _.find(userGroups, { id: item })?.name || item)} />;
         },
       },
       {
@@ -133,6 +124,7 @@ export default function Index() {
         title: t('common:table.operations'),
         dataIndex: 'operator',
         width: 120,
+        fixed: 'right',
         render: (_val, record: EmbeddedProductResponse) => {
           return (
             <Space>
@@ -226,6 +218,7 @@ export default function Index() {
           pagination={false}
           dataSource={data}
           columns={columns}
+          scroll={{ x: 'max-content' }}
           onRow={(record) => {
             return {
               onDoubleClick: () => {

@@ -295,6 +295,7 @@ export default function index() {
                   {
                     title: t('common:table.operations'),
                     width: 100,
+                    fixed: 'right',
                     render: (record) => {
                       return (
                         <Space size={2}>
@@ -339,7 +340,7 @@ export default function index() {
                   },
                 }}
                 pagination={pagination}
-                scroll={{ y: 'calc(100% - 42px)' }}
+                scroll={{ x: 'max-content', y: 'calc(100% - 42px)' }}
               />
             </div>
           </div>

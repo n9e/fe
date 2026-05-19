@@ -13,11 +13,11 @@ import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
-import Tags from '@/components/Tags';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
+import { TableTags } from '@/components/TableDesign';
 
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import './locale';
@@ -102,8 +102,7 @@ const Subscribe = (props: Props) => {
         render(value) {
           if (!value) return '-';
           return (
-            <Tags
-              width={70}
+            <TableTags
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';
@@ -159,13 +158,7 @@ const Subscribe = (props: Props) => {
         render: (text: any) => {
           if (!text) return '-';
           return (
-            <>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
-                  })
-                : ''}
-            </>
+            <TableTags data={_.compact(_.map(text, (tag) => (tag ? `${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))} />
           );
         },
       },
@@ -174,13 +167,9 @@ const Subscribe = (props: Props) => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
-                  })
-                : ''}
-            </>
+            <TableTags
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+            />
           );
         },
       },
@@ -188,7 +177,7 @@ const Subscribe = (props: Props) => {
         title: t('user_groups'),
         dataIndex: 'user_groups',
         render: (data) => {
-          return <Tags width={110} data={_.map(data, 'name')} />;
+          return <TableTags data={_.map(data, 'name')} />;
         },
       },
       {
@@ -291,6 +280,8 @@ const Subscribe = (props: Props) => {
             render: (text: string, record: subscribeItem) => {
               return (
                 <Dropdown
+                  trigger={['click']}
+                  placement='bottomRight'
                   overlay={
                     <Menu>
                       <Menu.Item>
@@ -312,6 +303,7 @@ const Subscribe = (props: Props) => {
                           {t('common:btn.clone')}
                         </Link>
                       </Menu.Item>
+                      <Menu.Divider />
                       <Menu.Item>
                         <Button
                           danger
