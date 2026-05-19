@@ -16,7 +16,9 @@ const ja_JP = {
     syntax_lucene: 'Lucene',
     interval_label: '集計間隔',
     syntax: '構文',
+    sql: 'SQL',
     query: 'クエリ',
+    filters: 'フィルター',
     duration: '所要時間',
     count: '件数',
     advancedSettings: {

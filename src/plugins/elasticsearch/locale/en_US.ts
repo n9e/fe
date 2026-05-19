@@ -16,7 +16,9 @@ const en_US = {
     syntax_lucene: 'Lucene',
     interval_label: 'Interval',
     syntax: 'Syntax',
+    sql: 'SQL',
     query: 'Query',
+    filters: 'Filters',
     duration: 'Duration',
     count: 'Count',
     advancedSettings: {

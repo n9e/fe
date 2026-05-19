@@ -16,7 +16,9 @@ const zh_CN = {
     syntax_lucene: 'Lucene',
     interval_label: '聚合粒度',
     syntax: '语法',
+    sql: 'SQL',
     query: '查询条件',
+    filters: '筛选',
     duration: '耗时',
     count: '条数',
     advancedSettings: {
