@@ -149,7 +149,7 @@ export default function LogView(props: Props) {
                             <div className='break-all'>
                               <Space align='start'>
                                 <span className='whitespace-nowrap'>{t('field_type')}:</span>
-                                {fieldObject.type2}
+                                <span className='text-hint'>{fieldObject.type2}</span>
                               </Space>
                             </div>
                           ) : undefined
@@ -159,7 +159,7 @@ export default function LogView(props: Props) {
                           <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>
                             {fieldObject ? typeIconMap[TYPE_MAP[fieldObject.type]] ?? <QuestionOutlined /> : <QuestionOutlined />}
                           </span>
-                          <span>{val}</span>
+                          <span className='text-hint'>{val}</span>
                         </Space>
                       </Tooltip>
                     );
