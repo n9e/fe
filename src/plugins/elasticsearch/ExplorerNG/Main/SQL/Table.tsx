@@ -109,8 +109,8 @@ export default function Table(props: IProps) {
           const newLogs = _.map(res.list, (item) => {
             return {
               ...(flatten(item) || {}),
-              ___raw___: item,
-              ___id___: _.uniqueId('log_id_'),
+              __n9e_raw_n9e__: item,
+              __n9e_id_n9e__: _.uniqueId('log_id_'),
             };
           });
 
@@ -171,6 +171,8 @@ export default function Table(props: IProps) {
         <>
           {!_.isEmpty(data?.list) ? (
             <LogsViewer
+              id_key='__n9e_id_n9e__'
+              raw_key='__n9e_raw_n9e__'
               timeField={queryValues?.time_field}
               hideHistogram
               loading={loading}
@@ -185,9 +187,7 @@ export default function Table(props: IProps) {
               filterFields={(fieldKeys) => {
                 return filteredFields(fieldKeys, organizeFields ?? []);
               }}
-              addonBefore={
-                <SqlVizTypeSwitch sqlVizType={sqlVizType} />
-              }
+              addonBefore={<SqlVizTypeSwitch sqlVizType={sqlVizType} />}
               optionsExtraRender={
                 <Space>
                   {loadTimeRef.current !== null && (
@@ -214,7 +214,7 @@ export default function Table(props: IProps) {
                           data: _.map(newLogs, (item) => {
                             return {
                               ...item,
-                              ___id___: _.uniqueId('log_id_'),
+                              __n9e_id_n9e__: _.uniqueId('log_id_'),
                             };
                           }),
                           hash: _.uniqueId('logs_'),
@@ -261,7 +261,7 @@ export default function Table(props: IProps) {
                         _.map(appendLogs, (item) => {
                           return {
                             ...item,
-                            ___id___: _.uniqueId('log_id_'),
+                            __n9e_id_n9e__: _.uniqueId('log_id_'),
                           };
                         }),
                       ),

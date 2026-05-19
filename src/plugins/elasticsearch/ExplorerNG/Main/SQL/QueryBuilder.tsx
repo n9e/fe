@@ -58,59 +58,62 @@ export default function QueryBuilderCpt(props: Props) {
 
   if (!datasourceValue) return null;
 
-  const executeBuilder = React.useCallback((values: Record<string, any>, isPreview: boolean) => {
-    onClose();
+  const executeBuilder = React.useCallback(
+    (values: Record<string, any>, isPreview: boolean) => {
+      onClose();
 
-    const range = form.getFieldValue(['query', 'range']);
-    if (!range) {
-      message.error(t('builder.range_required'));
-      return;
-    }
-    const parsedRange = parseRange(range);
+      const range = form.getFieldValue(['query', 'range']);
+      if (!range) {
+        message.error(t('builder.range_required'));
+        return;
+      }
+      const parsedRange = parseRange(range);
 
-    esQueryBuilder({
-      cate: DatasourceCateEnum.elasticsearch,
-      datasource_id: datasourceValue!,
-      query: [
-        {
-          mode: values.mode,
-          index: values.index || index,
-          time_field: values.date_field || date_field,
-          from: moment(parsedRange.start).unix(),
-          to: moment(parsedRange.end).unix(),
-          filters: values.filters,
-          aggregates: values.aggregates,
-          group_by: values.group_by,
-          order_by: values.order_by,
-          limit: values.limit,
-        },
-      ],
-    })
-      .then((result) => {
-        const queryValues = form.getFieldValue('query') || {};
-        form.setFieldsValue({
-          ...(isPreview ? {} : { refreshFlag: _.uniqueId('refreshFlag_') }),
-          query: {
-            ...queryValues,
-            sql: result.sql,
-            sqlVizType: result.mode,
-            keys: {
-              valueKey: result.value_key,
-              labelKey: result.label_key,
-            },
+      esQueryBuilder({
+        cate: DatasourceCateEnum.elasticsearch,
+        datasource_id: datasourceValue!,
+        query: [
+          {
+            mode: values.mode,
+            index: values.index || index,
+            time_field: values.date_field || date_field,
+            from: moment(parsedRange.start).unix(),
+            to: moment(parsedRange.end).unix(),
+            filters: values.filters,
+            aggregates: values.aggregates,
+            group_by: values.group_by,
+            order_by: values.order_by,
+            limit: values.limit,
           },
-        });
-
-        if (isPreview) {
-          onPreviewSQL(result);
-        } else {
-          onExecute(result);
-        }
+        ],
       })
-      .catch((err) => {
-        message.error(err?.message || t(isPreview ? 'builder.preview_sql_failed' : 'builder.execute_failed'));
-      });
-  }, [form, datasourceValue, index, date_field, onClose, onExecute, onPreviewSQL, t]);
+        .then((result) => {
+          const queryValues = form.getFieldValue('query') || {};
+          form.setFieldsValue({
+            ...(isPreview ? {} : { refreshFlag: _.uniqueId('refreshFlag_') }),
+            query: {
+              ...queryValues,
+              sql: result.sql,
+              sqlVizType: result.mode,
+              keys: {
+                valueKey: result.value_key,
+                labelKey: result.label_key,
+              },
+            },
+          });
+
+          if (isPreview) {
+            onPreviewSQL(result);
+          } else {
+            onExecute(result);
+          }
+        })
+        .catch((err) => {
+          message.error(err?.message || t(isPreview ? 'builder.preview_sql_failed' : 'builder.execute_failed'));
+        });
+    },
+    [form, datasourceValue, index, date_field, onClose, onExecute, onPreviewSQL, t],
+  );
 
   return (
     <CommonStateContext.Provider
