@@ -17,15 +17,17 @@ export interface TableActionItem {
 
 interface TableActionDropdownProps {
   items: TableActionItem[];
+  placement?: 'bottomLeft' | 'bottomCenter' | 'bottomRight' | 'topLeft' | 'topCenter' | 'topRight';
 }
 
 export function TableActionDropdown(props: TableActionDropdownProps) {
-  const { items } = props;
+  const { items, placement = 'bottomRight' } = props;
   const visibleItems = items.filter(Boolean);
 
   return (
     <Dropdown
       trigger={['click']}
+      placement={placement}
       overlayClassName='fc-table-action-dropdown'
       overlay={
         <Menu>
