@@ -18,6 +18,7 @@ const ja_JP = {
   unit: '単位',
   page_help: '使用説明',
   document_title: 'ドキュメント',
+  product_document_title: '製品ドキュメント',
   more_document_link: 'さらにドキュメント',
   and: 'および',
   yes: 'はい',
