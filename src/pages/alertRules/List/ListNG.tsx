@@ -181,7 +181,7 @@ export default function AlertRules(props: Props) {
         title: t('table.datasource_ids'),
         dataIndex: 'datasource_ids',
         render(value, record) {
-          if (!value) return '-';
+          if (!value) return null;
           const cate = _.find(allCates, { value: record.cate });
           const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
           let logoSrc = cate?.logo;
