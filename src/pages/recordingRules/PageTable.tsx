@@ -133,20 +133,16 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         title: t('common:datasource.name'),
         dataIndex: 'datasource_ids',
         render: (data) => {
-          return _.map(
-            _.filter(data, (item) => {
-              return _.find(groupedDatasourceList.prometheus, { id: item });
-            }),
-            (item) => {
-              if (item === 0) {
-                return (
-                  <Tag color='purple' key={item}>
-                    $all
-                  </Tag>
-                );
-              }
-              return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
-            },
+          return (
+            <TableTags
+              data={_.map(
+                _.filter(data, (item) => item === 0 || _.find(groupedDatasourceList.prometheus, { id: item })),
+                (item) => {
+                  if (item === 0) return '$all';
+                  return _.find(groupedDatasourceList.prometheus, { id: item })?.name!;
+                },
+              )}
+            />
           );
         },
       },
@@ -217,11 +213,12 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         title: t('common:table.operations'),
         dataIndex: 'operator',
         width: 64,
-      fixed: 'right' as const,
+        fixed: 'right' as const,
         render: (data, record) => {
           return (
             <Dropdown
-              trigger={['hover', 'click']}
+              trigger={['click']}
+              placement='bottomRight'
               overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>

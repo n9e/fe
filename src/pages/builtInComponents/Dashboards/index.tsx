@@ -196,11 +196,12 @@ export default function index(props: Props) {
           {
             title: t('common:table.operations'),
             width: 64,
-      fixed: 'right' as const,
+            fixed: 'right' as const,
             render: (record) => {
               return (
                 <Dropdown
-                  trigger={['hover', 'click']}
+                  trigger={['click']}
+                  placement='bottomRight'
                   overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>

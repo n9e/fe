@@ -275,7 +275,8 @@ export default function AlertRules(props: Props) {
               const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
               return (
                 <Dropdown
-                  trigger={['hover', 'click']}
+                  trigger={['click']}
+                  placement='bottomRight'
                   overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>

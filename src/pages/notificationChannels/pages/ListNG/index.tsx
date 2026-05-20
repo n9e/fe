@@ -300,7 +300,8 @@ export default function index() {
                     render: (record) => {
                       return (
                         <Dropdown
-                          trigger={['hover', 'click']}
+                          trigger={['click']}
+                          placement='bottomRight'
                           overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>

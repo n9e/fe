@@ -153,13 +153,11 @@ const Subscribe = (props: Props) => {
         render: (text: any) => {
           if (!text) return '-';
           return (
-            <>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
-                  })
-                : ''}
-            </>
+            <TableTags
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+              maxVisible={2}
+              maxTagWidth={160}
+            />
           );
         },
       },
@@ -168,13 +166,11 @@ const Subscribe = (props: Props) => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
-                  })
-                : ''}
-            </>
+            <TableTags
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+              maxVisible={2}
+              maxTagWidth={180}
+            />
           );
         },
       },
@@ -273,7 +269,8 @@ const Subscribe = (props: Props) => {
             render: (text: string, record: subscribeItem) => {
               return (
                 <Dropdown
-                  trigger={['hover', 'click']}
+                  trigger={['click']}
+                  placement='bottomRight'
                   overlayClassName='fc-table-action-dropdown'
                   overlay={
                     <Menu>

@@ -17,14 +17,7 @@ import TableTags from '@/components/TableTags';
 
 import { NS, DETAIL_PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
-import {
-  getEmbeddedProducts,
-  addEmbeddedProducts,
-  updateEmbeddedProducts,
-  putEmbeddedProductsWeights,
-  deleteEmbeddedProducts,
-  putEmbeddedProductHide,
-} from '../../services';
+import { getEmbeddedProducts, addEmbeddedProducts, updateEmbeddedProducts, putEmbeddedProductsWeights, deleteEmbeddedProducts, putEmbeddedProductHide } from '../../services';
 import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 
 import './style.less';
@@ -132,11 +125,12 @@ export default function Index() {
         title: t('common:table.operations'),
         dataIndex: 'operator',
         width: 64,
-      fixed: 'right' as const,
+        fixed: 'right' as const,
         render: (_val, record: EmbeddedProductResponse) => {
           return (
             <Dropdown
-              trigger={['hover', 'click']}
+              trigger={['click']}
+              placement='bottomRight'
               overlayClassName='fc-table-action-dropdown'
               overlay={
                 <Menu>

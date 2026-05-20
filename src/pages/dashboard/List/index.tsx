@@ -306,11 +306,12 @@ export default function index() {
                   {
                     title: t('common:table.operations'),
                     width: 64,
-      fixed: 'right' as const,
+                    fixed: 'right' as const,
                     render: (text: string, record: DashboardType) => {
                       return (
                         <Dropdown
-                          trigger={['hover', 'click']}
+                          trigger={['click']}
+                          placement='bottomRight'
                           overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>
