@@ -37,6 +37,10 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
       '__execute__',
       'filters',
       'allow_hide_system_indices',
+      'labelKey',
+      'valueKey',
+      'sql',
+      'sqlVizType',
     ]);
     _.forEach(validParmas, (value, key) => {
       if (value) {
@@ -141,6 +145,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const syntax = _.get(params, 'syntax');
       const mode = _.get(params, 'mode');
       const allow_hide_system_indices = _.get(params, 'allow_hide_system_indices') === 'true' ? true : false;
+      const sql = _.get(params, 'sql') || undefined;
+      const sqlVizType = _.get(params, 'sqlVizType') || undefined;
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
       let filters: any[] = [];
       try {
         if (params?.filters) {
@@ -165,6 +173,12 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             syntax,
             allow_hide_system_indices,
             filters,
+            sql,
+            sqlVizType,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+            },
           },
         };
       } else if (index) {
@@ -179,6 +193,12 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             syntax,
             allow_hide_system_indices,
             filters,
+            sql,
+            sqlVizType,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+            },
           },
         };
       }
@@ -339,6 +359,10 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.query = formValues.query?.query;
     query.allow_hide_system_indices = formValues.query?.allow_hide_system_indices ? 'true' : 'false';
     query.filters = filtersString;
+    query.sql = formValues.query?.sql;
+    query.sqlVizType = formValues.query?.sqlVizType;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.huaweiLTS) {
