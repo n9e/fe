@@ -625,7 +625,6 @@ export default function index() {
               rowKey='id'
               {...tableProps}
               columns={ajustColumns(columns, columnsConfigs)}
-              scroll={{ x: 'max-content' }}
               pagination={{
                 ...pagination,
                 ...tableProps.pagination,

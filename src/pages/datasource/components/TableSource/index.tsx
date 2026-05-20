@@ -287,7 +287,6 @@ const TableSource = (props: IPropsType) => {
         size='small'
         className='settings-data-source-list'
         rowKey='id'
-        scroll={{ x: 'max-content' }}
         dataSource={_.filter(tableData, (item) => {
           if (searchVal) {
             return _.includes(item.name, searchVal);

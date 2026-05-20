@@ -342,7 +342,6 @@ function Card(props: Props, ref) {
           }}
           dataSource={drawerList}
           columns={columns}
-          scroll={{ x: 'max-content' }}
           pagination={{
             defaultPageSize: 30,
             showSizeChanger: true,

@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
@@ -114,8 +114,9 @@ const Shield: React.FC = () => {
         render(value, record: any) {
           if (!value) return '-';
           return (
-            <TableTags
-              maxTagWidth={120}
+            <Tags
+              type='outline'
+              maxWidth={180}
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';
@@ -233,12 +234,24 @@ const Shield: React.FC = () => {
         title: t('common:table.update_at'),
         dataIndex: 'update_at',
         render: (value) => {
-          return moment.unix(value).format('YYYY-MM-DD HH:mm:ss');
+          const m = moment.unix(value);
+          return (
+            <div>
+              <div>{m.format('YYYY-MM-DD')}</div>
+              <div>{m.format('HH:mm:ss')}</div>
+            </div>
+          );
         },
       },
       {
         title: t('common:table.update_by'),
         dataIndex: 'update_by',
+        render: (val, record: any) => (
+          <div>
+            <div>{val}</div>
+            {record.update_by_nickname && <div className='text-soft'>{record.update_by_nickname}</div>}
+          </div>
+        ),
       },
       {
         title: t('common:table.enabled'),

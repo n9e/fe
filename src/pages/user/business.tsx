@@ -340,7 +340,6 @@ const Resource: React.FC = () => {
                 rowKey='id'
                 columns={teamMemberColumns}
                 dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
-                scroll={{ x: 'max-content' }}
                 loading={memberLoading}
                 pagination={pagination}
               />

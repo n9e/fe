@@ -24,7 +24,7 @@ import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
@@ -41,7 +41,6 @@ import UnBindTags from './unBindTags';
 
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_TPL_NODE_ID';
 const SEARCH_SESSION_KEY = 'taskTpl_query';
-const TASK_TPL_TABLE_SCROLL_X = 1052;
 
 function getTableData(options: any, gids: string | undefined, query: string) {
   if (gids) {
@@ -142,20 +141,32 @@ const index = (_props: any) => {
         dataIndex: 'tags',
         width: 280,
         render: (text) => {
-          return <TableTags data={text} maxVisible={2} maxTagWidth={160} onTagClick={handleTagClick} />;
+          return <Tags type='outline' maxWidth={180} data={text} onTagClick={handleTagClick} />;
         },
       },
       {
         title: t('tpl.creator'),
         dataIndex: 'create_by',
         width: 120,
+        render: (val, record: any) => (
+          <div>
+            <div>{val}</div>
+            {record.create_by_nickname && <div className='text-soft'>{record.create_by_nickname}</div>}
+          </div>
+        ),
       },
       {
         title: t('tpl.last_updated'),
         dataIndex: 'update_at',
         width: 180,
         render: (text) => {
-          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+          const m = moment.unix(text);
+          return (
+            <div>
+              <div>{m.format('YYYY-MM-DD')}</div>
+              <div>{m.format('HH:mm:ss')}</div>
+            </div>
+          );
         },
       },
       {
@@ -285,7 +296,6 @@ const index = (_props: any) => {
               rowKey='id'
               columns={columns}
               {...(tableProps as any)}
-              scroll={{ x: TASK_TPL_TABLE_SCROLL_X }}
               rowSelection={{
                 selectedRowKeys: selectedIds,
                 onChange: (selectedRowKeys) => {

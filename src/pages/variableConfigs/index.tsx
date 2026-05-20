@@ -89,7 +89,6 @@ export default function index() {
           className='mt-2'
           rowKey='id'
           size='small'
-          scroll={{ x: 'max-content' }}
           columns={[
             {
               dataIndex: 'ckey',

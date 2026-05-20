@@ -407,7 +407,6 @@ export default function index() {
             )}
             rowKey='id'
             size='small'
-            scroll={{ x: 'max-content' }}
             rowSelection={{
               selectedRowKeys: selectRowKeys,
               onChange: (selectedRowKeys: number[]) => {

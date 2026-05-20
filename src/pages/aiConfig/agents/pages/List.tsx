@@ -58,7 +58,6 @@ export default function List() {
                 pagination={pagination}
                 loading={loading}
                 dataSource={data}
-                scroll={{ x: 'max-content' }}
                 columns={[
                   {
                     dataIndex: 'name',

@@ -13,7 +13,7 @@ import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -96,8 +96,9 @@ const Subscribe = (props: Props) => {
         render(value) {
           if (!value) return '-';
           return (
-            <TableTags
-              maxTagWidth={120}
+            <Tags
+              type='outline'
+              maxWidth={180}
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';
@@ -153,10 +154,10 @@ const Subscribe = (props: Props) => {
         render: (text: any) => {
           if (!text) return '-';
           return (
-            <TableTags
+            <Tags
+              type='outline'
+              maxWidth={180}
               data={_.compact(_.map(text, (tag) => (tag ? `${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
-              maxVisible={2}
-              maxTagWidth={160}
             />
           );
         },
@@ -166,10 +167,10 @@ const Subscribe = (props: Props) => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <TableTags
+            <Tags
+              type='outline'
+              maxWidth={180}
               data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
-              maxVisible={2}
-              maxTagWidth={180}
             />
           );
         },
@@ -178,7 +179,7 @@ const Subscribe = (props: Props) => {
         title: t('user_groups'),
         dataIndex: 'user_groups',
         render: (data) => {
-          return <TableTags data={_.map(data, 'name')} maxVisible={2} maxTagWidth={140} />;
+          return <Tags type='outline' maxWidth={180} data={_.map(data, 'name')} />;
         },
       },
       {
@@ -186,14 +187,13 @@ const Subscribe = (props: Props) => {
         dataIndex: 'notify_rule_ids',
         render: (data) => {
           return (
-            <TableTags
+            <Tags<number>
+              type='outline'
+              maxWidth={180}
               data={data}
-              maxVisible={2}
-              maxTagWidth={160}
               getKey={(id) => id}
-              getLabel={(id) => _.find(notificationRules, { id })?.name || id}
-              getLinkTo={(id) => `/${notificationRulesNS}/edit/${id}`}
-              linkTarget='_blank'
+              getLabel={(id) => _.find(notificationRules, { id })?.name || _.toString(id)}
+              onTagClick={(id) => window.open(`/${notificationRulesNS}/edit/${id}`, '_blank')}
             />
           );
         },
@@ -216,11 +216,12 @@ const Subscribe = (props: Props) => {
         title: t('common:table.username'),
         ellipsis: true,
         dataIndex: 'update_by',
-      },
-      {
-        title: t('common:table.nickname'),
-        ellipsis: true,
-        dataIndex: 'update_by_nickname',
+        render: (val, record: any) => (
+          <div>
+            <div>{val}</div>
+            {record.update_by_nickname && <div className='text-soft'>{record.update_by_nickname}</div>}
+          </div>
+        ),
       },
     ],
     readonly

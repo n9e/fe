@@ -287,7 +287,6 @@ export default function index(props: Props) {
             },
           },
         ]}
-        scroll={{ x: 'max-content' }}
         pagination={pagination}
       />
     </>

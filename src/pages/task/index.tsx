@@ -145,13 +145,25 @@ const index = (_props: any) => {
         title: t('task.creator'),
         dataIndex: 'create_by',
         width: 100,
+        render: (val, record: any) => (
+          <div>
+            <div>{val}</div>
+            {record.create_by_nickname && <div className='text-soft'>{record.create_by_nickname}</div>}
+          </div>
+        ),
       },
       {
         title: t('task.created'),
         dataIndex: 'create_at',
         width: 160,
         render: (text) => {
-          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+          const m = moment.unix(text);
+          return (
+            <div>
+              <div>{m.format('YYYY-MM-DD')}</div>
+              <div>{m.format('HH:mm:ss')}</div>
+            </div>
+          );
         },
       },
       {
@@ -254,7 +266,6 @@ const index = (_props: any) => {
               rowKey='id'
               columns={columns as any}
               {...(tableProps as any)}
-              scroll={{ x: 'max-content' }}
               pagination={{
                 ...pagination,
                 ...tableProps.pagination,

@@ -409,16 +409,7 @@ const Resource: React.FC = () => {
                 </Button>
               </Row>
 
-              <Table
-                className='mt-2'
-                size='small'
-                rowKey='id'
-                columns={teamMemberColumns}
-                dataSource={memberList}
-                loading={memberLoading}
-                pagination={pagination}
-                scroll={{ x: 'max-content' }}
-              />
+              <Table className='mt-2' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} pagination={pagination} />
             </div>
           ) : (
             <div className='blank-busi-holder'>

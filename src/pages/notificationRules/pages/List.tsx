@@ -166,12 +166,24 @@ export default function List() {
             {
               title: t('common:table.update_by'),
               dataIndex: 'update_by',
+              render: (val, record: any) => (
+                <div>
+                  <div>{val}</div>
+                  {record.update_by_nickname && <div className='text-soft'>{record.update_by_nickname}</div>}
+                </div>
+              ),
             },
             {
               title: t('common:table.update_at'),
               dataIndex: 'update_at',
               render: (val) => {
-                return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
+                const m = moment.unix(val);
+                return (
+                  <div>
+                    <div>{m.format('YYYY-MM-DD')}</div>
+                    <div>{m.format('HH:mm:ss')}</div>
+                  </div>
+                );
               },
             },
             {
@@ -252,7 +264,6 @@ export default function List() {
               },
             },
           ]}
-          scroll={{ x: 'max-content' }}
           pagination={pagination}
         />
       </div>

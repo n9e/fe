@@ -226,7 +226,6 @@ export default function List() {
               },
             },
           ]}
-          scroll={{ x: 'max-content' }}
           rowSelection={{
             selectedRowKeys: _.map(selectedRows, 'id'),
             onChange: (_selectedRowKeys, selectedRows: ChannelItem[]) => {

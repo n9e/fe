@@ -14,7 +14,7 @@ import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
@@ -115,45 +115,36 @@ const PageTable: React.FC<Props> = ({ gids }) => {
     getRecordingRules();
   };
 
-  const columns: ColumnType<strategyItem>[] = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
-    [
-      {
-        title: t('common:datasource.name'),
-        dataIndex: 'datasource_ids',
-        render: (data) => {
-          return (
-            <TableTags
-              data={_.map(
-                _.filter(data, (item) => item === 0 || _.find(groupedDatasourceList.prometheus, { id: item })),
-                (item) => {
-                  if (item === 0) return '$all';
-                  return _.find(groupedDatasourceList.prometheus, { id: item })?.name!;
-                },
-              )}
-            />
-          );
-        },
+  const columns: ColumnType<strategyItem>[] = _.concat([
+    {
+      title: t('common:datasource.name'),
+      dataIndex: 'datasource_ids',
+      render: (data) => {
+        return (
+          <Tags
+            type='outline'
+            maxWidth={180}
+            data={_.map(
+              _.filter(data, (item) => item === 0 || _.find(groupedDatasourceList.prometheus, { id: item })),
+              (item) => {
+                if (item === 0) return '$all';
+                return _.find(groupedDatasourceList.prometheus, { id: item })?.name!;
+              },
+            )}
+          />
+        );
       },
-      {
-        title: t('name'),
-        dataIndex: 'name',
-        sorter: (a, b) => {
-          return localeCompare(a.name, b.name);
-        },
-        render: (data, record) => {
-          return (
+    },
+    {
+      title: t('name'),
+      dataIndex: 'name',
+      sorter: (a, b) => {
+        return localeCompare(a.name, b.name);
+      },
+      render: (data, record) => {
+        const groupName = !(businessGroup.isLeaf && gids !== '-2') ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
+        return (
+          <div className='flex flex-col gap-0.5'>
             <div
               className='table-active-text'
               onClick={() => {
@@ -162,108 +153,117 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             >
               {data}
             </div>
-          );
-        },
+            {groupName && <span className='text-soft text-xs'>{groupName}</span>}
+          </div>
+        );
       },
-      {
-        title: t('cron_pattern'),
-        dataIndex: 'cron_pattern',
+    },
+    {
+      title: t('cron_pattern'),
+      dataIndex: 'cron_pattern',
+    },
+    {
+      title: t('append_tags'),
+      dataIndex: 'append_tags',
+      render: (data) => {
+        const array = data || [];
+        return <Tags type='outline' maxWidth={180} data={array} />;
       },
-      {
-        title: t('append_tags'),
-        dataIndex: 'append_tags',
-        render: (data) => {
-          const array = data || [];
-          return <TableTags data={array} maxVisible={2} maxTagWidth={160} emptyText={<div />} />;
-        },
+    },
+    {
+      title: t('common:table.update_at'),
+      dataIndex: 'update_at',
+      sorter: (a, b) => {
+        return a.update_at - b.update_at;
       },
-      {
-        title: t('common:table.update_at'),
-        dataIndex: 'update_at',
-        sorter: (a, b) => {
-          return a.update_at - b.update_at;
-        },
-        render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: number) => {
+        const m = moment.unix(text);
+        return (
+          <div>
+            <div>{m.format('YYYY-MM-DD')}</div>
+            <div>{m.format('HH:mm:ss')}</div>
+          </div>
+        );
       },
-      {
-        title: t('disabled'),
-        dataIndex: 'disabled',
-        render: (disabled, record) => (
-          <Switch
-            checked={disabled === strategyStatus.Enable}
-            size='small'
-            onChange={() => {
-              const { id, disabled } = record;
-              updateRecordingRules(
-                {
-                  ids: [id],
-                  fields: {
-                    disabled: !disabled ? 1 : 0,
-                  },
+    },
+    {
+      title: t('disabled'),
+      dataIndex: 'disabled',
+      render: (disabled, record) => (
+        <Switch
+          checked={disabled === strategyStatus.Enable}
+          size='small'
+          onChange={() => {
+            const { id, disabled } = record;
+            updateRecordingRules(
+              {
+                ids: [id],
+                fields: {
+                  disabled: !disabled ? 1 : 0,
                 },
-                record.group_id,
-              ).then(() => {
-                refreshList();
-              });
-            }}
-          />
-        ),
-      },
-      {
-        title: t('common:table.operations'),
-        dataIndex: 'operator',
-        width: 64,
-        fixed: 'right' as const,
-        render: (data, record) => {
-          return (
-            <Dropdown
-              trigger={['click']}
-              align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
-              overlayClassName='fc-table-action-dropdown'
-              overlay={
-                <Menu>
-                  <Menu.Item>
-                    <TableActionButton
-                      actionIcon='copy'
-                      onClick={() => {
-                        handleClickEdit(record.id, true);
-                      }}
-                    >
-                      {t('common:btn.clone')}
-                    </TableActionButton>
-                  </Menu.Item>
-                  <Menu.Divider />
-                  <Menu.Item>
-                    <TableActionButton
-                      actionIcon='delete'
-                      danger
-                      onClick={() => {
-                        confirm({
-                          title: t('common:confirm.delete'),
-                          onOk: () => {
-                            deleteRecordingRule([record.id], record.group_id).then(() => {
-                              message.success(t('common:success.delete'));
-                              refreshList();
-                            });
-                          },
+              },
+              record.group_id,
+            ).then(() => {
+              refreshList();
+            });
+          }}
+        />
+      ),
+    },
+    {
+      title: t('common:table.operations'),
+      dataIndex: 'operator',
+      width: 64,
+      fixed: 'right' as const,
+      render: (data, record) => {
+        return (
+          <Dropdown
+            trigger={['click']}
+            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
+            overlayClassName='fc-table-action-dropdown'
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <TableActionButton
+                    actionIcon='copy'
+                    onClick={() => {
+                      handleClickEdit(record.id, true);
+                    }}
+                  >
+                    {t('common:btn.clone')}
+                  </TableActionButton>
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item>
+                  <TableActionButton
+                    actionIcon='delete'
+                    danger
+                    onClick={() => {
+                      confirm({
+                        title: t('common:confirm.delete'),
+                        onOk: () => {
+                          deleteRecordingRule([record.id], record.group_id).then(() => {
+                            message.success(t('common:success.delete'));
+                            refreshList();
+                          });
+                        },
 
-                          onCancel() {},
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </TableActionButton>
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <TableActionTrigger />
-            </Dropdown>
-          );
-        },
+                        onCancel() {},
+                      });
+                    }}
+                  >
+                    {t('common:btn.delete')}
+                  </TableActionButton>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <TableActionTrigger />
+          </Dropdown>
+        );
       },
-    ],
-  );
+    },
+  ]);
 
   const toOneArr = (arr, res, name) => {
     arr.forEach((ele) => {
@@ -433,7 +433,6 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         className='mt-2'
         size='small'
         rowKey='id'
-        scroll={{ x: 'max-content' }}
         pagination={{
           total: currentStrategyData.length,
           showQuickJumper: true,

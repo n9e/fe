@@ -116,7 +116,6 @@ export default function Servers() {
                 tableLayout='fixed'
                 loading={loading}
                 dataSource={_.filter(data, (item) => _.includes(_.toLower(item.name), _.toLower(search)))}
-                scroll={{ x: 'max-content' }}
                 pagination={false}
                 columns={[
                   {

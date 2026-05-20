@@ -12,7 +12,7 @@ interface Props<T> {
   bgColor?: string | ((item: string | T, index: number) => string); // 背景颜色，仅在 type 为 'fill' 时生效
   fontColor?: string | ((item: string | T, index: number) => string); // 字体颜色，仅在 type 为 'fill' 时生效
   icon?: React.ReactNode | ((item: string | T, index: number) => React.ReactNode);
-  data: string[] | T[];
+  data: string[] | T[] | null; // null 兼容接口可能返回 null 值的情况
   getKey?: (item: T, index: number) => React.Key;
   getLabel?: (item: T, index: number) => string;
   onTagClick?: (item: string | T, index: number) => void;
@@ -86,12 +86,15 @@ function resolveColor<T>(color: string | ((item: string | T, index: number) => s
 }
 
 export default function Tags<T>(props: Props<T>) {
-  const { type = 'outline', data, icon, onTagClick, getKey, getLabel, maxWidth } = props;
+  const { type = 'outline', icon, data, onTagClick, getKey, getLabel, maxWidth } = props;
+
+  if (!data || data.length === 0) return null;
+
   const borderRadius = props.borderRadius ?? 16;
   const containerRef = useRef<HTMLDivElement>(null);
   const tagMeasureRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const overflowMeasureRef = useRef<HTMLSpanElement | null>(null);
-  const [layout, setLayout] = useState({ visibleCount: data.length, overflowCount: 0 });
+  const [layout, setLayout] = useState({ visibleCount: data?.length, overflowCount: 0 });
 
   // fill 模式下通过 inline style 设置动态颜色（Tailwind 不支持动态值）
   const getTagStyle = (item: string | T, index: number): React.CSSProperties => {
@@ -138,7 +141,7 @@ export default function Tags<T>(props: Props<T>) {
       if (rawWidth <= 0) return;
       const containerWidth = maxWidth != null ? Math.min(rawWidth, maxWidth) : rawWidth;
 
-      const tagWidths = tagMeasureRefs.current.slice(0, data.length).map((span) => (span ? Math.ceil(span.getBoundingClientRect().width) : containerWidth));
+      const tagWidths = tagMeasureRefs.current.slice(0, data?.length).map((span) => (span ? Math.ceil(span.getBoundingClientRect().width) : containerWidth));
       const overflowTagWidth = overflowMeasureRef.current ? Math.ceil(overflowMeasureRef.current.getBoundingClientRect().width) : 40;
 
       setLayout(calcLayout(tagWidths, overflowTagWidth, containerWidth));
@@ -171,7 +174,7 @@ export default function Tags<T>(props: Props<T>) {
         ))}
         {/* 用最大计数值预估 overflow tag 宽度上限 */}
         <span ref={overflowMeasureRef} className={tagBaseClass}>
-          +{data.length}
+          +{data?.length}
         </span>
       </div>
 
@@ -196,7 +199,7 @@ export default function Tags<T>(props: Props<T>) {
           <Popover
             title={
               <div className='flex justify-between items-center'>
-                <Trans ns='common' i18nKey='tags_popover_title' values={{ count: data.length }} />
+                <Trans ns='common' i18nKey='tags_popover_title' values={{ count: data?.length }} />
                 <Button
                   type='text'
                   icon={<CopyOutlined />}

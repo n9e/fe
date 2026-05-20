@@ -426,7 +426,6 @@ export default function index(props: Props) {
         rowKey='id'
         {...tableProps}
         columns={ajustColumns(columns, columnsConfigs)}
-        scroll={{ x: 'max-content' }}
         pagination={{
           ...pagination,
           ...tableProps.pagination,

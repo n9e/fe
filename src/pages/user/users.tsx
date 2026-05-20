@@ -305,7 +305,6 @@ const Resource: React.FC = () => {
           rowKey='id'
           columns={ajustColumns(userColumns, columnsConfigs)}
           {...tableProps}
-          scroll={{ x: 'max-content' }}
           pagination={{
             ...tableProps.pagination,
             ...pagination,

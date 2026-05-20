@@ -233,7 +233,6 @@ export default function Index() {
           pagination={false}
           dataSource={data}
           columns={columns}
-          scroll={{ x: 'max-content' }}
           onRow={(record) => {
             return {
               onDoubleClick: () => {
