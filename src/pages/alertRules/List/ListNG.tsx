@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { TriangleAlert, CircleCheckBig } from 'lucide-react';
-import Tags from './Tags';
+import Tags from '@/components/TableTags/Tags';
 
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';

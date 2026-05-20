@@ -14,6 +14,7 @@ import { copy2ClipBoard } from '@/utils';
 import getTextWidth from '@/utils/getTextWidth';
 import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import Tags from '@/components/TableTags/Tags';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
 import Explorer from '@/pages/targets/components/Explorer';
 import EditBusinessGroups from '@/pages/targets/components/EditBusinessGroups';
@@ -31,7 +32,6 @@ import { NS } from '../../constants';
 import { Item, OperateType } from '../../types';
 import { getList } from '../../services';
 import VersionIcon from './VersionIcon';
-import TableTags from '@/components/TableTags';
 import { formatBeatTimeDisplay } from './formatBeatTimeDisplay';
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
@@ -524,10 +524,10 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <TableTags
+                    <Tags
+                      type='outline'
                       data={tags}
-                      maxVisible={2}
-                      maxTagWidth={120}
+                      fontColor={record.target_up === 0 ? 'var(--fc-text-4)' : 'var(--fc-text-2)'}
                       onTagClick={(tag) => {
                         if (!_.includes(params.query, tag)) {
                           const val = params.query ? `${params.query.trim()} ${tag}` : tag;
@@ -557,10 +557,10 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <TableTags
+                    <Tags
+                      type='outline'
                       data={tags}
-                      maxVisible={2}
-                      maxTagWidth={120}
+                      fontColor={record.target_up === 0 ? 'var(--fc-text-4)' : 'var(--fc-text-2)'}
                       onTagClick={(tag) => {
                         if (!_.includes(params.query, tag)) {
                           const val = params.query ? `${params.query.trim()} ${tag}` : tag;
@@ -584,7 +584,7 @@ export default function List(props: Props) {
                 }
                 return (
                   <div className='w-[200px]' style={{ minWidth }}>
-                    <TableTags data={groupNames} maxVisible={2} maxTagWidth={120} />
+                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'var(--fc-text-4)' : undefined} />
                   </div>
                 );
               },
