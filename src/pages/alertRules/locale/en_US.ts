@@ -40,6 +40,7 @@ const en_US = {
   time_zone: 'Time zone',
   time_zone_tip: 'Time zone only affects the start time and end time in the rule, and does not affect the relevant time fields of viewing alert events',
   local_time: 'Local time',
+  notify_rule_not_found: 'Corresponding notification rule not found',
 
   notify_configs: 'Notification Configuration',
   notify_rule_ids: 'Notification rule',

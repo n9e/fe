@@ -30,6 +30,11 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'severities',
+    i18nKey: 'table.severity',
+    visible: false,
+  },
+  {
     name: 'datasource_ids',
     i18nKey: 'table.datasource_ids',
     visible: false,
@@ -57,11 +62,6 @@ export const defaultColumnsConfigs = [
   {
     name: 'update_by',
     i18nKey: 'common:table.username',
-    visible: true,
-  },
-  {
-    name: 'update_by_nickname',
-    i18nKey: 'common:table.nickname',
     visible: true,
   },
   {

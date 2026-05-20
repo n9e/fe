@@ -39,6 +39,7 @@ const zh_CN = {
   time_zone: '时区',
   time_zone_tip: '时区仅影响规则中的开始时间、结束时间，不影响告警事件查看相关时间字段',
   local_time: '本地时间',
+  notify_rule_not_found: '未找到对应的通知规则',
 
   notify_configs: '通知配置',
   notify_rule_ids: '通知规则',

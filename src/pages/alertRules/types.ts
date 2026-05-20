@@ -27,7 +27,8 @@ export interface AlertRuleType<T> {
   prod: string;
   severities: number[];
   update_at: number;
-  update_by: number;
+  update_by: string;
+  update_by_nickname?: string;
 
   cur_event_count: number;
 }

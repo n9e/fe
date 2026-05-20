@@ -5,13 +5,17 @@ import { Trans } from 'react-i18next';
 
 import { copy2ClipBoard } from '@/utils';
 
-interface Props {
+interface Props<T> {
   type: 'outline' | 'fill';
-  bgColor?: string; // 背景颜色，仅在 type 为 'fill' 时生效
-  fontColor?: string; // 字体颜色，仅在 type 为 'fill' 时生效
-  data: string[];
-  icon?: React.ReactNode | ((tagname: string) => React.ReactNode);
-  onTagClick?: (tag: string) => void;
+  maxWidth?: number; // 容器最大宽度，设置后布局计算以此为上限
+  borderRadius?: number; // 边框圆角
+  bgColor?: string | ((item: string | T, index: number) => string); // 背景颜色，仅在 type 为 'fill' 时生效
+  fontColor?: string | ((item: string | T, index: number) => string); // 字体颜色，仅在 type 为 'fill' 时生效
+  icon?: React.ReactNode | ((item: string | T, index: number) => React.ReactNode);
+  data: string[] | T[];
+  getKey?: (item: T, index: number) => React.Key;
+  getLabel?: (item: T, index: number) => string;
+  onTagClick?: (item: string | T, index: number) => void;
 }
 
 const GAP = 2;
@@ -19,7 +23,7 @@ const GAP = 2;
 /**
  * 核心布局算法：根据实际测量的 tag 宽度计算可见数量
  */
-function calcLayout(tagWidths: number[], overflowTagWidth: number, containerWidth: number): { visibleCount: number; overflowCount: number } {
+export function calcLayout(tagWidths: number[], overflowTagWidth: number, containerWidth: number): { visibleCount: number; overflowCount: number } {
   if (!tagWidths.length || containerWidth <= 0) {
     return { visibleCount: tagWidths.length, overflowCount: 0 };
   }
@@ -71,38 +75,56 @@ function calcLayout(tagWidths: number[], overflowTagWidth: number, containerWidt
   return { visibleCount, overflowCount: widths.length - visibleCount };
 }
 
-function resolveIcon(icon: Props['icon'], tagname: string): React.ReactNode | undefined {
+function resolveIcon<T>(icon: Props<T>['icon'], item: string | T, index: number): React.ReactNode | undefined {
   if (!icon) return undefined;
-  return typeof icon === 'function' ? icon(tagname) : icon;
+  return typeof icon === 'function' ? icon(item, index) : icon;
 }
 
-export default function Tags(props: Props) {
-  const { type = 'outline', data, icon, onTagClick } = props;
-  const bgColor = props.bgColor || 'var(--fc-violet-3)';
-  const fontColor = props.fontColor || 'var(--fc-violet-11)';
+function resolveColor<T>(color: string | ((item: string | T, index: number) => string) | undefined, item: string | T, index: number, defaultValue: string): string {
+  if (!color) return defaultValue;
+  return typeof color === 'function' ? color(item, index) : color;
+}
+
+export default function Tags<T>(props: Props<T>) {
+  const { type = 'outline', data, icon, onTagClick, getKey, getLabel, maxWidth } = props;
+  const borderRadius = props.borderRadius ?? 16;
   const containerRef = useRef<HTMLDivElement>(null);
   const tagMeasureRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const overflowMeasureRef = useRef<HTMLSpanElement | null>(null);
   const [layout, setLayout] = useState({ visibleCount: data.length, overflowCount: 0 });
 
   // fill 模式下通过 inline style 设置动态颜色（Tailwind 不支持动态值）
-  const fillStyle: React.CSSProperties | undefined =
-    type === 'fill'
-      ? {
-          backgroundColor: bgColor,
-          backgroundClip: 'padding-box',
-          borderColor: bgColor,
-          color: fontColor,
-        }
-      : {
-          color: fontColor,
-        };
+  const getTagStyle = (item: string | T, index: number): React.CSSProperties => {
+    if (type === 'fill') {
+      const bg = resolveColor(props.bgColor, item, index, 'var(--fc-violet-3)');
+      const fc = resolveColor(props.fontColor, item, index, 'var(--fc-violet-11)');
+      return {
+        backgroundColor: bg,
+        backgroundClip: 'padding-box',
+        borderColor: bg,
+        color: fc,
+        borderRadius,
+      };
+    }
+    const fc = props.fontColor ? resolveColor(props.fontColor, item, index, '') : undefined;
+    return { ...(fc ? { color: fc } : {}), borderRadius };
+  };
 
   // tag 的 Tailwind 基础类（测量层和渲染层共用）
-  // p-[6px] border border-[var(--fc-border-color)] rounded-2xl leading-none whitespace-nowrap box-border
-  const tagBaseClass = `inline-flex items-center px-[6px] py-[4px] border ${
-    type === 'fill' ? '' : 'border-[var(--fc-border-color)]'
-  } rounded-2xl leading-none whitespace-nowrap box-border ${onTagClick ? 'cursor-pointer' : ''}`;
+  const getItemLabel = (item: string | T, index: number): string => {
+    if (typeof item === 'string') return item;
+    return getLabel ? getLabel(item as T, index) : String(item);
+  };
+
+  const getItemKey = (item: string | T, index: number): React.Key => {
+    if (typeof item === 'string') return index;
+    return getKey ? getKey(item as T, index) : index;
+  };
+
+  // p-[6px] border border-[var(--fc-border-color)] leading-none whitespace-nowrap box-border
+  const tagBaseClass = `inline-flex items-center px-[6px] py-[4px] border ${type === 'fill' ? '' : 'border-[var(--fc-border-color)]'} leading-none whitespace-nowrap box-border ${
+    onTagClick ? 'cursor-pointer' : ''
+  }`;
 
   // 可见层额外加溢出省略
   const visibleTagClass = `${tagBaseClass} overflow-hidden text-ellipsis max-w-full shrink-0`;
@@ -112,8 +134,9 @@ export default function Tags(props: Props) {
     if (!el) return;
 
     const compute = () => {
-      const containerWidth = el.getBoundingClientRect().width;
-      if (containerWidth <= 0) return;
+      const rawWidth = el.getBoundingClientRect().width;
+      if (rawWidth <= 0) return;
+      const containerWidth = maxWidth != null ? Math.min(rawWidth, maxWidth) : rawWidth;
 
       const tagWidths = tagMeasureRefs.current.slice(0, data.length).map((span) => (span ? Math.ceil(span.getBoundingClientRect().width) : containerWidth));
       const overflowTagWidth = overflowMeasureRef.current ? Math.ceil(overflowMeasureRef.current.getBoundingClientRect().width) : 40;
@@ -131,19 +154,19 @@ export default function Tags(props: Props) {
   const { visibleCount, overflowCount } = layout;
 
   return (
-    <div ref={containerRef} className='relative'>
+    <div ref={containerRef} className='relative' style={maxWidth != null ? { maxWidth } : undefined}>
       {/* 隐藏测量层：绝对定位不占空间，用于获取各 tag 的真实渲染宽度 */}
       <div aria-hidden className='absolute top-0 left-0 invisible pointer-events-none flex'>
-        {data.map((tag, i) => (
+        {(data as (string | T)[]).map((item, i) => (
           <span
-            key={i}
+            key={getItemKey(item, i)}
             ref={(el) => {
               tagMeasureRefs.current[i] = el;
             }}
             className={tagBaseClass}
           >
-            {icon && <span className='mr-2 flex items-center'>{resolveIcon(icon, tag)}</span>}
-            {tag}
+            {icon && <span className='mr-2 flex items-center'>{resolveIcon(icon, item, i)}</span>}
+            {getItemLabel(item, i)}
           </span>
         ))}
         {/* 用最大计数值预估 overflow tag 宽度上限 */}
@@ -154,19 +177,19 @@ export default function Tags(props: Props) {
 
       {/* 可见布局层 */}
       <div className='flex flex-wrap gap-0.5 content-start'>
-        {data.slice(0, visibleCount).map((tag, i) => (
+        {(data as (string | T)[]).slice(0, visibleCount).map((item, i) => (
           <span
-            key={i}
+            key={getItemKey(item, i)}
             className={visibleTagClass}
-            style={fillStyle}
-            title={tag}
+            style={getTagStyle(item, i)}
+            title={getItemLabel(item, i)}
             onClick={(e) => {
               e.stopPropagation();
-              onTagClick?.(tag);
+              onTagClick?.(item, i);
             }}
           >
-            {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, tag)}</span>}
-            {tag}
+            {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, item, i)}</span>}
+            {getItemLabel(item, i)}
           </span>
         ))}
         {overflowCount > 0 && (
@@ -178,25 +201,25 @@ export default function Tags(props: Props) {
                   type='text'
                   icon={<CopyOutlined />}
                   onClick={() => {
-                    copy2ClipBoard(data.join('\n'));
+                    copy2ClipBoard((data as (string | T)[]).map((item, i) => getItemLabel(item, i)).join('\n'));
                   }}
                 />
               </div>
             }
             content={
               <div>
-                {data.map((tag, i) => (
-                  <div key={i} className='mb-1'>
+                {(data as (string | T)[]).map((item, i) => (
+                  <div key={getItemKey(item, i)} className='mb-1'>
                     <div
                       className={tagBaseClass}
-                      style={fillStyle}
+                      style={getTagStyle(item, i)}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onTagClick?.(tag);
+                        onTagClick?.(item, i);
                       }}
                     >
-                      {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, tag)}</span>}
-                      {tag}
+                      {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, item, i)}</span>}
+                      {getItemLabel(item, i)}
                     </div>
                   </div>
                 ))}
@@ -205,7 +228,7 @@ export default function Tags(props: Props) {
           >
             <span
               className={`${tagBaseClass} shrink-0`}
-              style={fillStyle}
+              style={getTagStyle('', -1)}
               onClick={(e) => {
                 e.stopPropagation();
               }}

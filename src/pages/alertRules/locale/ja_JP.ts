@@ -40,6 +40,7 @@ const ja_JP = {
   time_zone: 'タイムゾーン',
   time_zone_tip: 'タイムゾーンはルールの開始時間と終了時間にのみ影響し、アラートイベントの関連する時間フィールドの表示には影響しません',
   local_time: '現地時間',
+  notify_rule_not_found: '対応する通知ルールが見つかりません',
 
   notify_configs: '通知設定',
   notify_rule_ids: '通知ルール',

@@ -8,10 +8,8 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { TriangleAlert, CircleCheckBig } from 'lucide-react';
-import Tags from '@/components/TableTags/Tags';
 
 import { CommonStateContext } from '@/App';
-import { priorityColor } from '@/utils/constant';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -19,10 +17,9 @@ import { TableActionButton, TableActionLink, TableActionTrigger } from '@/compon
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
-import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
 import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
@@ -105,6 +102,7 @@ export default function AlertRules(props: Props) {
               type='fill'
               bgColor={val > 0 ? 'var(--fc-red-3)' : 'var(--fc-green-3)'}
               fontColor={val > 0 ? 'var(--fc-red-11)' : 'var(--fc-green-11)'}
+              borderRadius={6}
               icon={() => {
                 if (val > 0) {
                   return <TriangleAlert size={14} />;
@@ -133,12 +131,6 @@ export default function AlertRules(props: Props) {
           return localeCompare(a.name, b.name);
         },
         render: (data, record) => {
-          const cate = _.find(allCates, { value: record.cate });
-          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
-          let logoSrc = cate?.logo;
-          if (record.cate === 'host') {
-            logoSrc = '/image/logos/host.png';
-          }
           const groupName = !hideBusinessGroupColumn ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
           return (
             <div className='flex flex-col gap-0.5'>
@@ -151,37 +143,71 @@ export default function AlertRules(props: Props) {
               >
                 {data}
               </Link>
-              <span className='text-soft text-xs inline-flex items-center gap-2 flex-wrap'>
-                {logoSrc && <img alt={record.cate} src={logoSrc} height={14} />}
-                {cateLabel && <span>{cateLabel}</span>}
-                {groupName && <span>{groupName}</span>}
-                {_.map(record.severities, (severity) => (
-                  <Tag key={severity} color={priorityColor[severity - 1]} style={{ marginRight: 0 }}>
-                    S{severity}
-                  </Tag>
-                ))}
-              </span>
+              <span className='text-soft text-xs inline-flex items-center gap-2 flex-wrap'>{groupName && <span>{groupName}</span>}</span>
             </div>
+          );
+        },
+      },
+      {
+        title: t('table.severity'),
+        dataIndex: 'severities',
+        render: (data) => {
+          return (
+            <Tags
+              type='fill'
+              borderRadius={6}
+              data={_.map(data, (severity) => `S${severity}`)}
+              bgColor={(tagname) => {
+                const bgColorMap = {
+                  S1: 'var(--fc-red-3)',
+                  S2: 'var(--fc-orange-3)',
+                  S3: 'var(--fc-yellow-3)',
+                };
+                return bgColorMap[tagname] || 'var(--fc-gray-3)';
+              }}
+              fontColor={(tagname) => {
+                const fontColorMap = {
+                  S1: 'var(--fc-red-11)',
+                  S2: 'var(--fc-orange-11)',
+                  S3: 'var(--fc-yellow-11)',
+                };
+                return fontColorMap[tagname] || 'var(--fc-gray-11)';
+              }}
+            />
           );
         },
       },
       {
         title: t('table.datasource_ids'),
         dataIndex: 'datasource_ids',
-        render(value) {
-          if (!value) return '';
+        render(value, record) {
+          if (!value) return '-';
+          const cate = _.find(allCates, { value: record.cate });
+          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+          let logoSrc = cate?.logo;
+          if (record.cate === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
           return (
-            <TableTags
-              maxTagWidth={120}
-              data={_.compact(
-                _.map(value, (item) => {
-                  if (item === 0) return '$all';
-                  const name = _.find(datasourceList, { id: item })?.name;
-                  if (!name) return '';
-                  return name;
-                }),
+            <Space>
+              {logoSrc && (
+                <Tooltip title={cateLabel}>
+                  <img alt={record.cate} src={logoSrc} height={18} />
+                </Tooltip>
               )}
-            />
+              <Tags
+                type='outline'
+                maxWidth={180}
+                data={_.compact(
+                  _.map(value, (item) => {
+                    if (item === 0) return '$all';
+                    const name = _.find(datasourceList, { id: item })?.name;
+                    if (!name) return '';
+                    return name;
+                  }),
+                )}
+              />
+            </Space>
           );
         },
       },
@@ -189,14 +215,14 @@ export default function AlertRules(props: Props) {
         title: t('table.append_tags'),
         dataIndex: 'append_tags',
         render(value) {
-          return <TableTags data={value} maxVisible={2} maxTagWidth={180} />;
+          return <Tags type='outline' maxWidth={180} data={value} />;
         },
       },
       {
         title: t('table.notify_groups_obj'),
         dataIndex: 'notify_groups_obj',
         render: (data) => {
-          return <TableTags data={_.map(data, (user) => user.nickname || user.username || user.name)} maxVisible={2} maxTagWidth={160} />;
+          return <Tags type='outline' maxWidth={180} data={_.map(data, (user) => user.nickname || user.username || user.name)} />;
         },
       },
       {
@@ -204,14 +230,20 @@ export default function AlertRules(props: Props) {
         dataIndex: 'notify_rule_ids',
         render: (data) => {
           return (
-            <TableTags
+            <Tags<number>
+              type='outline'
+              maxWidth={180}
               data={data}
-              maxVisible={2}
-              maxTagWidth={160}
               getKey={(id) => id}
-              getLabel={(id) => _.find(notificationRules, { id })?.name || id}
-              getLinkTo={(id) => `/${notificationRulesNS}/edit/${id}`}
-              linkTarget='_blank'
+              getLabel={(id) => _.find(notificationRules, { id })?.name || _.toString(id)}
+              onTagClick={(id) => {
+                const finded = _.find(notificationRules, { id });
+                if (finded) {
+                  window.open(`/notification-rules/edit/${id}`, '_blank');
+                } else {
+                  message.warning(t('notify_rule_not_found'));
+                }
+              }}
             />
           );
         },
@@ -219,20 +251,31 @@ export default function AlertRules(props: Props) {
       {
         title: t('table.update_at'),
         dataIndex: 'update_at',
+        width: 60,
         sorter: (a, b) => {
           return a.update_at - b.update_at;
         },
         render: (text: string) => {
-          return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
+          const m = moment.unix(Number(text));
+          return (
+            <div>
+              <div>{m.format('YYYY-MM-DD')}</div>
+              <div>{m.format('HH:mm:ss')}</div>
+            </div>
+          );
         },
       },
       {
         title: t('common:table.username'),
         dataIndex: 'update_by',
-      },
-      {
-        title: t('common:table.nickname'),
-        dataIndex: 'update_by_nickname',
+        render: (val, record) => {
+          return (
+            <div>
+              <div>{val}</div>
+              <div className='text-soft'>{record.update_by_nickname}</div>
+            </div>
+          );
+        },
       },
     ],
     readonly

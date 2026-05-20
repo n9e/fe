@@ -39,6 +39,7 @@ const zh_HK = {
   time_zone: '時區',
   time_zone_tip: '時區僅影響規則中的開始時間、結束時間，不影響告警事件查看相關時間字段',
   local_time: '本地時間',
+  notify_rule_not_found: '未找到對應的通知規則',
 
   notify_configs: '通知配置',
   notify_rule_ids: '通知規則',
