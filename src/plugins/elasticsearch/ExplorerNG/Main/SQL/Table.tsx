@@ -90,6 +90,7 @@ export default function Table(props: IProps) {
     const queryValues = form.getFieldValue('query');
     if (refreshFlag && datasourceValue && queryValues.sql) {
       setExecuteLoading(true);
+      setServiceParams({ current: 1, pageSize: DEFAULT_LOGS_PAGE_SIZE });
       const range = parseRange(queryValues.range);
       const queryStart = Date.now();
       return esLogsQuery({
@@ -118,7 +119,7 @@ export default function Table(props: IProps) {
           setFields(columnsKeys);
 
           setLogs({
-            data: _.slice(newLogs, 0, serviceParams.pageSize),
+            data: _.slice(newLogs, 0, DEFAULT_LOGS_PAGE_SIZE),
             hash: _.uniqueId('logs_'),
           });
 
