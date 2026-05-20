@@ -1,6 +1,8 @@
 const ru_RU = {
   title: 'Правила оповещений',
   search_placeholder: 'Поиск по названию или тегам',
+  status_triggered: 'Сработало',
+  status_normal: 'Нет срабатываний',
   prod: 'Тип мониторинга',
   severity: 'Уровень',
   notify_groups: 'Группы получателей оповещений',

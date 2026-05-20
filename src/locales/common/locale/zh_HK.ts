@@ -171,6 +171,7 @@ const zh_HK = {
   disabling: '禁用中',
   select_event: '選擇告警事件',
   click_to_view_doc: '點擊查看文檔',
+  tags_popover_title: '{{count}} 個標籤',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

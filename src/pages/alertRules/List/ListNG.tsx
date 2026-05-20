@@ -1,12 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Space, Select, Input, Button, Table, Tooltip, Tag, Modal, Switch, message, Dropdown, Menu } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, SearchOutlined, InfoCircleOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import { TriangleAlert, CircleCheckBig } from 'lucide-react';
+import Tags from './Tags';
 
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
@@ -93,13 +95,23 @@ export default function AlertRules(props: Props) {
           </Space>
         ),
         dataIndex: 'cur_event_count',
+        width: 100,
         sorter: (a, b) => {
           return localeCompare(a.cur_event_count, b.cur_event_count);
         },
         render: (val, record) => {
           return (
-            <a
-              onClick={() => {
+            <Tags
+              type='fill'
+              bgColor={val > 0 ? 'var(--fc-red-3)' : 'var(--fc-green-3)'}
+              fontColor={val > 0 ? 'var(--fc-red-11)' : 'var(--fc-green-11)'}
+              icon={() => {
+                if (val > 0) {
+                  return <TriangleAlert size={14} />;
+                }
+                return <CircleCheckBig size={14} />;
+              }}
+              onTagClick={() => {
                 setEventsDrawerProps({
                   ...eventsDrawerProps,
                   visible: true,
@@ -107,13 +119,8 @@ export default function AlertRules(props: Props) {
                   rid: record.id,
                 });
               }}
-              style={{
-                fontSize: 20,
-                color: val > 0 ? '#e6522c' : '#00a700',
-              }}
-            >
-              {val > 0 ? <WarningFilled /> : <CheckCircleFilled />}
-            </a>
+              data={[val > 0 ? t('status_triggered') : t('status_normal')]}
+            />
           );
         },
       },

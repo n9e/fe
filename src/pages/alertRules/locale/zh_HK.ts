@@ -1,6 +1,8 @@
 const zh_HK = {
   title: '告警規則',
   search_placeholder: '搜尋名稱或標籤',
+  status_triggered: '告警中',
+  status_normal: '無告警',
   prod: '監控類型',
   severity: '級別',
   notify_groups: '告警接收組',

@@ -1,6 +1,8 @@
 const ja_JP = {
   title: 'アラートルール',
   search_placeholder: '名前またはタグを検索',
+  status_triggered: 'アラート中',
+  status_normal: '正常',
   prod: '監視タイプ',
   severity: 'レベル',
   notify_groups: 'アラート受信グループ',

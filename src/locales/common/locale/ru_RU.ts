@@ -172,6 +172,7 @@ const ru_RU = {
   disabling: 'Отключение',
   select_event: 'Выбрать событие оповещения',
   click_to_view_doc: 'Нажмите, чтобы просмотреть документацию',
+  tags_popover_title: '{{count}} тегов',
 
   tpl: 'Скрипт самовосстановления',
   'tpl.create': 'Создать',

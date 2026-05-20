@@ -1,6 +1,8 @@
 const en_US = {
   title: 'Alert rules',
   search_placeholder: 'Search by name or tags',
+  status_triggered: 'Triggered',
+  status_normal: 'Normal',
   prod: 'Type',
   severity: 'Severity',
   notify_groups: 'Notify groups',
