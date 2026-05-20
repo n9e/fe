@@ -311,7 +311,7 @@ export default function index() {
                       return (
                         <Dropdown
                           trigger={['click']}
-                          placement='bottomRight'
+                          align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
                           overlayClassName='fc-table-action-dropdown'
                           overlay={
                             <Menu>

@@ -232,9 +232,7 @@ export default function index() {
       title: t('extra_fields'),
       dataIndex: 'extra_fields',
       render: (val) => {
-        return (
-          <TableTags data={_.map(val, (item) => `${item.name}: ${item.value}`)} maxVisible={2} maxTagWidth={180} />
-        );
+        return <TableTags data={_.map(val, (item) => `${item.name}: ${item.value}`)} maxVisible={2} maxTagWidth={180} />;
       },
     },
     {
@@ -272,7 +270,8 @@ export default function index() {
       render: (data, record: any) => {
         return (
           <Dropdown
-            trigger={['hover', 'click']}
+            trigger={['click']}
+            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>

@@ -142,22 +142,19 @@ const Resource: React.FC = () => {
       render: (text: string, record) => {
         return (
           <Dropdown
-            trigger={['hover', 'click']}
+            trigger={['click']}
+            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
                 {_.includes(perms, '/users/put') && (
                   <Menu.Item onClick={() => handleClick(ActionType.EditUser, record.id)}>
-                    <TableActionButton actionIcon='edit'>
-                      {t('common:btn.edit')}
-                    </TableActionButton>
+                    <TableActionButton actionIcon='edit'>{t('common:btn.edit')}</TableActionButton>
                   </Menu.Item>
                 )}
                 {_.includes(perms, '/users/put') && (
                   <Menu.Item onClick={() => handleClick(ActionType.Reset, record.id)}>
-                    <TableActionButton actionIcon='settings'>
-                      {t('account:password.reset')}
-                    </TableActionButton>
+                    <TableActionButton actionIcon='settings'>{t('account:password.reset')}</TableActionButton>
                   </Menu.Item>
                 )}
                 {_.includes(perms, '/users/del') && <Menu.Divider />}

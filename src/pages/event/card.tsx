@@ -176,7 +176,8 @@ function Card(props: Props, ref) {
       render(value, record) {
         return (
           <Dropdown
-            trigger={['hover', 'click']}
+            trigger={['click']}
+            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>

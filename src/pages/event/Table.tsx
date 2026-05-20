@@ -135,7 +135,8 @@ export default function TableCpt(props: IProps) {
       render(value, record) {
         return (
           <Dropdown
-            trigger={['hover', 'click']}
+            trigger={['click']}
+            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>

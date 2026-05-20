@@ -197,7 +197,8 @@ const TableSource = (props: IPropsType) => {
       render: (record) => {
         return (
           <Dropdown
-            trigger={['hover', 'click']}
+            trigger={['click']}
+            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>

@@ -148,7 +148,8 @@ export default function index(props: Props) {
       render: (data, record: any) => {
         return (
           <Dropdown
-            trigger={['hover', 'click']}
+            trigger={['click']}
+            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
             overlayClassName='fc-table-action-dropdown'
             overlay={
               <Menu>
@@ -164,10 +165,10 @@ export default function index(props: Props) {
                         setRefreshFlag(_.uniqueId('refreshFlag_'));
                       }}
                     >
-                    <TableActionButton actionIcon='copy'>{t('common:btn.clone')}</TableActionButton>
-                  </FormModal>
-                </Menu.Item>
-              )}
+                      <TableActionButton actionIcon='copy'>{t('common:btn.clone')}</TableActionButton>
+                    </FormModal>
+                  </Menu.Item>
+                )}
                 {actionAuth.edit && record.updated_by !== 'system' && (
                   <Menu.Item>
                     <FormModal
@@ -180,34 +181,34 @@ export default function index(props: Props) {
                         setRefreshFlag(_.uniqueId('refreshFlag_'));
                       }}
                     >
-                    <TableActionButton actionIcon='edit'>{t('common:btn.edit')}</TableActionButton>
-                  </FormModal>
-                </Menu.Item>
-              )}
-              {actionAuth.delete && record.updated_by !== 'system' && (
-                <>
-                  <Menu.Divider />
-                  <Menu.Item>
-                    <TableActionButton
-                      danger
-                      actionIcon='delete'
-                      onClick={() => {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk() {
-                            deleteMetrics([record.id]).then(() => {
-                              message.success(t('common:success.delete'));
-                              setRefreshFlag(_.uniqueId('refreshFlag_'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </TableActionButton>
+                      <TableActionButton actionIcon='edit'>{t('common:btn.edit')}</TableActionButton>
+                    </FormModal>
                   </Menu.Item>
-                </>
-              )}
+                )}
+                {actionAuth.delete && record.updated_by !== 'system' && (
+                  <>
+                    <Menu.Divider />
+                    <Menu.Item>
+                      <TableActionButton
+                        danger
+                        actionIcon='delete'
+                        onClick={() => {
+                          Modal.confirm({
+                            title: t('common:confirm.delete'),
+                            onOk() {
+                              deleteMetrics([record.id]).then(() => {
+                                message.success(t('common:success.delete'));
+                                setRefreshFlag(_.uniqueId('refreshFlag_'));
+                              });
+                            },
+                          });
+                        }}
+                      >
+                        {t('common:btn.delete')}
+                      </TableActionButton>
+                    </Menu.Item>
+                  </>
+                )}
               </Menu>
             }
           >
