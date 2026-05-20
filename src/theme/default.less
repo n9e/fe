@@ -58,7 +58,7 @@ mark {
 // 2026-05 table design
 .ant-table-wrapper {
   .ant-table-container {
-    border: 1px solid var(--fc-border-color) !important;
+    border: 1px solid var(--fc-table-border-color) !important;
     border-radius: 8px !important;
     overflow: hidden;
   }
@@ -69,26 +69,33 @@ mark {
 
   .ant-table-tbody .ant-table-cell-fix-left,
   .ant-table-tbody .ant-table-cell-fix-right {
-    background: inherit;
+    background: var(--fc-table-fixed-body-bg);
   }
 
   .ant-table-thead > tr > th.ant-table-cell-fix-left,
   .ant-table-thead > tr > th.ant-table-cell-fix-right {
-    background: var(--fc-fill-2-5);
+    background: var(--fc-table-fixed-header-bg);
+  }
+
+  .ant-table-tbody > tr.ant-table-row:hover > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr.ant-table-row:hover > td.ant-table-cell-fix-right,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left.ant-table-cell-row-hover,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right.ant-table-cell-row-hover {
+    background: var(--fc-table-row-hover-bg);
   }
 
   .ant-table-thead > tr > th,
   .ant-table-tbody > tr > td,
   .ant-table tfoot > tr > th,
   .ant-table tfoot > tr > td {
-    border-bottom-color: var(--fc-border-color);
+    border-bottom-color: var(--fc-table-border-color);
   }
 
   .ant-table.ant-table-bordered {
     > .ant-table-title,
     > .ant-table-footer,
     > .ant-table-container {
-      border-color: var(--fc-border-color);
+      border-color: var(--fc-table-border-color);
     }
 
     > .ant-table-container {
@@ -101,7 +108,7 @@ mark {
           > tbody > tr > td,
           > tfoot > tr > th,
           > tfoot > tr > td {
-            border-right-color: var(--fc-border-color);
+            border-right-color: var(--fc-table-border-color);
           }
         }
       }
@@ -109,7 +116,7 @@ mark {
       > .ant-table-content,
       > .ant-table-header {
         > table {
-          border-top-color: var(--fc-border-color);
+          border-top-color: var(--fc-table-border-color);
         }
       }
     }
@@ -117,19 +124,19 @@ mark {
 
   .ant-table-tbody > tr.ant-table-row-selected > td {
     color: inherit;
-    background: rgb(var(--fc-fill-5-rgb) / 0.15);
+    background: var(--fc-table-selected-row-bg);
   }
 
   .ant-table-tbody > tr.ant-table-row-selected:hover > td {
-    background: rgb(var(--fc-fill-5-rgb) / 0.25);
+    background: var(--fc-table-selected-row-hover-bg);
   }
 
   .ant-table-tbody > tr.ant-table-row-selected > td.ant-table-column-sort {
-    background: rgb(var(--fc-fill-5-rgb) / 0.15);
+    background: var(--fc-table-selected-row-bg);
   }
 
   .ant-table-tbody > tr.ant-table-row-selected:hover > td.ant-table-column-sort {
-    background: rgb(var(--fc-fill-5-rgb) / 0.25);
+    background: var(--fc-table-selected-row-hover-bg);
   }
 }
 

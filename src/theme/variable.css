@@ -71,6 +71,14 @@
   --fc-menu-dark-bg: rgb(24, 27, 31);
   --fc-menu-dark-sub-bg: var(--fc-menu-dark-bg);
 
+  /* 表格 */
+  --fc-table-border-color: var(--fc-border-color);
+  --fc-table-fixed-header-bg: var(--fc-fill-2-5);
+  --fc-table-fixed-body-bg: inherit;
+  --fc-table-row-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+  --fc-table-selected-row-bg: rgb(var(--fc-fill-5-rgb) / 0.15);
+  --fc-table-selected-row-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.25);
+
   /* 浅色侧栏（Firemap 参考，组件内 isLight 时引用） */
   --fc-sidemenu-bg: rgb(247, 247, 248);
   --fc-sidemenu-border: #e5e7eb;
@@ -264,6 +272,13 @@
   --fc-fill-2: rgb(var(--fc-fill-2-rgb));
   --fc-menu-dark-bg: var(--fc-fill-2);
   --fc-menu-dark-sub-bg: var(--fc-menu-dark-bg);
+
+  --fc-table-border-color: var(--fc-border-color);
+  --fc-table-fixed-header-bg: var(--fc-fill-2-5);
+  --fc-table-fixed-body-bg: inherit;
+  --fc-table-row-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.2);
+  --fc-table-selected-row-bg: rgb(var(--fc-fill-5-rgb) / 0.15);
+  --fc-table-selected-row-hover-bg: rgb(var(--fc-fill-5-rgb) / 0.25);
 
   --fc-fill-2-5-rgb: 27 27 29;
   --fc-fill-2-5: rgb(var(--fc-fill-2-5-rgb));
@@ -490,6 +505,12 @@
   --fc-gold-text: #222;
   --fc-text-link: #4880ff;
   --fc-primary-bg: #fff2cb;
+  --fc-table-border-color: #f0f0f0;
+  --fc-table-fixed-header-bg: #fff8e6;
+  --fc-table-fixed-body-bg: #fff;
+  --fc-table-row-hover-bg: #fff2cb;
+  --fc-table-selected-row-bg: #fffce6;
+  --fc-table-selected-row-hover-bg: #fffbdc;
 }
 
 .theme-light-blue {
