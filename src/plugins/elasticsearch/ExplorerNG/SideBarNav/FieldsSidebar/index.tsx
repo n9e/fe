@@ -44,6 +44,7 @@ export default function index(props: IProps) {
   const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, requestParams } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
+  const queryValues = Form.useWatch('query');
   const { from, range, limit, reverse } = requestParams;
 
   return (
@@ -63,13 +64,17 @@ export default function index(props: IProps) {
           }
         }}
         fields={data}
-        onValueFilter={(params) => {
-          onValueFilter({
-            ...params,
-            assignmentOperator: '=',
-            operator: params.operator === 'and' ? 'AND' : 'NOT',
-          });
-        }}
+        onValueFilter={
+          queryValues?.syntax === 'sql'
+            ? undefined
+            : (params) => {
+                onValueFilter({
+                  ...params,
+                  assignmentOperator: '=',
+                  operator: params.operator === 'and' ? 'AND' : 'NOT',
+                });
+              }
+        }
         fetchStats={async (record) => {
           const options = getOptionsFromLocalstorage(LOGS_OPTIONS_CACHE_KEY);
           const topNumber = options.topNumber ?? 5;

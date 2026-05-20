@@ -63,6 +63,7 @@ interface Props {
       onValueFilter?: (parmas: OnValueFilterParams) => void;
     },
   ) => React.ReactNode | false;
+  hideTypeIcon?: boolean;
 }
 
 interface RenderValueProps {
@@ -264,6 +265,7 @@ function Raw(props: Props) {
     adjustFieldValue,
     showExistsAction,
     customLogFieldRender,
+    hideTypeIcon,
   } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
@@ -490,6 +492,7 @@ function Raw(props: Props) {
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
             customLogFieldRender={customLogFieldRender}
+            hideTypeIcon={hideTypeIcon}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
