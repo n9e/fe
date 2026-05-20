@@ -181,6 +181,7 @@ export default function Table(props: IProps) {
             <LogsViewer
               timeField={queryValues?.time_field}
               hideHistogram
+              hideTypeIcon
               loading={loading}
               logs={logs.data}
               logsHash={data?.hash + '_' + logs.hash}

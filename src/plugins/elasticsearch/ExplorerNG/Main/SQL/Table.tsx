@@ -175,6 +175,7 @@ export default function Table(props: IProps) {
               raw_key='__n9e_raw_n9e__'
               timeField={queryValues?.time_field}
               hideHistogram
+              hideTypeIcon
               loading={loading}
               logs={logs.data}
               logsHash={data?.hash + '_' + logs.hash}

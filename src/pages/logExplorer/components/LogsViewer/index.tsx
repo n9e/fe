@@ -107,6 +107,7 @@ interface Props {
   };
   /** 为 true 时字段值不按 delimiter 分词，划选文本后弹出与点击 token 相同的菜单（与分词互斥） */
   enableLogTextSelectMenu?: boolean;
+  hideTypeIcon?: boolean;
 }
 
 interface LogsViewerState {
@@ -166,6 +167,7 @@ export default function LogsViewer(props: Props) {
     logClusting,
     customLogFieldRender,
     enableLogTextSelectMenu = false,
+    hideTypeIcon = false,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -350,6 +352,7 @@ export default function LogsViewer(props: Props) {
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
                   customLogFieldRender={customLogFieldRender}
+                  hideTypeIcon={hideTypeIcon}
                 />
               )}
               {options.logMode === 'table' && (
@@ -383,6 +386,7 @@ export default function LogsViewer(props: Props) {
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
                   customLogFieldRender={customLogFieldRender}
+                  hideTypeIcon={hideTypeIcon}
                 />
               )}
               {options.logMode === 'clustering' && logClusting && (

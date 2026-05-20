@@ -69,6 +69,7 @@ interface Props {
       onValueFilter?: (parmas: OnValueFilterParams) => void;
     },
   ) => React.ReactNode | false;
+  hideTypeIcon?: boolean;
 }
 
 function Table(props: Props) {
@@ -96,6 +97,7 @@ function Table(props: Props) {
     adjustFieldValue,
     showExistsAction,
     customLogFieldRender,
+    hideTypeIcon,
   } = props;
   const fields = useMemo(() => {
     const resolvedFields = getFieldsFromTableData(data);
@@ -246,6 +248,7 @@ function Table(props: Props) {
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
             customLogFieldRender={customLogFieldRender}
+            hideTypeIcon={hideTypeIcon}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
