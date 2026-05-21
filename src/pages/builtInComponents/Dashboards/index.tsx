@@ -11,7 +11,7 @@ import Export from '@/pages/dashboard/List/Export';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { HelpLink } from '@/components/pageLayout';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import { getPayloads, deletePayloads } from '../services';
 import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
@@ -162,7 +162,7 @@ export default function index(props: Props) {
             render: (val) => {
               const tags = _.compact(_.split(val, ' '));
               return (
-                <TableTags
+                <Tags
                   data={tags}
                   onTagClick={(tag) => {
                     const queryItem = _.compact(_.split(filter.query, ' '));

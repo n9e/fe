@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Space, Button, Switch, Modal, Input, Tag, Tooltip, Dropdown, Menu } from 'antd';
+import { Table, Space, Button, Switch, Modal, Input, Dropdown, Menu } from 'antd';
 import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 
 import { IS_PLUS } from '@/utils/constant';
 import PageLayout from '@/components/pageLayout';
+import Tags from '@/components/TableTags/Tags';
 import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
 import usePagination from '@/components/usePagination';
@@ -139,28 +140,39 @@ export default function List() {
             {
               title: t('notification_configuration.channel'),
               dataIndex: 'notify_configs',
-              render: (val) => {
-                return _.map(val, (item) => {
-                  return (
-                    <Tooltip key={item.channel_id} title={!item.channel ? t('channel_invalid_tip') : undefined}>
-                      <Tag color={!item.channel ? 'warning' : undefined}>{item.channel ?? item.channel_id}</Tag>
-                    </Tooltip>
-                  );
-                });
+              render: (val: { channel_id: number; channel?: string }[]) => {
+                return (
+                  <Tags
+                    type='outline'
+                    maxWidth={180}
+                    data={val}
+                    getKey={(item) => item.channel_id}
+                    getLabel={(item) => item.channel ?? String(item.channel_id)}
+                    getTooltipTitle={(item) => (typeof item === 'string' ? undefined : item.channel ? undefined : t('channel_invalid_tip'))}
+                  />
+                );
               },
             },
             {
               title: t('user_group_ids'),
               dataIndex: 'user_group_ids',
-              render: (val) => {
-                return _.map(val, (item) => {
-                  const name = _.find(userGroups, { id: item })?.name;
-                  return (
-                    <Tooltip key={item} title={!name ? t('user_group_id_invalid_tip') : undefined}>
-                      <Tag color={!name ? 'warning' : undefined}>{name ?? item}</Tag>
-                    </Tooltip>
-                  );
-                });
+              render: (val: number[]) => {
+                return (
+                  <Tags
+                    type='outline'
+                    maxWidth={180}
+                    data={val}
+                    getKey={(item) => item}
+                    getLabel={(item) => {
+                      const id = typeof item === 'number' ? item : Number(item);
+                      return _.find(userGroups, { id })?.name ?? String(item);
+                    }}
+                    getTooltipTitle={(item) => {
+                      const id = typeof item === 'number' ? item : Number(item);
+                      return _.find(userGroups, { id })?.name ? undefined : t('user_group_id_invalid_tip');
+                    }}
+                  />
+                );
               },
             },
             {

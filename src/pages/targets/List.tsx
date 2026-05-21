@@ -20,7 +20,7 @@ import TargetMetaDrawer from './TargetMetaDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
 import HostsSelect from './components/HostsSelect';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -206,10 +206,9 @@ export default function List(props: IProps) {
         },
         render(tagArr) {
           return (
-            <TableTags
+            <Tags<string>
               data={tagArr}
-              maxVisible={2}
-              maxTagWidth={120}
+              maxWidth={180}
               onTagClick={(item) => {
                 if (!tableQueryContent.includes(item)) {
                   isAddTagToQueryInput.current = true;

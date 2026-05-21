@@ -42,11 +42,6 @@ export const defaultColumnsConfigs = [
     visible: false,
   },
   {
-    name: 'update_by_nickname',
-    i18nKey: 'common:table.nickname',
-    visible: false,
-  },
-  {
     name: 'public',
     i18nKey: 'public.name',
     visible: true,

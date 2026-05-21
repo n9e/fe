@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Space, Select, Table, Tag } from 'antd';
+import { Input, Space, Select, Table } from 'antd';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 
+import Tags from '@/components/TableTags/Tags';
 import PageLayout from '@/components/pageLayout';
 import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
 
@@ -46,12 +47,6 @@ export default function index() {
     refreshDeps: [JSON.stringify(filters)],
     defaultPageSize,
   });
-
-  const statusMap = {
-    running: <Tag color='purple'>{t('executions.status.running')}</Tag>,
-    success: <Tag color='green'>{t('executions.status.success')}</Tag>,
-    failed: <Tag color='red'>{t('executions.status.failed')}</Tag>,
-  };
 
   const [itemDetailDrawerState, setItemDetailDrawerState] = useState<{
     id: string | null;
@@ -152,7 +147,7 @@ export default function index() {
                 key: 'mode',
                 width: 100,
                 render: (value) => {
-                  return <Tag color='green'>{t(`trigger_mode.${value}`)}</Tag>;
+                  return <Tags type='fill' data={[t(`trigger_mode.${value}`)]} bgColor={() => 'var(--fc-green-3)'} fontColor={() => 'var(--fc-green-11)'} />;
                 },
               },
               {
@@ -161,7 +156,24 @@ export default function index() {
                 key: 'status',
                 width: 100,
                 render: (value) => {
-                  return statusMap[value] || value;
+                  const bgColorMap = {
+                    running: 'var(--fc-purple-3)',
+                    success: 'var(--fc-green-3)',
+                    failed: 'var(--fc-red-3)',
+                  };
+                  const fontColorMap = {
+                    running: 'var(--fc-purple-11)',
+                    success: 'var(--fc-green-11)',
+                    failed: 'var(--fc-red-11)',
+                  };
+                  return (
+                    <Tags
+                      type='fill'
+                      data={[t(`executions.status.${value}`)]}
+                      bgColor={() => bgColorMap[value as string] || 'var(--fc-gray-3)'}
+                      fontColor={() => fontColorMap[value as string] || 'var(--fc-gray-11)'}
+                    />
+                  );
                 },
               },
               {

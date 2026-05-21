@@ -22,7 +22,7 @@ import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
-import PageLayout, { HelpLink } from '@/components/pageLayout';
+import PageLayout from '@/components/pageLayout';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import UserInfoModal from './component/createModal';
 import { getUserInfoList, deleteUser } from '@/services/manage';
@@ -32,7 +32,7 @@ import usePagination from '@/components/usePagination';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import './index.less';
 import './locale';
 
@@ -46,7 +46,7 @@ const Resource: React.FC = () => {
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [range, setRange] = useState<IRawTimeRange>();
-  const { profile, perms } = useContext(CommonStateContext);
+  const { perms } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const userColumn: ColumnsType<User> = [
@@ -78,18 +78,16 @@ const Resource: React.FC = () => {
       title: t('user.busi_groups'),
       dataIndex: 'busi_groups',
       width: 160,
-      render: (value) => {
+      render: (value: { id: number; name: string }[]) => {
         return (
-          <TableTags
+          <Tags
             data={value}
-            maxVisible={1}
-            maxTagWidth={110}
+            maxWidth={220}
             getKey={(item) => item.id}
             getLabel={(item) => item.name}
-            getLinkTo={(item) => ({
-              pathname: '/busi-groups',
-              search: `?id=${item.id}`,
-            })}
+            onTagClick={(item) => {
+              if (typeof item !== 'string') window.open(`/busi-groups?id=${item.id}`, '_blank');
+            }}
           />
         );
       },
@@ -98,18 +96,16 @@ const Resource: React.FC = () => {
       title: t('user.user_groups'),
       dataIndex: 'user_groups',
       width: 160,
-      render: (value) => {
+      render: (value: { id: number; name: string }[]) => {
         return (
-          <TableTags
+          <Tags
             data={value}
-            maxVisible={1}
-            maxTagWidth={110}
+            maxWidth={220}
             getKey={(item) => item.id}
             getLabel={(item) => item.name}
-            getLinkTo={(item) => ({
-              pathname: '/user-groups',
-              search: `?id=${item.id}`,
-            })}
+            onTagClick={(item) => {
+              if (typeof item !== 'string') window.open(`/user-groups?id=${item.id}`, '_blank');
+            }}
           />
         );
       },

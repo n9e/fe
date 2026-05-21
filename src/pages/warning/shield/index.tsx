@@ -81,12 +81,6 @@ const Shield: React.FC = () => {
         dataIndex: 'note',
         render: (data, record: any) => {
           const groupName = _.find(busiGroups, { id: record.group_id })?.name;
-          const cate = _.find(allCates, { value: record.cate });
-          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
-          let logoSrc = cate?.logo;
-          if (record.cate === 'host') {
-            logoSrc = '/image/logos/host.png';
-          }
           return (
             <div className='flex flex-col gap-0.5'>
               <Link
@@ -97,11 +91,7 @@ const Shield: React.FC = () => {
               >
                 {data}
               </Link>
-              <span className='text-soft text-xs inline-flex items-center gap-2 flex-wrap'>
-                {logoSrc && <img alt={record.cate} src={logoSrc} height={14} />}
-                {cateLabel && <span>{cateLabel}</span>}
-                {showBusinessGroup && groupName && <span>{groupName}</span>}
-              </span>
+              {showBusinessGroup && groupName && <span className='text-soft text-xs'>{groupName}</span>}
             </div>
           );
         },
@@ -113,19 +103,32 @@ const Shield: React.FC = () => {
         dataIndex: 'datasource_ids',
         render(value, record: any) {
           if (!value) return '-';
+          const cate = _.find(allCates, { value: record.cate });
+          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+          let logoSrc = cate?.logo;
+          if (record.cate === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
           return (
-            <Tags
-              type='outline'
-              maxWidth={180}
-              data={_.compact(
-                _.map(value, (item) => {
-                  if (item === 0) return '$all';
-                  const name = _.find(groupedDatasourceList[record.cate], { id: item })?.name;
-                  if (!name) return '';
-                  return name;
-                }),
+            <Space>
+              {logoSrc && (
+                <Tooltip title={cateLabel}>
+                  <img alt={record.cate} src={logoSrc} height={18} />
+                </Tooltip>
               )}
-            />
+              <Tags
+                type='outline'
+                maxWidth={180}
+                data={_.compact(
+                  _.map(value, (item) => {
+                    if (item === 0) return '$all';
+                    const name = _.find(groupedDatasourceList[record.cate], { id: item })?.name;
+                    if (!name) return '';
+                    return name;
+                  }),
+                )}
+              />
+            </Space>
           );
         },
       },
@@ -134,17 +137,11 @@ const Shield: React.FC = () => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <div>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? (
-                      <div className='max-w-[400px] break-all' key={index} style={{ lineHeight: '16px' }}>{`${tag.key} ${tag.func} ${
-                        tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value
-                      }`}</div>
-                    ) : null;
-                  })
-                : ''}
-            </div>
+            <Tags
+              type='outline'
+              maxWidth={180}
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+            />
           );
         },
       },

@@ -95,7 +95,7 @@ export default function List(props: ListProps) {
   }, [gids, refreshFlag]);
 
   return (
-    <div className='fc-border rounded-lg alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
+    <div className='fc-border rounded-lg alert-rules-list-container' style={{ height: '100%', overflowY: 'auto', minWidth: 0 }}>
       <ListNG
         hideBusinessGroupColumn={businessGroup.isLeaf && gids !== '-2'}
         showRowSelection

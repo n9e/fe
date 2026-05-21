@@ -11,7 +11,7 @@ import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import { RuleType } from './types';
 import Import from './Import';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -207,7 +207,7 @@ export default function index(props: Props) {
             render: (val) => {
               const tags = _.compact(_.split(val, ' '));
               return (
-                <TableTags
+                <Tags
                   data={tags}
                   onTagClick={(tag) => {
                     const queryItem = _.compact(_.split(filter.query, ' '));

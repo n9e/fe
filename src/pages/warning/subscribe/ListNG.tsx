@@ -14,6 +14,7 @@ import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -47,7 +48,7 @@ interface Props {
 }
 
 const Subscribe = (props: Props) => {
-  const { t } = useTranslation('alertSubscribes');
+  const { t, i18n } = useTranslation('alertSubscribes');
   const { datasourceList, busiGroups } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
@@ -93,21 +94,34 @@ const Subscribe = (props: Props) => {
       {
         title: t('common:datasource.id'),
         dataIndex: 'datasource_ids',
-        render(value) {
+        render(value, record: any) {
           if (!value) return '-';
+          const cate = _.find(allCates, { value: record.cate });
+          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+          let logoSrc = cate?.logo;
+          if (record.cate === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
           return (
-            <Tags
-              type='outline'
-              maxWidth={180}
-              data={_.compact(
-                _.map(value, (item) => {
-                  if (item === 0) return '$all';
-                  const name = _.find(datasourceList, { id: item })?.name;
-                  if (!name) return '';
-                  return name;
-                }),
+            <Space>
+              {logoSrc && (
+                <Tooltip title={cateLabel}>
+                  <img alt={record.cate} src={logoSrc} height={18} />
+                </Tooltip>
               )}
-            />
+              <Tags
+                type='outline'
+                maxWidth={180}
+                data={_.compact(
+                  _.map(value, (item) => {
+                    if (item === 0) return '$all';
+                    const name = _.find(datasourceList, { id: item })?.name;
+                    if (!name) return '';
+                    return name;
+                  }),
+                )}
+              />
+            </Space>
           );
         },
       },
@@ -116,27 +130,19 @@ const Subscribe = (props: Props) => {
         dataIndex: 'severities',
         render: (data) => {
           return (
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 4,
+            <Tags
+              type='fill'
+              borderRadius={6}
+              data={_.map(data, (severity) => `S${severity}`)}
+              bgColor={(tagname) => {
+                const bgColorMap = { S1: 'var(--fc-red-3)', S2: 'var(--fc-orange-3)', S3: 'var(--fc-yellow-3)' };
+                return bgColorMap[tagname as string] || 'var(--fc-gray-3)';
               }}
-            >
-              {_.map(data, (severity) => {
-                return (
-                  <Tag
-                    key={severity}
-                    color={priorityColor[severity - 1]}
-                    style={{
-                      marginRight: 0,
-                    }}
-                  >
-                    S{severity}
-                  </Tag>
-                );
-              })}
-            </div>
+              fontColor={(tagname) => {
+                const fontColorMap = { S1: 'var(--fc-red-11)', S2: 'var(--fc-orange-11)', S3: 'var(--fc-yellow-11)' };
+                return fontColorMap[tagname as string] || 'var(--fc-gray-11)';
+              }}
+            />
           );
         },
       },

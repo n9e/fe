@@ -5,16 +5,17 @@ import { Trans } from 'react-i18next';
 
 import { copy2ClipBoard } from '@/utils';
 
-interface Props<T> {
-  type: 'outline' | 'fill';
+interface Props<T = any> {
+  type?: 'outline' | 'fill';
   maxWidth?: number; // 容器最大宽度，设置后布局计算以此为上限
   borderRadius?: number; // 边框圆角
   bgColor?: string | ((item: string | T, index: number) => string); // 背景颜色，仅在 type 为 'fill' 时生效
   fontColor?: string | ((item: string | T, index: number) => string); // 字体颜色，仅在 type 为 'fill' 时生效
   icon?: React.ReactNode | ((item: string | T, index: number) => React.ReactNode);
-  data: string[] | T[] | null; // null 兼容接口可能返回 null 值的情况
+  data: T[] | null; // null 兼容接口可能返回 null 值的情况
   getKey?: (item: T, index: number) => React.Key;
   getLabel?: (item: T, index: number) => string;
+  getTooltipTitle?: (item: string | T, index: number) => string | undefined; // 返回 undefined 不显示 tooltip
   onTagClick?: (item: string | T, index: number) => void;
 }
 
@@ -86,7 +87,7 @@ function resolveColor<T>(color: string | ((item: string | T, index: number) => s
 }
 
 export default function Tags<T>(props: Props<T>) {
-  const { type = 'outline', icon, data, onTagClick, getKey, getLabel, maxWidth } = props;
+  const { type = 'outline', icon, data, onTagClick, getKey, getLabel, getTooltipTitle, maxWidth } = props;
 
   if (!data || data.length === 0) return null;
 
@@ -129,8 +130,8 @@ export default function Tags<T>(props: Props<T>) {
     onTagClick ? 'cursor-pointer' : ''
   }`;
 
-  // 可见层额外加溢出省略
-  const visibleTagClass = `${tagBaseClass} overflow-hidden text-ellipsis max-w-full shrink-0`;
+  // 可见层额外加溢出省略（text-ellipsis 对 inline-flex 无效，由内部 span 承接）
+  const visibleTagClass = `${tagBaseClass} overflow-hidden max-w-full shrink-0 min-w-0`;
 
   useLayoutEffect(() => {
     const el = containerRef.current;
@@ -157,7 +158,7 @@ export default function Tags<T>(props: Props<T>) {
   const { visibleCount, overflowCount } = layout;
 
   return (
-    <div ref={containerRef} className='relative' style={maxWidth != null ? { maxWidth } : undefined}>
+    <div ref={containerRef} className='relative overflow-hidden' style={maxWidth != null ? { maxWidth } : undefined}>
       {/* 隐藏测量层：绝对定位不占空间，用于获取各 tag 的真实渲染宽度 */}
       <div aria-hidden className='absolute top-0 left-0 invisible pointer-events-none flex'>
         {(data as (string | T)[]).map((item, i) => (
@@ -185,14 +186,14 @@ export default function Tags<T>(props: Props<T>) {
             key={getItemKey(item, i)}
             className={visibleTagClass}
             style={getTagStyle(item, i)}
-            title={getItemLabel(item, i)}
+            title={getTooltipTitle ? getTooltipTitle(item, i) : getItemLabel(item, i)}
             onClick={(e) => {
               e.stopPropagation();
               onTagClick?.(item, i);
             }}
           >
-            {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, item, i)}</span>}
-            {getItemLabel(item, i)}
+            {icon && <span className='mr-[3px] flex items-center shrink-0'>{resolveIcon(icon, item, i)}</span>}
+            <span className='overflow-hidden text-ellipsis'>{getItemLabel(item, i)}</span>
           </span>
         ))}
         {overflowCount > 0 && (

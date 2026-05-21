@@ -251,7 +251,7 @@ export default function AlertRules(props: Props) {
       {
         title: t('table.update_at'),
         dataIndex: 'update_at',
-        width: 60,
+        width: 100,
         sorter: (a, b) => {
           return a.update_at - b.update_at;
         },

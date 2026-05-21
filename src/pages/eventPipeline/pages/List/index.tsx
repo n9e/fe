@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Tag, Input, Modal, Drawer, Select, Dropdown, Menu } from 'antd';
+import { Space, Table, Button, Input, Modal, Drawer, Select, Dropdown, Menu } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
@@ -66,11 +66,6 @@ export default function List() {
   useEffect(() => {
     featchData();
   }, []);
-
-  const disabledMap = {
-    false: <Tag color='green'>{t('disabled.false')}</Tag>,
-    true: <Tag color='red'>{t('disabled.true')}</Tag>,
-  };
 
   return (
     <>
@@ -186,7 +181,7 @@ export default function List() {
             dataIndex: 'use_case',
             width: 100,
             render: (value) => {
-              return <Tag>{t(`use_case.${value}`)}</Tag>;
+              return <Tags type='outline' maxWidth={100} data={[t(`use_case.${value}`)]} />;
             },
           },
           {
@@ -194,7 +189,7 @@ export default function List() {
             dataIndex: 'trigger_mode',
             width: 100,
             render: (value) => {
-              return <Tag>{t(`trigger_mode.${value}`)}</Tag>;
+              return <Tags type='outline' maxWidth={100} data={[t(`trigger_mode.${value}`)]} />;
             },
           },
           {
@@ -203,7 +198,14 @@ export default function List() {
             key: 'disabled',
             width: 100,
             render: (value) => {
-              return disabledMap[value] || value;
+              return (
+                <Tags
+                  type='fill'
+                  data={[t(`disabled.${value}`)]}
+                  bgColor={() => (value === false ? 'var(--fc-green-3)' : 'var(--fc-red-3)')}
+                  fontColor={() => (value === false ? 'var(--fc-green-11)' : 'var(--fc-red-11)')}
+                />
+              );
             },
           },
           {

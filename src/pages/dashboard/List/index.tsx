@@ -19,7 +19,7 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Tag, Modal, Space, Button, Dropdown, Menu, message, Tooltip } from 'antd';
+import { Table, Modal, Space, Dropdown, Menu, message, Tooltip } from 'antd';
 import { FundViewOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
@@ -34,7 +34,7 @@ import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
-import TableTags from '@/components/TableTags';
+import Tags from '@/components/TableTags/Tags';
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getBusiGroups } from '@/components/BusinessGroup';
@@ -145,26 +145,15 @@ export default function index() {
             className='mt-2'
             dataSource={data}
             columns={ajustColumns(
-              _.concat(
-                businessGroup.isLeaf && gids !== '-1' && gids !== '-2'
-                  ? []
-                  : ([
-                      {
-                        title: t('common:business_group'),
-                        dataIndex: 'group_id',
-                        width: 100,
-                        render: (id) => {
-                          return _.find(busiGroups, { id })?.name;
-                        },
-                      },
-                    ] as any),
-                [
-                  {
-                    title: t('name'),
-                    dataIndex: 'name',
-                    className: 'name-column',
-                    render: (text: string, record: DashboardType) => {
-                      return (
+              _.concat([
+                {
+                  title: t('name'),
+                  dataIndex: 'name',
+                  className: 'name-column',
+                  render: (text: string, record: DashboardType) => {
+                    const groupName = _.find(busiGroups, { id: record.group_id })?.name;
+                    return (
+                      <div className='flex flex-col gap-0.5'>
                         <Link
                           className='table-active-text'
                           to={{
@@ -174,176 +163,222 @@ export default function index() {
                         >
                           {text}
                         </Link>
-                      );
-                    },
+                        {groupName && <span className='text-soft text-xs'>{groupName}</span>}
+                      </div>
+                    );
                   },
-                  {
-                    title: t('tags'),
-                    dataIndex: 'tags',
-                    className: 'tags-column',
-                    render: (text: string) => (
-                      <TableTags
-                        data={_.compact(_.split(text, ' '))}
-                        maxVisible={2}
-                        maxTagWidth={160}
-                        onTagClick={(tag) => {
-                          const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
-                          if (queryItem.includes(tag)) return;
-                          setsearchVal((searchVal) => {
-                            if (searchVal) {
-                              sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, searchVal + ' ' + tag);
-                              return searchVal + ' ' + tag;
-                            }
-                            sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tag);
-                            return tag;
-                          });
-                        }}
-                      />
-                    ),
+                },
+                {
+                  title: t('tags'),
+                  dataIndex: 'tags',
+                  className: 'tags-column',
+                  render: (text: string) => (
+                    <Tags
+                      type='outline'
+                      data={_.compact(_.split(text, ' '))}
+                      maxWidth={180}
+                      onTagClick={(tag) => {
+                        const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
+                        if (queryItem.includes(tag)) return;
+                        setsearchVal((searchVal) => {
+                          if (searchVal) {
+                            sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, searchVal + ' ' + tag);
+                            return searchVal + ' ' + tag;
+                          }
+                          sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tag);
+                          return tag;
+                        });
+                      }}
+                    />
+                  ),
+                },
+                {
+                  title: t('common:table.note'),
+                  dataIndex: 'note',
+                  className: 'note-column',
+                },
+                {
+                  title: t('common:table.update_at'),
+                  width: 100,
+                  dataIndex: 'update_at',
+                  render: (text: number) => {
+                    return (
+                      <div>
+                        <div>{moment.unix(text).format('YYYY-MM-DD')}</div>
+                        <div>{moment.unix(text).format('HH:mm:ss')}</div>
+                      </div>
+                    );
                   },
-                  {
-                    title: t('common:table.note'),
-                    dataIndex: 'note',
-                    className: 'note-column',
-                  },
-                  {
-                    title: t('common:table.update_at'),
-                    width: 150,
-                    dataIndex: 'update_at',
-                    render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
-                  },
-                  {
-                    title: t('common:table.username'),
-                    dataIndex: 'update_by',
-                    width: 100,
-                  },
-                  {
-                    title: t('common:table.nickname'),
-                    dataIndex: 'update_by_nickname',
-                    width: 100,
-                  },
-                  {
-                    title: t('public.name'),
-                    width: 150,
-                    dataIndex: 'public',
-                    className: 'published-cell',
-                    render: (val: number, record: DashboardType) => {
-                      let content: React.ReactNode = null;
-                      if (val === 1 && record.public_cate !== undefined) {
-                        if (record.public_cate === 0) {
-                          content = (
-                            <Tooltip
-                              overlayClassName='ant-tooltip-with-link'
-                              title={
-                                <>
-                                  <div>
-                                    <Link
-                                      target='_blank'
-                                      to={{
-                                        pathname: `/dashboards/share/${record.ident || record.id}`,
-                                        search: 'themeMode=dark',
-                                      }}
-                                    >
-                                      {t('public.theme_link.dark')}
-                                    </Link>
-                                  </div>
-                                  <div>
-                                    <Link
-                                      target='_blank'
-                                      to={{
-                                        pathname: `/dashboards/share/${record.ident || record.id}`,
-                                        search: 'themeMode=light',
-                                      }}
-                                    >
-                                      {t('public.theme_link.light')}
-                                    </Link>
-                                  </div>
-                                </>
-                              }
-                            >
-                              <Link
-                                target='_blank'
-                                to={{
-                                  pathname: `/dashboards/share/${record.ident || record.id}`,
-                                }}
-                              >
-                                <ShareAltOutlined /> {t(`public.cate.${record.public_cate}`)}
-                              </Link>
-                            </Tooltip>
-                          );
-                        } else {
-                          content = t(`public.cate.${record.public_cate}`);
-                        }
-                      } else {
-                        content = t('public.unpublic');
-                      }
-
-                      return (
-                        <Space>
-                          {content}
-                          {gids !== '-1' && (
-                            <EditOutlined
-                              onClick={() => {
-                                PublicForm({
-                                  busiGroups,
-                                  boardId: record.id,
-                                  initialValues: {
-                                    public: val,
-                                    public_cate: record.public_cate,
-                                    bgids: record.bgids,
-                                  },
-                                  onOk: () => {
-                                    setRefreshKey(_.uniqueId('refreshKey_'));
-                                  },
-                                });
-                              }}
-                            />
-                          )}
-                        </Space>
-                      );
-                    },
-                  },
-                  {
-                    title: t('common:table.operations'),
-                    width: 64,
-                    fixed: 'right' as const,
-                    render: (text: string, record: DashboardType) => {
-                      return (
-                        <Dropdown
-                          trigger={['click']}
-                          align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
-                          overlayClassName='fc-table-action-dropdown'
-                          overlay={
-                            <Menu>
-                              {gids !== '-1' && (
-                                <Menu.Item>
-                                  <TableActionButton
-                                    actionIcon='edit'
-                                    onClick={() => {
-                                      FormModal({
-                                        action: 'edit',
-                                        initialValues: record,
-                                        busiId: businessGroup.id,
-                                        onOk: () => {
-                                          setRefreshKey(_.uniqueId('refreshKey_'));
-                                        },
-                                      });
+                },
+                {
+                  title: t('common:table.username'),
+                  dataIndex: 'update_by',
+                  render: (val: string, record: any) => (
+                    <div>
+                      <div>{val}</div>
+                      {record.update_by_nickname && <div className='text-soft'>{record.update_by_nickname}</div>}
+                    </div>
+                  ),
+                },
+                {
+                  title: t('public.name'),
+                  width: 150,
+                  dataIndex: 'public',
+                  className: 'published-cell',
+                  render: (val: number, record: DashboardType) => {
+                    let content: React.ReactNode = null;
+                    if (val === 1 && record.public_cate !== undefined) {
+                      if (record.public_cate === 0) {
+                        content = (
+                          <Tooltip
+                            overlayClassName='ant-tooltip-with-link'
+                            title={
+                              <>
+                                <div>
+                                  <Link
+                                    target='_blank'
+                                    to={{
+                                      pathname: `/dashboards/share/${record.ident || record.id}`,
+                                      search: 'themeMode=dark',
                                     }}
                                   >
-                                    {t('common:btn.edit')}
-                                  </TableActionButton>
-                                </Menu.Item>
-                              )}
-                              {gids && gids !== '-1' && (
+                                    {t('public.theme_link.dark')}
+                                  </Link>
+                                </div>
+                                <div>
+                                  <Link
+                                    target='_blank'
+                                    to={{
+                                      pathname: `/dashboards/share/${record.ident || record.id}`,
+                                      search: 'themeMode=light',
+                                    }}
+                                  >
+                                    {t('public.theme_link.light')}
+                                  </Link>
+                                </div>
+                              </>
+                            }
+                          >
+                            <Link
+                              target='_blank'
+                              to={{
+                                pathname: `/dashboards/share/${record.ident || record.id}`,
+                              }}
+                            >
+                              <ShareAltOutlined /> {t(`public.cate.${record.public_cate}`)}
+                            </Link>
+                          </Tooltip>
+                        );
+                      } else {
+                        content = t(`public.cate.${record.public_cate}`);
+                      }
+                    } else {
+                      content = t('public.unpublic');
+                    }
+
+                    return (
+                      <Space>
+                        {content}
+                        {gids !== '-1' && (
+                          <EditOutlined
+                            onClick={() => {
+                              PublicForm({
+                                busiGroups,
+                                boardId: record.id,
+                                initialValues: {
+                                  public: val,
+                                  public_cate: record.public_cate,
+                                  bgids: record.bgids,
+                                },
+                                onOk: () => {
+                                  setRefreshKey(_.uniqueId('refreshKey_'));
+                                },
+                              });
+                            }}
+                          />
+                        )}
+                      </Space>
+                    );
+                  },
+                },
+                {
+                  title: t('common:table.operations'),
+                  width: 64,
+                  fixed: 'right' as const,
+                  render: (text: string, record: DashboardType) => {
+                    return (
+                      <Dropdown
+                        trigger={['click']}
+                        align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
+                        overlayClassName='fc-table-action-dropdown'
+                        overlay={
+                          <Menu>
+                            {gids !== '-1' && (
+                              <Menu.Item>
+                                <TableActionButton
+                                  actionIcon='edit'
+                                  onClick={() => {
+                                    FormModal({
+                                      action: 'edit',
+                                      initialValues: record,
+                                      busiId: businessGroup.id,
+                                      onOk: () => {
+                                        setRefreshKey(_.uniqueId('refreshKey_'));
+                                      },
+                                    });
+                                  }}
+                                >
+                                  {t('common:btn.edit')}
+                                </TableActionButton>
+                              </Menu.Item>
+                            )}
+                            {gids && gids !== '-1' && (
+                              <Menu.Item>
+                                <TableActionButton
+                                  actionIcon='copy'
+                                  onClick={async () => {
+                                    Modal.confirm({
+                                      title: t('common:confirm.clone'),
+                                      onOk: async () => {
+                                        await cloneDashboard(record.group_id, record.id);
+                                        message.success(t('common:success.clone'));
+                                        setRefreshKey(_.uniqueId('refreshKey_'));
+                                      },
+
+                                      onCancel() {},
+                                    });
+                                  }}
+                                >
+                                  {t('common:btn.clone')}
+                                </TableActionButton>
+                              </Menu.Item>
+                            )}
+                            <Menu.Item>
+                              <TableActionButton
+                                actionIcon='open'
+                                onClick={async () => {
+                                  const exportData = await getDashboard(record.id);
+                                  Export({
+                                    data: exportDataStringify(exportData),
+                                  });
+                                }}
+                              >
+                                {t('common:btn.export')}
+                              </TableActionButton>
+                            </Menu.Item>
+                            {gids !== '-1' && (
+                              <>
+                                <Menu.Divider />
                                 <Menu.Item>
                                   <TableActionButton
-                                    actionIcon='copy'
+                                    danger
+                                    actionIcon='delete'
                                     onClick={async () => {
                                       Modal.confirm({
-                                        title: t('common:confirm.clone'),
+                                        title: t('common:confirm.delete'),
                                         onOk: async () => {
-                                          await cloneDashboard(record.group_id, record.id);
-                                          message.success(t('common:success.clone'));
+                                          await removeDashboards([record.id]);
+                                          message.success(t('common:success.delete'));
                                           setRefreshKey(_.uniqueId('refreshKey_'));
                                         },
 
@@ -351,58 +386,20 @@ export default function index() {
                                       });
                                     }}
                                   >
-                                    {t('common:btn.clone')}
+                                    {t('common:btn.delete')}
                                   </TableActionButton>
                                 </Menu.Item>
-                              )}
-                              <Menu.Item>
-                                <TableActionButton
-                                  actionIcon='open'
-                                  onClick={async () => {
-                                    const exportData = await getDashboard(record.id);
-                                    Export({
-                                      data: exportDataStringify(exportData),
-                                    });
-                                  }}
-                                >
-                                  {t('common:btn.export')}
-                                </TableActionButton>
-                              </Menu.Item>
-                              {gids !== '-1' && (
-                                <>
-                                  <Menu.Divider />
-                                  <Menu.Item>
-                                    <TableActionButton
-                                      danger
-                                      actionIcon='delete'
-                                      onClick={async () => {
-                                        Modal.confirm({
-                                          title: t('common:confirm.delete'),
-                                          onOk: async () => {
-                                            await removeDashboards([record.id]);
-                                            message.success(t('common:success.delete'));
-                                            setRefreshKey(_.uniqueId('refreshKey_'));
-                                          },
-
-                                          onCancel() {},
-                                        });
-                                      }}
-                                    >
-                                      {t('common:btn.delete')}
-                                    </TableActionButton>
-                                  </Menu.Item>
-                                </>
-                              )}
-                            </Menu>
-                          }
-                        >
-                          <TableActionTrigger />
-                        </Dropdown>
-                      );
-                    },
+                              </>
+                            )}
+                          </Menu>
+                        }
+                      >
+                        <TableActionTrigger />
+                      </Dropdown>
+                    );
                   },
-                ],
-              ),
+                },
+              ]),
               columnsConfigs,
             )}
             rowKey='id'
