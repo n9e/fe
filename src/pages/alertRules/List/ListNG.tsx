@@ -157,16 +157,16 @@ export default function AlertRules(props: Props) {
               type='fill'
               borderRadius={6}
               data={_.map(data, (severity) => `S${severity}`)}
-              bgColor={(tagname) => {
-                const bgColorMap = {
+              bgColor={(tagname: string) => {
+                const bgColorMap: Record<string, string> = {
                   S1: 'var(--fc-red-3)',
                   S2: 'var(--fc-orange-3)',
                   S3: 'var(--fc-yellow-3)',
                 };
                 return bgColorMap[tagname] || 'var(--fc-gray-3)';
               }}
-              fontColor={(tagname) => {
-                const fontColorMap = {
+              fontColor={(tagname: string) => {
+                const fontColorMap: Record<string, string> = {
                   S1: 'var(--fc-red-11)',
                   S2: 'var(--fc-orange-11)',
                   S3: 'var(--fc-yellow-11)',

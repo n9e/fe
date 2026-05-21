@@ -164,7 +164,7 @@ export default function index(props: Props) {
               return (
                 <Tags
                   data={tags}
-                  onTagClick={(tag) => {
+                  onTagClick={(tag: string) => {
                     const queryItem = _.compact(_.split(filter.query, ' '));
                     if (_.includes(queryItem, tag)) return;
                     setFilter((filter) => ({

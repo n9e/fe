@@ -177,7 +177,7 @@ export default function index() {
                       type='outline'
                       data={_.compact(_.split(text, ' '))}
                       maxWidth={180}
-                      onTagClick={(tag) => {
+                      onTagClick={(tag: string) => {
                         const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
                         if (queryItem.includes(tag)) return;
                         setsearchVal((searchVal) => {
