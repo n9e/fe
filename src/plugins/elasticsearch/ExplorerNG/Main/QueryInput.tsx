@@ -46,7 +46,7 @@ export default function QueryInputCpt(props: Props) {
                   darkMode,
                   title: t('common:page_help'),
                   type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/elasticserch/',
+                  documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/logs/elasticserch/',
                 });
               }}
             />

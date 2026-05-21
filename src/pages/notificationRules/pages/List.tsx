@@ -88,7 +88,7 @@ export default function List() {
     <PageLayout
       title={<Space>{t('title')}</Space>}
       icon={<NotificationOutlined />}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/quickstart/notify-rules/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/notify-rules/'
     >
       <div className={`n9e ${CN}`}>
         <div className='pb-4 flex justify-between'>

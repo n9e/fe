@@ -249,7 +249,7 @@ const Resource: React.FC = () => {
     <PageLayout
       title={<Space>{t('user.title')}</Space>}
       icon={<UserOutlined />}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/user-management/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/personnel-permissions/user-management/'
     >
       <div className='user-manage-content n9e'>
         <Row className='event-table-search'>

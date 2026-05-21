@@ -207,7 +207,9 @@ export default function index({ disabled }) {
                       <Trans
                         ns='alertRules'
                         i18nKey='alertRules:callbacks_tip'
-                        components={{ a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/tpl_func/' target='_blank' /> }}
+                        components={{
+                          a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/msg-template/tpl_func/' target='_blank' />,
+                        }}
                       />
                     }
                     overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'

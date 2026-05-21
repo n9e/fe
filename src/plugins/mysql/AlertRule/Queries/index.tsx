@@ -81,7 +81,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                                     darkMode,
                                     title: t('common:page_help'),
                                     type: 'iframe',
-                                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usage/alert/query-data/mysql/',
+                                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/mysql/',
                                   });
                                 }}
                               />

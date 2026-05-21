@@ -307,7 +307,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/integration/built-in-metric-template/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/templates/built-in-metric-template/' />
           {actionAuth.add && (
             <FormModal
               component={component}
