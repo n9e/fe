@@ -14,12 +14,12 @@ import { SSOConfigType } from './types';
 import { putSSOConfig } from './services';
 
 export const documentMap = {
-  OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/oauth2/',
-  LDAP: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/ldap/',
-  CAS: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/cas/',
-  OIDC: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/oidc/',
-  dingtalk: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/dingtalk',
-  feishu: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/sso/feishu',
+  OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/oauth2/',
+  LDAP: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/ldap/',
+  CAS: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/cas/',
+  OIDC: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/oidc/',
+  dingtalk: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/dingtalk',
+  feishu: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/feishu',
 };
 
 interface Props {

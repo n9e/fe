@@ -386,7 +386,7 @@ const Shield: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('title')} icon={<CloseCircleOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-mute/'>
+    <PageLayout title={t('title')} icon={<CloseCircleOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-mute/'>
       <div className='shield-content'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div className='shield-index fc-border rounded-lg' style={{ height: '100%', overflowY: 'auto' }}>

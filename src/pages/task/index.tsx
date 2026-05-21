@@ -178,7 +178,7 @@ const index = (_props: any) => {
     <PageLayout
       icon={<CodeOutlined />}
       title={<Space>{t('task')}</Space>}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/self-healing/create-temporary-task/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/self-healing/create-temporary-task/'
     >
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:task.allOptionLabel')} />

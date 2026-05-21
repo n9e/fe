@@ -14,9 +14,9 @@ interface Props {
 }
 
 const documentPathMap = {
-  [DatasourceCateEnum.prometheus]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/time-series/metrics/prometheus/',
-  [DatasourceCateEnum.tdengine]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/time-series/metrics/tdengine/',
-  [DatasourceCateEnum.elasticsearch]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/elasticserch/',
+  [DatasourceCateEnum.prometheus]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/datasource/prometheus/',
+  [DatasourceCateEnum.tdengine]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/datasource/tdengine/',
+  [DatasourceCateEnum.elasticsearch]: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/logs/elasticserch/',
   ...(proDocumentPathMap || {}),
 };
 

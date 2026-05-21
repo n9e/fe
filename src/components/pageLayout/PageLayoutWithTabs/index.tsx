@@ -54,7 +54,7 @@ interface IPageLayoutProps {
 }
 
 const DEFAULT_DOCUMENT_URL_ENT = '/docs/content/flashcat/overview/';
-const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/?ask_ai=1';
+const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/';
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');

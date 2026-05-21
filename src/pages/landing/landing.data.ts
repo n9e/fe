@@ -33,7 +33,7 @@ export interface LandingGuideCard {
 }
 
 const DOCS_BASE = 'https://flashcat.cloud/product/nightingale/';
-const DOCS_V8_BASE = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/';
+const DOCS_V8_BASE = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/';
 
 export const DOC_LINKS = {
   base: DOCS_BASE,

@@ -146,7 +146,7 @@ export default function Query(props: Props) {
                             darkMode,
                             title: t('common:page_help'),
                             type: 'iframe',
-                            documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/query-data/es/',
+                            documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/es/',
                           });
                         }}
                       />

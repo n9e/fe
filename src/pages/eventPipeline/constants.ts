@@ -21,9 +21,9 @@ export const DEFAULT_VALUES = {
 };
 
 export const documentPathMap = {
-  relabel: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-relabel/',
-  event_drop: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-drop/',
-  event_update: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-event-update/',
-  callback: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-callback/',
-  ai_summary: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/notification/processor-ai-summary/',
+  relabel: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/processor-event-relabel/',
+  event_drop: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/processor-event-drop/',
+  event_update: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/processor-event-update/',
+  callback: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/processor-callback/',
+  ai_summary: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/processor-ai-summary/',
 };

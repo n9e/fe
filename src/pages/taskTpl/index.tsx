@@ -197,7 +197,7 @@ const index = (_props: any) => {
     <PageLayout
       icon={<CodeOutlined />}
       title={<Space>{t('tpl')}</Space>}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/self-healing/self-healing-script/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/self-healing/self-healing-script/'
     >
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
