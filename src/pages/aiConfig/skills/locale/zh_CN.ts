@@ -24,6 +24,7 @@ const zh_CN = {
   search_placeholder: '请输入关键字搜索',
   builtin: '内置',
   description: '描述',
+  frontmatter_title: '元数据',
 
   form: {
     name: '名称',

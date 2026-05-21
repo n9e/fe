@@ -23,6 +23,7 @@ const en_US = {
   document_empty: 'No document content',
   search_placeholder: 'Search by keyword',
   builtin: 'Builtin',
+  frontmatter_title: 'Metadata',
 
   form: {
     name: 'Name',

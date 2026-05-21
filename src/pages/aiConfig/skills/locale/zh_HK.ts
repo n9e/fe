@@ -23,6 +23,7 @@ const zh_HK = {
   document_empty: '暫無文件內容',
   search_placeholder: '請輸入關鍵字搜尋',
   builtin: '內建',
+  frontmatter_title: '元數據',
 
   form: {
     name: '名稱',
