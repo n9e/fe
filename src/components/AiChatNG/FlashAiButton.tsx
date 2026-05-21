@@ -17,6 +17,7 @@ function FlashAiButtonContent() {
 
   return (
     <Button
+      className='border-violet-600 text-violet-1100 bg-violet-300 hover:border-violet-700 hover:bg-violet-400'
       icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mr-2' />}
       size='small'
       onClick={() => {
