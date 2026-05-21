@@ -237,7 +237,7 @@ export default function Table(props: IProps) {
                       <span>{data?.total}</span>
                     </Space>
                   )}
-                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />}
+                  {/* {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />} */}
                 </Space>
               }
               onOptionsChange={updateOptions}
