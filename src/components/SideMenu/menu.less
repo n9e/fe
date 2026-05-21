@@ -26,8 +26,23 @@
   }
 }
 
-.side-menu-profile-submenu {
+.side-menu-profile-menu {
+  .ant-dropdown-menu-item-icon,
+  .anticon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
+  }
 
+  .ant-dropdown-menu-item-icon svg,
+  .anticon svg {
+    display: block;
+  }
+}
+
+.side-menu-profile-submenu {
   .ant-dropdown-menu-item-active:not(:hover),
   .ant-dropdown-menu-submenu-title.ant-dropdown-menu-item-active:not(:hover),
   .ant-dropdown-menu-submenu-active>.ant-dropdown-menu-submenu-title:not(:hover) {
