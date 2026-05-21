@@ -392,7 +392,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
                 'absolute right-[5px] top-[4px] h-[18px] scale-75 text-[9px] leading-[15px]',
                 isLight
                   ? 'rounded-full bg-[var(--fc-sidemenu-beta-bg)] px-[6px] py-[1px] text-[var(--fc-sidemenu-beta-text)]'
-                  : 'fc-border rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 px-[3px] py-[1px] text-yellow-700',
+                  : 'fc-border rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 px-[3px] py-[1px] text-[var(--fc-yellow-9)]',
               )}
             >
               Beta
@@ -457,7 +457,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
                 'absolute right-[25px] top-[4px] h-[18px] scale-75 text-[9px] leading-[15px]',
                 isLight
                   ? 'rounded-full bg-[var(--fc-sidemenu-beta-bg)] px-[6px] py-[1px] text-[var(--fc-sidemenu-beta-text)]'
-                  : 'fc-border rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 px-[3px] py-[1px] text-yellow-700',
+                  : 'fc-border rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 px-[3px] py-[1px] text-[var(--fc-yellow-9)]',
               )}
             >
               Beta
@@ -704,7 +704,7 @@ export default function MenuList(
                                         'ml-2 shrink-0 scale-75 text-[9px] leading-[15px]',
                                         isLight
                                           ? 'rounded-full bg-[var(--fc-sidemenu-beta-bg)] px-[6px] py-[1px] text-[var(--fc-sidemenu-beta-text)]'
-                                          : 'fc-border rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 px-[3px] py-[1px] text-yellow-700',
+                                          : 'fc-border rounded-full bg-gradient-to-r from-yellow-400 to-yellow-300 px-[3px] py-[1px] text-[var(--fc-yellow-9)]',
                                       )}
                                     >
                                       Beta
