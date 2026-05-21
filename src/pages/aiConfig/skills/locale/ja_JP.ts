@@ -23,6 +23,7 @@ const ja_JP = {
   document_empty: 'ドキュメント内容がありません',
   search_placeholder: 'キーワードで検索',
   builtin: '組み込み',
+  frontmatter_title: 'メタデータ',
 
   form: {
     name: '名前',
