@@ -55,7 +55,7 @@
   --fc-text-5: #65738666;
   --fc-text-link: #8162dc;
   --fc-text-link-light: #a186f4; /* 用于 tooltip 里加亮链接颜色 */
-  --fc-text-link-rgb: 129, 98, 220;
+  --fc-text-link-rgb: 129 98 220;
   --fc-text-placeholder: #bfbfbf;
 
   /* 其他 */
@@ -157,13 +157,13 @@
   --fc-violet-6: #2800e734;
   --fc-violet-7: #2700cb49;
   --fc-violet-8: #2700bd64;
-  --fc-violet-9-rgb: 108, 83, 177;
+  --fc-violet-9-rgb: 108 83 177;
   --fc-violet-9: rgb(var(--fc-violet-9-rgb));
-  --fc-violet-10-rgb: 95, 69, 161;
+  --fc-violet-10-rgb: 95 69 161;
   --fc-violet-10: rgb(var(--fc-violet-10-rgb));
-  --fc-violet-11-rgb: 107, 81, 175;
+  --fc-violet-11-rgb: 107 81 175;
   --fc-violet-11: rgb(var(--fc-violet-11-rgb));
-  --fc-violet-12-rgb: 52, 38, 89;
+  --fc-violet-12-rgb: 52 38 89;
   --fc-violet-12: rgb(var(--fc-violet-12-rgb));
 
   --fc-indigo-1: #0000ff02;
@@ -174,13 +174,13 @@
   --fc-indigo-6: #000fff36;
   --fc-indigo-7: #010bff4b;
   --fc-indigo-8: #0003ff66;
-  --fc-indigo-9-rgb: 92, 64, 230;
+  --fc-indigo-9-rgb: 92 64 230;
   --fc-indigo-9: rgb(var(--fc-indigo-9-rgb));
-  --fc-indigo-10-rgb: 80, 52, 204;
+  --fc-indigo-10-rgb: 80 52 204;
   --fc-indigo-10: rgb(var(--fc-indigo-10-rgb));
-  --fc-indigo-11-rgb: 91, 69, 221;
+  --fc-indigo-11-rgb: 91 69 221;
   --fc-indigo-11: rgb(var(--fc-indigo-11-rgb));
-  --fc-indigo-12-rgb: 43, 34, 109;
+  --fc-indigo-12-rgb: 43 34 109;
   --fc-indigo-12: rgb(var(--fc-indigo-12-rgb));
 
   --fc-red-1: #ff000003;
@@ -191,13 +191,13 @@
   --fc-red-6: #fc0f0046;
   --fc-red-7: #e30c015a;
   --fc-red-8: #d4090074;
-  --fc-red-9-rgb: 229, 72, 77;
+  --fc-red-9-rgb: 229 72 77;
   --fc-red-9: rgb(var(--fc-red-9-rgb));
-  --fc-red-10-rgb: 215, 56, 64;
+  --fc-red-10-rgb: 215 56 64;
   --fc-red-10: rgb(var(--fc-red-10-rgb));
-  --fc-red-11-rgb: 204, 46, 57;
+  --fc-red-11-rgb: 204 46 57;
   --fc-red-11: rgb(var(--fc-red-11-rgb));
-  --fc-red-12-rgb: 100, 24, 27;
+  --fc-red-12-rgb: 100 24 27;
   --fc-red-12: rgb(var(--fc-red-12-rgb));
 
   --fc-orange-1: #c0400004;
@@ -208,13 +208,13 @@
   --fc-orange-6: #ff5a016a;
   --fc-orange-7: #f94e007d;
   --fc-orange-8: #e84a009c;
-  --fc-orange-9-rgb: 247, 107, 21;
+  --fc-orange-9-rgb: 247 107 21;
   --fc-orange-9: rgb(var(--fc-orange-9-rgb));
-  --fc-orange-10-rgb: 235, 93, 0;
+  --fc-orange-10-rgb: 235 93 0;
   --fc-orange-10: rgb(var(--fc-orange-10-rgb));
-  --fc-orange-11-rgb: 210, 77, 0;
+  --fc-orange-11-rgb: 210 77 0;
   --fc-orange-11: rgb(var(--fc-orange-11-rgb));
-  --fc-orange-12-rgb: 87, 46, 26;
+  --fc-orange-12-rgb: 87 46 26;
   --fc-orange-12: rgb(var(--fc-orange-12-rgb));
 
   --fc-yellow-1: #cc990005;
@@ -225,13 +225,13 @@
   --fc-yellow-6: #efb50090;
   --fc-yellow-7: #d29d0097;
   --fc-yellow-8: #c39600c4;
-  --fc-yellow-9-rgb: 255, 214, 0;
+  --fc-yellow-9-rgb: 255 214 0;
   --fc-yellow-9: rgb(var(--fc-yellow-9-rgb));
-  --fc-yellow-10-rgb: 252, 205, 29;
+  --fc-yellow-10-rgb: 252 205 29;
   --fc-yellow-10: rgb(var(--fc-yellow-10-rgb));
-  --fc-yellow-11-rgb: 149, 115, 0;
+  --fc-yellow-11-rgb: 149 115 0;
   --fc-yellow-11: rgb(var(--fc-yellow-11-rgb));
-  --fc-yellow-12-rgb: 68, 59, 32;
+  --fc-yellow-12-rgb: 68 59 32;
   --fc-yellow-12: rgb(var(--fc-yellow-12-rgb));
 
   --fc-green-1: #00c04004;
@@ -242,13 +242,13 @@
   --fc-green-6: #00963c52;
   --fc-green-7: #00903970;
   --fc-green-8: #008d3f9f;
-  --fc-green-9-rgb: 48, 164, 108;
+  --fc-green-9-rgb: 48 164 108;
   --fc-green-9: rgb(var(--fc-green-9-rgb));
-  --fc-green-10-rgb: 40, 150, 98;
+  --fc-green-10-rgb: 40 150 98;
   --fc-green-10: rgb(var(--fc-green-10-rgb));
-  --fc-green-11-rgb: 0, 129, 76;
+  --fc-green-11-rgb: 0 129 76;
   --fc-green-11: rgb(var(--fc-green-11-rgb));
-  --fc-green-12-rgb: 29, 59, 42;
+  --fc-green-12-rgb: 29 59 42;
   --fc-green-12: rgb(var(--fc-green-12-rgb));
 }
 
@@ -302,7 +302,7 @@
 
   /* 文本 */
   --fc-text-link: #9470ff;
-  --fc-text-link-rgb: 148, 112, 255;
+  --fc-text-link-rgb: 148 112 255;
   --fc-text-1: rgb(242, 242, 242);
   --fc-text-2: rgb(201, 201, 207);
   --fc-text-3: rgb(135, 135, 146);
@@ -387,13 +387,13 @@
   --fc-violet-6: #8359ff73;
   --fc-violet-7: #8b66fe8c;
   --fc-violet-8: #8f6cffb2;
-  --fc-violet-9-rgb: 148, 112, 255;
+  --fc-violet-9-rgb: 148 112 255;
   --fc-violet-9: rgb(var(--fc-violet-9-rgb));
-  --fc-violet-10-rgb: 136, 99, 241;
+  --fc-violet-10-rgb: 136 99 241;
   --fc-violet-10: rgb(var(--fc-violet-10-rgb));
-  --fc-violet-11-rgb: 184, 164, 255;
+  --fc-violet-11-rgb: 184 164 255;
   --fc-violet-11: rgb(var(--fc-violet-11-rgb));
-  --fc-violet-12-rgb: 225, 220, 255;
+  --fc-violet-12-rgb: 225 220 255;
   --fc-violet-12: rgb(var(--fc-violet-12-rgb));
 
   --fc-indigo-1: #0300f00d;
@@ -404,13 +404,13 @@
   --fc-indigo-6: #6c55fe82;
   --fc-indigo-7: #745ffe9a;
   --fc-indigo-8: #7863ffbd;
-  --fc-indigo-9-rgb: 124, 102, 255;
+  --fc-indigo-9-rgb: 124 102 255;
   --fc-indigo-9: rgb(var(--fc-indigo-9-rgb));
-  --fc-indigo-10-rgb: 113, 88, 240;
+  --fc-indigo-10-rgb: 113 88 240;
   --fc-indigo-10: rgb(var(--fc-indigo-10-rgb));
-  --fc-indigo-11-rgb: 173, 168, 255;
+  --fc-indigo-11-rgb: 173 168 255;
   --fc-indigo-11: rgb(var(--fc-indigo-11-rgb));
-  --fc-indigo-12-rgb: 222, 222, 255;
+  --fc-indigo-12-rgb: 222 222 255;
   --fc-indigo-12: rgb(var(--fc-indigo-12-rgb));
 
   --fc-red-1: #f1000007;
@@ -421,13 +421,13 @@
   --fc-red-6: #ff312c68;
   --fc-red-7: #fe494385;
   --fc-red-8: #fe534fb3;
-  --fc-red-9-rgb: 239, 67, 67;
+  --fc-red-9-rgb: 239 67 67;
   --fc-red-9: rgb(var(--fc-red-9-rgb));
-  --fc-red-10-rgb: 224, 51, 55;
+  --fc-red-10-rgb: 224 51 55;
   --fc-red-10: rgb(var(--fc-red-10-rgb));
-  --fc-red-11-rgb: 255, 143, 134;
+  --fc-red-11-rgb: 255 143 134;
   --fc-red-11: rgb(var(--fc-red-11-rgb));
-  --fc-red-12-rgb: 255, 209, 204;
+  --fc-red-12-rgb: 255 209 204;
   --fc-red-12: rgb(var(--fc-red-12-rgb));
 
   --fc-orange-1: #eb000006;
@@ -438,13 +438,13 @@
   --fc-orange-6: #ff6c1859;
   --fc-orange-7: #ff803672;
   --fc-orange-8: #fe833e9a;
-  --fc-orange-9-rgb: 240, 110, 10;
+  --fc-orange-9-rgb: 240 110 10;
   --fc-orange-9: rgb(var(--fc-orange-9-rgb));
-  --fc-orange-10-rgb: 226, 98, 0;
+  --fc-orange-10-rgb: 226 98 0;
   --fc-orange-10: rgb(var(--fc-orange-10-rgb));
-  --fc-orange-11-rgb: 255, 157, 97;
+  --fc-orange-11-rgb: 255 157 97;
   --fc-orange-11: rgb(var(--fc-orange-11-rgb));
-  --fc-orange-12-rgb: 255, 221, 202;
+  --fc-orange-12-rgb: 255 221 202;
   --fc-orange-12: rgb(var(--fc-orange-12-rgb));
 
   --fc-yellow-1: #c0160003;
@@ -455,13 +455,13 @@
   --fc-yellow-6: #ffbb0044;
   --fc-yellow-7: #ffc82359;
   --fc-yellow-8: #fdca3678;
-  --fc-yellow-9-rgb: 245, 194, 10;
+  --fc-yellow-9-rgb: 245 194 10;
   --fc-yellow-9: rgb(var(--fc-yellow-9-rgb));
-  --fc-yellow-10-rgb: 234, 184, 0;
+  --fc-yellow-10-rgb: 234 184 0;
   --fc-yellow-10: rgb(var(--fc-yellow-10-rgb));
-  --fc-yellow-11-rgb: 255, 206, 53;
+  --fc-yellow-11-rgb: 255 206 53;
   --fc-yellow-11: rgb(var(--fc-yellow-11-rgb));
-  --fc-yellow-12-rgb: 252, 232, 182;
+  --fc-yellow-12-rgb: 252 232 182;
   --fc-yellow-12: rgb(var(--fc-yellow-12-rgb));
 
   --fc-green-1: #00d60004;
@@ -472,13 +472,13 @@
   --fc-green-6: #2afd604b;
   --fc-green-7: #32fd6a5e;
   --fc-green-8: #31ff7072;
-  --fc-green-9-rgb: 33, 196, 93;
+  --fc-green-9-rgb: 33 196 93;
   --fc-green-9: rgb(var(--fc-green-9-rgb));
-  --fc-green-10-rgb: 0, 184, 82;
+  --fc-green-10-rgb: 0 184 82;
   --fc-green-10: rgb(var(--fc-green-10-rgb));
-  --fc-green-11-rgb: 65, 216, 112;
+  --fc-green-11-rgb: 65 216 112;
   --fc-green-11: rgb(var(--fc-green-11-rgb));
-  --fc-green-12-rgb: 174, 245, 187;
+  --fc-green-12-rgb: 174 245 187;
   --fc-green-12: rgb(var(--fc-green-12-rgb));
 }
 
