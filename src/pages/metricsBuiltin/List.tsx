@@ -405,7 +405,11 @@ export default function index() {
 
   return (
     <>
-      <PageLayout title={t('title')} icon={<SettingOutlined />}>
+      <PageLayout
+        title={t('title')}
+        icon={<SettingOutlined />}
+        doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/metrics/metrics-built-in/'
+      >
         <div className='built-in-metrics-container'>
           <Collapse
             collapseLocalStorageKey='built-in-metrics-filters-collapse'

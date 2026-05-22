@@ -22,7 +22,7 @@ export default function List() {
 
   return (
     <>
-      <PageLayout title={t('title')}>
+      <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/llm-configs/'>
         <div className='fc-page n9e'>
           <div className='flex flex-col gap-2'>
             <div className='fc-toolbar flex flex-wrap items-center justify-between gap-2'>

@@ -66,7 +66,11 @@ export default function ListCpt() {
   }, []);
 
   return (
-    <PageLayout title={<Space>{t('title')}</Space>} icon={<NotificationOutlined />}>
+    <PageLayout
+      title={<Space>{t('title')}</Space>}
+      icon={<NotificationOutlined />}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/msg-template/notification-templates/'
+    >
       <div className='n9e'>
         <div className={CN}>
           <div className={`${CN}-sidebar`}>

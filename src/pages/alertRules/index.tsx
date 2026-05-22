@@ -37,7 +37,7 @@ export default function index() {
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
 
   return (
-    <PageLayout title={t('title')} icon={<SettingOutlined />}>
+    <PageLayout title={t('title')} icon={<SettingOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/'>
       <div className='alert-rules-container'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
         {businessGroup.ids ? <List gids={gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
