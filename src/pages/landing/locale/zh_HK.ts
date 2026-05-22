@@ -69,7 +69,7 @@ const zh_HK = {
     ingest: {
       title: '統一接入',
       description: '快速完成部署與數據接入',
-      links: ['如何使用 Docker Compose 快速部署 Nightingale？', '如何用 Categraf 採集主機和中間件數據？'],
+      links: ['如何部署 Categraf 採集器？', '如何用 Categraf 採集主機和中間件數據？'],
     },
     observe: {
       title: '統一觀測',
@@ -84,7 +84,7 @@ const zh_HK = {
     ai: {
       title: 'AI 智慧化',
       description: '大模型與智慧體',
-      links: ['如何添加數據源？', '如何使用 Agent 自動分析告警？'],
+      links: ['夜鶯有哪些內置技能？', '如何使用 Agent 自動分析告警？'],
     },
   },
   aiAssistant: {
