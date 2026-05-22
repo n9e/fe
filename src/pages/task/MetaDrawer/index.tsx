@@ -43,7 +43,7 @@ type SizeType = 'small' | 'middle' | 'large';
 export default function MetaDrawer(props: Props) {
   const { t } = useTranslation('common');
   const { t: tn } = useTranslation('navigableDrawer');
-  const { visible, loading, onClose, data, hosts, taskId } = props;
+  const { visible, loading = false, onClose, data, hosts, taskId } = props;
   const [size, setSize] = useState<SizeType>('middle');
 
   return (
