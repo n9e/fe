@@ -33,7 +33,7 @@ export interface LandingGuideCard {
 }
 
 const DOCS_BASE = 'https://flashcat.cloud/product/nightingale/';
-const DOCS_V8_BASE = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/';
+const DOCS_V8_BASE = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/';
 
 export const DOC_LINKS = {
   base: DOCS_BASE,
@@ -137,7 +137,7 @@ export const landingQuickStartCards: LandingGuideCard[] = [
     titleKey: 'quickStart.ingest.title',
     descriptionKey: 'quickStart.ingest.description',
     links: [
-      { labelKey: 'quickStart.ingest.links.0', url: `${DOCS_V8_BASE}install/compose/` },
+      { labelKey: 'quickStart.ingest.links.0', url: 'https://flashcat.cloud/docs/content/flashcat-monitor/categraf/2-installation/' },
       { labelKey: 'quickStart.ingest.links.1', url: `${DOCS_V8_BASE}agent/categraf/` },
     ],
   },
@@ -161,7 +161,7 @@ export const landingQuickStartCards: LandingGuideCard[] = [
     titleKey: 'quickStart.ai.title',
     descriptionKey: 'quickStart.ai.description',
     links: [
-      { labelKey: 'quickStart.ai.links.0', url: `${DOCS_V8_BASE}usecase/processor/` },
+      { labelKey: 'quickStart.ai.links.0', url: `${DOCS_V8_BASE}usage/ai-config/builtin-skills/` },
       { labelKey: 'quickStart.ai.links.1', url: `${DOCS_V8_BASE}usecase/processor/` },
     ],
   },

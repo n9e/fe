@@ -18,6 +18,7 @@ const zh_HK = {
   unit: '單位',
   page_help: '使用說明',
   document_title: '說明文檔',
+  product_document_title: '產品文檔',
   more_document_link: '更多文檔',
   and: '且',
   yes: '是',
@@ -172,6 +173,7 @@ const zh_HK = {
   select_event: '選擇告警事件',
   click_to_view_doc: '點擊查看文檔',
   tags_popover_title: '{{count}} 個標籤',
+  format_sql: '格式化 SQL',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',

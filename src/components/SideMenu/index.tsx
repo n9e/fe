@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } 
 import { useHistory, useLocation } from 'react-router-dom';
 import { Dropdown, Menu } from 'antd';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { Sun } from 'lucide-react';
+import { Settings, Sun } from 'lucide-react';
 import _ from 'lodash';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -311,6 +311,7 @@ const SideMenu = (props: SideMenuProps) => {
     effectiveSideMenuBgMode === 'theme' ? 'side-menu-profile-menu-on-theme' : effectiveSideMenuBgMode === 'dark' ? 'side-menu-profile-menu-on-dark' : '';
   const profileMenuClassName = cn('side-menu-profile-menu', profilePopupThemeClassName);
   const profileSubmenuClassName = cn('side-menu-profile-submenu', profilePopupThemeClassName);
+  const profileMenuAlign = { points: ['bl', 'tr'] as [string, string], offset: [collapsed ? 8 : -24, 0] as [number, number] };
   const profileMenu = (
     <Menu
       className={profileMenuClassName}
@@ -461,36 +462,54 @@ const SideMenu = (props: SideMenuProps) => {
               isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]',
             )}
           >
-            <div className='side-menu-profile-row'>
-              <Dropdown
-                overlay={profileMenu}
-                trigger={['click']}
-                placement={collapsed ? 'topRight' : 'topLeft'}
-                visible={profileMenuOpen}
-                onVisibleChange={setProfileMenuOpen}
+            <Dropdown
+              overlay={profileMenu}
+              trigger={['hover']}
+              placement='topLeft'
+              align={profileMenuAlign}
+              visible={profileMenuOpen}
+              onVisibleChange={setProfileMenuOpen}
+            >
+              <div
+                className={cn(
+                  'side-menu-profile-row rounded transition-colors',
+                  collapsed ? 'justify-center' : '',
+                  isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200',
+                )}
               >
                 <button
                   type='button'
                   className={cn(
-                    'side-menu-profile-trigger flex cursor-pointer items-center rounded border-0 bg-transparent p-0 text-left transition-colors',
+                    'side-menu-profile-trigger flex cursor-pointer items-center border-0 bg-transparent p-0 text-left',
                     collapsed ? 'h-10 justify-center' : 'h-12 gap-2 px-2',
-                    isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200',
+                    isCustomBg ? 'text-[#fff]' : 'text-title',
                   )}
                 >
                   <span className='side-menu-profile-avatar'>
                     {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
                   </span>
                   {!collapsed && (
-                    <>
-                      <span className='min-w-0 flex-1'>
-                        <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
-                        {profileDisplay.detail && <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>}
-                      </span>
-                    </>
+                    <span className='min-w-0 flex-1'>
+                      <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
+                      {profileDisplay.detail && <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>}
+                    </span>
                   )}
                 </button>
-              </Dropdown>
-            </div>
+                {!collapsed && (
+                  <button
+                    type='button'
+                    className={cn(
+                      'side-menu-profile-setting-button flex shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent p-0',
+                      isCustomBg ? 'text-[#fff]' : 'text-hint',
+                    )}
+                    aria-label={t('menu.setting')}
+                    onClick={() => setProfileMenuOpen(true)}
+                  >
+                    <Settings size={16} strokeWidth={1.8} />
+                  </button>
+                )}
+              </div>
+            </Dropdown>
           </div>
         </aside>
       </div>

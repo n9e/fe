@@ -20,6 +20,8 @@ import {
 import classNames from 'classnames';
 import { Link, LinkProps } from 'react-router-dom';
 
+import './style.less';
+
 const tableActionIconMap = {
   default: CheckCircle,
   edit: Pencil,

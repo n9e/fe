@@ -164,6 +164,7 @@ export default function SkillDetailPanel(props: Props) {
       />
       <UploadSkillModal
         title={t('upload_modal_title')}
+        showSubtitle
         visible={uploadModalVisible}
         onCancel={() => {
           setUploadModalVisible(false);

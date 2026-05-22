@@ -18,7 +18,7 @@ export default function DocLink({ link }: { link: string }) {
       target='_blank'
       rel='noopener'
     >
-      {t('common:document_title')}
+      {t('common:product_document_title')}
     </Button>
   );
 }

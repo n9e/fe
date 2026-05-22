@@ -56,5 +56,10 @@ const zh_CN = {
       12: '1 年之前',
     },
   },
+  filter_disabled: {
+    placeholder: '启用状态',
+    0: '启用',
+    1: '未启用',
+  },
 };
 export default zh_CN;

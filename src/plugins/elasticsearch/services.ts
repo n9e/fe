@@ -3,7 +3,7 @@ import semver from 'semver';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { N9E_PATHNAME } from '@/utils/constant';
+import { N9E_PATHNAME, DatasourceCateEnum } from '@/utils/constant';
 
 import { normalizeTime } from './utils/index';
 import mappingsToFields, { mappingsToFullFields } from './utils/mappingsToFields';
@@ -353,4 +353,54 @@ export async function getHistogram(params: {
     },
   ];
   return series;
+}
+
+export function getESClusterInfo(data: { cate: DatasourceCateEnum; datasource_id: number }): Promise<{
+  version: string;
+  is_sql_supported: boolean;
+}> {
+  return request('/api/n9e/es-cluster-info', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+}
+
+export function esLogsQuery(data: {
+  cate: DatasourceCateEnum;
+  datasource_id: number;
+  query: {
+    sql: string;
+    index: string;
+    start: number; // unix timestamp
+    end: number; // unix timestamp
+  }[];
+}): Promise<{
+  total: number;
+  list: Record<string, any>[];
+}> {
+  return request('/api/n9e/logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+}
+
+export function esSQLDsQuery(data: {
+  cate: DatasourceCateEnum;
+  datasource_id: number;
+  query: {
+    sql: string;
+    from: number; // unix timestamp
+    to: number; // unix timestamp
+    keys?: {
+      valueKey?: string;
+      labelKey?: string;
+    };
+  }[];
+}): Promise<any[]> {
+  return request('/api/n9e/ds-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => {
+    return res.dat || [];
+  });
 }

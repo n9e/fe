@@ -18,8 +18,8 @@ import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 
 const explorerOriginInlineCellClassName = 'inline-block mr-1 my-[2px] align-top';
 const explorerOriginBreakCellClassName = 'break-all block mr-1 my-[2px]';
-const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-title inline-flex text-[12px] py-[1px] px-[3px]';
-const explorerOrigiFieldValClassName = 'inline text-main m-0 p-0 cursor-pointer';
+const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-hint inline-flex text-[12px] py-[1px] px-[3px]';
+const explorerOriginFieldValClassName = 'inline text-main m-0 p-0 cursor-pointer';
 const explorerOriginUlClassName = 'border-0 list-none bg-transparent p-0 m-0';
 const explorerOriginLiClassName = 'relative ml-0 pl-0 ';
 
@@ -63,6 +63,7 @@ interface Props {
       onValueFilter?: (parmas: OnValueFilterParams) => void;
     },
   ) => React.ReactNode | false;
+  hideTypeIcon?: boolean;
 }
 
 interface RenderValueProps {
@@ -83,7 +84,7 @@ export function RenderValue({ name, value, parentKey, onValueFilter, adjustField
   if (typeof value === 'string' && value.indexOf('\n') > -1) {
     const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
     return (
-      <div className='inline text-hint m-0 p-0'>
+      <div className='inline text-main m-0 p-0'>
         {_.map(lines, (v, idx) => {
           return (
             <div key={idx}>
@@ -179,7 +180,7 @@ function RenderSubJSON({
                   <ul className={explorerOriginUlClassName}>
                     {_.isEmpty(v) ? (
                       <>
-                        <div className={explorerOriginFieldKeyClassName}>{k}</div>:<div className={explorerOrigiFieldValClassName}>{`[]`}</div>
+                        <div className={explorerOriginFieldKeyClassName}>{k}</div>:<div className={explorerOriginFieldValClassName}>{`[]`}</div>
                       </>
                     ) : (
                       _.map(_.isArray(v) ? v : [v], (item, idx) => {
@@ -225,7 +226,7 @@ function RenderSubJSON({
   return (
     <li className={explorerOriginLiClassName}>
       <div className={explorerOriginFieldKeyClassName}>{label}</div>:
-      <div className={explorerOrigiFieldValClassName}>
+      <div className={explorerOriginFieldValClassName}>
         <RenderValue name={label} value={JSON.stringify(subJSON)} onValueFilter={onValueFilter} adjustFieldValue={adjustFieldValue} showExistsAction={showExistsAction} />
       </div>
     </li>
@@ -264,6 +265,7 @@ function Raw(props: Props) {
     adjustFieldValue,
     showExistsAction,
     customLogFieldRender,
+    hideTypeIcon,
   } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
@@ -306,7 +308,7 @@ function Raw(props: Props) {
                       <ul className={explorerOriginUlClassName}>
                         {_.isEmpty(subJSON) ? (
                           <>
-                            <div className={explorerOriginFieldKeyClassName}>{key}</div>: <div className={explorerOrigiFieldValClassName}>{`[]`}</div>
+                            <div className={explorerOriginFieldKeyClassName}>{key}</div>: <div className={explorerOriginFieldValClassName}>{`[]`}</div>
                           </>
                         ) : (
                           _.map(subJSON, (item, idx) => {
@@ -490,6 +492,7 @@ function Raw(props: Props) {
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
             customLogFieldRender={customLogFieldRender}
+            hideTypeIcon={hideTypeIcon}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

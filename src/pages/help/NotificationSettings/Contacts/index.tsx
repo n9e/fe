@@ -52,7 +52,7 @@ export default function Channels() {
                     language: i18n.language,
                     title: t('common:document_link'),
                     type: 'iframe',
-                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/contact/',
+                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/personnel-permissions/contact/',
                   });
                 }}
               >

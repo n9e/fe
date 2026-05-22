@@ -82,7 +82,7 @@ export default function index({ initialValues }: { initialValues: any }) {
           >
             {t('effective_configs')}
             {collapsed ? <RightOutlined /> : <DownOutlined />}
-            {!collapsed && <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-rules/effective-configuration/' />}
+            {!collapsed && <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/effective-configuration/' />}
           </Space>
         </>
       }

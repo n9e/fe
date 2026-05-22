@@ -18,6 +18,7 @@ const ru_RU = {
   unit: 'Единица',
   page_help: 'Инструкция',
   document_title: 'Документация',
+  product_document_title: 'Документация продукта',
   more_document_link: 'Больше документов',
   and: 'И',
   yes: 'Да',
@@ -173,6 +174,7 @@ const ru_RU = {
   select_event: 'Выбрать событие оповещения',
   click_to_view_doc: 'Нажмите, чтобы просмотреть документацию',
   tags_popover_title: '{{count}} тегов',
+  format_sql: 'Форматировать SQL',
 
   tpl: 'Скрипт самовосстановления',
   'tpl.create': 'Создать',

@@ -54,7 +54,7 @@ interface IPageLayoutProps {
 }
 
 const DEFAULT_DOCUMENT_URL_ENT = '/docs/content/flashcat/overview/';
-const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/introduction/?ask_ai=1';
+const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/';
 
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
@@ -130,20 +130,20 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
                   <span className='page-layout-intro-container'>{introIcon}</span>
                   <div className='page-header-action-group'>
-                    {rightArea}
                     <Version />
                     {!IS_ENT && !IS_PLUS && (
                       <Button size='small' type='text' icon={<HistoryOutlined />} className='relative'>
                         <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
                       </Button>
                     )}
+                    <FlashAiButton />
+                    {rightArea}
                     <DocLink link={documentUrl} />
                     {!IS_ENT && !IS_PLUS && (
-                      <Button target='_blank' href='https://github.com/ccfos/nightingale/issues' size='small' icon={<GithubOutlined />}>
+                      <Button className='text-hint text-[11px]' target='_blank' href='https://github.com/ccfos/nightingale/issues' size='small' icon={<GithubOutlined />}>
                         {t('submit_issue')}
                       </Button>
                     )}
-                    <FlashAiButton />
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
                       <License />
                     </AdvancedWrap>

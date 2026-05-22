@@ -58,6 +58,11 @@ const ru_RU = {
   notify_configs: 'Настройки уведомлений',
   and: 'и',
   btn_add_rule: 'Добавить правило',
+  filter_disabled: {
+    placeholder: 'Статус активации',
+    0: 'Активно',
+    1: 'Не активно',
+  },
 };
 
 export default ru_RU;

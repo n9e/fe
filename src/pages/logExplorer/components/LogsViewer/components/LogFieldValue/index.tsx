@@ -109,7 +109,7 @@ export default function index(props: Props) {
             );
           } else if (item.type === 'delimiter') {
             return (
-              <div key={idx} className='inline text-hint m-0 p-0'>
+              <div key={idx} className='inline text-main m-0 p-0'>
                 {item.value}
               </div>
             );

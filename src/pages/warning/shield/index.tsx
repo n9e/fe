@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag, Dropdown, Menu } from 'antd';
+import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag, Dropdown, Menu, Select } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -48,6 +48,7 @@ const N9E_GIDS_LOCALKEY = 'n9e_mutes_gids';
 interface Filter {
   query?: string;
   datasourceIds?: number[];
+  disabled?: 0 | 1;
 }
 
 const FILTER_SESSION_STORAGE_KEY = 'alert-mutes-filter';
@@ -68,6 +69,7 @@ const Shield: React.FC = () => {
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
+  const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
   const [deleteMutesModalVisible, setDeleteMutesModalVisible] = useState(false);
   const saveFilter = (patch: Partial<Filter>) => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
@@ -346,7 +348,7 @@ const Shield: React.FC = () => {
 
   useEffect(() => {
     filterData();
-  }, [query, datasourceIds, currentShieldDataAll]);
+  }, [query, datasourceIds, filterDisabled, currentShieldDataAll]);
 
   const includesProm = (ids) => {
     return _.some(ids, (id) => {
@@ -368,7 +370,7 @@ const Shield: React.FC = () => {
             return _.includes(datasourceIds, id);
           })
         : true;
-      return (_.includes(item.note, query) || _.includes(item.cause, query) || !!tagFind) && datsourceFind;
+      return (_.includes(item.note, query) || _.includes(item.cause, query) || !!tagFind) && datsourceFind && (filterDisabled === undefined || item.disabled === filterDisabled);
     });
     setCurrentShieldData(res || []);
   };
@@ -396,7 +398,7 @@ const Shield: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('title')} icon={<CloseCircleOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-mute/'>
+    <PageLayout title={t('title')} icon={<CloseCircleOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-mute/'>
       <div className='shield-content'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div className='shield-index fc-border rounded-lg' style={{ height: '100%', overflowY: 'auto' }}>
@@ -423,6 +425,19 @@ const Shield: React.FC = () => {
                 placeholder={t('search_placeholder')}
                 style={{
                   width: 300,
+                }}
+              />
+              <Select
+                allowClear
+                placeholder={t('filter_disabled.placeholder')}
+                options={[
+                  { label: t('filter_disabled.0'), value: 0 },
+                  { label: t('filter_disabled.1'), value: 1 },
+                ]}
+                value={filterDisabled}
+                onChange={(val) => {
+                  setFilterDisabled(val);
+                  saveFilter({ disabled: val });
                 }}
               />
             </Space>

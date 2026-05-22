@@ -39,9 +39,6 @@ function saveLess(filePath, filename, callback) {
         'border-color-base': 'rgba(204,204,220,0.2)', // input框的边框颜色
         'border-color-split': 'rgb(57, 60, 77)',
         'component-background': 'rgb(22 22 24)', //fc-fill-2
-        // 'table-header-bg': 'rgb(34 37 43)', //fc-fill-3
-        // 'table-row-hover-bg': 'rgba(204, 204, 220, 0.08)',
-        'table-header-sort-bg': 'rgba(204, 204, 220, 0.08)',
         'popover-background': 'rgb(22 22 24)', //fc-fill-2
         'normal-color': 'rgb(79, 82, 99)',
 
@@ -50,15 +47,19 @@ function saveLess(filePath, filename, callback) {
         'table-header-bg': 'var(--fc-fill-2-5)',
         'table-header-color': 'var(--fc-text-3)',
         'table-header-sort-bg': 'var(--fc-fill-2-5)',
-        'table-body-sort-bg': 'var(--fc-fill-2)',
+        'table-body-sort-bg': 'var(--fc-fill-2-5)',
         'table-row-hover-bg': 'rgb(var(--fc-fill-5-rgb) / 0.2)',
         'table-selected-row-color': 'inherit',
-        // AntD calls color functions on selected/border tokens; patch runtime CSS vars in theme/default.less.
+        // AntD wraps @table-selected-row-bg in darken() (default.less:644), so it must
+        // be a Less-parsable color literal, not a var(). Keep this explicit neutral overlay.
         'table-selected-row-bg': 'rgba(228, 228, 231, 0.15)',
         'table-body-selected-sort-bg': '@table-selected-row-bg',
+        // Explicit override so AntD's darken(@table-selected-row-bg) default is not used.
         'table-selected-row-hover-bg': 'rgba(228, 228, 231, 0.25)',
         'table-expanded-row-bg': 'var(--fc-fill-2-5)',
-        'table-border-color': '#e4e4e7',
+        // AntD uses @table-border-color in Less color functions such as lighten(),
+        // so this must be the compiled dark value of --fc-border-color, not a CSS var().
+        'table-border-color': 'rgba(255, 255, 255, 0.06)',
         'table-padding-vertical': '16px',
         'table-padding-horizontal': '16px',
         'table-padding-vertical-md': '(@table-padding-vertical * 3 / 4)',
@@ -73,8 +74,8 @@ function saveLess(filePath, filename, callback) {
         'table-font-size-md': '14px',
         'table-font-size-sm': '@table-font-size',
         'table-header-cell-split-color': 'var(--fc-border-color)',
-        'table-header-sort-active-bg': 'var(--fc-fill-2-5)',
-        'table-fixed-header-sort-active-bg': 'var(--fc-fill-2-5)',
+        'table-header-sort-active-bg': 'rgb(var(--fc-fill-5-rgb) / 0.4)',
+        'table-fixed-header-sort-active-bg': 'var(--fc-fill-3)',
         'border-radius-base': '8px',
         'border-radius-sm': '4px',
         'checkbox-border-radius': '2px',

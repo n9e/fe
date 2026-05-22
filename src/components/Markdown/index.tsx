@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -40,6 +40,18 @@ dark['pre[class*="language-"]'] = {
 
 // https://github.com/vitejs/vite/issues/3592 bug solve 记录
 const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, inTooltip }) => {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(typeof document !== 'undefined' ? document.body.classList.contains('theme-dark') : false);
+
+  useEffect(() => {
+    const update = () => {
+      setIsDarkMode(document.body.classList.contains('theme-dark'));
+    };
+    window.addEventListener('n9e-dark-mode-update', update);
+    return () => {
+      window.removeEventListener('n9e-dark-mode-update', update);
+    };
+  }, []);
+
   return (
     <div className={inTooltip ? 'theme-dark bg-transparent' : ''}>
       <div className='typora-theme-lark' style={style}>
@@ -51,7 +63,7 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, inTooltip }) =
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match ? (
-                <SyntaxHighlighter {...props} children={String(children).replace(/\n$/, '')} language={match[1]} PreTag='div' style={inTooltip ? dark : undefined} />
+                <SyntaxHighlighter {...props} children={String(children).replace(/\n$/, '')} language={match[1]} PreTag='div' style={inTooltip || isDarkMode ? dark : undefined} />
               ) : (
                 <div
                   className={classNames({

@@ -133,7 +133,7 @@ export default function Query(props: Props) {
                     </a>
                   </span>
                 }
-                labelWidth={90}
+                addonAfter='Lucene'
               >
                 <Form.Item {...field} name={[field.name, 'filter']}>
                   <Input disabled={disabled} />

@@ -18,6 +18,7 @@ const ja_JP = {
   unit: '単位',
   page_help: '使用説明',
   document_title: 'ドキュメント',
+  product_document_title: '製品ドキュメント',
   more_document_link: 'さらにドキュメント',
   and: 'および',
   yes: 'はい',
@@ -173,6 +174,7 @@ const ja_JP = {
   select_event: 'アラートイベントを選択',
   click_to_view_doc: 'クリックしてドキュメントを表示します',
   tags_popover_title: '{{count}} タグ',
+  format_sql: 'SQLをフォーマット',
 
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',

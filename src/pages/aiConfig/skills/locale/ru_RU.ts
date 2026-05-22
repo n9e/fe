@@ -23,6 +23,7 @@ const ru_RU = {
   document_empty: 'Нет содержимого документа',
   search_placeholder: 'Поиск по ключевому слову',
   builtin: 'Встроенный',
+  frontmatter_title: 'Метаданные',
 
   form: {
     name: 'Название',

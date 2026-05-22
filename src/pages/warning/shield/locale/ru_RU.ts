@@ -59,6 +59,11 @@ const ru_RU = {
       12: '1 год назад',
     },
   },
+  filter_disabled: {
+    placeholder: 'Статус активации',
+    0: 'Активно',
+    1: 'Не активно',
+  },
 };
 
 export default ru_RU;

@@ -136,7 +136,7 @@ export default function Servers() {
     <PageLayout
       icon={<Icon component={SystemInfoSvg as any} />}
       title={<Space>{t('title')}</Space>}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/alert-engine/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/alert-engine/'
     >
       <div className='n9e'>
         {profile.admin ? (

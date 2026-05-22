@@ -22,6 +22,20 @@ export const findMenuByPath = (path: string, menuList: MenuItem[]): MenuMatchRes
   for (const parent of menuList) {
     if (!parent.children) continue;
 
+    // Handle top-level items with type: 'tabs' (2-level hierarchy: parent → tab item)
+    if (parent.type === 'tabs') {
+      for (const child of parent.children) {
+        if (child.key === path) {
+          return {
+            currentItem: child,
+            parentItem: parent,
+            showTabs: true,
+            icon: parent.icon,
+          };
+        }
+      }
+    }
+
     for (const child of parent.children) {
       if (child.children) {
         for (const grandChild of child.children) {
@@ -30,7 +44,7 @@ export const findMenuByPath = (path: string, menuList: MenuItem[]): MenuMatchRes
               currentItem: grandChild,
               parentItem: child,
               showTabs: child.type === 'tabs',
-              icon: parent?.icon,
+              icon: parent.icon,
             };
           }
         }

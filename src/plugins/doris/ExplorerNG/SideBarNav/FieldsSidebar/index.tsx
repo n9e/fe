@@ -54,13 +54,17 @@ export default function index(props: IProps) {
           }
         }}
         fields={data}
-        onValueFilter={(params) => {
-          onValueFilter({
-            ...params,
-            assignmentOperator: '=',
-            operator: params.operator === 'and' ? 'AND' : 'NOT',
-          });
-        }}
+        onValueFilter={
+          queryValues?.syntax === 'sql'
+            ? undefined
+            : (params) => {
+                onValueFilter({
+                  ...params,
+                  assignmentOperator: '=',
+                  operator: params.operator === 'and' ? 'AND' : 'NOT',
+                });
+              }
+        }
         fetchStats={async (record) => {
           try {
             const range = parseRange(queryValues.range);

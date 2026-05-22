@@ -184,7 +184,9 @@ export default function FormCpt(props: Props) {
           </Splitter.Panel>
           <Splitter.Panel>
             <div className='p-4 best-looking-scroll h-full'>
-              {requestType && <Document type='iframe' documentPath={`https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/usage/notify-channel/${ident}/`} />}
+              {requestType && (
+                <Document type='iframe' documentPath={`https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/${ident}/`} />
+              )}
             </div>
           </Splitter.Panel>
         </Splitter>

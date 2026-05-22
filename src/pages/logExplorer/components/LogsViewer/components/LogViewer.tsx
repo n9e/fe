@@ -43,12 +43,24 @@ interface Props {
       onValueFilter?: (parmas: OnValueFilterParams) => void;
     },
   ) => React.ReactNode | false;
+  hideTypeIcon?: boolean;
 }
 
 export default function LogView(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { fieldConfig, range, indexData } = useContext(LogsViewerStateContext);
-  const { raw_key, id_key, value, rawValue = value, highlight, onValueFilter, logViewerFilterFields, logViewerRenderCustomTagsArea, customLogFieldRender } = props;
+  const {
+    raw_key,
+    id_key,
+    value,
+    rawValue = value,
+    highlight,
+    onValueFilter,
+    logViewerFilterFields,
+    logViewerRenderCustomTagsArea,
+    customLogFieldRender,
+    hideTypeIcon = false,
+  } = props;
   const [type, setType] = useState<string>('table');
   const parsedRange = range ? parseRange(range) : null;
   let start = parsedRange ? moment(parsedRange.start).unix() : 0;
@@ -138,7 +150,7 @@ export default function LogView(props: Props) {
                   title: 'Field',
                   dataIndex: 'field',
                   key: 'field',
-                  width: maxFieldLength + 16 + 16 + 8, // 16px 是 padding, 16px 是图标宽度, 8px 容错
+                  width: hideTypeIcon ? maxFieldLength + 16 + 8 : maxFieldLength + 16 + 16 + 8, // 16px 是 padding, 16px 是图标宽度, 8px 容错
                   render: (val) => {
                     const fieldObject = _.find(indexData, (item) => item.field === val);
                     return (
@@ -149,17 +161,19 @@ export default function LogView(props: Props) {
                             <div className='break-all'>
                               <Space align='start'>
                                 <span className='whitespace-nowrap'>{t('field_type')}:</span>
-                                {fieldObject.type2}
+                                <span className='text-hint'>{fieldObject.type2}</span>
                               </Space>
                             </div>
                           ) : undefined
                         }
                       >
                         <Space>
-                          <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>
-                            {fieldObject ? typeIconMap[TYPE_MAP[fieldObject.type]] ?? <QuestionOutlined /> : <QuestionOutlined />}
-                          </span>
-                          <span>{val}</span>
+                          {!hideTypeIcon && (
+                            <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>
+                              {fieldObject ? typeIconMap[TYPE_MAP[fieldObject.type]] ?? <QuestionOutlined /> : <QuestionOutlined />}
+                            </span>
+                          )}
+                          <span className='text-hint'>{val}</span>
                         </Space>
                       </Tooltip>
                     );

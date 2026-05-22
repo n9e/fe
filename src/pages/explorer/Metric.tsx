@@ -36,7 +36,7 @@ function MetricExplorerPageContent() {
   ]);
 
   return (
-    <PageLayout title={t('title')} icon={<LineChartOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v8/quickstart/ad-hoc/'>
+    <PageLayout title={t('title')} icon={<LineChartOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/'>
       <div className='n9e'>
         <div className='w-full h-full flex'>
           <div className='flex-1 min-w-0 h-full best-looking-scroll'>

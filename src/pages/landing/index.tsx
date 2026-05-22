@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import PageLayout from '@/components/pageLayout';
 import { useAiChatContext } from '@/components/AiChatNG';
-import { buildPageFrom } from '@/components/AiChatNG/recommend';
+import { buildPageFrom, getRecommendByUrl } from '@/components/AiChatNG/recommend';
 import {
   DOC_LINKS,
   landingAiAssistant,
@@ -107,18 +107,19 @@ function makeLinkProps(url: string | undefined, history: ReturnType<typeof useHi
 }
 
 export default function Landing() {
-  const { t } = useTranslation('n9e-landing');
+  const { t, i18n } = useTranslation('n9e-landing');
   const history = useHistory();
   const { openAiChat } = useAiChatContext();
 
   const handleAskAi = useCallback(
     (prefill?: string) => {
+      const recommend = getRecommendByUrl('/landing', i18n.language);
       openAiChat({
         queryPageFrom: buildPageFrom({ url: '/landing' }),
-        promptList: prefill ? [prefill] : [t('quickStart.ingest.links.0'), t('quickStart.observe.links.0'), t('quickStart.alert.links.0'), t('quickStart.ai.links.0')],
+        promptList: prefill ? [prefill] : recommend?.promptList,
       });
     },
-    [openAiChat, t],
+    [openAiChat, i18n.language],
   );
 
   return (

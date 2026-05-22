@@ -55,7 +55,7 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')} icon={<SafetyCertificateOutlined />}>
+    <PageLayout title={t('title')} icon={<SafetyCertificateOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/templates/'>
       <div>
         <div style={{ background: 'unset' }}>
           <div className='mb-4' style={{ display: 'flex', justifyContent: 'space-between' }}>

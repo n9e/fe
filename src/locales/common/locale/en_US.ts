@@ -18,6 +18,7 @@ const en_US = {
   unit: 'Unit',
   page_help: 'Help',
   document_title: 'Documentation',
+  product_document_title: 'Product documentation',
   more_document_link: 'More documents',
   and: 'And',
   yes: 'Yes',
@@ -173,6 +174,7 @@ const en_US = {
   select_event: 'Select an alert event',
   click_to_view_doc: 'Click to view documentation',
   tags_popover_title: '{{count}} tags',
+  format_sql: 'Format SQL',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',

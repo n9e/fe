@@ -18,6 +18,7 @@ const zh_CN = {
   unit: '单位',
   page_help: '使用说明',
   document_title: '说明文档',
+  product_document_title: '产品文档',
   more_document_link: '更多文档',
   and: '且',
   yes: '是',
@@ -172,6 +173,7 @@ const zh_CN = {
   select_event: '选择告警事件',
   click_to_view_doc: '点击查看文档',
   tags_popover_title: '{{count}} 个标签',
+  format_sql: '格式化 SQL',
 
   // 临时把 task 的翻译放在这里
   tpl: '自愈脚本',

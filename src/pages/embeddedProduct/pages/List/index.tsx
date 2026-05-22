@@ -211,7 +211,7 @@ export default function Index() {
   };
 
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/embedded-products/'>
       <div className='n9e'>
         <div className='flex justify-end items-center'>
           <Button
