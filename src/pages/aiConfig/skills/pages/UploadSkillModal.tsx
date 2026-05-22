@@ -8,13 +8,14 @@ import { NS } from '../constants';
 interface Props {
   title: string;
   visible: boolean;
+  showSubtitle?: boolean;
   onCancel: () => void;
   onSubmit: (file: File) => Promise<void> | void;
 }
 
 export default function UploadSkillModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { title, visible, onCancel, onSubmit } = props;
+  const { title, visible, showSubtitle, onCancel, onSubmit } = props;
   const [submitting, setSubmitting] = React.useState(false);
 
   return (
@@ -22,7 +23,7 @@ export default function UploadSkillModal(props: Props) {
       title={
         <div className='flex items-center gap-4'>
           <span>{title}</span>
-          <span className='text-soft'>{t('upload_modal_subtitle')}</span>
+          {showSubtitle && <span className='text-soft'>{t('upload_modal_subtitle')}</span>}
         </div>
       }
       visible={visible}
