@@ -69,7 +69,7 @@ const ja_JP = {
     ingest: {
       title: '統一取込',
       description: '迅速にデプロイしデータを取り込む',
-      links: ['Docker Compose で Nightingale をデプロイする方法は？', 'Categraf でホスト/ミドルウェアを収集する方法は？'],
+      links: ['Categraf コレクターをデプロイする方法は？', 'Categraf でホスト/ミドルウェアを収集する方法は？'],
     },
     observe: {
       title: '統一可観測',
@@ -84,7 +84,7 @@ const ja_JP = {
     ai: {
       title: 'AI インテリジェンス',
       description: 'LLM とエージェント',
-      links: ['データソースを追加するには？', 'エージェントでアラートを分析するには？'],
+      links: ['Nightingale にはどんな組み込みスキルがありますか？', 'エージェントでアラートを分析するには？'],
     },
   },
   aiAssistant: {

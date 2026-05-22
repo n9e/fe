@@ -81,7 +81,7 @@ const en_US = {
     ingest: {
       title: 'Unified Ingestion',
       description: 'Deploy and ingest data quickly',
-      links: ['How to deploy Nightingale with Docker Compose?', 'How to collect host and middleware data with Categraf?'],
+      links: ['How to deploy the Categraf collector?', 'How to collect host and middleware data with Categraf?'],
     },
     observe: {
       title: 'Unified Observability',
@@ -96,7 +96,7 @@ const en_US = {
     ai: {
       title: 'AI Intelligence',
       description: 'LLM and agents',
-      links: ['How to add a data source?', 'How to use Agents to analyze alerts?'],
+      links: ['What built-in skills does Nightingale have?', 'How to use Agents to analyze alerts?'],
     },
   },
   aiAssistant: {

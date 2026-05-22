@@ -81,7 +81,7 @@ const zh_CN = {
     ingest: {
       title: '统一接入',
       description: '快速完成部署与数据接入',
-      links: ['如何使用 Docker Compose 快速部署 Nightingale？', '如何用 Categraf 采集主机和中间件数据？'],
+      links: ['如何部署 Categraf 采集器？', '如何用 Categraf 采集主机和中间件数据？'],
     },
     observe: {
       title: '统一观测',
@@ -96,7 +96,7 @@ const zh_CN = {
     ai: {
       title: 'AI 智能化',
       description: '大模型与智能体',
-      links: ['如何添加数据源？', '如何使用 Agent 自动分析告警？'],
+      links: ['夜莺有哪些内置技能？', '如何使用 Agent 自动分析告警？'],
     },
   },
   aiAssistant: {
