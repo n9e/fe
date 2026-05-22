@@ -6,6 +6,7 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 import PrometheusExplorer from '@/pages/explorer/Prometheus';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import EmptyDatasourcePopover from '@/components/DatasourceSelect/EmptyDatasourcePopover';
+import { getPrimaryTypeByCate } from '@/components/AdvancedWrap/utils';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
@@ -61,7 +62,7 @@ export default function Panel(props: Props) {
                   {({ getFieldValue }) => {
                     const cate = getFieldValue('datasourceCate');
                     return (
-                      <EmptyDatasourcePopover datasourceCate={cate} datasourceList={groupedDatasourceList[cate]}>
+                      <EmptyDatasourcePopover type={getPrimaryTypeByCate(cate)} datasourceList={groupedDatasourceList[cate]}>
                         <Input.Group compact>
                           <span
                             className='ant-input-group-addon'

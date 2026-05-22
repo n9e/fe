@@ -285,6 +285,7 @@ const Panel = (props: IProps) => {
                   >
                     <DatasourceSelectV3
                       style={{ minWidth: 220 }}
+                      type={type}
                       datasourceCateList={datasourceCateOptions}
                       ajustDatasourceList={(list) => {
                         return _.filter(list, (item) => {

@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { Cate, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 
+import EmptyDatasourcePopover from '../EmptyDatasourcePopover';
+
 import './style.less';
 
 interface DatasourceItem {
@@ -18,6 +20,7 @@ interface DatasourceItem {
 }
 
 interface Props {
+  type?: 'metric' | 'logging';
   datasourceCateList: Cate[];
   ajustDatasourceList?: (list: DatasourceItem[]) => DatasourceItem[];
   onChange?: (value: string | number, datasourceCate: string) => void;
@@ -25,67 +28,69 @@ interface Props {
 }
 
 export default function index(props: SelectProps & Props) {
-  const { datasourceCateList, ajustDatasourceList, onChange, onClear } = props;
+  const { type, datasourceCateList, ajustDatasourceList, onChange, onClear } = props;
   const { i18n } = useTranslation();
   const { datasourceList } = useContext(CommonStateContext);
   const currentDatasourceList = ajustDatasourceList ? ajustDatasourceList(datasourceList) : datasourceList;
 
   return (
-    <Select
-      className='n9e-datasource-select-v3'
-      dropdownMatchSelectWidth={false}
-      {..._.omit(props, ['datasourceCateList', 'ajustDatasourceList'])}
-      showSearch
-      optionLabelProp='optionLabel'
-      filterOption={(inputValue, option) => {
-        // 根据空格分词进行过滤，取交集
-        const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw) as string[];
-        return _.every(keywords, (kw) => _.includes(_.toLower(option?.filter), _.toLower(kw)));
-      }}
-      options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
-        const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
-        const displayLabel = getCateDisplayLabel(datasourceCate, i18n.language);
-        return {
-          filter: item.plugin_type + item.name,
-          originLabel: item.name,
-          optionLabel: (
-            <div>
-              <Space>
-                <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
-                {item.name}
-              </Space>
-            </div>
-          ),
-          label: (
-            <div className='flex items-center gap-2 justify-between'>
-              <Space>
-                <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
-                {item.name}
-                {item.is_default && <Tag color='var(--fc-fill-primary)'>default</Tag>}
-              </Space>
-              <span
-                style={{
-                  color: 'var(--fc-text-4)',
-                }}
-              >
-                {displayLabel}
-              </span>
-            </div>
-          ),
-          value: item.id,
-        };
-      })}
-      onChange={(value) => {
-        if (onChange) {
-          const curCate = _.find(currentDatasourceList, { id: value })?.plugin_type;
-          if (!curCate) {
-            return;
+    <EmptyDatasourcePopover type={type} datasourceList={currentDatasourceList}>
+      <Select
+        className='n9e-datasource-select-v3'
+        dropdownMatchSelectWidth={false}
+        {..._.omit(props, ['type', 'datasourceCateList', 'ajustDatasourceList'])}
+        showSearch
+        optionLabelProp='optionLabel'
+        filterOption={(inputValue, option) => {
+          // 根据空格分词进行过滤，取交集
+          const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw) as string[];
+          return _.every(keywords, (kw) => _.includes(_.toLower(option?.filter), _.toLower(kw)));
+        }}
+        options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
+          const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
+          const displayLabel = getCateDisplayLabel(datasourceCate, i18n.language);
+          return {
+            filter: item.plugin_type + item.name,
+            originLabel: item.name,
+            optionLabel: (
+              <div>
+                <Space>
+                  <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
+                  {item.name}
+                </Space>
+              </div>
+            ),
+            label: (
+              <div className='flex items-center gap-2 justify-between'>
+                <Space>
+                  <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
+                  {item.name}
+                  {item.is_default && <Tag color='var(--fc-fill-primary)'>default</Tag>}
+                </Space>
+                <span
+                  style={{
+                    color: 'var(--fc-text-4)',
+                  }}
+                >
+                  {displayLabel}
+                </span>
+              </div>
+            ),
+            value: item.id,
+          };
+        })}
+        onChange={(value) => {
+          if (onChange) {
+            const curCate = _.find(currentDatasourceList, { id: value })?.plugin_type;
+            if (!curCate) {
+              return;
+            }
+            onChange(value, curCate);
           }
-          onChange(value, curCate);
-        }
-      }}
-      onClear={onClear}
-      allowClear={!!onClear}
-    />
+        }}
+        onClear={onClear}
+        allowClear={!!onClear}
+      />
+    </EmptyDatasourcePopover>
   );
 }

@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { IS_ENT } from '@/utils/constant';
 
 interface IProps {
-  datasourceCate?: string;
+  type?: 'metric' | 'logging';
   datasourceList: any[];
   children: React.ReactNode;
   placement?: TooltipPlacement;
@@ -18,10 +18,12 @@ interface IProps {
 export default function EmptyDatasourcePopover(props: IProps) {
   const { t } = useTranslation();
   const { profile } = useContext(CommonStateContext);
-  const { datasourceCate, datasourceList, children, placement, getPopupContainer } = props;
+  const { type = 'metric', datasourceList, children, placement, getPopupContainer } = props;
+
   let linkUrl = IS_ENT ? '/settings/source/timeseries' : '/datasources';
-  if (datasourceCate === 'prometheus') {
-    linkUrl = IS_ENT ? '/settings/datasource/add/prometheus' : '/datasources/add/prometheus';
+
+  if (type === 'logging') {
+    linkUrl = IS_ENT ? '/settings/source/log' : '/datasources';
   }
 
   return (
@@ -32,7 +34,7 @@ export default function EmptyDatasourcePopover(props: IProps) {
         </>
       }
       visible={_.isEmpty(datasourceList)}
-      placement={placement ?? 'rightTop'}
+      placement={placement ?? 'bottomLeft'}
       getPopupContainer={getPopupContainer}
     >
       {children}
