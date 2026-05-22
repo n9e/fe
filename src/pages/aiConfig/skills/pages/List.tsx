@@ -251,7 +251,7 @@ export default function List() {
   if (_.isEmpty(data)) {
     if (loading) {
       return (
-        <PageLayout title={t('title')}>
+        <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/skills/'>
           <div className='fc-page n9e'>
             <div className='bg-fc-100 rounded flex items-center justify-center h-[200px]'>
               <Spin spinning />
@@ -263,7 +263,7 @@ export default function List() {
 
     return (
       <>
-        <PageLayout title={t('title')}>
+        <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/skills/'>
           <div className='n9e'>
             <div className='bg-fc-100 rounded flex items-center justify-center'>
               <Empty
@@ -327,7 +327,7 @@ export default function List() {
 
   return (
     <>
-      <PageLayout title={t('title')}>
+      <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/skills/'>
         <div className='n9e h-full overflow-hidden children:h-full mr-0'>
           <Spin spinning={loading}>
             <div className='flex flex-col h-full gap-4'>

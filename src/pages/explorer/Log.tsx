@@ -36,7 +36,7 @@ const MetricExplorerPage = () => {
   const [activeKey, setActiveKey] = useState<string>(getLocalActiveKey(params, defaultItems));
 
   return (
-    <PageLayout title={t('log_title')} icon={<LineChartOutlined />}>
+    <PageLayout title={t('log_title')} icon={<LineChartOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/'>
       <div>
         <div className='logs-explorer-container-wrapper'>
           <div className='logs-explorer-container'>

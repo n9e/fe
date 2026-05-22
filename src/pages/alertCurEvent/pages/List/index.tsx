@@ -133,10 +133,7 @@ const AlertCurEvent: React.FC = () => {
     return requestParams;
   }, [filter.aggr_rule_id, JSON.stringify(params)]);
 
-  const {
-    refresh: reloadRuleCards,
-    data: ruleCardsData,
-  } = useRequest(
+  const { refresh: reloadRuleCards, data: ruleCardsData } = useRequest(
     () => {
       // ready 会保证这里不会在 undefined 时执行
       return getAlertCards(ruleCardsRequestParams as RuleCardsRequestParams);
@@ -188,7 +185,7 @@ const AlertCurEvent: React.FC = () => {
   }, [JSON.stringify(filter)]);
 
   return (
-    <PageLayout icon={<AlertOutlined />} title={t('title')}>
+    <PageLayout icon={<AlertOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/events/cur-events/'>
       <div className={`n9e ${NS}`}>
         <div className='bg-fc-100 fc-border rounded-lg h-full'>
           <div className='p-4 h-full'>

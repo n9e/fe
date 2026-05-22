@@ -74,7 +74,11 @@ export default function index() {
   ]);
 
   return (
-    <PageLayout title={<Space>{t('title')}</Space>} icon={<NotificationOutlined />}>
+    <PageLayout
+      title={<Space>{t('title')}</Space>}
+      icon={<NotificationOutlined />}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/'
+    >
       <div className='n9e'>
         <div className='flex h-full overflow-hidden'>
           <div className='h-full shrink-0 overflow-hidden'>

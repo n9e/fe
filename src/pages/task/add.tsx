@@ -101,6 +101,7 @@ const Add = (props: any) => {
           </>
         )
       }
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/self-healing/create-temporary-task/'
     >
       <div className='p-4'>
         <div style={{ background: 'none' }}>

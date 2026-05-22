@@ -15,14 +15,7 @@ import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
 import { NS, DETAIL_PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
-import {
-  getEmbeddedProducts,
-  addEmbeddedProducts,
-  updateEmbeddedProducts,
-  putEmbeddedProductsWeights,
-  deleteEmbeddedProducts,
-  putEmbeddedProductHide,
-} from '../../services';
+import { getEmbeddedProducts, addEmbeddedProducts, updateEmbeddedProducts, putEmbeddedProductsWeights, deleteEmbeddedProducts, putEmbeddedProductHide } from '../../services';
 import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 
 import './style.less';
@@ -204,7 +197,7 @@ export default function Index() {
   };
 
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/embedded-products/'>
       <div className='n9e'>
         <div className='flex justify-end items-center'>
           <Button
