@@ -143,6 +143,7 @@ function SectionHeader(props: { section: NonNullable<IMenuItem['section']>; coll
 export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   const { t } = useTranslation('sideMenu');
   const { item, collapsed, selectedKeys, sideMenuBgColor, isLight, ...otherProps } = props;
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const isActive = isMenuGroupActive(item, selectedKeys);
   const [isExpand, setIsExpand] = useState<boolean>(false);
@@ -181,7 +182,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
   const submenuOpen = isExpand && !collapsed && visibleChildren.length > 0;
 
   return (
-    <div className='w-full'>
+    <div className='w-full' ref={rootRef}>
       <div
         onClick={() => {
           if (collapsed) {
@@ -208,6 +209,11 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
         className={cn(submenuOpen ? 'mt-0.5' : 'mt-0', 'overflow-hidden transition-height')}
         style={{
           height: !isExpand || collapsed ? 0 : visibleChildren.length * 30,
+        }}
+        onTransitionEnd={(e) => {
+          if (e.propertyName === 'height' && submenuOpen) {
+            rootRef.current?.scrollIntoView({ block: 'nearest' });
+          }
         }}
       >
         <div
@@ -535,7 +541,7 @@ export default function MenuList(
 
   return (
     <>
-      <div className={cn('h-full pl-2 pr-4', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
+      <div className={cn('h-full pl-2 pr-4 pb-2.5', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
         {IS_ENT ? (
           <Link
             to='/landing'
