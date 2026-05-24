@@ -18,8 +18,6 @@ export default function List() {
   const { t } = useTranslation(NS);
   const [filter, setFilter] = useState<{
     search?: string;
-    use_case?: string;
-    trigger_mode?: string;
     disabled?: boolean;
   }>();
   const [data, setData] = useState<{
@@ -89,40 +87,6 @@ export default function List() {
           />
           <Select
             allowClear
-            dropdownMatchSelectWidth={false}
-            placeholder={t('use_case.label')}
-            options={[
-              {
-                label: t('use_case.firemap'),
-                value: 'firemap',
-              },
-              {
-                label: t('use_case.event_pipeline'),
-                value: 'event_pipeline',
-              },
-            ]}
-            value={filter?.use_case}
-            onChange={(value) => setFilter((prev) => ({ ...prev, use_case: value }))}
-          />
-          <Select
-            allowClear
-            placeholder={t('trigger_mode.label')}
-            dropdownMatchSelectWidth={false}
-            options={[
-              {
-                label: t('trigger_mode.event'),
-                value: 'event',
-              },
-              {
-                label: t('trigger_mode.api'),
-                value: 'api',
-              },
-            ]}
-            value={filter?.trigger_mode}
-            onChange={(value) => setFilter((prev) => ({ ...prev, trigger_mode: value }))}
-          />
-          <Select
-            allowClear
             placeholder={t('disabled.label')}
             options={[
               {
@@ -179,22 +143,6 @@ export default function List() {
           {
             title: t('common:table.note'),
             dataIndex: 'description',
-          },
-          {
-            title: t('use_case.label'),
-            dataIndex: 'use_case',
-            width: 100,
-            render: (value) => {
-              return <Tag>{t(`use_case.${value}`)}</Tag>;
-            },
-          },
-          {
-            title: t('trigger_mode.label'),
-            dataIndex: 'trigger_mode',
-            width: 100,
-            render: (value) => {
-              return <Tag>{t(`trigger_mode.${value}`)}</Tag>;
-            },
           },
           {
             title: t('disabled.label'),
@@ -283,16 +231,6 @@ export default function List() {
           let pass = true;
           if (filter?.search) {
             if (!_.includes(item.name, filter.search)) {
-              pass = false;
-            }
-          }
-          if (filter?.use_case) {
-            if (item.use_case !== filter.use_case) {
-              pass = false;
-            }
-          }
-          if (filter?.trigger_mode) {
-            if (item.trigger_mode !== filter.trigger_mode) {
               pass = false;
             }
           }
