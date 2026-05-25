@@ -4,6 +4,8 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplorer/types';
 
 import Elasticsearch from '@/plugins/elasticsearch/ExplorerNG';
+// @ts-ignore
+import { ExplorerNG as BLSExplorerNG } from 'plus:/datasource/bceBLS';
 
 interface Props {
   tabKey: string;
@@ -17,6 +19,10 @@ export default function index(props: Props) {
 
   if (datasourceCate === DatasourceCateEnum.elasticsearch) {
     return <Elasticsearch tabKey={tabKey} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />;
+  }
+
+  if (datasourceCate === DatasourceCateEnum.bceBLS) {
+    return <BLSExplorerNG tabKey={tabKey} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />;
   }
 
   return null;
