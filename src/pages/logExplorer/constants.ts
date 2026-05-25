@@ -16,8 +16,9 @@ export const ENABLED_VIEW_CATES = [
   DatasourceCateEnum.opensearch,
   DatasourceCateEnum.huaweiLTS,
   DatasourceCateEnum.tencentCLS,
-  DatasourceCateEnum.bceBLS,
   DatasourceCateEnum.cloudwatchLogs,
+  DatasourceCateEnum.bceBLS,
+  DatasourceCateEnum.volcTLS,
 ];
 
 export const TYPE_MAP: Record<string, string> = {
