@@ -8,13 +8,14 @@ interface OutlinedSelectProps<VT = any> extends Omit<SelectProps<VT>, 'placehold
   label: string | React.ReactNode; // 浮动标签文本
   required?: boolean; // 是否必填(影响标签显示)
   suffix?: React.ReactNode; // 后缀
+  emptyStringAsValue?: boolean; // 为 true 时，value 为空字符串也视为有值
 }
 
 // Antd 4.x 的 Form Item Status Context
 const FormItemInputContext = React.createContext<FormItemStatusContextProps>({});
 
 export const OutlinedSelect = <VT extends any = any>(props: OutlinedSelectProps<VT>) => {
-  const { label, required, suffix, value, onChange, onFocus, onBlur, className, ...restProps } = props;
+  const { label, required, suffix, value, onChange, onFocus, onBlur, className, emptyStringAsValue, ...restProps } = props;
 
   // 状态管理
   const [focused, setFocused] = useState(false);
@@ -23,8 +24,9 @@ export const OutlinedSelect = <VT extends any = any>(props: OutlinedSelectProps<
   const hasValue = React.useMemo(() => {
     if (value === undefined || value === null) return false;
     if (Array.isArray(value)) return value.length > 0;
+    if (emptyStringAsValue) return true;
     return value !== '';
-  }, [value]);
+  }, [value, emptyStringAsValue]);
 
   // 尝试获取 Form Item 状态 (Antd 4.x 方式)
   const formItemContext = useContext(FormItemInputContext);
