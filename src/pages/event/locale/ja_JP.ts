@@ -98,6 +98,7 @@ const ja_JP = {
     trigger_label: 'アラート条件',
     current_anomaly_time: '今回の異常時間',
     ai_analysis: 'AI 解析',
+    ai_analysis_content: 'このアラートイベントの原因を分析',
   },
 
   sharing_link: {
