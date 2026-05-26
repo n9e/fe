@@ -110,7 +110,7 @@ export default function Servers() {
                 </Button>
               </div>
               <Table
-                className='mt-2'
+                className='mt-2 fc-table-standard'
                 size='small'
                 rowKey='id'
                 tableLayout='fixed'

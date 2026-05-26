@@ -64,7 +64,7 @@ export default function LegendTable(props: Props) {
   return (
     <div className='min-w-0 h-full overflow-auto'>
       <Table
-        className='mt-2 renderer-timeseries-ng-legend-table'
+        className='mt-2 renderer-timeseries-ng-legend-table fc-table-standard'
         size='small'
         pagination={false}
         rowKey='id'

@@ -296,7 +296,7 @@ const Resource: React.FC = () => {
           </div>
         </Row>
         <Table
-          className='mt-2'
+          className='mt-2 fc-table-standard'
           size='small'
           rowKey='id'
           columns={ajustColumns(userColumns, columnsConfigs)}

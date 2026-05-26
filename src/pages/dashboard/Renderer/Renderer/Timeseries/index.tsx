@@ -477,7 +477,7 @@ export default function index(props: IProps) {
       >
         {displayMode === 'table' && (
           <div ref={legendEleRef}>
-            <Table
+            <Table className='fc-table-standard'
               tableLayout='auto' // 2024-01-10 对齐 grafana 效果，取消 fixed 改成 auto，开启 x 轴滚动条
               rowKey='id'
               size='small'

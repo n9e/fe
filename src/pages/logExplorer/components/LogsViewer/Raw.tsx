@@ -425,7 +425,7 @@ function Raw(props: Props) {
   return (
     <div className='min-h-0 h-full' ref={drawerRef}>
       <Table
-        className='n9e-event-logs-table n9e-log-explorer-raw-table'
+        className='n9e-event-logs-table n9e-log-explorer-raw-table fc-table-standard'
         rowKey={id_key}
         size='small'
         pagination={false}

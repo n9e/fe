@@ -141,7 +141,7 @@ export default function Servers() {
       <div className='n9e'>
         {profile.admin ? (
           <div>
-            <Table bordered size='small' rowKey='id' tableLayout='fixed' loading={loading} dataSource={data} pagination={false} columns={columns} />
+            <Table className='fc-table-standard' bordered size='small' rowKey='id' tableLayout='fixed' loading={loading} dataSource={data} pagination={false} columns={columns} />
           </div>
         ) : (
           <div>{t('unauthorized')}</div>

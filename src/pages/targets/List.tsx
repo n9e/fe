@@ -630,7 +630,7 @@ export default function List(props: IProps) {
         </Space>
       </div>
       <Table
-        className='mt-2 n9e-hosts-table'
+        className='mt-2 n9e-hosts-table fc-table-standard'
         rowKey='id'
         columns={columns}
         size='small'
