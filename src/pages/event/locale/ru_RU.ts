@@ -97,6 +97,8 @@ const ru_RU = {
     query_label: 'Условия запроса',
     trigger_label: 'Условия предупреждения',
     current_anomaly_time: 'Время текущей аномалии',
+    ai_analysis: 'AI Анализ',
+    ai_analysis_content: 'Анализировать причину этого события предупреждения',
   },
 
   sharing_link: {

@@ -25,6 +25,7 @@ export interface IAiChatActionParam {
 }
 
 export interface IAiChatAction {
+  content?: string;
   key?: string;
   param?: IAiChatActionParam;
 }
@@ -133,6 +134,7 @@ export interface IAiChatProps {
   queryAction?: IAiChatAction;
   welcomeSlot?: React.ReactNode;
   promptList?: string[];
+  initialMessage?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;
   onError?: (error: Error) => void;

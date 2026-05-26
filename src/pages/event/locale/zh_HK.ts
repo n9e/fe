@@ -97,6 +97,8 @@ const zh_HK = {
     query_label: '查詢條件',
     trigger_label: '告警條件',
     current_anomaly_time: '本次異常時間',
+    ai_analysis: 'AI 分析',
+    ai_analysis_content: '分析這條告警事件的根因',
   },
 
   sharing_link: {

@@ -47,11 +47,12 @@ function AiButtonContent(props: {
   queryPageFrom?: IAiChatPageInfo;
   queryAction?: IAiChatAction;
   promptList?: string[];
+  initialMessage?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   children?: React.ReactNode;
 }) {
   const { openAiChat } = useAiChatContext();
-  const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent, children } = props;
+  const { size, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, children } = props;
 
   return (
     <Button
@@ -62,6 +63,7 @@ function AiButtonContent(props: {
           queryPageFrom,
           queryAction,
           promptList,
+          initialMessage,
           onExecuteQueryForQueryContent,
         });
       }}
@@ -76,10 +78,11 @@ export function AiButton(props: {
   queryPageFrom?: IAiChatPageInfo;
   queryAction?: IAiChatAction;
   promptList?: string[];
+  initialMessage?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   children?: React.ReactNode;
 }) {
-  const { size, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent, children } = props;
+  const { size, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, children } = props;
 
   const [aiChatVisible, setAiChatVisible] = useAiChatVisible();
   const [aiHandleEvent, setAiHandleEvent] = useAiHandleEvent();

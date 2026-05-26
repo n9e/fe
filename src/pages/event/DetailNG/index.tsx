@@ -108,13 +108,17 @@ export default function DetailNG(props: Props) {
               <AiButton
                 size='small'
                 queryAction={{
+                  content: t('detail.ai_analysis_content'),
                   key: 'troubleshooting',
                   param: {
                     event_id: eventDetail.id,
                   },
                 }}
                 promptList={getAlertEventDetailPrompts(i18n.language)}
-              />
+                initialMessage={getAlertEventDetailPrompts(i18n.language)[0]}
+              >
+                {t('detail.ai_analysis')}
+              </AiButton>
             </Space>
           );
         }
