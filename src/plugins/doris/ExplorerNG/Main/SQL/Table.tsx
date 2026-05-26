@@ -309,6 +309,7 @@ export default function Table(props: IProps) {
               showPageLoadMode
               showLogMode={false}
               linesColumnFormat={(val) => {
+                if (pageLoadMode === 'infiniteScroll') return val;
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
             />

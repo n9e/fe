@@ -31,9 +31,12 @@ interface IAiChatContextValue {
   setOnExecuteQueryForQueryContent: React.Dispatch<React.SetStateAction<AiChatExecuteQueryForQueryContent | undefined>>;
   setQueryPageFrom: React.Dispatch<React.SetStateAction<IAiChatPageInfo | undefined>>;
   setQueryAction: React.Dispatch<React.SetStateAction<IAiChatAction | undefined>>;
+  initialMessage?: string;
+  setInitialMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
   openAiChat: (options?: {
     mode?: AiChatMode;
     promptList?: string[];
+    initialMessage?: string;
     onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
     queryPageFrom?: IAiChatPageInfo;
     queryAction?: IAiChatAction;
@@ -51,12 +54,14 @@ export const AiChatContext = React.createContext<IAiChatContextValue>({
   visible: false,
   mode: 'drawer',
   promptList: undefined,
+  initialMessage: undefined,
   onExecuteQueryForQueryContent: undefined,
   queryPageFrom: undefined,
   queryAction: undefined,
   setVisible: noop as React.Dispatch<React.SetStateAction<boolean>>,
   setMode: noop as React.Dispatch<React.SetStateAction<AiChatMode>>,
   setPromptList: noop as React.Dispatch<React.SetStateAction<string[] | undefined>>,
+  setInitialMessage: noop as React.Dispatch<React.SetStateAction<string | undefined>>,
   setOnExecuteQueryForQueryContent: noop as React.Dispatch<React.SetStateAction<AiChatExecuteQueryForQueryContent | undefined>>,
   setQueryPageFrom: noop as React.Dispatch<React.SetStateAction<IAiChatPageInfo | undefined>>,
   setQueryAction: noop as React.Dispatch<React.SetStateAction<IAiChatAction | undefined>>,
@@ -69,6 +74,7 @@ export function AiChatProvider(props: IAiChatProviderProps) {
   const [visible, setVisible] = React.useState(false);
   const [mode, setMode] = React.useState<AiChatMode>(getInitialMode);
   const [promptList, setPromptList] = React.useState<string[] | undefined>(undefined);
+  const [initialMessage, setInitialMessage] = React.useState<string | undefined>(undefined);
   const [onExecuteQueryForQueryContent, setOnExecuteQueryForQueryContent] = React.useState<AiChatExecuteQueryForQueryContent | undefined>(undefined);
   const [queryPageFrom, setQueryPageFrom] = React.useState<IAiChatPageInfo | undefined>(undefined);
   const [queryAction, setQueryAction] = React.useState<IAiChatAction | undefined>(undefined);
@@ -85,6 +91,7 @@ export function AiChatProvider(props: IAiChatProviderProps) {
     (options?: {
       mode?: AiChatMode;
       promptList?: string[];
+      initialMessage?: string;
       onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
       queryPageFrom?: IAiChatPageInfo;
       queryAction?: IAiChatAction;
@@ -105,9 +112,10 @@ export function AiChatProvider(props: IAiChatProviderProps) {
         setQueryAction(undefined);
       }
       setPromptList(options?.promptList);
+      setInitialMessage(options?.initialMessage);
       setVisible(true);
     },
-    [setMode, setOnExecuteQueryForQueryContent, setQueryPageFrom, setQueryAction, setPromptList, setVisible],
+    [setMode, setOnExecuteQueryForQueryContent, setQueryPageFrom, setQueryAction, setPromptList, setInitialMessage, setVisible],
   );
 
   const closeAiChat = React.useCallback(() => {
@@ -119,19 +127,21 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       visible,
       mode,
       promptList,
+      initialMessage,
       onExecuteQueryForQueryContent,
       queryPageFrom,
       queryAction,
       setVisible,
       setMode,
       setPromptList,
+      setInitialMessage,
       setOnExecuteQueryForQueryContent,
       setQueryPageFrom,
       setQueryAction,
       openAiChat,
       closeAiChat,
     }),
-    [visible, mode, promptList, onExecuteQueryForQueryContent, queryPageFrom, queryAction, openAiChat, closeAiChat],
+    [visible, mode, promptList, initialMessage, onExecuteQueryForQueryContent, queryPageFrom, queryAction, openAiChat, closeAiChat],
   );
 
   return <AiChatContext.Provider value={value}>{children}</AiChatContext.Provider>;

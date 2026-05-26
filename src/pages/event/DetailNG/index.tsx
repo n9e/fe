@@ -114,7 +114,10 @@ export default function DetailNG(props: Props) {
                   },
                 }}
                 promptList={getAlertEventDetailPrompts(i18n.language)}
-              />
+                initialMessage={getAlertEventDetailPrompts(i18n.language)[0]}
+              >
+                {t('detail.ai_analysis')}
+              </AiButton>
             </Space>
           );
         }

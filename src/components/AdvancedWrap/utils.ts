@@ -178,3 +178,14 @@ export const getGraphProByCate = (cate: string) => {
   const currentCate = _.find(allCates, { value: cate });
   return currentCate?.graphPro;
 };
+
+export const getPrimaryTypeByCate = (cate: string): 'metric' | 'logging' | undefined => {
+  const currentCate = _.find(allCates, { value: cate });
+  if (currentCate) {
+    const primaryType = currentCate.type[0];
+    if (primaryType === 'metric' || primaryType === 'logging') {
+      return primaryType;
+    }
+  }
+  return undefined;
+};

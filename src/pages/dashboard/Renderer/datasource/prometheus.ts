@@ -89,7 +89,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
         });
       } else {
         const realExpr = replaceTemplateVariables(target.expr, {
-          range: target.time,
+          range: target.time ?? queryOptionsTime ?? time,
           step,
           scopedVars,
         });

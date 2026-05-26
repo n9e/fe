@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { setDefaultDatasourceValue } from '@/utils';
-import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
-import { allCates, getGraphProByCate } from '@/components/AdvancedWrap/utils';
+import { IS_PLUS } from '@/utils/constant';
+import { allCates, getGraphProByCate, getPrimaryTypeByCate } from '@/components/AdvancedWrap/utils';
 import ViewSelect, { ModalState } from '@/components/ViewSelect';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import omitUndefinedDeep from '@/pages/logExplorer/utils/omitUndefinedDeep';
@@ -38,6 +38,7 @@ export default function Explorer(props: Props) {
   const datasourceValue = Form.useWatch('datasourceValue', form);
 
   const cateGraphPro = getGraphProByCate(datasourceCate);
+  const primaryType = getPrimaryTypeByCate(datasourceCate);
 
   // 统一维护 ViewSelect 的状态，这样 ViewSelect 组件本身就是一个无状态组件
   const [viewSelectValue, setViewSelectValue] = useState<number>();
@@ -120,7 +121,6 @@ export default function Explorer(props: Props) {
             modalState={viewModalState}
             setModalState={setViewModalState}
             // 其他 props
-            disabled={!_.includes(ENABLED_VIEW_CATES, DatasourceCateEnum.doris)}
             page={location.pathname}
             getFilterValues={() => {
               const formValues = form.getFieldsValue();
@@ -214,6 +214,7 @@ export default function Explorer(props: Props) {
         >
           <DatasourceSelectV3
             className='w-full'
+            type={primaryType}
             datasourceCateList={datasourceCateOptions}
             ajustDatasourceList={(list) => {
               return _.filter(list, (item) => {

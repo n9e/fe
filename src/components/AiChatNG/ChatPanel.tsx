@@ -16,7 +16,7 @@ const POLLING_INTERVAL = 3000;
 
 export default function ChatPanel(props: IAiChatProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { placeholder, chatId, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent, onChatChange, onError, welcomeSlot } = props;
+  const { placeholder, chatId, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, onChatChange, onError, welcomeSlot } = props;
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -194,6 +194,8 @@ export default function ChatPanel(props: IAiChatProps) {
     };
   }, [cleanupPolling, stopStream]);
 
+  const initialMessageSentRef = useRef(false);
+
   const createNewChat = useCallback(async () => {
     try {
       const chat = await createChat(queryPageFrom);
@@ -278,6 +280,13 @@ export default function ChatPanel(props: IAiChatProps) {
     },
     [activeChat, chatId, createNewChat, handleError, inputValue, mergeMessage, onChatChange, queryAction, queryPageFrom, startPolling, submitting, syncMessageDetail, t],
   );
+
+  useEffect(() => {
+    if (initialMessage && !initialMessageSentRef.current) {
+      initialMessageSentRef.current = true;
+      sendUserMessage(undefined, initialMessage);
+    }
+  }, [initialMessage, sendUserMessage]);
 
   const handleStop = useCallback(async () => {
     if (!streamingLocator) return;

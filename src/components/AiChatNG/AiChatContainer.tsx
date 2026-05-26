@@ -14,7 +14,7 @@ interface IAiChatContainerProps {
 
 export default function AiChatContainer(props: IAiChatContainerProps) {
   const { drawerWidth = 900, floatingStorageKey = 'ai-chat-floating-panel' } = props;
-  const { visible, mode, closeAiChat, queryPageFrom, queryAction, promptList, onExecuteQueryForQueryContent } = useAiChatContext();
+  const { visible, mode, closeAiChat, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent } = useAiChatContext();
 
   const DRAWER_MIN_WIDTH = 440;
   const DRAWER_WIDTH_STORAGE_KEY = 'ai-chat-drawer-width';
@@ -149,6 +149,7 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
           queryPageFrom={ensuredPageFrom}
           queryAction={queryAction}
           promptList={promptList}
+          initialMessage={initialMessage}
           onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
         />
       )}

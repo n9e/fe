@@ -97,6 +97,7 @@ const ja_JP = {
     query_label: 'クエリ条件',
     trigger_label: 'アラート条件',
     current_anomaly_time: '今回の異常時間',
+    ai_analysis: 'AI 解析',
   },
 
   sharing_link: {
