@@ -43,7 +43,7 @@ export default async function mysqlQuery(options: IOptions): Promise<Result> {
       }
       const query: any = target.query || {};
       if (!query[QUERY_KEY]) return;
-      const queryStr = replaceTemplateVariables(query[QUERY_KEY]);
+      const queryStr = replaceTemplateVariables(query[QUERY_KEY], { range: queryOptionsTime ?? time });
       const mode = query.mode;
       if (target.__mode__ === '__expr__') {
         exps.push({
