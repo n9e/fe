@@ -68,13 +68,13 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
   const indexPatterns = hasIndexPattern ? await getESIndexPatterns(datasourceValue) : [];
   if (targets && datasourceValue && !isInvalid) {
     _.forEach(targets, (target) => {
+      const rangeForInterval = queryOptionsTime ? parseRange(queryOptionsTime) : parsedRange;
       if (queryOptionsTime) {
-        const parsedRange = parseRange(queryOptionsTime);
-        start = moment(parsedRange.start).valueOf();
-        end = moment(parsedRange.end).valueOf();
+        start = moment(rangeForInterval.start).valueOf();
+        end = moment(rangeForInterval.end).valueOf();
       }
       const query: any = target.query || {};
-      const filter = replaceTemplateVariables(query.filter);
+      const filter = replaceTemplateVariables(query.filter, { range: queryOptionsTime ?? time });
       if (target.__mode__ === '__expr__') {
         exps.push({
           ref: target.refId,
@@ -104,20 +104,14 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               values: query?.values,
               group_by: query.group_by,
               date_field: query.date_field,
-              interval: `${normalizeInterval(parsedRange, query.interval, query.interval_unit)}s`,
+              interval: `${normalizeInterval(rangeForInterval, query.interval, query.interval_unit)}s`,
               start,
               end,
             });
           } else {
-            if (queryOptionsTime) {
-              const parsedRange = parseRange(queryOptionsTime);
-              start = moment(parsedRange.start).unix();
-              end = moment(parsedRange.end).unix();
-            } else {
-              const parsedRange = parseRange(time);
-              start = moment(parsedRange.start).unix();
-              end = moment(parsedRange.end).unix();
-            }
+            const parsedRange = rangeForInterval;
+            start = moment(parsedRange.start).unix();
+            end = moment(parsedRange.end).unix();
             _.map(query?.values, (item) => {
               batchDsParams.push({
                 ref: target.refId,
@@ -182,6 +176,13 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
           };
         });
       } else {
+        _.forEach(batchDsParams, (item) => {
+          if (item.query?.index_type === 'index_pattern') {
+            const currentIndexPattern = _.find(indexPatterns, { id: item.query?.index_pattern });
+            item.query.index = currentIndexPattern?.name;
+            item.query.date_field = currentIndexPattern?.time_field;
+          }
+        });
         dsRes = await fetchHistoryRangeBatch2({ queries: batchDsParams, exps }, signalKey);
         const dat = dsRes.dat || [];
         for (let i = 0; i < dat?.length; i++) {
