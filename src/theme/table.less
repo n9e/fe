@@ -1,4 +1,4 @@
-// 2026-05 table 设计规范：排序 icon 默认隐藏，表头 hover 时展示 lucide ArrowDownUp
+// 2026-05 table 设计规范：未排序使用 ArrowDownUp，升序/降序分别使用 MoveUp/MoveDown
 .ant-table-thead > tr > th.ant-table-column-has-sorters {
   .ant-table-column-sorters {
     display: inline-flex;
@@ -56,5 +56,15 @@
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
+  }
+
+  .ant-table-column-sorter:has(.ant-table-column-sorter-up.active) .ant-table-column-sorter-inner::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 6L12 2L16 6'/%3E%3Cpath d='M12 2V22'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 6L12 2L16 6'/%3E%3Cpath d='M12 2V22'/%3E%3C/svg%3E");
+  }
+
+  .ant-table-column-sorter:has(.ant-table-column-sorter-down.active) .ant-table-column-sorter-inner::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 18L12 22L16 18'/%3E%3Cpath d='M12 2V22'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 18L12 22L16 18'/%3E%3Cpath d='M12 2V22'/%3E%3C/svg%3E");
   }
 }
