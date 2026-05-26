@@ -446,7 +446,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       </div>
 
       <Table
-        className='mt-2'
+        className='mt-2 fc-table-standard'
         size='small'
         rowKey='id'
         pagination={{
