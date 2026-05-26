@@ -99,6 +99,7 @@ const en_US = {
     query_label: 'Query',
     trigger_label: 'Trigger',
     current_anomaly_time: 'Current Anomaly Time',
+    ai_analysis: 'AI Analysis',
   },
 
   sharing_link: {

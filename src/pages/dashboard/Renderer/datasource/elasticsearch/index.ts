@@ -176,6 +176,13 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
           };
         });
       } else {
+        _.forEach(batchDsParams, (item) => {
+          if (item.query?.index_type === 'index_pattern') {
+            const currentIndexPattern = _.find(indexPatterns, { id: item.query?.index_pattern });
+            item.query.index = currentIndexPattern?.name;
+            item.query.date_field = currentIndexPattern?.time_field;
+          }
+        });
         dsRes = await fetchHistoryRangeBatch2({ queries: batchDsParams, exps }, signalKey);
         const dat = dsRes.dat || [];
         for (let i = 0; i < dat?.length; i++) {

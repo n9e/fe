@@ -87,6 +87,24 @@ export default function index(props: Props) {
     return getScalesXMinMax({ range, queryOptionsTime });
   }, [range, JSON.stringify(queryOptionsTime)]);
 
+  // 当 Y 轴为 log 刻度时，将 ≤ 0 的数据值转为 null，避免 uPlot 内部 log 计算产生 -Infinity/NaN 导致崩溃
+  const processedFrames = useMemo(() => {
+    if (custom.scaleDistribution?.type === 'log') {
+      const clone = _.cloneDeep(frames) as AlignedData;
+      for (let i = 1; i < clone.length; i++) {
+        const series = clone[i];
+        if (!series) continue;
+        for (let j = 0; j < series.length; j++) {
+          if (series[j] != null && series[j]! <= 0) {
+            series[j] = null;
+          }
+        }
+      }
+      return clone;
+    }
+    return frames;
+  }, [frames, custom.scaleDistribution?.type]);
+
   const uOptions: Options = useMemo(() => {
     const yRange = getScalesYRange({ panel });
     return {
@@ -298,10 +316,10 @@ export default function index(props: Props) {
     JSON.stringify(overrides),
     timezone,
   ]);
-  let data = frames;
+  let data = processedFrames;
 
   if (custom.stack === 'normal') {
-    const stackedDataAndBands = getStackedDataAndBands(frames);
+    const stackedDataAndBands = getStackedDataAndBands(processedFrames);
     const stackedData = stackedDataAndBands.data;
     uOptions.bands = stackedDataAndBands.bands;
     uOptions.series = _.map(uOptions.series, (s, i) => {
@@ -311,11 +329,11 @@ export default function index(props: Props) {
         n9e_internal: {
           // @ts-ignore
           ...s.n9e_internal,
-          values: frames[i], // 只用于堆叠图下保存原始数据
+          values: processedFrames[i], // 只用于堆叠图下保存原始数据
         },
       };
     });
-    data = _.concat([frames[0]], stackedData) as any;
+    data = _.concat([processedFrames[0]], stackedData) as any;
   }
 
   useEffect(() => {
