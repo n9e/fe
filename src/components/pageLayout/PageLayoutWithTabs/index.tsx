@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { ReactNode, useContext, useState, useEffect, useLayoutEffect } from 'react';
+import React, { ReactNode, useState, useEffect, useLayoutEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
@@ -22,13 +22,13 @@ import { Space, Button } from 'antd';
 import { RollbackOutlined, HistoryOutlined, GithubOutlined } from '@ant-design/icons';
 
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
-import { CommonStateContext } from '@/App';
 import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils';
 import { MenuMatchResult } from '@/components/SideMenu/types';
 import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
 
 import DocLink from './DocLink';
+import PageDocLink from './PageDocLink';
 import { TabMenu } from './TabMenu';
 import Version from '../Version';
 import HelpLink from '../HelpLink';
@@ -53,19 +53,14 @@ interface IPageLayoutProps {
   tabGroup?: string;
 }
 
-const DEFAULT_DOCUMENT_URL_ENT = '/docs/content/flashcat/overview/';
-const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/';
-
 const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
   const query = querystring.parse(location.search);
-  const { siteInfo } = useContext(CommonStateContext);
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = getCurrentMenuList();
-  const documentUrl = doc || siteInfo?.document_url || (IS_ENT ? DEFAULT_DOCUMENT_URL_ENT : DEFAULT_DOCUMENT_URL);
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
@@ -125,6 +120,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
+                  {doc && <PageDocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
@@ -138,7 +134,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     )}
                     <FlashAiButton />
                     {rightArea}
-                    <DocLink link={documentUrl} />
+                    <DocLink />
                     {!IS_ENT && !IS_PLUS && (
                       <Button className='text-hint text-[11px]' target='_blank' href='https://github.com/ccfos/nightingale/issues' size='small' icon={<GithubOutlined />}>
                         {t('submit_issue')}
