@@ -1,13 +1,13 @@
 jest.mock('@/components/IconFont', () => () => null);
 jest.mock('@/utils/constant', () => ({ IS_ENT: false }));
 
-import { getProductDocumentHref, PRODUCT_DOCUMENT_URL, PRODUCT_DOCUMENT_URL_ENT } from './DocLink';
+import { getProductDocumentHref } from './DocLink';
 
 describe('getProductDocumentHref', () => {
-  it('ignores page-specific document links and uses the product docs homepage', () => {
+  it('opens the provided page document link and keeps ENT links relative', () => {
     const pageDocumentUrl = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/';
 
-    expect(getProductDocumentHref(pageDocumentUrl, false)).toBe(PRODUCT_DOCUMENT_URL);
-    expect(getProductDocumentHref(pageDocumentUrl, true)).toBe(PRODUCT_DOCUMENT_URL_ENT);
+    expect(getProductDocumentHref(pageDocumentUrl, false)).toBe(pageDocumentUrl);
+    expect(getProductDocumentHref(pageDocumentUrl, true)).toBe('/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/');
   });
 });
