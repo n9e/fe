@@ -29,7 +29,7 @@ import { MenuMatchResult } from '@/components/SideMenu/types';
 import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
 
 import DocLink from './DocLink';
-import PageDocLink from './PageDocLink';
+import PageDocLink, { shouldShowPageDocLink } from './PageDocLink';
 import { TabMenu } from './TabMenu';
 import Version from '../Version';
 import HelpLink from '../HelpLink';
@@ -126,7 +126,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
-                  {doc && <PageDocLink link={doc} />}
+                  {shouldShowPageDocLink(doc) && <PageDocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
