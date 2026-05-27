@@ -4,8 +4,13 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
 
 export const PAGE_DOCUMENT_LABEL_KEY = 'common:document_title';
+
+export function shouldShowPageDocLink(documentPath: string | undefined, isEnt = IS_ENT): documentPath is string {
+  return isEnt && !!documentPath;
+}
 
 export function getPageDocumentDrawerOptions(documentPath: string, title: string, language: string, darkMode: boolean) {
   return {
