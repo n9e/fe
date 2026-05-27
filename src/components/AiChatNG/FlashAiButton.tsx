@@ -10,6 +10,7 @@ import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
 import { IAiChatPageInfo, IAiChatAction, AiChatExecuteQueryForQueryContent } from './types';
 import { useAiChatVisible, useAiExternalConfig, useAiHandleEvent, useParamsAiAction } from '../AiChat/utils/useHook';
+import { EPageType } from '../AiChat/config';
 
 function FlashAiButtonContent() {
   const { i18n } = useTranslation();
@@ -102,6 +103,7 @@ export function AiButton(props: {
             promptList,
           });
           setParamsAiAction({
+            page: EPageType.Custom,
             custom: {
               ...queryPageFrom,
               ...queryAction,
