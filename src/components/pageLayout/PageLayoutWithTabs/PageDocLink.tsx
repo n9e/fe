@@ -1,18 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button } from 'antd';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
-import { IS_ENT } from '@/utils/constant';
+import { CommonStateContext } from '@/App';
 
 export const PAGE_DOCUMENT_LABEL_KEY = 'common:document_title';
 
-export function getPageDocumentHref(pageDocumentUrl: string, isEnt = IS_ENT) {
-  return isEnt ? pageDocumentUrl.replace('https://flashcat.cloud', '') : pageDocumentUrl;
+export function getPageDocumentDrawerOptions(documentPath: string, title: string, language: string, darkMode: boolean) {
+  return {
+    darkMode,
+    documentPath,
+    language,
+    title,
+    type: 'iframe' as const,
+  };
 }
 
 export default function PageDocLink({ link }: { link: string }) {
-  const { t } = useTranslation();
-  const href = getPageDocumentHref(link);
+  const { t, i18n } = useTranslation();
+  const { darkMode } = useContext(CommonStateContext);
 
   return (
     <Button
@@ -20,9 +27,9 @@ export default function PageDocLink({ link }: { link: string }) {
       size='small'
       type='link'
       icon={<IconFont type='icon-ic_book_one' />}
-      href={href}
-      target='_blank'
-      rel='noopener'
+      onClick={() => {
+        DocumentDrawer(getPageDocumentDrawerOptions(link, t(PAGE_DOCUMENT_LABEL_KEY), i18n.language, darkMode));
+      }}
     >
       {t(PAGE_DOCUMENT_LABEL_KEY)}
     </Button>

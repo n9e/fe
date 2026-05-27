@@ -4,14 +4,11 @@ import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 import { IS_ENT } from '@/utils/constant';
 
-export const PRODUCT_DOCUMENT_URL_ENT = '/docs/content/flashcat/overview/';
-export const PRODUCT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/';
-
-export function getProductDocumentHref(_pageDocumentUrl?: string, isEnt = IS_ENT) {
-  return isEnt ? PRODUCT_DOCUMENT_URL_ENT : PRODUCT_DOCUMENT_URL;
+export function getProductDocumentHref(pageDocumentUrl: string, isEnt = IS_ENT) {
+  return isEnt ? pageDocumentUrl.replace('https://flashcat.cloud', '') : pageDocumentUrl;
 }
 
-export default function DocLink({ link }: { link?: string }) {
+export default function DocLink({ link }: { link: string }) {
   const { t } = useTranslation();
   const href = getProductDocumentHref(link);
 
