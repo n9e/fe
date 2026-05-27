@@ -529,7 +529,7 @@ export default function AlertRules(props: Props) {
         </Space>
       </div>
       <Table
-        className='mt-2 fc-table-standard'
+        className='mt-2'
         size='small'
         rowKey='id'
         tableLayout='auto'
