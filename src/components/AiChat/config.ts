@@ -17,6 +17,8 @@ export enum EPageType {
   AlertActive = 'active_alert',
   SloList = 'slo_list',
   SloDetail = 'slo_detail',
+  Landing = 'landing',
+  Custom = 'custom', // 外部业务传进来参数都用这个类型
 }
 
 export const aiChatWhiteList = [
