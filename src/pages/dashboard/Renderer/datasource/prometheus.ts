@@ -142,18 +142,9 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
               refId: batchQueryParams[i]?.refId,
             };
             const target = _.find(targets, (t) => t.refId === item.refId);
+            const queryParam = _.find(batchQueryParams, { refId: item.refId });
+            const step = !spanNulls ? queryParam?.step ?? 15 : 15;
             _.forEach(item.result, (serie) => {
-              let step = 15;
-              if (!spanNulls) {
-                if (target) {
-                  step = getRealStep({
-                    time: queryOptionsTime || time,
-                    maxDataPoints,
-                    panelWidth,
-                    minStep: target.step,
-                  });
-                }
-              }
               series.push({
                 id: _.uniqueId('series_'),
                 refId: item.refId,
@@ -170,19 +161,9 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           for (let i = 0; i < dat?.length; i++) {
             const refId = dat[i]?.ref;
             const expr = _.find(batchQueryParams, { ref: dat[i]?.ref })?.ql;
-            const target = _.find(targets, (t) => t.refId === refId);
+            const queryParam = _.find(batchQueryParams, { ref: refId });
+            const step = !spanNulls ? queryParam?.query?.step ?? 15 : 15;
             _.forEach(dat[i]?.data, (serie) => {
-              let step = 15;
-              if (!spanNulls) {
-                if (target) {
-                  step = getRealStep({
-                    time: queryOptionsTime || time,
-                    maxDataPoints,
-                    panelWidth,
-                    minStep: target.step,
-                  });
-                }
-              }
               const isExp = _.find(exps, (exp) => exp.ref === serie.ref);
               const currentTarget = _.find(targets, (target) => target.refId === serie.ref);
               if (!currentTarget?.hide) {
