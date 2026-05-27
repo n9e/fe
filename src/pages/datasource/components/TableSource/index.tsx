@@ -285,7 +285,7 @@ const TableSource = (props: IPropsType) => {
     <>
       <Table
         size='small'
-        className='settings-data-source-list fc-table-standard'
+        className='settings-data-source-list'
         rowKey='id'
         dataSource={_.filter(tableData, (item) => {
           if (searchVal) {

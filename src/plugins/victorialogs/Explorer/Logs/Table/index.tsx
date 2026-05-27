@@ -36,7 +36,6 @@ function Table(
 
   return (
     <AntTable
-      className='fc-table-standard'
       size='small'
       tableLayout='auto'
       showSorterTooltip={false}

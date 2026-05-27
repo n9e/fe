@@ -512,7 +512,7 @@ function TableCpt(props: IProps, ref: any) {
   return (
     <div className='renderer-table-container' ref={eleRef}>
       <div className='renderer-table-container-box'>
-        <Table className='fc-table-standard'
+        <Table
           rowKey='id'
           size='small'
           getPopupContainer={() => document.body}

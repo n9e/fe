@@ -242,7 +242,7 @@ export default function Raw(props: Props) {
 
   return (
     <Table
-      className='n9e-event-logs-table fc-table-standard'
+      className='n9e-event-logs-table'
       rowKey='___id___'
       size='small'
       pagination={false}
