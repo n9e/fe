@@ -107,7 +107,7 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       }
       setQueryPageFrom(ensuredPageFrom);
       if (options?.queryAction !== undefined) {
-        setQueryAction(options.queryAction);
+        // setQueryAction(options.queryAction);
       } else {
         setQueryAction(undefined);
       }
