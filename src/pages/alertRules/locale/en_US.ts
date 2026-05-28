@@ -288,8 +288,8 @@ const en_US = {
       label: 'Recovery configuration',
       judge_type: {
         0: 'No data is considered recovered',
-        1: 'No data is not considered recovered',
-        2: 'The result meets the condition to be considered recovered',
+        1: 'Recover only when data exists and trigger condition is not met',
+        2: 'Recover only when result meets the custom condition',
       },
       recover_exp_placeholder: 'e.g. $A < 50',
     },

@@ -223,6 +223,7 @@ export default function index(props: Props) {
                   };
                   executeQuery();
                 }}
+                showMillisecond
               />
             </Form.Item>
           </Col>

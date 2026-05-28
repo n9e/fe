@@ -4,7 +4,7 @@ const en_US = {
   end: 'End time',
   history: 'Recently used absolute ranges',
   quickSearchPlaceholder: 'Search quick options',
-  ok: 'Ok',
+  ok: 'OK',
   invalid: 'invalid date',
   spans: {
     second: 'second',

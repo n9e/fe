@@ -38,7 +38,8 @@ export { AutoRefresh };
 
 export default function index(props: ITimeRangePickerProps) {
   const { rangePickerShowSecond } = useContext(CommonStateContext);
-  const { localKey, dateFormat = rangePickerShowSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm', onChange } = props;
+  const defaultDateFormat = props.showMillisecond ? 'YYYY-MM-DD HH:mm:ss.SSS' : rangePickerShowSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm';
+  const { localKey, dateFormat = defaultDateFormat, onChange } = props;
   const [globalVar] = useGlobalVar();
 
   return (
@@ -46,6 +47,7 @@ export default function index(props: ITimeRangePickerProps) {
       limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
       showSecond={rangePickerShowSecond}
       {...props}
+      dateFormat={dateFormat}
       onChange={(val) => {
         if (localKey) {
           localStorage.setItem(
