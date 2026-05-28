@@ -38,6 +38,13 @@ function Refresh(props: IProps, ref) {
   const [visible, setVisible] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | undefined>();
   const removeRef = useRef(false);
+  // 用 ref 保存最新的 onRefresh，避免 effect 因函数引用变化而重置 timer
+  const onRefreshRef = useRef(props.onRefresh);
+
+  // 每次渲染都同步最新的 onRefresh 到 ref
+  useEffect(() => {
+    onRefreshRef.current = props.onRefresh;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -51,7 +58,7 @@ function Refresh(props: IProps, ref) {
         if (removeRef.current || cancelled) return;
         intervalRef.current = setTimeout(() => {
           if (removeRef.current || cancelled) return;
-          props.onRefresh();
+          onRefreshRef.current();
           loop();
         }, intervalSeconds * 1000);
       };
@@ -65,7 +72,7 @@ function Refresh(props: IProps, ref) {
         intervalRef.current = undefined;
       }
     };
-  }, [intervalSeconds, props.onRefresh]);
+  }, [intervalSeconds]); // 移除 props.onRefresh 依赖，改用 ref 避免 timer 被意外重置
 
   useEffect(() => {
     return () => {
