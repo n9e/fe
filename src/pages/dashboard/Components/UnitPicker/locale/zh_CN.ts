@@ -3,6 +3,7 @@ const zh_CN = {
     none: '原始值, 不做单位转换',
     sishort: '使用 SI 标准换算, 比如 1K=1000',
     count: '计数单位',
+    short: '短数字格式，中文下使用万/亿，比如 10000 渲染为 1万',
     bitsSI: '原始数据单位是 bit, 使用 SI 标准换算, 比如 1K=1000',
     bytesSI: '原始数据单位是 byte, 使用 SI 标准换算, 比如 1K=1000',
     bitsIEC: '原始数据单位是 bit, 使用 IEC 标准换算, 比如 1K=1024',
