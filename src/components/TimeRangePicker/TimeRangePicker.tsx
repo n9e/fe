@@ -99,8 +99,40 @@ const AbsoluteTimePicker = ({
     start: t('start'),
     end: t('end'),
   };
+  const pickerLocale = localeMap[i18n.language] || en_US;
+  const nowLabel = pickerLocale?.now || 'Now';
+  const okLabel = pickerLocale?.ok || 'OK';
   const val = moment(range ? range[type] : undefined, true);
   const [visible, setVisible] = useState(false);
+  const [tempValue, setTempValue] = useState<Moment | undefined>(val.isValid() ? val : undefined);
+
+  useEffect(() => {
+    if (visible) {
+      setTempValue(val.isValid() ? val : undefined);
+    }
+  }, [visible, range, type]);
+
+  const confirmPanelValue = () => {
+    if (!tempValue || !tempValue.isValid()) {
+      return;
+    }
+    const newRange = {
+      ...(range || {}),
+      [type]: tempValue,
+    };
+    if (type === 'start' && !moment.isMoment(newRange.end)) {
+      newRange.end = moment(newRange.start).endOf('day');
+    }
+    if (type === 'end' && !moment.isMoment(newRange.start)) {
+      newRange.start = moment(newRange.end).startOf('day');
+    }
+    setRangeStatus({
+      ...rangeStatus,
+      [type]: undefined,
+    });
+    setRange(newRange as IRawTimeRange);
+    setVisible(false);
+  };
 
   return (
     <div className='mb-2'>
@@ -151,7 +183,8 @@ const AbsoluteTimePicker = ({
             <PickerPanel
               prefixCls='ant-picker'
               generateConfig={momentGenerateConfig}
-              locale={localeMap[i18n.language] || en_US}
+              locale={pickerLocale}
+              showNow={false}
               showTime={{
                 defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
                 showSecond,
@@ -165,24 +198,31 @@ const AbsoluteTimePicker = ({
                 }
                 return false;
               }}
-              value={val.isValid() ? val : undefined}
+              value={tempValue}
               onChange={(value) => {
-                const newRange = {
-                  ...(range || {}),
-                  [type]: value,
-                };
-                if (type === 'start' && !moment.isMoment(newRange.end)) {
-                  newRange.end = moment(newRange.start).endOf('day');
-                }
-                if (type === 'end' && !moment.isMoment(newRange.start)) {
-                  newRange.start = moment(newRange.end).startOf('day');
-                }
-                setRange(newRange as IRawTimeRange);
+                setTempValue(value);
               }}
+              renderExtraFooter={() => (
+                <div className='flex items-center justify-between'>
+                  <a
+                    onClick={() => {
+                      setTempValue(moment());
+                    }}
+                  >
+                    {nowLabel}
+                  </a>
+                  <Button type='primary' size='small' onClick={confirmPanelValue}>
+                    {okLabel}
+                  </Button>
+                </div>
+              )}
             />
           }
           visible={visible}
           onVisibleChange={(v) => {
+            if (v) {
+              setTempValue(val.isValid() ? val : undefined);
+            }
             setVisible(v);
           }}
         >
