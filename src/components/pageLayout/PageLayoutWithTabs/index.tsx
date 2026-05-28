@@ -28,7 +28,8 @@ import { findMenuByPath, getCurrentMenuList } from '@/components/SideMenu/utils'
 import { MenuMatchResult } from '@/components/SideMenu/types';
 import FlashAiButton from '@/components/AiChatNG/FlashAiButton';
 
-import DocLink from './DocLink';
+import DocLink, { getProductDocumentLink } from './DocLink';
+import PageDocLink, { shouldShowPageDocLink } from './PageDocLink';
 import { TabMenu } from './TabMenu';
 import Version from '../Version';
 import HelpLink from '../HelpLink';
@@ -50,13 +51,11 @@ interface IPageLayoutProps {
   showBack?: Boolean;
   backPath?: string;
   doc?: string;
+  productDocLink?: string;
   tabGroup?: string;
 }
 
-const DEFAULT_DOCUMENT_URL_ENT = '/docs/content/flashcat/overview/';
-const DEFAULT_DOCUMENT_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/';
-
-const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, tabGroup }) => {
+const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, productDocLink, tabGroup }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
@@ -65,7 +64,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
   const embed = localStorage.getItem('embed') === '1' && window.self !== window.top;
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = getCurrentMenuList();
-  const documentUrl = doc || siteInfo?.document_url || (IS_ENT ? DEFAULT_DOCUMENT_URL_ENT : DEFAULT_DOCUMENT_URL);
+  const documentUrl = getProductDocumentLink({ productDocLink, doc, siteDocumentUrl: siteInfo?.document_url });
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
@@ -125,6 +124,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
+                  {shouldShowPageDocLink(doc) && <PageDocLink link={doc} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>

@@ -46,6 +46,9 @@ const ja_JP = {
     quick_view_ratio: '割合',
   },
   empty_value_not_supported_tip: '空の値の検索はサポートされていません',
+  unsupported_datasource_type: 'サポートされていないデータソースタイプは表示できません: {{type}}',
+  no_supported_datasource_types_title: '利用可能なデータソースタイプがありません',
+  no_supported_datasource_types_desc: '<a>データソース管理</a>ページで設定するか、管理者に連絡してください。現在サポートされているデータソースタイプ: {{types}}。',
   field_tip: 'クリックして統計情報を表示',
   field_value_statistic: {
     view_statistic: '統計値を表示',
