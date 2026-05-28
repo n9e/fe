@@ -16,6 +16,7 @@
  */
 import _ from 'lodash';
 import moment from 'moment';
+import i18next from 'i18next';
 import { getUnitSymbol, getUnitFn } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { utilValMap } from '../config';
 import * as byteConverter from './byteConverter';
@@ -106,6 +107,21 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         type: 'si',
         decimals,
       });
+    }
+    if (unit === 'short') {
+      const lang = i18next.language;
+      const intlLocale = lang === 'zh_CN' ? 'zh-CN' : 'en-US';
+      const text = new Intl.NumberFormat(intlLocale, {
+        notation: 'compact',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: decimals,
+      }).format(valNum);
+      return {
+        value: valNum,
+        unit: '',
+        text,
+        stat: valNum,
+      };
     }
     if (unit === 'none') {
       const rounded = typeof val === 'number' ? _.round(val, decimals) : val;
