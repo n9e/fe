@@ -10,6 +10,7 @@ import {
   IAiChatSendMessageRequest,
   IAiChatSendMessageResponse,
 } from './types';
+import _ from 'lodash';
 
 const apiPrefix = IS_ENT ? '/api/fc-model/assistant' : '/api/n9e/assistant';
 const dataPathName = IS_ENT ? 'data' : 'dat';
@@ -34,24 +35,15 @@ export const deleteChat = (chatId: string): Promise<void> => {
 };
 
 export const sendMessage = (data: IAiChatSendMessageRequest): Promise<IAiChatSendMessageResponse> => {
-  // 非首次会话发送消息时不再传 action.key，避免覆盖后端的会话语义推断
-  const shouldClearActionKey = !!data.chat_id && !!data.query.action && !data.query.action.key;
-  const payload: IAiChatSendMessageRequest = shouldClearActionKey
-    ? {
-        ...data,
-        query: {
-          ...data.query,
-          action: {
-            ...data.query.action,
-            key: '',
-          },
-        },
-      }
-    : data;
-
   return request(`${apiPrefix}/message/new`, {
     method: RequestMethod.Post,
-    data: payload,
+    data: {
+      ...data,
+      query: {
+        ...data.query,
+        action: _.omit(data.query.action, 'key'), // 不再需要传入 action key
+      },
+    },
   }).then((res) => res?.[dataPathName]);
 };
 
