@@ -639,12 +639,12 @@ export default function index(props: Props) {
                 if (_.isString(val)) {
                   const parsedTime = moment(val);
                   if (parsedTime.isValid()) {
-                    return parsedTime.format('YYYY-MM-DD HH:mm:ss');
+                    return parsedTime.format('YYYY-MM-DD HH:mm:ss.SSS');
                   }
                 } else if (_.isNumber(val)) {
                   const parsedTime = moment(val);
                   if (parsedTime.isValid()) {
-                    return parsedTime.format('YYYY-MM-DD HH:mm:ss');
+                    return parsedTime.format('YYYY-MM-DD HH:mm:ss.SSS');
                   }
                 }
                 return val as string;
