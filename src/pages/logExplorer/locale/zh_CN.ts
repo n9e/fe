@@ -46,6 +46,9 @@ const zh_CN = {
     quick_view_ratio: '占比',
   },
   empty_value_not_supported_tip: '暂不支持对空值做检索',
+  unsupported_datasource_type: '无法渲染不支持的数据源类型：{{type}}',
+  no_supported_datasource_types_title: '没有可用的数据源类型',
+  no_supported_datasource_types_desc: '可前往<a>数据源管理</a>页面配置或联系管理员配置，目前支持的数据源类型（{{types}}），',
   field_tip: '点击查看统计信息',
   field_value_statistic: {
     view_statistic: '查看统计值',
