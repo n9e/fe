@@ -46,6 +46,10 @@ const ru_RU = {
     quick_view_ratio: 'Процент',
   },
   empty_value_not_supported_tip: 'Поиск пустых значений не поддерживается',
+  unsupported_datasource_type: 'Невозможно отобразить неподдерживаемый тип источника данных: {{type}}',
+  no_supported_datasource_types_title: 'Нет доступного типа источника данных',
+  no_supported_datasource_types_desc:
+    'Вы можете перейти на страницу <a>Управления источниками данных</a> для настройки или обратиться к администратору. Сейчас поддерживаются следующие типы источников данных: {{types}}.',
   field_tip: 'Нажмите, чтобы просмотреть статистику',
   field_value_statistic: {
     view_statistic: 'Просмотреть таблицу',

@@ -46,6 +46,9 @@ const zh_HK = {
     quick_view_ratio: '佔比',
   },
   empty_value_not_supported_tip: '暫不支持對空值做檢索',
+  unsupported_datasource_type: '無法渲染不支持的數據源類型：{{type}}',
+  no_supported_datasource_types_title: '沒有可用的數據源類型',
+  no_supported_datasource_types_desc: '可前往<a>數據源管理</a>頁面配置或聯繫管理員配置，目前支持的數據源類型（{{types}}）。',
   field_tip: '點擊查看統計信息',
   field_value_statistic: {
     view_statistic: '查看統計值',

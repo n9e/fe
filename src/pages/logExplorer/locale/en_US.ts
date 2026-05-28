@@ -46,6 +46,10 @@ const en_US = {
     quick_view_ratio: 'Ratio',
   },
   empty_value_not_supported_tip: 'Empty value search is not supported',
+  unsupported_datasource_type: 'Unable to render unsupported datasource type: {{type}}',
+  no_supported_datasource_types_title: 'No available datasource type',
+  no_supported_datasource_types_desc:
+    'You can go to the <a>Datasource Management</a> page to configure it, or contact an administrator. Currently supported datasource types: {{types}}.',
   field_tip: 'Click to view statistics',
   field_value_statistic: {
     view_statistic: 'View Table',
