@@ -263,6 +263,7 @@ export default function QueryBuilder(props: Props) {
                   options,
                 );
               }}
+              showMillisecond
             />
           </Form.Item>
         </Col>
