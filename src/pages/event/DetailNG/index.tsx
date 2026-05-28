@@ -108,6 +108,7 @@ export default function DetailNG(props: Props) {
               <AiButton
                 size='small'
                 queryAction={{
+                  content: t('detail.ai_analysis_content'),
                   key: 'troubleshooting',
                   param: {
                     event_id: eventDetail.id,

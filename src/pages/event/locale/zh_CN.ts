@@ -100,6 +100,7 @@ const zh_CN = {
     trigger_label: '告警条件',
     current_anomaly_time: '本次异常时间',
     ai_analysis: 'AI 分析',
+    ai_analysis_content: '分析这条告警事件的根因',
   },
 
   sharing_link: {

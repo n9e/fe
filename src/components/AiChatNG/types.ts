@@ -25,6 +25,7 @@ export interface IAiChatActionParam {
 }
 
 export interface IAiChatAction {
+  content?: string;
   key?: string;
   param?: IAiChatActionParam;
 }
