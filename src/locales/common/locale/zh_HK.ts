@@ -239,6 +239,7 @@ const zh_HK = {
   'task.tip.title': '提示資訊',
   'task.tip.content': '如果你的角色是管理員，則可以在任意機器執行腳本；否則，只能對有管理權限的業務組下的機器執行腳本',
   'task.allOptionLabel': '全部任務',
+  'task.error.no_group': '業務組不存在無法建立任務，請聯絡管理員',
 
   'last.1.days': '最近 1 天',
   'last.7.days': '最近 7 天',
