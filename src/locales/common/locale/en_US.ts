@@ -241,6 +241,7 @@ const en_US = {
   'task.tip.content':
     'If your role is an administrator, you can execute the script on any machine; otherwise, you can only execute the script on the machines under the business group with administrative rights',
   'task.allOptionLabel': 'All tasks',
+  'task.error.no_group': 'Business group does not exist, cannot create task. Please contact the administrator',
 
   'last.1.days': 'Last 1 day',
   'last.7.days': 'Last 7 days',

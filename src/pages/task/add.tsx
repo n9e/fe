@@ -14,17 +14,19 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Button, Spin, Row, Col, Card, Alert, message } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
+
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
 import api from '@/utils/api';
 import { CommonStateContext } from '@/App';
+
 import TplForm from '../taskTpl/tplForm';
 
 const Add = (props: any) => {
@@ -36,10 +38,16 @@ const Add = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
   const [action, setAction] = useState('');
+  const groupId = useRef<number>(curBusiId);
+
   const handleSubmit = (values: any) => {
+    if (!groupId.current) {
+      message.error(t('task.error.no_group'));
+      return;
+    }
     if (action) {
       values.pause = _.join(values.pause, ',');
-      request(api.tasks(curBusiId), {
+      request(api.tasks(groupId.current), {
         method: 'POST',
         body: JSON.stringify({
           ...values,
@@ -60,6 +68,7 @@ const Add = (props: any) => {
         setLoading(true);
         request(`${api.tasktpl(curBusiId)}/${query.tpl}`, {})
           .then((data) => {
+            groupId.current = data.dat.tpl.group_id;
             setData({
               ...data.dat.tpl,
               hosts: data.dat.hosts,
@@ -72,6 +81,7 @@ const Add = (props: any) => {
         setLoading(true);
         request(`${api.task(curBusiId)}/${query.task}`, {})
           .then((data) => {
+            groupId.current = data.dat.group_id;
             setData({
               ...data.dat.meta,
               hosts: _.map(data.dat.hosts, (host) => {
@@ -112,6 +122,7 @@ const Add = (props: any) => {
                   {data || (!query.tpl && !query.task) ? (
                     <TplForm
                       type='task'
+                      bgid={groupId.current}
                       initialValues={data}
                       onSubmit={handleSubmit}
                       footer={

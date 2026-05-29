@@ -14,14 +14,16 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import _ from 'lodash';
 import { withRouter } from 'react-router-dom';
 import { Button, Form, Input, InputNumber, Select, Space, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
+
 import { CommonStateContext } from '@/App';
 import Editor from './editor';
 import hostsFilterModal from './hostsFilterModal';
+
 import './style.less';
 
 const FormItem = Form.Item;
@@ -32,10 +34,6 @@ const TplForm = (props) => {
   const [form] = Form.useForm();
   const { businessGroup } = useContext(CommonStateContext);
   const hosts = Form.useWatch('hosts', form);
-
-  useEffect(() => {
-    // 获取服务列表
-  });
 
   const handleSubmit = (values) => {
     props.onSubmit({
