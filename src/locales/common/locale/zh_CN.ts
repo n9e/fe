@@ -240,6 +240,7 @@ const zh_CN = {
   'task.tip.title': '提示信息',
   'task.tip.content': '如果你的角色是管理员，则可以在任意机器执行脚本；否则，只能对有管理权限的业务组下的机器执行脚本',
   'task.allOptionLabel': '全部任务',
+  'task.error.no_group': '业务组不存在无法创建任务，请联系管理员',
 
   'last.1.days': '最近 1 天',
   'last.7.days': '最近 7 天',
