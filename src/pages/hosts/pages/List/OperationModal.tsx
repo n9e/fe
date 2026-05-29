@@ -221,6 +221,7 @@ export default function OperationModal(props: OperateionModalProps) {
                 />
               ),
             });
+            reloadList();
             setConfirmLoading(false);
           }
         })
