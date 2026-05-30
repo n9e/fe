@@ -108,31 +108,34 @@ const MetricExplorerPage = () => {
                       defaultFormValuesControl={{
                         isInited: item.isInited,
                         setIsInited: () => {
-                          const newItems = _.map(items, (i) => {
-                            if (i.key === item.key) {
-                              return {
-                                ...i,
-                                isInited: true,
-                              };
-                            }
-                            return i;
+                          setItems((prev) => {
+                            return _.map(prev, (i) => {
+                              if (i.key === item.key) {
+                                return {
+                                  ...i,
+                                  isInited: true,
+                                };
+                              }
+                              return i;
+                            });
                           });
-                          setItems(newItems);
                         },
                         defaultFormValues: item.formValues,
                         setDefaultFormValues: (newValues) => {
-                          const newItems = _.map(items, (i) => {
-                            if (i.key === item.key) {
-                              return {
-                                ...i,
-                                isInited: true,
-                                formValues: newValues,
-                              };
-                            }
-                            return i;
+                          setItems((prev) => {
+                            const newItems = _.map(prev, (i) => {
+                              if (i.key === item.key) {
+                                return {
+                                  ...i,
+                                  isInited: true,
+                                  formValues: newValues,
+                                };
+                              }
+                              return i;
+                            });
+                            setLocalItems(newItems);
+                            return newItems;
                           });
-                          setLocalItems(newItems);
-                          setItems(newItems);
                         },
                       }}
                     />
