@@ -51,9 +51,11 @@ const MetricExplorerPage = () => {
                       className='pl-4'
                       onClick={() => {
                         // 只保留当前 tab
-                        const newItems = [items.find((item) => item.key === activeKey)!];
-                        setItems(newItems);
-                        setLocalItems(newItems);
+                        setItems((prev) => {
+                          const newItems = [prev.find((item) => item.key === activeKey)!];
+                          setLocalItems(newItems);
+                          return newItems;
+                        });
                       }}
                     >
                       {t('clear_tabs')}
@@ -64,33 +66,37 @@ const MetricExplorerPage = () => {
               onEdit={(targetKey: string, action: 'add' | 'remove') => {
                 if (action === 'add') {
                   const newActiveKey = getuuid();
-                  const newItems = [
-                    ...items,
-                    {
-                      key: newActiveKey,
-                      isInited: false,
-                      formValues: {
-                        query: {
-                          range: {
-                            start: 'now-1h',
-                            end: 'now',
+                  setItems((prev) => {
+                    const newItems = [
+                      ...prev,
+                      {
+                        key: newActiveKey,
+                        isInited: false,
+                        formValues: {
+                          query: {
+                            range: {
+                              start: 'now-1h',
+                              end: 'now',
+                            },
                           },
                         },
                       },
-                    },
-                  ];
-                  setItems(newItems);
-                  setLocalItems(newItems);
+                    ];
+                    setLocalItems(newItems);
+                    return newItems;
+                  });
                   setActiveKey(newActiveKey);
                   setLocalActiveKey(newActiveKey);
                 } else {
-                  const newItems = _.filter(items, (item) => item.key !== targetKey);
-                  setItems(newItems);
-                  setLocalItems(newItems);
-                  if (targetKey === activeKey) {
-                    setActiveKey(newItems?.[0]?.key);
-                    setLocalActiveKey(newItems?.[0]?.key);
-                  }
+                  setItems((prev) => {
+                    const newItems = _.filter(prev, (item) => item.key !== targetKey);
+                    setLocalItems(newItems);
+                    if (targetKey === activeKey) {
+                      setActiveKey(newItems?.[0]?.key);
+                      setLocalActiveKey(newItems?.[0]?.key);
+                    }
+                    return newItems;
+                  });
                 }
               }}
               onChange={(key) => {

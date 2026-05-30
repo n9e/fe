@@ -35,38 +35,42 @@ export default function Header(props: Props) {
         activeKey={activeKey}
         onEdit={(targetKey: string, action: 'add' | 'remove') => {
           if (action === 'add') {
-            const activeItem = _.find(items, { key: activeKey });
             const newActiveKey = getUUID();
-            const newItem = activeItem
-              ? {
-                  ...activeItem,
-                  key: newActiveKey,
-                  isInited: false,
-                }
-              : {
-                  key: newActiveKey,
-                  isInited: false,
-                  formValues: {
-                    datasourceCate: defaultDatasourceCate,
-                    datasourceValue: defaultDatasourceValue,
-                    query: {
-                      range: logsDefaultRange,
+            setItems((prev) => {
+              const activeItem = _.find(prev, { key: activeKey });
+              const newItem = activeItem
+                ? {
+                    ...activeItem,
+                    key: newActiveKey,
+                    isInited: false,
+                  }
+                : {
+                    key: newActiveKey,
+                    isInited: false,
+                    formValues: {
+                      datasourceCate: defaultDatasourceCate,
+                      datasourceValue: defaultDatasourceValue,
+                      query: {
+                        range: logsDefaultRange,
+                      },
                     },
-                  },
-                };
-            const newItems = [...items, newItem];
-            setItems(newItems);
-            setLocalItems(newItems);
+                  };
+              const newItems = [...prev, newItem];
+              setLocalItems(newItems);
+              return newItems;
+            });
             setActiveKey(newActiveKey);
             setLocalActiveKey(newActiveKey);
           } else {
-            const newItems = _.filter(items, (item) => item.key !== targetKey);
-            setItems(newItems);
-            setLocalItems(newItems);
-            if (targetKey === activeKey) {
-              setActiveKey(newItems?.[0]?.key);
-              setLocalActiveKey(newItems?.[0]?.key);
-            }
+            setItems((prev) => {
+              const newItems = _.filter(prev, (item) => item.key !== targetKey);
+              setLocalItems(newItems);
+              if (targetKey === activeKey) {
+                setActiveKey(newItems?.[0]?.key);
+                setLocalActiveKey(newItems?.[0]?.key);
+              }
+              return newItems;
+            });
           }
         }}
         onChange={(key) => {
