@@ -75,3 +75,42 @@
     color: var(--fc-text-4);
   }
 }
+
+// 行内暴露的特色操作图标（与 3 个点的 dropdown 并排）
+.fc-table-action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.fc-table-action-icon-btn.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--fc-text-3);
+
+  .fc-table-action-menu-icon {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    stroke-width: 2;
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--fc-text-2);
+  }
+
+  &.ant-btn-dangerous {
+    color: var(--fc-fill-error);
+  }
+
+  &[disabled],
+  &[disabled]:hover {
+    color: var(--fc-text-4);
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Space, Table, Button, Input, Modal, Drawer, Select, Dropdown, Menu } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -12,11 +13,12 @@ import { Item, getList, deleteItems } from '../../services';
 import Add from '../Add';
 import Edit from '../Edit';
 import MoreOperations from './MoreOperations';
-import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
+import { TableActionButton, TableActionLink, TableActionTrigger, TableActionCell, TableActionIconButton } from '@/components/TableActionDropdown';
 import Tags from '@/components/TableTags/Tags';
 
 export default function List() {
   const { t } = useTranslation(NS);
+  const history = useHistory();
   const [filter, setFilter] = useState<{
     search?: string;
     use_case?: string;
@@ -240,73 +242,77 @@ export default function List() {
           },
           {
             title: t('common:table.operations'),
-            width: 64,
+            width: 90,
             fixed: 'right' as const,
             render: (item: Item) => {
               return (
-                <Dropdown
-                  trigger={['click']}
-                  align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
-                  overlayClassName='fc-table-action-dropdown'
-                  overlay={
-                    <Menu>
-                      <Menu.Item>
-                        <TableActionButton
-                          actionIcon='copy'
-                          onClick={() => {
-                            setEventPipelineDrawerState({
-                              visible: true,
-                              action: 'clone',
-                              data: _.omit(item, 'id'),
-                            });
-                          }}
-                        >
-                          {t('common:btn.clone')}
-                        </TableActionButton>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <TableActionButton
-                          actionIcon='edit'
-                          onClick={() => {
-                            setEventPipelineDrawerState({
-                              visible: true,
-                              action: 'edit',
-                              id: item.id,
-                            });
-                          }}
-                        >
-                          {t('common:btn.edit')}
-                        </TableActionButton>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <TableActionLink actionIcon='open' to={`/event-pipelines-executions?pipeline_id=${item.id}`}>
-                          {t('executions.title')}
-                        </TableActionLink>
-                      </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Item>
-                        <TableActionButton
-                          actionIcon='delete'
-                          danger
-                          onClick={() => {
-                            Modal.confirm({
-                              title: t('common:confirm.delete'),
-                              onOk: () => {
-                                deleteItems([item.id]).then(() => {
-                                  featchData();
-                                });
-                              },
-                            });
-                          }}
-                        >
-                          {t('common:btn.delete')}
-                        </TableActionButton>
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <TableActionTrigger />
-                </Dropdown>
+                <TableActionCell>
+                  <TableActionIconButton
+                    actionIcon='open'
+                    title={t('executions.title')}
+                    onClick={() => {
+                      history.push(`/event-pipelines-executions?pipeline_id=${item.id}`);
+                    }}
+                  />
+                  <Dropdown
+                    trigger={['click']}
+                    align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
+                    overlayClassName='fc-table-action-dropdown'
+                    overlay={
+                      <Menu>
+                        <Menu.Item>
+                          <TableActionButton
+                            actionIcon='copy'
+                            onClick={() => {
+                              setEventPipelineDrawerState({
+                                visible: true,
+                                action: 'clone',
+                                data: _.omit(item, 'id'),
+                              });
+                            }}
+                          >
+                            {t('common:btn.clone')}
+                          </TableActionButton>
+                        </Menu.Item>
+                        <Menu.Item>
+                          <TableActionButton
+                            actionIcon='edit'
+                            onClick={() => {
+                              setEventPipelineDrawerState({
+                                visible: true,
+                                action: 'edit',
+                                id: item.id,
+                              });
+                            }}
+                          >
+                            {t('common:btn.edit')}
+                          </TableActionButton>
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item>
+                          <TableActionButton
+                            actionIcon='delete'
+                            danger
+                            onClick={() => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk: () => {
+                                  deleteItems([item.id]).then(() => {
+                                    featchData();
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </TableActionButton>
+                        </Menu.Item>
+                      </Menu>
+                    }
+                  >
+                    <TableActionTrigger />
+                  </Dropdown>
+                </TableActionCell>
               );
             },
           },

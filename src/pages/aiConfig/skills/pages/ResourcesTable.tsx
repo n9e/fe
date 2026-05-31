@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { NS } from '../constants';
 import { getItem, uploadFile, deleteFile } from '../services';
 import ResourceModal from './ResourceModal';
-import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
+import { TableActionButton, TableActionTrigger, TableActionCell, TableActionIconButton } from '@/components/TableActionDropdown';
 
 interface Props {
   id: number;
@@ -146,51 +146,49 @@ export default function ResourcesTable(props: Props) {
           },
           {
             title: t('common:table.operations'),
-            width: 64,
+            width: 90,
             fixed: 'right' as const,
             render: (record) => {
               return (
-                <Dropdown
-                  trigger={['click']}
-                  align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
-                  overlayClassName='fc-table-action-dropdown'
-                  overlay={
-                    <Menu>
-                      <Menu.Item>
-                        <TableActionButton
-                          actionIcon='view'
-                          onClick={() => {
-                            setResourceState({ visible: true, id: record.id, name: record.name });
-                          }}
-                        >
-                          {t('common:btn.view')}
-                        </TableActionButton>
-                      </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Item>
-                        <TableActionButton
-                          actionIcon='delete'
-                          danger
-                          onClick={() => {
-                            Modal.confirm({
-                              title: t('common:confirm.delete'),
-                              onOk: () => {
-                                deleteFile(record.id).then(() => {
-                                  message.success(t('common:success.delete'));
-                                  run();
-                                });
-                              },
-                            });
-                          }}
-                        >
-                          {t('common:btn.delete')}
-                        </TableActionButton>
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <TableActionTrigger />
-                </Dropdown>
+                <TableActionCell>
+                  <TableActionIconButton
+                    actionIcon='view'
+                    title={t('common:btn.view')}
+                    onClick={() => {
+                      setResourceState({ visible: true, id: record.id, name: record.name });
+                    }}
+                  />
+                  <Dropdown
+                    trigger={['click']}
+                    align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
+                    overlayClassName='fc-table-action-dropdown'
+                    overlay={
+                      <Menu>
+                        <Menu.Item>
+                          <TableActionButton
+                            actionIcon='delete'
+                            danger
+                            onClick={() => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk: () => {
+                                  deleteFile(record.id).then(() => {
+                                    message.success(t('common:success.delete'));
+                                    run();
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </TableActionButton>
+                        </Menu.Item>
+                      </Menu>
+                    }
+                  >
+                    <TableActionTrigger />
+                  </Dropdown>
+                </TableActionCell>
               );
             },
           },

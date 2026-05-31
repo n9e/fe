@@ -23,7 +23,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
-import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
+import { TableActionButton, TableActionLink, TableActionTrigger, TableActionCell, TableActionIconButton } from '@/components/TableActionDropdown';
 
 import request from '@/utils/request';
 import api from '@/utils/api';
@@ -168,31 +168,29 @@ const index = (_props: any) => {
       },
       {
         title: t('table.operations'),
-        width: 64,
+        width: 90,
         fixed: 'right' as const,
         render: (_text, record) => {
           return (
-            <Dropdown
-              trigger={['click']}
-              align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
-              overlayClassName='fc-table-action-dropdown'
-              overlay={
-                <Menu>
-                  <Menu.Item>
-                    <TableActionLink actionIcon='copy' to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>
-                      {t('task.clone')}
-                    </TableActionLink>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <TableActionButton actionIcon='view' onClick={() => handleOpenMetaDrawer(record)}>
-                      {t('task.meta')}
-                    </TableActionButton>
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <TableActionTrigger />
-            </Dropdown>
+            <TableActionCell>
+              <TableActionIconButton actionIcon='view' title={t('task.meta')} onClick={() => handleOpenMetaDrawer(record)} />
+              <Dropdown
+                trigger={['click']}
+                align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
+                overlayClassName='fc-table-action-dropdown'
+                overlay={
+                  <Menu>
+                    <Menu.Item>
+                      <TableActionLink actionIcon='copy' to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>
+                        {t('task.clone')}
+                      </TableActionLink>
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <TableActionTrigger />
+              </Dropdown>
+            </TableActionCell>
           );
         },
       },
