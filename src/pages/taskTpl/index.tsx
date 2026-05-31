@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useContext, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Table, Modal, Tag, Row, Col, Button, Dropdown, Menu, message, Space } from 'antd';
 import { DownOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
@@ -23,7 +23,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { TableActionButton, TableActionLink, TableActionTrigger } from '@/components/TableActionDropdown';
+import { TableActionButton, TableActionLink, TableActionTrigger, TableActionCell, TableActionInlineButton } from '@/components/TableActionDropdown';
 import Tags from '@/components/TableTags/Tags';
 
 import request from '@/utils/request';
@@ -62,6 +62,7 @@ function getTableData(options: any, gids: string | undefined, query: string) {
 
 const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
+  const history = useHistory();
   const [query, setQuery] = useState(() => sessionStorage.getItem(SEARCH_SESSION_KEY) || '');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
@@ -171,58 +172,62 @@ const index = (_props: any) => {
       },
       {
         title: t('table.operations'),
-        width: 64,
+        width: 110,
         fixed: 'right' as const,
         render: (_text, record) => {
           return (
-            <Dropdown
-              trigger={['click']}
-              align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
-              overlayClassName='fc-table-action-dropdown'
-              overlay={
-                <Menu>
-                  <Menu.Item>
-                    <TableActionLink actionIcon='run' to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>
-                      {t('task.create')}
-                    </TableActionLink>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <TableActionLink actionIcon='edit' to={{ pathname: `/job-tpls/${record.id}/modify` }}>
-                      {t('common:btn.edit')}
-                    </TableActionLink>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <TableActionLink actionIcon='copy' to={{ pathname: `/job-tpls/${record.id}/clone` }}>
-                      {t('common:btn.clone')}
-                    </TableActionLink>
-                  </Menu.Item>
-                  <Menu.Divider />
-                  <Menu.Item>
-                    <TableActionButton
-                      actionIcon='delete'
-                      danger
-                      onClick={() => {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk: () => {
-                            return request(`${api.tasktpl(record.group_id)}/${record.id}`, {
-                              method: 'DELETE',
-                            }).then(() => {
-                              message.success(t('msg.delete.success'));
-                              refresh();
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </TableActionButton>
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <TableActionTrigger />
-            </Dropdown>
+            <TableActionCell>
+              <TableActionInlineButton
+                onClick={() => {
+                  history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` });
+                }}
+              >
+                {t('task.create')}
+              </TableActionInlineButton>
+              <Dropdown
+                trigger={['click']}
+                align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
+                overlayClassName='fc-table-action-dropdown'
+                overlay={
+                  <Menu>
+                    <Menu.Item>
+                      <TableActionLink actionIcon='edit' to={{ pathname: `/job-tpls/${record.id}/modify` }}>
+                        {t('common:btn.edit')}
+                      </TableActionLink>
+                    </Menu.Item>
+                    <Menu.Item>
+                      <TableActionLink actionIcon='copy' to={{ pathname: `/job-tpls/${record.id}/clone` }}>
+                        {t('common:btn.clone')}
+                      </TableActionLink>
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item>
+                      <TableActionButton
+                        actionIcon='delete'
+                        danger
+                        onClick={() => {
+                          Modal.confirm({
+                            title: t('common:confirm.delete'),
+                            onOk: () => {
+                              return request(`${api.tasktpl(record.group_id)}/${record.id}`, {
+                                method: 'DELETE',
+                              }).then(() => {
+                                message.success(t('msg.delete.success'));
+                                refresh();
+                              });
+                            },
+                          });
+                        }}
+                      >
+                        {t('common:btn.delete')}
+                      </TableActionButton>
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <TableActionTrigger />
+              </Dropdown>
+            </TableActionCell>
           );
         },
       },

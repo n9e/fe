@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import type { ButtonProps } from 'antd/lib/button';
 import {
   CheckCircle,
@@ -59,6 +59,28 @@ export function TableActionButton({ actionIcon, icon, className, type = 'link', 
       {...rest}
     />
   );
+}
+
+interface TableActionIconButtonProps extends Omit<ButtonProps, 'icon' | 'title'> {
+  actionIcon: TableActionIconName;
+  title: React.ReactNode;
+}
+
+export function TableActionIconButton({ actionIcon, title, className, type = 'text', ...rest }: TableActionIconButtonProps) {
+  return (
+    <Tooltip title={title}>
+      <Button type={type} className={classNames('fc-table-action-icon-btn', className)} icon={<TableActionIcon name={actionIcon} />} {...rest} />
+    </Tooltip>
+  );
+}
+
+export function TableActionCell({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={classNames('fc-table-action-cell', className)}>{children}</div>;
+}
+
+// 行内放出的「特色操作」文字按钮（置于三点菜单左侧）
+export function TableActionInlineButton({ className, type = 'link', ...rest }: ButtonProps) {
+  return <Button type={type} className={classNames('fc-table-action-inline-btn', className)} {...rest} />;
 }
 
 interface TableActionLinkProps extends LinkProps {

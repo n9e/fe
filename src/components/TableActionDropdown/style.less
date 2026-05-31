@@ -75,3 +75,64 @@
     color: var(--fc-text-4);
   }
 }
+
+// 行内暴露的特色操作图标（与 3 个点的 dropdown 并排）
+.fc-table-action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.fc-table-action-icon-btn.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--fc-text-3);
+
+  .fc-table-action-menu-icon {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    stroke-width: 2;
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--fc-text-2);
+  }
+
+  &.ant-btn-dangerous {
+    color: var(--fc-fill-error);
+  }
+
+  &[disabled],
+  &[disabled]:hover {
+    color: var(--fc-text-4);
+  }
+}
+
+// 行内放出的特色操作（文字链接，与三点并排）
+.fc-table-action-inline-btn.ant-btn {
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: var(--fc-violet-11);
+  font-size: inherit;
+  line-height: 22px;
+
+  &:hover,
+  &:focus {
+    color: var(--fc-violet-9);
+    background: rgb(var(--fc-fill-5-rgb) / 0.4);
+  }
+
+  &[disabled],
+  &[disabled]:hover {
+    color: var(--fc-text-4);
+    background: transparent;
+  }
+}
