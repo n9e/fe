@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Switch, Space, Button, Popconfirm, message } from 'antd';
+import { Table, Switch, Space, Button, Modal, Dropdown, Menu, message } from 'antd';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import DocumentDrawer from '@/components/DocumentDrawer';
@@ -102,47 +103,70 @@ export default function Channels() {
           },
           {
             title: t('common:table.operations'),
-            width: 100,
+            width: 64,
+            fixed: 'right' as const,
             render: (reocrd) => {
               return (
-                <Space>
-                  <a
-                    onClick={() => {
-                      EditModal({
-                        initialValues: reocrd,
-                        onOk: (values) => {
-                          const oldIndex = _.findIndex(data, (item) => item.ident === reocrd.ident);
-                          const newData = _.map(data, (item, idx) => {
-                            if (idx === oldIndex) {
-                              return values;
-                            }
-                            return item;
-                          });
-                          putNotifyChannels(newData).then(() => {
-                            setData(newData);
-                            message.success(t('common:success.edit'));
-                          });
-                        },
-                      });
-                    }}
-                  >
-                    {t('common:btn.edit')}
-                  </a>
-                  {!reocrd.built_in && (
-                    <Popconfirm
-                      title={t('common:confirm.delete')}
-                      onConfirm={() => {
-                        const newData = _.filter(data, (item) => item.ident !== reocrd.ident);
-                        putNotifyChannels(newData).then(() => {
-                          setData(newData);
-                          message.success(t('common:success.delete'));
-                        });
-                      }}
-                    >
-                      <a>{t('common:btn.delete')}</a>
-                    </Popconfirm>
-                  )}
-                </Space>
+                <Dropdown
+                  trigger={['click']}
+                  overlayClassName='fc-table-action-dropdown'
+                  overlay={
+                    <Menu>
+                      <Menu.Item>
+                        <TableActionButton
+                          actionIcon='edit'
+                          onClick={() => {
+                            EditModal({
+                              initialValues: reocrd,
+                              onOk: (values) => {
+                                const oldIndex = _.findIndex(data, (item) => item.ident === reocrd.ident);
+                                const newData = _.map(data, (item, idx) => {
+                                  if (idx === oldIndex) {
+                                    return values;
+                                  }
+                                  return item;
+                                });
+                                putNotifyChannels(newData).then(() => {
+                                  setData(newData);
+                                  message.success(t('common:success.edit'));
+                                });
+                              },
+                            });
+                          }}
+                        >
+                          {t('common:btn.edit')}
+                        </TableActionButton>
+                      </Menu.Item>
+                      {!reocrd.built_in && (
+                        <>
+                          <Menu.Divider />
+                          <Menu.Item>
+                            <TableActionButton
+                              actionIcon='delete'
+                              danger
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: t('common:confirm.delete'),
+                                  onOk: () => {
+                                    const newData = _.filter(data, (item) => item.ident !== reocrd.ident);
+                                    putNotifyChannels(newData).then(() => {
+                                      setData(newData);
+                                      message.success(t('common:success.delete'));
+                                    });
+                                  },
+                                });
+                              }}
+                            >
+                              {t('common:btn.delete')}
+                            </TableActionButton>
+                          </Menu.Item>
+                        </>
+                      )}
+                    </Menu>
+                  }
+                >
+                  <TableActionTrigger />
+                </Dropdown>
               );
             },
           },

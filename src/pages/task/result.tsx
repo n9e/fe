@@ -16,7 +16,8 @@
  */
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Divider, Tag, Row, Col, Button, Card } from 'antd';
+import { Table, Divider, Tag, Row, Col, Button, Card, Dropdown, Menu } from 'antd';
+import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
 import { RollbackOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
@@ -160,15 +161,36 @@ const index = (props: any) => {
   if (!data.done) {
     columns.push({
       title: t('table.operations'),
+      width: 64,
+      fixed: 'right' as const,
       render: (_text, record) => {
         return (
-          <span>
-            <a onClick={() => handleHostAction(record.host, 'ignore')}>ignore</a>
-            <Divider type='vertical' />
-            <a onClick={() => handleHostAction(record.host, 'redo')}>redo</a>
-            <Divider type='vertical' />
-            <a onClick={() => handleHostAction(record.host, 'kill')}>kill</a>
-          </span>
+          <Dropdown
+            trigger={['click']}
+            overlayClassName='fc-table-action-dropdown'
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <TableActionButton actionIcon='default' onClick={() => handleHostAction(record.host, 'ignore')}>
+                    ignore
+                  </TableActionButton>
+                </Menu.Item>
+                <Menu.Item>
+                  <TableActionButton actionIcon='run' onClick={() => handleHostAction(record.host, 'redo')}>
+                    redo
+                  </TableActionButton>
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item>
+                  <TableActionButton actionIcon='delete' danger onClick={() => handleHostAction(record.host, 'kill')}>
+                    kill
+                  </TableActionButton>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <TableActionTrigger />
+          </Dropdown>
         );
       },
     });

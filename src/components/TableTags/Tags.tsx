@@ -89,8 +89,6 @@ function resolveColor<T>(color: string | ((item: string | T, index: number) => s
 export default function Tags<T>(props: Props<T>) {
   const { type = 'outline', icon, data, onTagClick, getKey, getLabel, getTooltipTitle, maxWidth } = props;
 
-  if (!data || data.length === 0) return null;
-
   const borderRadius = props.borderRadius ?? 16;
   const containerRef = useRef<HTMLDivElement>(null);
   const tagMeasureRefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -156,6 +154,8 @@ export default function Tags<T>(props: Props<T>) {
   }, [data]);
 
   const { visibleCount, overflowCount } = layout;
+
+  if (!data || data.length === 0) return null;
 
   return (
     <div ref={containerRef} className='relative overflow-hidden' style={maxWidth != null ? { maxWidth } : undefined}>
