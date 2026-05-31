@@ -30,7 +30,7 @@ import './locale';
 import { SearchOutlined } from '@ant-design/icons';
 import EditField from './EditField';
 import { useQuery } from '@/utils';
-import { TableActionButton, TableActionTrigger } from '@/components/TableActionDropdown';
+import { TableActionButton, TableActionTrigger, TableActionCell, TableActionIconButton } from '@/components/TableActionDropdown';
 
 export default function Servers() {
   const { t } = useTranslation('es-index-patterns');
@@ -143,47 +143,45 @@ export default function Servers() {
                   },
                   {
                     title: t('common:table.operations'),
-                    width: 64,
+                    width: 90,
                     fixed: 'right' as const,
                     render: (record) => {
                       return (
-                        <Dropdown
-                          trigger={['click']}
-                          align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
-                          overlayClassName='fc-table-action-dropdown'
-                          overlay={
-                            <Menu>
-                              <Menu.Item>
-                                <TableActionButton
-                                  actionIcon='settings'
-                                  onClick={() => {
-                                    if (record) {
-                                      EditField({
-                                        id: record.id,
-                                        datasourceList,
-                                        onOk(values, name) {
-                                          console.log('values', values);
-                                          const newFieldConfig = {
-                                            ...values,
-                                            version: 2,
-                                          };
-                                          putESIndexPattern(record.id, {
-                                            ..._.omit(record, ['fieldConfig', 'id']),
-                                            fields_format: JSON.stringify(newFieldConfig),
-                                            name,
-                                          }).then(() => {
-                                            fetchData();
-                                            message.success(t('common:success.save'));
-                                          });
-                                        },
-                                      });
-                                    }
-                                  }}
-                                >
-                                  {t('common:btn.config')}
-                                </TableActionButton>
-                              </Menu.Item>
-                              <Menu.Item>
+                        <TableActionCell>
+                          <TableActionIconButton
+                            actionIcon='settings'
+                            title={t('common:btn.config')}
+                            onClick={() => {
+                              if (record) {
+                                EditField({
+                                  id: record.id,
+                                  datasourceList,
+                                  onOk(values, name) {
+                                    console.log('values', values);
+                                    const newFieldConfig = {
+                                      ...values,
+                                      version: 2,
+                                    };
+                                    putESIndexPattern(record.id, {
+                                      ..._.omit(record, ['fieldConfig', 'id']),
+                                      fields_format: JSON.stringify(newFieldConfig),
+                                      name,
+                                    }).then(() => {
+                                      fetchData();
+                                      message.success(t('common:success.save'));
+                                    });
+                                  },
+                                });
+                              }
+                            }}
+                          />
+                          <Dropdown
+                            trigger={['click']}
+                            align={{ points: ['tr', 'tl'], offset: [-2, 0] }}
+                            overlayClassName='fc-table-action-dropdown'
+                            overlay={
+                              <Menu>
+                                <Menu.Item>
                                 <TableActionButton
                                   actionIcon='edit'
                                   onClick={() => {
@@ -224,8 +222,9 @@ export default function Servers() {
                             </Menu>
                           }
                         >
-                          <TableActionTrigger />
-                        </Dropdown>
+                            <TableActionTrigger />
+                          </Dropdown>
+                        </TableActionCell>
                       );
                     },
                   },
