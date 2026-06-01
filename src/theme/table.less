@@ -44,13 +44,14 @@
     flex: 0 1 auto;
   }
 
-  // 表头列 hover / 已排序：整格底色（对齐 design-system thead th:hover / th:has(.is-sorted)）。
-  // 排除固定列表头——固定列需不透明背景，叠半透明 hover 会让横向滚动内容透出。
+  // 表头 hover：**每一列**（含不可排序列）整格底色 fill-5/0.4，对齐 design-system `thead th:hover`。
+  // antd v4 token 只给「可排序」表头 hover 上色（@table-header-sort-active-bg），不可排序列没有；
+  // v4 无「任意表头 hover」对应 token，故这里用 CSS 补齐。排除固定列表头（半透明底会引发穿透）。
+  // 已排序列不额外加底色——antd token @table-header-sort-bg = fill-2-5（与表头同色、不可见），保持。
   .ant-table-thead > tr > th:not(.ant-table-cell-fix-left):not(.ant-table-cell-fix-right) {
     transition: background 0.15s ease;
 
-    &.ant-table-column-has-sorters:hover,
-    &.ant-table-column-sort {
+    &:hover {
       background: rgb(var(--fc-fill-5-rgb) / 0.4);
     }
   }
