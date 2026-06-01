@@ -141,17 +141,11 @@ const Shield: React.FC = () => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <div>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? (
-                      <div className='max-w-[400px] break-all' key={index} style={{ lineHeight: '16px' }}>{`${tag.key} ${tag.func} ${
-                        tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value
-                      }`}</div>
-                    ) : null;
-                  })
-                : ''}
-            </div>
+            <Tags
+              type='outline'
+              maxWidth={180}
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+            />
           );
         },
       },
