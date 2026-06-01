@@ -16,13 +16,15 @@
  */
 import React, { useState, useContext, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Divider, Popconfirm, Tag, Row, Col, Button, Dropdown, Menu, message, Space, Modal } from 'antd';
+import { Table, Modal, Tag, Row, Col, Button, Dropdown, Menu, message, Space } from 'antd';
 import { DownOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
+import EnhancedTable from '@/components/EnhancedTable';
+import Tags from '@/components/TableTags/Tags';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
@@ -32,7 +34,6 @@ import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import SearchInput from '@/components/BaseSearchInput';
-import EnhancedTable from '@/components/EnhancedTable';
 
 import { Tpl } from './interface';
 import BindTags from './bindTags';
@@ -114,53 +115,59 @@ const index = (_props: any) => {
     }
   }
 
+  const showBusinessGroup = !(businessGroup.isLeaf && gids !== '-2');
   const columns: ColumnProps<Tpl>[] = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
-      {
-        title: 'ID',
-        dataIndex: 'id',
-      },
       {
         title: t('tpl.title'),
         dataIndex: 'title',
+        width: 360,
         render: (text, record) => {
-          return <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>;
+          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
+          return (
+            <div className='flex flex-col gap-0.5'>
+              <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>
+              <span className='text-soft text-xs inline-flex items-center gap-2'>
+                <span>ID: {record.id}</span>
+                {showBusinessGroup && groupName && <span>{groupName}</span>}
+              </span>
+            </div>
+          );
         },
       },
+    ] as any,
+    [
       {
         title: t('tpl.tags'),
         dataIndex: 'tags',
+        width: 280,
         render: (text) => {
-          return _.map(text, (item) => (
-            <Tag color='purple' key={item} onClick={() => handleTagClick(item)}>
-              {item}
-            </Tag>
-          ));
+          return <Tags type='outline' maxWidth={180} data={text} onTagClick={handleTagClick} />;
         },
       },
       {
         title: t('tpl.creator'),
         dataIndex: 'create_by',
-        width: 100,
+        width: 120,
+        render: (val, record: any) => (
+          <div>
+            <div>{val}</div>
+            {record.create_by_nickname && <div className='text-soft'>{record.create_by_nickname}</div>}
+          </div>
+        ),
       },
       {
         title: t('tpl.last_updated'),
         dataIndex: 'update_at',
-        width: 160,
+        width: 180,
         render: (text) => {
-          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+          const m = moment.unix(text);
+          return (
+            <div>
+              <div>{m.format('YYYY-MM-DD')}</div>
+              <div>{m.format('HH:mm:ss')}</div>
+            </div>
+          );
         },
       },
     ],
@@ -175,7 +182,7 @@ const index = (_props: any) => {
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
         {gids ? (
-          <div className='fc-border rounded-lg p-4' style={{ flex: 1 }}>
+          <div className='fc-border rounded-lg p-4' style={{ flex: 1, minWidth: 0 }}>
             <Row>
               <Col span={14} className='mb-2'>
                 <SearchInput
@@ -233,7 +240,7 @@ const index = (_props: any) => {
               rowKey='id'
               columns={columns}
               rowActions={(record) => ({
-                inline: [{ key: 'create', text: t('task.create'), onClick: () => history.push(`/job-tpls/add/task?tpl=${record.id}`) }],
+                inline: [{ key: 'create', text: t('task.create'), onClick: () => history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }) }],
                 menu: [
                   { key: 'edit', text: t('common:btn.edit'), onClick: () => history.push(`/job-tpls/${record.id}/modify`) },
                   { key: 'clone', text: t('common:btn.clone'), onClick: () => history.push(`/job-tpls/${record.id}/clone`) },
@@ -245,7 +252,7 @@ const index = (_props: any) => {
                       Modal.confirm({
                         title: t('common:confirm.delete'),
                         onOk: () => {
-                          request(`${api.tasktpl(record.group_id)}/${record.id}`, { method: 'DELETE' }).then(() => {
+                          return request(`${api.tasktpl(record.group_id)}/${record.id}`, { method: 'DELETE' }).then(() => {
                             message.success(t('msg.delete.success'));
                             refresh();
                           });
@@ -267,7 +274,7 @@ const index = (_props: any) => {
                 {
                   ...tableProps.pagination,
                   showSizeChanger: true,
-                  pageSizeOptions: ['10', '50', '100', '500', '1000'],
+                  pageSizeOptions: ['10', '15', '50', '100', '500', '1000'],
                   showTotal: (total) => {
                     return i18n.language == 'en' ? `Total ${total} items` : `共 ${total} 条`;
                   },
