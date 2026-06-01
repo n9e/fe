@@ -1,7 +1,4 @@
-// 全局表格基线（最小集）：当前仅固定列穿透修复。
-// 注：design-system 的排序/筛选图标改造（lucide mask）是全局规则，会让所有可排序表的表头
-// hover 时撑开图标位、auto 列宽跳变（如未迁移的 /alert-rules）。故暂不引入，留到「全局视觉
-// 基线」专门一步，届时要么逐表给排序列预留宽度，要么把图标规则限定在 .fc-enhanced-table 内。
+// 全局表格基线。固定列穿透修复为全局；排序图标限定在已迁移表 .fc-enhanced-table 内。
 
 // 固定列（左/右）：不透明背景 + 层级，避免横向滚动 + 行 hover 时被其它列内容穿透。
 // 背景：n9e 通用行 hover 背景是 rgb(var(--fc-fill-5-rgb) / 0.2)（带透明度），落到固定列上会
@@ -28,12 +25,26 @@
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// 排序列图标 / 交互（与 design-system table-style-preview「更新时间」列对齐）。
+// 排序列图标 / 交互（与 design-system table-style-preview「更新时间」列 1:1 对齐）。
 // 仅作用于已迁移表 .fc-enhanced-table；未迁移表仍用 App.less 的默认 antd caret。
-// 关键：图标命中区「常驻保留 24px 宽度、仅切 opacity（hover 或已排序时显现）」，不做 width
-// 0→24 动画，因此不会像之前的全局版那样让 auto 列宽表头 hover 时抖动（见迁移日志 #0 教训）。
-// 未排序 = ArrowUpDown，升序 = ArrowUp，降序 = ArrowDown（lucide mask，跟随 currentColor）。
+// 关键：图标命中区「常驻保留 24px、仅切 opacity（hover 表头或已排序时显现）」，无 width 动画
+//      → 不会像之前的全局版那样让 auto 列宽表头 hover 时抖动（见迁移日志 #0 教训）。
+// 对齐点：表头内容 flex + gap 6px（图标紧贴文字）；按钮 = ghost-quaternary-xs（24px 命中区 +
+//      14px 图标 + hover/active 底色）；未排序 ArrowUpDown，升序 ArrowUp，降序 ArrowDown。
 .fc-enhanced-table {
+  // 表头：标题 + 排序图标紧贴（对齐 .th-content：flex + gap 6px，标题不撑开把图标推到右边）
+  .ant-table-column-sorters {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .ant-table-column-title {
+    flex: 0 1 auto;
+  }
+
+  // 排序按钮（对齐 .fc-ghost-quaternary-xs：24px 命中区，14px 图标居中）
   .ant-table-column-sorter {
     display: inline-flex;
     align-items: center;
@@ -41,11 +52,12 @@
     width: 24px;
     min-width: 24px;
     height: 24px;
-    margin-left: 4px;
+    margin: 0;
     border-radius: 6px;
     color: var(--fc-text-4);
     opacity: 0;
-    transition: opacity 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+    cursor: pointer;
+    transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 
     .ant-table-column-sorter-inner {
       display: none;
@@ -56,18 +68,18 @@
       height: 14px;
       content: '';
       background: currentColor;
-      -webkit-mask: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.083 2.333v9.334M4.083 2.333 2.333 4.083M4.083 2.333l1.75 1.75M9.917 11.667V2.333M9.917 11.667l1.75-1.75M9.917 11.667l-1.75-1.75' stroke='black' stroke-width='1.17' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
-      mask: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.083 2.333v9.334M4.083 2.333 2.333 4.083M4.083 2.333l1.75 1.75M9.917 11.667V2.333M9.917 11.667l1.75-1.75M9.917 11.667l-1.75-1.75' stroke='black' stroke-width='1.17' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16l-4 4-4-4'/%3E%3Cpath d='M17 20V4'/%3E%3Cpath d='M3 8l4-4 4 4'/%3E%3Cpath d='M7 4v16'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16l-4 4-4-4'/%3E%3Cpath d='M17 20V4'/%3E%3Cpath d='M3 8l4-4 4 4'/%3E%3Cpath d='M7 4v16'/%3E%3C/svg%3E") center / contain no-repeat;
     }
 
     &:has(.ant-table-column-sorter-up.active)::before {
-      -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 11.083V2.917M7 2.917 3.5 6.417M7 2.917l3.5 3.5' stroke='black' stroke-width='1.17' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      mask-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 11.083V2.917M7 2.917 3.5 6.417M7 2.917l3.5 3.5' stroke='black' stroke-width='1.17' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5'/%3E%3Cpath d='M5 12l7-7 7 7'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5'/%3E%3Cpath d='M5 12l7-7 7 7'/%3E%3C/svg%3E");
     }
 
     &:has(.ant-table-column-sorter-down.active)::before {
-      -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2.917v8.166M7 11.083l3.5-3.5M7 11.083l-3.5-3.5' stroke='black' stroke-width='1.17' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      mask-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 2.917v8.166M7 11.083l3.5-3.5M7 11.083l-3.5-3.5' stroke='black' stroke-width='1.17' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='M19 12l-7 7-7-7'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='M19 12l-7 7-7-7'/%3E%3C/svg%3E");
     }
 
     &:hover {
@@ -75,9 +87,20 @@
       background: rgb(var(--fc-fill-5-rgb) / 0.4);
     }
 
+    &:active {
+      color: var(--fc-text-1);
+      background: rgb(var(--fc-fill-5-rgb) / 0.7);
+    }
+
+    // 已排序：常显、text-3、透明底；hover 再叠底色（对齐 .table-head-sort.is-active）
     &:has(.active) {
       opacity: 1;
       color: var(--fc-text-3);
+    }
+
+    &:has(.active):hover {
+      color: var(--fc-text-2);
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
     }
   }
 
