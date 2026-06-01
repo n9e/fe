@@ -28,7 +28,7 @@ export default function PageDocLink({ link }: { link: string }) {
 
   return (
     <>
-      <Divider type='vertical' style={{ margin: '0 0 0 12px' }} />
+      <Divider type='vertical' />
       <Button
         className='document-open-button page-layout-page-doc-button'
         size='small'
