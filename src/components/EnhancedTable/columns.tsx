@@ -4,13 +4,13 @@ import type { ColumnType } from 'antd/lib/table';
 import Tags from '@/components/TableTags/Tags';
 
 /**
- * 列工厂助手 —— 只是「返回一个标准 antd column 对象」的函数，不接管 antd Table。
- * - 与手写 column 在同一个 columns 数组里随意混用；
- * - 任何字段（width/align/sorter/render…）都能通过参数覆盖默认；
- * - 只覆盖「几乎每张表都一样」的 date / user / tags，标题等差异大的列继续手写。
+ * Column factories for the few near-identical column types (tags / user / date).
+ * Each returns a plain antd column, so it mixes freely with hand-written columns
+ * and any field can be overridden via opts. Varied columns (e.g. the primary
+ * title column) stay hand-written.
  */
 
-// ---- 标签列：统一用 Tags（+N Popover） ----
+// Tags column (unified +N popover)
 export function tagsColumn<T = any>(
   opts: {
     title: React.ReactNode;
@@ -24,16 +24,16 @@ export function tagsColumn<T = any>(
   return {
     width: 280,
     render: (value: any) => <Tags type={type} maxWidth={maxWidth} data={value} onTagClick={onTagClick} />,
-    ...rest, // 调用方可覆盖 width / render / 任意列属性
+    ...rest,
   };
 }
 
-// ---- 用户列：两行 用户名 / 昵称 ----
+// User column: username over nickname (two lines)
 export function userColumn<T = any>(
   opts: {
     title: React.ReactNode;
     dataIndex: ColumnType<T>['dataIndex'];
-    nickname?: string; // 第二行字段名（无则只显示一行）
+    nickname?: string;
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
   const { nickname, ...rest } = opts;
@@ -49,13 +49,13 @@ export function userColumn<T = any>(
   };
 }
 
-// ---- 时间列：两行 日期 / 时间 ----
+// Date column: date over time (two lines)
 export function dateColumn<T = any>(
   opts: {
     title: React.ReactNode;
     dataIndex: ColumnType<T>['dataIndex'];
-    unix?: boolean; // 值为 unix 秒
-    format?: [string, string]; // [日期格式, 时间格式]
+    unix?: boolean;
+    format?: [string, string];
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
   const { unix, format = ['YYYY-MM-DD', 'HH:mm:ss'], ...rest } = opts;
