@@ -119,4 +119,74 @@
   .ant-table-column-has-sorters:hover .ant-table-column-sorter {
     opacity: 1;
   }
+
+  // ───────────────────────────────────────────────────────────────────────
+  // 列头筛选漏斗（对齐 design-system table-style-preview `.table-head-filter`）。
+  // 用 lucide Funnel(14px) mask 取代 antd 默认实心漏斗；命中区 24px、ghost-quaternary。
+  // 默认 opacity 0，表头 hover / 下拉打开 / 已筛选(.active) 时显现；已筛选用 violet-9 高亮。
+
+  // 漏斗紧跟排序图标之后：antd 默认 .ant-table-filter-column 用 space-between，会把漏斗推到
+  // 表头最右、与排序图标脱节；改 flex-start 让「标题 → 排序 → 漏斗」连成一组。
+  .ant-table-filter-column {
+    justify-content: flex-start;
+  }
+
+  .ant-table-filter-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    margin: 0 0 0 6px;
+    border-radius: 6px;
+    color: var(--fc-text-4);
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+
+    // 隐藏 antd 默认实心漏斗，改用 lucide Funnel 描边图标
+    > .anticon {
+      display: none;
+    }
+
+    &::before {
+      width: 14px;
+      height: 14px;
+      content: '';
+      background: currentColor;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 -2 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 20a1 1 0 0 0 .553.895l3.447 1.724V14.87l5.446-5.446A.5.5 0 0 0 19.093 8.5H4.907a.5.5 0 0 0-.353.924L10 14.87Z'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 -2 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 20a1 1 0 0 0 .553.895l3.447 1.724V14.87l5.446-5.446A.5.5 0 0 0 19.093 8.5H4.907a.5.5 0 0 0-.353.924L10 14.87Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    &:hover {
+      color: var(--fc-text-2);
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+    }
+
+    &:active {
+      color: var(--fc-text-1);
+      background: rgb(var(--fc-fill-5-rgb) / 0.7);
+    }
+
+    // 已筛选（antd 给 trigger 加 .active）：常显 + violet
+    &.active {
+      opacity: 1;
+      color: var(--fc-violet-9);
+
+      &:hover {
+        color: var(--fc-violet-9);
+        background: rgb(var(--fc-fill-5-rgb) / 0.4);
+      }
+    }
+
+    // 下拉打开时保持可见（即便鼠标移出表头）
+    &.ant-dropdown-open {
+      opacity: 1;
+    }
+  }
+
+  // 表头 hover 时显现漏斗（与排序图标同款显隐）
+  .ant-table-thead > tr > th:hover .ant-table-filter-trigger {
+    opacity: 1;
+  }
 }
