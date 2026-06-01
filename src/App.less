@@ -381,6 +381,26 @@ input::placeholder {
   }
 }
 
+// antd表格排序icon特殊处理
+.ant-table-column-has-sorters .ant-table-column-sorter-inner {
+  .ant-table-column-sorter-up,
+  .ant-table-column-sorter-down {
+    transition: all 0.2s;
+  }
+
+  &:has(.ant-table-column-sorter-up.active) {
+    .ant-table-column-sorter-down {
+      opacity: 0;
+    }
+  }
+
+  &:has(.ant-table-column-sorter-down.active) {
+    .ant-table-column-sorter-up {
+      opacity: 0;
+    }
+  }
+}
+
 .theme-light.theme-light-gold {
   .login-main.integration {
     .ant-btn-primary {
