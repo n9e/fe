@@ -24,7 +24,7 @@ import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import EnhancedTable from '@/components/EnhancedTable';
-import Tags from '@/components/TableTags/Tags';
+import { tagsColumn, userColumn, dateColumn } from '@/components/EnhancedTable/columns';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
@@ -137,40 +137,10 @@ const index = (_props: any) => {
       },
     ] as any,
     [
-      {
-        title: t('tpl.tags'),
-        dataIndex: 'tags',
-        width: 280,
-        render: (text) => {
-          return <Tags type='outline' maxWidth={180} data={text} onTagClick={handleTagClick} />;
-        },
-      },
-      {
-        title: t('tpl.creator'),
-        dataIndex: 'create_by',
-        width: 120,
-        render: (val, record: any) => (
-          <div>
-            <div>{val}</div>
-            {record.create_by_nickname && <div className='text-soft'>{record.create_by_nickname}</div>}
-          </div>
-        ),
-      },
-      {
-        title: t('tpl.last_updated'),
-        dataIndex: 'update_at',
-        width: 180,
-        render: (text) => {
-          const m = moment.unix(text);
-          return (
-            <div>
-              <div>{m.format('YYYY-MM-DD')}</div>
-              <div>{m.format('HH:mm:ss')}</div>
-            </div>
-          );
-        },
-      },
-    ],
+      tagsColumn({ title: t('tpl.tags'), dataIndex: 'tags', maxWidth: 180, onTagClick: handleTagClick }),
+      userColumn({ title: t('tpl.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
+      dateColumn({ title: t('tpl.last_updated'), dataIndex: 'update_at', unix: true }),
+    ] as any,
   );
 
   return (
