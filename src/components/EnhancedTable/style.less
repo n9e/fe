@@ -1,0 +1,104 @@
+// EnhancedTable 操作列样式（收/放）。视觉基线（排序/筛选图标、固定列底色等）在 theme/table.less。
+
+// 操作列单元格：放出的文字链接 + 三点，右对齐
+.fc-table-action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+// 放出（文字链接，design-system in-cell text）
+.fc-table-action-inline-btn.ant-btn {
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  color: var(--fc-violet-11);
+  font-size: inherit;
+  line-height: 22px;
+
+  &:hover,
+  &:focus {
+    color: var(--fc-violet-9);
+    background: rgb(var(--fc-fill-5-rgb) / 0.4);
+  }
+
+  &.is-danger {
+    color: var(--fc-fill-error);
+  }
+
+  &[disabled],
+  &[disabled]:hover {
+    color: var(--fc-text-4);
+    background: transparent;
+  }
+}
+
+// 三点触发按钮（ghost-quaternary-xs）
+.fc-table-action-trigger.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  color: var(--fc-text-3);
+
+  &:hover,
+  &:focus {
+    color: var(--fc-text-2);
+    background: rgb(var(--fc-fill-5-rgb) / 0.4);
+  }
+}
+
+// 三点菜单浮层
+.fc-table-action-dropdown {
+  .ant-dropdown-menu {
+    min-width: 112px;
+    padding: 8px 0;
+    border-radius: 8px;
+  }
+
+  .ant-dropdown-menu-item {
+    padding: 0;
+    line-height: normal;
+  }
+
+  .ant-dropdown-menu-item-divider {
+    margin: 4px 0;
+    background-color: var(--fc-border-color);
+  }
+
+  .fc-table-action-menu-btn.ant-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 32px;
+    padding: 0 16px;
+    color: var(--fc-text-3);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+
+    &:hover,
+    &:focus {
+      color: var(--fc-text-2);
+    }
+
+    &.is-danger {
+      color: var(--fc-fill-error);
+    }
+
+    &.is-danger:hover,
+    &.is-danger:focus {
+      color: color-mix(in srgb, var(--fc-fill-error) 82%, #000);
+    }
+
+    &[disabled],
+    &[disabled]:hover {
+      color: var(--fc-text-4);
+    }
+  }
+}

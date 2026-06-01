@@ -15,8 +15,8 @@
  *
  */
 import React, { useState, useContext, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Table, Divider, Popconfirm, Tag, Row, Col, Button, Dropdown, Menu, message, Space } from 'antd';
+import { Link, useHistory } from 'react-router-dom';
+import { Table, Divider, Popconfirm, Tag, Row, Col, Button, Dropdown, Menu, message, Space, Modal } from 'antd';
 import { DownOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
@@ -32,6 +32,7 @@ import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import SearchInput from '@/components/BaseSearchInput';
+import EnhancedTable from '@/components/EnhancedTable';
 
 import { Tpl } from './interface';
 import BindTags from './bindTags';
@@ -60,6 +61,7 @@ function getTableData(options: any, gids: string | undefined, query: string) {
 
 const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
+  const history = useHistory();
   const [query, setQuery] = useState(() => sessionStorage.getItem(SEARCH_SESSION_KEY) || '');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
@@ -161,35 +163,6 @@ const index = (_props: any) => {
           return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
         },
       },
-      {
-        title: t('table.operations'),
-        width: 220,
-        render: (_text, record) => {
-          return (
-            <span>
-              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
-              <Divider type='vertical' />
-              <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.edit')}</Link>
-              <Divider type='vertical' />
-              <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
-              <Divider type='vertical' />
-              <Popconfirm
-                title={<div style={{ width: 100 }}>{t('common:confirm.delete')}</div>}
-                onConfirm={() => {
-                  request(`${api.tasktpl(record.group_id)}/${record.id}`, {
-                    method: 'DELETE',
-                  }).then(() => {
-                    message.success(t('msg.delete.success'));
-                    refresh();
-                  });
-                }}
-              >
-                <a style={{ color: 'red' }}>{t('common:btn.delete')}</a>
-              </Popconfirm>
-            </span>
-          );
-        },
-      },
     ],
   );
 
@@ -254,11 +227,35 @@ const index = (_props: any) => {
                 </Col>
               )}
             </Row>
-            <Table
+            <EnhancedTable
               className='mt-2'
               size='small'
               rowKey='id'
               columns={columns}
+              rowActions={(record) => ({
+                inline: [{ key: 'create', text: t('task.create'), onClick: () => history.push(`/job-tpls/add/task?tpl=${record.id}`) }],
+                menu: [
+                  { key: 'edit', text: t('common:btn.edit'), onClick: () => history.push(`/job-tpls/${record.id}/modify`) },
+                  { key: 'clone', text: t('common:btn.clone'), onClick: () => history.push(`/job-tpls/${record.id}/clone`) },
+                  {
+                    key: 'delete',
+                    text: t('common:btn.delete'),
+                    danger: true,
+                    onClick: () => {
+                      Modal.confirm({
+                        title: t('common:confirm.delete'),
+                        onOk: () => {
+                          request(`${api.tasktpl(record.group_id)}/${record.id}`, { method: 'DELETE' }).then(() => {
+                            message.success(t('msg.delete.success'));
+                            refresh();
+                          });
+                        },
+                      });
+                    },
+                  },
+                ],
+              })}
+              actionColumn={{ title: t('table.operations'), width: 110 }}
               {...(tableProps as any)}
               rowSelection={{
                 selectedRowKeys: selectedIds,
