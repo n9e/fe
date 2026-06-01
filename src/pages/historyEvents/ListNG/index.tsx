@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
-import { Input, Tag, Button, Space, Table, Select, Dropdown, Menu, message } from 'antd';
+import { Input, Tag, Button, Space, Select, message } from 'antd';
 import queryString from 'query-string';
 import { useHistory } from 'react-router-dom';
 
@@ -21,6 +21,7 @@ import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawe
 import usePagination from '@/components/usePagination';
 import { getEventById } from '@/pages/alertCurEvent/services';
 import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEventsModal';
+import EnhancedTable from '@/components/EnhancedTable';
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
@@ -177,82 +178,6 @@ const Event = (props: Props) => {
               }}
             >
               {record.status === 1 ? value : t('alert-cur-events:status_0')}
-            </div>
-          );
-        },
-      },
-      {
-        title: t('common:table.operations'),
-        fixed: 'right' as const,
-        render(record) {
-          return (
-            <div
-              style={{
-                minWidth: getTextWidth(t('common:table.operations')),
-              }}
-            >
-              <Dropdown
-                overlay={
-                  <Menu>
-                    {IS_PLUS && (
-                      <Menu.Item>
-                        <AckBtn
-                          data={record}
-                          onOk={() => {
-                            setRefreshFlag(_.uniqueId('refresh_'));
-                          }}
-                        />
-                      </Menu.Item>
-                    )}
-                    {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
-                      <Menu.Item>
-                        <Button
-                          style={{ padding: 0 }}
-                          size='small'
-                          type='link'
-                          onClick={() => {
-                            history.push({
-                              pathname: '/alert-mutes/add',
-                              search: queryString.stringify({
-                                busiGroup: record.group_id,
-                                prod: record.rule_prod,
-                                cate: record.cate,
-                                datasource_ids: [record.datasource_id],
-                                tags: record.tags,
-                              }),
-                            });
-                          }}
-                        >
-                          {t('shield')}
-                        </Button>
-                      </Menu.Item>
-                    )}
-                    {!hideDeleteEventButton && (
-                      <Menu.Item>
-                        <Button
-                          style={{ padding: 0 }}
-                          size='small'
-                          type='link'
-                          danger
-                          onClick={() =>
-                            deleteAlertEventsModal(
-                              [record.id],
-                              () => {
-                                setRefreshFlag(_.uniqueId('refresh_'));
-                              },
-                              t,
-                            )
-                          }
-                        >
-                          {t('common:btn.delete')}
-                        </Button>
-                      </Menu.Item>
-                    )}
-                  </Menu>
-                }
-              >
-                <Button type='link' icon={<MoreOutlined />} />
-              </Dropdown>
             </div>
           );
         },
@@ -450,13 +375,64 @@ const Event = (props: Props) => {
           {filterAreaRight}
         </div>
       )}
-      <Table
+      <EnhancedTable
         className='mt-4 n9e-antd-table-with-border-collapse'
         size='small'
         tableLayout='auto'
         scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined}
         columns={columns}
         rowKey='id'
+        {...(showClaimant
+          ? {
+              rowActions: (record) => ({
+                menu: _.compact([
+                  IS_PLUS && {
+                    key: 'ack',
+                    node: (
+                      <AckBtn
+                        data={record}
+                        onOk={() => {
+                          setRefreshFlag(_.uniqueId('refresh_'));
+                        }}
+                      />
+                    ),
+                  },
+                  !_.includes(['firemap', 'northstar'], record?.rule_prod) && {
+                    key: 'shield',
+                    icon: 'permission',
+                    text: t('shield'),
+                    onClick: () => {
+                      history.push({
+                        pathname: '/alert-mutes/add',
+                        search: queryString.stringify({
+                          busiGroup: record.group_id,
+                          prod: record.rule_prod,
+                          cate: record.cate,
+                          datasource_ids: [record.datasource_id],
+                          tags: record.tags,
+                        }),
+                      });
+                    },
+                  },
+                  !hideDeleteEventButton && {
+                    key: 'delete',
+                    icon: 'delete',
+                    text: t('common:btn.delete'),
+                    danger: true,
+                    onClick: () =>
+                      deleteAlertEventsModal(
+                        [record.id],
+                        () => {
+                          setRefreshFlag(_.uniqueId('refresh_'));
+                        },
+                        t,
+                      ),
+                  },
+                ]),
+              }),
+              actionColumn: { title: t('common:table.operations'), width: 64 },
+            }
+          : {})}
         {...tableProps}
         rowClassName={(record: { severity: number; is_recovered: number }) => {
           return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';

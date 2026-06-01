@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Dropdown, Menu, Space } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
+import { Tag, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -20,6 +19,7 @@ import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS, EVENTS_TABLE_PAGESIZE_CACHE_KEY } from '../../constants';
 import { FilterType } from '../../types';
 import EventDetailDrawer from './EventDetailDrawer';
+import EnhancedTable from '@/components/EnhancedTable';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -183,81 +183,6 @@ export default function AlertTable(props: IProps) {
         );
       },
     },
-    {
-      title: t('common:table.operations'),
-      fixed: 'right' as const,
-      render(record) {
-        return (
-          <div
-            style={{
-              minWidth: getTextWidth(t('common:table.operations')),
-            }}
-          >
-            <Dropdown
-              overlay={
-                <Menu>
-                  {IS_PLUS && (
-                    <Menu.Item>
-                      <AckBtn
-                        data={record}
-                        onOk={() => {
-                          setRefreshFlag(_.uniqueId('refresh_'));
-                        }}
-                      />
-                    </Menu.Item>
-                  )}
-                  {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
-                    <Menu.Item>
-                      <Button
-                        style={{ padding: 0 }}
-                        size='small'
-                        type='link'
-                        onClick={() => {
-                          history.push({
-                            pathname: '/alert-mutes/add',
-                            search: queryString.stringify({
-                              busiGroup: record.group_id,
-                              prod: record.rule_prod,
-                              cate: record.cate,
-                              datasource_ids: [record.datasource_id],
-                              tags: record.tags,
-                            }),
-                          });
-                        }}
-                      >
-                        {t('shield')}
-                      </Button>
-                    </Menu.Item>
-                  )}
-                  <Menu.Item>
-                    <Button
-                      style={{ padding: 0 }}
-                      size='small'
-                      type='link'
-                      danger
-                      onClick={() =>
-                        deleteAlertEventsModal(
-                          [record.id],
-                          () => {
-                            setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                            setRefreshFlag(_.uniqueId('refresh_'));
-                          },
-                          t,
-                        )
-                      }
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Button type='link' icon={<MoreOutlined />} />
-            </Dropdown>
-          </div>
-        );
-      },
-    },
   ];
 
   if (import.meta.env.VITE_IS_PRO === 'true') {
@@ -309,7 +234,7 @@ export default function AlertTable(props: IProps) {
 
   return (
     <div className='n9e-antd-table-height-full'>
-      <Table
+      <EnhancedTable
         size='small'
         tableLayout='auto'
         scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content', y: 'calc(100% - 37px)' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
@@ -330,6 +255,58 @@ export default function AlertTable(props: IProps) {
           ...tableProps.pagination,
           pageSizeOptions: ['30', '100', '200', '500'],
         }}
+        rowActions={(record) => ({
+          menu: _.compact([
+            IS_PLUS
+              ? {
+                  key: 'ack',
+                  node: (
+                    <AckBtn
+                      data={record}
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refresh_'));
+                      }}
+                    />
+                  ),
+                }
+              : undefined,
+            !_.includes(['firemap', 'northstar'], record?.rule_prod)
+              ? {
+                  key: 'shield',
+                  icon: 'permission',
+                  text: t('shield'),
+                  onClick: () => {
+                    history.push({
+                      pathname: '/alert-mutes/add',
+                      search: queryString.stringify({
+                        busiGroup: record.group_id,
+                        prod: record.rule_prod,
+                        cate: record.cate,
+                        datasource_ids: [record.datasource_id],
+                        tags: record.tags,
+                      }),
+                    });
+                  },
+                }
+              : undefined,
+            {
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              onClick: () =>
+                deleteAlertEventsModal(
+                  [record.id],
+                  () => {
+                    setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                    setRefreshFlag(_.uniqueId('refresh_'));
+                  },
+                  t,
+                ),
+            },
+          ]) as any,
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
       <EventDetailDrawer
         showAckBtn

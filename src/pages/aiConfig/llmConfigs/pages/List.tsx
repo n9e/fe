@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Table, Tooltip, Modal, Tag, Alert, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Space, Switch, Tooltip, Modal, Tag, Alert, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Trash2 } from 'lucide-react';
 import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
+import EnhancedTable from '@/components/EnhancedTable';
+import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../constants';
 import { getList, deleteItem, putItem } from '../services';
@@ -34,12 +37,51 @@ export default function List() {
               </Space>
             </div>
             <div className='min-h-0 flex-shrink-0'>
-              <Table
+              <EnhancedTable
                 size='small'
                 rowKey='id'
                 pagination={pagination}
                 loading={loading}
                 dataSource={data}
+                rowActions={(record) => ({
+                  menu: [
+                    {
+                      key: 'edit',
+                      icon: 'edit',
+                      text: t('common:btn.edit'),
+                      onClick: () => setEditDrawerState({ visible: true, id: record.id }),
+                    },
+                    {
+                      key: 'delete',
+                      danger: true,
+                      disabled: record.enabled === true,
+                      node: (
+                        <Tooltip title={record.enabled === true ? t('cannot_delete_when_enabled') : undefined}>
+                          <Button
+                            type='link'
+                            className='fc-table-action-menu-btn is-danger'
+                            disabled={record.enabled === true}
+                            icon={<Trash2 className='fc-table-action-menu-icon' />}
+                            onClick={() => {
+                              Modal.confirm({
+                                title: t('common:confirm.delete'),
+                                onOk: () => {
+                                  deleteItem(record.id).then(() => {
+                                    message.success(t('common:success.delete'));
+                                    run();
+                                  });
+                                },
+                              });
+                            }}
+                          >
+                            {t('common:btn.delete')}
+                          </Button>
+                        </Tooltip>
+                      ),
+                    },
+                  ],
+                })}
+                actionColumn={{ title: t('common:table.operations'), width: 64 }}
                 columns={[
                   {
                     dataIndex: 'id',
@@ -59,6 +101,8 @@ export default function List() {
                   {
                     dataIndex: 'description',
                     title: t('description'),
+                    ellipsis: { showTitle: false },
+                    render: (val) => <EllipsisText text={val} />,
                   },
                   {
                     dataIndex: 'api_type',
@@ -85,35 +129,6 @@ export default function List() {
                           });
                         }}
                       />
-                    ),
-                  },
-                  {
-                    title: t('common:table.operations'),
-                    width: 100,
-                    render: (record) => (
-                      <Space size={2}>
-                        <Button size='small' type='text' className='p-0' icon={<EditOutlined />} onClick={() => setEditDrawerState({ visible: true, id: record.id })} />
-                        <Tooltip title={record.enabled === true ? t('cannot_delete_when_enabled') : undefined}>
-                          <Button
-                            size='small'
-                            type='text'
-                            className='p-0'
-                            icon={<DeleteOutlined />}
-                            disabled={record.enabled === true}
-                            onClick={() => {
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk: () => {
-                                  deleteItem(record.id).then(() => {
-                                    message.success(t('common:success.delete'));
-                                    run();
-                                  });
-                                },
-                              });
-                            }}
-                          />
-                        </Tooltip>
-                      </Space>
                     ),
                   },
                 ]}

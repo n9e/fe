@@ -1,11 +1,12 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import _ from 'lodash';
-import { Table, Space, Button, Input, Dropdown, Menu, Modal, Tag } from 'antd';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { Space, Button, Input, Modal, Tag } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useDebounceEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import EnhancedTable from '@/components/EnhancedTable';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { HelpLink } from '@/components/pageLayout';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -21,7 +22,7 @@ interface Props {
 export default function index(props: Props) {
   const { component, component_id } = props;
   const { t } = useTranslation('builtInComponents');
-  const { darkMode, busiGroups } = useContext(CommonStateContext);
+  const { darkMode, busiGroups, perms } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
     query?: string;
   }>({
@@ -115,7 +116,7 @@ export default function index(props: Props) {
           </AuthorizationWrapper>
         </Space>
       </div>
-      <Table
+      <EnhancedTable
         className='mt-2'
         size='small'
         rowKey='id'
@@ -151,86 +152,68 @@ export default function index(props: Props) {
               return value;
             },
           },
-          {
-            title: t('common:table.operations'),
-            width: 100,
-            render: (record) => {
-              return (
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item>
-                        <a
-                          onClick={() => {
-                            GroupSelectModal({
-                              busiGroups,
-                              onOk: (group_id) => {
-                                window.open(`/collects/add/${group_id}?component_id=${component_id}&cate=${record.cate}&payloadID=${record.id}`, '_blank');
-                              },
-                            });
-                          }}
-                        >
-                          {t('collect_create')}
-                        </a>
-                      </Menu.Item>
-                      <AuthorizationWrapper allowedPerms={['/components/put']}>
-                        <Menu.Item>
-                          <a
-                            onClick={() => {
-                              PayloadFormModal({
-                                darkMode,
-                                action: 'edit',
-                                showName: true,
-                                showCate: true,
-                                cateList,
-                                cateI18nKey: 'collects:cate',
-                                contentMode: 'yaml',
-                                initialValues: record,
-                                onOk: () => {
-                                  fetchData();
-                                  fetchCates();
-                                },
-                              });
-                            }}
-                          >
-                            {t('common:btn.edit')}
-                          </a>
-                        </Menu.Item>
-                      </AuthorizationWrapper>
-                      {record.updated_by !== 'system' && (
-                        <AuthorizationWrapper allowedPerms={['/components/del']}>
-                          <Menu.Item>
-                            <Button
-                              type='link'
-                              danger
-                              className='p-0 h-auto'
-                              onClick={() => {
-                                Modal.confirm({
-                                  title: t('common:confirm.delete'),
-                                  onOk() {
-                                    deletePayloads([record.id]).then(() => {
-                                      fetchData();
-                                      fetchCates();
-                                    });
-                                  },
-                                });
-                              }}
-                            >
-                              {t('common:btn.delete')}
-                            </Button>
-                          </Menu.Item>
-                        </AuthorizationWrapper>
-                      )}
-                    </Menu>
-                  }
-                >
-                  <Button type='link' icon={<MoreOutlined />} />
-                </Dropdown>
-              );
-            },
-          },
         ]}
         pagination={pagination}
+        rowActions={(record: any) => ({
+          menu: _.compact([
+            {
+              key: 'collect_create',
+              icon: 'open',
+              text: t('collect_create'),
+              onClick: () => {
+                GroupSelectModal({
+                  busiGroups,
+                  onOk: (group_id) => {
+                    window.open(`/collects/add/${group_id}?component_id=${component_id}&cate=${record.cate}&payloadID=${record.id}`, '_blank');
+                  },
+                });
+              },
+            },
+            _.includes(perms, '/components/put')
+              ? {
+                  key: 'edit',
+                  icon: 'edit',
+                  text: t('common:btn.edit'),
+                  onClick: () => {
+                    PayloadFormModal({
+                      darkMode,
+                      action: 'edit',
+                      showName: true,
+                      showCate: true,
+                      cateList,
+                      cateI18nKey: 'collects:cate',
+                      contentMode: 'yaml',
+                      initialValues: record,
+                      onOk: () => {
+                        fetchData();
+                        fetchCates();
+                      },
+                    });
+                  },
+                }
+              : undefined,
+            record.updated_by !== 'system' && _.includes(perms, '/components/del')
+              ? {
+                  key: 'delete',
+                  icon: 'delete',
+                  text: t('common:btn.delete'),
+                  danger: true,
+                  onClick: () => {
+                    Modal.confirm({
+                      title: t('common:confirm.delete'),
+                      onOk() {
+                        deletePayloads([record.id]).then(() => {
+                          fetchData();
+                          fetchCates();
+                        });
+                      },
+                    });
+                  },
+                }
+              : undefined,
+          ]) as any,
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
     </>
   );

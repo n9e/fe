@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, Table, Switch, Space, Button, Modal, message } from 'antd';
+import { Drawer, Switch, Space, Button, Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { CloseOutlined } from '@ant-design/icons';
 
+import EnhancedTable from '@/components/EnhancedTable';
 import { getNotifyContacts, putNotifyContacts } from './services';
 import { ContactType } from './types';
 import { NS, CN } from './constants';
@@ -51,11 +52,61 @@ export default function ContactDrawer(props: Props) {
               </Button>
             </Space>
           </div>
-          <Table<ContactType>
+          <EnhancedTable<ContactType>
             rowKey='ident'
             size='small'
             pagination={false}
             dataSource={data}
+            rowActions={(reocrd) => ({
+              menu: _.compact([
+                {
+                  key: 'edit',
+                  icon: 'edit',
+                  text: t('common:btn.edit'),
+                  onClick: () => {
+                    EditModal({
+                      initialValues: reocrd,
+                      onOk: (values) => {
+                        const oldIndex = _.findIndex(data, (item) => item.ident === reocrd.ident);
+                        const newData = _.map(data, (item, idx) => {
+                          if (idx === oldIndex) {
+                            return values;
+                          }
+                          return item;
+                        });
+                        putNotifyContacts(newData).then(() => {
+                          setData(newData);
+                          message.success(t('common:success.edit'));
+                        });
+                      },
+                    });
+                  },
+                },
+                !reocrd.built_in
+                  ? {
+                      key: 'delete',
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      danger: true,
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            const newData = _.filter(data, (item) => item.ident !== reocrd.ident);
+                            putNotifyContacts(newData).then(() => {
+                              setData(newData);
+                              message.success(t('common:success.delete'));
+                            });
+                          },
+
+                          onCancel() {},
+                        });
+                      },
+                    }
+                  : undefined,
+              ]),
+            })}
+            actionColumn={{ title: t('common:table.operations'), width: 64 }}
             columns={[
               {
                 title: t('common:table.name'),
@@ -95,66 +146,8 @@ export default function ContactDrawer(props: Props) {
                   );
                 },
               },
-              {
-                title: t('common:table.operations'),
-                width: 100,
-                render: (reocrd) => {
-                  return (
-                    <Space>
-                      <a
-                        onClick={() => {
-                          EditModal({
-                            initialValues: reocrd,
-                            onOk: (values) => {
-                              const oldIndex = _.findIndex(data, (item) => item.ident === reocrd.ident);
-                              const newData = _.map(data, (item, idx) => {
-                                if (idx === oldIndex) {
-                                  return values;
-                                }
-                                return item;
-                              });
-                              putNotifyContacts(newData).then(() => {
-                                setData(newData);
-                                message.success(t('common:success.edit'));
-                              });
-                            },
-                          });
-                        }}
-                      >
-                        {t('common:btn.edit')}
-                      </a>
-                      {!reocrd.built_in && (
-                        <Button
-                          size='small'
-                          type='link'
-                          danger
-                          style={{
-                            padding: 0,
-                          }}
-                          onClick={() => {
-                            Modal.confirm({
-                              title: t('common:confirm.delete'),
-                              onOk: () => {
-                                const newData = _.filter(data, (item) => item.ident !== reocrd.ident);
-                                putNotifyContacts(newData).then(() => {
-                                  setData(newData);
-                                  message.success(t('common:success.delete'));
-                                });
-                              },
-
-                              onCancel() {},
-                            });
-                          }}
-                        >
-                          {t('common:btn.delete')}
-                        </Button>
-                      )}
-                    </Space>
-                  );
-                },
-              },
             ]}
-          ></Table>
+          ></EnhancedTable>
         </div>
       </div>
     </Drawer>

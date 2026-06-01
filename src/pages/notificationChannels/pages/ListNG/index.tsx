@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Input, Select, Space, Table, Button, Modal, Switch, message, Tooltip } from 'antd';
-import { NotificationOutlined, PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Input, Select, Space, Button, Modal, Switch, message } from 'antd';
+import { NotificationOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { map, upperCase, includes, filter } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -10,6 +10,7 @@ import moment from 'moment';
 import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
+import EnhancedTable from '@/components/EnhancedTable';
 
 import { NS, NOTIFICATION_CHANNEL_TYPES } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
@@ -223,7 +224,7 @@ export default function index() {
               </Space>
             </div>
             <div className='n9e-antd-table-height-full'>
-              <Table
+              <EnhancedTable
                 size='small'
                 loading={loading}
                 rowKey='id'
@@ -296,46 +297,38 @@ export default function index() {
                       />
                     ),
                   },
-                  {
-                    title: t('common:table.operations'),
-                    width: 100,
-                    render: (record) => {
-                      return (
-                        <Space size={2}>
-                          <Link
-                            className='table-operator-area-normal'
-                            to={{
-                              pathname: `/${NS}/edit/${record.id}?mode=clone`,
-                            }}
-                            target='_blank'
-                          >
-                            <Button size='small' type='text' className='p-0' icon={<CopyOutlined />} />
-                          </Link>
-                          <Tooltip title={record.enable === true ? t('delete_disable_first') : undefined}>
-                            <Button
-                              size='small'
-                              type='text'
-                              className='p-0'
-                              icon={<DeleteOutlined />}
-                              disabled={record.enable === true}
-                              onClick={() => {
-                                Modal.confirm({
-                                  title: t('common:confirm.delete'),
-                                  onOk: () => {
-                                    deleteItems([record.id]).then(() => {
-                                      message.success(t('common:success.delete'));
-                                      run();
-                                    });
-                                  },
-                                });
-                              }}
-                            />
-                          </Tooltip>
-                        </Space>
-                      );
-                    },
-                  },
                 ]}
+                rowActions={(record) => ({
+                  menu: [
+                    {
+                      key: 'clone',
+                      icon: 'copy',
+                      text: t('common:btn.clone'),
+                      onClick: () => {
+                        window.open(`/${NS}/edit/${record.id}?mode=clone`, '_blank');
+                      },
+                    },
+                    {
+                      key: 'delete',
+                      danger: true,
+                      disabled: record.enable === true,
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteItems([record.id]).then(() => {
+                              message.success(t('common:success.delete'));
+                              run();
+                            });
+                          },
+                        });
+                      },
+                    },
+                  ],
+                })}
+                actionColumn={{ title: t('common:table.operations'), width: 64 }}
                 rowSelection={{
                   selectedRowKeys: map(selectedRows, 'id'),
                   onChange: (_selectedRowKeys, selectedRows: ChannelItem[]) => {
@@ -343,7 +336,7 @@ export default function index() {
                   },
                 }}
                 pagination={pagination}
-                scroll={{ y: 'calc(100% - 42px)' }}
+                scroll={{ x: 'max-content', y: 'calc(100% - 42px)' }}
               />
             </div>
           </div>

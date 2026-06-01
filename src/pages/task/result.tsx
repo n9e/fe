@@ -16,12 +16,13 @@
  */
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Divider, Tag, Row, Col, Button, Card } from 'antd';
+import { Divider, Tag, Row, Col, Button, Card } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import EnhancedTable from '@/components/EnhancedTable';
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
 import api from '@/utils/api';
@@ -157,23 +158,6 @@ const index = (props: any) => {
     },
   ];
 
-  if (!data.done) {
-    columns.push({
-      title: t('table.operations'),
-      render: (_text, record) => {
-        return (
-          <span>
-            <a onClick={() => handleHostAction(record.host, 'ignore')}>ignore</a>
-            <Divider type='vertical' />
-            <a onClick={() => handleHostAction(record.host, 'redo')}>redo</a>
-            <Divider type='vertical' />
-            <a onClick={() => handleHostAction(record.host, 'kill')}>kill</a>
-          </span>
-        );
-      },
-    });
-  }
-
   return (
     <PageLayout
       title={
@@ -230,12 +214,24 @@ const index = (props: any) => {
               ) : null}
             </Col>
           </Row>
-          <Table
+          <EnhancedTable
             size='small'
             rowKey='host'
             columns={columns as any}
             dataSource={hosts}
             loading={loading}
+            {...(!data.done
+              ? {
+                  rowActions: (record) => ({
+                    menu: [
+                      { key: 'ignore', icon: 'default', text: 'ignore', onClick: () => handleHostAction(record.host, 'ignore') },
+                      { key: 'redo', icon: 'run', text: 'redo', onClick: () => handleHostAction(record.host, 'redo') },
+                      { key: 'kill', icon: 'delete', text: 'kill', danger: true, onClick: () => handleHostAction(record.host, 'kill') },
+                    ],
+                  }),
+                  actionColumn: { title: t('table.operations'), width: 64 },
+                }
+              : {})}
             pagination={
               {
                 showSizeChanger: true,
