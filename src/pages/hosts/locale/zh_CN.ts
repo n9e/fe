@@ -118,6 +118,8 @@ const zh_CN = {
     modal_title: '填写机器标识或者 IP',
     modal_placeholder: '每行一个机器标识或者 IP',
   },
+  force_cover: '强制覆盖',
+  batch_failed: '批量操作失败',
 };
 
 export default zh_CN;
