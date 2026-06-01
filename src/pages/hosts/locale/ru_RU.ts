@@ -117,6 +117,8 @@ const ru_RU = {
     modal_title: 'Введите идентификаторы хоста или IP',
     modal_placeholder: 'Один идентификатор хоста или IP на строку',
   },
+  force_cover: 'Принудительная замена',
+  batch_failed: 'Ошибка пакетной операции',
 };
 
 export default ru_RU;
