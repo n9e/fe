@@ -212,10 +212,11 @@ const index = (_props: any) => {
               rowActions={(record) => ({
                 inline: [{ key: 'create', text: t('task.create'), onClick: () => history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }) }],
                 menu: [
-                  { key: 'edit', text: t('common:btn.edit'), onClick: () => history.push(`/job-tpls/${record.id}/modify`) },
-                  { key: 'clone', text: t('common:btn.clone'), onClick: () => history.push(`/job-tpls/${record.id}/clone`) },
+                  { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => history.push(`/job-tpls/${record.id}/modify`) },
+                  { key: 'clone', icon: 'copy', text: t('common:btn.clone'), onClick: () => history.push(`/job-tpls/${record.id}/clone`) },
                   {
                     key: 'delete',
+                    icon: 'delete',
                     text: t('common:btn.delete'),
                     danger: true,
                     onClick: () => {

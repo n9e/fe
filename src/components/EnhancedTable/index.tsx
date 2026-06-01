@@ -1,13 +1,47 @@
 import React from 'react';
 import { Table, Dropdown, Menu, Button } from 'antd';
 import type { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
-import { MoreVertical } from 'lucide-react';
+import {
+  CheckCircle,
+  Copy,
+  ExternalLink,
+  Eye,
+  Link as LinkIcon,
+  MoreVertical,
+  Network,
+  Pencil,
+  Play,
+  Search,
+  Settings,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+} from 'lucide-react';
 import classNames from 'classnames';
 import './style.less';
+
+const actionIconMap = {
+  default: CheckCircle,
+  edit: Pencil,
+  view: Eye,
+  settings: Settings,
+  access: Network,
+  permission: ShieldCheck,
+  copy: Copy,
+  delete: Trash2,
+  run: Play,
+  search: Search,
+  open: ExternalLink,
+  link: LinkIcon,
+  ai: Sparkles,
+};
+export type ActionIconName = keyof typeof actionIconMap;
 
 export interface RowAction {
   key?: string;
   text: React.ReactNode;
+  /** lucide icon shown before the text in the kebab menu */
+  icon?: ActionIconName;
   onClick?: (e: React.MouseEvent) => void;
   disabled?: boolean;
   danger?: boolean;
@@ -31,12 +65,14 @@ export interface EnhancedTableProps<RecordType> extends TableProps<RecordType> {
 
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
 
-function ActionButton({ action, className }: { action: RowAction; className: string }) {
+function ActionButton({ action, className, withIcon }: { action: RowAction; className: string; withIcon?: boolean }) {
+  const Icon = withIcon && action.icon ? actionIconMap[action.icon] : undefined;
   return (
     <Button
       type='link'
       className={classNames(className, { 'is-danger': action.danger })}
       disabled={action.disabled}
+      icon={Icon ? <Icon className='fc-table-action-menu-icon' /> : undefined}
       onClick={(e) => {
         e.stopPropagation();
         action.onClick?.(e);
@@ -69,13 +105,13 @@ function RowActionCell({ actions }: { actions: RowActions }) {
             <Menu>
               {normal.map((a, i) => (
                 <Menu.Item key={a.key ?? `m-${i}`} disabled={a.disabled}>
-                  <ActionButton action={a} className='fc-table-action-menu-btn' />
+                  <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />
                 </Menu.Item>
               ))}
               {normal.length > 0 && danger.length > 0 && <Menu.Divider />}
               {danger.map((a, i) => (
                 <Menu.Item key={a.key ?? `d-${i}`} disabled={a.disabled}>
-                  <ActionButton action={a} className='fc-table-action-menu-btn' />
+                  <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />
                 </Menu.Item>
               ))}
             </Menu>
