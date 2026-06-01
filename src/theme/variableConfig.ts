@@ -2,6 +2,9 @@
  * tsGraph 使用
  */
 export const tsGraphThemeColor = {
+  labels: {
+    fontSize: 13,
+  },
   xAxis: {
     lineColor: {
       light: '#ccc',
