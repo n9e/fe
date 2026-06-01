@@ -119,6 +119,7 @@ const zh_HK = {
     modal_placeholder: '每行一個機器標識或 IP',
   },
   force_cover: '強制覆蓋',
+  force_delete: '強制刪除',
   batch_failed: '批量操作失敗',
 };
 

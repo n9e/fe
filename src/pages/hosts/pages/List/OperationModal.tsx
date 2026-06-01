@@ -296,9 +296,9 @@ export default function OperationModal(props: OperateionModalProps) {
         onCancel={() => setErrorModal({ visible: false, errData: [], formData: null })}
         footer={
           <div className='flex justify-end gap-2'>
-            {operateType !== OperateType.UpdateNote && (
+            {operateType === OperateType.Delete && (
               <Button danger onClick={handleForceSubmit}>
-                {t('hosts:force_cover')}
+                {t('hosts:force_delete')}
               </Button>
             )}
             <Button type='primary' onClick={() => setErrorModal({ visible: false, errData: [], formData: null })}>

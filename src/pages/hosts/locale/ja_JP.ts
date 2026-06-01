@@ -118,6 +118,7 @@ const ja_JP = {
     modal_placeholder: '1 行に 1 つのホスト識別子または IP',
   },
   force_cover: '強制上書き',
+  force_delete: '強制削除',
   batch_failed: '一括操作が失敗しました',
 };
 
