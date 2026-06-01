@@ -147,7 +147,7 @@ export default defineConfig(({ mode }) => {
             'table-bg': 'var(--fc-fill-2)',
             'table-header-bg': 'var(--fc-fill-2-5)',
             'table-header-color': 'var(--fc-text-3)',
-            'table-header-sort-bg': 'var(--fc-fill-2-5)',
+            'table-header-sort-bg': 'rgb(var(--fc-fill-5-rgb) / 0.4)',
             'table-body-sort-bg': 'var(--fc-fill-2-5)',
             'table-row-hover-bg': 'rgb(var(--fc-fill-5-rgb) / 0.2)',
             'table-selected-row-color': 'inherit',
