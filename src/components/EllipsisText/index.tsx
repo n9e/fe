@@ -43,7 +43,15 @@ export default function EllipsisText({ text, title, className, style, tooltipPro
   };
 
   return (
-    <Tooltip title={title ?? text} visible={visible} onVisibleChange={onVisibleChange} {...tooltipProps}>
+    <Tooltip
+      title={title ?? text}
+      visible={visible}
+      onVisibleChange={onVisibleChange}
+      // light surface tooltip via design tokens; auto-flips to a dark surface in dark mode
+      color='var(--fc-fill-2)'
+      overlayInnerStyle={{ color: 'var(--fc-text-1)', border: '1px solid var(--fc-border-color)' }}
+      {...tooltipProps}
+    >
       <div ref={ref} className={classNames('fc-ellipsis-text', className)} style={{ ...ellipsisStyle, ...style }}>
         {text}
       </div>
