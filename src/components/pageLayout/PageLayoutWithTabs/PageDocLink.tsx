@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Button } from 'antd';
+import { Button, Divider } from 'antd';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
@@ -27,16 +27,19 @@ export default function PageDocLink({ link }: { link: string }) {
   const { darkMode } = useContext(CommonStateContext);
 
   return (
-    <Button
-      className='document-open-button page-layout-page-doc-button'
-      size='small'
-      type='link'
-      icon={<IconFont type='icon-ic_book_one' />}
-      onClick={() => {
-        DocumentDrawer(getPageDocumentDrawerOptions(link, t(PAGE_DOCUMENT_LABEL_KEY), i18n.language, darkMode));
-      }}
-    >
-      {t(PAGE_DOCUMENT_LABEL_KEY)}
-    </Button>
+    <>
+      <Divider type='vertical' style={{ margin: '0 0 0 12px' }} />
+      <Button
+        className='document-open-button page-layout-page-doc-button'
+        size='small'
+        type='link'
+        icon={<IconFont type='icon-ic_book_one' />}
+        onClick={() => {
+          DocumentDrawer(getPageDocumentDrawerOptions(link, t(PAGE_DOCUMENT_LABEL_KEY), i18n.language, darkMode));
+        }}
+      >
+        {t(PAGE_DOCUMENT_LABEL_KEY)}
+      </Button>
+    </>
   );
 }
