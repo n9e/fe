@@ -9,6 +9,7 @@ import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable from '@/components/EnhancedTable';
 import { tagsColumn, userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../../constants';
 import { Item, getList, deleteItems } from '../../services';
@@ -177,6 +178,8 @@ export default function List() {
           {
             title: t('common:table.note'),
             dataIndex: 'description',
+            ellipsis: { showTitle: false },
+            render: (val) => <EllipsisText text={val} />,
           },
           {
             title: t('use_case.label'),
