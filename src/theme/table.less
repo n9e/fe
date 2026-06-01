@@ -44,6 +44,17 @@
     flex: 0 1 auto;
   }
 
+  // 表头列 hover / 已排序：整格底色（对齐 design-system thead th:hover / th:has(.is-sorted)）。
+  // 排除固定列表头——固定列需不透明背景，叠半透明 hover 会让横向滚动内容透出。
+  .ant-table-thead > tr > th:not(.ant-table-cell-fix-left):not(.ant-table-cell-fix-right) {
+    transition: background 0.15s ease;
+
+    &.ant-table-column-has-sorters:hover,
+    &.ant-table-column-sort {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+    }
+  }
+
   // 排序按钮（对齐 .fc-ghost-quaternary-xs：24px 命中区，14px 图标居中）
   .ant-table-column-sorter {
     display: inline-flex;
