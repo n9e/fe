@@ -118,6 +118,7 @@ const en_US = {
     modal_placeholder: 'One host identifier or IP per line',
   },
   force_cover: 'Force Override',
+  force_delete: 'Force Delete',
   batch_failed: 'Batch Operation Failed',
 };
 

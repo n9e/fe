@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Modal, Form, Input, Select, Radio, Table } from 'antd';
+import { Modal, Form, Input, Select, Radio, Table, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { putTargetsBgids, getBusiGroupsTags } from '@/pages/targets/services';
@@ -17,6 +17,11 @@ export default function index(props: Props) {
   const { busiGroups } = useContext(CommonStateContext);
   const { gids, idents, selectedRows, onOk } = props;
   const [visible, setVisible] = useState(false);
+  const [errorModal, setErrorModal] = useState<{ visible: boolean; errData: { host: string; error_msg: string }[]; formData: any }>({
+    visible: false,
+    errData: [],
+    formData: null,
+  });
   const [form] = Form.useForm();
   const action = Form.useWatch('action', form);
   const groups = _.uniqBy(
@@ -71,36 +76,14 @@ export default function index(props: Props) {
                     error_msg: val,
                   };
                 });
-                Modal.error({
-                  icon: null,
-                  content: (
-                    <Table
-                      size='small'
-                      columns={[
-                        {
-                          title: t('common:table.host'),
-                          dataIndex: 'host',
-                          key: 'host',
-                        },
-                        {
-                          title: t('common:table.error_msg'),
-                          dataIndex: 'error_msg',
-                          key: 'error_msg',
-                        },
-                      ]}
-                      dataSource={errData}
-                      pagination={false}
-                      rowKey='host'
-                    />
-                  ),
-                });
+                setErrorModal({ visible: true, errData, formData: data });
               }
             });
           });
         }}
       >
         <Form layout='vertical' preserve={false} form={form}>
-          <Form.Item label={t('targets')} name='idents'>
+          <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
             <Input.TextArea
               autoSize={{
                 minRows: 4,
@@ -168,6 +151,52 @@ export default function index(props: Props) {
             />
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        zIndex={1001}
+        visible={errorModal.visible}
+        title={t('hosts:batch_failed')}
+        onCancel={() => setErrorModal({ visible: false, errData: [], formData: null })}
+        footer={
+          <div className='flex justify-end gap-2'>
+            <Button
+              danger
+              onClick={() => {
+                putTargetsBgids({ ...errorModal.formData, force: true }).then((res) => {
+                  if (_.isEmpty(res?.dat)) {
+                    setErrorModal({ visible: false, errData: [], formData: null });
+                    setVisible(false);
+                    onOk();
+                  }
+                });
+              }}
+            >
+              {errorModal.formData?.action === 'del' ? t('hosts:force_delete') : t('hosts:force_cover')}
+            </Button>
+            <Button type='primary' onClick={() => setErrorModal({ visible: false, errData: [], formData: null })}>
+              {t('common:btn.ok')}
+            </Button>
+          </div>
+        }
+      >
+        <Table
+          size='small'
+          columns={[
+            {
+              title: t('common:table.host'),
+              dataIndex: 'host',
+              key: 'host',
+            },
+            {
+              title: t('common:table.error_msg'),
+              dataIndex: 'error_msg',
+              key: 'error_msg',
+            },
+          ]}
+          dataSource={errorModal.errData}
+          pagination={false}
+          rowKey='host'
+        />
       </Modal>
     </>
   );
