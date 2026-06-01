@@ -39,7 +39,7 @@ export type ActionIconName = keyof typeof actionIconMap;
 
 export interface RowAction {
   key?: string;
-  text: React.ReactNode;
+  text?: React.ReactNode;
   /** lucide icon shown before the text in the kebab menu */
   icon?: ActionIconName;
   onClick?: (e: React.MouseEvent) => void;
@@ -47,6 +47,8 @@ export interface RowAction {
   danger?: boolean;
   /** false to hide this action (e.g. by permission) */
   visible?: boolean;
+  /** render a custom node instead of the default button (for bespoke menu items) */
+  node?: React.ReactNode;
 }
 
 export interface RowActions {
@@ -93,9 +95,13 @@ function RowActionCell({ actions }: { actions: RowActions }) {
 
   return (
     <div className='fc-table-action-cell'>
-      {inline.map((a, i) => (
-        <ActionButton key={a.key ?? `inline-${i}`} action={a} className='fc-table-action-inline-btn' />
-      ))}
+      {inline.map((a, i) =>
+        a.node ? (
+          <React.Fragment key={a.key ?? `inline-${i}`}>{a.node}</React.Fragment>
+        ) : (
+          <ActionButton key={a.key ?? `inline-${i}`} action={a} className='fc-table-action-inline-btn' />
+        ),
+      )}
       {menu.length > 0 && (
         <Dropdown
           trigger={['click']}
@@ -105,13 +111,13 @@ function RowActionCell({ actions }: { actions: RowActions }) {
             <Menu>
               {normal.map((a, i) => (
                 <Menu.Item key={a.key ?? `m-${i}`} disabled={a.disabled}>
-                  <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />
+                  {a.node ?? <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />}
                 </Menu.Item>
               ))}
               {normal.length > 0 && danger.length > 0 && <Menu.Divider />}
               {danger.map((a, i) => (
                 <Menu.Item key={a.key ?? `d-${i}`} disabled={a.disabled}>
-                  <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />
+                  {a.node ?? <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />}
                 </Menu.Item>
               ))}
             </Menu>
