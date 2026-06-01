@@ -1,6 +1,9 @@
 const zh_CN = {
   title: '告警规则',
   search_placeholder: '搜索名称或标签',
+  status_triggered: '告警中',
+  status_normal: '无告警',
+  notify_rule_not_found: '未找到对应的通知规则',
   prod: '监控类型',
   severity: '级别',
   notify_groups: '告警接收组',

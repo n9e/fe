@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Space, Select, Input, Button, Table, Tooltip, Tag, Modal, Switch, message } from 'antd';
+import { Space, Select, Input, Button, Tooltip, Tag, Modal, Switch, message } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, SearchOutlined, InfoCircleOutlined, WarningFilled, CheckCircleFilled } from '@ant-design/icons';
+import { EyeOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { TriangleAlert, CircleCheckBig } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
@@ -9,14 +10,15 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
-import { priorityColor } from '@/utils/constant';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
-import { allCates } from '@/components/AdvancedWrap/utils';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
-import Tags from '@/components/Tags';
+import Tags from '@/components/TableTags/Tags';
+import EnhancedTable from '@/components/EnhancedTable';
+import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -54,7 +56,7 @@ interface Props {
 }
 
 export default function AlertRules(props: Props) {
-  const { t } = useTranslation('alertRules');
+  const { t, i18n } = useTranslation('alertRules');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   let defaultFilter = {} as Filter;
@@ -92,13 +94,19 @@ export default function AlertRules(props: Props) {
           </Space>
         ),
         dataIndex: 'cur_event_count',
+        width: 100,
         sorter: (a, b) => {
           return localeCompare(a.cur_event_count, b.cur_event_count);
         },
         render: (val, record) => {
           return (
-            <a
-              onClick={() => {
+            <Tags
+              type='fill'
+              borderRadius={6}
+              bgColor={val > 0 ? 'var(--fc-red-3)' : 'var(--fc-green-3)'}
+              fontColor={val > 0 ? 'var(--fc-red-11)' : 'var(--fc-green-11)'}
+              icon={() => (val > 0 ? <TriangleAlert size={14} /> : <CircleCheckBig size={14} />)}
+              onTagClick={() => {
                 setEventsDrawerProps({
                   ...eventsDrawerProps,
                   visible: true,
@@ -106,60 +114,13 @@ export default function AlertRules(props: Props) {
                   rid: record.id,
                 });
               }}
-              style={{
-                fontSize: 20,
-                color: val > 0 ? '#e6522c' : '#00a700',
-              }}
-            >
-              {val > 0 ? <WarningFilled /> : <CheckCircleFilled />}
-            </a>
-          );
-        },
-      },
-    ],
-    hideBusinessGroupColumn
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
-    [
-      {
-        title: t('table.cate'),
-        dataIndex: 'cate',
-        render: (val) => {
-          let logoSrc = _.find(allCates, { value: val })?.logo;
-          if (val === 'host') {
-            logoSrc = '/image/logos/host.png';
-          }
-          return <img alt={val} src={logoSrc} height={20} />;
-        },
-      },
-      {
-        title: t('table.datasource_ids'),
-        dataIndex: 'datasource_ids',
-        render(value) {
-          if (!value) return '';
-          return (
-            <Tags
-              width={70}
-              data={_.compact(
-                _.map(value, (item) => {
-                  if (item === 0) return '$all';
-                  const name = _.find(datasourceList, { id: item })?.name;
-                  if (!name) return '';
-                  return name;
-                }),
-              )}
+              data={[val > 0 ? t('status_triggered') : t('status_normal')]}
             />
           );
         },
       },
+    ],
+    [
       {
         title: t('table.name'),
         dataIndex: 'name',
@@ -167,16 +128,20 @@ export default function AlertRules(props: Props) {
           return localeCompare(a.name, b.name);
         },
         render: (data, record) => {
+          const groupName = !hideBusinessGroupColumn ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
           return (
-            <Link
-              className='table-text'
-              to={{
-                pathname: `/alert-rules/edit/${record.id}`,
-              }}
-              target={linkTarget}
-            >
-              {data}
-            </Link>
+            <div className='flex flex-col gap-0.5'>
+              <Link
+                className='table-text'
+                to={{
+                  pathname: `/alert-rules/edit/${record.id}`,
+                }}
+                target={linkTarget}
+              >
+                {data}
+              </Link>
+              {groupName && <span className='text-soft text-xs'>{groupName}</span>}
+            </div>
           );
         },
       },
@@ -185,27 +150,61 @@ export default function AlertRules(props: Props) {
         dataIndex: 'severities',
         render: (data) => {
           return (
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 4,
+            <Tags
+              type='fill'
+              borderRadius={6}
+              data={_.map(data, (severity) => `S${severity}`)}
+              bgColor={(tagname: string) => {
+                const bgColorMap: Record<string, string> = {
+                  S1: 'var(--fc-red-3)',
+                  S2: 'var(--fc-orange-3)',
+                  S3: 'var(--fc-yellow-3)',
+                };
+                return bgColorMap[tagname] || 'var(--fc-gray-3)';
               }}
-            >
-              {_.map(data, (severity) => {
-                return (
-                  <Tag
-                    key={severity}
-                    color={priorityColor[severity - 1]}
-                    style={{
-                      marginRight: 0,
-                    }}
-                  >
-                    S{severity}
-                  </Tag>
-                );
-              })}
-            </div>
+              fontColor={(tagname: string) => {
+                const fontColorMap: Record<string, string> = {
+                  S1: 'var(--fc-red-11)',
+                  S2: 'var(--fc-orange-11)',
+                  S3: 'var(--fc-yellow-11)',
+                };
+                return fontColorMap[tagname] || 'var(--fc-gray-11)';
+              }}
+            />
+          );
+        },
+      },
+      {
+        title: t('table.datasource_ids'),
+        dataIndex: 'datasource_ids',
+        render(value, record) {
+          if (!value) return null;
+          const cate = _.find(allCates, { value: record.cate });
+          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+          let logoSrc = cate?.logo;
+          if (record.cate === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
+          return (
+            <Space>
+              {logoSrc && (
+                <Tooltip title={cateLabel}>
+                  <img alt={record.cate} src={logoSrc} height={18} />
+                </Tooltip>
+              )}
+              <Tags
+                type='outline'
+                maxWidth={180}
+                data={_.compact(
+                  _.map(value, (item) => {
+                    if (item === 0) return '$all';
+                    const name = _.find(datasourceList, { id: item })?.name;
+                    if (!name) return '';
+                    return name;
+                  }),
+                )}
+              />
+            </Space>
           );
         },
       },
@@ -213,55 +212,14 @@ export default function AlertRules(props: Props) {
         title: t('table.append_tags'),
         dataIndex: 'append_tags',
         render(value) {
-          return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(value, (item) => {
-                return (
-                  <Tooltip key={item} title={item}>
-                    <Tag color='purple' style={{ maxWidth: '100%', marginRight: 0 }}>
-                      <div
-                        style={{
-                          maxWidth: 'max-content',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {item}
-                      </div>
-                    </Tag>
-                  </Tooltip>
-                );
-              })}
-            </div>
-          );
+          return <Tags type='outline' maxWidth={180} data={value} />;
         },
       },
       {
         title: t('table.notify_groups_obj'),
         dataIndex: 'notify_groups_obj',
         render: (data) => {
-          return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(data, (user) => {
-                const val = user.nickname || user.username || user.name;
-                return (
-                  <Tooltip key={val} title={val}>
-                    <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
-                      <div
-                        style={{
-                          maxWidth: 'max-content',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {val}
-                      </div>
-                    </Tag>
-                  </Tooltip>
-                );
-              })}
-            </div>
-          );
+          return <Tags type='outline' maxWidth={180} data={_.map(data, (user) => user.nickname || user.username || user.name)} />;
         },
       },
       {
@@ -269,49 +227,26 @@ export default function AlertRules(props: Props) {
         dataIndex: 'notify_rule_ids',
         render: (data) => {
           return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(data, (id) => {
-                const val = _.find(notificationRules, { id })?.name || id;
-                return (
-                  <Link to={`/${notificationRulesNS}/edit/${id}`} key={val} target='_blank'>
-                    <Tooltip title={val}>
-                      <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
-                        <div
-                          style={{
-                            maxWidth: 'max-content',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {val}
-                        </div>
-                      </Tag>
-                    </Tooltip>
-                  </Link>
-                );
-              })}
-            </div>
+            <Tags<number>
+              type='outline'
+              maxWidth={180}
+              data={data}
+              getKey={(id) => id}
+              getLabel={(id) => _.find(notificationRules, { id })?.name || _.toString(id)}
+              onTagClick={(id) => {
+                const finded = _.find(notificationRules, { id });
+                if (finded) {
+                  window.open(`/${notificationRulesNS}/edit/${id}`, '_blank');
+                } else {
+                  message.warning(t('notify_rule_not_found'));
+                }
+              }}
+            />
           );
         },
       },
-      {
-        title: t('table.update_at'),
-        dataIndex: 'update_at',
-        sorter: (a, b) => {
-          return a.update_at - b.update_at;
-        },
-        render: (text: string) => {
-          return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
-        },
-      },
-      {
-        title: t('common:table.username'),
-        dataIndex: 'update_by',
-      },
-      {
-        title: t('common:table.nickname'),
-        dataIndex: 'update_by_nickname',
-      },
+      dateColumn({ title: t('table.update_at'), dataIndex: 'update_at', unix: true, width: 100, sorter: (a, b) => a.update_at - b.update_at }) as any,
+      userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
     ],
     readonly
       ? [
@@ -351,54 +286,6 @@ export default function AlertRules(props: Props) {
                 }}
               />
             ),
-          },
-          {
-            title: t('common:table.operations'),
-            fixed: 'right',
-            render: (record: any) => {
-              const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
-              return (
-                <Space>
-                  <Link
-                    className='table-operator-area-normal'
-                    to={{
-                      pathname: `/alert-rules/edit/${record.id}?mode=clone`,
-                    }}
-                    target='_blank'
-                  >
-                    {t('common:btn.clone')}
-                  </Link>
-                  <Button
-                    size='small'
-                    type='link'
-                    danger
-                    style={{
-                      padding: 0,
-                    }}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteStrategy([record.id], record.group_id).then(() => {
-                            message.success(t('common:success.delete'));
-                            fetchData();
-                          });
-                        },
-
-                        onCancel() {},
-                      });
-                    }}
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                  {record.cate === 'prometheus' && anomalyEnabled === true && (
-                    <div>
-                      <Link to={{ pathname: `/alert-rules/brain/${record.id}` }}>{t('brain_result_btn')}</Link>
-                    </div>
-                  )}
-                </Space>
-              );
-            },
           },
         ] as any),
   );
@@ -550,7 +437,7 @@ export default function AlertRules(props: Props) {
           />
         </Space>
       </div>
-      <Table
+      <EnhancedTable
         className='mt-2'
         size='small'
         rowKey='id'
@@ -572,6 +459,54 @@ export default function AlertRules(props: Props) {
             : undefined
         }
         columns={ajustColumns(columns, columnsConfigs)}
+        rowActions={
+          readonly
+            ? undefined
+            : (record: any) => {
+                const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
+                return {
+                  menu: _.compact([
+                    {
+                      key: 'clone',
+                      icon: 'copy',
+                      text: t('common:btn.clone'),
+                      onClick: () => {
+                        window.open(`/alert-rules/edit/${record.id}?mode=clone`, '_blank');
+                      },
+                    },
+                    record.cate === 'prometheus' && anomalyEnabled === true
+                      ? {
+                          key: 'brain',
+                          icon: 'ai',
+                          text: t('brain_result_btn'),
+                          onClick: () => {
+                            window.open(`/alert-rules/brain/${record.id}`, '_self');
+                          },
+                        }
+                      : undefined,
+                    {
+                      key: 'delete',
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      danger: true,
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteStrategy([record.id], record.group_id).then(() => {
+                              message.success(t('common:success.delete'));
+                              fetchData();
+                            });
+                          },
+                          onCancel() {},
+                        });
+                      },
+                    },
+                  ]) as any,
+                };
+              }
+        }
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
       <EventsDrawer {...eventsDrawerProps} />
     </>

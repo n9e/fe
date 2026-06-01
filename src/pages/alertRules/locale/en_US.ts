@@ -1,6 +1,9 @@
 const en_US = {
   title: 'Alert rules',
   search_placeholder: 'Search by name or tags',
+  status_triggered: 'Triggered',
+  status_normal: 'Normal',
+  notify_rule_not_found: 'Corresponding notification rule not found',
   prod: 'Type',
   severity: 'Severity',
   notify_groups: 'Notify groups',
