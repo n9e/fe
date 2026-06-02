@@ -118,6 +118,7 @@ export default function List() {
                       text: t('common:btn.delete'),
                       danger: true,
                       disabled: record.enabled === true,
+                      tooltip: record.enabled === true ? t('cannot_delete_when_enabled') : undefined,
                       onClick: () => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),

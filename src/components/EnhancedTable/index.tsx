@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Dropdown, Menu, Button } from 'antd';
+import { Table, Dropdown, Menu, Button, Tooltip } from 'antd';
 import type { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
 import {
   CheckCircle,
@@ -47,6 +47,8 @@ export interface RowAction {
   danger?: boolean;
   /** false to hide this action (e.g. by permission) */
   visible?: boolean;
+  /** hover hint; shown even when the item is disabled (e.g. why delete is blocked) */
+  tooltip?: React.ReactNode;
   /** render a custom node instead of the default button (for bespoke menu items) */
   node?: React.ReactNode;
 }
@@ -85,6 +87,35 @@ function ActionButton({ action, className, withIcon }: { action: RowAction; clas
   );
 }
 
+// One kebab menu item. When a tooltip is set we keep the Menu.Item itself enabled
+// and wrap the (possibly disabled) button in a span, so the hint still shows on
+// hover — a disabled button eats pointer events, and antd would also move the
+// button's className onto a wrapper span, dropping our styling.
+function renderMenuItem(action: RowAction, key: string) {
+  if (action.node) {
+    return (
+      <Menu.Item key={key} disabled={action.disabled}>
+        {action.node}
+      </Menu.Item>
+    );
+  }
+  const btn = <ActionButton action={action} className='fc-table-action-menu-btn' withIcon />;
+  if (action.tooltip) {
+    return (
+      <Menu.Item key={key}>
+        <Tooltip title={action.tooltip}>
+          <span className='fc-table-action-menu-btn-wrap'>{btn}</span>
+        </Tooltip>
+      </Menu.Item>
+    );
+  }
+  return (
+    <Menu.Item key={key} disabled={action.disabled}>
+      {btn}
+    </Menu.Item>
+  );
+}
+
 function RowActionCell({ actions }: { actions: RowActions }) {
   const inline = visibleOnly(actions.inline);
   const menu = visibleOnly(actions.menu);
@@ -109,17 +140,9 @@ function RowActionCell({ actions }: { actions: RowActions }) {
           overlayClassName='fc-table-action-dropdown'
           overlay={
             <Menu>
-              {normal.map((a, i) => (
-                <Menu.Item key={a.key ?? `m-${i}`} disabled={a.disabled}>
-                  {a.node ?? <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />}
-                </Menu.Item>
-              ))}
+              {normal.map((a, i) => renderMenuItem(a, a.key ?? `m-${i}`))}
               {normal.length > 0 && danger.length > 0 && <Menu.Divider />}
-              {danger.map((a, i) => (
-                <Menu.Item key={a.key ?? `d-${i}`} disabled={a.disabled}>
-                  {a.node ?? <ActionButton action={a} className='fc-table-action-menu-btn' withIcon />}
-                </Menu.Item>
-              ))}
+              {danger.map((a, i) => renderMenuItem(a, a.key ?? `d-${i}`))}
             </Menu>
           }
         >

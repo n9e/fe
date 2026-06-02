@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Tooltip, Modal, message } from 'antd';
+import { Button, Space, Switch, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Trash2 } from 'lucide-react';
 import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
@@ -53,31 +52,22 @@ export default function List() {
                     },
                     {
                       key: 'delete',
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
                       danger: true,
                       disabled: record.enabled === true,
-                      node: (
-                        <Tooltip title={record.enabled === true ? t('cannot_delete_when_enabled') : undefined}>
-                          <Button
-                            type='link'
-                            className='fc-table-action-menu-btn is-danger'
-                            disabled={record.enabled === true}
-                            icon={<Trash2 className='fc-table-action-menu-icon' />}
-                            onClick={() => {
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk: () => {
-                                  deleteItem(record.id).then(() => {
-                                    message.success(t('common:success.delete'));
-                                    run();
-                                  });
-                                },
-                              });
-                            }}
-                          >
-                            {t('common:btn.delete')}
-                          </Button>
-                        </Tooltip>
-                      ),
+                      tooltip: record.enabled === true ? t('cannot_delete_when_enabled') : undefined,
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteItem(record.id).then(() => {
+                              message.success(t('common:success.delete'));
+                              run();
+                            });
+                          },
+                        });
+                      },
                     },
                   ],
                 })}
