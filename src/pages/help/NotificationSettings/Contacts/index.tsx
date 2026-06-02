@@ -81,6 +81,7 @@ export default function Channels() {
             render: (val: boolean, record) => {
               return (
                 <Switch
+                  size='small'
                   checked={!val}
                   onChange={(checked) => {
                     const newData = _.map(data, (item) => {

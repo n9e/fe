@@ -20,6 +20,7 @@ import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Button, Input, Dropdown, Select, message, Modal, Tooltip, Tag } from 'antd';
 import { DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Copy, Pencil } from 'lucide-react';
 import { ColumnType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
 import EnhancedTable from '@/components/EnhancedTable';
@@ -376,7 +377,9 @@ export default function index(props: Props) {
                           setRefreshFlag(_.uniqueId('refreshFlag_'));
                         }}
                       >
-                        <a>{t('common:btn.clone')}</a>
+                        <Button type='link' className='fc-table-action-menu-btn' icon={<Copy className='fc-table-action-menu-icon' />}>
+                          {t('common:btn.clone')}
+                        </Button>
                       </FormModal>
                     ),
                   }
@@ -395,7 +398,9 @@ export default function index(props: Props) {
                           setRefreshFlag(_.uniqueId('refreshFlag_'));
                         }}
                       >
-                        <a>{t('common:btn.edit')}</a>
+                        <Button type='link' className='fc-table-action-menu-btn' icon={<Pencil className='fc-table-action-menu-icon' />}>
+                          {t('common:btn.edit')}
+                        </Button>
                       </FormModal>
                     ),
                   }
