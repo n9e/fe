@@ -1,10 +1,12 @@
 import React from 'react';
 import { Tooltip, message as antdMessage } from 'antd';
-import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
+import { AlertOutlined, CopyOutlined, ExportOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { copy2ClipBoard } from '@/utils';
 import { NAME_SPACE } from '../constants';
+import ContentCard from './ContentCard';
+import RowItem from './RowItem';
 
 interface IAlertRulePayload {
   cate?: string;
@@ -51,15 +53,6 @@ function SeverityText(props: { severity?: number; levelName?: string }) {
     <span className={`inline-flex items-center gap-2 ${colorClass}`}>
       <span>{text}</span>
     </span>
-  );
-}
-
-function RowItem(props: { label: string; value: React.ReactNode }) {
-  return (
-    <div className='grid grid-cols-[120px_1fr] gap-3 border-t border-fc-200 py-2 first:border-t-0'>
-      <div className='text-sm font-medium text-title'>{props.label}</div>
-      <div className='min-w-0 text-sm text-main'>{props.value}</div>
-    </div>
   );
 }
 
@@ -122,20 +115,16 @@ export default function AlertRuleContentBlock(props: { responseContent: string }
   );
 
   return (
-    <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
-      <div className='text-sm font-medium text-title'>{t('alert_rule.title')}</div>
-
-      <div className='mt-2'>
-        <RowItem label={t('alert_rule.field.id')} value={idNode} />
-        <RowItem label={t('alert_rule.field.name')} value={nameNode} />
-        <RowItem label={t('alert_rule.field.group')} value={groupText} />
-        <RowItem label={t('alert_rule.field.datasource')} value={datasourceText} />
-        <RowItem label={t('alert_rule.field.cate')} value={payload.cate || '--'} />
-        <RowItem label={t('alert_rule.field.severity')} value={<SeverityText severity={payload.severity} levelName={severityLevelName} />} />
-        {payload.metric ? <RowItem label={t('alert_rule.field.metric')} value={payload.metric} /> : null}
-        <RowItem label={t('alert_rule.field.condition')} value={conditionText} />
-        <RowItem label={t('alert_rule.field.note')} value={<div className='whitespace-pre-wrap break-words'>{payload.note || '--'}</div>} />
-      </div>
-    </div>
+    <ContentCard icon={<AlertOutlined />} title={t('alert_rule.title')} bodyClassName='px-4 py-2'>
+      <RowItem label={t('alert_rule.field.id')} value={idNode} />
+      <RowItem label={t('alert_rule.field.name')} value={nameNode} />
+      <RowItem label={t('alert_rule.field.group')} value={groupText} />
+      <RowItem label={t('alert_rule.field.datasource')} value={datasourceText} />
+      <RowItem label={t('alert_rule.field.cate')} value={payload.cate || '--'} />
+      <RowItem label={t('alert_rule.field.severity')} value={<SeverityText severity={payload.severity} levelName={severityLevelName} />} />
+      {payload.metric ? <RowItem label={t('alert_rule.field.metric')} value={payload.metric} /> : null}
+      <RowItem label={t('alert_rule.field.condition')} value={conditionText} />
+      <RowItem label={t('alert_rule.field.note')} value={<div className='whitespace-pre-wrap break-words'>{payload.note || '--'}</div>} />
+    </ContentCard>
   );
 }
