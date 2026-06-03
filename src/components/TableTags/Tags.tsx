@@ -8,6 +8,7 @@ import { copy2ClipBoard } from '@/utils';
 interface Props<T = any> {
   type?: 'outline' | 'fill';
   maxWidth?: number; // 容器最大宽度，设置后布局计算以此为上限
+  maxCount?: number; // 固定显示数量：设置后只展示前 N 个 + 溢出弹层（与按宽度自适应互斥），用于和旧的"前 N 个"逻辑对齐
   borderRadius?: number; // 边框圆角
   bgColor?: string | ((item: string | T, index: number) => string); // 背景颜色，仅在 type 为 'fill' 时生效
   fontColor?: string | ((item: string | T, index: number) => string); // 字体颜色，仅在 type 为 'fill' 时生效
@@ -87,7 +88,7 @@ function resolveColor<T>(color: string | ((item: string | T, index: number) => s
 }
 
 export default function Tags<T>(props: Props<T>) {
-  const { type = 'outline', icon, data, onTagClick, getKey, getLabel, getTooltipTitle, maxWidth } = props;
+  const { type = 'outline', icon, data, onTagClick, getKey, getLabel, getTooltipTitle, maxWidth, maxCount } = props;
 
   const borderRadius = props.borderRadius ?? 16;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -132,6 +133,13 @@ export default function Tags<T>(props: Props<T>) {
   const visibleTagClass = `${tagBaseClass} overflow-hidden max-w-full shrink-0 min-w-0`;
 
   useLayoutEffect(() => {
+    // 固定数量模式：只展示前 maxCount 个，其余进溢出弹层，不走宽度测量（与旧的"前 N 个 + N"逻辑对齐）
+    if (maxCount != null) {
+      const len = data?.length ?? 0;
+      setLayout({ visibleCount: Math.min(maxCount, len), overflowCount: Math.max(len - maxCount, 0) });
+      return;
+    }
+
     const el = containerRef.current;
     if (!el) return;
 
@@ -151,7 +159,7 @@ export default function Tags<T>(props: Props<T>) {
     compute();
 
     return () => ro.disconnect();
-  }, [data]);
+  }, [data, maxCount]);
 
   const { visibleCount, overflowCount } = layout;
 

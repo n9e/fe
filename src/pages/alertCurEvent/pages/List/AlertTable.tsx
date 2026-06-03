@@ -20,6 +20,7 @@ import { NS, SEVERITY_COLORS, EVENTS_TABLE_PAGESIZE_CACHE_KEY } from '../../cons
 import { FilterType } from '../../types';
 import EventDetailDrawer from './EventDetailDrawer';
 import EnhancedTable from '@/components/EnhancedTable';
+import Tags from '@/components/TableTags/Tags';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
@@ -77,8 +78,11 @@ export default function AlertTable(props: IProps) {
         const currentDatasourceCate = _.find(allCates, { value: record.cate });
         const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
         const tags = record.tags || [];
-        const visibleTags = eventColumnExpanded ? tags : tags.slice(0, 3);
-        const hiddenTagsCount = eventColumnExpanded ? 0 : Math.max(tags.length - visibleTags.length, 0);
+        const addTagToFilter = (item: string) => {
+          if (!_.includes(filter.query, item)) {
+            setFilter({ query: filter.query ? `${filter.query.trim()} ${item}` : item });
+          }
+        };
 
         return (
           <div className='alert-event-content max-w-[60vw]'>
@@ -110,32 +114,19 @@ export default function AlertTable(props: IProps) {
                 </a>
               </Space>
             </div>
-            <div className={`alert-event-tags ${eventColumnExpanded ? 'is-expanded' : 'is-collapsed'}`}>
-              {_.map(visibleTags, (item) => {
-                return (
-                  <Tag
-                    key={item}
-                    style={{ maxWidth: '100%' }}
-                    onDoubleClick={() => {
-                      if (!_.includes(filter.query, item)) {
-                        setFilter({ query: filter.query ? `${filter.query.trim()} ${item}` : item });
-                      }
-                    }}
-                  >
-                    <div
-                      style={{
-                        maxWidth: 'max-content',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {item}
-                    </div>
+            {eventColumnExpanded ? (
+              // 展开态：全部标签内联铺开（双击加入筛选）
+              <div className='alert-event-tags is-expanded'>
+                {_.map(tags, (item) => (
+                  <Tag key={item} style={{ maxWidth: '100%' }} onDoubleClick={() => addTagToFilter(item)}>
+                    <div style={{ maxWidth: 'max-content', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item}</div>
                   </Tag>
-                );
-              })}
-              {hiddenTagsCount > 0 && <Tag className='alert-event-more-tag'>+{hiddenTagsCount}</Tag>}
-            </div>
+                ))}
+              </div>
+            ) : (
+              // 收起态：公共 Tags 组件，固定展示前 3 个（对齐原逻辑）+ N 悬浮弹层展示全部标签 + 复制（单击标签加入筛选）
+              <Tags data={tags} type='outline' maxCount={3} onTagClick={(item) => addTagToFilter(item as string)} />
+            )}
           </div>
         );
       },
