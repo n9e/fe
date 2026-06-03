@@ -42,6 +42,9 @@
 
   .ant-table-column-title {
     flex: 0 1 auto;
+    // 短标题（更新人/启用/周期 等无 ellipsis 列）不逐字换行：antd 只给 ellipsis 列加 nowrap，
+    // 其余列 white-space:normal + 上面 flex 可收缩 → CJK 标题被排序/筛选图标挤到逐字竖排。
+    white-space: nowrap;
   }
 
   // 表头 hover：**每一列**（含不可排序列）整格底色 fill-5/0.4，对齐 design-system `thead th:hover`。
@@ -146,6 +149,13 @@
   // 表头最右、与排序图标脱节；改 flex-start 让「标题 → 排序 → 漏斗」连成一组。
   .ant-table-filter-column {
     justify-content: flex-start;
+  }
+
+  // 同时可排序 + 可筛选的列（如「更新人」「启用」）：antd 默认给 .ant-table-column-sorters 设 flex:auto，
+  // 让它撑满表头，把其后的漏斗一路顶到最右、与排序图标拉开一大段空隙，且常被相邻列裁掉一半。
+  // 收成 flex:0 1 auto → 标题/排序图标只占内容宽，漏斗紧跟其后（仅隔上面的 6px margin），不再溢出被遮。
+  .ant-table-filter-column .ant-table-column-sorters {
+    flex: 0 1 auto;
   }
 
   .ant-table-filter-trigger {
