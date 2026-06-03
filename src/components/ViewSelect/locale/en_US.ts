@@ -1,5 +1,5 @@
 const en_US = {
-  tip: 'Currently, the view feature only supports Prometheus and Doris data sources',
+  tip: 'Currently, the view feature only supports Prometheus, Doris, and GCM data sources',
   placeholder: 'Filter views',
   save_new: 'Save as new view',
   save: 'Save view',
