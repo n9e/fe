@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
-import { Input, Tag, Button, Space, Select, message } from 'antd';
+import { Input, Tag, Button, Space, Select, message, Tooltip } from 'antd';
+import { ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react';
 import queryString from 'query-string';
 import { useHistory } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ import usePagination from '@/components/usePagination';
 import { getEventById } from '@/pages/alertCurEvent/services';
 import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEventsModal';
 import EnhancedTable from '@/components/EnhancedTable';
+import Tags from '@/components/TableTags/Tags';
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
@@ -71,6 +73,7 @@ const Event = (props: Props) => {
     showClaimant = false,
   } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(false);
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
     data?: any;
@@ -84,6 +87,15 @@ const Event = (props: Props) => {
       render(title, record) {
         const currentDatasourceCate = _.find(allCates, { value: record.cate });
         const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
+        const tags = record.tags || [];
+        const addTagToFilter = (item: string) => {
+          if (!_.includes(filter.query, item)) {
+            setFilter({
+              ...filter,
+              query: filter.query ? `${filter.query.trim()} ${item}` : item,
+            });
+          }
+        };
 
         return (
           <div className='max-w-[60vw]'>
@@ -115,34 +127,19 @@ const Event = (props: Props) => {
                 </a>
               </Space>
             </div>
-            <div>
-              {_.map(record.tags, (item) => {
-                return (
-                  <Tag
-                    key={item}
-                    style={{ maxWidth: '100%' }}
-                    onDoubleClick={() => {
-                      if (!_.includes(filter.query, item)) {
-                        setFilter({
-                          ...filter,
-                          query: filter.query ? `${filter.query.trim()} ${item}` : item,
-                        });
-                      }
-                    }}
-                  >
-                    <div
-                      style={{
-                        maxWidth: 'max-content',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {item}
-                    </div>
+            {eventColumnExpanded ? (
+              // 展开态：全部标签内联铺开（双击加入筛选）
+              <div className='flex flex-wrap gap-1'>
+                {_.map(tags, (item) => (
+                  <Tag key={item} style={{ maxWidth: '100%' }} onDoubleClick={() => addTagToFilter(item)}>
+                    <div style={{ maxWidth: 'max-content', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item}</div>
                   </Tag>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : (
+              // 收起态：公共 Tags 组件，固定展示前 3 个 + N 悬浮弹层展示全部标签 + 复制（单击标签加入筛选）
+              <Tags data={tags} type='outline' maxCount={3} onTagClick={(item) => addTagToFilter(item as string)} />
+            )}
           </div>
         );
       },
@@ -371,6 +368,16 @@ const Event = (props: Props) => {
                 {t('delete_events.title')}
               </Button>
             )}
+            <Tooltip title={eventColumnExpanded ? t('common:btn.collapse') : t('common:btn.expand')}>
+              <Button
+                type='text'
+                size='small'
+                icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
+                onClick={() => {
+                  setEventColumnExpanded(!eventColumnExpanded);
+                }}
+              />
+            </Tooltip>
           </Space>
           {filterAreaRight}
         </div>
