@@ -152,7 +152,7 @@ const Panel = (props: IProps) => {
                   setFilters={setViewSelectFilters}
                   modalState={viewModalState}
                   setModalState={setViewModalState}
-                  disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus], datasourceCate)}
+                  disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus, DatasourceCateEnum.gcm], datasourceCate)}
                   page={location.pathname}
                   getFilterValues={() => {
                     const formValues = form.getFieldsValue();
@@ -220,6 +220,26 @@ const Panel = (props: IProps) => {
                         query: {
                           ...filterValues.query,
                           mode: filterValues.query?.mode || 'query',
+                          range,
+                        },
+                      });
+                    } else if (datasourceCate === DatasourceCateEnum.gcm) {
+                      // 完全重置表单后再设置新值，避免旧值残留
+                      form.setFieldsValue({
+                        query: undefined,
+                      });
+                      let range = filterValues.query?.range;
+                      if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
+                        range = {
+                          start: moment.unix(range.start),
+                          end: moment.unix(range.end),
+                        };
+                      }
+                      form.setFieldsValue({
+                        ...filterValues,
+                        refreshFlag: _.uniqueId('refreshFlag_'),
+                        query: {
+                          ...filterValues.query,
                           range,
                         },
                       });
