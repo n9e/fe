@@ -6,7 +6,7 @@ export type TsGraphThemeMode = 'light' | 'dark';
 /** 与 variable.css --fc-text-3 同步（Canvas 无法使用 CSS 变量） */
 const tsGraphAxisLabelColor: Record<TsGraphThemeMode, string> = {
   light: '#3f4856',
-  dark: '#9598A2',
+  dark: 'rgb(201, 201, 207)',
 };
 
 /** 与 variable.css --fc-red-9 同步 */
