@@ -196,15 +196,18 @@ const Panel = (props: IProps) => {
                   onSelect={(filterValues) => {
                     filterValues.datasourceCate = filterValues.datasourceCate || defaultDatasourceCate;
                     filterValues.datasourceValue = filterValues.datasourceValue || defaultDatasourceValue;
-                    if (datasourceCate === DatasourceCateEnum.prometheus) {
+                    const targetCate = filterValues.datasourceCate;
+                    if (targetCate === DatasourceCateEnum.prometheus) {
                       form.setFieldsValue({
                         datasourceCate: filterValues.datasourceCate,
                         datasourceValue: filterValues.datasourceValue,
                       });
                       setPromql(filterValues.query?.query || '');
-                    } else if (datasourceCate === DatasourceCateEnum.doris) {
-                      // 完全重置表单后再设置新值，避免旧值残留
+                    } else {
+                      // 先重置 datasourceCate/datasourceValue，再完全重置 query
                       form.setFieldsValue({
+                        datasourceCate: filterValues.datasourceCate,
+                        datasourceValue: filterValues.datasourceValue,
                         query: undefined,
                       });
                       let range = filterValues.query?.range;
@@ -220,26 +223,6 @@ const Panel = (props: IProps) => {
                         query: {
                           ...filterValues.query,
                           mode: filterValues.query?.mode || 'query',
-                          range,
-                        },
-                      });
-                    } else if (datasourceCate === DatasourceCateEnum.gcm) {
-                      // 完全重置表单后再设置新值，避免旧值残留
-                      form.setFieldsValue({
-                        query: undefined,
-                      });
-                      let range = filterValues.query?.range;
-                      if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
-                        range = {
-                          start: moment.unix(range.start),
-                          end: moment.unix(range.end),
-                        };
-                      }
-                      form.setFieldsValue({
-                        ...filterValues,
-                        refreshFlag: _.uniqueId('refreshFlag_'),
-                        query: {
-                          ...filterValues.query,
                           range,
                         },
                       });
