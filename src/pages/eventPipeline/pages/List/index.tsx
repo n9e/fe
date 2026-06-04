@@ -155,6 +155,7 @@ export default function List() {
       <EnhancedTable
         size='small'
         rowKey='id'
+        scroll={{ x: 'max-content' }}
         columns={[
           {
             title: t('common:table.name'),
@@ -178,8 +179,8 @@ export default function List() {
           {
             title: t('common:table.note'),
             dataIndex: 'description',
-            ellipsis: { showTitle: false },
-            render: (val) => <EllipsisText text={val} />,
+            // 不用列 ellipsis：它会把 tableLayout 切成 fixed，页面变窄时无宽度列被无限压缩
+            render: (val) => <EllipsisText style={{ maxWidth: 280 }} text={val} />,
           },
           {
             title: t('use_case.label'),
