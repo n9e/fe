@@ -146,6 +146,7 @@ export default function List(props: Props) {
   });
 
   useEffect(() => {
+    setSelectedRows([]);
     run({
       current: 1,
       pageSize: tableProps.pagination.pageSize,

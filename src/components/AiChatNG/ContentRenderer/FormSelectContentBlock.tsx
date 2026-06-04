@@ -1,7 +1,9 @@
 import React from 'react';
 import { Button, Select } from 'antd';
+import { ProfileOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { NAME_SPACE } from '../constants';
+import ContentCard from './ContentCard';
 
 type FieldKey = 'busi_group_id' | 'datasource_id' | string;
 
@@ -86,15 +88,13 @@ export default function FormSelectContentBlock(props: { responseContent: string;
   }
 
   return (
-    <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
-      <div className='text-sm font-medium text-title'>{t('form_select.title')}</div>
-
-      <div className='mt-3 space-y-3'>
+    <ContentCard icon={<ProfileOutlined />} title={t('form_select.title')}>
+      <div className='grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-3'>
         {busiGroupField ? (
-          <div className='flex items-center gap-3'>
-            <div className='w-20 shrink-0 text-sm text-title'>{t('form_select.busi_group')}</div>
+          <>
+            <div className='shrink-0 text-right text-sm text-title'>{t('form_select.busi_group')}</div>
             <Select
-              className='min-w-0 flex-1'
+              className='w-full min-w-0'
               placeholder={t('form_select.placeholder_select')}
               value={busiGroupId}
               onChange={(value) => setBusiGroupId(value)}
@@ -102,14 +102,14 @@ export default function FormSelectContentBlock(props: { responseContent: string;
               showSearch
               optionFilterProp='label'
             />
-          </div>
+          </>
         ) : null}
 
         {datasourceField ? (
-          <div className='flex items-center gap-3'>
-            <div className='w-20 shrink-0 text-sm text-title'>{t('form_select.datasource')}</div>
+          <>
+            <div className='shrink-0 text-right text-sm text-title'>{t('form_select.datasource')}</div>
             <Select
-              className='min-w-0 flex-1'
+              className='w-full min-w-0'
               placeholder={t('form_select.placeholder_select')}
               value={datasourceId}
               onChange={(value) => setDatasourceId(value)}
@@ -117,7 +117,7 @@ export default function FormSelectContentBlock(props: { responseContent: string;
               showSearch
               optionFilterProp='label'
             />
-          </div>
+          </>
         ) : null}
       </div>
 
@@ -142,6 +142,6 @@ export default function FormSelectContentBlock(props: { responseContent: string;
           {t('form_select.confirm')}
         </Button>
       </div>
-    </div>
+    </ContentCard>
   );
 }

@@ -5,7 +5,7 @@ import { Popover, Progress, Space, Spin, Tooltip, Form } from 'antd';
 import Icon, { PlusCircleOutlined, CloseCircleOutlined, CalendarOutlined, QuestionOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 import { getFieldLabel, dslBuilder, ajustFieldParamValue } from '../../Elasticsearch/utils';
-import { getESVersion, getFieldValues, typeMap } from '../../Elasticsearch/services';
+import { getESVersion, getFieldTopTerms, typeMap } from '../../Elasticsearch/services';
 import { Field as FieldType, Filter } from '../services';
 import { useGlobalState } from '../globalState';
 
@@ -135,7 +135,9 @@ export default function Field(props: Props) {
           const values = form.getFieldsValue();
           try {
             getESVersion(datasourceValue).then((version) => {
-              getFieldValues(
+              const adjustedField = ajustFieldParamValue(record);
+              const aggName = `top${topn}_${String(adjustedField).replace(/[^A-Za-z0-9_]/g, '_')}`;
+              getFieldTopTerms(
                 datasourceValue,
                 dslBuilder({
                   version,
@@ -146,15 +148,19 @@ export default function Field(props: Props) {
                   syntax: values.query.syntax,
                   query_string: values.query.filter,
                   kuery: values.query.filter,
-                  from,
-                  limit,
-                  fields: [ajustFieldParamValue(record, version)],
+                  termsAgg: {
+                    field: adjustedField,
+                    size: topn,
+                    name: aggName,
+                  },
                 }),
-                ajustFieldParamValue(record, version),
-                topn,
+                { aggName, field: adjustedField, size: topn },
               )
                 .then((res) => {
                   setTopnData(res);
+                })
+                .catch((e) => {
+                  console.error(e);
                 })
                 .finally(() => {
                   setTopnLoading(false);

@@ -1,11 +1,12 @@
 import React from 'react';
 import { Button, Space, Tooltip, message as antdMessage } from 'antd';
-import { CopyOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { ConsoleSqlOutlined, CopyOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import PromQLInput from '@/components/PromQLInput';
 import { copy2ClipBoard } from '@/utils';
 import { NAME_SPACE } from '../constants';
+import ContentCard from './ContentCard';
 
 export default function QueryContentBlock(props: { query: string; onExecute?: () => void }) {
   const { t } = useTranslation(NAME_SPACE);
@@ -13,7 +14,7 @@ export default function QueryContentBlock(props: { query: string; onExecute?: ()
   const canExecute = Boolean(onExecute);
 
   return (
-    <div className='border border-fc-200 rounded-lg p-2'>
+    <ContentCard icon={<ConsoleSqlOutlined />} title={t('query.title')} bodyClassName='p-3'>
       <PromQLInput value={query} readonly />
       <div
         className='my-2'
@@ -46,6 +47,6 @@ export default function QueryContentBlock(props: { query: string; onExecute?: ()
           </Button>
         </Tooltip>
       </Space>
-    </div>
+    </ContentCard>
   );
 }

@@ -1,10 +1,12 @@
 import React from 'react';
 import { message as antdMessage } from 'antd';
-import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
+import { CopyOutlined, DashboardOutlined, ExportOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { copy2ClipBoard } from '@/utils';
 import { NAME_SPACE } from '../constants';
+import ContentCard from './ContentCard';
+import RowItem from './RowItem';
 
 interface IDashboardPayload {
   datasource_id?: number;
@@ -27,15 +29,6 @@ function safeParsePayload(raw: string): IDashboardPayload | undefined {
   } catch {
     return undefined;
   }
-}
-
-function RowItem(props: { label: string; value: React.ReactNode }) {
-  return (
-    <div className='grid grid-cols-[120px_1fr] gap-3 border-t border-fc-200 py-2 first:border-t-0'>
-      <div className='text-sm font-medium text-title'>{props.label}</div>
-      <div className='min-w-0 text-sm text-main'>{props.value}</div>
-    </div>
-  );
 }
 
 export default function DashboardContentBlock(props: { responseContent: string }) {
@@ -79,18 +72,14 @@ export default function DashboardContentBlock(props: { responseContent: string }
     );
 
   return (
-    <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
-      <div className='text-sm font-medium text-title'>{t('dashboard.title')}</div>
-
-      <div className='mt-2'>
-        <RowItem label={t('dashboard.field.id')} value={idNode} />
-        <RowItem label={t('dashboard.field.name')} value={nameNode} />
-        <RowItem label={t('dashboard.field.group')} value={groupText} />
-        <RowItem label={t('dashboard.field.datasource')} value={datasourceText} />
-        <RowItem label={t('dashboard.field.panels_count')} value={payload.panels_count !== undefined ? String(payload.panels_count) : '--'} />
-        <RowItem label={t('dashboard.field.variables_count')} value={payload.variables_count !== undefined ? String(payload.variables_count) : '--'} />
-        <RowItem label={t('dashboard.field.tags')} value={payload.tags || '--'} />
-      </div>
-    </div>
+    <ContentCard icon={<DashboardOutlined />} title={t('dashboard.title')} bodyClassName='px-4 py-2'>
+      <RowItem label={t('dashboard.field.id')} value={idNode} />
+      <RowItem label={t('dashboard.field.name')} value={nameNode} />
+      <RowItem label={t('dashboard.field.group')} value={groupText} />
+      <RowItem label={t('dashboard.field.datasource')} value={datasourceText} />
+      <RowItem label={t('dashboard.field.panels_count')} value={payload.panels_count !== undefined ? String(payload.panels_count) : '--'} />
+      <RowItem label={t('dashboard.field.variables_count')} value={payload.variables_count !== undefined ? String(payload.variables_count) : '--'} />
+      <RowItem label={t('dashboard.field.tags')} value={payload.tags || '--'} />
+    </ContentCard>
   );
 }
