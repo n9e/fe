@@ -79,8 +79,12 @@ export default function SkillDetailPanel(props: Props) {
       <div className='flex justify-between fc-toolbar mb-2'>
         <div className='text-title text-l2'>{item.builtin === true ? t('form.usage') : item.name}</div>
         <Space>
-          {t('form.enabled')}
-          <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />
+          {item.builtin !== true && (
+            <>
+              {t('form.enabled')}
+              <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />
+            </>
+          )}
           {(item.builtin !== true || !!profile.admin) && (
             <Dropdown
               overlay={
