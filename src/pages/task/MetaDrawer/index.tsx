@@ -30,6 +30,7 @@ interface Props {
   data: any;
   hosts: { host: string }[];
   taskId: string;
+  hideCloneTask?: boolean;
 }
 
 const sizeWidthMap = {
@@ -43,7 +44,7 @@ type SizeType = 'small' | 'middle' | 'large';
 export default function MetaDrawer(props: Props) {
   const { t } = useTranslation('common');
   const { t: tn } = useTranslation('navigableDrawer');
-  const { visible, loading = false, onClose, data, hosts, taskId } = props;
+  const { visible, loading = false, onClose, data, hosts, taskId, hideCloneTask } = props;
   const [size, setSize] = useState<SizeType>('middle');
 
   return (
@@ -65,9 +66,11 @@ export default function MetaDrawer(props: Props) {
         />
       }
       footer={
-        <Link to={{ pathname: '/job-tasks/add', search: `task=${taskId}` }}>
-          <Button type='primary'>{t('task.clone.new')}</Button>
-        </Link>
+        !hideCloneTask && (
+          <Link to={{ pathname: '/job-tasks/add', search: `task=${taskId}` }}>
+            <Button type='primary'>{t('task.clone.new')}</Button>
+          </Link>
+        )
       }
     >
       <Spin spinning={loading}>
