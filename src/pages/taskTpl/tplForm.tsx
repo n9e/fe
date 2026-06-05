@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-import React, { useContext } from 'react';
+import React, { useContext, forwardRef, useImperativeHandle } from 'react';
 import _ from 'lodash';
-import { withRouter } from 'react-router-dom';
-import { Button, Form, Input, InputNumber, Select, Space, Tag } from 'antd';
+import { Button, Form, Input, InputNumber, Select, Space, Tag, Radio } from 'antd';
+import { FormInstance } from 'antd/lib/form';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
@@ -29,20 +29,52 @@ import './style.less';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 
-const TplForm = (props) => {
+export interface TplFormHandle {
+  getForm: () => FormInstance;
+}
+
+interface TplFormProps {
+  footer?: React.ReactNode;
+  footerRenderToEle?: HTMLElement | null;
+  initialValues?: any;
+  type?: string;
+  bgid?: number;
+  onSubmit?: (values: any) => void;
+  showAuthLevel?: boolean;
+}
+
+const defaultInitialValues = {
+  title: '',
+  batch: 0,
+  tolerance: 0,
+  timeout: 30,
+  pause: '',
+  script: '#!/bin/bash\n# e.g.\nexport PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:~/bin\nss -tln',
+  args: '',
+  tags: undefined,
+  account: 'root',
+  hosts: [],
+  treeData: [],
+};
+
+const TplForm = forwardRef<TplFormHandle, TplFormProps>(function TplForm(props, ref) {
   const { t } = useTranslation('common');
   const [form] = Form.useForm();
   const { businessGroup } = useContext(CommonStateContext);
   const hosts = Form.useWatch('hosts', form);
 
   const handleSubmit = (values) => {
-    props.onSubmit({
+    props.onSubmit?.({
       ...values,
       hosts: _.split(values.hosts, '\n'),
     });
   };
 
-  const { initialValues, type, bgid } = props;
+  useImperativeHandle(ref, () => ({
+    getForm: () => form,
+  }));
+
+  const { initialValues = defaultInitialValues, type = 'tpl', bgid, showAuthLevel } = props;
 
   return (
     <div className='job-tpl-form'>
@@ -181,6 +213,13 @@ const TplForm = (props) => {
             }
           />
         </FormItem>
+        <FormItem label={t('ai-task:auth_level')} name='auth_level' initialValue={initialValues.auth_level ?? 1} hidden={!showAuthLevel}>
+          <Radio.Group>
+            <Radio value={1}>R0 ({t('ai-task:r0.title')})</Radio>
+            <Radio value={2}>W1 ({t('ai-task:w1.title')})</Radio>
+            <Radio value={3}>W2 ({t('ai-task:w2.title')})</Radio>
+          </Radio.Group>
+        </FormItem>
         <FormItem
           label={
             <>
@@ -210,24 +249,6 @@ const TplForm = (props) => {
       </Form>
     </div>
   );
-};
+});
 
-TplForm.defaultProps = {
-  type: 'tpl', // tpl || task
-  initialValues: {
-    title: '',
-    batch: 0,
-    tolerance: 0,
-    timeout: 30,
-    pause: '',
-    script: '#!/bin/bash\n# e.g.\nexport PATH=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:~/bin\nss -tln',
-    args: '',
-    tags: undefined,
-    account: 'root',
-    hosts: [],
-    treeData: [],
-  },
-  onSubmit: () => {},
-};
-
-export default withRouter(TplForm);
+export default TplForm;

@@ -73,6 +73,7 @@ const ru_RU = {
     ai_config_skills: 'Skill управление',
     ai_config_mcp_servers: 'MCP управление',
     ai_config_scheduled_task: 'Задачи',
+    ai_task: 'Задачи канала',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',
