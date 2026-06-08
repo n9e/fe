@@ -29,7 +29,8 @@ const zh_HK = {
     query_generator: '生成查詢語句',
   },
   message: {
-    generating: '正在生成回覆...',
+    generating: '思考中...',
+    processing: '仍在處理中',
     hint: '提示',
     no_llm_title: '當前環境沒有大模型配置',
     no_llm_content: '請前往<a>LLM管理</a>頁面添加大模型配置',

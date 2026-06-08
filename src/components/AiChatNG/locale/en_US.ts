@@ -29,7 +29,8 @@ const en_US = {
     query_generator: 'Generate Query',
   },
   message: {
-    generating: 'Generating reply...',
+    generating: 'Thinking...',
+    processing: 'Still processing',
     hint: 'Hint',
     no_llm_title: 'No LLM configured in the current environment',
     no_llm_content: 'Please go to the <a>LLM Management</a> page to add a LLM configuration',

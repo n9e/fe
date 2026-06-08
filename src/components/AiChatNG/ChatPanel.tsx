@@ -8,8 +8,8 @@ import IconFont from '@/components/IconFont';
 import { cancelMessage, createChat, getMessageDetail, getMessageHistory, sendMessage } from './services';
 import { NAME_SPACE } from './constants';
 import { EmptyConversation, MessageItem } from './MessageBlocks';
-import { IAiChatAction, IAiChatHistoryItem, IAiChatMessage, IAiChatMessageLocator, IAiChatProps } from './types';
-import { buildStreamingMessage, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
+import { IAiChatAction, IAiChatHistoryItem, IAiChatMessage, IAiChatMessageLocator, IAiChatProps, IAiChatStreamSegment } from './types';
+import { applyStreamChunk, buildStreamingMessage, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
 import { useAiChatStream } from './useStream';
 
 const POLLING_INTERVAL = 3000;
@@ -27,7 +27,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const pollingTimerRef = useRef<number>();
   const startStreamRef = useRef<(streamId: string) => Promise<void> | void>();
-  const streamBufferRef = useRef<{ locator?: IAiChatMessageLocator; thinking: string; text: string }>({ locator: undefined, thinking: '', text: '' });
+  const streamBufferRef = useRef<{ locator?: IAiChatMessageLocator; segments: IAiChatStreamSegment[] }>({ locator: undefined, segments: [] });
   const { maybeScrollToBottom, scrollToBottom } = useAutoScroll(chatBodyRef);
 
   const cleanupPolling = useCallback(() => {
@@ -53,12 +53,9 @@ export default function ChatPanel(props: IAiChatProps) {
       const detail = await getMessageDetail(locator);
       const streamingState = streamBufferRef.current;
       const shouldOverlayStream =
-        streamingState.locator?.chat_id === locator.chat_id &&
-        streamingState.locator?.seq_id === locator.seq_id &&
-        (!!streamingState.thinking || !!streamingState.text) &&
-        !detail.is_finish;
+        streamingState.locator?.chat_id === locator.chat_id && streamingState.locator?.seq_id === locator.seq_id && streamingState.segments.length > 0 && !detail.is_finish;
 
-      mergeMessage(shouldOverlayStream ? buildStreamingMessage(detail, streamingState.thinking, streamingState.text) : detail);
+      mergeMessage(shouldOverlayStream ? buildStreamingMessage(detail, streamingState.segments) : detail);
 
       if (!detail.is_finish) {
         const streamResponse = findStreamResponse(detail);
@@ -67,8 +64,7 @@ export default function ChatPanel(props: IAiChatProps) {
           setStreamingLocator(locator);
           streamBufferRef.current = {
             locator,
-            thinking: isCurrentStream ? streamingState.thinking : '',
-            text: isCurrentStream ? streamingState.text : '',
+            segments: isCurrentStream ? streamingState.segments : [],
           };
           startStreamRef.current?.(streamResponse.stream_id);
         }
@@ -80,8 +76,7 @@ export default function ChatPanel(props: IAiChatProps) {
         setStreamingLocator(undefined);
         streamBufferRef.current = {
           locator: undefined,
-          thinking: '',
-          text: '',
+          segments: [],
         };
       }
     },
@@ -93,12 +88,8 @@ export default function ChatPanel(props: IAiChatProps) {
       const locator = streamBufferRef.current.locator;
       if (!locator) return;
 
-      if (chunk.type === 'thinking') {
-        streamBufferRef.current.thinking += chunk.delta || chunk.content || '';
-      }
-
-      if (chunk.type === 'text') {
-        streamBufferRef.current.text += chunk.delta || chunk.content || '';
+      if (chunk.type === 'thinking' || chunk.type === 'text' || chunk.type === 'step') {
+        streamBufferRef.current.segments = applyStreamChunk(streamBufferRef.current.segments, chunk);
       }
 
       if (chunk.type === 'error' && chunk.error) {
@@ -108,9 +99,8 @@ export default function ChatPanel(props: IAiChatProps) {
       setMessages((previous) => {
         const target = previous.find((item) => item.chat_id === locator.chat_id && item.seq_id === locator.seq_id);
         if (!target) return previous;
-        return upsertMessage(previous, buildStreamingMessage(target, streamBufferRef.current.thinking, streamBufferRef.current.text));
+        return upsertMessage(previous, buildStreamingMessage(target, streamBufferRef.current.segments));
       });
-      maybeScrollToBottom('smooth');
     },
     onFinish: () => {
       const locator = streamBufferRef.current.locator;
@@ -119,6 +109,13 @@ export default function ChatPanel(props: IAiChatProps) {
     },
     onError: handleError,
   });
+
+  // 流式消息更新后，如果用户未手动滚动则跟随到底部
+  useEffect(() => {
+    if (streamingLocator) {
+      maybeScrollToBottom('smooth');
+    }
+  }, [messages, streamingLocator, maybeScrollToBottom]);
 
   useEffect(() => {
     startStreamRef.current = startStream;
@@ -167,8 +164,7 @@ export default function ChatPanel(props: IAiChatProps) {
       setStreamingLocator(undefined);
       streamBufferRef.current = {
         locator: undefined,
-        thinking: '',
-        text: '',
+        segments: [],
       };
       setSubmitting(false);
       return;
@@ -299,8 +295,7 @@ export default function ChatPanel(props: IAiChatProps) {
       setStreamingLocator(undefined);
       streamBufferRef.current = {
         locator: undefined,
-        thinking: '',
-        text: '',
+        segments: [],
       };
       setSubmitting(false);
     } catch (error) {

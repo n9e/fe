@@ -29,7 +29,8 @@ const zh_CN = {
     query_generator: '生成查询语句',
   },
   message: {
-    generating: '正在生成回复...',
+    generating: '思考中...',
+    processing: '仍在处理中',
     hint: '提示',
     no_llm_title: '当前环境没有大模型配置',
     no_llm_content: '请前往<a>LLM管理</a>页面添加大模型配置',

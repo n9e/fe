@@ -64,11 +64,37 @@ interface IAiChatResponseBlocksProps {
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
 }
 
-export function ThinkingBlock({ title, content }: { title: string; content: string }) {
+export function ThinkingBlock({ title, content, isFinish }: { title: string; content: string; isFinish?: boolean }) {
+  const { t } = useTranslation(NAME_SPACE);
+  const userInteractedRef = React.useRef(false);
+  const [activeKey, setActiveKey] = React.useState<string | undefined>('thinking');
+
+  // 流式时展开，收口后自动折叠（除非用户手动操作过）
+  React.useEffect(() => {
+    if (userInteractedRef.current) return;
+    if (isFinish) {
+      setActiveKey(undefined);
+    } else {
+      setActiveKey('thinking');
+    }
+  }, [isFinish]);
+
+  const displayTitle = isFinish ? title : `${t('message.generating').replace('...', '')}…`;
+
   return (
-    <Collapse ghost className='w-full rounded-lg border border-fc-200 bg-fc-50' defaultActiveKey={['thinking']}>
-      <Collapse.Panel header={<span className='text-sm font-medium text-main'>{title}</span>} key='thinking'>
-        <Markdown content={content || ''} />
+    <Collapse
+      ghost
+      className='w-full rounded-lg border border-fc-200 bg-fc-50'
+      activeKey={activeKey}
+      onChange={(keys) => {
+        userInteractedRef.current = true;
+        setActiveKey(Array.isArray(keys) ? (keys[0] as string) : undefined);
+      }}
+    >
+      <Collapse.Panel header={<span className='text-sm font-medium text-main'>{displayTitle}</span>} key='thinking'>
+        <div className='max-h-60 overflow-y-auto'>
+          <Markdown content={content || ''} />
+        </div>
       </Collapse.Panel>
     </Collapse>
   );
@@ -176,7 +202,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
         switch (contentType) {
           case EAiChatContentType.Thinking:
           case EAiChatContentType.Reasoning:
-            return <ThinkingBlock key={`${response.content_type}-${index}`} title={t('message.thinking')} content={response.content} />;
+            return <ThinkingBlock key={`${response.content_type}-${index}`} title={t('message.thinking')} content={response.content} isFinish={response.is_finish} />;
           case EAiChatContentType.Markdown:
             return <MarkdownBlock key={`${response.content_type}-${index}`} response={response} />;
           case EAiChatContentType.Hint:
@@ -275,7 +301,24 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
   );
 }
 
+const bottomStatusContentTypes = [EAiChatContentType.Thinking, EAiChatContentType.Reasoning];
+
+function shouldShowInitialRunningStatus(isFinish?: boolean, responseList?: IAiChatMessageResponse[]) {
+  return !isFinish && !responseList?.length;
+}
+
+function shouldShowRunningStatusAtMessageBottom(isFinish?: boolean, responseList?: IAiChatMessageResponse[]) {
+  if (isFinish) return false;
+  const lastResponse = responseList?.[responseList.length - 1];
+  if (!lastResponse?.content_type) return false;
+  return bottomStatusContentTypes.includes(lastResponse.content_type as EAiChatContentType);
+}
+
 export function MessageItem({ message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
+  const { t } = useTranslation(NAME_SPACE);
+  const showInitialRunningStatus = shouldShowInitialRunningStatus(message.is_finish, message.response);
+  const showBottomRunningStatus = shouldShowRunningStatusAtMessageBottom(message.is_finish, message.response);
+
   return (
     <div className='w-full space-y-3 shadow-sm'>
       <div className='flex justify-end'>
@@ -292,6 +335,17 @@ export function MessageItem({ message, isStreaming, onExecuteQueryForQueryConten
           onOKForFormSelectContent={onOKForFormSelectContent}
           maybeScrollToBottom={maybeScrollToBottom}
         />
+        {!message.is_finish && (
+          <div className='inline-flex items-center w-fit text-main text-sm'>
+            {!!showInitialRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.generating')}</span>}
+            {!!showBottomRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.processing')}</span>}
+            <span className='inline-flex items-center gap-[3px]' aria-hidden='true'>
+              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse' />
+              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:160ms]' />
+              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:320ms]' />
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

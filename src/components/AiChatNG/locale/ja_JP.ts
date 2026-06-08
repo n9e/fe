@@ -29,7 +29,8 @@ const ja_JP = {
     query_generator: 'クエリを生成',
   },
   message: {
-    generating: '応答を生成中...',
+    generating: '思考中...',
+    processing: '処理中',
     hint: 'ヒント',
     no_llm_title: '現在の環境には大規模言語モデルの設定がありません',
     no_llm_content: '大規模言語モデルの設定を追加するには、<a>LLM管理</a>ページに移動してください',
