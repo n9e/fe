@@ -47,6 +47,7 @@ const zh_CN = {
   },
   form_select: {
     title: '请先补充以下信息后继续：',
+    approval_title: '请确认是否执行以上操作：',
     busi_group: '业务组',
     datasource: '数据源',
     placeholder_select: '请选择',
