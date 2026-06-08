@@ -40,6 +40,21 @@ export default function HistogramChart(props: Props) {
     return mapped;
   }, [series]);
 
+  // 堆叠模式下检测 error ref，生成颜色覆盖映射
+  const categoryColors = useMemo<Record<string, string> | undefined>(() => {
+    if (!stacked || !Array.isArray(series)) return undefined;
+    // 简单检测 name 中包含 ERROR/ERR（大小写）来识别 error ref，生成颜色覆盖映射
+    const ERROR_REF_PATTERNS = ['ERROR', 'ERR', 'error', 'err'];
+    const errorColor = darkMode ? 'rgb(239, 67, 67)' : 'rgb(200, 0, 0)';
+    const colors: Record<string, string> = {};
+    series.forEach((s: any) => {
+      if (s?.name && ERROR_REF_PATTERNS.includes(s.name)) {
+        colors[s.name] = errorColor;
+      }
+    });
+    return Object.keys(colors).length > 0 ? colors : undefined;
+  }, [series, stacked, darkMode]);
+
   // 计算步长（用于 x 轴刻度格式化）
   const stepMs = useMemo(() => {
     const times = chartData.map((d) => (typeof d.time === 'number' ? d.time : new Date(d.time).getTime())).filter((t) => Number.isFinite(t));
@@ -76,7 +91,16 @@ export default function HistogramChart(props: Props) {
   // 直接渲染新的时序柱状图组件
   return (
     <div className='w-full min-w-0 h-full min-h-0'>
-      <TimeSeriesBarChart data={chartData} height={120} onBarClick={handleBarClick} onBrushEnd={handleBrushEnd} stacked={stacked} stepMs={stepMs} darkMode={darkMode} />
+      <TimeSeriesBarChart
+        data={chartData}
+        height={120}
+        onBarClick={handleBarClick}
+        onBrushEnd={handleBrushEnd}
+        stacked={stacked}
+        stepMs={stepMs}
+        darkMode={darkMode}
+        categoryColors={categoryColors}
+      />
     </div>
   );
 }
