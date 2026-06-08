@@ -43,6 +43,7 @@ const en_US = {
   },
   form_select: {
     title: 'Please fill in the following information to continue:',
+    approval_title: 'Please confirm the action above:',
     busi_group: 'Business Group',
     datasource: 'Datasource',
     placeholder_select: 'Please select',

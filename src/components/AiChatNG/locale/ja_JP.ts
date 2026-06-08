@@ -43,6 +43,7 @@ const ja_JP = {
   },
   form_select: {
     title: '続行するには以下の情報を入力してください:',
+    approval_title: '上記の操作を実行してもよろしいですか:',
     busi_group: 'ビジネスグループ',
     datasource: 'データソース',
     placeholder_select: '選択してください',

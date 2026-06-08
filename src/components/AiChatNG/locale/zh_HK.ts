@@ -43,6 +43,7 @@ const zh_HK = {
   },
   form_select: {
     title: '請先補充以下資訊後繼續：',
+    approval_title: '請確認是否執行以上操作：',
     busi_group: '業務組',
     datasource: '數據源',
     placeholder_select: '請選擇',

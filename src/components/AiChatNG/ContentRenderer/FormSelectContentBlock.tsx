@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, Select } from 'antd';
-import { ProfileOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, ProfileOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { NAME_SPACE } from '../constants';
 import ContentCard from './ContentCard';
 
-type FieldKey = 'busi_group_id' | 'datasource_id' | string;
+type FieldKey = 'busi_group_id' | 'datasource_id' | 'approval' | string;
 
 interface IFormSelectCandidate {
   id: number;
@@ -24,6 +24,12 @@ interface IFormSelectPayload {
   skill_name?: string;
   fields?: IFormSelectField[];
 }
+
+// approval 结构化确认通道，与后端 aiagent.ApprovalParamKey / ApprovalCandidate* 对齐：
+// 写工具执行前弹「确认执行 / 取消」二选一，点击经 action.param.approval 回传数值 ID，
+// 下一轮后端零 NLP 直接裁决（id=1 确认，id=2 取消）。
+const APPROVAL_FIELD_KEY = 'approval';
+const APPROVAL_CANDIDATE_APPROVE = 1;
 
 function safeParsePayload(raw: string): IFormSelectPayload | undefined {
   if (!raw) return undefined;
@@ -53,13 +59,66 @@ export interface IFormSelectConfirmResult {
   param: {
     busi_group_id?: number;
     datasource_id?: number;
+    approval?: number;
   };
   content: string;
 }
 
+// 默认导出按字段类型分流：含 approval 字段走确认按钮视图，其余走业务组/数据源补全视图。
+// 解析放在这里只算一次，子组件各自持有自己的 hooks，避免条件调用 hooks。
 export default function FormSelectContentBlock(props: { responseContent: string; onConfirm: (result: IFormSelectConfirmResult) => void }) {
-  const { t } = useTranslation(NAME_SPACE);
   const payload = React.useMemo(() => safeParsePayload(props.responseContent), [props.responseContent]);
+  const approvalField = React.useMemo(() => payload?.fields?.find((f) => f.key === APPROVAL_FIELD_KEY), [payload?.fields]);
+
+  if (approvalField) {
+    return <FormApprovalView field={approvalField} onConfirm={props.onConfirm} />;
+  }
+  return <FormFieldsView payload={payload} onConfirm={props.onConfirm} />;
+}
+
+// approval 二选一确认：候选名（含语言）由后端下发，直接作为按钮文案与回传 content。
+// 取消按钮在前、确认主按钮靠右，与 antd 弹窗一致；点击后禁用两个按钮防重复提交
+// （后端有 Resume 幂等台账兜底，这里只做交互层防抖）。
+function FormApprovalView(props: { field: IFormSelectField; onConfirm: (result: IFormSelectConfirmResult) => void }) {
+  const { t } = useTranslation(NAME_SPACE);
+  const [submitted, setSubmitted] = React.useState(false);
+  const candidates = props.field.candidates || [];
+
+  const orderedCandidates = React.useMemo(() => {
+    const approve = candidates.find((c) => c.id === APPROVAL_CANDIDATE_APPROVE);
+    const rest = candidates.filter((c) => c.id !== APPROVAL_CANDIDATE_APPROVE);
+    return approve ? [...rest, approve] : candidates;
+  }, [candidates]);
+
+  if (!candidates.length) {
+    return <div className='rounded-lg border border-dashed border-fc-200 bg-fc-50 px-4 py-3 text-sm text-hint'>{t('message.unsupported_type', { type: 'form_select' })}</div>;
+  }
+
+  return (
+    <ContentCard icon={<CheckCircleOutlined />} title={t('form_select.approval_title')}>
+      <div className='flex flex-wrap items-center justify-end gap-2'>
+        {orderedCandidates.map((c) => (
+          <Button
+            key={c.id}
+            type={c.id === APPROVAL_CANDIDATE_APPROVE ? 'primary' : 'default'}
+            disabled={submitted}
+            onClick={() => {
+              setSubmitted(true);
+              props.onConfirm({ param: { approval: c.id }, content: c.name });
+            }}
+          >
+            {c.name}
+          </Button>
+        ))}
+      </div>
+    </ContentCard>
+  );
+}
+
+// 业务组 / 数据源补全（原 form_select 行为）。
+function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (result: IFormSelectConfirmResult) => void }) {
+  const { t } = useTranslation(NAME_SPACE);
+  const { payload } = props;
 
   const busiGroupField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'busi_group_id'), [payload?.fields]);
   const datasourceField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'datasource_id'), [payload?.fields]);
