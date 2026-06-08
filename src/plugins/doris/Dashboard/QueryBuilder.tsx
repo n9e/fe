@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
 import AddQueryButtons from '@/pages/dashboard/Editor/Components/AddQueryButtons';
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
@@ -43,7 +43,7 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                       header={
                         <Form.Item noStyle shouldUpdate>
                           {({ getFieldValue }) => {
-                            return getFieldValue([...prefixName, 'refId']) || alphabet[index];
+                            return getFieldValue([...prefixName, 'refId']) || generateQueryNameByIndex(index);
                           }}
                         </Form.Item>
                       }

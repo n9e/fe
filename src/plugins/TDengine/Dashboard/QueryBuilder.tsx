@@ -3,7 +3,7 @@ import { Form, Row, Col, Input, Button, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
@@ -26,7 +26,7 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
                     header={
                       <Form.Item noStyle shouldUpdate>
                         {({ getFieldValue }) => {
-                          return getFieldValue(['targets', field.name, 'refId']) || alphabet[index];
+                          return getFieldValue(['targets', field.name, 'refId']) || generateQueryNameByIndex(index);
                         }}
                       </Form.Item>
                     }

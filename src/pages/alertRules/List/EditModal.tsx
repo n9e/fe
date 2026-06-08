@@ -28,7 +28,7 @@ import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/Datasour
 import { CommonStateContext } from '@/App';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
 import NotificationRuleSelect from '@/pages/alertRules/Form/Notify/NotificationRuleSelect';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 
 import { defaultValues } from '../Form/constants';
@@ -765,7 +765,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                   _.forEach(row?.rule_config?.queries, (query, index) => {
                     queries.push({
                       ...query,
-                      ref: alphabet[index],
+                      ref: generateQueryNameByIndex(Number(index)),
                     });
                   });
                 });

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import { getFields } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import { alphabet } from '@/utils/constant';
+import { generateQueryName, generateQueryNameByIndex } from '@/components/QueryName/utils';
 
 interface IProps {
   prefixField?: any;
@@ -82,7 +82,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                     style={{ cursor: 'pointer' }}
                     onClick={() => {
                       add({
-                        ref: alphabet[fields.length],
+                        ref: generateQueryNameByIndex(fields.length),
                         func: functions[0],
                         field: undefined,
                       });
@@ -106,7 +106,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                           <Row gutter={10}>
                             <Col span={func === 'count' ? 24 : 12}>
                               <Input.Group>
-                                {valueRefVisible && <span className='ant-input-group-addon'>{alphabet[index]}</span>}
+                                {valueRefVisible && <span className='ant-input-group-addon'>{generateQueryNameByIndex(index)}</span>}
                                 <Form.Item {...field} name={[field.name, 'func']}>
                                   <Select
                                     style={{ width: '100%' }}
