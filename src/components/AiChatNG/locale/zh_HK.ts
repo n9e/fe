@@ -3,6 +3,8 @@ const zh_HK = {
     current_chat: '當前會話',
     new_chat: '新建會話',
     history: '會話歷史',
+    share: '分享',
+    share_copied: '分享連結已複製',
     switch_to_drawer: '切換為抽屜模式',
     switch_to_floating: '切換為浮窗模式',
   },
@@ -17,6 +19,7 @@ const zh_HK = {
   },
   input: {
     placeholder: '輸入問題，Enter 發送，Shift + Enter 換行',
+    share_readonly_placeholder: '當前為唯讀分享模式',
   },
   query: {
     title: '查詢語句',

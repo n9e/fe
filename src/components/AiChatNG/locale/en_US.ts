@@ -3,6 +3,8 @@ const en_US = {
     current_chat: 'Current Chat',
     new_chat: 'New Chat',
     history: 'Chat History',
+    share: 'Share',
+    share_copied: 'Share link copied',
     switch_to_drawer: 'Switch to Drawer Mode',
     switch_to_floating: 'Switch to Floating Panel',
   },
@@ -17,6 +19,7 @@ const en_US = {
   },
   input: {
     placeholder: 'Ask a question. Press Enter to send, Shift + Enter for a new line',
+    share_readonly_placeholder: 'Viewing a shared chat (read-only)',
   },
   query: {
     title: 'Query',

@@ -3,6 +3,8 @@ const ru_RU = {
     current_chat: 'Текущий чат',
     new_chat: 'Новый чат',
     history: 'История чатов',
+    share: 'Поделиться',
+    share_copied: 'Ссылка скопирована',
     switch_to_drawer: 'Переключить в режим Drawer',
     switch_to_floating: 'Переключить в плавающую панель',
   },
@@ -17,6 +19,7 @@ const ru_RU = {
   },
   input: {
     placeholder: 'Введите вопрос. Enter для отправки, Shift + Enter для новой строки',
+    share_readonly_placeholder: 'Просмотр общего чата (только чтение)',
   },
   query: {
     title: 'Запрос',

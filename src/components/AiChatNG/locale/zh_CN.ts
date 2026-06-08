@@ -3,6 +3,8 @@ const zh_CN = {
     current_chat: '当前会话',
     new_chat: '新建会话',
     history: '会话历史',
+    share: '分享',
+    share_copied: '分享链接已复制',
     switch_to_drawer: '切换为抽屉模式',
     switch_to_floating: '切换为浮窗模式',
   },
@@ -17,6 +19,7 @@ const zh_CN = {
   },
   input: {
     placeholder: '输入问题，Enter 发送，Shift + Enter 换行',
+    share_readonly_placeholder: '当前为只读分享模式',
   },
   query: {
     title: '查询语句',

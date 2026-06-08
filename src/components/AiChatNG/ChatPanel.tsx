@@ -11,12 +11,14 @@ import { EmptyConversation, MessageItem } from './MessageBlocks';
 import { IAiChatAction, IAiChatHistoryItem, IAiChatMessage, IAiChatMessageLocator, IAiChatProps, IAiChatStreamSegment } from './types';
 import { applyStreamChunk, buildStreamingMessage, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
 import { useAiChatStream } from './useStream';
+import { useAiChatContext } from './context';
 
 const POLLING_INTERVAL = 3000;
 
 export default function ChatPanel(props: IAiChatProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { placeholder, chatId, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, onChatChange, onError, welcomeSlot } = props;
+  const { shareReadonly } = useAiChatContext();
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -217,7 +219,7 @@ export default function ChatPanel(props: IAiChatProps) {
 
   const sendUserMessage = useCallback(
     async (action?: IAiChatAction, overrideContent?: string) => {
-      if (submitting) return;
+      if (submitting || shareReadonly) return;
       const content = (overrideContent ?? inputValue).trim();
       if (!content) return;
 
@@ -274,7 +276,7 @@ export default function ChatPanel(props: IAiChatProps) {
         handleError(nextError);
       }
     },
-    [activeChat, chatId, createNewChat, handleError, inputValue, mergeMessage, onChatChange, queryAction, queryPageFrom, startPolling, submitting, syncMessageDetail, t],
+    [activeChat, chatId, createNewChat, handleError, inputValue, mergeMessage, onChatChange, queryAction, queryPageFrom, shareReadonly, startPolling, submitting, syncMessageDetail, t],
   );
 
   useEffect(() => {
@@ -344,7 +346,8 @@ export default function ChatPanel(props: IAiChatProps) {
             autoSize={{ minRows: 3, maxRows: 8 }}
             bordered={false}
             value={inputValue}
-            placeholder={placeholder ?? t('input.placeholder')}
+            placeholder={shareReadonly ? t('input.share_readonly_placeholder') : placeholder ?? t('input.placeholder')}
+            disabled={shareReadonly}
             onChange={(event) => setInputValue(event.target.value)}
             onCompositionStart={() => setIsComposing(true)}
             onCompositionEnd={() => setIsComposing(false)}
@@ -363,6 +366,7 @@ export default function ChatPanel(props: IAiChatProps) {
               <Button
                 type='primary'
                 shape='circle'
+                disabled={shareReadonly}
                 icon={submitting ? <PauseCircleOutlined /> : <IconFont type='icon-ic_send' style={{ color: '#fff', fontSize: 14 }} />}
                 onClick={() => {
                   if (submitting) {

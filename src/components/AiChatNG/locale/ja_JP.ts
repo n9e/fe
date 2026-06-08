@@ -3,6 +3,8 @@ const ja_JP = {
     current_chat: '現在の会話',
     new_chat: '新規会話',
     history: '会話履歴',
+    share: 'シェア',
+    share_copied: '共有リンクをコピーしました',
     switch_to_drawer: 'ドロワーモードに切り替え',
     switch_to_floating: 'フローティングパネルに切り替え',
   },
@@ -17,6 +19,7 @@ const ja_JP = {
   },
   input: {
     placeholder: '質問を入力してください。Enter で送信、Shift + Enter で改行',
+    share_readonly_placeholder: '読み取り専用モードで共有されています',
   },
   query: {
     title: 'クエリ',
