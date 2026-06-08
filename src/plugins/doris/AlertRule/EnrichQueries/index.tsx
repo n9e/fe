@@ -7,7 +7,7 @@ import { SqlMonacoEditor } from '@fc-components/monaco-editor';
 import { WandSparkles } from 'lucide-react';
 
 import { CommonStateContext } from '@/App';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import EnhancedModal from '@/pages/alertRules/Form/components/EnhancedModal';
@@ -58,7 +58,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                   <Row gutter={8}>
                     <Col flex='32px'>
                       <Form.Item>
-                        <Input readOnly style={{ width: 32 }} value={alphabet[index]} />
+                        <Input readOnly style={{ width: 32 }} value={generateQueryNameByIndex(index)} />
                       </Form.Item>
                     </Col>
                     <Col flex='auto'>

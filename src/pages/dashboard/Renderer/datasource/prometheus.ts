@@ -4,7 +4,8 @@ import i18next from 'i18next';
 
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { fetchHistoryRangeBatch, fetchHistoryInstantBatch, fetchHistoryRangeBatch2 } from '@/services/dashboardV2';
-import { alphabet, N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+import { N9E_PATHNAME, IS_PLUS } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { ITarget } from '../../types';
@@ -65,7 +66,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
     _.forEach(targets, (target, idx) => {
       // 兼容没有 refId 数据的旧版内置大盘
       if (!target.refId) {
-        target.refId = alphabet[idx];
+        target.refId = generateQueryNameByIndex(idx);
       }
       let start = moment(parsedRange.start).unix();
       let end = moment(parsedRange.end).unix();

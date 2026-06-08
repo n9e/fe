@@ -14,17 +14,10 @@
  * limitations under the License.
  *
  */
-import _ from 'lodash';
-import { alphabet } from '@/utils/constant';
+import { generateQueryName } from '@/components/QueryName/utils';
 
 const getFirstUnusedLetter = (usedLetters: string[]) => {
-  for (let i = 0; i < alphabet.length; i++) {
-    const letter = alphabet[i];
-    if (!_.includes(usedLetters, letter)) {
-      return letter;
-    }
-  }
-  return 'Z';
+  return generateQueryName(usedLetters) || 'Z';
 };
 
 export default getFirstUnusedLetter;

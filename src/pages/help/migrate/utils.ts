@@ -18,7 +18,7 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import semver from 'semver';
 import { updateDashboardConfigs } from '@/services/dashboardV2';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import { defaultCustomValuesMap } from '../../dashboard/Editor/config';
 
 function JSONParse(str) {
@@ -58,7 +58,7 @@ export function convertPanelV1ToV2(oldStructure) {
     layout: structure.layout,
     targets: _.map(structure.QL, (item, i) => {
       return {
-        refId: alphabet[i],
+        refId: generateQueryNameByIndex(Number(i)),
         expr: item?.PromQL,
         legendFormat: item?.Legend,
       };

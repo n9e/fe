@@ -9,7 +9,8 @@ import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import { CommonStateContext } from '@/App';
 import LogQL from '@/components/LogQL';
-import { DatasourceCateEnum, alphabet } from '@/utils/constant';
+import { DatasourceCateEnum } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
 import AddQueryButtons from '@/pages/dashboard/Editor/Components/AddQueryButtons';
 
@@ -46,7 +47,7 @@ export default function MySQLQueryBuilder({ datasourceValue }) {
                     header={
                       <Form.Item noStyle shouldUpdate>
                         {({ getFieldValue }) => {
-                          return getFieldValue([...prefixName, 'refId']) || alphabet[index];
+                          return getFieldValue([...prefixName, 'refId']) || generateQueryNameByIndex(index);
                         }}
                       </Form.Item>
                     }
