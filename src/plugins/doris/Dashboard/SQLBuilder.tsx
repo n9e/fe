@@ -1,5 +1,5 @@
 import React, { useContext, useState, useRef } from 'react';
-import { Form, Select, Row, Col, Space, Modal, Button, Alert, Tooltip } from 'antd';
+import { Form, Space, Modal, Button, Alert, Tooltip } from 'antd';
 import { InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
@@ -26,67 +26,58 @@ export default function SQLBuilder(props: Props) {
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
   const queryValueRef = useRef<string>();
   const chartForm = Form.useFormInstance();
-  const type = Form.useWatch('type');
 
   return (
     <>
       <Form.Item
         className='n9e-doris-dashboard-querybuilder-query-item'
         label={
-          <div className='w-full flex justify-between'>
-            <Space>
-              {t('query.query')}
-              <Tooltip
-                overlayClassName='ant-tooltip-auto-width ant-tooltip-with-link'
-                title={
-                  <div>
-                    <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />
-                    <div className='mt-2'>
-                      <Trans
-                        ns={NAME_SPACE}
-                        i18nKey='query.click_doc'
-                        components={{
-                          a: (
-                            <a
-                              onClick={() => {
-                                DocumentDrawer({
-                                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                                  darkMode,
-                                  title: t('common:document_link'),
-                                  type: 'iframe',
-                                  documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                                  anchor: '#2-时间宏',
-                                });
-                              }}
-                            />
-                          ),
-                        }}
-                      />
-                    </div>
+          <Space>
+            {t('query.query')}
+            <Tooltip
+              overlayClassName='ant-tooltip-auto-width ant-tooltip-with-link'
+              title={
+                <div>
+                  <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />
+                  <div className='mt-2'>
+                    <Trans
+                      ns={NAME_SPACE}
+                      i18nKey='query.click_doc'
+                      components={{
+                        a: (
+                          <a
+                            onClick={() => {
+                              DocumentDrawer({
+                                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                                darkMode,
+                                title: t('common:document_link'),
+                                type: 'iframe',
+                                documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                                anchor: '#2-时间宏',
+                              });
+                            }}
+                          />
+                        ),
+                      }}
+                    />
                   </div>
-                }
-              >
-                <InfoCircleOutlined
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                      darkMode,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
-                      anchor: '#2-时间宏',
-                    });
-                  }}
-                />
-              </Tooltip>
-            </Space>
-            <Form.Item name={[field.name, 'query', 'mode']} initialValue={type === 'timeseries' ? 'timeSeries' : 'raw'} noStyle>
-              <Select>
-                <Select.Option value='timeSeries'>{t('query.dashboard.mode.timeSeries')}</Select.Option>
-                <Select.Option value='raw'>{t('query.dashboard.mode.table')}</Select.Option>
-              </Select>
-            </Form.Item>
-          </div>
+                </div>
+              }
+            >
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('common:document_link'),
+                    type: 'iframe',
+                    documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                    anchor: '#2-时间宏',
+                  });
+                }}
+              />
+            </Tooltip>
+          </Space>
         }
         {...field}
         name={[field.name, 'query', 'query']}
@@ -117,23 +108,21 @@ export default function SQLBuilder(props: Props) {
         />
       </Form.Item>
       {mode === 'timeSeries' && <AdvancedSettings span={8} prefixField={field} prefixName={[field.name, 'query']} expanded />}
-      <Row gutter={10}>
-        <Col flex='auto'>
-          <Form.Item
-            label='Legend'
-            {...field}
-            name={[field.name, 'legend']}
-            tooltip={{
-              getPopupContainer: () => document.body,
-              title: t('dashboard:query.legendTip2', {
-                interpolation: { skipOnVariables: true },
-              }),
-            }}
-          >
-            <LegendInput />
-          </Form.Item>
-        </Col>
-      </Row>
+      {mode === 'timeSeries' && (
+        <Form.Item
+          label='Legend'
+          {...field}
+          name={[field.name, 'legend']}
+          tooltip={{
+            getPopupContainer: () => document.body,
+            title: t('dashboard:query.legendTip2', {
+              interpolation: { skipOnVariables: true },
+            }),
+          }}
+        >
+          <LegendInput />
+        </Form.Item>
+      )}
       <Modal
         width={700}
         visible={queryWarnModalVisible}

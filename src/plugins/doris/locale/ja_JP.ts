@@ -52,6 +52,13 @@ const ja_JP = {
     warn_message_content_2: '一般的な時間マクロ: ',
     warn_message_content_3: '例：',
     warn_message_content_4: '時間マクロの使用方法: <a>詳細</a>',
+    editMode: {
+      switch_to_builder_confirm_title: 'ビルダーモードに切り替え',
+      switch_to_builder_confirm_content: '現在のSQLをビルダー設定に変換できません。切り替えると編集したSQLが失われます。続行しますか？',
+      no_builder_config: 'クエリ条件を設定してください',
+      require_db_table: 'データベースとテーブルを選択してください',
+      build_sql_failed: 'SQLの生成に失敗しました',
+    },
     dashboard: {
       mode: {
         label: 'クエリモード',
