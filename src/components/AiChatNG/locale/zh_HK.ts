@@ -50,6 +50,7 @@ const zh_HK = {
     approval_title: '請確認是否執行以上操作：',
     busi_group: '業務組',
     datasource: '數據源',
+    team: '團隊',
     placeholder_select: '請選擇',
     confirm: '確定',
   },

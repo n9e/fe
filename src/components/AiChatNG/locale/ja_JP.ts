@@ -50,6 +50,7 @@ const ja_JP = {
     approval_title: '上記の操作を実行してもよろしいですか:',
     busi_group: 'ビジネスグループ',
     datasource: 'データソース',
+    team: 'チーム',
     placeholder_select: '選択してください',
     confirm: '確定',
   },
