@@ -504,6 +504,7 @@ export default function index(props: Props) {
                 }
               }}
               linesColumnFormat={(val) => {
+                if (pageLoadMode === 'infiniteScroll') return val;
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
               // state context
