@@ -45,6 +45,7 @@ const en_US = {
     title: 'Please fill in the following information to continue:',
     busi_group: 'Business Group',
     datasource: 'Datasource',
+    team: 'Teams',
     placeholder_select: 'Please select',
     confirm: 'Confirm',
   },

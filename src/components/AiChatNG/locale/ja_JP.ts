@@ -45,6 +45,7 @@ const ja_JP = {
     title: '続行するには以下の情報を入力してください:',
     busi_group: 'ビジネスグループ',
     datasource: 'データソース',
+    team: 'チーム',
     placeholder_select: '選択してください',
     confirm: '確定',
   },

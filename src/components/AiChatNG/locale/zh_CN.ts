@@ -45,6 +45,7 @@ const zh_CN = {
     title: '请先补充以下信息后继续：',
     busi_group: '业务组',
     datasource: '数据源',
+    team: '团队',
     placeholder_select: '请选择',
     confirm: '确定',
   },
