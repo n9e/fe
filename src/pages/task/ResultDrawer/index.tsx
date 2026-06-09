@@ -28,6 +28,9 @@ interface Props {
   busiId: number;
   hideCloneTask?: boolean;
   metaAlias?: string;
+  initialOutputMode?: { outputType: 'stdout' | 'stderr'; host?: string };
+  onOutputOpen?: (info: { outputType: 'stdout' | 'stderr'; host?: string }) => void;
+  onOutputClose?: (info: { outputType: 'stdout' | 'stderr'; host?: string }) => void;
 }
 
 const sizeWidthMap = {
@@ -40,7 +43,7 @@ type SizeType = 'small' | 'middle' | 'large';
 
 export default function ResultDrawer(props: Props) {
   const { t } = useTranslation('navigableDrawer');
-  const { title, visible, onClose, taskId, busiId, hideCloneTask, metaAlias } = props;
+  const { title, visible, onClose, taskId, busiId, hideCloneTask, metaAlias, initialOutputMode, onOutputOpen, onOutputClose } = props;
   const [size, setSize] = useState<SizeType>('middle');
 
   return (
@@ -62,7 +65,17 @@ export default function ResultDrawer(props: Props) {
         />
       }
     >
-      {visible && <ResultContent taskId={taskId} busiId={busiId} hideCloneTask={hideCloneTask} metaAlias={metaAlias} />}
+      {visible && (
+        <ResultContent
+          taskId={taskId}
+          busiId={busiId}
+          hideCloneTask={hideCloneTask}
+          metaAlias={metaAlias}
+          initialOutputMode={initialOutputMode}
+          onOutputOpen={onOutputOpen}
+          onOutputClose={onOutputClose}
+        />
+      )}
     </Drawer>
   );
 }

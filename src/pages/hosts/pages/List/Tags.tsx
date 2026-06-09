@@ -125,7 +125,9 @@ export default function Tags(props: Props) {
   const { visibleCount, overflowCount } = layout;
 
   return (
-    <div ref={containerRef} className='relative'>
+    // overflow-hidden 防止下方绝对定位的测量层向祖先（.ant-table-body）贡献可滚动宽度，
+    // 否则当某行存在很长的 tag 时，会出现表体比表头多一段横向滚动距离的错位现象
+    <div ref={containerRef} className='relative overflow-hidden'>
       {/* 隐藏测量层：绝对定位不占空间，用于获取各 tag 的真实渲染宽度 */}
       <div aria-hidden className='absolute top-0 left-0 invisible pointer-events-none flex'>
         {data.map((tag, i) => (

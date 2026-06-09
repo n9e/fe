@@ -30,6 +30,7 @@ interface Props {
   host?: string;
   outputType: 'stdout' | 'stderr';
   title: string;
+  onOutputClose?: (info: { outputType: 'stdout' | 'stderr'; host?: string }) => void;
 }
 
 const sizeWidthMap = {
@@ -42,7 +43,12 @@ type SizeType = 'small' | 'middle' | 'large';
 
 export default function OutputDrawer(props: Props) {
   const { t } = useTranslation('navigableDrawer');
-  const { visible, onClose, busiId, taskId, host, outputType, title } = props;
+  const { visible, onClose, busiId, taskId, host, outputType, title, onOutputClose } = props;
+
+  const handleClose = () => {
+    onOutputClose?.({ outputType, host });
+    onClose();
+  };
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
   const [size, setSize] = useState<SizeType>('middle');
@@ -81,7 +87,7 @@ export default function OutputDrawer(props: Props) {
       width={sizeWidthMap[size]}
       title={title}
       placement='right'
-      onClose={onClose}
+      onClose={handleClose}
       visible={visible}
       extra={
         <Segmented

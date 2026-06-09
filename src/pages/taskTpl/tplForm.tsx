@@ -43,7 +43,7 @@ interface TplFormProps {
   showAuthLevel?: boolean;
 }
 
-const defaultInitialValues = {
+export const defaultInitialValues = {
   title: '',
   batch: 0,
   tolerance: 0,

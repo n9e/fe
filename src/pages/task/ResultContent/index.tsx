@@ -39,11 +39,14 @@ interface Props {
   busiId: number;
   hideCloneTask?: boolean;
   metaAlias?: string;
+  initialOutputMode?: { outputType: 'stdout' | 'stderr'; host?: string };
+  onOutputOpen?: (info: { outputType: 'stdout' | 'stderr'; host?: string }) => void;
+  onOutputClose?: (info: { outputType: 'stdout' | 'stderr'; host?: string }) => void;
 }
 
 const taskResultCls = 'job-task-result';
 
-const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAlias }) => {
+const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAlias, initialOutputMode, onOutputOpen, onOutputClose }) => {
   const { t, i18n } = useTranslation('common');
   const [activeStatus, setActiveStatus] = useState<string[]>();
   const [data, setData] = useState({} as any);
@@ -74,6 +77,12 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
 
   useEffect(() => {
     getTableData();
+  }, []);
+
+  useEffect(() => {
+    if (initialOutputMode) {
+      setOutputDrawer({ visible: true, host: initialOutputMode.host, outputType: initialOutputMode.outputType });
+    }
   }, []);
 
   useEffect(() => {
@@ -149,9 +158,23 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
       render: (_text, record) => {
         return (
           <span>
-            <a onClick={() => setOutputDrawer({ visible: true, host: record.host, outputType: 'stdout' })}>stdout</a>
+            <a
+              onClick={() => {
+                setOutputDrawer({ visible: true, host: record.host, outputType: 'stdout' });
+                onOutputOpen?.({ outputType: 'stdout', host: record.host });
+              }}
+            >
+              stdout
+            </a>
             <Divider type='vertical' />
-            <a onClick={() => setOutputDrawer({ visible: true, host: record.host, outputType: 'stderr' })}>stderr</a>
+            <a
+              onClick={() => {
+                setOutputDrawer({ visible: true, host: record.host, outputType: 'stderr' });
+                onOutputOpen?.({ outputType: 'stderr', host: record.host });
+              }}
+            >
+              stderr
+            </a>
           </span>
         );
       },
@@ -193,9 +216,23 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
           <Row style={{ marginBottom: 20 }}>
             <Col span={18}>
               <div>
-                <a onClick={() => setOutputDrawer({ visible: true, outputType: 'stdout' })}>stdouts</a>
+                <a
+                  onClick={() => {
+                    setOutputDrawer({ visible: true, outputType: 'stdout' });
+                    onOutputOpen?.({ outputType: 'stdout' });
+                  }}
+                >
+                  stdouts
+                </a>
                 <Divider type='vertical' />
-                <a onClick={() => setOutputDrawer({ visible: true, outputType: 'stderr' })}>stderrs</a>
+                <a
+                  onClick={() => {
+                    setOutputDrawer({ visible: true, outputType: 'stderr' });
+                    onOutputOpen?.({ outputType: 'stderr' });
+                  }}
+                >
+                  stderrs
+                </a>
                 <Divider type='vertical' />
                 <a onClick={() => setMetaDrawerVisible(true)}>{metaAlias ?? t('task.meta')}</a>
                 {!hideCloneTask && <Divider type='vertical' />}
@@ -247,12 +284,15 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
       </div>
       <OutputDrawer
         visible={outputDrawer.visible}
-        onClose={() => setOutputDrawer({ visible: false, outputType: 'stdout' })}
+        onClose={() => {
+          setOutputDrawer({ visible: false, outputType: 'stdout' });
+        }}
         busiId={busiId}
         taskId={taskId}
         host={outputDrawer.host}
         outputType={outputDrawer.outputType}
         title={`${data.title} - ${outputDrawer.host ? `${outputDrawer.host} - ` : ''}${outputDrawer.outputType}`}
+        onOutputClose={onOutputClose}
       />
       <MetaDrawer visible={metaDrawerVisible} onClose={() => setMetaDrawerVisible(false)} data={data} hosts={hosts} taskId={taskId} hideCloneTask={hideCloneTask} />
     </>
