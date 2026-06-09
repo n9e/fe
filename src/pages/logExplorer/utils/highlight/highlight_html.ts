@@ -226,8 +226,8 @@ export function getTokenHighlights(
   return [`${highlightTags.pre}${tokenText}${highlightTags.post}`];
 }
 
-export function getHighlightHtml(fieldValue: string | object, highlights: string[] | undefined | null) {
-  let highlightHtml = typeof fieldValue === 'object' ? _.escape(JSON.stringify(fieldValue)) : _.escape(fieldValue);
+export function getHighlightHtml(fieldValue: string | number | boolean | null | object, highlights: string[] | undefined | null) {
+  let highlightHtml = typeof fieldValue === 'object' ? _.escape(JSON.stringify(fieldValue)) : _.escape(String(fieldValue));
 
   _.each(highlights, function (highlight) {
     const escapedHighlight = _.escape(highlight);

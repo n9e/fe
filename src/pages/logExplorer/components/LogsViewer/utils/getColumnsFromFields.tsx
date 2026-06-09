@@ -7,8 +7,7 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { Field } from '../../../types';
 import LogFieldValue from '../components/LogFieldValue';
-import { OptionsType, OnValueFilterParams } from '../types';
-import toString from './toString';
+import { OptionsType, OnValueFilterParams, FieldValueType } from '../types';
 
 export default function getColumnsFromFields(params: {
   id_key: string;
@@ -27,7 +26,7 @@ export default function getColumnsFromFields(params: {
   setLogViewerDrawerState?: React.Dispatch<React.SetStateAction<{ visible: boolean; currentIndex: number }>>;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
 }) {
   const {
@@ -97,13 +96,23 @@ export default function getColumnsFromFields(params: {
         const record = params.row;
         const idx = _.findIndex(data, { [id_key]: params.row[id_key] });
         const highlight = highlights?.[idx] || {};
+        let fieldValue = record[item];
+
+        // 对象和数组类型的字段值进行字符串化展示
+        if (_.isPlainObject(fieldValue) || _.isArray(fieldValue)) {
+          fieldValue = JSON.stringify(fieldValue);
+        }
+
+        // 无 onValueFilter 兜底路径需用字符串；boolean/null 直接渲染会变空
+        const displayString = typeof fieldValue === 'string' ? fieldValue : String(fieldValue);
+
         return (
           <div className='max-h-[140px]'>
             {onValueFilter ? (
               <LogFieldValue
                 enableTooltip
                 name={item}
-                value={record[item]}
+                value={fieldValue}
                 onTokenClick={onValueFilter}
                 rawValue={record}
                 highlight={highlight}
@@ -111,8 +120,8 @@ export default function getColumnsFromFields(params: {
                 showExistsAction={showExistsAction}
               />
             ) : (
-              <Tooltip placement='topLeft' overlayClassName='ant-tooltip-max-width-600' title={toString(record[item])}>
-                {toString(record[item])}
+              <Tooltip placement='topLeft' overlayClassName='ant-tooltip-max-width-600' title={displayString}>
+                {displayString}
               </Tooltip>
             )}
           </div>

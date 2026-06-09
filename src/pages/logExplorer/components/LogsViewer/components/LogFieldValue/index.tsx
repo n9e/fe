@@ -5,7 +5,7 @@ import React, { useContext } from 'react';
 import _ from 'lodash';
 
 import { LogsViewerStateContext } from '../../index';
-import { OnValueFilterParams } from '../../types';
+import { OnValueFilterParams, FieldValueType } from '../../types';
 import { Field } from '../../../../types';
 import { tokenizer } from './util';
 import Token from './Token';
@@ -13,7 +13,7 @@ import Token from './Token';
 interface Props {
   parentKey?: string; // 嵌套json渲染时可以传入，目前仅用在下钻的字段名判断中。目前仅在 sls 中使用
   name: string;
-  value: any;
+  value: FieldValueType;
   onTokenClick?: (parmas: OnValueFilterParams) => void;
   rawValue?: object;
   highlight?: {
@@ -21,7 +21,7 @@ interface Props {
   };
   enableTooltip?: boolean;
   fieldValueClassName?: string;
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
 }
 
@@ -119,6 +119,7 @@ export default function index(props: Props) {
       </span>
     );
   }
+
   return (
     <Token
       segmented={false}
