@@ -27,6 +27,19 @@ interface GetTokenDisplayValueParams {
   fieldConfig?: TokenFieldConfig;
 }
 
+export function getDateTokenDisplayValue(params: GetTokenDisplayValueParams): string {
+  const { value, fieldValue, name, fieldConfig } = params;
+
+  let displayValue = toString(value);
+  const fieldAttr = fieldConfig?.arr?.find((i) => i.field === name);
+
+  if (fieldAttr?.formatMap?.type === 'date' && fieldAttr?.formatMap?.params?.pattern) {
+    displayValue = moment(fieldValue).format(fieldAttr.formatMap.params.pattern);
+  }
+
+  return displayValue;
+}
+
 export function getTokenDisplayValue(params: GetTokenDisplayValueParams): string {
   const { value, fieldValue, name, fieldConfig } = params;
 
