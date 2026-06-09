@@ -188,6 +188,8 @@ const ru_RU = {
     preview_sql: 'Предпросмотр SQL',
     btn_tip: 'При нажатии содержимое поля ввода SQL будет перезаписано',
     btn_failed_tip: 'Преобразование не удалось, попробуйте снова или измените форму',
+    preview_and_run: 'Предпросмотр SQL & Запрос',
+    builder_content_modified: 'Содержимое Builder изменено, пожалуйста, просмотрите последний SQL',
   },
 };
 export default ru_RU;

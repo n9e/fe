@@ -179,6 +179,8 @@ const zh_CN = {
     preview_sql: '预览 SQL',
     btn_tip: '点击后，SQL 输入框的内容将被覆盖',
     btn_failed_tip: '转换失败，请重试，或修改表单',
+    preview_and_run: '预览 SQL & 查询',
+    builder_content_modified: 'Builder 内容已修改，请预览最新的 SQL',
   },
 };
 export default zh_CN;

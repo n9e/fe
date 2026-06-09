@@ -184,6 +184,8 @@ const en_US = {
     preview_sql: 'Preview SQL',
     btn_tip: 'Clicking will overwrite the SQL input content',
     btn_failed_tip: 'Conversion failed, please retry or modify the form',
+    preview_and_run: 'Preview SQL & Query',
+    builder_content_modified: 'Builder content modified, please preview the latest SQL',
   },
 };
 export default en_US;

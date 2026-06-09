@@ -184,6 +184,8 @@ const ja_JP = {
     preview_sql: 'SQLプレビュー',
     btn_tip: 'クリックすると、SQL入力欄の内容が上書きされます',
     btn_failed_tip: '変換に失敗しました。再試行するか、フォームを修正してください',
+    preview_and_run: 'SQLプレビュー＆クエリ',
+    builder_content_modified: 'Builder コンテンツが変更されました。最新の SQL をプレビューしてください',
   },
 };
 

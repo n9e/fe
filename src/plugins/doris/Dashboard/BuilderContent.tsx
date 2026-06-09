@@ -26,12 +26,13 @@ import getMaxLabelWidth from '../ExplorerNG/components/QueryBuilder/utils/getMax
 interface Props {
   field: any;
   datasourceValue: number;
+  onBuilderChange?: () => void;
 }
 
 export default function BuilderContent(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(AppCommonStateContext);
-  const { field, datasourceValue } = props;
+  const { field, datasourceValue, onBuilderChange } = props;
   const previewSql = Form.useWatch(['targets', field.name, 'query', 'query']);
   const chartForm = Form.useFormInstance();
   const queryValues = Form.useWatch(['targets', field.name, 'query']);
@@ -53,9 +54,6 @@ export default function BuilderContent(props: Props) {
   useEffect(() => {
     if (prevDatasourceRef.current !== datasourceValue && prevDatasourceRef.current) {
       chartForm.setFields([
-        { name: ['targets', field.name, 'query', 'database'], value: undefined },
-        { name: ['targets', field.name, 'query', 'table'], value: undefined },
-        { name: ['targets', field.name, 'query', 'time_field'], value: undefined },
         { name: ['targets', field.name, 'query', 'builderConfig'], value: undefined },
         { name: ['targets', field.name, 'query', 'query'], value: undefined },
       ]);
@@ -67,11 +65,11 @@ export default function BuilderContent(props: Props) {
     return getDorisIndex({
       cate: DatasourceCateEnum.doris,
       datasource_id: datasourceValueRef.current,
-      database: queryValues.database,
-      table: queryValues.table,
+      database: queryValues?.builderConfig?.database,
+      table: queryValues?.builderConfig?.table,
     })
       .then((res) => {
-        const timeField = queryValues?.time_field;
+        const timeField = queryValues?.builderConfig?.time_field;
         const fieldExists = _.some(res, (item) => item.field === timeField);
         if (!timeField || !fieldExists) {
           const firstDateField = _.find(res, (item) => {
@@ -80,7 +78,7 @@ export default function BuilderContent(props: Props) {
           if (firstDateField) {
             chartForm.setFields([
               {
-                name: ['targets', field.name, 'query', 'time_field'],
+                name: ['targets', field.name, 'query', 'builderConfig', 'time_field'],
                 value: firstDateField,
               },
             ]);
@@ -92,8 +90,8 @@ export default function BuilderContent(props: Props) {
   };
 
   const { data: indexData = [] } = useRequest<Field[] | undefined, any>(indexDataService, {
-    refreshDeps: [queryValues?.database, queryValues?.table],
-    ready: !!datasourceValue && !!queryValues?.database && !!queryValues?.table,
+    refreshDeps: [queryValues?.builderConfig?.database, queryValues?.builderConfig?.table],
+    ready: !!datasourceValue && !!queryValues?.builderConfig?.database && !!queryValues?.builderConfig?.table,
   });
 
   const dateFields = useMemo(() => {
@@ -103,19 +101,19 @@ export default function BuilderContent(props: Props) {
   }, [indexData]);
 
   const fieldSampleParams = useMemo(() => {
-    if (!queryValues?.database || !queryValues?.table || !queryValues?.time_field) return {} as FieldSampleParams;
+    if (!queryValues?.builderConfig?.database || !queryValues?.builderConfig?.table || !queryValues?.builderConfig?.time_field) return {} as FieldSampleParams;
     return {
       cate: DatasourceCateEnum.doris,
       datasource_id: datasourceValue,
-      database: queryValues.database,
-      table: queryValues.table,
-      time_field: queryValues.time_field,
+      database: queryValues.builderConfig.database,
+      table: queryValues.builderConfig.table,
+      time_field: queryValues.builderConfig.time_field,
       filters: filters || [],
       from: moment().subtract(24, 'hours').unix(),
       to: moment().unix(),
       limit: 100,
     };
-  }, [datasourceValue, queryValues?.database, queryValues?.table, queryValues?.time_field, JSON.stringify(filters)]);
+  }, [datasourceValue, queryValues?.builderConfig?.database, queryValues?.builderConfig?.table, queryValues?.builderConfig?.time_field, JSON.stringify(filters)]);
 
   const validIndexData = useMemo(() => {
     return _.filter(indexData, (item) => {
@@ -145,6 +143,10 @@ export default function BuilderContent(props: Props) {
     }
   }, [builderMode]);
 
+  const markBuilderDirty = () => {
+    onBuilderChange?.();
+  };
+
   const ignoreNextOutsideClickRef = useRef(false);
 
   return (
@@ -157,36 +159,43 @@ export default function BuilderContent(props: Props) {
     >
       <Row gutter={10} wrap>
         <Col span={8}>
-          <Form.Item {...field} label={t('query.database')} name={[field.name, 'query', 'database']} rules={[{ required: true, message: t('query.database_msg') }]}>
+          <Form.Item
+            {...field}
+            label={t('query.database')}
+            name={[field.name, 'query', 'builderConfig', 'database']}
+            rules={[{ required: true, message: t('query.database_msg') }]}
+          >
             <DatabaseSelect
               datasourceValue={datasourceValue}
               onChange={() => {
-                chartForm.setFields([
-                  { name: ['targets', field.name, 'query', 'table'], value: undefined },
-                  { name: ['targets', field.name, 'query', 'time_field'], value: undefined },
-                  { name: ['targets', field.name, 'query', 'builderConfig'], value: undefined },
-                ]);
+                const currentBC = chartForm.getFieldValue(['targets', field.name, 'query', 'builderConfig']);
+                chartForm.setFields([{ name: ['targets', field.name, 'query', 'builderConfig'], value: { database: currentBC?.database } }]);
+                markBuilderDirty();
               }}
             />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item {...field} label={t('query.table')} name={[field.name, 'query', 'table']} rules={[{ required: true, message: t('query.table_msg') }]}>
+          <Form.Item {...field} label={t('query.table')} name={[field.name, 'query', 'builderConfig', 'table']} rules={[{ required: true, message: t('query.table_msg') }]}>
             <TableSelect
               datasourceValue={datasourceValue}
-              database={queryValues?.database}
+              database={queryValues?.builderConfig?.database}
               onChange={() => {
-                chartForm.setFields([
-                  { name: ['targets', field.name, 'query', 'time_field'], value: undefined },
-                  { name: ['targets', field.name, 'query', 'builderConfig'], value: undefined },
-                ]);
+                const currentBC = chartForm.getFieldValue(['targets', field.name, 'query', 'builderConfig']);
+                chartForm.setFields([{ name: ['targets', field.name, 'query', 'builderConfig'], value: _.pick(currentBC, ['database', 'table']) }]);
+                markBuilderDirty();
               }}
             />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item {...field} label={t('query.time_field')} name={[field.name, 'query', 'time_field']} rules={[{ required: true, message: t('query.time_field_msg') }]}>
-            <DateFieldSelect dateFields={dateFields} />
+          <Form.Item
+            {...field}
+            label={t('query.time_field')}
+            name={[field.name, 'query', 'builderConfig', 'time_field']}
+            rules={[{ required: true, message: t('query.time_field_msg') }]}
+          >
+            <DateFieldSelect dateFields={dateFields} onChange={markBuilderDirty} />
           </Form.Item>
         </Col>
       </Row>
@@ -206,7 +215,7 @@ export default function BuilderContent(props: Props) {
           </div>
           <div className='table-cell'>
             <Form.Item name={[field.name, 'query', 'builderConfig', 'filters']} noStyle initialValue={[]}>
-              <Filters size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
+              <Filters size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} onChange={markBuilderDirty} />
             </Form.Item>
           </div>
         </div>
@@ -216,7 +225,7 @@ export default function BuilderContent(props: Props) {
           </div>
           <div className='table-cell'>
             <Form.Item name={[field.name, 'query', 'builderConfig', 'aggregates']} noStyle initialValue={[]}>
-              <Aggregates indexData={validIndexData} />
+              <Aggregates indexData={validIndexData} onChange={markBuilderDirty} />
             </Form.Item>
           </div>
         </div>
@@ -233,6 +242,7 @@ export default function BuilderContent(props: Props) {
                     { label: t('builder.mode.table'), value: 'table' },
                     { label: t('builder.mode.timeseries'), value: 'timeseries' },
                   ]}
+                  onChange={markBuilderDirty}
                 />
               </Form.Item>
               <Form.Item name={[field.name, 'query', 'builderConfig', 'group_by']} noStyle initialValue={[]}>
@@ -248,10 +258,11 @@ export default function BuilderContent(props: Props) {
                   optionFilterProp='label'
                   dropdownMatchSelectWidth={false}
                   placeholder={t('builder.group_by')}
+                  onChange={markBuilderDirty}
                 />
               </Form.Item>
               <Form.Item name={[field.name, 'query', 'builderConfig', 'limit']} noStyle initialValue={100}>
-                <InputNumber size='small' className='w-[80px]' min={1} max={10000000} placeholder={t('builder.limit')} />
+                <InputNumber size='small' className='w-[80px]' min={1} max={10000000} placeholder={t('builder.limit')} onChange={markBuilderDirty} />
               </Form.Item>
             </Space>
           </div>
@@ -262,7 +273,7 @@ export default function BuilderContent(props: Props) {
           </div>
           <div className='table-cell'>
             <Form.Item name={[field.name, 'query', 'builderConfig', 'order_by']} noStyle initialValue={[]}>
-              <OrderBy indexData={validIndexData} aggregates={aggregates} group_by={group_by} />
+              <OrderBy indexData={validIndexData} aggregates={aggregates} group_by={group_by} onChange={markBuilderDirty} />
             </Form.Item>
           </div>
         </div>
