@@ -648,6 +648,7 @@ export default function index(props: Props) {
                 return val as string;
               }}
               linesColumnFormat={(val) => {
+                if (pageLoadMode === 'infiniteScroll') return val;
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
               adjustFieldValue={(formatedValue, highlightValue) => {
