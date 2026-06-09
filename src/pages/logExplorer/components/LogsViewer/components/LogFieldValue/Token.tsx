@@ -115,7 +115,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
   ) : tokenHighlights ? (
     <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(displayValue, tokenHighlights)) }} />
   ) : (
-    renderFieldValue(value)
+    renderFieldValue(displayValue)
   );
 
   const closePopover = useCallback(() => {

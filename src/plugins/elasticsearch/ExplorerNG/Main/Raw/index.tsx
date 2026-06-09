@@ -10,9 +10,9 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
-import { RenderValue } from '@/pages/logExplorer/components/LogsViewer/Raw';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
+import { getDateTokenDisplayValue } from '@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/tokenValue';
 
 import { NAME_SPACE, LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
 import { getLogsQuery, getHistogram } from '../../../services';
@@ -634,18 +634,16 @@ export default function index(props: Props) {
               timeFieldColumnFormat={(val) => {
                 if (!queryValues.date_field) return val as string;
                 if (queryValues?.index_pattern) {
-                  return <RenderValue name={queryValues.date_field} value={val as string} />;
+                  return getDateTokenDisplayValue({
+                    value: _.toString(val),
+                    fieldValue: _.toString(val),
+                    name: queryValues.date_field,
+                    fieldConfig: currentFieldConfig,
+                  });
                 }
-                if (_.isString(val)) {
-                  const parsedTime = moment(val);
-                  if (parsedTime.isValid()) {
-                    return parsedTime.format('YYYY-MM-DD HH:mm:ss');
-                  }
-                } else if (_.isNumber(val)) {
-                  const parsedTime = moment(val);
-                  if (parsedTime.isValid()) {
-                    return parsedTime.format('YYYY-MM-DD HH:mm:ss');
-                  }
+                const parsedTime = moment(val);
+                if (parsedTime.isValid()) {
+                  return parsedTime.format('YYYY-MM-DD HH:mm:ss');
                 }
                 return val as string;
               }}
