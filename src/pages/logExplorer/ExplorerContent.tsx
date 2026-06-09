@@ -7,10 +7,6 @@ import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplo
 import { NAME_SPACE } from '@/pages/logExplorer/constants';
 
 import Elasticsearch from '@/plugins/elasticsearch/ExplorerNG';
-// @ts-ignore
-import { ExplorerNG as BLSExplorerNG } from 'plus:/datasource/bceBLS';
-// @ts-ignore
-import { ExplorerNG as TLSExplorerNG } from 'plus:/datasource/volcTLS';
 
 interface Props {
   tabKey: string;
@@ -25,14 +21,6 @@ export default function index(props: Props) {
 
   if (datasourceCate === DatasourceCateEnum.elasticsearch) {
     return <Elasticsearch tabKey={tabKey} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />;
-  }
-
-  if (datasourceCate === DatasourceCateEnum.bceBLS) {
-    return <BLSExplorerNG tabKey={tabKey} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />;
-  }
-
-  if (datasourceCate === DatasourceCateEnum.volcTLS) {
-    return <TLSExplorerNG tabKey={tabKey} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />;
   }
 
   return <Alert showIcon className='m-4' type='error' message={t('unsupported_datasource_type', { type: datasourceCate })} />;
