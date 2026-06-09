@@ -179,6 +179,8 @@ const zh_HK = {
     preview_sql: '預覽 SQL',
     btn_tip: '點擊後，SQL 輸入框的內容將被覆蓋',
     btn_failed_tip: '轉換失敗，請重試，或修改表單',
+    preview_and_run: '預覽 SQL & 查詢',
+    builder_content_modified: 'Builder 內容已修改，請預覽最新的 SQL',
   },
 };
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Form, Radio, Space, Segmented, Button, Modal, message, Select } from 'antd';
+import React, { useState } from 'react';
+import { Form, Radio, Space, Segmented, Button, Modal, message, Select, Tag } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
@@ -25,6 +25,7 @@ export default function DorisQueryBuilder({ datasourceValue }) {
   const type = Form.useWatch('type');
   const targets = Form.useWatch('targets');
   const chartForm = Form.useFormInstance();
+  const [builderDirtyMap, setBuilderDirtyMap] = useState<Record<number, boolean>>({});
   if (!type) return null;
 
   return (
@@ -39,6 +40,7 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                   const mode = _.get(targets, [field.name, 'query', 'mode']);
                   const queryStrategy = _.get(targets, [field.name, 'query', 'queryStrategy']);
                   const editMode = _.get(targets, [field.name, 'query', 'editMode'], 'code');
+                  const isBuilderDirty = builderDirtyMap[field.name] ?? false;
                   const { __mode__ } = targets?.[field.name] || {};
                   if (__mode__ === '__expr__') {
                     return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
@@ -125,67 +127,90 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                                 }}
                               />
                               {editMode === 'builder' && (
-                                <Button
-                                  size='small'
-                                  onClick={() => {
-                                    const builderConfig = _.get(targets, [field.name, 'query', 'builderConfig']);
-                                    if (!builderConfig) {
-                                      message.warning(t('query.editMode.no_builder_config'));
-                                      return;
-                                    }
-                                    const database = _.get(targets, [field.name, 'query', 'database']);
-                                    const table = _.get(targets, [field.name, 'query', 'table']);
-                                    const timeField = _.get(targets, [field.name, 'query', 'time_field']);
-                                    if (!database || !table || !timeField) {
-                                      message.warning(t('query.editMode.require_db_table'));
-                                      return;
-                                    }
-                                    buildSql({
-                                      cate: DatasourceCateEnum.doris,
-                                      datasource_id: datasourceValue,
-                                      query: [
-                                        {
-                                          database,
-                                          table,
-                                          time_field: timeField,
-                                          from: moment().subtract(6, 'hours').unix(),
-                                          to: moment().unix(),
-                                          filters: builderConfig?.filters,
-                                          aggregates: builderConfig?.aggregates,
-                                          group_by: builderConfig?.group_by,
-                                          order_by: builderConfig?.order_by,
-                                          mode: builderConfig?.mode || 'table',
-                                          limit: builderConfig?.limit,
-                                        },
-                                      ],
-                                    })
-                                      .then((res) => {
-                                        chartForm.setFields([
+                                <Space>
+                                  <Button
+                                    size='small'
+                                    onClick={() => {
+                                      const builderConfig = _.get(targets, [field.name, 'query', 'builderConfig']);
+                                      if (!builderConfig) {
+                                        message.warning(t('query.editMode.no_builder_config'));
+                                        return;
+                                      }
+                                      const database = _.get(targets, [field.name, 'query', 'builderConfig', 'database']);
+                                      const table = _.get(targets, [field.name, 'query', 'builderConfig', 'table']);
+                                      const timeField = _.get(targets, [field.name, 'query', 'builderConfig', 'time_field']);
+                                      if (!database || !table || !timeField) {
+                                        message.warning(t('query.editMode.require_db_table'));
+                                        return;
+                                      }
+                                      buildSql({
+                                        cate: DatasourceCateEnum.doris,
+                                        datasource_id: datasourceValue,
+                                        query: [
                                           {
-                                            name: ['targets', field.name, 'query', 'query'],
-                                            value: res.sql,
+                                            database,
+                                            table,
+                                            time_field: timeField,
+                                            from: moment().subtract(6, 'hours').unix(),
+                                            to: moment().unix(),
+                                            filters: builderConfig?.filters,
+                                            aggregates: builderConfig?.aggregates,
+                                            group_by: builderConfig?.group_by,
+                                            order_by: builderConfig?.order_by,
+                                            mode: builderConfig?.mode || 'table',
+                                            limit: builderConfig?.limit,
                                           },
-                                          {
-                                            name: ['targets', field.name, 'query', 'mode'],
-                                            value: res.mode === 'timeseries' ? 'timeSeries' : 'raw',
-                                          },
-                                          {
-                                            name: ['targets', field.name, 'query', 'builderConfig', 'mode'],
-                                            value: res.mode,
-                                          },
-                                        ]);
+                                        ],
                                       })
-                                      .catch(() => {
-                                        message.error(t('query.editMode.build_sql_failed'));
-                                      });
-                                  }}
-                                >
-                                  {t('query.execute')}
-                                </Button>
+                                        .then((res) => {
+                                          chartForm.setFields([
+                                            {
+                                              name: ['targets', field.name, 'query', 'query'],
+                                              value: res.sql,
+                                            },
+                                            {
+                                              name: ['targets', field.name, 'query', 'mode'],
+                                              value: res.mode === 'timeseries' ? 'timeSeries' : 'raw',
+                                            },
+                                            {
+                                              name: ['targets', field.name, 'query', 'builderConfig', 'mode'],
+                                              value: res.mode,
+                                            },
+                                          ]);
+                                          setBuilderDirtyMap((prev) => ({ ...prev, [field.name]: false }));
+                                        })
+                                        .catch(() => {
+                                          message.error(t('query.editMode.build_sql_failed'));
+                                        });
+                                    }}
+                                  >
+                                    {t('builder.preview_and_run')}
+                                  </Button>
+                                  {isBuilderDirty && <Tag color='orange'>{t('builder.builder_content_modified')}</Tag>}
+                                </Space>
                               )}
                             </>
                           )}
                         </Space>
+                        {editMode === 'builder' && (
+                          <Form.Item
+                            name={[field.name, 'query', '__builderDirty__']}
+                            hidden
+                            initialValue={false}
+                            rules={[
+                              {
+                                validator: () => {
+                                  if (isBuilderDirty) {
+                                    return Promise.reject(new Error(t('builder.builder_content_modified')));
+                                  }
+                                  return Promise.resolve();
+                                },
+                              },
+                            ]}
+                          >
+                            <input type='hidden' />
+                          </Form.Item>
+                        )}
                         <Form.Item name={[field.name, 'query', 'mode']} initialValue={type === 'timeseries' ? 'timeSeries' : 'raw'} noStyle hidden={editMode === 'builder'}>
                           <Select size='small'>
                             <Select.Option value='timeSeries'>{t('query.dashboard.mode.timeSeries')}</Select.Option>
@@ -195,7 +220,15 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                       </div>
                       {queryStrategy === 'query' && <QueryStringBuilder field={field} datasourceValue={datasourceValue} />}
                       {queryStrategy === 'sql' && editMode === 'code' && <SQLBuilder field={field} datasourceValue={datasourceValue} mode={mode} />}
-                      {queryStrategy === 'sql' && editMode === 'builder' && <BuilderContent field={field} datasourceValue={datasourceValue} />}
+                      {queryStrategy === 'sql' && editMode === 'builder' && (
+                        <BuilderContent
+                          field={field}
+                          datasourceValue={datasourceValue}
+                          onBuilderChange={() => {
+                            setBuilderDirtyMap((prev) => ({ ...prev, [field.name]: true }));
+                          }}
+                        />
+                      )}
                     </Panel>
                   );
                 })}
