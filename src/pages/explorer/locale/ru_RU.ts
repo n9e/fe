@@ -33,6 +33,7 @@ const ru_RU = {
       download_title: 'Скачать журнал',
       range: 'Временной диапазон',
       filter: 'Фильтр',
+      query_condition: 'Условие запроса',
       format: 'Формат данных',
       time_sort: 'Сортировка по времени',
       count: 'Количество записей',

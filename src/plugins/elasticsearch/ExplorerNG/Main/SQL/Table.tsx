@@ -165,6 +165,19 @@ export default function Table(props: IProps) {
   >(service, {
     refreshDeps: [refreshFlag],
   });
+  const queryValuesForDownload = form.getFieldValue('query') || {};
+  const sqlForDownload = queryValuesForDownload.range
+    ? replaceTemplateVariables(_.trim(queryValuesForDownload.sql || ''), queryValuesForDownload.range)
+    : _.trim(queryValuesForDownload.sql || '');
+  const downloadQueryData = {
+    ...form.getFieldsValue(),
+    query: {
+      ...queryValuesForDownload,
+      sql: sqlForDownload,
+    },
+    mode: 'sql',
+    total: data?.total,
+  };
 
   return (
     <>
@@ -237,7 +250,7 @@ export default function Table(props: IProps) {
                       <span>{data?.total}</span>
                     </Space>
                   )}
-                  {/* {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />} */}
+                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={downloadQueryData} />}
                 </Space>
               }
               onOptionsChange={updateOptions}
