@@ -10,7 +10,7 @@ import { useClickAway } from 'ahooks';
 import NavigableDrawer from '@/components/NavigableDrawer';
 
 import { NAME_SPACE } from '../../constants';
-import { OnValueFilterParams } from './types';
+import { OnValueFilterParams, FieldValueType } from './types';
 import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
 import LogFieldValue from './components/LogFieldValue';
@@ -51,7 +51,7 @@ interface Props {
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
   customLogFieldRender?: (
     key: string,
@@ -68,10 +68,10 @@ interface Props {
 
 interface RenderValueProps {
   name: string;
-  value: string;
+  value: FieldValueType;
   parentKey?: string;
   onValueFilter?: Props['onValueFilter'];
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
 }
 
@@ -82,10 +82,14 @@ export function RenderValue({ name, value, parentKey, onValueFilter, adjustField
   const [expand, setExpand] = useState(false);
 
   if (typeof value === 'string' && value.indexOf('\n') > -1) {
-    const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
+    const allLines = value.split('\n');
+    const LINE_LIMIT = 18;
+    const exceedsLimit = allLines.length > LINE_LIMIT;
+    const lines = !expand && exceedsLimit ? _.slice(allLines, 0, LINE_LIMIT) : allLines;
     return (
       <div className='inline text-main m-0 p-0'>
         {_.map(lines, (v, idx) => {
+          const isLastLine = idx === lines.length - 1;
           return (
             <div key={idx}>
               <LogFieldValue
@@ -98,7 +102,7 @@ export function RenderValue({ name, value, parentKey, onValueFilter, adjustField
                 adjustFieldValue={adjustFieldValue}
                 showExistsAction={showExistsAction}
               />
-              {idx === lines.length - 1 && (
+              {isLastLine && exceedsLimit && (
                 <a
                   onClick={() => {
                     setExpand(!expand);
@@ -170,7 +174,7 @@ function RenderSubJSON({
             {expand ? <CaretDownOutlined className='text-link' /> : <CaretRightOutlined className='text-link' />}
             <span className={`${explorerOriginFieldKeyClassName} ml-[2px]`}>{label}</span>
           </div>
-          <div className='text-link'>{`{}`}</div>
+          <div className='text-link'>{_.isArray(subJSON) ? '[]' : '{}'}</div>
         </div>
         {expand && (
           <ul className='list-none pl-[30px]'>
@@ -184,18 +188,33 @@ function RenderSubJSON({
                       </>
                     ) : (
                       _.map(_.isArray(v) ? v : [v], (item, idx) => {
+                        if (_.isPlainObject(item) || _.isArray(item)) {
+                          return (
+                            <RenderSubJSON
+                              key={idx}
+                              parentKey={parentKey ? parentKey + '.' + k : k}
+                              label={_.isArray(v) ? `${k}[${idx}]` : k}
+                              subJSON={item}
+                              options={options}
+                              currentExpandLevel={currentExpandLevel + 1}
+                              onValueFilter={onValueFilter}
+                              adjustFieldValue={adjustFieldValue}
+                              showExistsAction={showExistsAction}
+                            />
+                          );
+                        }
                         return (
-                          <RenderSubJSON
-                            key={idx}
-                            parentKey={parentKey ? parentKey + '.' + k : k}
-                            label={k}
-                            subJSON={item}
-                            options={options}
-                            currentExpandLevel={currentExpandLevel + 1}
-                            onValueFilter={onValueFilter}
-                            adjustFieldValue={adjustFieldValue}
-                            showExistsAction={showExistsAction}
-                          />
+                          <li key={idx}>
+                            <div className={explorerOriginFieldKeyClassName}>{_.isArray(v) ? `${k}[${idx}]` : k}</div>:
+                            <RenderValue
+                              parentKey={parentKey ? parentKey + '.' + k : k}
+                              name={_.isArray(v) ? `${k}[${idx}]` : k}
+                              value={item}
+                              onValueFilter={onValueFilter}
+                              adjustFieldValue={adjustFieldValue}
+                              showExistsAction={showExistsAction}
+                            />
+                          </li>
                         );
                       })
                     )}
@@ -304,7 +323,7 @@ function Raw(props: Props) {
                       [explorerOriginBreakCellClassName]: options.lineBreak === 'true',
                     })}
                   >
-                    {_.isPlainObject(valToObj) || _.isArray(valToObj) ? (
+                    {_.isPlainObject(valToObj) || (_.isArray(valToObj) && options?.jsonDisplaType === 'tree') ? (
                       <ul className={explorerOriginUlClassName}>
                         {_.isEmpty(subJSON) ? (
                           <>
@@ -316,7 +335,7 @@ function Raw(props: Props) {
                               <RenderSubJSON
                                 key={idx}
                                 parentKey={key}
-                                label={key}
+                                label={_.isArray(valToObj) ? `${key}[${idx}]` : key}
                                 subJSON={item}
                                 options={options}
                                 currentExpandLevel={1}
@@ -328,6 +347,11 @@ function Raw(props: Props) {
                           })
                         )}
                       </ul>
+                    ) : _.isArray(valToObj) ? (
+                      <>
+                        <div className={explorerOriginFieldKeyClassName}>{key}</div>:{' '}
+                        <RenderValue name={key} value={JSON.stringify(val)} onValueFilter={onValueFilter} adjustFieldValue={adjustFieldValue} showExistsAction={showExistsAction} />
+                      </>
                     ) : (
                       <>
                         <div className={explorerOriginFieldKeyClassName}>{key}</div>:{' '}
