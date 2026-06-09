@@ -36,7 +36,7 @@ export default function index(props: Props) {
 
   const { delimiters } = indexData || ({} as Field);
 
-  if (enableLogTextSelectMenu && _.isString(value)) {
+  if (enableLogTextSelectMenu && typeof value === 'string') {
     return (
       <Token
         interactionMode='textSelect'
@@ -59,7 +59,7 @@ export default function index(props: Props) {
     );
   }
 
-  if (_.isString(value) && delimiters && delimiters.length > 0) {
+  if (typeof value === 'string' && delimiters && delimiters.length > 0) {
     const result = tokenizer(value, delimiters);
     if (result.length > 100) {
       // 分割结果过多时不进行分割展示，避免页面卡顿
@@ -71,7 +71,7 @@ export default function index(props: Props) {
           value={value}
           fieldValue={value}
           tokenStart={0}
-          tokenEnd={_.isString(value) ? value.length : undefined}
+          tokenEnd={value.length}
           highlightKey={highlightKey}
           onTokenClick={onTokenClick}
           rawValue={rawValue}
@@ -128,7 +128,7 @@ export default function index(props: Props) {
       value={value}
       fieldValue={value}
       tokenStart={0}
-      tokenEnd={_.isString(value) ? value.length : undefined}
+      tokenEnd={typeof value === 'string' ? value.length : undefined}
       highlightKey={highlightKey}
       onTokenClick={onTokenClick}
       rawValue={rawValue}
