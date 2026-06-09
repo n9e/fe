@@ -33,6 +33,7 @@ const zh_CN = {
       download_title: '下载日志数据',
       range: '时间范围',
       filter: '检索语句',
+      query_condition: '查询条件',
       format: '数据格式',
       time_sort: '日志排序',
       count: '日志数量',
