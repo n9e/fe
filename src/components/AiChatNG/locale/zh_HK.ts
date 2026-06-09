@@ -3,6 +3,8 @@ const zh_HK = {
     current_chat: '當前會話',
     new_chat: '新建會話',
     history: '會話歷史',
+    share: '分享',
+    share_copied: '分享連結已複製',
     switch_to_drawer: '切換為抽屜模式',
     switch_to_floating: '切換為浮窗模式',
   },
@@ -17,6 +19,7 @@ const zh_HK = {
   },
   input: {
     placeholder: '輸入問題，Enter 發送，Shift + Enter 換行',
+    share_readonly_placeholder: '當前為唯讀分享模式',
   },
   query: {
     title: '查詢語句',
@@ -29,7 +32,8 @@ const zh_HK = {
     query_generator: '生成查詢語句',
   },
   message: {
-    generating: '正在生成回覆...',
+    generating: '思考中...',
+    processing: '仍在處理中',
     hint: '提示',
     no_llm_title: '當前環境沒有大模型配置',
     no_llm_content: '請前往<a>LLM管理</a>頁面添加大模型配置',
@@ -43,6 +47,7 @@ const zh_HK = {
   },
   form_select: {
     title: '請先補充以下資訊後繼續：',
+    approval_title: '請確認是否執行以上操作：',
     busi_group: '業務組',
     datasource: '數據源',
     placeholder_select: '請選擇',

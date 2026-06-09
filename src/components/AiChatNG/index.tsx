@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ChatPanel from './ChatPanel';
 import ChatHistory from './ChatHistory';
@@ -6,6 +7,8 @@ import { IAiChatHistoryItem, IAiChatProps } from './types';
 import ToolsBar, { AiChatView } from './ToolsBar';
 import { cn } from './utils';
 import { useAiChatContext } from './context';
+import { NAME_SPACE } from './constants';
+import { buildAiChatShareUrl, copyAiChatShareUrl, cleanShareParamsFromUrl } from './share';
 
 export * from './types';
 export { default as ChatPanel } from './ChatPanel';
@@ -17,8 +20,9 @@ export { AiChatProvider, useAiChatContext } from './context';
 import './locale';
 
 export default function AiChat(props: IAiChatProps & { showClose?: boolean; onClose?: () => void }) {
+  const { t } = useTranslation(NAME_SPACE);
   const { className, onChatChange, onError, showClose, onClose } = props;
-  const { mode, setMode } = useAiChatContext();
+  const { mode, setMode, setShareReadonly, setShareChatId } = useAiChatContext();
   const [activeView, setActiveView] = useState<AiChatView>('chat');
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(props.chatId);
 
@@ -47,6 +51,12 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
     [onChatChange],
   );
 
+  const handleShare = useCallback(() => {
+    if (!selectedChatId) return;
+    const url = buildAiChatShareUrl(selectedChatId);
+    copyAiChatShareUrl(url, t('toolbar.share_copied'));
+  }, [selectedChatId, t]);
+
   const showHistory = activeView === 'history';
 
   return (
@@ -63,10 +73,14 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
           onNewChat={() => {
             setSelectedChatId(undefined);
             setActiveView('chat');
+            setShareReadonly(false);
+            setShareChatId(undefined);
+            cleanShareParamsFromUrl();
           }}
           onViewHistory={() => {
             setActiveView('history');
           }}
+          onShare={handleShare}
           onToggleMode={() => {
             setMode((previousMode) => (previousMode === 'drawer' ? 'floating' : 'drawer'));
           }}
@@ -85,6 +99,9 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
             onSelect={(chat) => {
               setSelectedChatId(chat.chat_id);
               setActiveView('chat');
+              setShareReadonly(false);
+              setShareChatId(undefined);
+              cleanShareParamsFromUrl();
             }}
             onError={onError}
             onDelete={handleDeleteChat}

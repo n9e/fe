@@ -47,6 +47,12 @@ export enum EAiChatContentType {
   Dashboard = 'dashboard',
 }
 
+export interface IAiChatStreamSegment {
+  kind: 'thinking' | 'text';
+  content: string;
+  done: boolean;
+}
+
 export interface IAiChatMessageResponse {
   content_type: string;
   content: string;

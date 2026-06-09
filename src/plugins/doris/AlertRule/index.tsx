@@ -21,7 +21,7 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import { CommonStateContext } from '@/App';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import Triggers from '@/pages/alertRules/Form/components/Triggers';
@@ -65,7 +65,7 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                       add({
                         prom_ql: '',
                         severity: 3,
-                        ref: alphabet[fields.length],
+                        ref: generateQueryNameByIndex(fields.length),
                       })
                     }
                   />

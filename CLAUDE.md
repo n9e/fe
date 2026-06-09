@@ -86,7 +86,7 @@ Less/CSS 侧要求：
 
 ## 测试
 
-- 使用 Vitest + Testing Library。
+- 使用 Jest。
 - 测试文件命名：`*.test.ts` / `*.test.tsx` 或 `*.spec.ts` / `*.spec.tsx`，与待测文件同目录或约定目录即可。
 - 测试中的数据字面量优先使用 `as const` 收窄类型，防止字符串/数值被扩宽，在 IDE 中捕获拼写错误：
   ```typescript

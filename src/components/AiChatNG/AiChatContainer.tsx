@@ -6,6 +6,7 @@ import FloatingPanel from './components/FloatingPanel';
 import { usePersistentPortal } from './components/usePersistentPortal';
 import AiChat from './index';
 import { buildPageFrom } from './recommend';
+import { aiChatShareQueryKey, aiChatShareReadonlyQueryKey } from './share';
 
 interface IAiChatContainerProps {
   drawerWidth?: number;
@@ -14,7 +15,8 @@ interface IAiChatContainerProps {
 
 export default function AiChatContainer(props: IAiChatContainerProps) {
   const { drawerWidth = 900, floatingStorageKey = 'ai-chat-floating-panel' } = props;
-  const { visible, mode, closeAiChat, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent } = useAiChatContext();
+  const { visible, mode, closeAiChat, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, shareChatId, setShareReadonly, setShareChatId, setVisible } =
+    useAiChatContext();
 
   const DRAWER_MIN_WIDTH = 440;
   const DRAWER_WIDTH_STORAGE_KEY = 'ai-chat-drawer-width';
@@ -31,7 +33,27 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
   }, [queryPageFrom]);
 
   useEffect(() => {
-    if (visible && !lastPageFromRef.current) {
+    if (typeof window === 'undefined') return;
+
+    // 页面加载时检测分享 URL 参数，自动打开 AI Chat
+    const searchParams = new URLSearchParams(window.location.search);
+    const shareChatIdParam = searchParams.get(aiChatShareQueryKey);
+    const isReadonly = searchParams.get(aiChatShareReadonlyQueryKey) === '1';
+    if (shareChatIdParam && isReadonly) {
+      setShareChatId(shareChatIdParam);
+      setShareReadonly(true);
+      // 直接用 setVisible 打开，避免 openAiChat 重置分享状态
+      if (!lastPageFromRef.current) {
+        lastPageFromRef.current = buildPageFrom();
+      }
+      setVisible(true);
+    }
+  }, [setShareChatId, setShareReadonly, setVisible]);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    if (!lastPageFromRef.current) {
       lastPageFromRef.current = buildPageFrom();
     }
   }, [visible]);
@@ -146,6 +168,7 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
           key={`${ensuredPageFrom.url}-${JSON.stringify(ensuredPageFrom.param ?? {})}-${JSON.stringify(queryAction ?? {})}`}
           showClose
           onClose={closeAiChat}
+          chatId={shareChatId}
           queryPageFrom={ensuredPageFrom}
           queryAction={queryAction}
           promptList={promptList}
