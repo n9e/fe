@@ -50,6 +50,7 @@ const zh_CN = {
     approval_title: '请确认是否执行以上操作：',
     busi_group: '业务组',
     datasource: '数据源',
+    team: '团队',
     placeholder_select: '请选择',
     confirm: '确定',
   },
