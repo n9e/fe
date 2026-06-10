@@ -131,14 +131,14 @@ export function AiButton(props: {
   return <AiButtonContent {...props} />;
 }
 
-export function CustomAiButtonWrap({ children }: { children: React.ReactElement }) {
+export function CustomAiButtonWrap({ children, ...rest }: { children: React.ReactElement } & Record<string, any>) {
   if (IS_ENT) {
     const handleEntClick = useAiEntClickHandler();
 
-    return React.cloneElement(children, { onClick: handleEntClick } as any);
+    return <span {...rest}>{React.cloneElement(children, { onClick: handleEntClick } as any)}</span>;
   }
 
   const handleClick = useFlashAiClickHandler();
 
-  return React.cloneElement(children, { onClick: handleClick } as any);
+  return <span {...rest}>{React.cloneElement(children, { onClick: handleClick } as any)}</span>;
 }

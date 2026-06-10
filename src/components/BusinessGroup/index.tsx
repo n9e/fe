@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { Resizable } from 're-resizable';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Button, Input, Popover, Space, Modal, message } from 'antd';
+import { Button, Input, Popover, Space, Modal, message, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
@@ -34,12 +34,21 @@ export {
   getVaildBusinessGroup,
 };
 
+interface PresetFilterOption {
+  value: string;
+  label: string;
+  tooltip?: string;
+}
+
 interface IProps {
   selected?: string;
-  onSelect?: (key: string, item: any) => void;
+  onSelect?: (key: string, item?: any) => void;
   title?: string;
   renderHeadExtra?: () => React.ReactNode;
   showSelected?: boolean;
+  presetFilters?: PresetFilterOption[];
+  presetFilterTitle?: string;
+  localeKey?: string;
 }
 
 interface Node {
@@ -106,6 +115,39 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
   const isBusiPutAuthorized = useIsAuthorized(['/busi-groups/put']);
   const isBusiDelAuthorized = useIsAuthorized(['/busi-groups/del']);
 
+  const handlePresetFilterClick = (value: string) => {
+    // 更新 context（'-2' 全部、'-1' 公开 使用 group, 前缀）
+    if (value === '-2' || value === '-1') {
+      businessGroupOnChange(`group,${value}`);
+    } else {
+      businessGroupOnChange(value);
+    }
+
+    // 更新页面级 localStorage
+    if (props.localeKey) {
+      localStorage.setItem(props.localeKey, value);
+    }
+
+    // 更新 URL：设置 ids/isLeaf 参数，便于分享和刷新后恢复状态
+    history.push({
+      pathname: location.pathname,
+      search: queryString.stringify({
+        ..._.omit(query, ['preset-filter']),
+        ids: value,
+        isLeaf: false,
+      }),
+    });
+
+    // 通知父组件更新本地 gids
+    onSelect && onSelect(value);
+  };
+
+  // 内部计算是否匹配预置筛选值（用于 showSelected 和 URL 同步判断）
+  // 使用 getCleanBusinessGroupIds 比较，因 selected 可能是 'group,-2' 而预设值是 '-2'
+  const cleanSelected = getCleanBusinessGroupIds(selected);
+  const isPresetFilterActive = props.presetFilters?.some((f) => cleanSelected === f.value) ?? false;
+  const internalShowSelected = isPresetFilterActive ? false : showSelected;
+
   const reloadData = () => {
     getBusiGroups().then((res = []) => {
       setBusiGroups(res);
@@ -122,6 +164,24 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
     }
     setBusinessGroupTreeData(listToTree(data, siteInfo?.businessGroupSeparator));
   }, []);
+
+  // 在 businessGroup 有值但 URL 缺少 ids/isLeaf 参数时（如 localStorage 恢复后刷新），同步到 URL
+  // 兼容预置筛选值：选中预置筛选时使用 isLeaf=false，而非基于 selected 前缀判断
+  useEffect(() => {
+    if (!businessGroup.key) return;
+    const expectedIds = getCleanBusinessGroupIds(selected);
+    const expectedIsLeaf = isPresetFilterActive ? false : !_.startsWith(selected, 'group,');
+    if (query.ids !== expectedIds || query.isLeaf !== String(expectedIsLeaf)) {
+      history.replace({
+        pathname: location.pathname,
+        search: queryString.stringify({
+          ..._.omit(query, ['preset-filter']),
+          ids: expectedIds,
+          isLeaf: expectedIsLeaf,
+        }),
+      });
+    }
+  }, [selected, isPresetFilterActive]);
 
   useImperativeHandle(ref, () => ({
     getCollapse: () => collapse,
@@ -161,6 +221,31 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
         </div>
         <div className='flex flex-col h-full overflow-hidden'>
           {renderHeadExtra && renderHeadExtra()}
+          {props.presetFilters && props.presetFilters.length > 0 && (
+            <div className='mb-2'>
+              {props.presetFilterTitle && <div className='text-l1 font-bold leading-none mb-4'>{props.presetFilterTitle}</div>}
+              {_.map(props.presetFilters, (item) => (
+                <div
+                  key={item.value}
+                  className={classNames('justify-between py-[6px] px-[8px] cursor-pointer rounded-md hover:bg-fc-200/80', {
+                    'bg-fc-200/90': selected === item.value,
+                    'font-bold': selected === item.value,
+                    'text-title': selected === item.value,
+                  })}
+                  onClick={() => handlePresetFilterClick(item.value)}
+                >
+                  <Space>
+                    {item.label}
+                    {item.tooltip && (
+                      <Tooltip title={item.tooltip}>
+                        <InfoCircleOutlined />
+                      </Tooltip>
+                    )}
+                  </Space>
+                </div>
+              ))}
+            </div>
+          )}
           <div className='n9e-biz-group-container-group-title'>
             {title}
             <Button
@@ -240,10 +325,11 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
                   >
                     <div
                       className={classNames('n9e-list-item px-[8px] py-[6px] cursor-pointer break-all', {
-                        active: showSelected ? itemKey === selected : false,
+                        active: internalShowSelected ? itemKey === selected : false,
                       })}
                       onClick={() => {
                         businessGroupOnChange(itemKey);
+                        if (props.localeKey) localStorage.removeItem(props.localeKey);
                         onSelect && onSelect(itemKey, item);
                         history.push({
                           pathname: location.pathname,
@@ -266,10 +352,11 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
               {!_.isEmpty(businessGroupTreeData) && (
                 <Tree
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), selected)}
-                  selectedKeys={showSelected && selected ? [selected] : undefined}
+                  selectedKeys={internalShowSelected && selected ? [selected] : undefined}
                   onSelect={(_selectedKeys, e) => {
                     const itemKey = e.node.key;
                     businessGroupOnChange(itemKey);
+                    if (props.localeKey) localStorage.removeItem(props.localeKey);
                     onSelect && onSelect(itemKey, e.node);
                     history.push({
                       pathname: location.pathname,

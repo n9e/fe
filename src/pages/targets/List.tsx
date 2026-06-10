@@ -496,7 +496,7 @@ export default function List(props: IProps) {
   const featchData = ({ current, pageSize, sorter }: { current: number; pageSize: number; sorter?: any }): Promise<any> => {
     const query = {
       query: tableQueryContent,
-      gids: gids,
+      gids: gids === '-2' ? undefined : gids,
       limit: pageSize,
       p: current,
       downtime,
@@ -688,7 +688,7 @@ export default function List(props: IProps) {
         scroll={{ x: 'max-content' }}
         locale={{
           emptyText:
-            gids === undefined ? (
+            gids === undefined || gids === '-2' ? (
               <Trans
                 ns='targets'
                 i18nKey='all_no_data'
