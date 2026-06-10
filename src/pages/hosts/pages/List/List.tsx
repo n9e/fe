@@ -129,7 +129,7 @@ export default function List(props: Props) {
 
   const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
     return getList({
-      gids: gids,
+      gids: gids === '-2' ? undefined : gids,
       limit: pageSize,
       p: current,
       query: params.query,
@@ -338,7 +338,7 @@ export default function List(props: Props) {
           })}
           locale={{
             emptyText:
-              gids === undefined ? (
+              gids === undefined || gids === '-2' ? (
                 <Trans
                   ns='targets'
                   i18nKey='all_no_data'
