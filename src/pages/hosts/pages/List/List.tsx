@@ -518,6 +518,28 @@ export default function List(props: Props) {
                     );
                   },
                 },
+              ],
+              aiTaskMode && IS_PLUS
+                ? [
+                    {
+                      dataIndex: 'ai_task_auth_level',
+                      title: t('auth_level'),
+                      render: (val) => {
+                        const minWidth = getTextWidth(t('auth_level')) + 4;
+                        if (val === null || val === undefined) {
+                          return <div style={{ minWidth }}>-</div>;
+                        }
+                        const authLevelDisplayMap = getAuthLevelDisplayMap(t);
+                        return (
+                          <div style={{ minWidth }}>
+                            <Tags type='fill' data={[authLevelDisplayMap[val]?.text]} bgColor={authLevelDisplayMap[val]?.bgColor} fontColor={authLevelDisplayMap[val]?.fontColor} />
+                          </div>
+                        );
+                      },
+                    },
+                  ]
+                : [],
+              [
                 {
                   dataIndex: 'agent_version',
                   title: t('agent_version_title'),
@@ -626,31 +648,7 @@ export default function List(props: Props) {
                 },
               ],
               aiTaskMode
-                ? IS_PLUS
-                  ? [
-                      {
-                        dataIndex: 'ai_task_auth_level',
-                        title: t('auth_level'),
-                        render: (val) => {
-                          const minWidth = getTextWidth(t('auth_level')) + 4;
-                          if (val === null || val === undefined) {
-                            return <div style={{ minWidth }}>-</div>;
-                          }
-                          const authLevelDisplayMap = getAuthLevelDisplayMap(t);
-                          return (
-                            <div style={{ minWidth }}>
-                              <Tags
-                                type='fill'
-                                data={[authLevelDisplayMap[val]?.text]}
-                                bgColor={authLevelDisplayMap[val]?.bgColor}
-                                fontColor={authLevelDisplayMap[val]?.fontColor}
-                              />
-                            </div>
-                          );
-                        },
-                      },
-                    ]
-                  : []
+                ? []
                 : [
                     {
                       dataIndex: 'beat_time',
