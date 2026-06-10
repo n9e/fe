@@ -314,7 +314,7 @@ export default function List(props: Props) {
           )}
         </Space>
       </div>
-      <div className='n9e-antd-table-height-full n9e-hosts-ng-table mt-4'>
+      <div className={classNames('n9e-hosts-ng-table mt-4', { 'n9e-antd-table-height-full': !aiTaskMode })}>
         <Table
           {...tableProps}
           rowKey='id'

@@ -228,9 +228,9 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
                 <div
                   key={item.value}
                   className={classNames('justify-between py-[6px] px-[8px] cursor-pointer rounded-md hover:bg-fc-200/80', {
-                    'bg-fc-200/90': selected === item.value,
-                    'font-bold': selected === item.value,
-                    'text-title': selected === item.value,
+                    'bg-fc-200/90': cleanSelected === item.value,
+                    'font-bold': cleanSelected === item.value,
+                    'text-title': cleanSelected === item.value,
                   })}
                   onClick={() => handlePresetFilterClick(item.value)}
                 >
