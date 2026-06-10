@@ -11,9 +11,11 @@ export interface OptionsType {
   topNumber?: number; // 默认 5
 }
 
+export type FieldValueType = string | number | boolean | null;
+
 export interface OnValueFilterParams {
   key: string;
-  value: string;
+  value: FieldValueType;
   assignmentOperator?: ':' | '=';
   operator: 'AND' | 'NOT' | 'EXISTS';
   indexName?: string;

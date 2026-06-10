@@ -50,6 +50,7 @@ import EventDetail from '@/pages/event/detail';
 import historyEvents from '@/pages/historyEvents';
 import Targets from '@/pages/targets';
 import Demo from '@/pages/demo';
+import LogViewerTestPage from '@/pages/logExplorer/LogViewerTestPage';
 import TaskTpl from '@/pages/taskTpl';
 import TaskTplAdd from '@/pages/taskTpl/add';
 import TaskTplDetail from '@/pages/taskTpl/detail';
@@ -152,6 +153,7 @@ export default function Content() {
     <div className='content'>
       <Switch>
         <Route path='/demo' component={Demo} />
+        {import.meta.env.DEV && <Route path='/log-viewer-test' component={LogViewerTestPage} />}
         <Route path='/overview' component={Overview} />
         <Route path='/login' component={Login} exact />
         <Route path='/callback' component={LoginCallback} exact />

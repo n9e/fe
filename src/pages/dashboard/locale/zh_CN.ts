@@ -613,6 +613,7 @@ const zh_CN = {
     hide_response: '隐藏查询结果',
   },
   detail: {
+    ai_analysis: 'AI 分析',
     datasource_empty: '没有数据源信息，请先配置数据源',
     invalidTimeRange: '无效的 __from 和 __to 值',
     invalidDatasource: '无效的数据源',

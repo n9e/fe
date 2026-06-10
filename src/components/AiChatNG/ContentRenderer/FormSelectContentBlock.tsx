@@ -45,18 +45,24 @@ function getDefaultCandidateId(candidates?: IFormSelectCandidate[]) {
   return candidates.find((c) => c.is_default)?.id;
 }
 
-function buildContentText(params: { busiGroupName?: string; datasourceName?: string }) {
-  const { busiGroupName, datasourceName } = params;
-  if (busiGroupName && datasourceName) return `业务组：${busiGroupName} 数据源：${datasourceName}`;
-  if (busiGroupName) return `业务组：${busiGroupName}`;
-  if (datasourceName) return `数据源：${datasourceName}`;
-  return '';
+function getDefaultCandidateIds(candidates?: IFormSelectCandidate[]) {
+  return (candidates || []).filter((c) => c.is_default).map((c) => c.id);
+}
+
+function buildContentText(params: { busiGroupName?: string; datasourceName?: string; teamNames?: string[] }) {
+  const { busiGroupName, datasourceName, teamNames } = params;
+  const parts: string[] = [];
+  if (busiGroupName) parts.push(`业务组：${busiGroupName}`);
+  if (datasourceName) parts.push(`数据源：${datasourceName}`);
+  if (teamNames?.length) parts.push(`团队：${teamNames.join('、')}`);
+  return parts.join(' ');
 }
 
 export interface IFormSelectConfirmResult {
   param: {
     busi_group_id?: number;
     datasource_id?: number;
+    team_ids?: number[];
     approval?: number;
   };
   content: string;
@@ -135,9 +141,24 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
   const selectedBusiGroupName = React.useMemo(() => busiGroupOptions.find((o) => o.value === busiGroupId)?.label, [busiGroupId, busiGroupOptions]);
   const selectedDatasourceName = React.useMemo(() => datasourceOptions.find((o) => o.value === datasourceId)?.label, [datasourceId, datasourceOptions]);
 
-  const disabled = (!!busiGroupField && !busiGroupId) || (!!datasourceField && !datasourceId) || (!busiGroupField && !datasourceField) || !payload;
+  const teamField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'team_ids'), [payload?.fields]);
+  const teamOptions = React.useMemo(() => (teamField?.candidates || []).map((c) => ({ value: c.id, label: c.name })), [teamField?.candidates]);
+  const [teamIds, setTeamIds] = React.useState<number[]>(() => getDefaultCandidateIds(teamField?.candidates));
 
-  if (!payload || (!busiGroupField && !datasourceField)) {
+  React.useEffect(() => {
+    setTeamIds(getDefaultCandidateIds(teamField?.candidates));
+  }, [teamField?.candidates]);
+
+  const selectedTeamNames = React.useMemo(() => teamOptions.filter((o) => teamIds.includes(o.value)).map((o) => o.label), [teamIds, teamOptions]);
+
+  const disabled =
+    (!!busiGroupField && !busiGroupId) ||
+    (!!datasourceField && !datasourceId) ||
+    (!!teamField && !teamIds.length) ||
+    (!busiGroupField && !datasourceField && !teamField) ||
+    !payload;
+
+  if (!payload || (!busiGroupField && !datasourceField && !teamField)) {
     return <div className='rounded-lg border border-dashed border-fc-200 bg-fc-50 px-4 py-3 text-sm text-hint'>{t('message.unsupported_type', { type: 'form_select' })}</div>;
   }
 
@@ -173,6 +194,22 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
             />
           </>
         ) : null}
+
+        {teamField ? (
+          <>
+            <div className='shrink-0 text-right text-sm text-title'>{t('form_select.team')}</div>
+            <Select
+              className='w-full min-w-0'
+              mode='multiple'
+              placeholder={t('form_select.placeholder_select')}
+              value={teamIds}
+              onChange={(value) => setTeamIds(value)}
+              options={teamOptions}
+              showSearch
+              optionFilterProp='label'
+            />
+          </>
+        ) : null}
       </div>
 
       <div className='mt-4 flex justify-end'>
@@ -180,15 +217,17 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
           type='primary'
           disabled={disabled}
           onClick={() => {
-            const param: { busi_group_id?: number; datasource_id?: number } = {};
+            const param: IFormSelectConfirmResult['param'] = {};
             if (busiGroupField && busiGroupId) param.busi_group_id = busiGroupId;
             if (datasourceField && datasourceId) param.datasource_id = datasourceId;
+            if (teamField && teamIds.length) param.team_ids = teamIds;
 
             props.onConfirm({
               param,
               content: buildContentText({
                 busiGroupName: selectedBusiGroupName,
                 datasourceName: selectedDatasourceName,
+                teamNames: selectedTeamNames,
               }),
             });
           }}

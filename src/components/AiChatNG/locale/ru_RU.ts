@@ -50,6 +50,7 @@ const ru_RU = {
     approval_title: 'Пожалуйста, подтвердите указанное выше действие:',
     busi_group: 'Группа бизнеса',
     datasource: 'Источник данных',
+    team: 'Команды',
     placeholder_select: 'Выберите',
     confirm: 'Подтвердить',
   },

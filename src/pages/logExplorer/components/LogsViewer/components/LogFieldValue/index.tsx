@@ -5,7 +5,7 @@ import React, { useContext } from 'react';
 import _ from 'lodash';
 
 import { LogsViewerStateContext } from '../../index';
-import { OnValueFilterParams } from '../../types';
+import { OnValueFilterParams, FieldValueType } from '../../types';
 import { Field } from '../../../../types';
 import { tokenizer } from './util';
 import Token from './Token';
@@ -13,7 +13,7 @@ import Token from './Token';
 interface Props {
   parentKey?: string; // 嵌套json渲染时可以传入，目前仅用在下钻的字段名判断中。目前仅在 sls 中使用
   name: string;
-  value: any;
+  value: FieldValueType;
   onTokenClick?: (parmas: OnValueFilterParams) => void;
   rawValue?: object;
   highlight?: {
@@ -21,7 +21,7 @@ interface Props {
   };
   enableTooltip?: boolean;
   fieldValueClassName?: string;
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
 }
 
@@ -36,7 +36,7 @@ export default function index(props: Props) {
 
   const { delimiters } = indexData || ({} as Field);
 
-  if (enableLogTextSelectMenu && _.isString(value)) {
+  if (enableLogTextSelectMenu && typeof value === 'string') {
     return (
       <Token
         interactionMode='textSelect'
@@ -59,7 +59,7 @@ export default function index(props: Props) {
     );
   }
 
-  if (_.isString(value) && delimiters && delimiters.length > 0) {
+  if (typeof value === 'string' && delimiters && delimiters.length > 0) {
     const result = tokenizer(value, delimiters);
     if (result.length > 100) {
       // 分割结果过多时不进行分割展示，避免页面卡顿
@@ -71,7 +71,7 @@ export default function index(props: Props) {
           value={value}
           fieldValue={value}
           tokenStart={0}
-          tokenEnd={_.isString(value) ? value.length : undefined}
+          tokenEnd={value.length}
           highlightKey={highlightKey}
           onTokenClick={onTokenClick}
           rawValue={rawValue}
@@ -119,6 +119,7 @@ export default function index(props: Props) {
       </span>
     );
   }
+
   return (
     <Token
       segmented={false}
@@ -127,7 +128,7 @@ export default function index(props: Props) {
       value={value}
       fieldValue={value}
       tokenStart={0}
-      tokenEnd={_.isString(value) ? value.length : undefined}
+      tokenEnd={typeof value === 'string' ? value.length : undefined}
       highlightKey={highlightKey}
       onTokenClick={onTokenClick}
       rawValue={rawValue}

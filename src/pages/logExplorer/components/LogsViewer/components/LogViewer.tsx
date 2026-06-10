@@ -188,10 +188,16 @@ export default function LogView(props: Props) {
                       return customRenderedFieldMap[record.field];
                     }
 
+                    // 对象和数组类型的字段值进行字符串化展示
+                    let displayVal = val;
+                    if (_.isPlainObject(displayVal) || _.isArray(displayVal)) {
+                      displayVal = JSON.stringify(displayVal);
+                    }
+
                     return (
                       <LogFieldValue
                         name={record.field}
-                        value={val}
+                        value={displayVal}
                         onTokenClick={onValueFilter}
                         rawValue={rawValue}
                         highlight={highlight}
