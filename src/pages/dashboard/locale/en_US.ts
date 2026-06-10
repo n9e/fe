@@ -590,6 +590,7 @@ const en_US = {
     hide_response: 'Hide response data',
   },
   detail: {
+    ai_analysis: 'AI Analysis',
     datasource_empty: 'Please configure the data source first',
     invalidTimeRange: 'Invalid __from and __to values',
     invalidDatasource: 'Invalid datasource',

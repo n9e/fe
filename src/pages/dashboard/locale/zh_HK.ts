@@ -597,6 +597,7 @@ const zh_HK = {
     hide_response: '隱藏響應數據',
   },
   detail: {
+    ai_analysis: 'AI 分析',
     datasource_empty: '沒有數據源資訊，請先配置數據源',
     invalidTimeRange: '無效的 __from 和 __to 值',
     invalidDatasource: '無效的數據源',
