@@ -161,7 +161,7 @@ export default function LogView(props: Props) {
                             <div className='break-all'>
                               <Space align='start'>
                                 <span className='whitespace-nowrap'>{t('field_type')}:</span>
-                                <span className='text-hint'>{fieldObject.type2}</span>
+                                <span>{fieldObject.type2}</span>
                               </Space>
                             </div>
                           ) : undefined
