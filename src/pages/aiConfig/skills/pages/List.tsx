@@ -8,12 +8,15 @@ import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
 
 import { NS } from '../constants';
-import { FileContent, Item, SkillDetail, deleteFile, deleteItem, getFile, getItem, getList, importItem, importItemToUpdate, putItem } from '../services';
+import { FileContent, Item, SkillDetail, deleteFile, deleteItem, getFile, getItem, getList, gitUpdate, importItem, importItemToUpdate, putItem } from '../services';
 import { SkillTreeNode } from '../types';
 import { buildSkillTree, getSkillNodeKey, isMarkdownFile } from '../utils/tree';
 import AddModal from './AddModal';
 import DocumentPreviewPanel from './DocumentPreviewPanel';
-import EditModal from './EditModal';
+import GitInstallModal from './GitInstallModal';
+import GitReplaceConfigModal from './GitReplaceConfigModal';
+import GitUpdateModal from './GitUpdateModal';
+import { showGitOperationError } from './gitErrorModal';
 import SkillDetailPanel from './SkillDetailPanel';
 import SkillSidebar from './SkillSidebar';
 import UploadSkillModal from './UploadSkillModal';
@@ -28,12 +31,11 @@ export default function List() {
   const [detailMap, setDetailMap] = useState<Record<number, SkillDetail | undefined>>({});
   const [detailLoadingMap, setDetailLoadingMap] = useState<Record<number, boolean>>({});
   const [addModalState, setAddModalState] = useState({ visible: false });
-  const [editModalState, setEditModalState] = useState<{
-    visible: boolean;
-    id?: number;
-  }>({ visible: false, id: undefined });
   const [mdFormat, setMdFormat] = useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [gitInstallVisible, setGitInstallVisible] = useState(false);
+  const [gitReplaceState, setGitReplaceState] = useState<{ visible: boolean; id?: number }>({ visible: false });
+  const [gitUpdateState, setGitUpdateState] = useState<{ visible: boolean; id?: number }>({ visible: false });
 
   const {
     data = [],
@@ -227,6 +229,16 @@ export default function List() {
     setSelectedNodeKey(getSkillNodeKey(skillId));
   }
 
+  async function handleBuiltinGitUpdate(skillId: number) {
+    try {
+      await gitUpdate(skillId, {}, { silence: true });
+      message.success(t('common:success.modify'));
+      await refreshSkill(skillId);
+    } catch (error) {
+      showGitOperationError(t('git.error_update_title'), error, t('git.error_default_msg'));
+    }
+  }
+
   function handleSelectNode(node: SkillTreeNode) {
     setSelectedNodeKey(node.key);
     setExpandedKeys((prev) => {
@@ -294,6 +306,14 @@ export default function List() {
                       >
                         <span>{t('upload_skill')}</span>
                       </Menu.Item>
+                      <Menu.Item
+                        key='git'
+                        onClick={() => {
+                          setGitInstallVisible(true);
+                        }}
+                      >
+                        <span>{t('git.install_entry')}</span>
+                      </Menu.Item>
                     </Menu>
                   }
                 >
@@ -321,6 +341,16 @@ export default function List() {
           }}
           onSubmit={handleImport}
         />
+        <GitInstallModal
+          visible={gitInstallVisible}
+          onCancel={() => {
+            setGitInstallVisible(false);
+          }}
+          onOk={() => {
+            setGitInstallVisible(false);
+            run();
+          }}
+        />
       </>
     );
   }
@@ -345,6 +375,9 @@ export default function List() {
                     setAddModalState({ visible: true });
                   }}
                   onImport={handleImport}
+                  onGitInstall={() => {
+                    setGitInstallVisible(true);
+                  }}
                 />
                 <div className='w-full min-w-0'>
                   {!selectedNode || !selectedSkillData ? (
@@ -357,17 +390,20 @@ export default function List() {
                       onToggleEnabled={() => {
                         handleToggleEnabled(selectedSkillData);
                       }}
-                      onEdit={() => {
-                        setEditModalState({
-                          visible: true,
-                          id: selectedSkillData.id,
-                        });
-                      }}
                       onImport={(file) => {
                         handleUpdateImport(selectedSkillData.id, file);
                       }}
                       onDelete={() => {
                         handleDeleteSkill(selectedSkillData.id);
+                      }}
+                      onGitUpdate={() => {
+                        setGitUpdateState({ visible: true, id: selectedSkillData.id });
+                      }}
+                      onGitReplaceConfig={() => {
+                        setGitReplaceState({ visible: true, id: selectedSkillData.id });
+                      }}
+                      onBuiltinGitUpdate={() => {
+                        handleBuiltinGitUpdate(selectedSkillData.id);
                       }}
                     />
                   ) : (
@@ -410,19 +446,44 @@ export default function List() {
           setAddModalState({ visible: false });
         }}
       />
-      <EditModal
-        visible={editModalState.visible}
-        id={editModalState.id}
+      <GitInstallModal
+        visible={gitInstallVisible}
+        onCancel={() => {
+          setGitInstallVisible(false);
+        }}
         onOk={() => {
-          const currentEditId = editModalState.id;
-          if (currentEditId) {
-            setDetailMap((prev) => _.omit(prev, currentEditId) as Record<number, SkillDetail | undefined>);
-          }
-          setEditModalState({ visible: false, id: undefined });
+          setGitInstallVisible(false);
           run();
         }}
+      />
+      <GitReplaceConfigModal
+        visible={gitReplaceState.visible}
+        id={gitReplaceState.id}
+        gitInfo={gitReplaceState.id ? _.find(data, { id: gitReplaceState.id })?.git_info : undefined}
         onCancel={() => {
-          setEditModalState({ visible: false, id: undefined });
+          setGitReplaceState({ visible: false });
+        }}
+        onOk={() => {
+          const currentId = gitReplaceState.id;
+          setGitReplaceState({ visible: false });
+          if (currentId) {
+            refreshSkill(currentId);
+          }
+        }}
+      />
+      <GitUpdateModal
+        visible={gitUpdateState.visible}
+        id={gitUpdateState.id}
+        gitInfo={gitUpdateState.id ? _.find(data, { id: gitUpdateState.id })?.git_info : undefined}
+        onCancel={() => {
+          setGitUpdateState({ visible: false });
+        }}
+        onOk={() => {
+          const currentId = gitUpdateState.id;
+          setGitUpdateState({ visible: false });
+          if (currentId) {
+            refreshSkill(currentId);
+          }
         }}
       />
     </>

@@ -114,6 +114,7 @@ export function buildSkillTree(skills: Item[], detailMap: Record<number, SkillDe
       selectable: true,
       enabled: skill.enabled,
       builtin: skill.builtin,
+      has_new_version: skill.has_new_version,
       children: resourceNodes,
     };
     nodeMap[node.key] = node;

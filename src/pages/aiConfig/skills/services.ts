@@ -3,9 +3,9 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-import { Item, FormValues, FileItem, SkillDetail, FileContent } from './types';
+import { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload } from './types';
 
-export type { Item, FormValues, FileItem, SkillDetail, FileContent };
+export type { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload };
 
 export const getList = function (): Promise<Item[]> {
   return request('/api/n9e/ai-skills', {
@@ -81,5 +81,37 @@ export const uploadFile = function (id: number, file: File) {
   return request(`/api/n9e/ai-skill/${id}/files`, {
     method: RequestMethod.Post,
     data: formData,
+  }).then((res) => res.dat);
+};
+
+interface GitRequestOptions {
+  silence?: boolean;
+  signal?: AbortSignal;
+}
+
+export const gitInstall = function (data: GitInstallPayload, options?: GitRequestOptions) {
+  return request('/api/n9e/ai-skills/git/install', {
+    method: RequestMethod.Post,
+    data,
+    silence: options?.silence,
+    signal: options?.signal,
+  }).then((res) => res.dat);
+};
+
+export const gitReplaceConfig = function (id: number, data: Partial<GitInstallPayload>, options?: GitRequestOptions) {
+  return request(`/api/n9e/ai-skill/${id}/git/install`, {
+    method: RequestMethod.Put,
+    data,
+    silence: options?.silence,
+    signal: options?.signal,
+  }).then((res) => res.dat);
+};
+
+export const gitUpdate = function (id: number, data: Partial<GitInstallPayload>, options?: GitRequestOptions) {
+  return request(`/api/n9e/ai-skill/${id}/git/update`, {
+    method: RequestMethod.Post,
+    data,
+    silence: options?.silence,
+    signal: options?.signal,
   }).then((res) => res.dat);
 };
