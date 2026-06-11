@@ -3,6 +3,28 @@ export interface LLMConfig {
   name: string;
 }
 
+export type SourceType = 'local' | 'git';
+export type GitRefType = 'branch' | 'tag' | 'commit';
+export type GitAuthType = 'none' | 'token';
+
+export interface GitInfo {
+  url: string;
+  ref_type: GitRefType;
+  ref: string;
+  auth_type: GitAuthType;
+  subdir?: string;
+  current_commit?: string;
+}
+
+export interface GitInstallPayload {
+  git_url: string;
+  git_ref_type: GitRefType;
+  git_ref: string;
+  git_auth_type?: GitAuthType;
+  git_token?: string;
+  git_subdir?: string;
+}
+
 export interface Item {
   id: number;
   name: string;
@@ -19,6 +41,10 @@ export interface Item {
   compatibility?: string;
   allowed_tools?: string;
   metadata?: Record<string, any>;
+
+  source_type?: SourceType;
+  git_info?: GitInfo;
+  has_new_version?: boolean;
 }
 
 export interface FormValues {
@@ -64,4 +90,5 @@ export interface SkillTreeNode {
   builtin?: boolean;
   file?: FileItem;
   path?: string;
+  has_new_version?: boolean;
 }

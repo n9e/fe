@@ -18,11 +18,12 @@ interface Props {
   onExpand: (expandedKeys: string[], node: SkillTreeNode, expanded: boolean) => void;
   onCreate: () => void;
   onImport: (file: File) => void;
+  onGitInstall: () => void;
 }
 
 export default function SkillSidebar(props: Props) {
   const { t } = useTranslation(NS);
-  const { searchValue, onSearchChange, treeData, selectedNodeKey, expandedKeys, onSelectNode, onExpand, onCreate, onImport } = props;
+  const { searchValue, onSearchChange, treeData, selectedNodeKey, expandedKeys, onSelectNode, onExpand, onCreate, onImport, onGitInstall } = props;
   const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
 
   return (
@@ -50,6 +51,9 @@ export default function SkillSidebar(props: Props) {
                 }}
               >
                 <span>{t('upload_skill')}</span>
+              </Menu.Item>
+              <Menu.Item key='git' onClick={onGitInstall}>
+                <span>{t('git.install_entry')}</span>
               </Menu.Item>
             </Menu>
           }
@@ -89,6 +93,11 @@ export default function SkillSidebar(props: Props) {
                       {node.builtin === true && (
                         <Tag className='m-0' color='purple'>
                           {t('builtin')}
+                        </Tag>
+                      )}
+                      {node.has_new_version === true && (
+                        <Tag className='m-0' color='red'>
+                          {t('git.new_version_tag')}
                         </Tag>
                       )}
                       {node.enabled === false && <Tag className='m-0'>OFF</Tag>}
