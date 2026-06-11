@@ -59,7 +59,7 @@ export default function GitForm(props: Props) {
         git_auth_type: 'none',
       }}
     >
-      <Form.Item label={t('git.field_url')} name='git_url' rules={[{ required: true }]}>
+      <Form.Item label={t('git.field_url')} name='git_url' rules={[{ required: true }, { pattern: /^https?:\/\/.+/, message: t('git.field_url_http_only') }]}>
         <Input placeholder={t('git.field_url_placeholder')} disabled={isDisabled('git_url')} />
       </Form.Item>
       {mode === 'update' && currentRefHint ? (
