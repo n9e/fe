@@ -83,12 +83,14 @@ export default function index(props: Props) {
     }, 0);
   };
 
-  const handleSetStackByField = (index) => {
+  const handleSetStackByField = (index?: string) => {
     form.setFieldsValue({
+      refreshFlag: undefined,
       query: {
         stackByField: index,
       },
     });
+    executeQuery();
   };
 
   const handleSetDefaultSearchField = (index) => {
