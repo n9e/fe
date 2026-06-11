@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Segmented, message } from 'antd';
+import { Form, Segmented } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { useRequest } from 'ahooks';
@@ -56,38 +56,72 @@ export default function index(props: Props) {
 
   const navMode = 'fields';
 
-  const indexDataService = () => {
-    if (datasourceValue && database && table) {
-      return getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table })
-        .then((res) => {
-          const timeField = form.getFieldValue('query')?.time_field;
-          const fieldExists = _.some(res, (item) => item.field === timeField);
-          if (!timeField || !fieldExists) {
-            const firstDateField = _.find(res, (item) => {
-              return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
-            })?.field;
-            if (firstDateField) {
-              form.setFieldsValue({
-                query: {
-                  time_field: firstDateField,
-                },
-              });
-            }
-          }
-          onIndexDataChange(res);
-          return res;
-        })
-        .catch(() => {
-          onIndexDataChange([]);
-          return [];
-        });
-    }
-    return Promise.resolve(undefined);
-  };
+  const { data: indexData = [], loading: indexDataLoading } = useRequest<Field[], any>(
+    async () => {
+      if (!datasourceValue || !database || !table) return [];
 
-  const { data: indexData = [], loading: indexDataLoading } = useRequest<Field[] | undefined, any>(indexDataService, {
-    refreshDeps: [datasourceValue, database, table],
-  });
+      // 1. 先获取 index 字段
+      let fields: Field[] = [];
+      try {
+        fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table });
+      } catch {
+        // getDorisIndex 失败时继续执行，fields 保持空数组
+      }
+
+      // 2. 再获取 table 配置
+      let tableConfig: { histogram_stack_field?: string; default_time_field?: string } | undefined;
+      try {
+        tableConfig = await getDorisTableConfig({
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          database,
+          table,
+        });
+      } catch {
+        // getDorisTableConfig 失败时继续执行，tableConfig 保持 undefined
+      }
+
+      // 3. 统一处理 time_field 和 stackByField
+      const timeField = form.getFieldValue('query')?.time_field;
+      const fieldExists = _.some(fields, (item) => item.field === timeField);
+      const needsTimeField = !timeField || !fieldExists;
+
+      const patch: Record<string, string> = {};
+
+      if (needsTimeField) {
+        if (tableConfig?.default_time_field) {
+          // 优先使用接口返回的 default_time_field
+          patch.time_field = tableConfig.default_time_field;
+        } else {
+          // 回退到第一个 date 类型字段
+          const firstDateField = _.find(fields, (item) => _.includes(DATE_TYPE_LIST, item.type.toLowerCase()))?.field;
+          if (firstDateField) {
+            patch.time_field = firstDateField;
+          }
+        }
+      }
+
+      if (tableConfig?.histogram_stack_field) {
+        const currentStackByField = form.getFieldValue(['query', 'stackByField']);
+        if (!currentStackByField) {
+          patch.stackByField = tableConfig.histogram_stack_field;
+        }
+      }
+
+      if (Object.keys(patch).length > 0) {
+        form.setFieldsValue({ query: patch });
+      }
+
+      onIndexDataChange(fields);
+      return fields;
+    },
+    {
+      refreshDeps: [table],
+      onError: () => {
+        onIndexDataChange([]);
+      },
+    },
+  );
 
   useEffect(() => {
     if (datasourceValue && database && table) {
@@ -101,35 +135,6 @@ export default function index(props: Props) {
       );
     }
   }, [datasourceValue, database, table]);
-
-  useEffect(() => {
-    if (datasourceValue && database && table) {
-      getDorisTableConfig({
-        cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        database,
-        table,
-      })
-        .then((res) => {
-          const currentStackByField = form.getFieldValue(['query', 'stackByField']);
-          if (res?.histogram_stack_field && !currentStackByField) {
-            form.setFieldsValue({
-              query: {
-                stackByField: res.histogram_stack_field,
-              },
-            });
-          }
-        })
-        .catch(_.noop);
-    } else if (!table) {
-      form.setFieldsValue({
-        query: {
-          stackByField: undefined,
-        },
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [table]);
 
   return (
     <>
@@ -224,75 +229,6 @@ export default function index(props: Props) {
           />
         </div>
       </div>
-
-      {/* <div
-        className='min-h-0 flex-1 h-full flex-col'
-        style={{
-          display: navMode === 'schema' ? 'flex' : 'none',
-        }}
-      >
-        <div className='min-h-0 flex-1 border border-fc-300 rounded-sm'>
-          {datasourceValue && (
-            <Meta
-              datasourceCate={DatasourceCateEnum.doris}
-              datasourceValue={datasourceValue}
-              onTreeNodeClick={(nodeData) => {
-                const query = form.getFieldValue(['query']);
-
-                getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database: nodeData.database, table: nodeData.table })
-                  .then((res) => {
-                    let dateField = 'timestamp';
-                    const firstDateField = _.find(res, (item) => {
-                      return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
-                    })?.field;
-                    if (firstDateField) {
-                      dateField = firstDateField;
-                    }
-                    if (query.sqlVizType === 'table') {
-                      _.set(query, 'sql', `select * from \`${nodeData.database}\`.\`${nodeData.table}\` WHERE $__timeFilter(\`${dateField}\`) limit 20;`);
-                    } else if (query.sqlVizType === 'timeseries') {
-                      _.set(
-                        query,
-                        'sql',
-                        `SELECT count(*) as cnt, $__timeGroup(\`${dateField}\`, 1m) as time 
-FROM \`${nodeData.database}\`.\`${nodeData.table}\`
-WHERE $__timeFilter(\`${dateField}\`) 
-GROUP BY time`,
-                      );
-                      _.set(query, 'keys.valueKey', ['cnt']);
-                    }
-                    form.setFieldsValue({
-                      refreshFlag: undefined,
-                      query,
-                    });
-                    executeQuery();
-                  })
-                  .catch(() => {
-                    message.warning(t('query.get_index_fail'));
-                    if (query.sqlVizType === 'table') {
-                      _.set(query, 'sql', `select * from \`${nodeData.database}\`.\`${nodeData.table}\` WHERE $__timeFilter(\`timestamp\`) limit 20;`);
-                    } else if (query.sqlVizType === 'timeseries') {
-                      _.set(
-                        query,
-                        'sql',
-                        `SELECT count(*) as cnt, $__timeGroup(\`timestamp\`, 1m) as time 
-FROM \`${nodeData.database}\`.\`${nodeData.table}\`
-WHERE $__timeFilter(\`timestamp\`) 
-GROUP BY time`,
-                      );
-                      _.set(query, 'keys.valueKey', ['cnt']);
-                    }
-                    form.setFieldsValue({
-                      refreshFlag: undefined,
-                      query,
-                    });
-                    executeQuery();
-                  });
-              }}
-            />
-          )}
-        </div>
-      </div> */}
     </>
   );
 }

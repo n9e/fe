@@ -296,7 +296,8 @@ export function buildSql(data: {
 }
 
 export function getDorisTableConfig(data: { cate: string; datasource_id: number; database: string; table: string }): Promise<{
-  histogram_stack_field: string;
+  histogram_stack_field?: string;
+  default_time_field?: string;
 }> {
   return request('/api/n9e-plus/doris-table-config', {
     method: RequestMethod.Post,
