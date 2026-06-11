@@ -22,6 +22,7 @@ const zh_HK = {
   expand_busi_and_overview: '展開業務組和概覽',
   collapse_busi_and_overview: '收起業務組和概覽',
   explorer_selected_metrics_tip: '查看已選擇機器的監控指標',
+  auth_level_current: '當前等級',
   auth_level: '通道等級',
   auth_level_0: '關閉',
   auth_level_1: 'R0',
@@ -40,7 +41,9 @@ const zh_HK = {
   auth_level_modal_title: '通道等級設置',
   auth_level_modal_content: '以下通道將被設置為 {{level}} 等級。',
   auth_level_modal_failed_title: '通道等級設置失敗',
+  auth_level_modal_content_close: '以下通道將關閉，不支持任何任務運行',
 
+  auth_level_channel_ident: '通道標識',
   ident: '標識',
   agent_version_title: 'AGENT版本',
   status: '狀態',

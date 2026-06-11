@@ -60,54 +60,66 @@ export default function AuthLevelDropdown(props: Props) {
 
   return (
     <>
-      <Dropdown
-        trigger={['click']}
-        overlay={
-          <Menu onClick={handleMenuClick}>
-            <Menu.Item key='1'>
-              <div>
-                <div>{t('auth_level_action_1_label')}</div>
-                <div className='text-soft text-xs'>{t('auth_level_action_1_help')}</div>
-              </div>
-            </Menu.Item>
-            <Menu.Item key='2'>
-              <div>
-                <div>{t('auth_level_action_2_label')}</div>
-                <div className='text-soft text-xs'>{t('auth_level_action_2_help')}</div>
-              </div>
-            </Menu.Item>
-            <Menu.Item key='3'>
-              <div>
-                <div>{t('auth_level_action_3_label')}</div>
-                <div className='text-soft text-xs'>{t('auth_level_action_3_help')}</div>
-              </div>
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item key='0'>
-              <div>
-                <div>{t('auth_level_action_0_label')}</div>
-                <div className='text-soft text-xs'>{t('auth_level_action_0_help')}</div>
-              </div>
-            </Menu.Item>
-          </Menu>
-        }
-      >
-        <Tooltip title={selectedIdents.length === 0 ? t('auth_level_action_tip') : undefined}>
-          <Button disabled={selectedIdents.length === 0}>
+      {selectedIdents.length === 0 ? (
+        <Tooltip title={t('auth_level_action_tip')}>
+          <Button disabled>
             {t('auth_level_action')} <DownOutlined />
           </Button>
         </Tooltip>
-      </Dropdown>
+      ) : (
+        <Dropdown
+          trigger={['click']}
+          overlay={
+            <Menu onClick={handleMenuClick}>
+              <Menu.Item key='1'>
+                <div>
+                  <div>{t('auth_level_action_1_label')}</div>
+                  <div className='text-soft text-xs'>{t('auth_level_action_1_help')}</div>
+                </div>
+              </Menu.Item>
+              <Menu.Item key='2'>
+                <div>
+                  <div>{t('auth_level_action_2_label')}</div>
+                  <div className='text-soft text-xs'>{t('auth_level_action_2_help')}</div>
+                </div>
+              </Menu.Item>
+              <Menu.Item key='3'>
+                <div>
+                  <div>{t('auth_level_action_3_label')}</div>
+                  <div className='text-soft text-xs'>{t('auth_level_action_3_help')}</div>
+                </div>
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item key='0'>
+                <div>
+                  <div>{t('auth_level_action_0_label')}</div>
+                  <div className='text-soft text-xs'>{t('auth_level_action_0_help')}</div>
+                </div>
+              </Menu.Item>
+            </Menu>
+          }
+        >
+          <Button>
+            {t('auth_level_action')} <DownOutlined />
+          </Button>
+        </Dropdown>
+      )}
       <Modal title={t('auth_level_modal_title')} visible={confirmModalVisible} confirmLoading={confirmLoading} onOk={handleConfirm} onCancel={handleCancel}>
-        <p className='mb-2 text-hint'>{t('auth_level_modal_content', { level: t(`auth_level_${targetLevel}` as any) })}</p>
+        {targetLevel === 0 ? (
+          <p className='mb-2 text-hint'>{t('auth_level_modal_content_close')}</p>
+        ) : (
+          <p className='mb-2 text-hint'>{t('auth_level_modal_content', { level: t(`auth_level_${targetLevel}` as any) })}</p>
+        )}
         <Table
           className='n9e-table-last-row-no-border'
           size='small'
           columns={[
             {
               dataIndex: 'ident',
+              title: t('auth_level_channel_ident'),
             },
             {
+              title: t('auth_level_current'),
               render: (_: any, record: Item) => {
                 const val = (record as any).ai_task_auth_level as number;
                 if (val === null || val === undefined) {
@@ -121,7 +133,6 @@ export default function AuthLevelDropdown(props: Props) {
           dataSource={selectedRows}
           pagination={false}
           rowKey='ident'
-          showHeader={false}
         />
       </Modal>
       <Modal

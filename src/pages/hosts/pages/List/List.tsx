@@ -241,6 +241,7 @@ export default function List(props: Props) {
               placeholder={t('auth_level')}
               dropdownMatchSelectWidth={false}
               options={[
+                { label: t('auth_level_0'), value: 0 },
                 { label: t('auth_level_1'), value: 1 },
                 { label: t('auth_level_2'), value: 2 },
                 { label: t('auth_level_3'), value: 3 },
