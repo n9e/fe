@@ -217,12 +217,13 @@ const Panel = (props: IProps) => {
                           end: moment.unix(range.end),
                         };
                       }
+
                       form.setFieldsValue({
                         ...filterValues,
                         refreshFlag: _.uniqueId('refreshFlag_'),
                         query: {
                           ...filterValues.query,
-                          mode: filterValues.query?.mode || 'query',
+                          query_type: targetCate === DatasourceCateEnum.gcm ? filterValues.query?.query_type || 'builder' : undefined,
                           range,
                         },
                       });
@@ -309,6 +310,7 @@ const Panel = (props: IProps) => {
                           });
                           form.setFieldsValue({
                             query: {
+                              query_type: datasourceCate === DatasourceCateEnum.gcm ? 'builder' : undefined,
                               range: {
                                 start: 'now-1h',
                                 end: 'now',
