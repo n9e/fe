@@ -22,6 +22,7 @@ const zh_CN = {
   expand_busi_and_overview: '展开业务组和概览',
   collapse_busi_and_overview: '收起业务组和概览',
   explorer_selected_metrics_tip: '查看已选择机器的监控指标',
+  auth_level_current: '当前等级',
   auth_level: '通道等级',
   auth_level_0: '关闭',
   auth_level_1: 'R0',
@@ -40,7 +41,9 @@ const zh_CN = {
   auth_level_modal_title: '通道等级设置',
   auth_level_modal_content: '以下通道将被设置为 {{level}} 等级。',
   auth_level_modal_failed_title: '通道等级设置失败',
+  auth_level_modal_content_close: '以下通道将关闭，不支持任何任务运行',
 
+  auth_level_channel_ident: '通道标识',
   ident: '标识',
   agent_version_title: 'AGENT版本',
   status: '状态',

@@ -21,6 +21,7 @@ const ja_JP = {
   expand_busi_and_overview: '業務グループと概要を展開',
   collapse_busi_and_overview: '業務グループと概要を折りたたむ',
   explorer_selected_metrics_tip: '選択したホストの監視メトリクスを表示',
+  auth_level_current: '現在のレベル',
   auth_level: 'チャンネルレベル',
   auth_level_0: '無効',
   auth_level_1: 'R0',
@@ -39,7 +40,9 @@ const ja_JP = {
   auth_level_modal_title: 'チャンネルレベル設定',
   auth_level_modal_content: '以下のチャンネルが {{level}} レベルに設定されます。',
   auth_level_modal_failed_title: 'チャンネルレベル設定失敗',
+  auth_level_modal_content_close: '以下のチャンネルは無効になり、タスク実行をサポートしません。',
 
+  auth_level_channel_ident: 'チャンネル識別子',
   ident: '識別子',
   agent_version_title: 'エージェントバージョン',
   status: 'ステータス',

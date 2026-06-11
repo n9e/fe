@@ -21,6 +21,7 @@ const en_US = {
   expand_busi_and_overview: 'Expand business group and overview',
   collapse_busi_and_overview: 'Collapse business group and overview',
   explorer_selected_metrics_tip: 'View monitoring metrics of selected hosts',
+  auth_level_current: 'Current Level',
   auth_level: 'Auth Level',
   auth_level_0: 'Disabled',
   auth_level_1: 'R0',
@@ -39,7 +40,9 @@ const en_US = {
   auth_level_modal_title: 'Auth Level Setting',
   auth_level_modal_content: 'The following hosts will be set to {{level}} level.',
   auth_level_modal_failed_title: 'Auth Level Setting Failed',
+  auth_level_modal_content_close: 'The following channels will be closed and will not support any task execution.',
 
+  auth_level_channel_ident: 'Channel Identifier',
   ident: 'Identifier',
   agent_version_title: 'Agent version',
   status: 'Status',

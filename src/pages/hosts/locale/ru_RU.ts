@@ -21,6 +21,7 @@ const ru_RU = {
   expand_busi_and_overview: 'Развернуть бизнес-группы и обзор',
   collapse_busi_and_overview: 'Свернуть бизнес-группы и обзор',
   explorer_selected_metrics_tip: 'Просмотреть метрики мониторинга выбранных хостов',
+  auth_level_current: 'Текущий уровень',
   auth_level: 'Уровень канала',
   auth_level_0: 'Отключено',
   auth_level_1: 'R0',
@@ -39,7 +40,9 @@ const ru_RU = {
   auth_level_modal_title: 'Настройка уровня канала',
   auth_level_modal_content: 'Следующие каналы будут установлены на уровень {{level}}.',
   auth_level_modal_failed_title: 'Ошибка настройки уровня канала',
+  auth_level_modal_content_close: 'Следующие каналы будут закрыты и не будут поддерживать выполнение задач.',
 
+  auth_level_channel_ident: 'Идентификатор канала',
   ident: 'Идентификатор',
   agent_version_title: 'Версия агента',
   status: 'Статус',
