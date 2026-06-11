@@ -8,7 +8,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import Meta from '@/components/Meta';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
-import { getDorisIndex } from '../../services';
+import { getDorisIndex, getDorisTableConfig } from '../../services';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import DatabaseSelect from './DatabaseSelect';
@@ -101,6 +101,35 @@ export default function index(props: Props) {
       );
     }
   }, [datasourceValue, database, table]);
+
+  useEffect(() => {
+    if (datasourceValue && database && table) {
+      getDorisTableConfig({
+        cate: DatasourceCateEnum.doris,
+        datasource_id: datasourceValue,
+        database,
+        table,
+      })
+        .then((res) => {
+          const currentStackByField = form.getFieldValue(['query', 'stackByField']);
+          if (res?.histogram_stack_field && !currentStackByField) {
+            form.setFieldsValue({
+              query: {
+                stackByField: res.histogram_stack_field,
+              },
+            });
+          }
+        })
+        .catch(_.noop);
+    } else if (!table) {
+      form.setFieldsValue({
+        query: {
+          stackByField: undefined,
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [table]);
 
   return (
     <>
