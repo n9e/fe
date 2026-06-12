@@ -14,22 +14,22 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
-import { Drawer, Segmented, Spin } from 'antd';
-import _ from 'lodash';
+import React, { useState } from 'react';
+import { Drawer, Segmented } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import request from '@/utils/request';
-import api from '@/utils/api';
+import ResultContent from '../ResultContent';
 
 interface Props {
+  title?: string;
   visible: boolean;
   onClose: () => void;
-  busiId: number;
   taskId: string;
-  host?: string;
-  outputType: 'stdout' | 'stderr';
-  title: string;
+  busiId: number;
+  hideCloneTask?: boolean;
+  metaAlias?: string;
+  initialOutputMode?: { outputType: 'stdout' | 'stderr'; host?: string };
+  onOutputOpen?: (info: { outputType: 'stdout' | 'stderr'; host?: string }) => void;
   onOutputClose?: (info: { outputType: 'stdout' | 'stderr'; host?: string }) => void;
 }
 
@@ -41,53 +41,17 @@ const sizeWidthMap = {
 
 type SizeType = 'small' | 'middle' | 'large';
 
-export default function OutputDrawer(props: Props) {
+export default function ResultDrawer(props: Props) {
   const { t } = useTranslation('navigableDrawer');
-  const { visible, onClose, busiId, taskId, host, outputType, title, onOutputClose } = props;
-
-  const handleClose = () => {
-    onOutputClose?.({ outputType, host });
-    onClose();
-  };
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any>(null);
+  const { title, visible, onClose, taskId, busiId, hideCloneTask, metaAlias, initialOutputMode, onOutputOpen, onOutputClose } = props;
   const [size, setSize] = useState<SizeType>('middle');
-
-  useEffect(() => {
-    if (!visible) return;
-    setLoading(true);
-    const url = host ? `${api.task(busiId)}/${taskId}/host/${host}/${outputType}` : `${api.task(busiId)}/${taskId}/${outputType}`;
-    request(url)
-      .then((res) => {
-        setData(res.dat);
-      })
-      .catch(() => {
-        setData(null);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [visible, busiId, taskId, host, outputType]);
-
-  const getOutput = () => {
-    if (!data) return '';
-    if (host) {
-      return `${host}\n${data}\n\n`;
-    }
-    let output = '';
-    _.each(data, (item: any) => {
-      output += `${item.host}\n`;
-      output += `${item[outputType]}\n\n`;
-    });
-    return output;
-  };
 
   return (
     <Drawer
       width={sizeWidthMap[size]}
       title={title}
       placement='right'
-      onClose={handleClose}
+      onClose={onClose}
       visible={visible}
       extra={
         <Segmented
@@ -101,9 +65,17 @@ export default function OutputDrawer(props: Props) {
         />
       }
     >
-      <Spin spinning={loading}>
-        <pre style={{ fontSize: 12, padding: 10 }}>{getOutput()}</pre>
-      </Spin>
+      {visible && (
+        <ResultContent
+          taskId={taskId}
+          busiId={busiId}
+          hideCloneTask={hideCloneTask}
+          metaAlias={metaAlias}
+          initialOutputMode={initialOutputMode}
+          onOutputOpen={onOutputOpen}
+          onOutputClose={onOutputClose}
+        />
+      )}
     </Drawer>
   );
 }

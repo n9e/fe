@@ -27,7 +27,7 @@ export default function StatsCards(props: Props) {
 
   const { data: stats, loading } = useRequest(
     () => {
-      return getStats({ gids });
+      return getStats({ gids: gids === '-2' ? undefined : gids });
     },
     {
       refreshDeps: [gids, refreshFlag],

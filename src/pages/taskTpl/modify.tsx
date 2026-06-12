@@ -15,10 +15,11 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Button, Spin, Card, message, Space } from 'antd';
 import { RollbackOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import request from '@/utils/request';
@@ -29,9 +30,11 @@ import { copyToClipBoard } from '@/utils';
 
 const Modify = (props: any) => {
   const history = useHistory();
+  const location = useLocation();
+  const query = queryString.parse(location.search);
   const id = _.get(props, 'match.params.id');
   const { businessGroup } = useContext(CommonStateContext);
-  const curBusiId = businessGroup.id!;
+  const curBusiId = (query.gid as string) || businessGroup.id!;
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>({});
@@ -44,6 +47,7 @@ const Modify = (props: any) => {
       message.success(t('msg.modify.success'));
       props.history.push({
         pathname: `/job-tpls`,
+        search: `ids=${curBusiId}&isLeaf=true`,
       });
     });
   };

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
 import _ from 'lodash';
 import { Button, Tooltip } from 'antd';
 
@@ -48,38 +47,11 @@ export default function index() {
         <div className='flex gap-[6px] h-full'>
           <BusinessGroup2
             ref={businessGroupRef}
-            showSelected={gids !== '0' && gids !== undefined}
-            renderHeadExtra={() => {
-              return (
-                <div className='mb-2'>
-                  <div className='text-l1 font-bold leading-none mb-4'>{t('default_filter')}</div>
-                  <div
-                    className={classNames('justify-between py-[6px] px-[8px] cursor-pointer rounded-md hover:bg-fc-200/80', {
-                      'bg-fc-200/90': gids === '0',
-                      'font-bold': gids === '0',
-                      'text-title': gids === '0',
-                    })}
-                    onClick={() => {
-                      setGids('0');
-                    }}
-                  >
-                    {t('ungrouped_targets')}
-                  </div>
-                  <div
-                    className={classNames('justify-between py-[6px] px-[8px] cursor-pointer rounded-md hover:bg-fc-200/80', {
-                      'bg-fc-200/90': gids === undefined,
-                      'font-bold': gids === undefined,
-                      'text-title': gids === undefined,
-                    })}
-                    onClick={() => {
-                      setGids(undefined);
-                    }}
-                  >
-                    {t('all_targets')}
-                  </div>
-                </div>
-              );
-            }}
+            presetFilterTitle={t('default_filter')}
+            presetFilters={[
+              { value: '0', label: t('ungrouped_targets') },
+              { value: '-2', label: t('all_targets') },
+            ]}
             onSelect={(key) => {
               const ids = getCleanBusinessGroupIds(key);
               setGids(ids);
