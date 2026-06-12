@@ -42,7 +42,7 @@ const en_US = {
     export_csv: 'Export (CSV)',
     import: 'Import',
     save: 'Save',
-    ok: 'Ok',
+    ok: 'OK',
     cancel: 'Cancel',
     view: 'View',
     more: 'More',

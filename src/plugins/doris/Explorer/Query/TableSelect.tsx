@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
@@ -18,13 +18,18 @@ export default function TableSelect(props: Props) {
   const { datasourceValue, database, value, onChange, disabled } = props;
   const [tables, setTables] = useState<string[]>([]);
 
+  const datasourceValueRef = useRef(datasourceValue);
   useEffect(() => {
-    if (datasourceValue && database) {
-      getDorisTables({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, query: [database] }).then((res) => {
+    datasourceValueRef.current = datasourceValue;
+  });
+
+  useEffect(() => {
+    if (database) {
+      getDorisTables({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValueRef.current, query: [database] }).then((res) => {
         setTables(res);
       });
     }
-  }, [datasourceValue, database]);
+  }, [database]);
 
   return (
     <Select

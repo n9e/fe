@@ -60,7 +60,7 @@ enum IMode {
   indices = 'indices',
 }
 
-const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss';
+const TIME_FORMAT = 'YYYY.MM.DD HH:mm:ss.SSS';
 const MAX_RESULT_WINDOW = 10000; // ES 默认最大返回 10000 条数据，超过需要设置 index.max_result_window
 export const CACHE_KEY_MAP = {
   indices: 'es-indices-query-history-records',

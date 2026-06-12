@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Popover, Row, Col, Input, Space } from 'antd';
 import { DownOutlined, UpOutlined, CalendarOutlined, SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { PickerPanel } from 'rc-picker';
@@ -81,6 +81,7 @@ const AbsoluteTimePicker = ({
   setRangeStatus,
   dateFormat,
   showSecond = false,
+  showMillisecond = false,
 }: {
   type: 'start' | 'end';
   limitHour?: number;
@@ -93,14 +94,75 @@ const AbsoluteTimePicker = ({
   setRangeStatus: any;
   dateFormat: string;
   showSecond?: boolean;
+  showMillisecond?: boolean;
 }) => {
   const { t, i18n } = useTranslation('timeRangePicker');
   const labelMap = {
     start: t('start'),
     end: t('end'),
   };
+  const pickerLocale = localeMap[i18n.language] || en_US;
+  const nowLabel = pickerLocale?.now || 'Now';
+  const okLabel = pickerLocale?.ok || 'OK';
   const val = moment(range ? range[type] : undefined, true);
   const [visible, setVisible] = useState(false);
+  const [tempValue, setTempValue] = useState<Moment | undefined>(val.isValid() ? val : undefined);
+  const isFocusedRef = useRef(false);
+  const [inputValue, setInputValue] = useState<string>(range ? valueAsString(range[type], dateFormat) : '');
+
+  useEffect(() => {
+    if (!isFocusedRef.current) {
+      setInputValue(range ? valueAsString(range[type], dateFormat) : '');
+    }
+  }, [range, type, dateFormat]);
+
+  useEffect(() => {
+    if (visible) {
+      setTempValue(val.isValid() ? val : undefined);
+    }
+  }, [visible, range, type]);
+
+  const commitInputValue = (val: string) => {
+    setRangeStatus({
+      ...rangeStatus,
+      [type]: !isValid(val) ? 'invalid' : undefined,
+    });
+    if (isValid(val)) {
+      const newRange = {
+        ...(range || {}),
+        [type]: isMathString(val) ? val : moment(val),
+      };
+      setRange(newRange as IRawTimeRange);
+    } else {
+      setRange({
+        ...(range || {}),
+        [type]: val,
+      } as IRawTimeRange);
+    }
+  };
+
+  const confirmPanelValue = () => {
+    if (!tempValue || !tempValue.isValid()) {
+      return;
+    }
+    const confirmedValue = showMillisecond ? tempValue.clone().milliseconds(0) : tempValue;
+    const newRange = {
+      ...(range || {}),
+      [type]: confirmedValue,
+    };
+    if (type === 'start' && !moment.isMoment(newRange.end)) {
+      newRange.end = moment(newRange.start).endOf('day');
+    }
+    if (type === 'end' && !moment.isMoment(newRange.start)) {
+      newRange.start = moment(newRange.end).startOf('day');
+    }
+    setRangeStatus({
+      ...rangeStatus,
+      [type]: undefined,
+    });
+    setRange(newRange as IRawTimeRange);
+    setVisible(false);
+  };
 
   return (
     <div className='mb-2'>
@@ -109,25 +171,24 @@ const AbsoluteTimePicker = ({
         <Input
           style={{ width: 'calc(100% - 32px)' }}
           className={rangeStatus[type] === 'invalid' ? 'ant-input-status-error' : ''}
-          value={range ? valueAsString(range[type], dateFormat) : undefined}
+          value={inputValue}
           onChange={(e) => {
             const val = e.target.value;
+            setInputValue(val);
             setRangeStatus({
               ...rangeStatus,
               [type]: !isValid(val) ? 'invalid' : undefined,
             });
-            if (isValid(val)) {
-              const newRange = {
-                ...(range || {}),
-                [type]: isMathString(val) ? val : moment(val),
-              };
-              setRange(newRange as IRawTimeRange);
-            } else {
-              setRange({
-                ...(range || {}),
-                [type]: val,
-              } as IRawTimeRange);
-            }
+          }}
+          onFocus={() => {
+            isFocusedRef.current = true;
+          }}
+          onBlur={(e) => {
+            isFocusedRef.current = false;
+            commitInputValue(e.currentTarget.value);
+          }}
+          onPressEnter={(e) => {
+            commitInputValue(e.currentTarget.value);
           }}
         />
         <Popover
@@ -151,10 +212,11 @@ const AbsoluteTimePicker = ({
             <PickerPanel
               prefixCls='ant-picker'
               generateConfig={momentGenerateConfig}
-              locale={localeMap[i18n.language] || en_US}
+              locale={pickerLocale}
+              showNow={false}
               showTime={{
                 defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
-                showSecond,
+                showSecond: showMillisecond || showSecond,
               }}
               disabledDate={(current: Moment) => {
                 const exceedHourLimit = limitHour
@@ -165,24 +227,31 @@ const AbsoluteTimePicker = ({
                 }
                 return false;
               }}
-              value={val.isValid() ? val : undefined}
+              value={tempValue}
               onChange={(value) => {
-                const newRange = {
-                  ...(range || {}),
-                  [type]: value,
-                };
-                if (type === 'start' && !moment.isMoment(newRange.end)) {
-                  newRange.end = moment(newRange.start).endOf('day');
-                }
-                if (type === 'end' && !moment.isMoment(newRange.start)) {
-                  newRange.start = moment(newRange.end).startOf('day');
-                }
-                setRange(newRange as IRawTimeRange);
+                setTempValue(value);
               }}
+              renderExtraFooter={() => (
+                <div className='flex items-center justify-between'>
+                  <a
+                    onClick={() => {
+                      setTempValue(moment());
+                    }}
+                  >
+                    {nowLabel}
+                  </a>
+                  <Button type='primary' size='small' onClick={confirmPanelValue}>
+                    {okLabel}
+                  </Button>
+                </div>
+              )}
             />
           }
           visible={visible}
           onVisibleChange={(v) => {
+            if (v) {
+              setTempValue(val.isValid() ? val : undefined);
+            }
             setVisible(v);
           }}
         >
@@ -212,6 +281,7 @@ export default function index(props: ITimeRangePickerProps) {
     timezone = InternalTimeZones.localBrowserTime,
     onTimezoneChange,
     showSecond,
+    showMillisecond,
     onVisibleChange,
   } = props;
   const [visible, setVisible] = useState(false);
@@ -252,7 +322,7 @@ export default function index(props: ITimeRangePickerProps) {
           <>
             <div className='flashcat-timeRangePicker'>
               <Row>
-                <Col span={15}>
+                <Col span={showMillisecond ? 17 : 15}>
                   <div className='flashcat-timeRangePicker-left'>
                     <AbsoluteTimePicker
                       type='start'
@@ -263,6 +333,7 @@ export default function index(props: ITimeRangePickerProps) {
                       setRangeStatus={setRangeStatus}
                       dateFormat={dateFormat}
                       showSecond={showSecond}
+                      showMillisecond={showMillisecond}
                     />
                     <AbsoluteTimePicker
                       type='end'
@@ -273,6 +344,7 @@ export default function index(props: ITimeRangePickerProps) {
                       setRangeStatus={setRangeStatus}
                       dateFormat={dateFormat}
                       showSecond={showSecond}
+                      showMillisecond={showMillisecond}
                     />
                     <div>
                       <Space>
@@ -328,7 +400,7 @@ export default function index(props: ITimeRangePickerProps) {
                     </div>
                   </div>
                 </Col>
-                <Col span={9}>
+                <Col span={showMillisecond ? 7 : 9}>
                   <div className='flashcat-timeRangePicker-ranges'>
                     <Input
                       placeholder={t('quickSearchPlaceholder')}

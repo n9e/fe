@@ -54,6 +54,13 @@ const ru_RU = {
     warn_message_content_2: 'Распространенные временные макросы: ',
     warn_message_content_3: 'Пример:',
     warn_message_content_4: 'Использование временных макросов: <a>Подробнее</a>',
+    editMode: {
+      switch_to_builder_confirm_title: 'Переключиться в режим Builder',
+      switch_to_builder_confirm_content: 'Текущий SQL не может быть преобразован в настройки Builder. Переключение приведет к потере отредактированного SQL. Продолжить?',
+      no_builder_config: 'Пожалуйста, сначала настройте условия запроса',
+      require_db_table: 'Пожалуйста, сначала выберите базу данных и таблицу',
+      build_sql_failed: 'Не удалось сгенерировать SQL',
+    },
     dashboard: {
       mode: {
         label: 'Режим запроса',
@@ -181,6 +188,8 @@ const ru_RU = {
     preview_sql: 'Предпросмотр SQL',
     btn_tip: 'При нажатии содержимое поля ввода SQL будет перезаписано',
     btn_failed_tip: 'Преобразование не удалось, попробуйте снова или измените форму',
+    preview_and_run: 'Предпросмотр SQL & Запрос',
+    builder_content_modified: 'Содержимое Builder изменено, пожалуйста, просмотрите последний SQL',
   },
 };
 export default ru_RU;
