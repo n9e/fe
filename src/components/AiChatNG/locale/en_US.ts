@@ -50,6 +50,7 @@ const en_US = {
     approval_title: 'Please confirm the action above:',
     busi_group: 'Business Group',
     datasource: 'Datasource',
+    team: 'Teams',
     placeholder_select: 'Please select',
     confirm: 'Confirm',
   },

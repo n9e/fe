@@ -571,6 +571,7 @@ const ru_RU = {
     hide_response: 'Скрыть ответ',
   },
   detail: {
+    ai_analysis: 'AI-анализ',
     datasource_empty: 'Нет информации об источнике данных, сначала настройте источник данных',
     invalidTimeRange: 'Недопустимые значения __from и __to',
     invalidDatasource: 'Недопустимый источник данных',

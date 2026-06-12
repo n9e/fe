@@ -152,6 +152,12 @@ export function getNotifyTplPrompts(lang?: string) {
       ];
 }
 
+export function getDashboardDetailPrompts(lang?: string) {
+  return isZhCN(lang)
+    ? ['分析下此仪表盘', '总结当前仪表盘的整体健康状况', '找出指标异常或趋势异常的图表']
+    : ['Analyze this dashboard', 'Summarize the overall health of this dashboard', 'Find panels with abnormal metrics or trends'];
+}
+
 export function getAlertEventDetailPrompts(lang?: string) {
   return isZhCN(lang)
     ? ['分析这条告警事件的根因', '查找同对象/同规则下的相似历史告警', '看下同一对象在这个时间点附近还有哪些活跃告警']
