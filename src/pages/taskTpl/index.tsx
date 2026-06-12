@@ -134,7 +134,7 @@ const index = (_props: any) => {
         title: t('tpl.title'),
         dataIndex: 'title',
         render: (text, record) => {
-          return <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>;
+          return <Link to={{ pathname: `/job-tpls/${record.id}/detail`, search: `gid=${record.group_id}` }}>{text}</Link>;
         },
       },
       {
@@ -167,11 +167,11 @@ const index = (_props: any) => {
         render: (_text, record) => {
           return (
             <span>
-              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }}>{t('task.create')}</Link>
+              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}&gid=${record.group_id}` }}>{t('task.create')}</Link>
               <Divider type='vertical' />
-              <Link to={{ pathname: `/job-tpls/${record.id}/modify` }}>{t('common:btn.edit')}</Link>
+              <Link to={{ pathname: `/job-tpls/${record.id}/modify`, search: `gid=${record.group_id}` }}>{t('common:btn.edit')}</Link>
               <Divider type='vertical' />
-              <Link to={{ pathname: `/job-tpls/${record.id}/clone` }}>{t('common:btn.clone')}</Link>
+              <Link to={{ pathname: `/job-tpls/${record.id}/clone`, search: `gid=${record.group_id}` }}>{t('common:btn.clone')}</Link>
               <Divider type='vertical' />
               <Popconfirm
                 title={<div style={{ width: 100 }}>{t('common:confirm.delete')}</div>}
@@ -216,7 +216,7 @@ const index = (_props: any) => {
               </Col>
               {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={10} className='textAlignRight'>
-                  <Link to={{ pathname: `/job-tpls/add` }}>
+                  <Link to={{ pathname: `/job-tpls/add`, search: `gid=${gids}` }}>
                     <Button style={{ marginRight: 10 }} type='primary'>
                       {t('tpl.create')}
                     </Button>
