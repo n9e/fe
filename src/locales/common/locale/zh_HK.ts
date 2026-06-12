@@ -94,6 +94,7 @@ const zh_HK = {
     preview: '數據源預覽',
     empty_modal: {
       title: '暫無數據源配置，請聯絡管理員去新增數據源',
+      title_with_types: '當前僅支援 {{types}} 數據源類型，其他數據源類型暫不支援。請聯絡管理員去新增數據源',
       btn1: '前往配置',
       btn2: '知道了',
     },

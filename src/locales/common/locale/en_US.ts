@@ -95,6 +95,8 @@ const en_US = {
     preview: 'Datasource preview',
     empty_modal: {
       title: 'Please contact the administrator to configure the datasource',
+      title_with_types:
+        'Currently only supports {{types}} datasource types. Other datasource types are not supported yet. Please contact the administrator to configure the datasource',
       btn1: 'Go to configure',
       btn2: 'OK',
     },

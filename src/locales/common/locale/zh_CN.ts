@@ -94,6 +94,7 @@ const zh_CN = {
     preview: '数据源预览',
     empty_modal: {
       title: '暂无数据源配置，请联系管理员去添加数据源',
+      title_with_types: '当前仅支持 {{types}} 数据源类型，其他数据源类型暂不支持。请联系管理员去添加数据源',
       btn1: '前往配置',
       btn2: '知道了',
     },
