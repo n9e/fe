@@ -131,9 +131,17 @@ export function AiButton(props: {
   return <AiButtonContent {...props} />;
 }
 
-export function CustomAiButtonWrap({ children, ...rest }: { children: React.ReactElement } & Record<string, any>) {
+export function CustomAiButtonWrap({
+  children,
+  queryAction,
+  queryPageFrom,
+  promptList,
+  onExecuteQueryForQueryContent,
+  ...rest
+}: // 这里 any 是因为作为 Wrap 会接受很多未知的 props，暂时不想一个个列举
+{ children: React.ReactElement } & Record<string, any>) {
   if (IS_ENT) {
-    const handleEntClick = useAiEntClickHandler();
+    const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList, onExecuteQueryForQueryContent });
 
     return <span {...rest}>{React.cloneElement(children, { onClick: handleEntClick } as any)}</span>;
   }
