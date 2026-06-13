@@ -18,6 +18,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import classNames from 'classnames';
+import { getUpdateByColumnFilterProps } from './columns';
 import './style.less';
 
 const actionIconMap = {
@@ -199,15 +200,36 @@ function RowActionCell({ actions }: { actions: RowActions }) {
   );
 }
 
+function injectColumnFilters<RecordType extends object>(
+  columns: ColumnsType<RecordType> | undefined,
+  dataSource: readonly RecordType[] | undefined,
+): ColumnsType<RecordType> | undefined {
+  if (!columns) return columns;
+
+  return columns.map((column) => {
+    if ('children' in column && column.children) {
+      return {
+        ...column,
+        children: injectColumnFilters(column.children as ColumnsType<RecordType>, dataSource),
+      };
+    }
+
+    return {
+      ...column,
+      ...getUpdateByColumnFilterProps(column as ColumnType<RecordType>, dataSource),
+    };
+  }) as ColumnsType<RecordType>;
+}
+
 /**
  * Thin pass-through wrapper over antd Table.
  * Forwards all TableProps; pass `rowActions` to auto-render the action column.
  * Visual baseline (sort/filter icons, fixed-column bg, …) lives in global theme/table.less.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, ...rest } = props;
 
-  let finalColumns: ColumnsType<RecordType> | undefined = columns;
+  let finalColumns: ColumnsType<RecordType> | undefined = injectColumnFilters(columns, Array.isArray(dataSource) ? dataSource : undefined);
   if (rowActions) {
     const opColumn: ColumnType<RecordType> = {
       title: '操作',
@@ -220,8 +242,8 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
         return cfg ? <RowActionCell actions={cfg} /> : null;
       },
     };
-    finalColumns = [...(columns || []), opColumn];
+    finalColumns = [...(finalColumns || []), opColumn];
   }
 
-  return <Table<RecordType> {...rest} columns={finalColumns} className={classNames('fc-enhanced-table', className)} />;
+  return <Table<RecordType> {...rest} dataSource={dataSource} columns={finalColumns} className={classNames('fc-enhanced-table', className)} />;
 }

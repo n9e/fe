@@ -11,7 +11,7 @@ import AuthorizationWrapper, { useIsAuthorized } from '@/components/Authorizatio
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
-import { tagsColumn } from '@/components/EnhancedTable/columns';
+import { tagsColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import { RuleType } from './types';
 import Import from './Import';
@@ -224,7 +224,7 @@ export default function index(props: Props) {
               );
             },
           }),
-          {
+          updateByColumn({
             title: t('common:table.update_by'),
             dataIndex: 'updated_by',
             key: 'updated_by',
@@ -235,7 +235,7 @@ export default function index(props: Props) {
               }
               return value;
             },
-          },
+          }),
         ]}
         pagination={pagination}
         rowActions={(record) => ({

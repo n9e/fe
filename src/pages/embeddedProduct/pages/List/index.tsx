@@ -12,6 +12,7 @@ import { arrayMoveImmutable } from 'array-move';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
@@ -75,10 +76,10 @@ export default function Index() {
           return !val ? t('common:public') : t('common:private');
         },
       },
-      {
+      updateByColumn({
         title: <span style={{ whiteSpace: 'nowrap' }}>{t('common:table.update_by')}</span>,
         dataIndex: 'update_by',
-      },
+      }),
       {
         title: t('common:table.update_at'),
         dataIndex: 'update_at',

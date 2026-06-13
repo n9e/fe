@@ -24,6 +24,7 @@ import { Copy, Pencil } from 'lucide-react';
 import { ColumnType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
 import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
 import EllipsisText from '@/components/EllipsisText';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
@@ -132,10 +133,11 @@ export default function index(props: Props) {
       ellipsis: { showTitle: false },
       render: (val) => <EllipsisText text={val} />,
     },
-    {
+    updateByColumn({
       title: t('common:table.update_by'),
       dataIndex: 'updated_by',
       key: 'updated_by',
+      filterMode: 'none',
       render: (value) => {
         if (!value) return '-';
         if (value === 'system') {
@@ -143,7 +145,7 @@ export default function index(props: Props) {
         }
         return value;
       },
-    },
+    }),
   ];
 
   const { run: queryChange } = useDebounceFn(
