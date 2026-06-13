@@ -67,6 +67,47 @@ export interface EnhancedTableProps<RecordType> extends TableProps<RecordType> {
   actionColumn?: Partial<ColumnType<RecordType>>;
 }
 
+type EnabledStatusFilterValue = boolean | number | string;
+type EnabledStatusValue = EnabledStatusFilterValue | null | undefined;
+
+export interface EnabledStatusColumnOptions<ValueType extends EnabledStatusValue = EnabledStatusValue> {
+  title: React.ReactNode;
+  dataIndex: ColumnType<any>['dataIndex'];
+  enabledText: React.ReactNode;
+  disabledText: React.ReactNode;
+  enabledValue: EnabledStatusFilterValue;
+  disabledValue: EnabledStatusFilterValue;
+  getValue?: (record: any) => ValueType;
+  sorter?: ColumnType<any>['sorter'];
+  onFilter?: ColumnType<any>['onFilter'] | false;
+}
+
+function getColumnValue<ValueType extends EnabledStatusValue>(record: any, dataIndex: ColumnType<any>['dataIndex']): ValueType {
+  if (Array.isArray(dataIndex)) {
+    return dataIndex.reduce((current, key) => current?.[key], record) as ValueType;
+  }
+  return record[dataIndex as keyof typeof record] as ValueType;
+}
+
+export function getEnabledStatusColumn<ValueType extends EnabledStatusValue = EnabledStatusValue>(
+  options: EnabledStatusColumnOptions<ValueType>,
+): Pick<ColumnType<any>, 'title' | 'dataIndex' | 'sorter' | 'filters' | 'onFilter'> {
+  const { title, dataIndex, enabledText, disabledText, enabledValue, disabledValue, getValue, sorter, onFilter } = options;
+  const readValue = (record: any) => (getValue ? getValue(record) : getColumnValue<ValueType>(record, dataIndex));
+  const rank = (value: ValueType) => (value === enabledValue ? 0 : value === disabledValue ? 1 : 2);
+
+  return {
+    title,
+    dataIndex,
+    sorter: sorter ?? ((a, b) => rank(readValue(a)) - rank(readValue(b))),
+    filters: [
+      { text: enabledText, value: enabledValue },
+      { text: disabledText, value: disabledValue },
+    ],
+    ...(onFilter === false ? {} : { onFilter: onFilter ?? ((value, record) => readValue(record) === value) }),
+  };
+}
+
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
 
 function ActionButton({ action, className, withIcon }: { action: RowAction; className: string; withIcon?: boolean }) {

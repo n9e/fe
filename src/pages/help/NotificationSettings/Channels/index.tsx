@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Switch, Space, Button, Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { getNotifyChannels, putNotifyChannels } from '../services';
 import { ChannelType } from '../types';
@@ -75,15 +75,16 @@ export default function Channels() {
             key: 'ident',
           },
           {
-            title: t('channels.enabled'),
-            dataIndex: 'hide',
+            ...getEnabledStatusColumn({
+              title: t('channels.enabled'),
+              dataIndex: 'hide',
+              enabledText: t('channels.enabled'),
+              disabledText: t('disabled'),
+              enabledValue: false,
+              disabledValue: true,
+            }),
             key: 'hide',
-            sorter: (a, b) => Number(a.hide) - Number(b.hide),
-            filters: [
-              { text: t('channels.enabled'), value: false },
-              { text: t('disabled'), value: true },
-            ],
-            onFilter: (value, record) => record.hide === value,
+
             render: (val: boolean, record) => {
               return (
                 <Switch
