@@ -17,7 +17,7 @@ import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
@@ -251,8 +251,15 @@ export default function AlertRules(props: Props) {
     readonly
       ? [
           {
-            title: t('table.disabled'),
-            dataIndex: 'disabled',
+            ...getEnabledStatusColumn({
+              title: t('table.disabled'),
+              dataIndex: 'disabled',
+              enabledText: t('filter_disabled.0'),
+              disabledText: t('filter_disabled.1'),
+              enabledValue: 0,
+              disabledValue: 1,
+            }),
+
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === AlertRuleStatus.Enable ? 'success' : 'error'}>
@@ -264,8 +271,15 @@ export default function AlertRules(props: Props) {
         ]
       : ([
           {
-            title: t('table.disabled'),
-            dataIndex: 'disabled',
+            ...getEnabledStatusColumn({
+              title: t('table.disabled'),
+              dataIndex: 'disabled',
+              enabledText: t('filter_disabled.0'),
+              disabledText: t('filter_disabled.1'),
+              enabledValue: 0,
+              disabledValue: 1,
+            }),
+
             render: (disabled, record) => (
               <Switch
                 checked={disabled === AlertRuleStatus.Enable}

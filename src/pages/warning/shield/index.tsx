@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 
 import Tags from '@/components/TableTags/Tags';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
@@ -237,8 +237,15 @@ const Shield: React.FC = () => {
         dataIndex: 'update_by',
       }),
       {
-        title: t('common:table.enabled'),
-        dataIndex: 'disabled',
+        ...getEnabledStatusColumn({
+          title: t('common:table.enabled'),
+          dataIndex: 'disabled',
+          enabledText: t('filter_disabled.0'),
+          disabledText: t('filter_disabled.1'),
+          enabledValue: 0,
+          disabledValue: 1,
+        }),
+
         render: (disabled, record) => (
           <Switch
             checked={disabled === strategyStatus.Enable}

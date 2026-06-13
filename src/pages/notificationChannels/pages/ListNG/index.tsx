@@ -10,7 +10,7 @@ import moment from 'moment';
 import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { updateByColumn } from '@/components/EnhancedTable/columns';
 
 import { NS, NOTIFICATION_CHANNEL_TYPES } from '../../constants';
@@ -271,9 +271,15 @@ export default function index() {
                     },
                   },
                   {
-                    title: t('common:table.enabled'),
+                    ...getEnabledStatusColumn({
+                      title: t('common:table.enabled'),
+                      dataIndex: 'enable',
+                      enabledText: t('common:table.enabled'),
+                      disabledText: t('disabled'),
+                      enabledValue: true,
+                      disabledValue: false,
+                    }),
                     width: 100,
-                    dataIndex: 'enable',
                     render: (val, record) => (
                       <Switch
                         checked={val}

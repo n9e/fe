@@ -6,7 +6,7 @@ import { ColumnProps } from 'antd/es/table';
 import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
@@ -156,21 +156,15 @@ const TableSource = (props: IPropsType) => {
       },
     },
     {
-      title: t('status.title'),
+      ...getEnabledStatusColumn({
+        title: t('status.title'),
+        dataIndex: 'status',
+        enabledText: t('status.enabled'),
+        disabledText: t('status.disabled'),
+        enabledValue: 'enabled',
+        disabledValue: 'disabled',
+      }),
       width: 300,
-      dataIndex: 'status',
-      sorter: (a, b) => localeCompare(a.status, b.status),
-      filters: [
-        {
-          text: t('status.enabled'),
-          value: 'enabled',
-        },
-        {
-          text: t('status.disabled'),
-          value: 'disabled',
-        },
-      ],
-      onFilter: (value: string, record) => record.status === value,
       render: (text) => {
         return text === 'enabled' ? (
           <>

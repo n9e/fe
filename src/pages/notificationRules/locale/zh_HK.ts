@@ -54,6 +54,7 @@ const zh_HK = {
   },
   user_group_id_invalid_tip: '授權團隊不存在',
   channel_invalid_tip: '通知媒介不存在',
+  disabled: '停用',
   pipeline_configuration: {
     title: '事件處理工作流',
     name_placeholder: '請選擇事件處理工作流',

@@ -6,6 +6,7 @@ const zh_CN = {
   llm_config_is_default: '默认',
   use_case: '用途',
   enabled: '启用',
+  disabled: '停用',
   add_btn: '新建 Agent',
   cannot_delete_when_enabled: '启用状态的 Agent 无法删除',
   form: {
