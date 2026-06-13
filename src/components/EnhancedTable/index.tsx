@@ -1,23 +1,9 @@
 import React from 'react';
 import { Table, Dropdown, Menu, Button, Tooltip } from 'antd';
 import type { TableProps, ColumnType, ColumnsType } from 'antd/lib/table';
-import {
-  CheckCircle,
-  Copy,
-  ExternalLink,
-  Eye,
-  Link as LinkIcon,
-  MoreVertical,
-  Network,
-  Pencil,
-  Play,
-  Search,
-  Settings,
-  ShieldCheck,
-  Sparkles,
-  Trash2,
-} from 'lucide-react';
+import { CheckCircle, Copy, ExternalLink, Eye, Link as LinkIcon, MoreVertical, Network, Pencil, Play, Plus, Search, Settings, ShieldCheck, Sparkles, Trash2 } from 'lucide-react';
 import classNames from 'classnames';
+import { getUpdateByColumnFilterProps } from './columns';
 import './style.less';
 
 const actionIconMap = {
@@ -30,6 +16,7 @@ const actionIconMap = {
   copy: Copy,
   delete: Trash2,
   run: Play,
+  create: Plus,
   search: Search,
   open: ExternalLink,
   link: LinkIcon,
@@ -44,6 +31,7 @@ export interface RowAction {
   icon?: ActionIconName;
   onClick?: (e: React.MouseEvent) => void;
   disabled?: boolean;
+  loading?: boolean;
   danger?: boolean;
   /** false to hide this action (e.g. by permission) */
   visible?: boolean;
@@ -111,21 +99,65 @@ export function getEnabledStatusColumn<ValueType extends EnabledStatusValue = En
 
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
 
-function ActionButton({ action, className, withIcon }: { action: RowAction; className: string; withIcon?: boolean }) {
-  const Icon = withIcon && action.icon ? actionIconMap[action.icon] : undefined;
+const fallbackInlineIconMap: Record<string, ActionIconName> = {
+  query: 'search',
+  trace: 'search',
+  executions: 'view',
+  execRecord: 'view',
+  create: 'create',
+  config: 'settings',
+  execute: 'run',
+  exec: 'run',
+  fire: 'run',
+  'ai-inspection': 'ai',
+};
+
+function resolveActionIcon(action: RowAction, fallbackToKey = false) {
+  const iconName = action.icon ?? (fallbackToKey && action.key ? fallbackInlineIconMap[action.key] : undefined);
+  return iconName ? actionIconMap[iconName] : undefined;
+}
+
+function getInlineTooltipTitle(action: RowAction) {
+  if (!action.tooltip) return action.text;
+  if (!action.text) return action.tooltip;
+  return (
+    <>
+      {action.text}
+      <br />
+      {action.tooltip}
+    </>
+  );
+}
+
+function ActionButton({ action, className, withIcon, iconOnly }: { action: RowAction; className: string; withIcon?: boolean; iconOnly?: boolean }) {
+  const Icon = withIcon ? resolveActionIcon(action, iconOnly) : undefined;
   return (
     <Button
       type='link'
-      className={classNames(className, { 'is-danger': action.danger })}
+      className={classNames(className, { 'is-danger': action.danger, 'is-icon-only': iconOnly })}
       disabled={action.disabled}
+      loading={action.loading}
       icon={Icon ? <Icon className='fc-table-action-menu-icon' /> : undefined}
+      aria-label={typeof action.text === 'string' ? action.text : undefined}
       onClick={(e) => {
         e.stopPropagation();
         action.onClick?.(e);
       }}
     >
-      {action.text}
+      {iconOnly ? null : action.text}
     </Button>
+  );
+}
+
+function renderInlineAction(action: RowAction, key: string) {
+  if (action.node) {
+    return <React.Fragment key={key}>{action.node}</React.Fragment>;
+  }
+  const btn = <ActionButton action={action} className='fc-table-action-inline-btn' withIcon iconOnly />;
+  return (
+    <Tooltip key={key} title={getInlineTooltipTitle(action)}>
+      <span className='fc-table-action-inline-btn-wrap'>{btn}</span>
+    </Tooltip>
   );
 }
 
@@ -168,13 +200,7 @@ function RowActionCell({ actions }: { actions: RowActions }) {
 
   return (
     <div className='fc-table-action-cell'>
-      {inline.map((a, i) =>
-        a.node ? (
-          <React.Fragment key={a.key ?? `inline-${i}`}>{a.node}</React.Fragment>
-        ) : (
-          <ActionButton key={a.key ?? `inline-${i}`} action={a} className='fc-table-action-inline-btn' />
-        ),
-      )}
+      {inline.map((a, i) => renderInlineAction(a, a.key ?? `inline-${i}`))}
       {menu.length > 0 && (
         <Dropdown
           trigger={['click']}
@@ -188,16 +214,32 @@ function RowActionCell({ actions }: { actions: RowActions }) {
             </Menu>
           }
         >
-          <Button
-            type='text'
-            className='fc-table-action-trigger'
-            icon={<MoreVertical size={16} />}
-            onClick={(e) => e.stopPropagation()}
-          />
+          <Button type='text' className='fc-table-action-trigger' icon={<MoreVertical size={16} />} onClick={(e) => e.stopPropagation()} />
         </Dropdown>
       )}
     </div>
   );
+}
+
+function injectColumnFilters<RecordType extends object>(
+  columns: ColumnsType<RecordType> | undefined,
+  dataSource: readonly RecordType[] | undefined,
+): ColumnsType<RecordType> | undefined {
+  if (!columns) return columns;
+
+  return columns.map((column) => {
+    if ('children' in column && column.children) {
+      return {
+        ...column,
+        children: injectColumnFilters(column.children as ColumnsType<RecordType>, dataSource),
+      };
+    }
+
+    return {
+      ...column,
+      ...getUpdateByColumnFilterProps(column as ColumnType<RecordType>, dataSource),
+    };
+  }) as ColumnsType<RecordType>;
 }
 
 /**
@@ -206,9 +248,9 @@ function RowActionCell({ actions }: { actions: RowActions }) {
  * Visual baseline (sort/filter icons, fixed-column bg, …) lives in global theme/table.less.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, ...rest } = props;
 
-  let finalColumns: ColumnsType<RecordType> | undefined = columns;
+  let finalColumns: ColumnsType<RecordType> | undefined = injectColumnFilters(columns, Array.isArray(dataSource) ? dataSource : undefined);
   if (rowActions) {
     const opColumn: ColumnType<RecordType> = {
       title: '操作',
@@ -221,8 +263,8 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
         return cfg ? <RowActionCell actions={cfg} /> : null;
       },
     };
-    finalColumns = [...(columns || []), opColumn];
+    finalColumns = [...(finalColumns || []), opColumn];
   }
 
-  return <Table<RecordType> {...rest} columns={finalColumns} className={classNames('fc-enhanced-table', className)} />;
+  return <Table<RecordType> {...rest} dataSource={dataSource} columns={finalColumns} className={classNames('fc-enhanced-table', className)} />;
 }

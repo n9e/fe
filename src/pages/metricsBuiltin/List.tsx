@@ -27,6 +27,7 @@ import Markdown from '@/components/Markdown';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
 import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
 import EllipsisText from '@/components/EllipsisText';
 import Tags from '@/components/TableTags/Tags';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -244,10 +245,11 @@ export default function index() {
         return <EllipsisText text={value} />;
       },
     },
-    {
+    updateByColumn({
       title: t('common:table.update_by'),
       dataIndex: 'updated_by',
       key: 'updated_by',
+      filterMode: 'none',
       render: (value) => {
         if (!value) return '-';
         if (value === 'system') {
@@ -255,7 +257,7 @@ export default function index() {
         }
         return value;
       },
-    },
+    }),
   ];
 
   const { run: queryChange } = useDebounceFn(
