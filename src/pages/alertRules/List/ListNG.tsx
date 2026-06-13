@@ -253,6 +253,12 @@ export default function AlertRules(props: Props) {
           {
             title: t('table.disabled'),
             dataIndex: 'disabled',
+            sorter: (a, b) => a.disabled - b.disabled,
+            filters: [
+              { text: t('filter_disabled.0'), value: 0 },
+              { text: t('filter_disabled.1'), value: 1 },
+            ],
+            onFilter: (value, record) => record.disabled === value,
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === AlertRuleStatus.Enable ? 'success' : 'error'}>
@@ -266,6 +272,12 @@ export default function AlertRules(props: Props) {
           {
             title: t('table.disabled'),
             dataIndex: 'disabled',
+            sorter: (a, b) => a.disabled - b.disabled,
+            filters: [
+              { text: t('filter_disabled.0'), value: 0 },
+              { text: t('filter_disabled.1'), value: 1 },
+            ],
+            onFilter: (value, record) => record.disabled === value,
             render: (disabled, record) => (
               <Switch
                 checked={disabled === AlertRuleStatus.Enable}

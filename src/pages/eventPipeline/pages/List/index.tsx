@@ -203,6 +203,12 @@ export default function List() {
             dataIndex: 'disabled',
             key: 'disabled',
             width: 100,
+            sorter: (a, b) => Number(a.disabled) - Number(b.disabled),
+            filters: [
+              { text: t('disabled.false'), value: false },
+              { text: t('disabled.true'), value: true },
+            ],
+            onFilter: (value, record) => record.disabled === value,
             render: (value) => {
               return (
                 <Tags

@@ -90,6 +90,12 @@ export default function List() {
                   {
                     dataIndex: 'enabled',
                     title: t('enabled'),
+                    sorter: (a, b) => Number(a.enabled) - Number(b.enabled),
+                    filters: [
+                      { text: t('enabled'), value: true },
+                      { text: t('disabled'), value: false },
+                    ],
+                    onFilter: (value, record) => record.enabled === value,
                     render: (val, record) => (
                       <Switch
                         size='small'

@@ -177,6 +177,12 @@ const PageTable: React.FC<Props> = ({ gids }) => {
     {
       title: t('disabled'),
       dataIndex: 'disabled',
+      sorter: (a, b) => a.disabled - b.disabled,
+      filters: [
+        { text: t('filter_disabled.0'), value: 0 },
+        { text: t('filter_disabled.1'), value: 1 },
+      ],
+      onFilter: (value, record) => record.disabled === value,
       render: (disabled, record) => (
         <Switch
           checked={disabled === strategyStatus.Enable}

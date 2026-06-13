@@ -28,7 +28,7 @@ const en_US = {
     'not-support': 'Not support',
   },
   status: {
-    title: 'Status',
+    title: 'Enabled',
     enabled: 'Enabled',
     disabled: 'Disabled',
   },

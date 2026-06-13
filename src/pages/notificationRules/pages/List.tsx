@@ -182,6 +182,12 @@ export default function List() {
               title: t('common:table.enabled'),
               width: 100,
               dataIndex: 'enable',
+              sorter: (a, b) => Number(a.enable) - Number(b.enable),
+              filters: [
+                { text: t('common:table.enabled'), value: true },
+                { text: t('disabled'), value: false },
+              ],
+              onFilter: (value, record) => record.enable === value,
               render: (val, record) => (
                 <Switch
                   checked={val}
