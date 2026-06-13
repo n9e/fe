@@ -15,7 +15,7 @@ import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { userColumn } from '@/components/EnhancedTable/columns';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
@@ -227,14 +227,15 @@ const Subscribe = (props: Props) => {
     readonly
       ? [
           {
-            title: t('common:table.enabled'),
-            dataIndex: 'disabled',
-            sorter: (a, b) => a.disabled - b.disabled,
-            filters: [
-              { text: t('filter_disabled.0'), value: 0 },
-              { text: t('filter_disabled.1'), value: 1 },
-            ],
-            onFilter: (value, record) => record.disabled === value,
+            ...getEnabledStatusColumn({
+              title: t('common:table.enabled'),
+              dataIndex: 'disabled',
+              enabledText: t('filter_disabled.0'),
+              disabledText: t('filter_disabled.1'),
+              enabledValue: 0,
+              disabledValue: 1,
+            }),
+
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === strategyStatus.Enable ? 'success' : 'error'}>
@@ -246,14 +247,15 @@ const Subscribe = (props: Props) => {
         ]
       : [
           {
-            title: t('common:table.enabled'),
-            dataIndex: 'disabled',
-            sorter: (a, b) => a.disabled - b.disabled,
-            filters: [
-              { text: t('filter_disabled.0'), value: 0 },
-              { text: t('filter_disabled.1'), value: 1 },
-            ],
-            onFilter: (value, record) => record.disabled === value,
+            ...getEnabledStatusColumn({
+              title: t('common:table.enabled'),
+              dataIndex: 'disabled',
+              enabledText: t('filter_disabled.0'),
+              disabledText: t('filter_disabled.1'),
+              enabledValue: 0,
+              disabledValue: 1,
+            }),
+
             render: (disabled, record: any) => (
               <Switch
                 checked={disabled === strategyStatus.Enable}
