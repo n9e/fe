@@ -120,10 +120,11 @@ const zh_CN = {
 
   types_search_placeholder: '搜索类型',
   name_search_placeholder: '搜索名称',
+  disabled: '停用',
   status_select: {
     placeholder: '状态',
     enable: '启用',
-    disable: '禁用',
+    disable: '停用',
   },
   types_select_placeholder: '类型',
   delete_disable_first: '当前类型未禁用，无法删除',

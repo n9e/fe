@@ -28,7 +28,7 @@ const ru_RU = {
     'not-support': 'Не поддерживается',
   },
   status: {
-    title: 'Статус',
+    title: 'Включено',
     enabled: 'Включено',
     disabled: 'Отключено',
   },

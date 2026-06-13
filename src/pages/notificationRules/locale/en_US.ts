@@ -58,6 +58,7 @@ const en_US = {
   },
   user_group_id_invalid_tip: 'Authorized team does not exist',
   channel_invalid_tip: 'Notification medium does not exist',
+  disabled: 'Disable',
   pipeline_configuration: {
     title: 'Event workflow',
     name_placeholder: 'Please select event workflow',

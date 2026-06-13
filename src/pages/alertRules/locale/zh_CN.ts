@@ -326,7 +326,7 @@ const zh_CN = {
   filter_disabled: {
     placeholder: '启用状态',
     0: '启用',
-    1: '未启用',
+    1: '停用',
   },
   var_config: {
     enable: '启用变量',

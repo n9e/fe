@@ -122,6 +122,12 @@ export default function ContactDrawer(props: Props) {
                 title: t('common:table.enabled'),
                 dataIndex: 'hide',
                 key: 'hide',
+                sorter: (a, b) => Number(a.hide) - Number(b.hide),
+                filters: [
+                  { text: t('common:table.enabled'), value: false },
+                  { text: t('disabled'), value: true },
+                ],
+                onFilter: (value, record) => record.hide === value,
                 render: (val: boolean, record) => {
                   return (
                     <Switch
