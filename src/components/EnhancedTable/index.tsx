@@ -11,6 +11,7 @@ import {
   Network,
   Pencil,
   Play,
+  Plus,
   Search,
   Settings,
   ShieldCheck,
@@ -31,6 +32,7 @@ const actionIconMap = {
   copy: Copy,
   delete: Trash2,
   run: Play,
+  create: Plus,
   search: Search,
   open: ExternalLink,
   link: LinkIcon,
@@ -45,6 +47,7 @@ export interface RowAction {
   icon?: ActionIconName;
   onClick?: (e: React.MouseEvent) => void;
   disabled?: boolean;
+  loading?: boolean;
   danger?: boolean;
   /** false to hide this action (e.g. by permission) */
   visible?: boolean;
@@ -111,21 +114,66 @@ export function getEnabledStatusColumn<ValueType extends EnabledStatusValue = En
 
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
 
-function ActionButton({ action, className, withIcon }: { action: RowAction; className: string; withIcon?: boolean }) {
-  const Icon = withIcon && action.icon ? actionIconMap[action.icon] : undefined;
+const fallbackInlineIconMap: Record<string, ActionIconName> = {
+  query: 'search',
+  trace: 'search',
+  executions: 'view',
+  execRecord: 'view',
+  create: 'create',
+  config: 'settings',
+  execute: 'run',
+  exec: 'run',
+  fire: 'run',
+  'ai-inspection': 'ai',
+};
+
+function resolveActionIcon(action: RowAction, fallbackToKey = false) {
+  const iconName = action.icon ?? (fallbackToKey && action.key ? fallbackInlineIconMap[action.key] : undefined);
+  if (iconName) return actionIconMap[iconName];
+  return fallbackToKey ? actionIconMap.default : undefined;
+}
+
+function getInlineTooltipTitle(action: RowAction) {
+  if (!action.tooltip) return action.text;
+  if (!action.text) return action.tooltip;
+  return (
+    <>
+      {action.text}
+      <br />
+      {action.tooltip}
+    </>
+  );
+}
+
+function ActionButton({ action, className, withIcon, iconOnly }: { action: RowAction; className: string; withIcon?: boolean; iconOnly?: boolean }) {
+  const Icon = withIcon ? resolveActionIcon(action, iconOnly) : undefined;
   return (
     <Button
       type='link'
-      className={classNames(className, { 'is-danger': action.danger })}
+      className={classNames(className, { 'is-danger': action.danger, 'is-icon-only': iconOnly })}
       disabled={action.disabled}
+      loading={action.loading}
       icon={Icon ? <Icon className='fc-table-action-menu-icon' /> : undefined}
+      aria-label={typeof action.text === 'string' ? action.text : undefined}
       onClick={(e) => {
         e.stopPropagation();
         action.onClick?.(e);
       }}
     >
-      {action.text}
+      {iconOnly ? null : action.text}
     </Button>
+  );
+}
+
+function renderInlineAction(action: RowAction, key: string) {
+  if (action.node) {
+    return <React.Fragment key={key}>{action.node}</React.Fragment>;
+  }
+  const btn = <ActionButton action={action} className='fc-table-action-inline-btn' withIcon iconOnly />;
+  return (
+    <Tooltip key={key} title={getInlineTooltipTitle(action)}>
+      <span className='fc-table-action-inline-btn-wrap'>{btn}</span>
+    </Tooltip>
   );
 }
 
@@ -169,11 +217,7 @@ function RowActionCell({ actions }: { actions: RowActions }) {
   return (
     <div className='fc-table-action-cell'>
       {inline.map((a, i) =>
-        a.node ? (
-          <React.Fragment key={a.key ?? `inline-${i}`}>{a.node}</React.Fragment>
-        ) : (
-          <ActionButton key={a.key ?? `inline-${i}`} action={a} className='fc-table-action-inline-btn' />
-        ),
+        renderInlineAction(a, a.key ?? `inline-${i}`),
       )}
       {menu.length > 0 && (
         <Dropdown
