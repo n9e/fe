@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import PageLayout, { HelpLink } from '@/components/pageLayout';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 
 import { getNotifyContacts, putNotifyContacts } from '../services';
 import { ContactType } from '../types';
@@ -65,9 +65,16 @@ export default function Channels() {
                 key: 'ident',
               },
               {
-                title: t('common:table.enabled'),
-                dataIndex: 'hide',
+                ...getEnabledStatusColumn({
+                  title: t('common:table.enabled'),
+                  dataIndex: 'hide',
+                  enabledText: t('common:table.enabled'),
+                  disabledText: t('disabled'),
+                  enabledValue: false,
+                  disabledValue: true,
+                }),
                 key: 'hide',
+
                 render: (val: boolean, record) => {
                   return (
                     <Switch

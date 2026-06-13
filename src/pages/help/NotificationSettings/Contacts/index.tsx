@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Switch, Space, Button, Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { getNotifyContacts, putNotifyContacts } from '../services';
 import { ContactType } from '../types';
@@ -75,9 +75,16 @@ export default function Channels() {
             key: 'ident',
           },
           {
-            title: t('channels.enabled'),
-            dataIndex: 'hide',
+            ...getEnabledStatusColumn({
+              title: t('channels.enabled'),
+              dataIndex: 'hide',
+              enabledText: t('channels.enabled'),
+              disabledText: t('disabled'),
+              enabledValue: false,
+              disabledValue: true,
+            }),
             key: 'hide',
+
             render: (val: boolean, record) => {
               return (
                 <Switch

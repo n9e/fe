@@ -16,7 +16,7 @@ const zh_CN = {
   filter_disabled: {
     placeholder: '启用状态',
     0: '启用',
-    1: '未启用',
+    1: '停用',
   },
   batch: {
     must_select_one: '未选择任何规则',

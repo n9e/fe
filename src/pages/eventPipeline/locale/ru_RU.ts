@@ -33,7 +33,7 @@ const ru_RU = {
   },
   disabled: {
     form_label: 'Включить',
-    label: 'Статус',
+    label: 'Включить',
     false: 'Включено',
     true: 'Отключено',
   },

@@ -6,7 +6,7 @@ import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../constants';
@@ -103,8 +103,15 @@ export default function List() {
                     title: t('model'),
                   },
                   {
-                    dataIndex: 'enabled',
-                    title: t('enabled'),
+                    ...getEnabledStatusColumn({
+                      title: t('enabled'),
+                      dataIndex: 'enabled',
+                      enabledText: t('enabled'),
+                      disabledText: t('disabled'),
+                      enabledValue: true,
+                      disabledValue: false,
+                    }),
+
                     render: (val, record) => (
                       <Switch
                         size='small'

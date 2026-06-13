@@ -33,7 +33,7 @@ const ja_JP = {
   },
   disabled: {
     form_label: '有効化',
-    label: 'ステータス',
+    label: '有効',
     false: '有効',
     true: '無効',
   },

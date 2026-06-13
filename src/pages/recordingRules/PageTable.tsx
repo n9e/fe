@@ -12,7 +12,7 @@ import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { tagsColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import EditModal from './components/editModal';
@@ -175,8 +175,15 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       },
     }),
     {
-      title: t('disabled'),
-      dataIndex: 'disabled',
+      ...getEnabledStatusColumn({
+        title: t('disabled'),
+        dataIndex: 'disabled',
+        enabledText: t('filter_disabled.0'),
+        disabledText: t('filter_disabled.1'),
+        enabledValue: 0,
+        disabledValue: 1,
+      }),
+
       render: (disabled, record) => (
         <Switch
           checked={disabled === strategyStatus.Enable}
