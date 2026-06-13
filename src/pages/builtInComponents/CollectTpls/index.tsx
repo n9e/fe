@@ -7,6 +7,7 @@ import { useDebounceEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { HelpLink } from '@/components/pageLayout';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -140,7 +141,7 @@ export default function index(props: Props) {
             dataIndex: 'name',
             key: 'name',
           },
-          {
+          updateByColumn({
             title: t('common:table.update_by'),
             dataIndex: 'updated_by',
             key: 'updated_by',
@@ -151,7 +152,7 @@ export default function index(props: Props) {
               }
               return value;
             },
-          },
+          }),
         ]}
         pagination={pagination}
         rowActions={(record: any) => ({

@@ -11,7 +11,7 @@ import Export from '@/pages/dashboard/List/Export';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { HelpLink } from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
-import { tagsColumn } from '@/components/EnhancedTable/columns';
+import { tagsColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import EllipsisText from '@/components/EllipsisText';
 import Tags from '@/components/TableTags/Tags';
 import { getPayloads, deletePayloads } from '../services';
@@ -250,7 +250,7 @@ export default function index(props: Props) {
             ellipsis: { showTitle: false },
             render: (val) => <EllipsisText text={val} />,
           },
-          {
+          updateByColumn({
             title: t('common:table.update_by'),
             dataIndex: 'updated_by',
             key: 'updated_by',
@@ -261,7 +261,7 @@ export default function index(props: Props) {
               }
               return value;
             },
-          },
+          }),
         ]}
         pagination={pagination}
       />

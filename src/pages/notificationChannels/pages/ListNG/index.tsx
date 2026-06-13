@@ -11,6 +11,7 @@ import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
 import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
 
 import { NS, NOTIFICATION_CHANNEL_TYPES } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
@@ -258,10 +259,10 @@ export default function index() {
                       );
                     },
                   },
-                  {
+                  updateByColumn({
                     title: t('common:table.update_by'),
                     dataIndex: 'update_by',
-                  },
+                  }),
                   {
                     title: t('common:table.update_at'),
                     dataIndex: 'update_at',

@@ -25,7 +25,7 @@ import { useHistory, Link } from 'react-router-dom';
 
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable from '@/components/EnhancedTable';
-import { dateColumn } from '@/components/EnhancedTable/columns';
+import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
@@ -232,10 +232,10 @@ const Shield: React.FC = () => {
         },
       },
       dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
-      {
+      updateByColumn({
         title: t('common:table.update_by'),
         dataIndex: 'update_by',
-      },
+      }),
       {
         title: t('common:table.enabled'),
         dataIndex: 'disabled',

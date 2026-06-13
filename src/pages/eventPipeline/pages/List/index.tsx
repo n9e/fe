@@ -8,7 +8,7 @@ import _ from 'lodash';
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable from '@/components/EnhancedTable';
-import { tagsColumn, userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { tagsColumn, updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../../constants';
@@ -69,6 +69,31 @@ export default function List() {
   useEffect(() => {
     featchData();
   }, []);
+
+  const filteredData = _.filter(data.list, (item) => {
+    let pass = true;
+    if (filter?.search) {
+      if (!_.includes(item.name, filter.search)) {
+        pass = false;
+      }
+    }
+    if (filter?.use_case) {
+      if (item.use_case !== filter.use_case) {
+        pass = false;
+      }
+    }
+    if (filter?.trigger_mode) {
+      if (item.trigger_mode !== filter.trigger_mode) {
+        pass = false;
+      }
+    }
+    if (filter?.disabled !== undefined) {
+      if (item.disabled !== filter.disabled) {
+        pass = false;
+      }
+    }
+    return pass;
+  });
 
   return (
     <>
@@ -215,33 +240,10 @@ export default function List() {
             },
           },
           tagsColumn({ title: t('teams'), dataIndex: 'team_names', maxWidth: 180 }),
-          userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
+          updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
           dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
         ]}
-        dataSource={_.filter(data.list, (item) => {
-          let pass = true;
-          if (filter?.search) {
-            if (!_.includes(item.name, filter.search)) {
-              pass = false;
-            }
-          }
-          if (filter?.use_case) {
-            if (item.use_case !== filter.use_case) {
-              pass = false;
-            }
-          }
-          if (filter?.trigger_mode) {
-            if (item.trigger_mode !== filter.trigger_mode) {
-              pass = false;
-            }
-          }
-          if (filter?.disabled !== undefined) {
-            if (item.disabled !== filter.disabled) {
-              pass = false;
-            }
-          }
-          return pass;
-        })}
+        dataSource={filteredData}
         loading={data.loading}
         pagination={pagination}
         rowSelection={{
