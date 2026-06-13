@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { tagsColumn, userColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import EllipsisText from '@/components/EllipsisText';
 
@@ -199,16 +199,17 @@ export default function List() {
             },
           },
           {
-            title: t('disabled.label'),
-            dataIndex: 'disabled',
+            ...getEnabledStatusColumn({
+              title: t('disabled.label'),
+              dataIndex: 'disabled',
+              enabledText: t('disabled.false'),
+              disabledText: t('disabled.true'),
+              enabledValue: false,
+              disabledValue: true,
+            }),
             key: 'disabled',
             width: 100,
-            sorter: (a, b) => Number(a.disabled) - Number(b.disabled),
-            filters: [
-              { text: t('disabled.false'), value: false },
-              { text: t('disabled.true'), value: true },
-            ],
-            onFilter: (value, record) => record.disabled === value,
+
             render: (value) => {
               return (
                 <Tags

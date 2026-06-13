@@ -6,7 +6,7 @@ import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
-import EnhancedTable from '@/components/EnhancedTable';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../constants';
@@ -103,14 +103,15 @@ export default function List() {
                     title: t('model'),
                   },
                   {
-                    dataIndex: 'enabled',
-                    title: t('enabled'),
-                    sorter: (a, b) => Number(a.enabled) - Number(b.enabled),
-                    filters: [
-                      { text: t('enabled'), value: true },
-                      { text: t('disabled'), value: false },
-                    ],
-                    onFilter: (value, record) => record.enabled === value,
+                    ...getEnabledStatusColumn({
+                      title: t('enabled'),
+                      dataIndex: 'enabled',
+                      enabledText: t('enabled'),
+                      disabledText: t('disabled'),
+                      enabledValue: true,
+                      disabledValue: false,
+                    }),
+
                     render: (val, record) => (
                       <Switch
                         size='small'
