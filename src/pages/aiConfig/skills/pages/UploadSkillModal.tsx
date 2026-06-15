@@ -40,7 +40,7 @@ export default function UploadSkillModal(props: Props) {
       keyboard={!submitting}
     >
       <Upload.Dragger
-        accept='.zip,.tgz,application/gzip,application/x-gzip'
+        accept='.zip,.tgz,.tar.gz,.gz,application/gzip,application/x-gzip'
         showUploadList={false}
         multiple={false}
         disabled={submitting}

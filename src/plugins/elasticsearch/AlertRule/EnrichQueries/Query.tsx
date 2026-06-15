@@ -10,6 +10,8 @@ import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import IndexPatternSelect from '@/plugins/elasticsearch/AlertRule/Queries/IndexPatternSelect';
 import DateField from '@/plugins/elasticsearch/AlertRule/Queries/DateField';
 import Value from '@/plugins/elasticsearch/AlertRule/Queries/Value';
+import LuceneInput from '@/plugins/elasticsearch/components/LuceneInput';
+
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 
@@ -136,7 +138,7 @@ export default function Query(props: Props) {
                 addonAfter='Lucene'
               >
                 <Form.Item {...field} name={[field.name, 'filter']}>
-                  <Input disabled={disabled} />
+                  <LuceneInput disabled={disabled} />
                 </Form.Item>
               </InputGroupWithFormItem>
             </Col>
