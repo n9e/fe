@@ -95,12 +95,7 @@ export function userColumn<T = any>(
   const { nickname, ...rest } = opts;
   return {
     width: 120,
-    render: (value: any, record: any) => (
-      <div>
-        <div>{value || '-'}</div>
-        {nickname && record?.[nickname] && <div className='text-soft'>{record[nickname]}</div>}
-      </div>
-    ),
+    render: (value: any, record: any) => <div>{nickname && record?.[nickname] ? <div className='text-soft'>{record[nickname]}</div> : <div>{value || '-'}</div>}</div>,
     ...rest,
   };
 }
@@ -110,12 +105,7 @@ export function updateByColumn<T = any>(opts: UpdateByColumnOptions<T>): UpdateB
   const { nickname, getValue, filterMode = 'client', onFilter, ...rest } = opts;
   return {
     width: 120,
-    render: (value: any, record: any) => (
-      <div>
-        <div>{value || '-'}</div>
-        {nickname && record?.[nickname] && <div className='text-soft'>{record[nickname]}</div>}
-      </div>
-    ),
+    render: (value: any, record: any) => <div>{nickname && record?.[nickname] ? <div className='text-soft'>{record[nickname]}</div> : <div>{value || '-'}</div>}</div>,
     ...rest,
     [UPDATE_BY_COLUMN_META]: {
       filterMode,
@@ -131,21 +121,16 @@ export function dateColumn<T = any>(
     title: React.ReactNode;
     dataIndex: ColumnType<T>['dataIndex'];
     unix?: boolean;
-    format?: [string, string];
+    format?: string;
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
-  const { unix, format = ['YYYY-MM-DD', 'HH:mm:ss'], ...rest } = opts;
+  const { unix, format = 'YYYY-MM-DD HH:mm:ss', ...rest } = opts;
   return {
-    width: 180,
+    width: 160,
     render: (value: any) => {
       if (!value) return '-';
       const m = unix ? moment.unix(value) : moment(value);
-      return (
-        <div>
-          <div>{m.format(format[0])}</div>
-          <div>{m.format(format[1])}</div>
-        </div>
-      );
+      return <div>{m.format(format)}</div>;
     },
     ...rest,
   };

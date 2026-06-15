@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
@@ -245,7 +244,7 @@ export default function AlertRules(props: Props) {
           );
         },
       },
-      dateColumn({ title: t('table.update_at'), dataIndex: 'update_at', unix: true, width: 100, sorter: (a, b) => a.update_at - b.update_at }) as any,
+      dateColumn({ title: t('table.update_at'), dataIndex: 'update_at', unix: true, sorter: (a, b) => a.update_at - b.update_at }) as any,
       userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
     ],
     readonly
