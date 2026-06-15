@@ -152,7 +152,8 @@ export default function index() {
                   dataIndex: 'name',
                   className: 'name-column',
                   render: (text: string, record: DashboardType) => {
-                    const groupName = _.find(busiGroups, { id: record.group_id })?.name;
+                    const hideBusinessGroupColumn = businessGroup.isLeaf && gids !== '-2' && gids !== '-1';
+                    const groupName = !hideBusinessGroupColumn ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
                     return (
                       <div className='flex flex-col gap-0.5'>
                         <Link
@@ -177,7 +178,7 @@ export default function index() {
                     <Tags
                       type='outline'
                       data={_.compact(_.split(text, ' '))}
-                      maxWidth={180}
+                      maxWidth={360}
                       onTagClick={(tag: string) => {
                         const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
                         if (queryItem.includes(tag)) return;

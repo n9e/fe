@@ -245,7 +245,7 @@ export default function AlertRules(props: Props) {
           );
         },
       },
-      dateColumn({ title: t('table.update_at'), dataIndex: 'update_at', unix: true, sorter: (a, b) => a.update_at - b.update_at }) as any,
+      dateColumn({ title: t('table.update_at'), dataIndex: 'update_at', unix: true }) as any,
       userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
     ],
     readonly

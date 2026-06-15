@@ -124,13 +124,19 @@ export function dateColumn<T = any>(
     format?: string;
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
-  const { unix, format = 'YYYY-MM-DD HH:mm:ss', ...rest } = opts;
+  const { unix, format = 'YYYY-MM-DD HH:mm:ss', dataIndex, ...rest } = opts;
   return {
     width: 160,
+    dataIndex,
     render: (value: any) => {
       if (!value) return '-';
       const m = unix ? moment.unix(value) : moment(value);
       return <div>{m.format(format)}</div>;
+    },
+    sorter: (a: T, b: T) => {
+      const aVal = getColumnValue(a, dataIndex);
+      const bVal = getColumnValue(b, dataIndex);
+      return (Number(aVal) || 0) - (Number(bVal) || 0);
     },
     ...rest,
   };
