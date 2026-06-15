@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useSize } from 'ahooks';
+import React, { useRef } from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -7,19 +8,13 @@ interface Props {
 export default function Panel(props: Props) {
   const { children } = props;
   const containerEleRef = useRef<HTMLDivElement>(null);
-  const [panelWidth, setPanelWidth] = useState<number>(0);
-
-  useEffect(() => {
-    if (containerEleRef.current) {
-      setPanelWidth(containerEleRef.current.clientWidth);
-    }
-  }, []);
+  const containerEleSize = useSize(containerEleRef);
 
   return (
     <div className='w-full h-full' ref={containerEleRef}>
-      {panelWidth
+      {containerEleSize?.width
         ? React.cloneElement(children as React.ReactElement, {
-            panelWidth,
+            panelWidth: containerEleSize.width,
           })
         : null}
     </div>
