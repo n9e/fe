@@ -19,6 +19,7 @@ interface Props<T = any> {
   getTooltipTitle?: (item: string | T, index: number) => string | undefined; // 返回 undefined 不显示 tooltip
   onTagClick?: (item: string | T, index: number) => void;
   popoverTitle?: React.ReactNode | ((count: number) => React.ReactNode); // 自定义 popover 标题，可接收 data.length
+  hideLabel?: boolean; // 仅展示 icon，隐藏文字内容
 }
 
 const GAP = 2;
@@ -89,7 +90,7 @@ function resolveColor<T>(color: string | ((item: string | T, index: number) => s
 }
 
 export default function Tags<T>(props: Props<T>) {
-  const { type = 'outline', icon, data, onTagClick, getKey, getLabel, getTooltipTitle, maxWidth, maxCount } = props;
+  const { type = 'outline', icon, data, onTagClick, getKey, getLabel, getTooltipTitle, maxWidth, maxCount, hideLabel } = props;
 
   const borderRadius = props.borderRadius ?? 16;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -178,8 +179,8 @@ export default function Tags<T>(props: Props<T>) {
             }}
             className={tagBaseClass}
           >
-            {icon && <span className='mr-2 flex items-center'>{resolveIcon(icon, item, i)}</span>}
-            {getItemLabel(item, i)}
+            {icon && <span className={`${hideLabel ? '' : 'mr-2'} flex items-center`}>{resolveIcon(icon, item, i)}</span>}
+            {!hideLabel && getItemLabel(item, i)}
           </span>
         ))}
         {/* 用最大计数值预估 overflow tag 宽度上限 */}
@@ -201,8 +202,8 @@ export default function Tags<T>(props: Props<T>) {
               onTagClick?.(item, i);
             }}
           >
-            {icon && <span className='mr-[3px] flex items-center shrink-0'>{resolveIcon(icon, item, i)}</span>}
-            <span className='overflow-hidden text-ellipsis'>{getItemLabel(item, i)}</span>
+            {icon && <span className={`${hideLabel ? '' : 'mr-[3px]'} flex items-center shrink-0`}>{resolveIcon(icon, item, i)}</span>}
+            {!hideLabel && <span className='overflow-hidden text-ellipsis'>{getItemLabel(item, i)}</span>}
           </span>
         ))}
         {overflowCount > 0 && (
@@ -242,8 +243,8 @@ export default function Tags<T>(props: Props<T>) {
                       onTagClick?.(item, i);
                     }}
                   >
-                    {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, item, i)}</span>}
-                    {getItemLabel(item, i)}
+                    {icon && <span className={`${hideLabel ? '' : 'mr-[3px]'} flex items-center`}>{resolveIcon(icon, item, i)}</span>}
+                    {!hideLabel && getItemLabel(item, i)}
                   </span>
                 ))}
               </div>

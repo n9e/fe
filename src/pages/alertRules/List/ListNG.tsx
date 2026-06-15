@@ -105,6 +105,7 @@ export default function AlertRules(props: Props) {
               bgColor={val > 0 ? 'var(--fc-red-3)' : 'var(--fc-green-3)'}
               fontColor={val > 0 ? 'var(--fc-red-11)' : 'var(--fc-green-11)'}
               icon={() => (val > 0 ? <TriangleAlert size={14} /> : <CircleCheckBig size={14} />)}
+              hideLabel
               onTagClick={() => {
                 setEventsDrawerProps({
                   ...eventsDrawerProps,
@@ -152,7 +153,7 @@ export default function AlertRules(props: Props) {
             <Tags
               type='fill'
               borderRadius={6}
-              data={_.map(data, (severity) => `S${severity}`)}
+              data={_.map(_.sortBy(data, 'severity'), (severity) => `S${severity}`)}
               bgColor={(tagname: string) => {
                 const bgColorMap: Record<string, string> = {
                   S1: 'var(--fc-red-3)',
