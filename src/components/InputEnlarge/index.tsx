@@ -12,8 +12,9 @@ export default function InputEnlarge({
   value,
   onChange,
   linkBuilder,
+  addonAfter,
   ...props
-}: InputProps & { linkBuilder?: { variables?: string[]; extracts?: ILogExtract[]; mappingParamsArr?: ILogMappingParams[]; rawData?: object } }) {
+}: InputProps & { linkBuilder?: { variables?: string[]; extracts?: ILogExtract[]; mappingParamsArr?: ILogMappingParams[]; rawData?: object }; addonAfter?: React.ReactNode }) {
   const { darkMode: appDarkMode } = useContext(CommonStateContext);
   // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底；无痕第一次登录时 兜不住，再拿body上的classname来兜底一下
   const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
@@ -42,14 +43,15 @@ export default function InputEnlarge({
         overlayInnerStyle={{ width: 615 }}
         placement='topRight'
       >
-        <Input.Group compact>
-          <Input style={{ width: linkBuilder ? 'calc(100% - 64px)' : 'calc(100% - 32px)' }} disabled={disabled} value={value} onChange={onChange} {...props} />
+        <Input.Group compact className='input-enlarge-group'>
+          <Input className='input-enlarge-input' disabled={disabled} value={value} onChange={onChange} {...props} />
           <Button icon={<FullscreenOutlined onClick={() => setVisible(true)} />} />
           {linkBuilder && (
             <Tooltip title={t('linkBuilderTip')}>
               <Button icon={<ToolFilled />} onClick={() => setLinkBuilderVisible(true)} />
             </Tooltip>
           )}
+          {addonAfter != null && addonAfter !== false && <span className='input-enlarge-addon-after'>{addonAfter}</span>}
         </Input.Group>
       </Tooltip>
       <LinkBuilder
