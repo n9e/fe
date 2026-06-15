@@ -18,6 +18,7 @@ interface Props<T = any> {
   getLabel?: (item: T, index: number) => string;
   getTooltipTitle?: (item: string | T, index: number) => string | undefined; // 返回 undefined 不显示 tooltip
   onTagClick?: (item: string | T, index: number) => void;
+  popoverTitle?: React.ReactNode | ((count: number) => React.ReactNode); // 自定义 popover 标题，可接收 data.length
 }
 
 const GAP = 2;
@@ -208,32 +209,42 @@ export default function Tags<T>(props: Props<T>) {
           <Popover
             title={
               <div className='flex justify-between items-center'>
-                <Trans ns='common' i18nKey='tags_popover_title' values={{ count: data?.length }} />
-                <Button
-                  type='text'
-                  icon={<CopyOutlined />}
-                  onClick={() => {
-                    copy2ClipBoard((data as (string | T)[]).map((item, i) => getItemLabel(item, i)).join('\n'));
-                  }}
-                />
+                {props.popoverTitle != null ? (
+                  typeof props.popoverTitle === 'function' ? (
+                    props.popoverTitle(data.length)
+                  ) : (
+                    props.popoverTitle
+                  )
+                ) : (
+                  <>
+                    <Trans ns='common' i18nKey='tags_popover_title' values={{ count: data?.length }} />
+                    <Button
+                      type='text'
+                      icon={<CopyOutlined />}
+                      onClick={() => {
+                        copy2ClipBoard((data as (string | T)[]).map((item, i) => getItemLabel(item, i)).join('\n'));
+                      }}
+                    />
+                  </>
+                )}
               </div>
             }
+            overlayStyle={{ width: 400, maxHeight: 600, overflowY: 'auto' } as React.CSSProperties}
             content={
-              <div>
+              <div className='flex flex-wrap gap-1'>
                 {(data as (string | T)[]).map((item, i) => (
-                  <div key={getItemKey(item, i)} className='mb-1'>
-                    <div
-                      className={tagBaseClass}
-                      style={getTagStyle(item, i)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onTagClick?.(item, i);
-                      }}
-                    >
-                      {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, item, i)}</span>}
-                      {getItemLabel(item, i)}
-                    </div>
-                  </div>
+                  <span
+                    key={getItemKey(item, i)}
+                    className={tagBaseClass}
+                    style={getTagStyle(item, i)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTagClick?.(item, i);
+                    }}
+                  >
+                    {icon && <span className='mr-[3px] flex items-center'>{resolveIcon(icon, item, i)}</span>}
+                    {getItemLabel(item, i)}
+                  </span>
                 ))}
               </div>
             }

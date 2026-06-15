@@ -15,7 +15,7 @@ const en_US = {
   no_data: 'Unknown',
   search_placeholder: 'Fuzzy search, separate multiple keywords with spaces',
   cores: 'Cores',
-  tags_popover_title: '{{count}} tags',
+  tags_popover_title: '{{count}} items',
   view_collects: 'View related collection configurations',
   host_no_heartbeat_tip: 'Host no heartbeat',
   expand_busi_and_overview: 'Expand business group and overview',

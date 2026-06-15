@@ -16,7 +16,7 @@ const zh_HK = {
   no_data: '未上報',
   search_placeholder: '模糊搜尋，多個關鍵字請用空格分隔',
   cores: 'Cores',
-  tags_popover_title: '{{count}} 個標籤',
+  tags_popover_title: '{{count}} 個',
   view_collects: '查看關聯採集配置',
   host_no_heartbeat_tip: '機器無心跳',
   expand_busi_and_overview: '展開業務組和概覽',

@@ -211,14 +211,14 @@ export default function AlertRules(props: Props) {
         title: t('table.append_tags'),
         dataIndex: 'append_tags',
         render(value) {
-          return <Tags type='outline' maxWidth={180} data={value} />;
+          return <Tags type='outline' maxWidth={360} data={value} />;
         },
       },
       {
         title: t('table.notify_groups_obj'),
         dataIndex: 'notify_groups_obj',
         render: (data) => {
-          return <Tags type='outline' maxWidth={180} data={_.map(data, (user) => user.nickname || user.username || user.name)} />;
+          return <Tags type='outline' maxWidth={360} data={_.map(data, (user) => user.nickname || user.username || user.name)} />;
         },
       },
       {
@@ -228,7 +228,7 @@ export default function AlertRules(props: Props) {
           return (
             <Tags<number>
               type='outline'
-              maxWidth={180}
+              maxWidth={360}
               data={data}
               getKey={(id) => id}
               getLabel={(id) => _.find(notificationRules, { id })?.name || _.toString(id)}

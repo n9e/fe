@@ -263,6 +263,6 @@ const en_US = {
   copy_success: 'Successful copy {{num}} items',
   request_fail_msg: 'Request failed, please try again later',
   trim_validator_msg: 'Leading or trailing spaces detected, please remove them manually',
-  tags_popover_title: '{{count}} tags',
+  tags_popover_title: '{{count}} items',
 };
 export default en_US;
