@@ -154,7 +154,7 @@ const Panel = (props: IProps) => {
                   setFilters={setViewSelectFilters}
                   modalState={viewModalState}
                   setModalState={setViewModalState}
-                  disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus], datasourceCate)}
+                  disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus, DatasourceCateEnum.gcm], datasourceCate)}
                   page={location.pathname}
                   getFilterValues={() => {
                     const formValues = form.getFieldsValue();
@@ -198,15 +198,18 @@ const Panel = (props: IProps) => {
                   onSelect={(filterValues) => {
                     filterValues.datasourceCate = filterValues.datasourceCate || defaultDatasourceCate;
                     filterValues.datasourceValue = filterValues.datasourceValue || defaultDatasourceValue;
-                    if (datasourceCate === DatasourceCateEnum.prometheus) {
+                    const targetCate = filterValues.datasourceCate;
+                    if (targetCate === DatasourceCateEnum.prometheus) {
                       form.setFieldsValue({
                         datasourceCate: filterValues.datasourceCate,
                         datasourceValue: filterValues.datasourceValue,
                       });
                       setPromql(filterValues.query?.query || '');
-                    } else if (datasourceCate === DatasourceCateEnum.doris) {
-                      // 完全重置表单后再设置新值，避免旧值残留
+                    } else {
+                      // 先重置 datasourceCate/datasourceValue，再完全重置 query
                       form.setFieldsValue({
+                        datasourceCate: filterValues.datasourceCate,
+                        datasourceValue: filterValues.datasourceValue,
                         query: undefined,
                       });
                       let range = filterValues.query?.range;
@@ -216,12 +219,13 @@ const Panel = (props: IProps) => {
                           end: moment.unix(range.end),
                         };
                       }
+
                       form.setFieldsValue({
                         ...filterValues,
                         refreshFlag: _.uniqueId('refreshFlag_'),
                         query: {
                           ...filterValues.query,
-                          mode: filterValues.query?.mode || 'query',
+                          query_type: targetCate === DatasourceCateEnum.gcm ? filterValues.query?.query_type || 'builder' : undefined,
                           range,
                         },
                       });
@@ -308,6 +312,7 @@ const Panel = (props: IProps) => {
                           });
                           form.setFieldsValue({
                             query: {
+                              query_type: datasourceCate === DatasourceCateEnum.gcm ? 'builder' : undefined,
                               range: {
                                 start: 'now-1h',
                                 end: 'now',

@@ -3,6 +3,11 @@ import { Input } from 'antd';
 
 interface Props {
   disabled?: boolean;
+  autoSize?: {
+    minRows?: number;
+    maxRows?: number;
+  };
+  placeholder?: string;
   value?: string;
   onChange?: (value?: string) => void;
 }
@@ -27,7 +32,8 @@ export default function QueryInput(props: Props) {
   return (
     <Input.TextArea
       disabled={props.disabled}
-      autoSize={{ minRows: 1, maxRows: 4 }}
+      autoSize={props.autoSize ?? { minRows: 1, maxRows: 4 }}
+      placeholder={props.placeholder}
       value={currentValue}
       onChange={(e) => setCurrentValue(e.target.value)}
       onBlur={() => {
