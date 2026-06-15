@@ -15,61 +15,16 @@
  *
  */
 import { Button, Result } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { getUserInfoList } from '@/services/manage';
-import { User } from '@/store/manageInterface';
-
-type UserWithRoles = User & {
-  roles?: string[];
-};
 
 const NotFound: React.FC = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const history = useHistory();
-  const [admins, setAdmins] = useState<string[]>([]);
-
-  useEffect(() => {
-    getUserInfoList({ limit: 5000 })
-      .then((res) => {
-        const list = (res?.dat?.list || []) as UserWithRoles[];
-        const adminNames = list
-          .filter((item) => item.roles?.includes('Admin'))
-          .map((item) => item.nickname || item.username)
-          .filter(Boolean);
-
-        setAdmins(adminNames);
-      })
-      .catch(() => {});
-  }, []);
-
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-      <Result
-        title='403'
-        subTitle={
-          <>
-            <div>{t('auth.403')}</div>
-            {admins.length > 0 && (
-              <div style={{ marginTop: 8, color: 'rgba(0, 0, 0, 0.45)', lineHeight: '24px' }}>
-                {t('auth.403_admin')}
-                {admins.join(', ')}
-              </div>
-            )}
-          </>
-        }
-        extra={
-          <Button
-            type='primary'
-            onClick={() => {
-              window.history.length > 1 ? history.goBack() : history.replace('/');
-            }}
-          >
-            {t('auth.403_back')}
-          </Button>
-        }
-      />
+      <Result title='403' subTitle={t('common:auth.403')} />
     </div>
   );
 };
