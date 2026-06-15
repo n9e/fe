@@ -19,3 +19,35 @@
     font-size: 14px;
     margin-bottom: 8px;
 }
+
+.input-enlarge-group.ant-input-group-compact {
+    display: flex;
+    width: 100%;
+
+    .input-enlarge-input {
+        flex: 1;
+        width: auto !important;
+        min-width: 0;
+    }
+
+    .ant-btn:has(+ .input-enlarge-addon-after) {
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+}
+
+.input-enlarge-addon-after {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 32px;
+    padding: 0 11px;
+    background: var(--fc-fill-2);
+    border: 1px solid var(--fc-border-base);
+    border-left: none;
+    border-radius: 0 var(--fc-border-radius-base, 8px) var(--fc-border-radius-base, 8px) 0;
+    font-size: 12px;
+    color: var(--fc-text-2);
+    line-height: 30px;
+    white-space: nowrap;
+}
