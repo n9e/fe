@@ -22,7 +22,7 @@ import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
-import PageLayout, { HelpLink } from '@/components/pageLayout';
+import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
 import Tags from '@/components/TableTags/Tags';
 import UserInfoModal from './component/createModal';
@@ -39,35 +39,33 @@ import './locale';
 const { confirm } = Modal;
 
 const Resource: React.FC = () => {
-  const { t, i18n } = useTranslation('user');
+  const { t } = useTranslation('user');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
   const [userId, setUserId] = useState<string>('');
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [range, setRange] = useState<IRawTimeRange>();
-  const { profile, perms } = useContext(CommonStateContext);
+  const { perms } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
-  const userColumn: ColumnsType<User> = [
+
+  const userColumns: ColumnsType<User> = [
     {
       title: t('account:profile.username'),
       dataIndex: 'username',
-      width: 260,
+      width: 180,
       ellipsis: true,
       sorter: true,
-      render: (text: string, record) => {
-        return (
-          <div className='flex flex-col gap-0.5'>
-            <span>{record.nickname || text}</span>
-            <span className='text-soft text-xs'>{text}</span>
-          </div>
-        );
-      },
     },
-  ];
-  const userColumns: ColumnsType<User> = [
-    ...userColumn,
+    {
+      title: t('account:profile.nickname'),
+      dataIndex: 'nickname',
+      width: 180,
+      ellipsis: true,
+      sorter: true,
+      render: (text: string) => <span>{text || '-'}</span>,
+    },
     {
       title: t('account:profile.role'),
       dataIndex: 'roles',

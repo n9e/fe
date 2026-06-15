@@ -78,7 +78,6 @@ export function tagsColumn<T = any>(
 ): ColumnType<T> {
   const { maxWidth = 180, type = 'outline', onTagClick, ...rest } = opts;
   return {
-    width: 280,
     render: (value: any) => <Tags type={type} maxWidth={maxWidth} data={value} onTagClick={onTagClick} />,
     ...rest,
   };
