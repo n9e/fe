@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import type { ColumnType } from 'antd/lib/table';
+import type { ColumnType, ColumnsType } from 'antd/lib/table';
 import Tags from '@/components/TableTags/Tags';
 
 /**
@@ -78,6 +78,7 @@ export function tagsColumn<T = any>(
 ): ColumnType<T> {
   const { maxWidth = 180, type = 'outline', onTagClick, ...rest } = opts;
   return {
+    width: 280,
     render: (value: any) => <Tags type={type} maxWidth={maxWidth} data={value} onTagClick={onTagClick} />,
     ...rest,
   };
@@ -94,7 +95,12 @@ export function userColumn<T = any>(
   const { nickname, ...rest } = opts;
   return {
     width: 120,
-    render: (value: any, record: any) => <div>{nickname && record?.[nickname] ? <div className='text-soft'>{record[nickname]}</div> : <div>{value || '-'}</div>}</div>,
+    render: (value: any, record: any) => (
+      <div>
+        <div>{value || '-'}</div>
+        {nickname && record?.[nickname] && <div className='text-soft'>{record[nickname]}</div>}
+      </div>
+    ),
     ...rest,
   };
 }
@@ -104,7 +110,12 @@ export function updateByColumn<T = any>(opts: UpdateByColumnOptions<T>): UpdateB
   const { nickname, getValue, filterMode = 'client', onFilter, ...rest } = opts;
   return {
     width: 120,
-    render: (value: any, record: any) => <div>{nickname && record?.[nickname] ? <div className='text-soft'>{record[nickname]}</div> : <div>{value || '-'}</div>}</div>,
+    render: (value: any, record: any) => (
+      <div>
+        <div>{value || '-'}</div>
+        {nickname && record?.[nickname] && <div className='text-soft'>{record[nickname]}</div>}
+      </div>
+    ),
     ...rest,
     [UPDATE_BY_COLUMN_META]: {
       filterMode,
@@ -120,23 +131,79 @@ export function dateColumn<T = any>(
     title: React.ReactNode;
     dataIndex: ColumnType<T>['dataIndex'];
     unix?: boolean;
-    format?: string;
+    format?: [string, string];
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
-  const { unix, format = 'YYYY-MM-DD HH:mm:ss', dataIndex, ...rest } = opts;
+  const { unix, format = ['YYYY-MM-DD', 'HH:mm:ss'], ...rest } = opts;
   return {
-    width: 160,
-    dataIndex,
+    width: 180,
     render: (value: any) => {
       if (!value) return '-';
       const m = unix ? moment.unix(value) : moment(value);
-      return <div>{m.format(format)}</div>;
-    },
-    sorter: (a: T, b: T) => {
-      const aVal = getColumnValue(a, dataIndex);
-      const bVal = getColumnValue(b, dataIndex);
-      return (Number(aVal) || 0) - (Number(bVal) || 0);
+      return (
+        <div>
+          <div>{m.format(format[0])}</div>
+          <div>{m.format(format[1])}</div>
+        </div>
+      );
     },
     ...rest,
   };
+}
+
+type EnabledStatusFilterValue = boolean | number | string;
+type EnabledStatusValue = EnabledStatusFilterValue | null | undefined;
+
+export interface EnabledStatusColumnOptions<ValueType extends EnabledStatusValue = EnabledStatusValue> {
+  title: React.ReactNode;
+  dataIndex: ColumnType<any>['dataIndex'];
+  enabledText: React.ReactNode;
+  disabledText: React.ReactNode;
+  enabledValue: EnabledStatusFilterValue;
+  disabledValue: EnabledStatusFilterValue;
+  getValue?: (record: any) => ValueType;
+  sorter?: ColumnType<any>['sorter'];
+  onFilter?: ColumnType<any>['onFilter'] | false;
+}
+
+// Enabled/disabled status column: builds the matching sorter + two-way filter.
+export function getEnabledStatusColumn<ValueType extends EnabledStatusValue = EnabledStatusValue>(
+  options: EnabledStatusColumnOptions<ValueType>,
+): Pick<ColumnType<any>, 'title' | 'dataIndex' | 'sorter' | 'filters' | 'onFilter'> {
+  const { title, dataIndex, enabledText, disabledText, enabledValue, disabledValue, getValue, sorter, onFilter } = options;
+  const readValue = (record: any) => (getValue ? getValue(record) : (getColumnValue(record, dataIndex) as ValueType));
+  const rank = (value: ValueType) => (value === enabledValue ? 0 : value === disabledValue ? 1 : 2);
+
+  return {
+    title,
+    dataIndex,
+    sorter: sorter ?? ((a, b) => rank(readValue(a)) - rank(readValue(b))),
+    filters: [
+      { text: enabledText, value: enabledValue },
+      { text: disabledText, value: disabledValue },
+    ],
+    ...(onFilter === false ? {} : { onFilter: onFilter ?? ((value, record) => readValue(record) === value) }),
+  };
+}
+
+// Walk the column tree and attach update-by filter props built from the data source.
+export function injectColumnFilters<RecordType extends object>(
+  columns: ColumnsType<RecordType> | undefined,
+  dataSource: readonly RecordType[] | undefined,
+): ColumnsType<RecordType> | undefined {
+  if (!columns) return columns;
+
+  return columns.map((column) => {
+    if ('children' in column && column.children) {
+      return {
+        ...column,
+        children: injectColumnFilters(column.children as ColumnsType<RecordType>, dataSource),
+      };
+    }
+
+    return {
+      ...column,
+      ...getUpdateByColumnFilterProps(column as ColumnType<RecordType>, dataSource),
+    };
+  }) as ColumnsType<RecordType>;
 }
