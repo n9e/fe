@@ -125,27 +125,35 @@ export function updateByColumn<T = any>(opts: UpdateByColumnOptions<T>): UpdateB
   };
 }
 
-// Date column: date over time (two lines)
+// Date column: one line by default (date + time, no wrap); pass `multiline` to
+// stack date over time on two lines. `format` accepts a single string or a
+// [date, time] tuple (the tuple is joined for one line / split for two lines).
 export function dateColumn<T = any>(
   opts: {
     title: React.ReactNode;
     dataIndex: ColumnType<T>['dataIndex'];
     unix?: boolean;
-    format?: [string, string];
+    multiline?: boolean;
+    format?: string | [string, string];
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
-  const { unix, format = ['YYYY-MM-DD', 'HH:mm:ss'], ...rest } = opts;
+  const { unix, multiline, format = ['YYYY-MM-DD', 'HH:mm:ss'], ...rest } = opts;
+  const parts = Array.isArray(format) ? format : [format];
   return {
-    width: 180,
+    width: multiline ? 180 : 160,
     render: (value: any) => {
       if (!value) return '-';
       const m = unix ? moment.unix(value) : moment(value);
-      return (
-        <div>
-          <div>{m.format(format[0])}</div>
-          <div>{m.format(format[1])}</div>
-        </div>
-      );
+      if (multiline) {
+        return (
+          <div>
+            {parts.map((f, i) => (
+              <div key={i}>{m.format(f)}</div>
+            ))}
+          </div>
+        );
+      }
+      return <div style={{ whiteSpace: 'nowrap' }}>{m.format(parts.join(' '))}</div>;
     },
     ...rest,
   };
