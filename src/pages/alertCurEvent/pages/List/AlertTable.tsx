@@ -14,16 +14,13 @@ import { allCates } from '@/components/AdvancedWrap/utils';
 import { IS_PLUS } from '@/utils/constant';
 import getTextWidth from '@/utils/getTextWidth';
 
-import { getEvents, getEventById } from '../../services';
+import { ackEvents, getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS, EVENTS_TABLE_PAGESIZE_CACHE_KEY } from '../../constants';
 import { FilterType } from '../../types';
 import EventDetailDrawer from './EventDetailDrawer';
 import EnhancedTable from '@/components/EnhancedTable';
 import Tags from '@/components/TableTags/Tags';
-
-// @ts-ignore
-import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
 
 interface IProps {
   filter: FilterType;
@@ -256,14 +253,13 @@ export default function AlertTable(props: IProps) {
             IS_PLUS
               ? {
                   key: 'ack',
-                  node: (
-                    <AckBtn
-                      data={record}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refresh_'));
-                      }}
-                    />
-                  ),
+                  icon: record.status === 0 ? 'claim' : 'unclaim',
+                  text: record.status === 0 ? t('claim') : t('unclaim'),
+                  onClick: () => {
+                    ackEvents([record.id], record.status === 0 ? 'ack' : 'unack').then(() => {
+                      setRefreshFlag(_.uniqueId('refresh_'));
+                    });
+                  },
                 }
               : undefined,
             !_.includes(['firemap', 'northstar'], record?.rule_prod)

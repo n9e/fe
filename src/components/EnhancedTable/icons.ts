@@ -13,6 +13,8 @@ import {
   ShieldCheck,
   Sparkles,
   Trash2,
+  UserCheck,
+  UserX,
 } from 'lucide-react';
 
 import type { RowAction } from './types';
@@ -26,6 +28,8 @@ export const actionIconMap = {
   permission: ShieldCheck,
   copy: Copy,
   delete: Trash2,
+  claim: UserCheck,
+  unclaim: UserX,
   run: Play,
   create: Plus,
   search: Search,
