@@ -3,13 +3,13 @@ import _ from 'lodash';
 import { FilterType } from '../types';
 import { MY_GRPUPS_CACHE_KEY } from '../constants';
 
-export default function getFilterByURLQuery(query, range, aggrRuleCardEventIds): FilterType {
+export default function getFilterByURLQuery(query, range, selections): FilterType {
   const localeMyGroups = localStorage.getItem(MY_GRPUPS_CACHE_KEY);
 
   return {
     range,
     aggr_rule_id: query.aggr_rule_id ? Number(query.aggr_rule_id) : undefined,
-    event_ids: aggrRuleCardEventIds,
+    selections,
     datasource_ids: query.datasource_ids ? _.split(query.datasource_ids, ',').map(Number) : undefined,
     bgid: query.bgid ? Number(query.bgid) : undefined,
     severity: query.severity ? _.split(query.severity, ',').map(Number) : undefined,

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Space } from 'antd';
 
 import { SEVERITY_COLORS } from '../../constants';
-import { FilterType, CardType } from '../../types';
+import { FilterType, CardType, CardDimension } from '../../types';
 
 interface Props {
   cardList?: CardType[];
@@ -12,15 +12,17 @@ interface Props {
   setFilter: (patch: Partial<FilterType>) => void;
 }
 
-export function isEqualEventIds(arr1?: number[], arr2?: number[]) {
-  if (!arr1 || !arr2) {
+// 维度数组顺序由聚合规则决定且稳定，可直接深比较来判断是否同一张卡片
+export function isSameDimensions(a?: CardDimension[], b?: CardDimension[]) {
+  if (!a || !b) {
     return false;
   }
-  return _.isEqual(_.sortBy(arr1), _.sortBy(arr2));
+  return _.isEqual(a, b);
 }
 
 const AlertCard = (props: Props) => {
   const { filter, setFilter, cardList } = props;
+  const selectedDimensions = filter.selections?.[0]?.dimensions;
 
   if (_.isEmpty(cardList)) return null;
 
@@ -28,21 +30,22 @@ const AlertCard = (props: Props) => {
     <div className='w-full overflow-y-auto pt-2 max-h-[172px]'>
       <Space wrap>
         {_.map(cardList, (card, i) => {
+          const selected = isSameDimensions(selectedDimensions, card.dimensions);
           return (
             <div
               key={i}
               className={`py-1 px-2 event-card-new cursor-pointer items-center inline-flex justify-between gap-2 rounded-[4px] ${SEVERITY_COLORS[card.severity - 1]} ${
-                isEqualEventIds(filter.event_ids, card.event_ids) ? 'selected' : ''
+                selected ? 'selected' : ''
               }`}
               onClick={() => {
-                if (isEqualEventIds(filter.event_ids, card.event_ids)) {
-                  setFilter({ event_ids: [] });
+                if (selected) {
+                  setFilter({ selections: [] });
                 } else {
-                  setFilter({ event_ids: card.event_ids });
+                  setFilter({ selections: [{ view_id: filter.aggr_rule_id as number, dimensions: card.dimensions }] });
                 }
               }}
             >
-              {isEqualEventIds(filter.event_ids, card.event_ids) && <CheckOutlined className='font-bold' style={{ stroke: 'currentColor', strokeWidth: '50' }} />}
+              {selected && <CheckOutlined className='font-bold' style={{ stroke: 'currentColor', strokeWidth: '50' }} />}
               <div className='truncate' style={{ color: 'inherit' }}>
                 {card.title}
               </div>

@@ -114,7 +114,7 @@ export default function AggrRuleDropdown(props: Props) {
             optionFilterProp='originLabel'
             value={filter.aggr_rule_id}
             onChange={(value) => {
-              setFilter({ aggr_rule_id: value, event_ids: undefined });
+              setFilter({ aggr_rule_id: value, selections: undefined });
             }}
           />
         </InputGroupWithFormItem>
@@ -139,7 +139,7 @@ export default function AggrRuleDropdown(props: Props) {
               getList();
               setFilter({
                 aggr_rule_id: editForm ? editForm.id : addRes.dat.id,
-                event_ids: editForm ? filter.event_ids : undefined,
+                selections: editForm ? filter.selections : undefined,
               });
               if (editForm) {
                 reloadRuleCards();

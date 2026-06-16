@@ -420,10 +420,12 @@ export const deleteAggrAlerts = function (ids: number[]) {
   });
 };
 
-export const getAlertCards = function (params) {
+// 卡片聚合改用 POST：base filter 走 query，下钻身份链 selections 走 body，避免 event_id 拼进 URL 导致 414
+export const getAlertCards = function (params, selections?: any[]) {
   return request('/api/n9e/alert-cur-events/card', {
-    method: RequestMethod.Get,
+    method: RequestMethod.Post,
     params,
+    data: { selections: selections ?? [] },
   });
 };
 

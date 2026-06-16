@@ -292,7 +292,8 @@ export default function AlertTable(props: IProps) {
       requestParams.stime = moment(parsedRange.start).unix();
       requestParams.etime = moment(parsedRange.end).unix();
     }
-    return getEvents(requestParams).then((res) => {
+    // 选中卡片的下钻身份链放在 POST body，后端据此重新解析事件，避免 event_id 拼进 URL
+    return getEvents(requestParams, filter.selections).then((res) => {
       return {
         total: res.dat.total,
         list: res.dat.list,
@@ -300,7 +301,7 @@ export default function AlertTable(props: IProps) {
     });
   };
   const { tableProps } = useAntdTable(fetchData, {
-    refreshDeps: [JSON.stringify(params), props.refreshFlag],
+    refreshDeps: [JSON.stringify(params), JSON.stringify(filter.selections), props.refreshFlag],
     defaultPageSize: 30,
     debounceWait: 500,
   });

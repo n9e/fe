@@ -23,10 +23,10 @@ import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import getProdOptions from '../../utils/getProdOptions';
 import getRequestParamsByFilter from '../../utils/getRequestParamsByFilter';
 import { ackEvents } from '../../services';
-import { CardType, FilterType } from '../../types';
+import { CardType, FilterType, CardSelection } from '../../types';
 import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
-import AlertCard, { isEqualEventIds } from './AlertCard';
+import AlertCard, { isSameDimensions } from './AlertCard';
 import AlertTable from './AlertTable';
 import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 
@@ -39,19 +39,19 @@ const AlertCurEvent: React.FC = () => {
   const [paramsAiAction, setParamsAiAction] = useParamsAiAction();
 
   const [range, setRange] = useState<IRawTimeRange>();
-  const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>();
+  const [selections, setSelections] = useState<CardSelection[] | undefined>();
   const rangeRef = useRef<IRawTimeRange | undefined>(range);
-  const aggrRuleCardEventIdsRef = useRef<number[] | undefined>(aggrRuleCardEventIds);
+  const selectionsRef = useRef<CardSelection[] | undefined>(selections);
 
   useEffect(() => {
     rangeRef.current = range;
   }, [range]);
 
   useEffect(() => {
-    aggrRuleCardEventIdsRef.current = aggrRuleCardEventIds;
-  }, [aggrRuleCardEventIds]);
+    selectionsRef.current = selections;
+  }, [selections]);
 
-  const filter = useMemo(() => getFilterByURLQuery(query, range, aggrRuleCardEventIds), [JSON.stringify(query), range, aggrRuleCardEventIds]);
+  const filter = useMemo(() => getFilterByURLQuery(query, range, selections), [JSON.stringify(query), range, selections]);
 
   const [draftQuery, setDraftQuery] = useState<string>(filter.query ?? '');
   const queryFocusedRef = useRef(false);
@@ -62,7 +62,7 @@ const AlertCurEvent: React.FC = () => {
   }, [filter.query]);
 
   const normalizeFilterForUrl = useCallback((input: FilterType) => {
-    const withoutLocalOnly = _.omit(input, ['range', 'event_ids']); // range 和 event_ids 不传递到 URL 中
+    const withoutLocalOnly = _.omit(input, ['range', 'selections']); // range 和 selections 不传递到 URL 中
     return _.omitBy(withoutLocalOnly, (v) => {
       if (v === undefined || v === '') return true;
       if (Array.isArray(v) && v.length === 0) return true;
@@ -73,7 +73,7 @@ const AlertCurEvent: React.FC = () => {
   const setFilterPatch = useCallback(
     (patch: Partial<FilterType>) => {
       const latestQuery = queryString.parse(history.location.search);
-      const currentFilter = getFilterByURLQuery(latestQuery, rangeRef.current, aggrRuleCardEventIdsRef.current);
+      const currentFilter = getFilterByURLQuery(latestQuery, rangeRef.current, selectionsRef.current);
       const nextFilter = { ...currentFilter, ...patch };
       // 只清理“本页实际管理过/正在管理的 key”，避免误删 URL 里其他同名参数
       const prevUrlFilter = normalizeFilterForUrl(currentFilter) as Record<string, unknown>;
@@ -91,8 +91,8 @@ const AlertCurEvent: React.FC = () => {
         ),
       });
 
-      if (_.has(patch, 'event_ids')) {
-        setAggrRuleCardEventIds(nextFilter.event_ids);
+      if (_.has(patch, 'selections')) {
+        setSelections(nextFilter.selections);
       }
       if (_.has(patch, 'range')) {
         setRange(nextFilter.range);
@@ -146,12 +146,13 @@ const AlertCurEvent: React.FC = () => {
       onSuccess: (res) => {
         const requestedAggrRuleId = ruleCardsRequestParams?.view_id;
         const latestQuery = queryString.parse(history.location.search);
-        const currentFilter = getFilterByURLQuery(latestQuery, rangeRef.current, aggrRuleCardEventIdsRef.current);
+        const currentFilter = getFilterByURLQuery(latestQuery, rangeRef.current, selectionsRef.current);
         if (!requestedAggrRuleId || currentFilter.aggr_rule_id !== requestedAggrRuleId) return;
 
-        const isValidFilterEventIds = _.every(res.dat, (item) => !isEqualEventIds(item.event_ids, aggrRuleCardEventIdsRef.current));
-        if (isValidFilterEventIds) {
-          setAggrRuleCardEventIds(undefined);
+        // 重新拉到的卡片里若已不存在当前选中的那张（如时间范围变化后卡片消失），清掉下钻身份
+        const selectedDimensions = selectionsRef.current?.[0]?.dimensions;
+        if (selectedDimensions && _.every(res.dat, (item) => !isSameDimensions(item.dimensions, selectedDimensions))) {
+          setSelections(undefined);
         }
       },
       onError: () => {
