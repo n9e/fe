@@ -33,6 +33,7 @@ const ja_JP = {
       download_title: 'ログデータをダウンロード',
       range: '時間範囲',
       filter: '検索語句',
+      query_condition: 'クエリ条件',
       format: 'データ形式',
       time_sort: 'ログの並べ替え',
       count: 'ログの数',

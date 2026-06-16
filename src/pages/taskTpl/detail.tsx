@@ -15,11 +15,12 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Button, Spin, Divider, Card } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import moment from 'moment';
+import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import PageLayout from '@/components/pageLayout';
@@ -32,9 +33,11 @@ import { Tpl } from './interface';
 
 const Detail = (props: any) => {
   const history = useHistory();
+  const location = useLocation();
+  const query = queryString.parse(location.search);
   const id = _.get(props, 'match.params.id');
   const { businessGroup } = useContext(CommonStateContext);
-  const curBusiId = businessGroup.id!;
+  const curBusiId = (query.gid as string) || businessGroup.id!;
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({} as Tpl);
@@ -133,12 +136,12 @@ const Detail = (props: any) => {
               </div>
             </div>
             <div style={{ marginTop: 10 }}>
-              <Link to={{ pathname: `/job-tpls/${id}/modify` }}>
+              <Link to={{ pathname: `/job-tpls/${id}/modify`, search: `gid=${curBusiId}` }}>
                 <Button type='primary' style={{ marginRight: 10 }}>
                   {t('tpl.modify')}
                 </Button>
               </Link>
-              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${id}` }}>
+              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${id}&gid=${curBusiId}` }}>
                 <Button type='primary'>{t('tpl.create.task')}</Button>
               </Link>
             </div>

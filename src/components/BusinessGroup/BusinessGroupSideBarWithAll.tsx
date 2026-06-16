@@ -1,11 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Space, Tooltip } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { useHistory, useLocation } from 'react-router-dom';
-import queryString from 'query-string';
-import _ from 'lodash';
 
 import BusinessGroup, { getCleanBusinessGroupIds } from './';
 import './locale';
@@ -43,73 +37,23 @@ export function getDefaultGidsInDashboard(queryParams: any, localeKey: string, b
 
 export default function BusinessGroupSideBarWithAll(props: Props) {
   const { t } = useTranslation('BusinessGroup');
-  const location = useLocation();
-  const query = queryString.parse(location.search);
-  const history = useHistory();
   const { gids, setGids, localeKey, showPublicOption, publicOptionLabel, allOptionLabel, allOptionTooltip } = props;
+
+  const presetFilters: { value: string; label: string; tooltip?: string }[] = [];
+  if (showPublicOption && publicOptionLabel) {
+    presetFilters.push({ value: '-1', label: publicOptionLabel });
+  }
+  presetFilters.push({ value: '-2', label: allOptionLabel || t('default_filter.all'), tooltip: allOptionTooltip });
 
   return (
     <BusinessGroup
       selected={gids}
-      renderHeadExtra={() => {
-        return (
-          <div>
-            <div className='n9e-biz-group-container-group-title'>{t('default_filter.title')}</div>
-            {showPublicOption && publicOptionLabel && (
-              <div
-                className={classNames({
-                  'n9e-biz-group-item': true,
-                  active: gids === '-1',
-                })}
-                onClick={() => {
-                  setGids('-1');
-                  localStorage.setItem(localeKey, '-1');
-                  // TODO: 选择预置条件时清理掉业务组的 ids 和 isLeaf 参数
-                  history.push({
-                    pathname: location.pathname,
-                    search: queryString.stringify({
-                      ..._.omit(query, ['ids', 'isLeaf']),
-                    }),
-                  });
-                }}
-              >
-                {publicOptionLabel}
-              </div>
-            )}
-            <div
-              className={classNames({
-                'n9e-biz-group-item': true,
-                active: gids === '-2',
-              })}
-              onClick={() => {
-                setGids('-2');
-                localStorage.setItem(localeKey, '-2');
-                // TODO: 选择预置条件时清理掉业务组的 ids 和 isLeaf 参数
-                history.push({
-                  pathname: location.pathname,
-                  search: queryString.stringify({
-                    ..._.omit(query, ['ids', 'isLeaf']),
-                  }),
-                });
-              }}
-            >
-              <Space>
-                {allOptionLabel || t('default_filter.all')}
-                {allOptionTooltip && (
-                  <Tooltip title={allOptionTooltip}>
-                    <InfoCircleOutlined />
-                  </Tooltip>
-                )}
-              </Space>
-            </div>
-          </div>
-        );
-      }}
-      showSelected={gids !== '-1' && gids !== '-2'}
+      presetFilters={presetFilters}
+      presetFilterTitle={t('default_filter.title')}
+      localeKey={localeKey}
       onSelect={(key) => {
         const ids = getCleanBusinessGroupIds(key);
         setGids(ids);
-        localStorage.removeItem(localeKey);
       }}
     />
   );

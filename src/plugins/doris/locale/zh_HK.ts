@@ -50,6 +50,13 @@ const zh_HK = {
     warn_message_content_2: '常用的時間宏: ',
     warn_message_content_3: '範例：',
     warn_message_content_4: '時間宏使用方法: <a>詳情</a>',
+    editMode: {
+      switch_to_builder_confirm_title: '切換至構建器模式',
+      switch_to_builder_confirm_content: '當前 SQL 語句無法轉換為構建器設置項，切換後將丟失已編輯的 SQL 內容，是否繼續？',
+      no_builder_config: '請先配置查詢條件',
+      require_db_table: '請先選擇數據庫和數據表',
+      build_sql_failed: 'SQL 生成失敗',
+    },
     dashboard: {
       mode: {
         label: '查詢模式',
@@ -172,6 +179,8 @@ const zh_HK = {
     preview_sql: '預覽 SQL',
     btn_tip: '點擊後，SQL 輸入框的內容將被覆蓋',
     btn_failed_tip: '轉換失敗，請重試，或修改表單',
+    preview_and_run: '預覽 SQL & 查詢',
+    builder_content_modified: 'Builder 內容已修改，請預覽最新的 SQL',
   },
 };
 

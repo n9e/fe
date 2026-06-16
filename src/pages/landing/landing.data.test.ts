@@ -56,7 +56,7 @@ describe('landing.data', () => {
     expect(landingInfrastructureCategories).toHaveLength(9);
   });
 
-  it('快速上手 4 张卡片，每卡 2 个文档链接，均为 flashcat.cloud 的 Nightingale 文档', () => {
+  it('快速上手 4 张卡片，每卡 2 个文档链接，均为 flashcat.cloud 的文档', () => {
     expect(landingQuickStartCards).toHaveLength(4);
     landingQuickStartCards.forEach((card) => {
       expect(card.links).toHaveLength(2);
@@ -64,7 +64,7 @@ describe('landing.data', () => {
         const url = new URL(link.url || '');
         expect(url.protocol).toBe('https:');
         expect(url.hostname).toBe('flashcat.cloud');
-        expect(url.pathname).toMatch(/nightingale/);
+        expect(url.pathname).toMatch(/nightingale|categraf/);
       });
     });
   });

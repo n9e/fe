@@ -141,7 +141,7 @@ export default function GraphPreview({ datasourceValue, query }) {
                 pagination={false}
                 scroll={{
                   x: 'max-content',
-                  y: 'calc(100% - 40px)',
+                  y: '200px',
                 }}
               />
             )}

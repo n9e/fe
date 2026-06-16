@@ -33,12 +33,12 @@ const Add = (props: any) => {
   const history = useHistory();
   const query = queryString.parse(_.get(props, 'location.search'));
   const { businessGroup } = useContext(CommonStateContext);
-  const curBusiId = businessGroup.id!;
+  const curBusiId = (query.gid as string) || businessGroup.id!;
   const { t } = useTranslation('common');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState();
   const [action, setAction] = useState('');
-  const groupId = useRef<number>(curBusiId);
+  const groupId = useRef<number>(Number(curBusiId));
 
   const handleSubmit = (values: any) => {
     if (!groupId.current) {

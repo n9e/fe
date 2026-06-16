@@ -15,16 +15,14 @@
  *
  */
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { Table, Modal, Tag, Row, Col, Button, Dropdown, Menu, message, Space } from 'antd';
+import { Link } from 'react-router-dom';
+import { Table, Divider, Popconfirm, Tag, Row, Col, Button, Dropdown, Menu, message, Space } from 'antd';
 import { DownOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import moment from 'moment';
 import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import EnhancedTable from '@/components/EnhancedTable';
-import { tagsColumn, userColumn, dateColumn } from '@/components/EnhancedTable/columns';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
@@ -62,7 +60,6 @@ function getTableData(options: any, gids: string | undefined, query: string) {
 
 const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
-  const history = useHistory();
   const [query, setQuery] = useState(() => sessionStorage.getItem(SEARCH_SESSION_KEY) || '');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
@@ -115,32 +112,85 @@ const index = (_props: any) => {
     }
   }
 
-  const showBusinessGroup = !(businessGroup.isLeaf && gids !== '-2');
   const columns: ColumnProps<Tpl>[] = _.concat(
+    businessGroup.isLeaf && gids !== '-2'
+      ? []
+      : ([
+          {
+            title: t('common:business_group'),
+            dataIndex: 'group_id',
+            width: 100,
+            render: (id) => {
+              return _.find(busiGroups, { id })?.name;
+            },
+          },
+        ] as any),
     [
+      {
+        title: 'ID',
+        dataIndex: 'id',
+      },
       {
         title: t('tpl.title'),
         dataIndex: 'title',
-        width: 360,
         render: (text, record) => {
-          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
+          return <Link to={{ pathname: `/job-tpls/${record.id}/detail`, search: `gid=${record.group_id}` }}>{text}</Link>;
+        },
+      },
+      {
+        title: t('tpl.tags'),
+        dataIndex: 'tags',
+        render: (text) => {
+          return _.map(text, (item) => (
+            <Tag color='purple' key={item} onClick={() => handleTagClick(item)}>
+              {item}
+            </Tag>
+          ));
+        },
+      },
+      {
+        title: t('tpl.creator'),
+        dataIndex: 'create_by',
+        width: 100,
+      },
+      {
+        title: t('tpl.last_updated'),
+        dataIndex: 'update_at',
+        width: 160,
+        render: (text) => {
+          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
+        },
+      },
+      {
+        title: t('table.operations'),
+        width: 220,
+        render: (_text, record) => {
           return (
-            <div className='flex flex-col gap-0.5'>
-              <Link to={{ pathname: `/job-tpls/${record.id}/detail` }}>{text}</Link>
-              <span className='text-soft text-xs inline-flex items-center gap-2'>
-                <span>ID: {record.id}</span>
-                {showBusinessGroup && groupName && <span>{groupName}</span>}
-              </span>
-            </div>
+            <span>
+              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}&gid=${record.group_id}` }}>{t('task.create')}</Link>
+              <Divider type='vertical' />
+              <Link to={{ pathname: `/job-tpls/${record.id}/modify`, search: `gid=${record.group_id}` }}>{t('common:btn.edit')}</Link>
+              <Divider type='vertical' />
+              <Link to={{ pathname: `/job-tpls/${record.id}/clone`, search: `gid=${record.group_id}` }}>{t('common:btn.clone')}</Link>
+              <Divider type='vertical' />
+              <Popconfirm
+                title={<div style={{ width: 100 }}>{t('common:confirm.delete')}</div>}
+                onConfirm={() => {
+                  request(`${api.tasktpl(record.group_id)}/${record.id}`, {
+                    method: 'DELETE',
+                  }).then(() => {
+                    message.success(t('msg.delete.success'));
+                    refresh();
+                  });
+                }}
+              >
+                <a style={{ color: 'red' }}>{t('common:btn.delete')}</a>
+              </Popconfirm>
+            </span>
           );
         },
       },
-    ] as any,
-    [
-      tagsColumn({ title: t('tpl.tags'), dataIndex: 'tags', maxWidth: 180, onTagClick: handleTagClick }),
-      userColumn({ title: t('tpl.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
-      dateColumn({ title: t('tpl.last_updated'), dataIndex: 'update_at', unix: true }),
-    ] as any,
+    ],
   );
 
   return (
@@ -152,7 +202,7 @@ const index = (_props: any) => {
       <div style={{ display: 'flex' }}>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
         {gids ? (
-          <div className='fc-border rounded-lg p-4' style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}>
+          <div className='fc-border rounded-lg p-4' style={{ flex: 1 }}>
             <Row>
               <Col span={14} className='mb-2'>
                 <SearchInput
@@ -166,7 +216,7 @@ const index = (_props: any) => {
               </Col>
               {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={10} className='textAlignRight'>
-                  <Link to={{ pathname: `/job-tpls/add` }}>
+                  <Link to={{ pathname: `/job-tpls/add`, search: `gid=${gids}` }}>
                     <Button style={{ marginRight: 10 }} type='primary'>
                       {t('tpl.create')}
                     </Button>
@@ -204,36 +254,11 @@ const index = (_props: any) => {
                 </Col>
               )}
             </Row>
-            <EnhancedTable
+            <Table
               className='mt-2'
               size='small'
               rowKey='id'
               columns={columns}
-              rowActions={(record) => ({
-                inline: [{ key: 'create', text: t('task.create'), onClick: () => history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}` }) }],
-                menu: [
-                  { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => history.push(`/job-tpls/${record.id}/modify`) },
-                  { key: 'clone', icon: 'copy', text: t('common:btn.clone'), onClick: () => history.push(`/job-tpls/${record.id}/clone`) },
-                  {
-                    key: 'delete',
-                    icon: 'delete',
-                    text: t('common:btn.delete'),
-                    danger: true,
-                    onClick: () => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          return request(`${api.tasktpl(record.group_id)}/${record.id}`, { method: 'DELETE' }).then(() => {
-                            message.success(t('msg.delete.success'));
-                            refresh();
-                          });
-                        },
-                      });
-                    },
-                  },
-                ],
-              })}
-              actionColumn={{ title: t('table.operations'), width: 110 }}
               {...(tableProps as any)}
               rowSelection={{
                 selectedRowKeys: selectedIds,
@@ -245,7 +270,7 @@ const index = (_props: any) => {
                 {
                   ...tableProps.pagination,
                   showSizeChanger: true,
-                  pageSizeOptions: ['10', '15', '50', '100', '500', '1000'],
+                  pageSizeOptions: ['10', '50', '100', '500', '1000'],
                   showTotal: (total) => {
                     return i18n.language == 'en' ? `Total ${total} items` : `共 ${total} 条`;
                   },

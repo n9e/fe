@@ -14,149 +14,23 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { Divider, Tag, Row, Col, Button, Card } from 'antd';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { RollbackOutlined } from '@ant-design/icons';
-import { ColumnProps } from 'antd/lib/table';
-import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import EnhancedTable from '@/components/EnhancedTable';
 import PageLayout from '@/components/pageLayout';
-import request from '@/utils/request';
-import api from '@/utils/api';
 import { CommonStateContext } from '@/App';
-import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
 
-import FieldCopy from './FieldCopy';
-import OutputDrawer from './OutputDrawer';
-import MetaDrawer from './MetaDrawer';
-
-interface HostItem {
-  host: string;
-  status: string;
-}
+import ResultContent from './ResultContent';
 
 const index = (props: any) => {
-  const taskResultCls = 'job-task-result';
   const history = useHistory();
   const { businessGroup } = useContext(CommonStateContext);
   const curBusiId = businessGroup.id!;
   const { params } = props.match;
   const taskId = params.id;
-  const { t, i18n } = useTranslation('common');
-  const [activeStatus, setActiveStatus] = useState<string[]>();
-  const [data, setData] = useState({} as any);
-  const [hosts, setHosts] = useState<HostItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const AutoRefreshRef = React.useRef<any>(null);
-  const [outputDrawer, setOutputDrawer] = useState<{
-    visible: boolean;
-    host?: string;
-    outputType: 'stdout' | 'stderr';
-  }>({ visible: false, outputType: 'stdout' });
-  const [metaDrawerVisible, setMetaDrawerVisible] = useState(false);
-  const getTableData = () => {
-    setLoading(true);
-    return request(`${api.task(curBusiId)}/${params.id}`)
-      .then((data) => {
-        setData({
-          ...data.dat.meta,
-          action: data.dat.action,
-        });
-        setHosts(data.dat.hosts);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    getTableData();
-  }, []);
-
-  useEffect(() => {
-    if (data.done && AutoRefreshRef.current?.closeRefresh) {
-      AutoRefreshRef.current?.closeRefresh();
-    }
-  }, [data.done]);
-
-  let filteredHosts = _.cloneDeep(hosts);
-  if (activeStatus) {
-    filteredHosts = _.filter(filteredHosts, (item: any) => {
-      return _.includes(activeStatus, item.status);
-    });
-  }
-
-  const handleHostAction = (host: string, action: string) => {
-    request(`${api.task(curBusiId)}/${taskId}/host/${host}/action`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        action,
-      }),
-    }).then(() => {
-      getTableData();
-    });
-  };
-
-  const handleTaskAction = (action: string) => {
-    request(`${api.task(curBusiId)}/${taskId}/action`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        action,
-      }),
-    }).then(() => {
-      getTableData();
-    });
-  };
-
-  const renderHostStatusFilter = () => {
-    const groupedHosts = _.groupBy(hosts, 'status');
-    return _.map(groupedHosts, (chosts, status) => {
-      return {
-        text: `${status} (${chosts.length})`,
-        value: status,
-      };
-    });
-  };
-
-  const columns: ColumnProps<HostItem>[] = [
-    {
-      title: <FieldCopy dataIndex='host' hasSelected={false} data={filteredHosts} />,
-      dataIndex: 'host',
-    },
-    {
-      title: t('task.status'),
-      dataIndex: 'status',
-      filters: renderHostStatusFilter(),
-      onFilter: (value: string, record) => {
-        return record.status === value;
-      },
-      render: (text) => {
-        if (text === 'success') {
-          return <Tag color='#87d068'>{text}</Tag>;
-        } else if (text === 'cancelled' || text === 'ignored') {
-          return <Tag color='#ec971f'>{text}</Tag>;
-        } else if (text === 'failed' || text === 'killfailed' || text === 'timeout') {
-          return <Tag color='#f50'>{text}</Tag>;
-        }
-        return <Tag>{text}</Tag>;
-      },
-    },
-    {
-      title: t('task.output'),
-      render: (_text, record) => {
-        return (
-          <span>
-            <a onClick={() => setOutputDrawer({ visible: true, host: record.host, outputType: 'stdout' })}>stdout</a>
-            <Divider type='vertical' />
-            <a onClick={() => setOutputDrawer({ visible: true, host: record.host, outputType: 'stderr' })}>stderr</a>
-          </span>
-        );
-      },
-    },
-  ];
+  const { t } = useTranslation('common');
 
   return (
     <PageLayout
@@ -167,96 +41,7 @@ const index = (props: any) => {
         </>
       }
     >
-      <div className={`${taskResultCls} p-4`}>
-        <Card
-          title={data.title}
-          extra={
-            <AutoRefresh
-              ref={AutoRefreshRef}
-              disabled={data.done}
-              onRefresh={() => {
-                getTableData();
-              }}
-            />
-          }
-        >
-          <Row style={{ marginBottom: 20 }}>
-            <Col span={18}>
-              <div>
-                <a onClick={() => setOutputDrawer({ visible: true, outputType: 'stdout' })}>stdouts</a>
-                <Divider type='vertical' />
-                <a onClick={() => setOutputDrawer({ visible: true, outputType: 'stderr' })}>stderrs</a>
-                <Divider type='vertical' />
-                <a onClick={() => setMetaDrawerVisible(true)}>{t('task.meta')}</a>
-                <Divider type='vertical' />
-                <Link to={{ pathname: '/job-tasks/add', search: `task=${taskId}` }}>{t('task.clone')}</Link>
-              </div>
-            </Col>
-            <Col span={6} className='textAlignRight'>
-              {!data.done ? (
-                <span>
-                  {data.action === 'start' ? (
-                    <Button className='success-btn' onClick={() => handleTaskAction('pause')}>
-                      Pause
-                    </Button>
-                  ) : (
-                    <Button className='success-btn' onClick={() => handleTaskAction('start')}>
-                      Start
-                    </Button>
-                  )}
-                  <Button className='ml-2 warning-btn' onClick={() => handleTaskAction('cancel')}>
-                    Cancel
-                  </Button>
-                  <Button className='ml-2 danger-btn' onClick={() => handleTaskAction('kill')}>
-                    Kill
-                  </Button>
-                </span>
-              ) : null}
-            </Col>
-          </Row>
-          <EnhancedTable
-            size='small'
-            rowKey='host'
-            columns={columns as any}
-            dataSource={hosts}
-            loading={loading}
-            {...(!data.done
-              ? {
-                  rowActions: (record) => ({
-                    menu: [
-                      { key: 'ignore', icon: 'default', text: 'ignore', onClick: () => handleHostAction(record.host, 'ignore') },
-                      { key: 'redo', icon: 'run', text: 'redo', onClick: () => handleHostAction(record.host, 'redo') },
-                      { key: 'kill', icon: 'delete', text: 'kill', danger: true, onClick: () => handleHostAction(record.host, 'kill') },
-                    ],
-                  }),
-                  actionColumn: { title: t('table.operations'), width: 64 },
-                }
-              : {})}
-            pagination={
-              {
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '50', '100', '500', '1000'],
-                showTotal: (total) => {
-                  return i18n.language == 'en' ? `Total ${total} items` : `共 ${total} 条`;
-                },
-              } as any
-            }
-            onChange={(pagination, filters, sorter, extra) => {
-              setActiveStatus(filters.status as string[]);
-            }}
-          />
-        </Card>
-      </div>
-      <OutputDrawer
-        visible={outputDrawer.visible}
-        onClose={() => setOutputDrawer({ visible: false, outputType: 'stdout' })}
-        busiId={curBusiId}
-        taskId={params.id}
-        host={outputDrawer.host}
-        outputType={outputDrawer.outputType}
-        title={`${data.title} - ${outputDrawer.host ? `${outputDrawer.host} - ` : ''}${outputDrawer.outputType}`}
-      />
-      <MetaDrawer visible={metaDrawerVisible} onClose={() => setMetaDrawerVisible(false)} data={data} hosts={hosts} taskId={params.id} />
+      <ResultContent taskId={taskId} busiId={curBusiId} />
     </PageLayout>
   );
 };

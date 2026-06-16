@@ -1,6 +1,8 @@
 const en_US = {
   auth: {
     403: 'You do not have permission to access this page, please contact the administrator!',
+    '403_admin': 'Administrators: ',
+    '403_back': 'Back to previous page',
     404: 'The page you visited does not exist!',
     '404_btn': 'Back to home',
   },
@@ -42,7 +44,7 @@ const en_US = {
     export_csv: 'Export (CSV)',
     import: 'Import',
     save: 'Save',
-    ok: 'Ok',
+    ok: 'OK',
     cancel: 'Cancel',
     view: 'View',
     more: 'More',
@@ -95,6 +97,8 @@ const en_US = {
     preview: 'Datasource preview',
     empty_modal: {
       title: 'Please contact the administrator to configure the datasource',
+      title_with_types:
+        'Currently only supports {{types}} datasource types. Other datasource types are not supported yet. Please contact the administrator to configure the datasource',
       btn1: 'Go to configure',
       btn2: 'OK',
     },
