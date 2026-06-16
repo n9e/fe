@@ -24,6 +24,22 @@
   z-index: 8;
 }
 
+// react-sortable-hoc 拖拽表格行时会把 tr clone 到 body，脱离 table/colgroup 上下文。
+// 固定列在 clone 中继续保持 sticky 会导致操作列（三个点）悬浮错位，这里仅在拖拽 helper 上还原固定列定位。
+.row-dragging {
+  .ant-table-cell-fix-left,
+  .ant-table-cell-fix-right {
+    position: static !important;
+    background: inherit;
+  }
+
+  .ant-table-cell-fix-left-last::after,
+  .ant-table-cell-fix-right-first::after,
+  .ant-table-cell-fix-right-last::after {
+    display: none;
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // 排序列图标 / 交互（与 design-system table-style-preview「更新时间」列 1:1 对齐）。
 // 仅作用于已迁移表 .fc-enhanced-table；未迁移表仍用 App.less 的默认 antd caret。
