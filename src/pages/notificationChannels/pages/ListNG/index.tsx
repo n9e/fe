@@ -116,7 +116,7 @@ export default function index() {
             </div>
           </div>
           <div className='w-px bg-fc-300'></div>
-          <div className='ml-4 w-full flex-1 flex flex-col gap-4'>
+          <div className='ml-4 w-full min-w-0 flex-1 flex flex-col gap-4'>
             <div className='flex justify-between'>
               <Space>
                 <Input
@@ -234,9 +234,12 @@ export default function index() {
                   {
                     title: t('common:table.name'),
                     dataIndex: 'name',
+                    width: 240,
+                    ellipsis: true,
                     render: (val, record) => {
                       return (
                         <Link
+                          className='block truncate'
                           to={{
                             pathname: `/${NS}/edit/${record.id}`,
                           }}
@@ -249,12 +252,14 @@ export default function index() {
                   {
                     title: t('ident'),
                     dataIndex: 'ident',
+                    width: 180,
+                    ellipsis: true,
                     render: (val) => {
                       const typeConfig = NOTIFICATION_CHANNEL_TYPES[val];
                       return (
-                        <div className='flex items-center gap-2'>
+                        <div className='flex min-w-0 items-center gap-2'>
                           {typeConfig ? <img height={16} src={typeConfig?.logo} alt={val} /> : null}
-                          {typeConfig ? t(`types.${val}`) : val}
+                          <span className='truncate'>{typeConfig ? t(`types.${val}`) : val}</span>
                         </div>
                       );
                     },
@@ -262,10 +267,12 @@ export default function index() {
                   updateByColumn({
                     title: t('common:table.update_by'),
                     dataIndex: 'update_by',
+                    width: 120,
                   }),
                   {
                     title: t('common:table.update_at'),
                     dataIndex: 'update_at',
+                    width: 170,
                     render: (val) => {
                       return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
                     },
@@ -279,7 +286,7 @@ export default function index() {
                       enabledValue: true,
                       disabledValue: false,
                     }),
-                    width: 100,
+                    width: 96,
                     render: (val, record) => (
                       <Switch
                         checked={val}
@@ -344,7 +351,7 @@ export default function index() {
                   },
                 }}
                 pagination={pagination}
-                scroll={{ x: 'max-content', y: 'calc(100% - 42px)' }}
+                scroll={{ y: 'calc(100% - 42px)' }}
               />
             </div>
           </div>
