@@ -212,7 +212,8 @@ export default function Index() {
               },
             ],
           })}
-          actionColumn={{ title: t('common:table.operations'), width: 64 }}
+          // fixed:false：本表可拖拽排序，默认 fixed:'right' 的 sticky 单元格在拖拽克隆行里会脱离行浮起；本表无横向滚动，无需固定
+          actionColumn={{ title: t('common:table.operations'), width: 64, fixed: false }}
           onRow={(record) => {
             return {
               onDoubleClick: () => {
