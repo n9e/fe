@@ -25,6 +25,65 @@
   }
 }
 
+.n9e-log-explorer-toolbar {
+  min-width: 0;
+}
+
+.n9e-log-explorer-toolbar-main {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
+
+  .ant-space-item {
+    flex-shrink: 0;
+  }
+}
+
+.n9e-log-explorer-log-mode {
+  white-space: nowrap;
+
+  .ant-radio-button-wrapper {
+    white-space: nowrap;
+  }
+}
+
+.n9e-log-explorer-toolbar-extra {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.n9e-log-clustering-extra {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  white-space: nowrap;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+
+  .ant-divider-vertical {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+}
+
+.n9e-log-clustering-sampled-tip {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--fc-text-2);
+  cursor: help;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.n9e-log-clustering-meta {
+  flex: 0 0 auto;
+}
+
 .log-clustering-group-by-select.ant-select-multiple.ant-select-sm {
   .ant-select-selector {
     min-height: 24px;
