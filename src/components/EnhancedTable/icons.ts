@@ -1,4 +1,5 @@
 import {
+  ArrowDownToLine,
   CheckCircle,
   Copy,
   ExternalLink,
@@ -31,6 +32,7 @@ export const actionIconMap = {
   claim: UserCheck,
   unclaim: UserX,
   run: Play,
+  offline: ArrowDownToLine,
   create: Plus,
   search: Search,
   open: ExternalLink,
