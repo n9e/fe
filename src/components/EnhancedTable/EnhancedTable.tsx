@@ -18,7 +18,7 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, dataSource, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, ...rest } = props;
 
   const rowActionsRef = useRef(rowActions);
   rowActionsRef.current = rowActions;
@@ -55,5 +55,12 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     return allColumns;
   }, [columns, actionColumn, hasRowActions]);
 
-  return <Table<RecordType> {...rest} dataSource={dataSource} columns={enhancedColumns} className={classNames('fc-enhanced-table', className)} />;
+  return (
+    <Table<RecordType>
+      {...rest}
+      dataSource={dataSource}
+      columns={enhancedColumns}
+      className={classNames('fc-enhanced-table', { 'fc-enhanced-table--compact-header': compactHeader }, className)}
+    />
+  );
 }

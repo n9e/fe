@@ -1,5 +1,22 @@
 // EnhancedTable action column (inline + kebab). Visual baseline lives in theme/table.less.
 
+// Compact header (opt-in via `compactHeader` prop): tighter thead padding + smaller sort hit-area.
+// Default header is ~40px (small padding 8px + 24px sort hit-area); embedded sub-tables inside
+// tabs/cards want it shorter. Doubled class to outrank `.fc-enhanced-table .ant-table-column-sorter`
+// in theme/table.less and antd's `.ant-table-small` thead padding. Body rows are untouched.
+.fc-enhanced-table.fc-enhanced-table--compact-header {
+  .ant-table-thead > tr > th {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .ant-table-column-sorter {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+  }
+}
+
 .fc-table-action-cell {
   display: flex;
   align-items: center;

@@ -32,4 +32,6 @@ export interface EnhancedTableProps<RecordType> extends TableProps<RecordType> {
   rowActions?: (record: RecordType, index: number) => RowActions | null | undefined;
   /** overrides for the generated action column (title / width / …) */
   actionColumn?: Partial<ColumnType<RecordType>>;
+  /** compact header: tighter thead padding + smaller sort hit-area, for tables embedded inside tabs/cards */
+  compactHeader?: boolean;
 }
