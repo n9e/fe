@@ -1,6 +1,6 @@
 // 日志聚类，目前仅支持了doris和es
 import React, { useState, useEffect } from 'react';
-import { Space, Tag, Select, Divider, Button } from 'antd';
+import { Space, Tag, Select, Divider, Button, Tooltip } from 'antd';
 import IconFont from '@/components/IconFont';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { BarChartOutlined, SyncOutlined } from '@ant-design/icons';
@@ -62,7 +62,7 @@ export default function TableCpt(props: Props) {
   const getCachedGroupByFields = () => {
     const cached = localStorage.getItem(FIELD_CACHE_PREFIX + fieldCacheKey);
     if (!cached) {
-      return [];
+      return undefined;
     }
     try {
       const parsed = JSON.parse(cached);
@@ -75,21 +75,18 @@ export default function TableCpt(props: Props) {
     } catch {
       return [cached];
     }
-    return [];
+    return undefined;
   };
 
   const getInitialGroupByFields = () => {
-    const cachedFields = normalizeGroupByFields(getCachedGroupByFields());
-    return cachedFields.length > 0 ? cachedFields : getDefaultGroupByFields(indexData);
+    const cachedFields = getCachedGroupByFields();
+    return cachedFields ? normalizeGroupByFields(cachedFields) : getDefaultGroupByFields(indexData);
   };
 
   const [groupByFields, setGroupByFields] = useState<string[]>(() => getInitialGroupByFields());
 
   const setCachedGroupByFields = (value: string[]) => {
     const nextFields = normalizeGroupByFields(value);
-    if (_.isEmpty(nextFields)) {
-      return;
-    }
     localStorage.setItem(FIELD_CACHE_PREFIX + fieldCacheKey, JSON.stringify(nextFields));
     setGroupByFields(nextFields);
   };
@@ -350,7 +347,7 @@ export default function TableCpt(props: Props) {
           })
         }
       >
-        {t('说明文档')}
+        {t('common:page_help')}
       </Button>
     </Space>
   );
@@ -361,18 +358,20 @@ export default function TableCpt(props: Props) {
       {clusteringExtraEleRef.current &&
         createPortal(
           scope === 'full' ? (
-            <Space size='small'>
+            <div className='n9e-log-clustering-extra'>
               {isSampled ? (
                 <>
-                  {t('clustering.sampled_tip')}
+                  <Tooltip title={t('clustering.sampled_tip')}>
+                    <span className='n9e-log-clustering-sampled-tip'>{t('clustering.sampled_tip')}</span>
+                  </Tooltip>
                   <Divider type='vertical' />
                 </>
               ) : null}
-              <span>{t('clustering.log_count')}</span>
-              <span>{logTotal?.toLocaleString()}</span>
-              <span>{t('clustering.duration')}</span>
-              <span>{timeCost}s</span>
-            </Space>
+              <span className='n9e-log-clustering-meta'>{t('clustering.log_count')}</span>
+              <span className='n9e-log-clustering-meta'>{logTotal?.toLocaleString()}</span>
+              <span className='n9e-log-clustering-meta'>{t('clustering.duration')}</span>
+              <span className='n9e-log-clustering-meta'>{timeCost}s</span>
+            </div>
           ) : null,
           clusteringExtraEleRef.current,
         )}
