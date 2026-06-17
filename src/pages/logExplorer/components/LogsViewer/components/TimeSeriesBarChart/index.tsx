@@ -31,7 +31,7 @@ export interface TimeSeriesBarChartProps {
 
 function categoryFormatter(category: string | number | null | undefined) {
   if (category === undefined) return 'default';
-  if (typeof category === 'string') return `"${category}"`;
+  if (category === '') return '""';
   return String(category);
 }
 
