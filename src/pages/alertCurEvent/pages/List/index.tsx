@@ -123,7 +123,8 @@ const AlertCurEvent: React.FC = () => {
     const requestParams: RuleCardsRequestParams = {
       view_id: filter.aggr_rule_id,
       my_groups: String(params.my_groups) === 'true',
-      ..._.omit(params, ['range', 'my_groups']),
+      // card 接口按聚合规则自行分组，无需 event_ids；其数量可能极大，去掉以免 URL 超长(414)
+      ..._.omit(params, ['range', 'my_groups', 'event_ids']),
     };
     if (params.range) {
       const parsedRange = parseRange(params.range);
