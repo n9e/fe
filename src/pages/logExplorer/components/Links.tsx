@@ -10,8 +10,8 @@ export function replaceVarAndGenerateLink(link: string, rawValue: object, regExt
   const param = new URLSearchParams(link);
   let reallink = link;
   const timeFormat = param.get('$__time_format__');
-  const startMarginNew = param.get('${__start_time_margin__}');
-  const endMarginNew = param.get('${__end_time_margin__}');
+  const startMarginNew = param.get('$__start_time_margin__');
+  const endMarginNew = param.get('$__end_time_margin__');
 
   reallink = reallink.replace('$local_protocol', location.protocol).replace('$local_domain', location.host).replace('$local_url', location.origin);
 
@@ -90,8 +90,8 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
   // 旧逻辑Endding，开启新逻辑，替换不带括号的 $local_protocol
   // 我把上边的一坨代码复制下来，然后改成不带括号的了
   const timeFormat = param.get('$__time_format__');
-  const startMarginNew = param.get('${__start_time_margin__}');
-  const endMarginNew = param.get('${__end_time_margin__}');
+  const startMarginNew = param.get('$__start_time_margin__');
+  const endMarginNew = param.get('$__end_time_margin__');
   const startMarginNumNew = startMarginNew && !isNaN(Number(startMarginNew)) ? Number(startMarginNew) : 0;
   const endMarginNumNew = endMarginNew && !isNaN(Number(endMarginNew)) ? Number(endMarginNew) : 0;
   let fromValue: string | number = '';
