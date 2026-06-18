@@ -2,8 +2,8 @@ const zh_CN = {
   title: '告警规则',
   empty_guide: {
     title: '还没有告警规则',
-    desc: '新增一条告警规则，或从模板中心导入内置告警规则包。',
-    from_template: '从模板中心导入',
+    desc: '新增一条告警规则，或一键导入内置告警规则模板。',
+    from_template: '从模板导入',
   },
   search_placeholder: '搜索名称或标签',
   prod: '监控类型',

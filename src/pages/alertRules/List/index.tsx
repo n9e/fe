@@ -74,7 +74,7 @@ function HeaderExtra(
 
 export default function List(props: ListProps) {
   const { t } = useTranslation('alertRules');
-  const { businessGroup } = useContext(CommonStateContext);
+  const { businessGroup, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const history = useHistory();
   const { gids } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
@@ -116,7 +116,25 @@ export default function List(props: ListProps) {
                     {t('common:btn.add')}
                   </Button>
                 )}
-                <a onClick={() => history.push('/components')}>{t('empty_guide.from_template')}</a>
+                {businessGroup.isLeaf && businessGroup.id && gids !== '-2' ? (
+                  <a
+                    onClick={() => {
+                      if (businessGroup.id) {
+                        Import({
+                          busiId: businessGroup.id,
+                          refreshList: fetchData,
+                          groupedDatasourceList,
+                          reloadGroupedDatasourceList,
+                          datasourceCateOptions,
+                        });
+                      }
+                    }}
+                  >
+                    {t('empty_guide.from_template')}
+                  </a>
+                ) : (
+                  <a onClick={() => history.push('/components')}>{t('empty_guide.from_template')}</a>
+                )}
               </>
             }
           />

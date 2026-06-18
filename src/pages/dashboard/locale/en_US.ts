@@ -10,8 +10,8 @@ const en_US = {
   search_placeholder: 'Search',
   empty_guide: {
     title: 'No dashboard yet',
-    desc: 'Create a dashboard, or import a built-in one from the template center with one click.',
-    from_template: 'Import from template center',
+    desc: 'Create a dashboard, or import a built-in dashboard template with one click.',
+    from_template: 'Import from template',
   },
   refresh_tip: 'Refresh interval less than step({{num}}s) will not update data',
   refresh_btn: 'Refresh',

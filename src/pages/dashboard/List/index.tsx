@@ -42,6 +42,7 @@ import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
 import FormModal from './FormModal';
 import Export from './Export';
+import Import, { ModalType } from './Import';
 import { exportDataStringify } from './utils';
 import PublicForm from './PublicForm';
 
@@ -69,6 +70,7 @@ export default function index() {
   const [busiGroups, setBusiGroups] = useState<any[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [importData, setImportData] = useState<{ visible: boolean; busiId?: number; type?: ModalType }>({ visible: false });
 
   useUpdateEffect(() => {
     setGids(businessGroup.ids);
@@ -442,7 +444,17 @@ export default function index() {
                           {t('common:btn.add')}
                         </Button>
                       )}
-                      <Link to='/components'>{t('empty_guide.from_template')}</Link>
+                      {businessGroup.isLeaf && businessGroup.id && gids && gids !== '-1' && gids !== '-2' ? (
+                        <a
+                          onClick={() => {
+                            setImportData({ visible: true, busiId: businessGroup.id, type: 'ImportBuiltin' });
+                          }}
+                        >
+                          {t('empty_guide.from_template')}
+                        </a>
+                      ) : (
+                        <Link to='/components'>{t('empty_guide.from_template')}</Link>
+                      )}
                     </>
                   }
                 />
@@ -451,6 +463,17 @@ export default function index() {
           />
         </div>
       </div>
+      {importData.busiId && importData.type && (
+        <Import
+          visible={importData.visible}
+          busiId={importData.busiId}
+          type={importData.type}
+          onOk={() => {
+            setImportData({ ...importData, visible: false });
+            setRefreshKey(_.uniqueId('refreshKey_'));
+          }}
+        />
+      )}
     </PageLayout>
   );
 }
