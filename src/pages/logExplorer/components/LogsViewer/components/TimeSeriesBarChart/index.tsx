@@ -31,9 +31,7 @@ export interface TimeSeriesBarChartProps {
 
 function categoryFormatter(category: string | null | undefined) {
   if (category === undefined) return 'default';
-  if (category === '') return '""';
-  if (category === null) return '"null"';
-  return String(category);
+  return category === null || category === '' ? `"${category}"` : category;
 }
 
 const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs, categoryColors }) => {
