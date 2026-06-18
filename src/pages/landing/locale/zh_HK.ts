@@ -1,5 +1,20 @@
 const zh_HK = {
   pageTitle: '歡迎使用 Nightingale',
+  onboarding: {
+    title: '新手引導',
+    subtitle: '跟著做完這幾步，幾分鐘把監控跑起來',
+    progress: '已完成 {{done}}/{{total}}',
+    dismiss: '不再顯示',
+    hostTrack: '主機監控線',
+    dataTrack: '數據接入線',
+    steps: {
+      machine: { title: '部署採集器，接入主機', desc: '在主機部署 Categraf，機器會自動出現在裝置列表' },
+      hostDashboard: { title: '套用主機監控大盤', desc: '從模板中心一鍵導入內置主機大盤' },
+      datasource: { title: '配置數據源', desc: '接入 Prometheus / VictoriaMetrics 等數據源' },
+      dashboard: { title: '建立儀表盤', desc: '把關心的指標視覺化成大盤' },
+      alert: { title: '配置告警規則', desc: '為關鍵指標設定第一條告警規則' },
+    },
+  },
   hero: {
     badge: '開源 · 一站式監控告警平台',
     highlight: '讓監控更簡單、更智慧',

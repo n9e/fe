@@ -6,6 +6,7 @@ import { Space, Button } from 'antd';
 
 import { CommonStateContext } from '@/App';
 import { getBusiGroupsAlertRules } from '@/services/warning';
+import EmptyGuide from '@/components/EmptyGuide';
 
 import { AlertRuleType } from '../types';
 import MoreOperations from './MoreOperations';
@@ -74,6 +75,7 @@ function HeaderExtra(
 export default function List(props: ListProps) {
   const { t } = useTranslation('alertRules');
   const { businessGroup } = useContext(CommonStateContext);
+  const history = useHistory();
   const { gids } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
@@ -103,6 +105,22 @@ export default function List(props: ListProps) {
         data={data}
         loading={loading}
         setRefreshFlag={setRefreshFlag}
+        emptyGuide={
+          <EmptyGuide
+            title={t('empty_guide.title')}
+            description={t('empty_guide.desc')}
+            actions={
+              <>
+                {businessGroup.isLeaf && gids !== '-2' && (
+                  <Button type='primary' onClick={() => history.push(`/alert-rules/add/${businessGroup.id}`)}>
+                    {t('common:btn.add')}
+                  </Button>
+                )}
+                <a onClick={() => history.push('/components')}>{t('empty_guide.from_template')}</a>
+              </>
+            }
+          />
+        }
       />
     </div>
   );

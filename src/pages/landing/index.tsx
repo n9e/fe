@@ -51,6 +51,7 @@ import {
   landingQuickStartCards,
   landingScenarioProducts,
 } from './landing.data';
+import OnboardingChecklist from './OnboardingChecklist';
 import './style.less';
 
 const scenarioIcons: LucideIcon[] = [UsersIcon, Flame, History, Sparkles];
@@ -171,6 +172,9 @@ export default function Landing() {
               </div>
             </div>
           </section>
+
+          {/* Section 1.5 · 新手任务清单（仅在仍有未完成步骤时展示） */}
+          <OnboardingChecklist />
 
           {/* Section header for the matrix */}
           <div className='n9e-landing-header'>

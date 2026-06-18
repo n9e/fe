@@ -36,6 +36,7 @@ import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/compon
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getBusiGroups } from '@/components/BusinessGroup';
+import EmptyGuide from '@/components/EmptyGuide';
 
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
@@ -418,6 +419,35 @@ export default function index() {
               },
             }}
             pagination={pagination}
+            locale={{
+              emptyText: (
+                <EmptyGuide
+                  title={t('empty_guide.title')}
+                  description={t('empty_guide.desc')}
+                  actions={
+                    <>
+                      {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
+                        <Button
+                          type='primary'
+                          onClick={() => {
+                            FormModal({
+                              action: 'create',
+                              busiId: businessGroup.id,
+                              onOk: () => {
+                                setRefreshKey(_.uniqueId('refreshKey_'));
+                              },
+                            });
+                          }}
+                        >
+                          {t('common:btn.add')}
+                        </Button>
+                      )}
+                      <Link to='/components'>{t('empty_guide.from_template')}</Link>
+                    </>
+                  }
+                />
+              ),
+            }}
           />
         </div>
       </div>
