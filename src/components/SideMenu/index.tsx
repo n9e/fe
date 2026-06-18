@@ -25,6 +25,7 @@ import MenuList from './MenuList';
 // @ts-ignore
 import QuickStart from 'plus:/components/quickStart';
 import QuickMenu from './QuickMenu';
+import OnboardingProgressBadge from '@/components/OnboardingProgress';
 import { MenuItem, DefaultLogos } from './types';
 import { getSidebarProfileDisplay } from './profile';
 import './menu.less';
@@ -429,6 +430,7 @@ const SideMenu = (props: SideMenuProps) => {
               onToggleCollapse={toggleCollapsed}
               toggleTitle={collapsed ? t('expand') : t('collapse')}
             />
+            {!hideSideMenu && <OnboardingProgressBadge collapsed={collapsed} isCustomBg={isCustomBg} />}
             <div
               className={cn(
                 'shrink-0 h-px',
