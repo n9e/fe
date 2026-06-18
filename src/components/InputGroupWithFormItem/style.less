@@ -1,7 +1,7 @@
 .ant-input-group.ant-input-group-compact.input-group-with-form-item {
   display: flex !important;
 
-  >.ant-input-group-addon {
+  > .ant-input-group-addon {
     .ant-select {
       margin: 0 !important;
 
@@ -16,13 +16,12 @@
   }
 
   // 左侧 label（ant-input-group-addon）：右侧连接处取消圆角
-  >.ant-input-group-addon:first-child {
+  > .ant-input-group-addon:first-child {
     border-radius: var(--fc-border-radius-base) 0 0 var(--fc-border-radius-base) !important;
   }
 
   // 中间 content 内的输入控件：当左侧有 label 时取消左圆角
   .input-group-with-form-item-content:not(:first-child) {
-
     .ant-input,
     .ant-select .ant-select-selector,
     .ant-picker,
@@ -35,7 +34,6 @@
 
   // 有右侧 addonAfter 时，content 内控件右侧也取消圆角
   .input-group-with-form-item-content:not(:last-child) {
-
     .ant-input,
     .ant-select .ant-select-selector,
     .ant-picker,
@@ -47,7 +45,7 @@
   }
 
   // 右侧 addonAfter：左侧连接处取消圆角，右侧保留
-  >.ant-input-group-addon:last-child {
+  > .ant-input-group-addon:last-child {
     border-radius: 0 var(--fc-border-radius-base) var(--fc-border-radius-base) 0 !important;
   }
 
@@ -77,7 +75,7 @@
     }
   }
 
-  .ant-input-group-addon:last-child {
+  > .ant-input-group-addon:last-child {
     border-left: 1px solid var(--fc-border-color);
     width: max-content;
     max-width: unset;
