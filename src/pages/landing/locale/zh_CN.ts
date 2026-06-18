@@ -5,6 +5,7 @@ const zh_CN = {
     subtitle: '跟着做完这几步，几分钟把监控跑起来',
     progress: '已完成 {{done}}/{{total}}',
     dismiss: '不再显示',
+    viewFull: '查看完整引导',
     hostTrack: '主机监控线',
     dataTrack: '数据接入线',
     steps: {

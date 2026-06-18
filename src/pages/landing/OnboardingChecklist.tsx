@@ -2,41 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
-import { Server, Database, Check, ArrowRight, type LucideIcon } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 
-import useOnboardingProgress, { OnboardingStepKey } from '@/components/OnboardingProgress/useOnboardingProgress';
-
-interface StepDef {
-  key: OnboardingStepKey;
-  to: string;
-}
-
-interface TrackDef {
-  key: 'host' | 'data';
-  icon: LucideIcon;
-  steps: StepDef[];
-}
-
-// 两条平行引导线：主机监控线（机器单独成线）+ 数据接入线
-const TRACKS: TrackDef[] = [
-  {
-    key: 'host',
-    icon: Server,
-    steps: [
-      { key: 'machine', to: '/targets' },
-      { key: 'hostDashboard', to: '/components' },
-    ],
-  },
-  {
-    key: 'data',
-    icon: Database,
-    steps: [
-      { key: 'datasource', to: '/datasources' },
-      { key: 'dashboard', to: '/dashboards' },
-      { key: 'alert', to: '/alert-rules' },
-    ],
-  },
-];
+import useOnboardingProgress from '@/components/OnboardingProgress/useOnboardingProgress';
+import { ONBOARDING_TRACKS } from '@/components/OnboardingProgress/tracks';
 
 export default function OnboardingChecklist() {
   const { t } = useTranslation('n9e-landing');
@@ -61,7 +30,7 @@ export default function OnboardingChecklist() {
           </div>
         </div>
         <div className='n9e-landing-onboarding-tracks'>
-          {TRACKS.map((track) => {
+          {ONBOARDING_TRACKS.map((track) => {
             const TrackIcon = track.icon;
             return (
               <section className='n9e-landing-onboarding-panel' key={track.key}>

@@ -5,6 +5,7 @@ const en_US = {
     subtitle: 'A few steps to get your monitoring up and running',
     progress: '{{done}}/{{total}} completed',
     dismiss: 'Dismiss',
+    viewFull: 'View full guide',
     hostTrack: 'Host monitoring',
     dataTrack: 'Data integration',
     steps: {

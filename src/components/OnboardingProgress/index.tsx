@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'antd';
+import { Popover } from 'antd';
 import classNames from 'classnames';
 
 import useOnboardingProgress from './useOnboardingProgress';
+import OnboardingPopoverContent from './PopoverContent';
 import './style.less';
 
 interface ProgressRingProps {
@@ -47,7 +48,8 @@ interface Props {
 export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props) {
   const { t } = useTranslation('n9e-landing');
   const history = useHistory();
-  const { loaded, doneCount, total } = useOnboardingProgress();
+  const { loaded, doneCount, total, doneMap } = useOnboardingProgress();
+  const [open, setOpen] = useState(false);
 
   // 加载中、或已全部完成（5/5）时不展示
   if (!loaded || doneCount === total) {
@@ -58,28 +60,48 @@ export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props
   const ringTrack = isCustomBg ? 'rgba(255,255,255,0.28)' : 'rgb(var(--fc-text-link-rgb) / 0.18)';
   const label = t('onboarding.title');
   const countText = `${doneCount}/${total}`;
-  const go = () => history.push('/landing');
   const ring = <ProgressRing done={doneCount} total={total} color={ringColor} trackColor={ringTrack} />;
+
+  const handleNavigate = (to: string) => {
+    setOpen(false);
+    history.push(to);
+  };
+
+  const popover = (trigger: React.ReactElement) => (
+    <Popover
+      trigger='click'
+      visible={open}
+      onVisibleChange={setOpen}
+      placement='rightTop'
+      align={{ offset: [8, -8] }}
+      overlayClassName='n9e-onboarding-pop-overlay'
+      content={<OnboardingPopoverContent doneMap={doneMap} doneCount={doneCount} total={total} onNavigate={handleNavigate} />}
+    >
+      {trigger}
+    </Popover>
+  );
 
   if (collapsed) {
     return (
       <div className='px-2 pt-2'>
-        <Tooltip placement='right' title={`${label} · ${countText}`}>
-          <button type='button' onClick={go} aria-label={`${label} ${countText}`} className={classNames('n9e-onboarding-badge-collapsed', { 'is-custom-bg': isCustomBg })}>
+        {popover(
+          <button type='button' aria-label={`${label} ${countText}`} className={classNames('n9e-onboarding-badge-collapsed', { 'is-custom-bg': isCustomBg })}>
             {ring}
-          </button>
-        </Tooltip>
+          </button>,
+        )}
       </div>
     );
   }
 
   return (
     <div className='px-3 pt-3'>
-      <button type='button' onClick={go} className={classNames('n9e-onboarding-badge', { 'is-custom-bg': isCustomBg })}>
-        {ring}
-        <span className='n9e-onboarding-badge-label'>{label}</span>
-        <span className='n9e-onboarding-badge-count'>{countText}</span>
-      </button>
+      {popover(
+        <button type='button' className={classNames('n9e-onboarding-badge', { 'is-custom-bg': isCustomBg, 'is-open': open })}>
+          {ring}
+          <span className='n9e-onboarding-badge-label'>{label}</span>
+          <span className='n9e-onboarding-badge-count'>{countText}</span>
+        </button>,
+      )}
     </div>
   );
 }
