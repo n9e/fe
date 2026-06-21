@@ -176,6 +176,14 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                                               name: ['targets', field.name, 'query', 'builderConfig', 'mode'],
                                               value: res.mode,
                                             },
+                                            {
+                                              name: ['targets', field.name, 'query', 'keys', 'valueKey'],
+                                              value: res.value_key,
+                                            },
+                                            {
+                                              name: ['targets', field.name, 'query', 'keys', 'labelKey'],
+                                              value: res.label_key,
+                                            },
                                           ]);
                                           setBuilderDirtyMap((prev) => ({ ...prev, [field.name]: false }));
                                         })
