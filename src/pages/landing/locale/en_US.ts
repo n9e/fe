@@ -5,7 +5,6 @@ const en_US = {
     subtitle: 'A few steps to get your monitoring up and running',
     progress: '{{done}}/{{total}} completed',
     dismiss: 'Dismiss',
-    viewFull: 'View full guide',
     hostTrack: 'Host monitoring',
     dataTrack: 'Data integration',
     steps: {
@@ -97,7 +96,7 @@ const en_US = {
     ingest: {
       title: 'Unified Ingestion',
       description: 'Deploy and ingest data quickly',
-      links: ['How to deploy the Categraf collector?', 'How to collect host and middleware data with Categraf?'],
+      links: ['How to deploy the Categraf collector?', 'How to configure a data source?'],
     },
     observe: {
       title: 'Unified Observability',

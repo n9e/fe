@@ -4,9 +4,7 @@ const zh_CN = {
     title: '新手引导',
     subtitle: '跟着做完这几步，几分钟把监控跑起来',
     progress: '已完成 {{done}}/{{total}}',
-    dismiss: '不再显示',
-    viewFull: '查看完整引导',
-    hostTrack: '主机监控线',
+    dismiss: '不再显示',    hostTrack: '主机监控线',
     dataTrack: '数据接入线',
     steps: {
       machine: { title: '部署采集器，接入主机', desc: '在主机部署 Categraf，机器会自动出现在设备列表' },
@@ -97,7 +95,7 @@ const zh_CN = {
     ingest: {
       title: '统一接入',
       description: '快速完成部署与数据接入',
-      links: ['如何部署 Categraf 采集器？', '如何用 Categraf 采集主机和中间件数据？'],
+      links: ['如何部署 Categraf 采集器？', '如何配置数据源？'],
     },
     observe: {
       title: '统一观测',

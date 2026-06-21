@@ -36,6 +36,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import PageLayout from '@/components/pageLayout';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { useAiChatContext } from '@/components/AiChatNG';
 import { buildPageFrom, getRecommendByUrl } from '@/components/AiChatNG/recommend';
 import {
@@ -121,6 +122,19 @@ export default function Landing() {
       });
     },
     [openAiChat, i18n.language],
+  );
+
+  // 快速上手区的文档：在右侧抽屉内嵌打开，不跳新标签页
+  const handleOpenDoc = useCallback(
+    (url: string, title: string) => {
+      DocumentDrawer({
+        language: i18n.language,
+        title,
+        type: 'iframe',
+        documentPath: url,
+      });
+    },
+    [i18n.language],
   );
 
   return (
@@ -379,7 +393,16 @@ export default function Landing() {
                         const linkLabel = t(link.labelKey);
                         return (
                           <div key={link.labelKey} className='n9e-landing-quickstart-link-row'>
-                            <a className='n9e-landing-quickstart-link' href={link.url} target='_blank' rel='noopener noreferrer'>
+                            <a
+                              className='n9e-landing-quickstart-link'
+                              href={link.url}
+                              rel='noopener noreferrer'
+                              onClick={(e) => {
+                                if (!link.url) return;
+                                e.preventDefault();
+                                handleOpenDoc(link.url, linkLabel);
+                              }}
+                            >
                               <ArrowRightOutlined className='n9e-landing-quickstart-link-arrow' />
                               <span className='n9e-landing-quickstart-link-label'>{linkLabel}</span>
                             </a>

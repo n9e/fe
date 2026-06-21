@@ -138,7 +138,7 @@ export const landingQuickStartCards: LandingGuideCard[] = [
     descriptionKey: 'quickStart.ingest.description',
     links: [
       { labelKey: 'quickStart.ingest.links.0', url: 'https://flashcat.cloud/docs/content/flashcat-monitor/categraf/2-installation/' },
-      { labelKey: 'quickStart.ingest.links.1', url: `${DOCS_V8_BASE}agent/categraf/` },
+      { labelKey: 'quickStart.ingest.links.1', url: `${DOCS_V8_BASE}quickstart/datasource/` },
     ],
   },
   {

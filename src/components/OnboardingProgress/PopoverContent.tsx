@@ -54,10 +54,6 @@ export default function OnboardingPopoverContent({ doneMap, doneCount, total, on
           );
         })}
       </div>
-      <button type='button' className='n9e-onboarding-pop-footer' onClick={() => onNavigate('/landing')}>
-        {t('onboarding.viewFull')}
-        <ArrowRight size={13} strokeWidth={2} />
-      </button>
     </div>
   );
 }
