@@ -59,6 +59,34 @@ describe('showGitOperationError', () => {
       }),
     );
   });
+
+  it('extracts err from error.data when available (silence mode)', () => {
+    const error = { data: { err: 'Repository not found' } };
+    showGitOperationError('Error Title', error, 'Fallback');
+    expect(Modal.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Error Title',
+        width: 560,
+      }),
+    );
+    const callArg = (Modal.error as jest.Mock).mock.calls[0][0];
+    expect(callArg.content.props.className).toBe('break-all whitespace-pre-wrap');
+    expect(callArg.content.props.children).toBe('Repository not found');
+  });
+
+  it('falls back to error.message when error.data.err is absent', () => {
+    const error = { data: { foo: 'bar' }, message: 'Network error' };
+    showGitOperationError('Error Title', error, 'Fallback');
+    expect(Modal.error).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Error Title',
+        width: 560,
+      }),
+    );
+    const callArg = (Modal.error as jest.Mock).mock.calls[0][0];
+    expect(callArg.content.props.className).toBe('break-all whitespace-pre-wrap');
+    expect(callArg.content.props.children).toBe('Network error');
+  });
 });
 
 describe('confirmAbortOngoingRequest', () => {
