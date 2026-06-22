@@ -270,11 +270,12 @@ export default function LogsViewer(props: Props) {
           </>
         )}
         <FullscreenButton.Provider>
-          <div className='flex justify-between pb-2'>
-            <Space>
+          <div className='n9e-log-explorer-toolbar flex justify-between items-center gap-2 pb-2'>
+            <Space className='n9e-log-explorer-toolbar-main'>
               {addonBefore}
               {showLogMode && (
                 <Radio.Group
+                  className='n9e-log-explorer-log-mode'
                   size='small'
                   optionType='button'
                   options={_.concat(
@@ -323,7 +324,7 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {options.logMode === 'clustering' ? <div ref={clusteringExtraEleRef} /> : optionsExtraRender}
+            {options.logMode === 'clustering' ? <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} /> : optionsExtraRender}
           </div>
           <div className='h-full min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>

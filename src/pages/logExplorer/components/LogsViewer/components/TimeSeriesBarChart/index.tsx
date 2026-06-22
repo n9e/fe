@@ -14,7 +14,7 @@ register('palette.custom', customPalette);
 export interface TimeSeriesDataPoint {
   time: number | string; // 时间戳或时间字符串
   value: number;
-  category?: string; // 用于堆叠图的分类
+  category?: string | null; // 用于堆叠图的分类
 }
 
 export interface TimeSeriesBarChartProps {
@@ -29,10 +29,9 @@ export interface TimeSeriesBarChartProps {
   stepMs?: number; // x 轴步长（毫秒），用于刻度格式化
 }
 
-function categoryFormatter(category: string | number | null | undefined) {
+function categoryFormatter(category: string | null | undefined) {
   if (category === undefined) return 'default';
-  if (typeof category === 'string') return `"${category}"`;
-  return String(category);
+  return category === null || category === '' ? `"${category}"` : category;
 }
 
 const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs, categoryColors }) => {

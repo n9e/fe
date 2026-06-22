@@ -59,14 +59,13 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
   timestamps.sort((a, b) => a - b);
   frames[0] = timestamps;
 
-  // Create frames
+  // Create frames — use null (not undefined) as initial value so uPlot's
+  // findGaps (=== null) can detect gaps across the entire missing region.
   for (const item of result) {
     for (const data of item.data) {
-      const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), undefined);
+      const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
       for (const [ts, value] of data.values) {
         const index = timestamps.indexOf(ts);
-
-        // Add value to frame
         frame[index] = value;
       }
       frames.push(frame);
@@ -126,9 +125,10 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
   timestamps.sort((a, b) => a - b);
   frames[0] = timestamps;
 
-  // Create frames
+  // Create frames — use null (not undefined) as initial value so uPlot's
+  // findGaps (=== null) can detect gaps across the entire missing region.
   for (const item of oldSeries) {
-    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), undefined);
+    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
     if (item.data) {
       for (const [ts, value] of item.data) {
         const index = timestamps.indexOf(ts);

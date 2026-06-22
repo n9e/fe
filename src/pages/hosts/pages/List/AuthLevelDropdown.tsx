@@ -61,7 +61,7 @@ export default function AuthLevelDropdown(props: Props) {
   return (
     <>
       {selectedIdents.length === 0 ? (
-        <Tooltip title={t('auth_level_action_tip')}>
+        <Tooltip title={t('auth_level_action_tip')} placement='left'>
           <Button disabled>
             {t('auth_level_action')} <DownOutlined />
           </Button>

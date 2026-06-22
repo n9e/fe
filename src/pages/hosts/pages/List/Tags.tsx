@@ -167,7 +167,7 @@ export default function Tags(props: Props) {
           <Popover
             title={
               <div className='flex justify-between items-center'>
-                <Trans ns={NS} i18nKey='tags_popover_title' values={{ count: data.length }} />
+                <Trans ns='common' i18nKey='tags_popover_title' values={{ count: data.length }} />
                 <Button
                   type='text'
                   icon={<CopyOutlined />}
