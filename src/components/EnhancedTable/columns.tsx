@@ -78,7 +78,6 @@ export function tagsColumn<T = any>(
 ): ColumnType<T> {
   const { maxWidth = 180, type = 'outline', onTagClick, ...rest } = opts;
   return {
-    width: 280,
     render: (value: any) => <Tags type={type} maxWidth={maxWidth} data={value} onTagClick={onTagClick} />,
     ...rest,
   };
@@ -95,12 +94,7 @@ export function userColumn<T = any>(
   const { nickname, ...rest } = opts;
   return {
     width: 120,
-    render: (value: any, record: any) => (
-      <div>
-        <div>{value || '-'}</div>
-        {nickname && record?.[nickname] && <div className='text-soft'>{record[nickname]}</div>}
-      </div>
-    ),
+    render: (value: any, record: any) => <div>{nickname && record?.[nickname] ? <div>{record[nickname]}</div> : <div>{value || '-'}</div>}</div>,
     ...rest,
   };
 }
@@ -110,12 +104,7 @@ export function updateByColumn<T = any>(opts: UpdateByColumnOptions<T>): UpdateB
   const { nickname, getValue, filterMode = 'client', onFilter, ...rest } = opts;
   return {
     width: 120,
-    render: (value: any, record: any) => (
-      <div>
-        <div>{value || '-'}</div>
-        {nickname && record?.[nickname] && <div className='text-soft'>{record[nickname]}</div>}
-      </div>
-    ),
+    render: (value: any, record: any) => <div>{nickname && record?.[nickname] ? <div>{record[nickname]}</div> : <div>{value || '-'}</div>}</div>,
     ...rest,
     [UPDATE_BY_COLUMN_META]: {
       filterMode,
