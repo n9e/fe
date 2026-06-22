@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Button, Dropdown, Menu, Modal, Space, Switch, Tag, Tooltip, message } from 'antd';
-import { DeleteOutlined, EllipsisOutlined, DownloadOutlined, UploadOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Menu, Modal, Space, Switch, Tag, Tooltip, message } from 'antd';
+import { DeleteOutlined, EllipsisOutlined, DownloadOutlined, UploadOutlined, ReloadOutlined, InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { GitBranch, GitCommitHorizontal, Tag as TagIcon } from 'lucide-react';
 import JSZip from 'jszip';
 import _ from 'lodash';
@@ -24,6 +24,7 @@ interface Props {
   onGitUpdate?: () => void;
   onGitReplaceConfig?: () => void;
   onBuiltinGitUpdate?: () => void;
+  builtinGitUpdating?: boolean;
 }
 
 function shortCommit(commit?: string) {
@@ -44,7 +45,7 @@ function getRefIcon(refType?: GitRefType) {
 export default function SkillDetailPanel(props: Props) {
   const { t } = useTranslation(NS);
   const { profile } = useContext(CommonStateContext);
-  const { item, onToggleEnabled, onImport, onDelete, onGitUpdate, onGitReplaceConfig, onBuiltinGitUpdate } = props;
+  const { item, onToggleEnabled, onImport, onDelete, onGitUpdate, onGitReplaceConfig, onBuiltinGitUpdate, builtinGitUpdating } = props;
 
   const [previewMode, setPreviewMode] = React.useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
@@ -116,8 +117,8 @@ export default function SkillDetailPanel(props: Props) {
       {(!isBuiltin || (isBuiltin && !isGit && !!profile.admin)) && (
         <Menu.Item key={replaceMenuKey} onClick={handleReplaceClick}>
           <Space>
-            <UploadOutlined />
-            {t('upload_skill_update')}
+            {isGit ? <EditOutlined /> : <UploadOutlined />}
+            {isGit ? t('upload_skill_modify') : t('upload_skill_update')}
           </Space>
         </Menu.Item>
       )}
@@ -243,7 +244,6 @@ export default function SkillDetailPanel(props: Props) {
       <div className='flex justify-between fc-toolbar mb-2'>
         <div className='text-title text-l2 flex items-center gap-2'>
           <span>{isBuiltin && !isGit ? t('form.usage') : item.name}</span>
-          {isBuiltin && isGit && item.has_new_version === true && <Tag color='red'>{t('git.new_version_tag')}</Tag>}
         </div>
         <Space>
           {!isBuiltin && (
@@ -254,13 +254,36 @@ export default function SkillDetailPanel(props: Props) {
           )}
           {showUpdateButton &&
             (isBuiltin ? (
-              <Button size='small' icon={<ReloadOutlined />} onClick={onBuiltinGitUpdate}>
-                {t('git.update_btn')}
-              </Button>
+              <>
+                {item.has_new_version === true && (
+                  <Tag className='m-0' color='red'>
+                    <InfoCircleOutlined /> {t('git.has_new_version_tag')}
+                  </Tag>
+                )}
+                <Button size='small' icon={<ReloadOutlined />} onClick={onBuiltinGitUpdate} loading={builtinGitUpdating}>
+                  {t('git.update_btn')}
+                </Button>
+                <Button
+                  size='small'
+                  icon={<UploadOutlined />}
+                  onClick={() => {
+                    setUploadModalVisible(true);
+                  }}
+                >
+                  {t('upload_skill_update')}
+                </Button>
+              </>
             ) : (
-              <Button size='small' icon={<ReloadOutlined />} onClick={onGitUpdate}>
-                {t('git.update_btn')}
-              </Button>
+              <>
+                {item.has_new_version === true && (
+                  <Tag className='m-0' color='red'>
+                    <InfoCircleOutlined /> {t('git.has_new_version_tag')}
+                  </Tag>
+                )}
+                <Button size='small' icon={<ReloadOutlined />} onClick={onGitUpdate}>
+                  {t('git.update_btn')}
+                </Button>
+              </>
             ))}
           {showOverflowMenu && (
             <Dropdown overlay={overflowMenu}>
@@ -269,7 +292,6 @@ export default function SkillDetailPanel(props: Props) {
           )}
         </Space>
       </div>
-      {isBuiltin && isGit && item.has_new_version === true && <Alert className='mb-2' type='info' showIcon message={t('git.has_new_version')} />}
       {showMetaSection && (
         <>
           {renderMetaSection()}

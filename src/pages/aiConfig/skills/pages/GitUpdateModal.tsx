@@ -1,10 +1,11 @@
 import React from 'react';
-import { Modal, Form, Button, Space, message } from 'antd';
+import { Modal, Form, Button, Space } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
+import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 import { NS } from '../constants';
-import { gitUpdate } from '../services';
+import { getItem, gitUpdate } from '../services';
 import { GitInstallPayload, GitInfo } from '../types';
 import GitForm from './GitForm';
 import { confirmAbortOngoingRequest, isAbortError, showGitOperationError } from './gitErrorModal';
@@ -86,7 +87,28 @@ export default function GitUpdateModal(props: Props) {
         },
         { silence: true, signal: controller.signal },
       );
-      message.success(t('common:success.modify'));
+      try {
+        const detail = await getItem(id);
+        const updatedAt = detail.updated_at ? moment.unix(detail.updated_at).format('YYYY-MM-DD HH:mm:ss') : '-';
+        const commit = detail.git_info?.current_commit || '-';
+        Modal.success({
+          title: t('git.update_success_title'),
+          content: (
+            <div>
+              <div className='flex items-baseline gap-2'>
+                <span className='inline-block w-[5em] whitespace-nowrap text-right'>{t('git.meta_update_at')}:</span>
+                <span className='flex-1'>{updatedAt}</span>
+              </div>
+              <div className='flex items-baseline gap-2'>
+                <span className='inline-block w-[5em] whitespace-nowrap text-right'>Commit:</span>
+                <span className='break-all flex-1'>{commit}</span>
+              </div>
+            </div>
+          ),
+        });
+      } catch {
+        Modal.success({ title: t('git.update_success_title') });
+      }
       form.resetFields();
       controllerRef.current = null;
       onOk();
