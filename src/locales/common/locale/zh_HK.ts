@@ -262,6 +262,7 @@ const zh_HK = {
   copy_success: '複製成功 {{num}} 條記錄',
   request_fail_msg: '請求失敗，請檢查網絡連線',
   trim_validator_msg: '前後有空格，請手動刪除',
+  tags_popover_title: '{{count}} 個',
 };
 
 export default zh_HK;
