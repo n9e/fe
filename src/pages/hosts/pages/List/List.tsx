@@ -95,7 +95,15 @@ interface Props {
   refreshFlag?: string;
   setRefreshFlag: (refreshFlag: string) => void;
   setOperateType?: (operateType: OperateType) => void;
-  aiTaskMode?: boolean; // ai-task 里需要展示 通道等级，以及去掉更新时间、各指标数据等列
+  /*
+   * ai-task 页面里的通道管理
+   * 删除 机器标识或是 IP 筛选项
+   * 添加 通道等级 筛选项
+   * 删除 更新时间、各指标数据等列
+   * 添加 通道等级 列
+   * 调整 业务组 列位置到第一列
+   */
+  aiTaskMode?: boolean;
 }
 
 export default function List(props: Props) {
@@ -121,7 +129,7 @@ export default function List(props: Props) {
     hosts?: string;
     downtime?: number;
     agent_versions?: string[];
-    auth_level?: number; // 0 = 关闭AI开关 1、2、3 = 授权等级
+    auth_level?: string; // 逗号分隔，如 '1,2,3'
   }>({
     limit: pagination.pageSize,
     p: 1,
@@ -167,9 +175,34 @@ export default function List(props: Props) {
     }
   }, [refreshFlag]);
 
+  const groupObjsColumn: {
+    dataIndex: string;
+    title: React.ReactNode;
+    render: (val: any, record: any) => React.ReactNode;
+  } = {
+    dataIndex: 'group_objs',
+    title: t('group_objs'),
+    render: (val, record) => {
+      const minWidth = getTextWidth(t('group_objs')) + 4;
+      const groupNames = _.map(val, 'name');
+      if (_.isEmpty(groupNames)) {
+        return <div style={{ minWidth }}>-</div>;
+      }
+      return (
+        <div className='w-[200px]' style={{ minWidth }}>
+          <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
+        </div>
+      );
+    },
+  };
+
   return (
     <>
-      <div className='flex-shrink-0 bg-fc-100 fc-border rounded-lg p-4 flex justify-between'>
+      <div
+        className={classNames('flex-shrink-0 flex justify-between', {
+          'bg-fc-100 fc-border rounded-lg p-4': !aiTaskMode,
+        })}
+      >
         <Space>
           {allCollapseNode}
           <Button
@@ -192,16 +225,18 @@ export default function List(props: Props) {
               setParams((p) => ({ ...p, query: searchValue }));
             }}
           />
-          <HostsSelect
-            value={params.hosts}
-            onChange={(newHosts) => {
-              setParams((p) => ({ ...p, hosts: newHosts }));
-            }}
-          />
+          {!aiTaskMode && (
+            <HostsSelect
+              value={params.hosts}
+              onChange={(newHosts) => {
+                setParams((p) => ({ ...p, hosts: newHosts }));
+              }}
+            />
+          )}
           <Select
             allowClear
             placeholder={t('filterDowntime')}
-            style={{ width: 'max-content' }}
+            style={{ minWidth: 120 }}
             dropdownMatchSelectWidth={false}
             options={[
               {
@@ -236,19 +271,20 @@ export default function List(props: Props) {
           />
           {aiTaskMode && (
             <Select
-              style={{ minWidth: 100 }}
+              style={{ minWidth: 120 }}
               allowClear
+              showArrow
+              mode='multiple'
               placeholder={t('auth_level')}
               dropdownMatchSelectWidth={false}
               options={[
-                { label: t('auth_level_0'), value: 0 },
                 { label: t('auth_level_1'), value: 1 },
                 { label: t('auth_level_2'), value: 2 },
                 { label: t('auth_level_3'), value: 3 },
               ]}
-              value={params.auth_level}
-              onChange={(val) => {
-                setParams((p) => ({ ...p, auth_level: val }));
+              value={params.auth_level ? params.auth_level.split(',').map(Number) : undefined}
+              onChange={(val: number[]) => {
+                setParams((p) => ({ ...p, auth_level: val.length > 0 ? val.join(',') : undefined }));
               }}
             />
           )}
@@ -339,7 +375,7 @@ export default function List(props: Props) {
           })}
           locale={{
             emptyText:
-              gids === undefined || gids === '-2' ? (
+              !IS_PLUS && (gids === undefined || gids === '-2') ? (
                 <Trans
                   ns='targets'
                   i18nKey='all_no_data'
@@ -377,6 +413,7 @@ export default function List(props: Props) {
           }}
           columns={
             _.concat(
+              aiTaskMode ? [groupObjsColumn] : [],
               [
                 {
                   dataIndex: 'ident',
@@ -631,26 +668,11 @@ export default function List(props: Props) {
                     );
                   },
                 },
-                {
-                  dataIndex: 'group_objs',
-                  title: t('group_objs'),
-                  render: (val, record) => {
-                    const minWidth = getTextWidth(t('group_objs')) + 4;
-                    const groupNames = _.map(val, 'name');
-                    if (_.isEmpty(groupNames)) {
-                      return <div style={{ minWidth }}>-</div>;
-                    }
-                    return (
-                      <div className='w-[200px]' style={{ minWidth }}>
-                        <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
-                      </div>
-                    );
-                  },
-                },
               ],
               aiTaskMode
                 ? []
                 : [
+                    groupObjsColumn,
                     {
                       dataIndex: 'beat_time',
                       title: t('beat_time'),

@@ -12,7 +12,7 @@ export function getList(params: {
   limit: number;
   p: number;
   hosts?: string;
-  auth_level?: number; // 0 = 关闭AI开关 1、2、3 = 授权等级
+  auth_level?: string; // 逗号分隔的授权等级，如 '1,2,3'
   downtime?: number;
   agent_versions?: string;
 }): Promise<{ list: Item[]; total: number }> {

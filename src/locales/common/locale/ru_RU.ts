@@ -263,6 +263,7 @@ const ru_RU = {
   copy_success: 'Успешно скопировано {{num}} записей',
   request_fail_msg: 'Время ожидания сети превышено, пожалуйста, попробуйте позже',
   trim_validator_msg: 'Обнаружены ведущие или замыкающие пробелы, пожалуйста, удалите их вручную',
+  tags_popover_title: '{{count}} элементов',
 };
 
 export default ru_RU;
