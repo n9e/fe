@@ -279,7 +279,7 @@ export default function BuilderContent(props: Props) {
         </div>
       </div>
       {previewSql && (
-        <div className='bg-gray-100 dark:bg-gray-800 p-3 rounded max-h-[160px] overflow-y-auto mb-4'>
+        <div className={`p-3 rounded max-h-[160px] overflow-y-auto mb-4 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
           <SqlMonacoPreview theme={darkMode ? 'dark' : 'light'} value={previewSql} />
         </div>
       )}

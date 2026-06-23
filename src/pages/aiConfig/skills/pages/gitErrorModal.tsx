@@ -6,6 +6,10 @@ function pickErrorMessage(error: unknown): string {
   if (typeof error === 'string') return error;
   if (typeof error === 'object') {
     const anyError = error as Record<string, any>;
+    // When silence: true, the ResponseError carries the parsed response body in data
+    if (anyError.data?.err) {
+      return typeof anyError.data.err === 'string' ? anyError.data.err : JSON.stringify(anyError.data.err);
+    }
     if (typeof anyError.message === 'string' && anyError.message) {
       return anyError.message;
     }
