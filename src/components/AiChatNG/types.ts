@@ -26,6 +26,7 @@ export interface IAiChatActionParam {
 
 export interface IAiChatAction {
   content?: string;
+  prefillOnly?: boolean; // 是否仅预填充内容，禁止自动发送消息
   key?: string;
   param?: IAiChatActionParam;
 }

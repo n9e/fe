@@ -47,9 +47,10 @@ function useAiEntClickHandler(options?: {
     setParamsAiAction({
       page: EPageType.Custom,
       custom: {
+        content: ' ', // 预填充一个空格，表示新建会话，不然 FlashAI Chat 会报错导致页面崩溃
+        prefillOnly: true, // 禁止自动发送消息
         ...queryPageFrom,
         ...queryAction,
-        prefillOnly: true, // 禁止自动发送消息
       } as any,
     });
   }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);
