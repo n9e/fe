@@ -13,7 +13,7 @@ const en_US = {
   versions: 'Version Distribution',
   other_versions: 'Other Versions',
   no_data: 'Unknown',
-  search_placeholder: 'Fuzzy search, separate multiple keywords with spaces',
+  search_placeholder: 'Separate multiple keywords with spaces, with "AND" relationship',
   cores: 'Cores',
   tags_popover_title: '{{count}} tags',
   view_collects: 'View related collection configurations',

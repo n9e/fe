@@ -14,7 +14,7 @@ const zh_CN = {
   versions: '版本号分布',
   other_versions: '其他版本',
   no_data: '未上报',
-  search_placeholder: '模糊搜索，多个关键词用空格分隔',
+  search_placeholder: '多个关键词用空格分隔，关系为"且"',
   cores: 'Cores',
   tags_popover_title: '{{count}} 个标签',
   view_collects: '查看关联采集配置',

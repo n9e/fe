@@ -13,7 +13,7 @@ const ja_JP = {
   versions: 'バージョン分布',
   other_versions: 'その他のバージョン',
   no_data: '未上報',
-  search_placeholder: 'あいまい検索。複数キーワードはスペースで区切ってください',
+  search_placeholder: '複数キーワードをスペースで区切って検索、関係は"AND"',
   cores: 'Cores',
   tags_popover_title: '{{count}} 個のタグ',
   view_collects: '関連する収集設定を表示',

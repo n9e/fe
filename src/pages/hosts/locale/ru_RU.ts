@@ -13,7 +13,7 @@ const ru_RU = {
   versions: 'Распределение версий',
   other_versions: 'Другие версии',
   no_data: 'Не上报',
-  search_placeholder: 'Нечеткий поиск, разделяйте несколько ключевых слов пробелами',
+  search_placeholder: 'Разделяйте несколько ключевых слов пробелами, с отношением "И"',
   cores: 'Cores',
   tags_popover_title: '{{count}} тегов',
   view_collects: 'Показать связанные конфигурации сбора',

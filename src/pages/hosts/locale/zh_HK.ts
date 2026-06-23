@@ -14,7 +14,7 @@ const zh_HK = {
   versions: '版本號分佈',
   other_versions: '其他版本',
   no_data: '未上報',
-  search_placeholder: '模糊搜尋，多個關鍵字請用空格分隔',
+  search_placeholder: '多個關鍵字用空格分隔，關係為"且"',
   cores: 'Cores',
   tags_popover_title: '{{count}} 個標籤',
   view_collects: '查看關聯採集配置',
