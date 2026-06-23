@@ -136,6 +136,11 @@ const zh_CN = {
   meta_no_data: '暂无数据',
   all_no_data: '没有部署采集器？可参考 <a>安装手册</a> 安装部署',
   categraf_doc: 'categraf 文档',
+  empty_guide: {
+    title: '还没有机器上报',
+    desc: '在主机上部署 Categraf 采集器后，机器会自动出现在这里。',
+    deploy_btn: '部署采集器',
+  },
   hosts_select: {
     placeholder: '机器标识或者 IP',
     modal_title: '填写机器标识或者 IP',

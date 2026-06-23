@@ -2,6 +2,10 @@ const en_US = {
   title: 'Data sources',
   search_placeholder: 'Please enter search keywords',
   chooseDataSourceType: 'Choose data source type',
+  empty_guide: {
+    title: 'No data source yet',
+    desc: 'Connect a data source first to query metrics/logs and build dashboards and alerts. Prometheus / VictoriaMetrics are recommended.',
+  },
   name: 'Data source name',
   id: 'Data source ID',
   description: 'Description',

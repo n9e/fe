@@ -136,6 +136,11 @@ const zh_HK = {
   meta_no_data: '暫無資料',
   all_no_data: '沒有部署採集器？可參考 <a>安裝手冊</a> 安裝部署',
   categraf_doc: 'categraf 文件',
+  empty_guide: {
+    title: '還沒有機器上報',
+    desc: '在主機上部署 Categraf 採集器後，機器會自動出現在這裡。',
+    deploy_btn: '部署採集器',
+  },
   hosts_select: {
     placeholder: '機器標識或 IP',
     modal_title: '填寫機器標識或 IP',

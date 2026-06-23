@@ -1,5 +1,19 @@
 const zh_CN = {
   pageTitle: '欢迎使用 Nightingale',
+  onboarding: {
+    title: '新手引导',
+    subtitle: '跟着做完这几步，几分钟把监控跑起来',
+    progress: '已完成 {{done}}/{{total}}',
+    hostTrack: '主机监控线',
+    dataTrack: '数据接入线',
+    steps: {
+      machine: { title: '部署采集器，接入主机', desc: '在主机部署 Categraf，机器会自动出现在设备列表' },
+      hostDashboard: { title: '套用主机监控大盘', desc: '从模板中心一键导入内置主机大盘' },
+      datasource: { title: '配置数据源', desc: '接入 Prometheus / VictoriaMetrics 等数据源' },
+      dashboard: { title: '创建仪表盘', desc: '把关心的指标可视化成大盘' },
+      alert: { title: '配置告警规则', desc: '为关键指标设置第一条告警规则' },
+    },
+  },
   hero: {
     badge: '开源 · 一站式监控告警平台',
     highlight: '让监控更简单、更智能',
@@ -81,7 +95,7 @@ const zh_CN = {
     ingest: {
       title: '统一接入',
       description: '快速完成部署与数据接入',
-      links: ['如何部署 Categraf 采集器？', '如何用 Categraf 采集主机和中间件数据？'],
+      links: ['如何部署 Categraf 采集器？', '如何配置数据源？'],
     },
     observe: {
       title: '统一观测',

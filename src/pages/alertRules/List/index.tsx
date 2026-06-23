@@ -6,6 +6,7 @@ import { Space, Button } from 'antd';
 
 import { CommonStateContext } from '@/App';
 import { getBusiGroupsAlertRules } from '@/services/warning';
+import EmptyGuide from '@/components/EmptyGuide';
 
 import { AlertRuleType } from '../types';
 import MoreOperations from './MoreOperations';
@@ -73,7 +74,8 @@ function HeaderExtra(
 
 export default function List(props: ListProps) {
   const { t } = useTranslation('alertRules');
-  const { businessGroup } = useContext(CommonStateContext);
+  const { businessGroup, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const history = useHistory();
   const { gids } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
@@ -94,6 +96,9 @@ export default function List(props: ListProps) {
     fetchData();
   }, [gids, refreshFlag]);
 
+  // 仅在选中具体叶子业务组（有 id 且非「未归组」-2）时，才允许在组内新增 / 导入告警规则
+  const canManageInGroup = !!(businessGroup.isLeaf && businessGroup.id && gids !== '-2');
+
   return (
     <div className='fc-border rounded-lg alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
       <ListNG
@@ -103,6 +108,38 @@ export default function List(props: ListProps) {
         data={data}
         loading={loading}
         setRefreshFlag={setRefreshFlag}
+        emptyGuide={
+          <EmptyGuide
+            title={t('empty_guide.title')}
+            description={t('empty_guide.desc')}
+            actions={
+              <>
+                {canManageInGroup && (
+                  <Button type='primary' onClick={() => history.push(`/alert-rules/add/${businessGroup.id}`)}>
+                    {t('common:btn.add')}
+                  </Button>
+                )}
+                {canManageInGroup ? (
+                  <a
+                    onClick={() =>
+                      Import({
+                        busiId: businessGroup.id!, // canManageInGroup 已保证非空
+                        refreshList: fetchData,
+                        groupedDatasourceList,
+                        reloadGroupedDatasourceList,
+                        datasourceCateOptions,
+                      })
+                    }
+                  >
+                    {t('empty_guide.from_template')}
+                  </a>
+                ) : (
+                  <a onClick={() => history.push('/components')}>{t('empty_guide.from_template')}</a>
+                )}
+              </>
+            }
+          />
+        }
       />
     </div>
   );

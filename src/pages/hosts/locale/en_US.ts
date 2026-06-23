@@ -135,6 +135,11 @@ const en_US = {
   meta_no_data: 'No data',
   all_no_data: 'No collector deployed? See <a>Installation Guide</a> for setup',
   categraf_doc: 'Categraf Docs',
+  empty_guide: {
+    title: 'No machines are reporting yet',
+    desc: 'Deploy the Categraf collector on your hosts and they will show up here automatically.',
+    deploy_btn: 'Deploy collector',
+  },
   hosts_select: {
     placeholder: 'Host identifier or IP',
     modal_title: 'Enter host identifiers or IP addresses',

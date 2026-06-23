@@ -51,12 +51,13 @@ interface Props {
   loading: boolean;
   setRefreshFlag?: (flag: string) => void;
   linkTarget?: string;
+  emptyGuide?: React.ReactNode;
 }
 
 export default function AlertRules(props: Props) {
   const { t } = useTranslation('alertRules');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
-  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
+  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide } = props;
   let defaultFilter = {} as Filter;
   try {
     defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
@@ -560,6 +561,7 @@ export default function AlertRules(props: Props) {
         pagination={pagination}
         loading={loading}
         dataSource={filterData()}
+        locale={emptyGuide ? { emptyText: emptyGuide } : undefined}
         rowSelection={
           showRowSelection
             ? {
