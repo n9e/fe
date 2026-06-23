@@ -4,7 +4,6 @@ const zh_HK = {
     title: '新手引導',
     subtitle: '跟著做完這幾步，幾分鐘把監控跑起來',
     progress: '已完成 {{done}}/{{total}}',
-    dismiss: '不再顯示',
     hostTrack: '主機監控線',
     dataTrack: '數據接入線',
     steps: {

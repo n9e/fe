@@ -4,7 +4,6 @@ const ja_JP = {
     title: 'はじめに',
     subtitle: '数ステップで監視を立ち上げましょう',
     progress: '{{done}}/{{total}} 完了',
-    dismiss: '表示しない',
     hostTrack: 'ホスト監視',
     dataTrack: 'データ連携',
     steps: {
