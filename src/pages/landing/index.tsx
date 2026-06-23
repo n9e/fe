@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import PageLayout from '@/components/pageLayout';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import { IS_PLUS } from '@/utils/constant';
 import { useAiChatContext } from '@/components/AiChatNG';
 import { buildPageFrom, getRecommendByUrl } from '@/components/AiChatNG/recommend';
 import {
@@ -187,8 +188,8 @@ export default function Landing() {
             </div>
           </section>
 
-          {/* Section 1.5 · 新手任务清单（仅在仍有未完成步骤时展示） */}
-          <OnboardingChecklist />
+          {/* Section 1.5 · 新手任务清单（仅开源版、且仍有未完成步骤时展示） */}
+          {!IS_PLUS && <OnboardingChecklist />}
 
           {/* Section header for the matrix */}
           <div className='n9e-landing-header'>

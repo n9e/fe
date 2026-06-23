@@ -96,6 +96,9 @@ export default function List(props: ListProps) {
     fetchData();
   }, [gids, refreshFlag]);
 
+  // 仅在选中具体叶子业务组（有 id 且非「未归组」-2）时，才允许在组内新增 / 导入告警规则
+  const canManageInGroup = !!(businessGroup.isLeaf && businessGroup.id && gids !== '-2');
+
   return (
     <div className='fc-border rounded-lg alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
       <ListNG
@@ -111,24 +114,22 @@ export default function List(props: ListProps) {
             description={t('empty_guide.desc')}
             actions={
               <>
-                {businessGroup.isLeaf && gids !== '-2' && (
+                {canManageInGroup && (
                   <Button type='primary' onClick={() => history.push(`/alert-rules/add/${businessGroup.id}`)}>
                     {t('common:btn.add')}
                   </Button>
                 )}
-                {businessGroup.isLeaf && businessGroup.id && gids !== '-2' ? (
+                {canManageInGroup ? (
                   <a
-                    onClick={() => {
-                      if (businessGroup.id) {
-                        Import({
-                          busiId: businessGroup.id,
-                          refreshList: fetchData,
-                          groupedDatasourceList,
-                          reloadGroupedDatasourceList,
-                          datasourceCateOptions,
-                        });
-                      }
-                    }}
+                    onClick={() =>
+                      Import({
+                        busiId: businessGroup.id!, // canManageInGroup 已保证非空
+                        refreshList: fetchData,
+                        groupedDatasourceList,
+                        reloadGroupedDatasourceList,
+                        datasourceCateOptions,
+                      })
+                    }
                   >
                     {t('empty_guide.from_template')}
                   </a>

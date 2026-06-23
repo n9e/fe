@@ -1,11 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import classNames from 'classnames';
-import { Check, ArrowRight } from 'lucide-react';
 
 import useOnboardingProgress from '@/components/OnboardingProgress/useOnboardingProgress';
-import { ONBOARDING_TRACKS } from '@/components/OnboardingProgress/tracks';
+import OnboardingTracks from '@/components/OnboardingProgress/OnboardingTracks';
 
 export default function OnboardingChecklist() {
   const { t } = useTranslation('n9e-landing');
@@ -30,36 +28,27 @@ export default function OnboardingChecklist() {
           </div>
         </div>
         <div className='n9e-landing-onboarding-tracks'>
-          {ONBOARDING_TRACKS.map((track) => {
-            const TrackIcon = track.icon;
-            return (
-              <section className='n9e-landing-onboarding-panel' key={track.key}>
-                <div className='n9e-landing-onboarding-panel-tag'>
-                  <span className={classNames('n9e-landing-onboarding-tag-icon', `n9e-landing-onboarding-tag-icon-${track.key}`)}>
-                    <TrackIcon strokeWidth={1.9} />
-                  </span>
-                  <span className='n9e-landing-onboarding-tag-name'>{t(`onboarding.${track.key}Track`)}</span>
-                </div>
-                <div className='n9e-landing-onboarding-steps'>
-                  {track.steps.map((step) => {
-                    const done = doneMap[step.key];
-                    return (
-                      <button type='button' key={step.key} onClick={() => history.push(step.to)} className='n9e-landing-onboarding-step'>
-                        <span className={classNames('n9e-landing-onboarding-node', done ? 'n9e-landing-onboarding-node-done' : 'n9e-landing-onboarding-node-todo')}>
-                          {done ? <Check strokeWidth={2.4} /> : null}
-                        </span>
-                        <span className='n9e-landing-onboarding-step-text'>
-                          <span className={classNames('n9e-landing-onboarding-step-title', { 'n9e-landing-onboarding-step-title-done': done })}>{t(`onboarding.steps.${step.key}.title`)}</span>
-                          <span className='n9e-landing-onboarding-step-desc'>{t(`onboarding.steps.${step.key}.desc`)}</span>
-                        </span>
-                        <ArrowRight className='n9e-landing-onboarding-step-arrow' />
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-            );
-          })}
+          <OnboardingTracks
+            doneMap={doneMap}
+            onStepClick={(to) => history.push(to)}
+            trackIconExtra={(key) => `n9e-landing-onboarding-tag-icon-${key}`}
+            classes={{
+              track: 'n9e-landing-onboarding-panel',
+              trackTag: 'n9e-landing-onboarding-panel-tag',
+              trackIcon: 'n9e-landing-onboarding-tag-icon',
+              trackName: 'n9e-landing-onboarding-tag-name',
+              steps: 'n9e-landing-onboarding-steps',
+              step: 'n9e-landing-onboarding-step',
+              node: 'n9e-landing-onboarding-node',
+              nodeDone: 'n9e-landing-onboarding-node-done',
+              nodeTodo: 'n9e-landing-onboarding-node-todo',
+              stepText: 'n9e-landing-onboarding-step-text',
+              stepTitle: 'n9e-landing-onboarding-step-title',
+              stepTitleDone: 'n9e-landing-onboarding-step-title-done',
+              stepDesc: 'n9e-landing-onboarding-step-desc',
+              stepArrow: 'n9e-landing-onboarding-step-arrow',
+            }}
+          />
         </div>
       </div>
     </section>

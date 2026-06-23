@@ -67,41 +67,31 @@ export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props
     history.push(to);
   };
 
-  const popover = (trigger: React.ReactElement) => (
-    <Popover
-      trigger='click'
-      visible={open}
-      onVisibleChange={setOpen}
-      placement='rightTop'
-      align={{ offset: [8, -8] }}
-      overlayClassName='n9e-onboarding-pop-overlay'
-      content={<OnboardingPopoverContent doneMap={doneMap} doneCount={doneCount} total={total} onNavigate={handleNavigate} />}
-    >
-      {trigger}
-    </Popover>
+  const trigger = collapsed ? (
+    <button type='button' aria-label={`${label} ${countText}`} className={classNames('n9e-onboarding-badge-collapsed', { 'is-custom-bg': isCustomBg })}>
+      {ring}
+    </button>
+  ) : (
+    <button type='button' className={classNames('n9e-onboarding-badge', { 'is-custom-bg': isCustomBg, 'is-open': open })}>
+      {ring}
+      <span className='n9e-onboarding-badge-label'>{label}</span>
+      <span className='n9e-onboarding-badge-count'>{countText}</span>
+    </button>
   );
 
-  if (collapsed) {
-    return (
-      <div className='px-2 pt-2'>
-        {popover(
-          <button type='button' aria-label={`${label} ${countText}`} className={classNames('n9e-onboarding-badge-collapsed', { 'is-custom-bg': isCustomBg })}>
-            {ring}
-          </button>,
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className='px-3 pt-3'>
-      {popover(
-        <button type='button' className={classNames('n9e-onboarding-badge', { 'is-custom-bg': isCustomBg, 'is-open': open })}>
-          {ring}
-          <span className='n9e-onboarding-badge-label'>{label}</span>
-          <span className='n9e-onboarding-badge-count'>{countText}</span>
-        </button>,
-      )}
+    <div className={collapsed ? 'px-2 pt-2' : 'px-3 pt-3'}>
+      <Popover
+        trigger='click'
+        visible={open}
+        onVisibleChange={setOpen}
+        placement='rightTop'
+        align={{ offset: [8, -8] }}
+        overlayClassName='n9e-onboarding-pop-overlay'
+        content={<OnboardingPopoverContent doneMap={doneMap} doneCount={doneCount} total={total} onNavigate={handleNavigate} />}
+      >
+        {trigger}
+      </Popover>
     </div>
   );
 }

@@ -13,7 +13,7 @@ import { DarkModeMenuItems } from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
-import { AccessTokenKey, IS_ENT } from '@/utils/constant';
+import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 import { DETAIL_PATH as embeddedProductDetailPath } from '@/pages/embeddedProduct/constants';
@@ -430,7 +430,8 @@ const SideMenu = (props: SideMenuProps) => {
               onToggleCollapse={toggleCollapsed}
               toggleTitle={collapsed ? t('expand') : t('collapse')}
             />
-            {!hideSideMenu && <OnboardingProgressBadge collapsed={collapsed} isCustomBg={isCustomBg} />}
+            {/* 新手引导徽标仅开源版展示 */}
+            {!hideSideMenu && !IS_PLUS && <OnboardingProgressBadge collapsed={collapsed} isCustomBg={isCustomBg} />}
             <div
               className={cn(
                 'shrink-0 h-px',

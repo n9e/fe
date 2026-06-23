@@ -110,6 +110,9 @@ export default function index() {
     });
   }, []);
 
+  // 仅在选中具体叶子业务组（有 id，且非「全部」-1 /「未归组」-2）时，才允许在组内新建 / 导入大盘
+  const canManageInGroup = !!(businessGroup.isLeaf && businessGroup.id && gids && gids !== '-1' && gids !== '-2');
+
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/dashboard/'>
       <div style={{ display: 'flex' }}>
@@ -428,7 +431,7 @@ export default function index() {
                   description={t('empty_guide.desc')}
                   actions={
                     <>
-                      {businessGroup.isLeaf && gids && gids !== '-1' && gids !== '-2' && (
+                      {canManageInGroup && (
                         <Button
                           type='primary'
                           onClick={() => {
@@ -444,7 +447,7 @@ export default function index() {
                           {t('common:btn.add')}
                         </Button>
                       )}
-                      {businessGroup.isLeaf && businessGroup.id && gids && gids !== '-1' && gids !== '-2' ? (
+                      {canManageInGroup ? (
                         <a
                           onClick={() => {
                             setImportData({ visible: true, busiId: businessGroup.id, type: 'ImportBuiltin' });

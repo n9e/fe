@@ -1,9 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
-import { ArrowRight, Check } from 'lucide-react';
 
-import { ONBOARDING_TRACKS } from './tracks';
+import OnboardingTracks from './OnboardingTracks';
 import { OnboardingStepKey } from './useOnboardingProgress';
 
 interface Props {
@@ -25,34 +23,28 @@ export default function OnboardingPopoverContent({ doneMap, doneCount, total, on
         <span className='n9e-onboarding-pop-count'>{t('onboarding.progress', { done: doneCount, total })}</span>
       </div>
       <div className='n9e-onboarding-pop-tracks'>
-        {ONBOARDING_TRACKS.map((track) => {
-          const TrackIcon = track.icon;
-          return (
-            <div className='n9e-onboarding-pop-track' key={track.key}>
-              <div className='n9e-onboarding-pop-track-tag'>
-                <span className='n9e-onboarding-pop-track-icon'>
-                  <TrackIcon strokeWidth={1.9} />
-                </span>
-                <span className='n9e-onboarding-pop-track-name'>{t(`onboarding.${track.key}Track`)}</span>
-              </div>
-              <div className='n9e-onboarding-pop-steps'>
-                {track.steps.map((step) => {
-                  const done = doneMap[step.key];
-                  return (
-                    <button type='button' key={step.key} className='n9e-onboarding-pop-step' onClick={() => onNavigate(step.to)}>
-                      <span className={classNames('n9e-onboarding-pop-node', done ? 'is-done' : 'is-todo')}>{done ? <Check strokeWidth={2.6} /> : null}</span>
-                      <span className='n9e-onboarding-pop-step-text'>
-                        <span className={classNames('n9e-onboarding-pop-step-title', { 'is-done': done })}>{t(`onboarding.steps.${step.key}.title`)}</span>
-                        <span className='n9e-onboarding-pop-step-desc'>{t(`onboarding.steps.${step.key}.desc`)}</span>
-                      </span>
-                      <ArrowRight className='n9e-onboarding-pop-step-arrow' size={15} strokeWidth={1.9} />
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+        <OnboardingTracks
+          doneMap={doneMap}
+          onStepClick={onNavigate}
+          checkStrokeWidth={2.6}
+          arrowProps={{ size: 15, strokeWidth: 1.9 }}
+          classes={{
+            track: 'n9e-onboarding-pop-track',
+            trackTag: 'n9e-onboarding-pop-track-tag',
+            trackIcon: 'n9e-onboarding-pop-track-icon',
+            trackName: 'n9e-onboarding-pop-track-name',
+            steps: 'n9e-onboarding-pop-steps',
+            step: 'n9e-onboarding-pop-step',
+            node: 'n9e-onboarding-pop-node',
+            nodeDone: 'is-done',
+            nodeTodo: 'is-todo',
+            stepText: 'n9e-onboarding-pop-step-text',
+            stepTitle: 'n9e-onboarding-pop-step-title',
+            stepTitleDone: 'is-done',
+            stepDesc: 'n9e-onboarding-pop-step-desc',
+            stepArrow: 'n9e-onboarding-pop-step-arrow',
+          }}
+        />
       </div>
     </div>
   );
