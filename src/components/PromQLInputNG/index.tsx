@@ -82,7 +82,7 @@ export default function index(props: MonacoEditorPromQLProps) {
        * 解决 monaco-editor 在 Input.Group 下无法正常自动布局
        * https://github.com/microsoft/monaco-editor/issues/3393
        */}
-      <div className='promql-input-ng-container flex'>
+      <div className={`promql-input-ng-container flex${showBuiltinMetrics ? ' has-builtin-metrics' : ''}`}>
         {showBuiltinMetrics && (
           <BuiltinMetrics
             addonClassName='flex-shrink-0 w-max flex'

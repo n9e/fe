@@ -15,6 +15,8 @@
  *
  */
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Space } from 'antd';
 
 export interface QueryStats {
   loadTime: number;
@@ -23,13 +25,16 @@ export interface QueryStats {
 }
 
 const QueryStatsView: FC<QueryStats> = (props) => {
+  const { t } = useTranslation('promGraphCpt');
   const { loadTime, resolution, resultSeries } = props;
 
   return (
     <div className='query-stats'>
-      <span>
-        Load time: {loadTime}ms &ensp;{resolution && `Resolution: ${resolution}s `}&ensp;Result series: {resultSeries}
-      </span>
+      <Space>
+        {t('load_time', { time: loadTime })}
+        {resolution && t('resolution', { resolution })}
+        {t('result_series', { count: resultSeries })}
+      </Space>
     </div>
   );
 };
