@@ -13,6 +13,8 @@ export const ONBOARDING_STEP_KEYS: OnboardingStepKey[] = ['machine', 'hostDashbo
 interface DetectState {
   machine: boolean;
   dashboard: boolean;
+  // 是否存在「主机大盘」（按 name 近似判断，与「任意大盘」dashboard 区分开）
+  hostDashboard: boolean;
   alert: boolean;
   loaded: boolean;
 }
@@ -26,20 +28,49 @@ export interface OnboardingProgress {
 
 // 全部完成后写入会话级标记，已上手的用户后续直接短路、不再探测，避免每次加载都拉全量大盘 / 告警
 const ONBOARDING_DONE_KEY = 'n9e_onboarding_done';
-const DONE_DETECT: DetectState = { machine: true, dashboard: true, alert: true, loaded: true };
+const DONE_DETECT: DetectState = { machine: true, dashboard: true, hostDashboard: true, alert: true, loaded: true };
 
 // 跨实例（侧栏徽标 + 着陆页清单）与多次挂载共享的最近一次探测结果：
 // 既作初始值避免重复请求与闪烁，也用于跳过已完成步骤的探测（大盘 / 告警接口偏重，置真后不再重复拉取）。
-let lastDetect: DetectState = { machine: false, dashboard: false, alert: false, loaded: false };
+let lastDetect: DetectState = { machine: false, dashboard: false, hostDashboard: false, alert: false, loaded: false };
+
+// 内置主机大盘的 name 约定：中文盘多为「机器…」，英文盘含 Host（如 Host Table NG / Windows Host by Categraf），
+// 与内置库 integrations/Linux 对齐。仅按 name 关键字近似判断「是否套用过主机大盘」，无需额外接口。
+const HOST_DASHBOARD_NAME_HINTS = ['机器', 'host'];
+function isHostDashboardName(name?: string): boolean {
+  if (!name) return false;
+  const lower = name.toLowerCase();
+  return HOST_DASHBOARD_NAME_HINTS.some((hint) => lower.includes(hint));
+}
 
 function probeOnboarding(): Promise<DetectState> {
   const known = lastDetect;
-  return Promise.all([
-    known.machine ? Promise.resolve(true) : getMonObjectList({ p: 1, limit: 1 }).then((res) => (res?.dat?.total ?? 0) > 0, () => false),
-    known.dashboard ? Promise.resolve(true) : getBusiGroupsDashboards(undefined).then((res) => ((res as any[])?.length ?? 0) > 0, () => false),
-    known.alert ? Promise.resolve(true) : getBusiGroupsAlertRules(undefined).then((res) => (res?.dat?.length ?? 0) > 0, () => false),
-  ]).then(([machine, dashboard, alert]) => {
-    lastDetect = { machine, dashboard, alert, loaded: true };
+  const machineP = known.machine
+    ? Promise.resolve(true)
+    : getMonObjectList({ p: 1, limit: 1 }).then(
+        (res) => (res?.dat?.total ?? 0) > 0,
+        () => false,
+      );
+  // dashboard（任意大盘）与 hostDashboard（主机大盘）复用同一次大盘列表请求，两者都已知为真才跳过
+  const dashboardP: Promise<{ any: boolean; host: boolean }> =
+    known.dashboard && known.hostDashboard
+      ? Promise.resolve({ any: true, host: true })
+      : getBusiGroupsDashboards(undefined).then(
+          (res) => {
+            const list = (res as { name?: string }[]) ?? [];
+            return { any: known.dashboard || list.length > 0, host: known.hostDashboard || list.some((board) => isHostDashboardName(board?.name)) };
+          },
+          () => ({ any: known.dashboard, host: known.hostDashboard }),
+        );
+  const alertP = known.alert
+    ? Promise.resolve(true)
+    : getBusiGroupsAlertRules(undefined).then(
+        (res) => (res?.dat?.length ?? 0) > 0,
+        () => false,
+      );
+
+  return Promise.all([machineP, dashboardP, alertP]).then(([machine, dashboard, alert]) => {
+    lastDetect = { machine, dashboard: dashboard.any, hostDashboard: dashboard.host, alert, loaded: true };
     return lastDetect;
   });
 }
@@ -71,7 +102,7 @@ export default function useOnboardingProgress(): OnboardingProgress {
     () => ({
       machine: detect.machine,
       // 没有机器上报就不可能套用主机大盘，gate 在 machine 上，避免“未部署采集器却显示主机大盘已完成”的矛盾态
-      hostDashboard: detect.machine && detect.dashboard,
+      hostDashboard: detect.machine && detect.hostDashboard,
       datasource: !!datasourceList?.length,
       dashboard: detect.dashboard,
       alert: detect.alert,
