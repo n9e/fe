@@ -46,6 +46,8 @@ const zh_HK = {
   auth_level_channel_ident: '通道標識',
   ident: '標識',
   agent_version_title: 'AGENT版本',
+  current_version: '當前版本',
+  upgrade_version: '可升級版本',
   status: '狀態',
   online: '有心跳',
   offline: '無心跳',

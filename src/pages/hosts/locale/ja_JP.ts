@@ -45,6 +45,8 @@ const ja_JP = {
   auth_level_channel_ident: 'チャンネル識別子',
   ident: '識別子',
   agent_version_title: 'エージェントバージョン',
+  current_version: '現在のバージョン',
+  upgrade_version: 'アップグレードバージョン',
   status: 'ステータス',
   online: 'オンライン',
   offline: 'オフライン',

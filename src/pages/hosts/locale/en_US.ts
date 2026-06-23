@@ -45,6 +45,8 @@ const en_US = {
   auth_level_channel_ident: 'Channel Identifier',
   ident: 'Identifier',
   agent_version_title: 'Agent version',
+  current_version: 'Current version',
+  upgrade_version: 'Upgrade version',
   status: 'Status',
   online: 'Online',
   offline: 'Offline',

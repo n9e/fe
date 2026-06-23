@@ -46,6 +46,8 @@ const zh_CN = {
   auth_level_channel_ident: '通道标识',
   ident: '标识',
   agent_version_title: 'AGENT版本',
+  current_version: '当前版本',
+  upgrade_version: '可升级版本',
   status: '状态',
   online: '有心跳',
   offline: '无心跳',

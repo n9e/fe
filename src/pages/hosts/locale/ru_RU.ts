@@ -45,6 +45,8 @@ const ru_RU = {
   auth_level_channel_ident: 'Идентификатор канала',
   ident: 'Идентификатор',
   agent_version_title: 'Версия агента',
+  current_version: 'Текущая версия',
+  upgrade_version: 'Версия обновления',
   status: 'Статус',
   online: 'Онлайн',
   offline: 'Офлайн',
