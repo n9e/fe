@@ -204,7 +204,7 @@ export default function Graph(props: IProps) {
           <InputGroupWithFormItem
             label={
               <Space>
-                Max data points
+                {t('promGraphCpt:max_data_points')}
                 <Tooltip title={t('dashboard:query.prometheus.maxDataPoints.tip_2')}>
                   <QuestionCircleOutlined />
                 </Tooltip>
@@ -238,7 +238,7 @@ export default function Graph(props: IProps) {
           <InputGroupWithFormItem
             label={
               <Space>
-                Min step
+                {t('promGraphCpt:min_step')}
                 <Tooltip title={t('dashboard:query.prometheus.minStep.tip')}>
                   <QuestionCircleOutlined />
                 </Tooltip>
