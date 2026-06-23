@@ -185,6 +185,9 @@ export default function List(props: Props) {
     });
   };
 
+  // 有搜索/筛选时的空结果不代表「该业务组没有机器」，此时不展示部署引导，避免误导用户去重复部署采集器
+  const hasActiveFilter = !!(params.query || params.hosts || !_.isNil(params.downtime) || !_.isEmpty(params.agent_versions) || params.auth_level);
+
   const groupObjsColumn: {
     dataIndex: string;
     title: React.ReactNode;
@@ -384,7 +387,7 @@ export default function List(props: Props) {
             },
           })}
           locale={{
-            emptyText: !IS_PLUS ? (
+            emptyText: !IS_PLUS && !hasActiveFilter ? (
               <EmptyGuide
                 title={t('empty_guide.title')}
                 description={t('empty_guide.desc')}
