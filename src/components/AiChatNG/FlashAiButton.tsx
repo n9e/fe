@@ -49,6 +49,7 @@ function useAiEntClickHandler(options?: {
       custom: {
         ...queryPageFrom,
         ...queryAction,
+        prefillOnly: true, // 禁止自动发送消息
       } as any,
     });
   }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);

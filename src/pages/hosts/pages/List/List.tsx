@@ -581,23 +581,45 @@ export default function List(props: Props) {
                 {
                   dataIndex: 'agent_version',
                   title: t('agent_version_title'),
-                  render: (_val, record) => {
+                  render: (val, record) => {
                     const display = record.agent_version || 'Null';
-                    const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(display) + 36) + 8;
+                    const hasUpgrade = record.new_version && record.agent_version !== record.new_version;
+                    const displayText = hasUpgrade ? `${display} / ${record.new_version}` : display;
+                    const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(displayText) + 36) + 8;
+                    const badge = (
+                      <div
+                        className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
+                          'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
+                          'bg-alert/10': record.agent_version === '' || record.agent_version === null,
+                          'text-alert': record.agent_version === '' || record.agent_version === null,
+                          'text-soft': record.target_up === 0,
+                          'text-title': record.target_up !== 0,
+                        })}
+                      >
+                        <VersionIcon className='flex leading-none' />
+                        <span className='leading-none'>{displayText}</span>
+                      </div>
+                    );
                     return (
                       <div style={{ minWidth }}>
-                        <div
-                          className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
-                            'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
-                            'bg-alert/10': record.agent_version === '' || record.agent_version === null,
-                            'text-alert': record.agent_version === '' || record.agent_version === null,
-                            'text-soft': record.target_up === 0,
-                            'text-title': record.target_up !== 0,
-                          })}
-                        >
-                          <VersionIcon className='flex leading-none' />
-                          <span className='leading-none'>{display}</span>
-                        </div>
+                        {hasUpgrade ? (
+                          <Tooltip
+                            title={
+                              <div>
+                                <div>
+                                  {t('current_version')}: {display}
+                                </div>
+                                <div>
+                                  {t('upgrade_version')}: {record.new_version}
+                                </div>
+                              </div>
+                            }
+                          >
+                            {badge}
+                          </Tooltip>
+                        ) : (
+                          badge
+                        )}
                       </div>
                     );
                   },
