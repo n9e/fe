@@ -384,21 +384,20 @@ export default function List(props: Props) {
             },
           })}
           locale={{
-            emptyText:
-              !IS_PLUS && (gids === undefined || gids === '-2') ? (
-                <EmptyGuide
-                  title={t('empty_guide.title')}
-                  description={t('empty_guide.desc')}
-                  actions={
-                    <>
-                      <Button type='primary' onClick={openCategrafDoc}>
-                        {t('empty_guide.deploy_btn')}
-                      </Button>
-                      <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
-                    </>
-                  }
-                />
-              ) : undefined,
+            emptyText: !IS_PLUS ? (
+              <EmptyGuide
+                title={t('empty_guide.title')}
+                description={t('empty_guide.desc')}
+                actions={
+                  <>
+                    <Button type='primary' onClick={openCategrafDoc}>
+                      {t('empty_guide.deploy_btn')}
+                    </Button>
+                    <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
+                  </>
+                }
+              />
+            ) : undefined,
           }}
           rowSelection={{
             type: 'checkbox',
