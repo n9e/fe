@@ -52,15 +52,19 @@ const Subscribe = (props: Props) => {
   const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   let defaultFilter = {} as Filter;
+  let defaultPage = 1;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    defaultFilter = saved;
+    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
-  const saveFilter = (patch: Partial<Filter>) => {
+  const [current, setCurrent] = useState<number>(defaultPage);
+  const saveState = (patch: Record<string, any>) => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
@@ -349,7 +353,7 @@ const Subscribe = (props: Props) => {
           },
         ],
   );
-  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-subscribes-table-pagesize', defaultPageSize: 30, pageSizeOptions: ['30', '50', '100', '300'] });
+  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-subscribes-table-pagesize' });
 
   const filterData = () => {
     const res = _.filter(data, (item: subscribeItem) => {
@@ -406,7 +410,8 @@ const Subscribe = (props: Props) => {
             value={datasourceIds}
             onChange={(val) => {
               setDatasourceIds(val);
-              saveFilter({ datasourceIds: val });
+              setCurrent(1);
+              saveState({ datasourceIds: val, current: 1 });
             }}
           />
           <Input
@@ -414,7 +419,8 @@ const Subscribe = (props: Props) => {
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
-              saveFilter({ query: e.target.value });
+              setCurrent(1);
+              saveState({ query: e.target.value, current: 1 });
             }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
@@ -429,7 +435,8 @@ const Subscribe = (props: Props) => {
             value={filterDisabled}
             onChange={(val) => {
               setFilterDisabled(val);
-              saveFilter({ disabled: val });
+              setCurrent(1);
+              saveState({ disabled: val, current: 1 });
             }}
           />
         </Space>
@@ -456,7 +463,11 @@ const Subscribe = (props: Props) => {
         rowKey='id'
         tableLayout='auto'
         scroll={{ x: 'max-content' }}
-        pagination={pagination}
+        pagination={{ ...pagination, current }}
+        onChange={(pag) => {
+          setCurrent(pag.current || 1);
+          saveState({ current: pag.current || 1 });
+        }}
         loading={loading}
         dataSource={filterData()}
         columns={ajustColumns(columns, columnsConfigs)}

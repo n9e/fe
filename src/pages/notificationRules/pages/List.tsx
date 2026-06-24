@@ -27,13 +27,21 @@ export default function List() {
   const pagination = usePagination({ PAGESIZE_KEY: TABLE_PAGINATION_CACHE_KEY });
   const [loading, setLoading] = useState(false);
   let defaultFilter = {} as Filter;
+  let defaultPage = 1;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    defaultFilter = saved;
+    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
   const [filter, setFilter] = useState<Filter>(defaultFilter);
-  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(f));
+  const [current, setCurrent] = useState<number>(defaultPage);
+  const handleFilterChange = (newFilter: Filter) => {
+    setFilter(newFilter);
+    setCurrent(1);
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...newFilter, current: 1 }));
+  };
   const [data, setData] = useState<RuleItem[]>([]);
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const filteredData = useMemo(() => {
@@ -102,8 +110,7 @@ export default function List() {
                   ...filter,
                   search: e.target.value,
                 };
-                setFilter(newFilter);
-                saveFilter(newFilter);
+                handleFilterChange(newFilter);
               }}
               prefix={<SearchOutlined />}
             />
@@ -119,6 +126,12 @@ export default function List() {
           loading={loading}
           rowKey='id'
           dataSource={filteredData}
+          pagination={{ ...pagination, current }}
+          onChange={(pag) => {
+            setCurrent(pag.current || 1);
+            const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+            window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...saved, current: pag.current || 1 }));
+          }}
           columns={[
             {
               title: t('common:table.name'),
@@ -249,7 +262,6 @@ export default function List() {
               },
             },
           ]}
-          pagination={pagination}
         />
       </div>
     </PageLayout>
