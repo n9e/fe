@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
 import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import semver from 'semver';
 import { useAntdTable } from 'ahooks';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -120,6 +121,7 @@ export default function List(props: Props) {
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [metaDrawerOpen, setMetaDrawerOpen] = useState(false);
   const [metaDrawerIdent, setMetaDrawerIdent] = useState('');
+  const [upgradeTargetIdent, setUpgradeTargetIdent] = useState<string | null>(null);
 
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
@@ -387,20 +389,21 @@ export default function List(props: Props) {
             },
           })}
           locale={{
-            emptyText: !IS_PLUS && !hasActiveFilter ? (
-              <EmptyGuide
-                title={t('empty_guide.title')}
-                description={t('empty_guide.desc')}
-                actions={
-                  <>
-                    <Button type='primary' onClick={openCategrafDoc}>
-                      {t('empty_guide.deploy_btn')}
-                    </Button>
-                    <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
-                  </>
-                }
-              />
-            ) : undefined,
+            emptyText:
+              !IS_PLUS && !hasActiveFilter ? (
+                <EmptyGuide
+                  title={t('empty_guide.title')}
+                  description={t('empty_guide.desc')}
+                  actions={
+                    <>
+                      <Button type='primary' onClick={openCategrafDoc}>
+                        {t('empty_guide.deploy_btn')}
+                      </Button>
+                      <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
+                    </>
+                  }
+                />
+              ) : undefined,
           }}
           rowSelection={{
             type: 'checkbox',
@@ -592,6 +595,18 @@ export default function List(props: Props) {
                     const hasUpgrade = record.new_version && record.agent_version !== record.new_version;
                     const displayText = hasUpgrade ? `${display} / ${record.new_version}` : display;
                     const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(displayText) + 36) + 8;
+
+                    // aiTaskMode 下检测 Agent 版本是否需要 ent 升级提示
+                    const needsEntUpgrade =
+                      aiTaskMode &&
+                      IS_PLUS &&
+                      record.agent_version &&
+                      (!record.agent_version.startsWith('ent') ||
+                        (() => {
+                          const ver = record.agent_version.replace('ent-', '');
+                          return !semver.valid(ver) || semver.lt(ver, '0.5.27');
+                        })());
+
                     const badge = (
                       <div
                         className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
@@ -602,22 +617,40 @@ export default function List(props: Props) {
                           'text-title': record.target_up !== 0,
                         })}
                       >
-                        <VersionIcon className='flex leading-none' />
+                        <VersionIcon className='flex leading-none' style={needsEntUpgrade ? { color: 'var(--fc-fill-alert)' } : undefined} />
                         <span className='leading-none'>{displayText}</span>
                       </div>
                     );
+
+                    const showTooltip = hasUpgrade || needsEntUpgrade;
+
                     return (
                       <div style={{ minWidth }}>
-                        {hasUpgrade ? (
+                        {showTooltip ? (
                           <Tooltip
+                            overlayClassName='ant-tooltip-with-link'
                             title={
                               <div>
-                                <div>
-                                  {t('current_version')}: {display}
-                                </div>
-                                <div>
-                                  {t('upgrade_version')}: {record.new_version}
-                                </div>
+                                {hasUpgrade && (
+                                  <div className='mb-1'>
+                                    {t('current_version')}: {display}
+                                    <br />
+                                    {t('upgrade_version')}: {record.new_version}
+                                  </div>
+                                )}
+                                {needsEntUpgrade && (
+                                  <div>
+                                    {t('upgrade_not_support_tip')}{' '}
+                                    <a
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setUpgradeTargetIdent(record.ident);
+                                      }}
+                                    >
+                                      {t('go_upgrade')}
+                                    </a>
+                                  </div>
+                                )}
                               </div>
                             }
                           >
@@ -913,6 +946,19 @@ export default function List(props: Props) {
         }}
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
+      {upgradeTargetIdent && (
+        <UpgradeAgent
+          selectedIdents={[upgradeTargetIdent]}
+          visible
+          onVisibleChange={(v) => {
+            if (!v) setUpgradeTargetIdent(null);
+          }}
+          onOk={() => {
+            setUpgradeTargetIdent(null);
+            setRefreshFlag(_.uniqueId('refreshFlag_'));
+          }}
+        />
+      )}
     </>
   );
 }
