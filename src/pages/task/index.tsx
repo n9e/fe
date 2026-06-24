@@ -44,6 +44,7 @@ interface DataItem {
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_NODE_ID';
 
 const FILTER_SESSION_KEY = 'task_filter';
+const PAGE_SESSION_KEY = 'task_page';
 
 function getDefaultFilter() {
   try {
@@ -56,6 +57,7 @@ function getDefaultFilter() {
 function getTableData(options: any, gids: string | undefined, query: string, mine: boolean, days: number) {
   if (gids) {
     const ids = gids === '-2' ? undefined : gids;
+    sessionStorage.setItem(PAGE_SESSION_KEY, String(options.current));
     return request(`/api/n9e/busi-groups/tasks`, {
       method: RequestMethod.Get,
       params: {
@@ -94,9 +96,11 @@ const index = (_props: any) => {
     window.sessionStorage.setItem(FILTER_SESSION_KEY, JSON.stringify({ query, mine, days }));
   }, [query, mine, days]);
 
+  const defaultPage = Number(sessionStorage.getItem(PAGE_SESSION_KEY) || '1');
   const { tableProps } = useAntdTable((options) => getTableData(options, gids, query, mine, days), {
     refreshDeps: [gids, query, mine, days, refreshFlag],
     defaultPageSize: pagination.pageSize,
+    defaultCurrent: defaultPage,
   });
 
   const handleOpenMetaDrawer = (record: any) => {
