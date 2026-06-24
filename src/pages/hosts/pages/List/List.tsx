@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
 import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -14,6 +14,7 @@ import { copy2ClipBoard } from '@/utils';
 import getTextWidth from '@/utils/getTextWidth';
 import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import EmptyGuide from '@/components/EmptyGuide';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
 import Explorer from '@/pages/targets/components/Explorer';
 import EditBusinessGroups from '@/pages/targets/components/EditBusinessGroups';
@@ -174,6 +175,18 @@ export default function List(props: Props) {
       });
     }
   }, [refreshFlag]);
+
+  const openCategrafDoc = () => {
+    DocumentDrawer({
+      language: i18n.language,
+      darkMode,
+      title: t('categraf_doc'),
+      documentPath: '/n9e-docs/categraf',
+    });
+  };
+
+  // 有搜索/筛选时的空结果不代表「该业务组没有机器」，此时不展示部署引导，避免误导用户去重复部署采集器
+  const hasActiveFilter = !!(params.query || params.hosts || !_.isNil(params.downtime) || !_.isEmpty(params.agent_versions) || params.auth_level);
 
   const groupObjsColumn: {
     dataIndex: string;
@@ -374,27 +387,20 @@ export default function List(props: Props) {
             },
           })}
           locale={{
-            emptyText:
-              !IS_PLUS && (gids === undefined || gids === '-2') ? (
-                <Trans
-                  ns='targets'
-                  i18nKey='all_no_data'
-                  components={{
-                    a: (
-                      <a
-                        onClick={() => {
-                          DocumentDrawer({
-                            language: i18n.language,
-                            darkMode,
-                            title: t('categraf_doc'),
-                            documentPath: '/n9e-docs/categraf',
-                          });
-                        }}
-                      />
-                    ),
-                  }}
-                />
-              ) : undefined,
+            emptyText: !IS_PLUS && !hasActiveFilter ? (
+              <EmptyGuide
+                title={t('empty_guide.title')}
+                description={t('empty_guide.desc')}
+                actions={
+                  <>
+                    <Button type='primary' onClick={openCategrafDoc}>
+                      {t('empty_guide.deploy_btn')}
+                    </Button>
+                    <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
+                  </>
+                }
+              />
+            ) : undefined,
           }}
           rowSelection={{
             type: 'checkbox',

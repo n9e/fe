@@ -135,6 +135,11 @@ const ja_JP = {
   meta_no_data: 'データなし',
   all_no_data: 'コレクターが未配備ですか？ <a>インストールガイド</a> を参照してください',
   categraf_doc: 'Categraf ドキュメント',
+  empty_guide: {
+    title: 'まだマシンからの報告がありません',
+    desc: 'ホストに Categraf コレクタをデプロイすると、マシンが自動的にここに表示されます。',
+    deploy_btn: 'コレクタをデプロイ',
+  },
   hosts_select: {
     placeholder: 'ホスト識別子または IP',
     modal_title: 'ホスト識別子または IP を入力',

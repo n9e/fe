@@ -36,6 +36,8 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import PageLayout from '@/components/pageLayout';
+import DocumentDrawer from '@/components/DocumentDrawer';
+import { IS_PLUS } from '@/utils/constant';
 import { useAiChatContext } from '@/components/AiChatNG';
 import { buildPageFrom, getRecommendByUrl } from '@/components/AiChatNG/recommend';
 import {
@@ -51,6 +53,7 @@ import {
   landingQuickStartCards,
   landingScenarioProducts,
 } from './landing.data';
+import OnboardingChecklist from './OnboardingChecklist';
 import './style.less';
 
 const scenarioIcons: LucideIcon[] = [UsersIcon, Flame, History, Sparkles];
@@ -122,6 +125,19 @@ export default function Landing() {
     [openAiChat, i18n.language],
   );
 
+  // 快速上手区的文档：在右侧抽屉内嵌打开，不跳新标签页
+  const handleOpenDoc = useCallback(
+    (url: string, title: string) => {
+      DocumentDrawer({
+        language: i18n.language,
+        title,
+        type: 'iframe',
+        documentPath: url,
+      });
+    },
+    [i18n.language],
+  );
+
   return (
     <PageLayout title={t('pageTitle')}>
       <div className='n9e-landing-page best-looking-scroll'>
@@ -171,6 +187,9 @@ export default function Landing() {
               </div>
             </div>
           </section>
+
+          {/* Section 1.5 · 新手任务清单（仅开源版、且仍有未完成步骤时展示） */}
+          {!IS_PLUS && <OnboardingChecklist />}
 
           {/* Section header for the matrix */}
           <div className='n9e-landing-header'>
@@ -375,7 +394,16 @@ export default function Landing() {
                         const linkLabel = t(link.labelKey);
                         return (
                           <div key={link.labelKey} className='n9e-landing-quickstart-link-row'>
-                            <a className='n9e-landing-quickstart-link' href={link.url} target='_blank' rel='noopener noreferrer'>
+                            <a
+                              className='n9e-landing-quickstart-link'
+                              href={link.url}
+                              rel='noopener noreferrer'
+                              onClick={(e) => {
+                                if (!link.url) return;
+                                e.preventDefault();
+                                handleOpenDoc(link.url, linkLabel);
+                              }}
+                            >
                               <ArrowRightOutlined className='n9e-landing-quickstart-link-arrow' />
                               <span className='n9e-landing-quickstart-link-label'>{linkLabel}</span>
                             </a>

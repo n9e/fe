@@ -1,5 +1,10 @@
 const en_US = {
   title: 'Alert rules',
+  empty_guide: {
+    title: 'No alert rule yet',
+    desc: 'Create an alert rule, or import a built-in alert rule template with one click.',
+    from_template: 'Import from template',
+  },
   search_placeholder: 'Search by name or tags',
   prod: 'Type',
   severity: 'Severity',

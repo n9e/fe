@@ -1,5 +1,10 @@
 const ja_JP = {
   title: 'アラートルール',
+  empty_guide: {
+    title: 'まだアラートルールがありません',
+    desc: 'アラートルールを新規作成するか、テンプレートセンターから組み込みのアラートルールパックをインポートできます。',
+    from_template: 'テンプレートセンターからインポート',
+  },
   search_placeholder: '名前またはタグを検索',
   prod: '監視タイプ',
   severity: 'レベル',

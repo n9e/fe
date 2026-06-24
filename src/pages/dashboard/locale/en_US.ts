@@ -8,6 +8,11 @@ const en_US = {
   ident: 'Ident',
   ident_msg: 'Please enter English letters or numbers or hyphens',
   search_placeholder: 'Search',
+  empty_guide: {
+    title: 'No dashboard yet',
+    desc: 'Create a dashboard, or import a built-in dashboard template with one click.',
+    from_template: 'Import from template',
+  },
   refresh_tip: 'Refresh interval less than step({{num}}s) will not update data',
   refresh_btn: 'Refresh',
   share_btn: 'Share',

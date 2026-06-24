@@ -93,6 +93,7 @@
 }
 
 .n9e-landing-hero,
+.n9e-landing-onboarding,
 .n9e-landing-header,
 .n9e-landing-matrix,
 .n9e-landing-guide,
@@ -1444,5 +1445,240 @@
 
   .n9e-landing-chip-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================================ Onboarding checklist (新手引导) */
+.n9e-landing-onboarding-shell {
+  border-radius: 16px;
+  padding: 22px 20px 20px;
+  background: var(--landing-shell-main-bg);
+}
+
+.n9e-landing-onboarding-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding: 0 2px;
+}
+
+/* title + subtitle share one baseline-aligned row */
+.n9e-landing-onboarding-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  min-width: 0;
+}
+
+.n9e-landing-onboarding-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: -0.2px;
+  color: var(--fc-text-1);
+}
+
+.n9e-landing-onboarding-subtitle {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--landing-card-muted);
+}
+
+.n9e-landing-onboarding-meter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.n9e-landing-onboarding-progress-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  color: rgb(var(--landing-primary-rgb));
+  white-space: nowrap;
+}
+
+.n9e-landing-onboarding-tracks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.n9e-landing-onboarding-panel {
+  padding: 14px 14px 8px;
+  border-radius: 12px;
+  background: var(--landing-card-bg);
+  border: 1px solid var(--landing-card-border);
+  box-shadow: var(--landing-card-shadow);
+}
+
+.n9e-landing-onboarding-panel-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+
+.n9e-landing-onboarding-tag-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  flex-shrink: 0;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.n9e-landing-onboarding-tag-icon-host {
+  background: var(--landing-icon-violet-bg);
+  color: var(--landing-icon-violet-color);
+}
+
+.n9e-landing-onboarding-tag-icon-data {
+  background: var(--landing-icon-blue-bg);
+  color: var(--landing-icon-blue-color);
+}
+
+.n9e-landing-onboarding-tag-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--fc-text-1);
+}
+
+/* The vertical line (线) that connects the step nodes within a track */
+.n9e-landing-onboarding-steps {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 17px;
+    top: 18px;
+    bottom: 18px;
+    width: 2px;
+    background: var(--landing-card-border);
+    z-index: 0;
+  }
+}
+
+.n9e-landing-onboarding-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+
+  &:hover {
+    background: var(--landing-card-hover-bg);
+  }
+
+  &:hover .n9e-landing-onboarding-step-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Opaque nodes mask the connector line so it only shows in the gaps between steps */
+.n9e-landing-onboarding-node {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.n9e-landing-onboarding-node-done {
+  background: var(--landing-glyph-violet-bg);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(var(--landing-primary-rgb), 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.n9e-landing-onboarding-node-todo {
+  /* opaque soft-violet disc (tint composited over the panel bg) so it reads
+     against the white panel while still masking the connector line behind it */
+  background: linear-gradient(var(--landing-icon-violet-bg), var(--landing-icon-violet-bg)), var(--landing-card-bg);
+  border: 1.5px solid rgba(var(--landing-primary-rgb), 0.5);
+}
+
+.n9e-landing-onboarding-node-todo::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(var(--landing-primary-rgb), 0.55);
+}
+
+.n9e-landing-onboarding-step-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.n9e-landing-onboarding-step-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--landing-card-text);
+}
+
+.n9e-landing-onboarding-step-title-done {
+  font-weight: 500;
+  color: var(--landing-card-muted);
+  text-decoration: line-through;
+}
+
+.n9e-landing-onboarding-step-desc {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--landing-card-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.n9e-landing-onboarding-step-arrow {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: rgb(var(--landing-primary-rgb));
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+@media (max-width: 1100px) {
+  .n9e-landing-onboarding-tracks {
+    grid-template-columns: 1fr;
   }
 }
