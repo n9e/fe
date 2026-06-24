@@ -148,6 +148,8 @@ const ru_RU = {
   force_cover: 'Принудительная замена',
   force_delete: 'Принудительное удаление',
   batch_failed: 'Ошибка пакетной операции',
+  upgrade_not_support_tip: 'Эта версия не поддерживает каналы задач. Пожалуйста, обновите Agent до ent-v0.5.27 или новее',
+  go_upgrade: 'Обновить',
 };
 
 export default ru_RU;

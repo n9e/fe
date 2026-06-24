@@ -153,6 +153,9 @@ export default function SkillDetailPanel(props: Props) {
 
   const renderMetaSection = () => {
     if (isBuiltin && isGit) {
+      if (!gitInfo?.current_commit) {
+        return null;
+      }
       return (
         <div>
           <Space size={32} align='start'>
