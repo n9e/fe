@@ -38,7 +38,7 @@ export default function SideMenuHeader(props: Props) {
 
   if (collapsed) {
     return (
-      <div className='side-menu-collapsed-logo-row relative my-1.5 flex h-10 w-full shrink-0 items-center justify-center px-2'>
+      <div className='side-menu-collapsed-logo-row relative flex h-[50px] w-full shrink-0 items-center justify-center px-2'>
         <Tooltip title={toggleTitle} placement='right'>
           <button
             type='button'
@@ -57,7 +57,7 @@ export default function SideMenuHeader(props: Props) {
   }
 
   return (
-    <div className='relative my-1.5 flex h-10 w-full shrink-0 items-center gap-2 overflow-hidden pl-5 pr-2 transition-spacing'>
+    <div className='side-menu-logo-row relative flex h-[50px] w-full shrink-0 items-center gap-2 overflow-hidden pl-5 pr-2 transition-spacing'>
       <div className='min-w-0 flex-1'>
         <img src={noCollapsedLogo} width={96} height={28} className='block max-h-7 max-w-[96px] object-contain' />
       </div>
