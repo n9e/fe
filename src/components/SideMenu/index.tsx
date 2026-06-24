@@ -448,7 +448,7 @@ const SideMenu = (props: SideMenuProps) => {
             />
             {/* 新手引导徽标仅开源版展示 */}
             {!hideSideMenu && !IS_PLUS && <OnboardingProgressBadge collapsed={collapsed} isCustomBg={isCustomBg} />}
-            <div className={cn('shrink-0 h-px', collapsed ? 'mx-2' : 'mx-3', isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]')} />
+            <div className={cn('shrink-0 -mt-px h-px', collapsed ? 'mx-2' : 'mx-3', isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]')} />
             <ScrollArea className='-mr-2 mt-3 flex-1'>
               <MenuList
                 list={menus}
