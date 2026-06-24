@@ -485,7 +485,7 @@ const SideMenu = (props: SideMenuProps) => {
                     isCustomBg ? 'text-[#fff]' : 'text-title',
                   )}
                 >
-                  <span className='side-menu-profile-avatar'>
+                  <span className={cn('side-menu-profile-avatar', isCustomBg ? 'side-menu-profile-avatar-on-dark' : 'side-menu-profile-avatar-on-light')}>
                     {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
                   </span>
                   {!collapsed && (
