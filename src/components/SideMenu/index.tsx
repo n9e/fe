@@ -431,7 +431,7 @@ const SideMenu = (props: SideMenuProps) => {
             />
             <div
               className={cn(
-                'shrink-0 h-px',
+                'shrink-0 -mt-px h-px',
                 collapsed ? 'mx-2' : 'mx-3',
                 isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]',
               )}
