@@ -34,4 +34,6 @@ export interface EnhancedTableProps<RecordType> extends TableProps<RecordType> {
   actionColumn?: Partial<ColumnType<RecordType>>;
   /** compact header: tighter thead padding + smaller sort hit-area, for tables embedded inside tabs/cards */
   compactHeader?: boolean;
+  /** auto-inject default sorter for columns without `sorter` (default false); column `sorter` always wins */
+  autoSortColumns?: boolean;
 }

@@ -18,7 +18,7 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, ...rest } = props;
 
   const rowActionsRef = useRef(rowActions);
   rowActionsRef.current = rowActions;
@@ -26,15 +26,15 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
 
   const enhancedColumns: ColumnsType<RecordType> = useMemo(() => {
     let finalColumns: ColumnsType<RecordType> | undefined = injectColumnFilters(columns, Array.isArray(dataSource) ? dataSource : undefined);
+
     const allColumns: ColumnType<RecordType>[] = ((finalColumns ?? []) as ColumnsType<RecordType>).filter(Boolean).map((col: ColumnType<RecordType>) => {
+      if (!autoSortColumns) {
+        return col;
+      }
       const dataIndex = col.dataIndex;
       // 操作列不排序
       const sorter = col.sorter !== undefined ? col.sorter : !!dataIndex && !['operate'].includes(dataIndex as string) ? defaultComparator(dataIndex as string) : false;
-      return {
-        ...col,
-        // ellipsis: col.ellipsis !== undefined ? col.ellipsis : true,
-        sorter,
-      };
+      return { ...col, sorter };
     });
 
     if (hasRowActions) {
@@ -53,7 +53,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     }
 
     return allColumns;
-  }, [columns, actionColumn, hasRowActions]);
+  }, [columns, actionColumn, hasRowActions, autoSortColumns, dataSource]);
 
   return (
     <Table<RecordType>
