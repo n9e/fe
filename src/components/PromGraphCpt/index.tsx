@@ -151,7 +151,7 @@ export default function index(props: IProps) {
                 setCompleteEnabled(e.target.checked);
               }}
             >
-              Enable autocomplete
+              {t('enable_autocomplete')}
             </Checkbox>
           </div>,
           headerExtra,
@@ -164,7 +164,7 @@ export default function index(props: IProps) {
               setCompleteEnabled(e.target.checked);
             }}
           >
-            Enable autocomplete
+            {t('enable_autocomplete')}
           </Checkbox>
         </div>
       )}
@@ -246,7 +246,7 @@ export default function index(props: IProps) {
           type='card'
           tabBarExtraContent={queryStats && <QueryStatsView {...queryStats} />}
         >
-          <TabPane tab='Table' key='table'>
+          <TabPane tab={t('tab_table')} key='table'>
             <Table
               url={url}
               contentMaxHeight={contentMaxHeight}
@@ -265,7 +265,7 @@ export default function index(props: IProps) {
               showExportButton={showExportButton}
             />
           </TabPane>
-          <TabPane tab='Graph' key='graph'>
+          <TabPane tab={t('tab_graph')} key='graph'>
             <Panel>
               <Graph
                 url={url}
