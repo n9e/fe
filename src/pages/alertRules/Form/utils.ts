@@ -6,6 +6,7 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 
 import { getDefaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
 import { DATASOURCE_ALL } from '../constants';
+import { DEFAULT_QUERY } from '@/plugins/victorialogs/constants';
 // @ts-ignore
 import * as alertUtils from 'plus:/parcels/AlertRule/utils';
 
@@ -390,6 +391,22 @@ export function getDefaultValuesByCate(prod, cate) {
             ref: 'A',
             interval: 1,
             interval_unit: 'min',
+          },
+        ],
+      },
+      ...datasourceDefaultValue,
+    };
+  }
+  if (cate === DatasourceCateEnum.victorialogs) {
+    return {
+      prod,
+      cate,
+      rule_config: {
+        ...defaultRuleConfig,
+        queries: [
+          {
+            ref: 'A',
+            query: DEFAULT_QUERY,
           },
         ],
       },

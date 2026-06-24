@@ -8,6 +8,11 @@ const zh_HK = {
   ident: '英文標識',
   ident_msg: '請輸入英文字母、數字、中劃線',
   search_placeholder: '儀表盤名稱、分類標籤',
+  empty_guide: {
+    title: '還沒有儀表盤',
+    desc: '新建一個儀表盤，或從模板中心一鍵導入內置儀表盤。',
+    from_template: '從模板中心導入',
+  },
   refresh_tip: '刷新間隔小於 step({{num}}s) 將不會更新資料',
   refresh_btn: '刷新',
   share_btn: '分享',

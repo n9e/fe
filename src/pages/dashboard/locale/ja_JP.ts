@@ -8,6 +8,11 @@ const ja_JP = {
   ident: '英語識別子',
   ident_msg: 'アルファベット、数字、アンダースコアを入力してください',
   search_placeholder: 'ダッシュボード名、カテゴリータグ',
+  empty_guide: {
+    title: 'まだダッシュボードがありません',
+    desc: 'ダッシュボードを新規作成するか、テンプレートセンターから組み込みのダッシュボードをワンクリックでインポートできます。',
+    from_template: 'テンプレートセンターからインポート',
+  },
   refresh_tip: '更新間隔が{{num}}s未満の場合、データは更新されません',
   refresh_btn: '更新',
   share_btn: '共有',

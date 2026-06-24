@@ -1,5 +1,10 @@
 const zh_HK = {
   title: '告警規則',
+  empty_guide: {
+    title: '還沒有告警規則',
+    desc: '新增一條告警規則，或從模板中心導入內置告警規則包。',
+    from_template: '從模板中心導入',
+  },
   search_placeholder: '搜尋名稱或標籤',
   prod: '監控類型',
   severity: '級別',
