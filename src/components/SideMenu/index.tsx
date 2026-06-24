@@ -37,7 +37,7 @@ const calcUrlPath = (url: string) => {
 };
 
 /** 侧栏展开宽度（px），持久化 localStorage */
-const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx';
+const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx-1';
 const SIDE_MENU_MIN_WIDTH = 170;
 const SIDE_MENU_MAX_WIDTH = 400;
 const i18nMap: Record<string, string> = {
@@ -55,19 +55,37 @@ function clampSideMenuWidth(px: number): number {
   return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));
 }
 
-function readInitialSideMenuWidth(): number {
+function getDefaultSideMenuWidthByLang(lang: string): number {
+  const def = lang === 'en_US' || lang === 'ru_RU' ? 200 : 172;
+  return clampSideMenuWidth(def);
+}
+
+/** 用户手动拖拽后才会写入 localStorage；无值时表示未自定义 */
+function readCustomSideMenuWidth(): number | null {
   try {
     const raw = localStorage.getItem(SIDE_MENU_WIDTH_STORAGE_KEY);
-    if (raw != null) {
-      const n = Number(raw);
-      if (Number.isFinite(n)) return clampSideMenuWidth(n);
-    }
-    const lang = localStorage.getItem('i18nextLng') || 'zh_CN';
-    const def = lang === 'en_US' || lang === 'ru_RU' ? 250 : 172;
-    return clampSideMenuWidth(def);
+    if (raw == null) return null;
+    const n = Number(raw);
+    if (!Number.isFinite(n)) return null;
+    return clampSideMenuWidth(n);
   } catch {
-    return 172;
+    return null;
   }
+}
+
+function persistCustomSideMenuWidth(px: number): void {
+  try {
+    localStorage.setItem(SIDE_MENU_WIDTH_STORAGE_KEY, String(clampSideMenuWidth(px)));
+  } catch {
+    /* ignore */
+  }
+}
+
+function readInitialSideMenuWidth(): number {
+  const custom = readCustomSideMenuWidth();
+  if (custom != null) return custom;
+  const lang = localStorage.getItem('language') || 'zh_CN';
+  return getDefaultSideMenuWidthByLang(lang);
 }
 
 interface SideMenuProps {
@@ -153,10 +171,10 @@ const SideMenu = (props: SideMenuProps) => {
         const items = res
           .filter((product) => !(product.hide ?? true))
           .map((product) => ({
-          key: `${embeddedProductDetailPath}/${product.id}`,
-          label: product.name,
-          children: [],
-        }));
+            key: `${embeddedProductDetailPath}/${product.id}`,
+            label: product.name,
+            children: [],
+          }));
         setEmbeddedProductMenu(items);
       }
     });
@@ -253,12 +271,9 @@ const SideMenu = (props: SideMenuProps) => {
   const menuList = getMenuList(embeddedProductMenu, hideDeprecatedMenus);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(SIDE_MENU_WIDTH_STORAGE_KEY, String(menuWidthPx));
-    } catch {
-      /* ignore */
-    }
-  }, [menuWidthPx]);
+    if (readCustomSideMenuWidth() != null) return;
+    setMenuWidthPx(getDefaultSideMenuWidthByLang(i18n.language));
+  }, [i18n.language]);
 
   const onResizeHandleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -269,14 +284,17 @@ const SideMenu = (props: SideMenuProps) => {
       setIsResizingMenu(true);
       const startX = e.clientX;
       const startW = menuWidthPx;
+      let finalW = startW;
       const onMove = (ev: MouseEvent) => {
         if (!resizeActiveRef.current) return;
         const delta = ev.clientX - startX;
-        setMenuWidthPx(clampSideMenuWidth(startW + delta));
+        finalW = clampSideMenuWidth(startW + delta);
+        setMenuWidthPx(finalW);
       };
       const onUp = () => {
         resizeActiveRef.current = false;
         setIsResizingMenu(false);
+        persistCustomSideMenuWidth(finalW);
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
         document.body.style.removeProperty('cursor');
@@ -393,9 +411,7 @@ const SideMenu = (props: SideMenuProps) => {
         display: hideSideMenu ? 'none' : 'flex',
       }}
     >
-      <div
-        className={cn('relative flex h-screen shrink-0', collapsed ? 'w-[56px]' : '')}
-      >
+      <div className={cn('relative flex h-screen shrink-0', collapsed ? 'w-[56px]' : '')}>
         <aside
           className={cn(
             'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid bg-sidebar',
@@ -429,13 +445,7 @@ const SideMenu = (props: SideMenuProps) => {
               onToggleCollapse={toggleCollapsed}
               toggleTitle={collapsed ? t('expand') : t('collapse')}
             />
-            <div
-              className={cn(
-                'shrink-0 h-px',
-                collapsed ? 'mx-2' : 'mx-3',
-                isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]',
-              )}
-            />
+            <div className={cn('shrink-0 h-px', collapsed ? 'mx-2' : 'mx-3', isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]')} />
             <ScrollArea className='-mr-2 mt-3 flex-1'>
               <MenuList
                 list={menus}
@@ -457,26 +467,10 @@ const SideMenu = (props: SideMenuProps) => {
             </ScrollArea>
           </div>
           <div
-            className={cn(
-              'side-menu-footer shrink-0 border-0 border-t border-solid px-2',
-              isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]',
-            )}
+            className={cn('side-menu-footer shrink-0 border-0 border-t border-solid px-2', isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]')}
           >
-            <Dropdown
-              overlay={profileMenu}
-              trigger={['hover']}
-              placement='topLeft'
-              align={profileMenuAlign}
-              visible={profileMenuOpen}
-              onVisibleChange={setProfileMenuOpen}
-            >
-              <div
-                className={cn(
-                  'side-menu-profile-row rounded transition-colors',
-                  collapsed ? 'justify-center' : '',
-                  isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200',
-                )}
-              >
+            <Dropdown overlay={profileMenu} trigger={['hover']} placement='topLeft' align={profileMenuAlign} visible={profileMenuOpen} onVisibleChange={setProfileMenuOpen}>
+              <div className={cn('side-menu-profile-row rounded transition-colors', collapsed ? 'justify-center' : '', isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200')}>
                 <button
                   type='button'
                   className={cn(
@@ -485,13 +479,13 @@ const SideMenu = (props: SideMenuProps) => {
                     isCustomBg ? 'text-[#fff]' : 'text-title',
                   )}
                 >
-                  <span className='side-menu-profile-avatar'>
-                    {profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}
-                  </span>
+                  <span className='side-menu-profile-avatar'>{profile?.portrait ? <img src={profile.portrait} /> : <span>{profileDisplay.initial}</span>}</span>
                   {!collapsed && (
                     <span className='min-w-0 flex-1'>
                       <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
-                      {profileDisplay.detail && <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>}
+                      {profileDisplay.detail && (
+                        <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>
+                      )}
                     </span>
                   )}
                 </button>
