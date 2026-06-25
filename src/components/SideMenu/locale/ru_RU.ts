@@ -65,6 +65,7 @@ const ru_RU = {
     sso: 'SSO',
     audit_log: 'Журнал аудита',
     alert_servers: 'Система оповещений',
+    log_conversion_engines: 'Движки преобразования логов',
     about: 'О продукте',
     license_management: 'Управление лицензиями',
     ai_config: 'AI настройки',

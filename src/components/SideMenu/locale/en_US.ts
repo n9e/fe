@@ -66,6 +66,7 @@ const en_US = {
     sso: 'SSO',
     audit_log: 'Audit log',
     alert_servers: 'Alerting engines',
+    log_conversion_engines: 'Log conversion engines',
     about: 'About',
     license_management: 'License',
     ai_config: 'AI Configuration',
