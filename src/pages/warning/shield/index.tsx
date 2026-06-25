@@ -60,8 +60,11 @@ const Shield: React.FC = () => {
   const { datasourceList, groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   let defaultFilter = {} as Filter;
+  let defaultPage = 1;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    defaultFilter = saved;
+    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
@@ -72,7 +75,8 @@ const Shield: React.FC = () => {
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
   const [deleteMutesModalVisible, setDeleteMutesModalVisible] = useState(false);
-  const saveFilter = (patch: Partial<Filter>) => {
+  const [current, setCurrent] = useState<number>(defaultPage);
+  const saveState = (patch: Record<string, any>) => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
@@ -270,7 +274,7 @@ const Shield: React.FC = () => {
       },
     ],
   );
-  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-mutes-table-pagesize', defaultPageSize: 30, pageSizeOptions: ['30', '50', '100', '300'] });
+  const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-mutes-table-pagesize' });
 
   useEffect(() => {
     getList();
@@ -324,7 +328,8 @@ const Shield: React.FC = () => {
   const onSearchQuery = (e) => {
     let val = e.target.value;
     setQuery(val);
-    saveFilter({ query: val });
+    setCurrent(1);
+    saveState({ query: val, current: 1 });
   };
 
   return (
@@ -345,7 +350,8 @@ const Shield: React.FC = () => {
                 value={datasourceIds}
                 onChange={(val) => {
                   setDatasourceIds(val);
-                  saveFilter({ datasourceIds: val });
+                  setCurrent(1);
+                  saveState({ datasourceIds: val, current: 1 });
                 }}
               />
               <Input
@@ -367,7 +373,8 @@ const Shield: React.FC = () => {
                 value={filterDisabled}
                 onChange={(val) => {
                   setFilterDisabled(val);
-                  saveFilter({ disabled: val });
+                  setCurrent(1);
+                  saveState({ disabled: val, current: 1 });
                 }}
               />
             </Space>
@@ -398,7 +405,11 @@ const Shield: React.FC = () => {
             rowKey='id'
             tableLayout='auto'
             scroll={{ x: 'max-content' }}
-            pagination={pagination}
+            pagination={{ ...pagination, current }}
+            onChange={(pag) => {
+              setCurrent(pag.current || 1);
+              saveState({ current: pag.current || 1 });
+            }}
             loading={loading}
             dataSource={currentShieldData}
             columns={columns}

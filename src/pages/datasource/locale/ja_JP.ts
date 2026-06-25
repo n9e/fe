@@ -2,6 +2,10 @@ const ja_JP = {
   title: 'データソース管理',
   search_placeholder: '検索キーワードを入力してください',
   chooseDataSourceType: 'データソースタイプを選択',
+  empty_guide: {
+    title: 'まだデータソースがありません',
+    desc: 'まずデータソースを接続すると、メトリクス/ログのクエリやダッシュボード・アラートの設定ができます。Prometheus / VictoriaMetrics がおすすめです。',
+  },
   name: 'データソース名',
   id: 'データソースID',
   description: '備考',

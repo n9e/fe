@@ -52,20 +52,29 @@ interface Props {
   loading: boolean;
   setRefreshFlag?: (flag: string) => void;
   linkTarget?: string;
+  emptyGuide?: React.ReactNode;
 }
 
 export default function AlertRules(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
   const { busiGroups, datasourceList } = useContext(CommonStateContext);
-  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
+  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide } = props;
   let defaultFilter = {} as Filter;
+  let defaultPage = 1;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    defaultFilter = saved;
+    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
   const [filter, setFilter] = useState<Filter>(defaultFilter);
-  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(f));
+  const [current, setCurrent] = useState<number>(defaultPage);
+  const handleFilterChange = (newFilter: Filter) => {
+    setFilter(newFilter);
+    setCurrent(1);
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...newFilter, current: 1 }));
+  };
   const [queryValue, setQueryValue] = useState<string | undefined>(defaultFilter.search);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
@@ -306,8 +315,7 @@ export default function AlertRules(props: Props) {
   const { run: searchChange } = useDebounceFn(
     (search) => {
       const newFilter = { ...filter, search };
-      setFilter(newFilter);
-      saveFilter(newFilter);
+      handleFilterChange(newFilter);
     },
     {
       wait: 500,
@@ -372,8 +380,7 @@ export default function AlertRules(props: Props) {
                 ...filter,
                 datasourceIds: val,
               };
-              setFilter(newFilter);
-              saveFilter(newFilter);
+              handleFilterChange(newFilter);
             }}
           />
           <Select
@@ -386,8 +393,7 @@ export default function AlertRules(props: Props) {
                 ...filter,
                 severities: val,
               };
-              setFilter(newFilter);
-              saveFilter(newFilter);
+              handleFilterChange(newFilter);
             }}
             dropdownMatchSelectWidth={false}
           >
@@ -424,8 +430,7 @@ export default function AlertRules(props: Props) {
                 ...filter,
                 disabled: val,
               };
-              setFilter(newFilter);
-              saveFilter(newFilter);
+              handleFilterChange(newFilter);
             }}
           />
         </Space>
@@ -458,9 +463,15 @@ export default function AlertRules(props: Props) {
         tableLayout='auto'
         scroll={{ x: 'max-content' }}
         showSorterTooltip={false}
-        pagination={pagination}
+        pagination={{ ...pagination, current }}
+        onChange={(pag) => {
+          setCurrent(pag.current || 1);
+          const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+          window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...saved, current: pag.current || 1 }));
+        }}
         loading={loading}
         dataSource={filterData()}
+        locale={emptyGuide ? { emptyText: emptyGuide } : undefined}
         rowSelection={
           showRowSelection
             ? {

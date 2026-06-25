@@ -8,6 +8,7 @@ import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { allCates } from '@/components/AdvancedWrap/utils';
+import EmptyGuide from '@/components/EmptyGuide';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
 import Rename from '../Rename';
@@ -32,6 +33,7 @@ export interface IPropsType {
     logo?: any;
   }[];
   nameClick: (val) => void;
+  onAdd?: () => void;
 }
 
 export interface IKeyValue {
@@ -41,7 +43,7 @@ export interface IKeyValue {
 const TableSource = (props: IPropsType) => {
   const { t } = useTranslation('datasourceManage');
   const isPlus = useIsPlus();
-  const { nameClick, pluginList, debouncedSearchValue } = props;
+  const { nameClick, pluginList, debouncedSearchValue, onAdd } = props;
   const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
   const { reloadDatasourceList } = useContext(CommonStateContext);
   const [tableData, setTableData] = useState<any>([]);
@@ -269,6 +271,21 @@ const TableSource = (props: IPropsType) => {
           ]) as any,
         })}
         actionColumn={{ title: t('common:table.operations'), width: 64 }}
+        locale={{
+          emptyText: (
+            <EmptyGuide
+              title={t('empty_guide.title')}
+              description={t('empty_guide.desc')}
+              actions={
+                onAdd ? (
+                  <Button type='primary' onClick={onAdd}>
+                    {t('common:btn.add')}
+                  </Button>
+                ) : undefined
+              }
+            />
+          ),
+        }}
       />
       {auth && (
         <AuthList

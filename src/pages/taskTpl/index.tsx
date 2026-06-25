@@ -40,10 +40,12 @@ import UnBindTags from './unBindTags';
 
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_TPL_NODE_ID';
 const SEARCH_SESSION_KEY = 'taskTpl_query';
+const PAGE_SESSION_KEY = 'taskTpl_page';
 
 function getTableData(options: any, gids: string | undefined, query: string) {
   if (gids) {
     const ids = gids === '-2' ? undefined : gids;
+    sessionStorage.setItem(PAGE_SESSION_KEY, String(options.current));
     return request(`/api/n9e/busi-groups/task-tpls`, {
       method: RequestMethod.Get,
       params: {
@@ -70,9 +72,11 @@ const index = (_props: any) => {
     sessionStorage.setItem(SEARCH_SESSION_KEY, query);
   }, [query]);
 
+  const defaultPage = Number(sessionStorage.getItem(PAGE_SESSION_KEY) || '1');
   const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, gids, query), {
     refreshDeps: [gids, query],
     debounceWait: 300,
+    defaultCurrent: defaultPage,
   });
 
   function handleTagClick(tag: string) {

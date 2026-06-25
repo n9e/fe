@@ -13,7 +13,7 @@ const ru_RU = {
   versions: 'Распределение версий',
   other_versions: 'Другие версии',
   no_data: 'Не上报',
-  search_placeholder: 'Нечеткий поиск, разделяйте несколько ключевых слов пробелами',
+  search_placeholder: 'Разделяйте несколько ключевых слов пробелами, с отношением "И"',
   cores: 'Cores',
   tags_popover_title: '{{count}} тегов',
   view_collects: 'Показать связанные конфигурации сбора',
@@ -45,6 +45,8 @@ const ru_RU = {
   auth_level_channel_ident: 'Идентификатор канала',
   ident: 'Идентификатор',
   agent_version_title: 'Версия агента',
+  current_version: 'Текущая версия',
+  upgrade_version: 'Версия обновления',
   status: 'Статус',
   online: 'Онлайн',
   offline: 'Офлайн',
@@ -133,6 +135,11 @@ const ru_RU = {
   meta_no_data: 'Нет данных',
   all_no_data: 'Коллектор не развернут? См. <a>руководство по установке</a>',
   categraf_doc: 'Документация Categraf',
+  empty_guide: {
+    title: 'Пока нет хостов, отправляющих данные',
+    desc: 'Разверните сборщик Categraf на хостах, и они автоматически появятся здесь.',
+    deploy_btn: 'Развернуть сборщик',
+  },
   hosts_select: {
     placeholder: 'Идентификатор хоста или IP',
     modal_title: 'Введите идентификаторы хоста или IP',
@@ -141,6 +148,8 @@ const ru_RU = {
   force_cover: 'Принудительная замена',
   force_delete: 'Принудительное удаление',
   batch_failed: 'Ошибка пакетной операции',
+  upgrade_not_support_tip: 'Эта версия не поддерживает каналы задач. Пожалуйста, обновите Agent до ent-v0.5.27 или новее',
+  go_upgrade: 'Обновить',
 };
 
 export default ru_RU;

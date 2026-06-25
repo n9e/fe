@@ -8,7 +8,7 @@ import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, DEFAULT_QUERY } from '../../constants';
 import GraphPreview from '../../AlertRule/Queries/GraphPreview';
 
 interface IProps {
@@ -47,7 +47,7 @@ export default function index({ field = {}, path = [], prefixPath = [], datasour
                 </Space>
               }
             >
-              <Form.Item {...field} name={[...path, 'query']}>
+              <Form.Item {...field} name={[...path, 'query']} initialValue={DEFAULT_QUERY}>
                 <Input.TextArea autoSize={{ minRows: 1 }} />
               </Form.Item>
             </InputGroupWithFormItem>

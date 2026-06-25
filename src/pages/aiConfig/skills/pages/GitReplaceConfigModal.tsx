@@ -124,7 +124,7 @@ export default function GitReplaceConfigModal(props: Props) {
       destroyOnClose
       title={
         <div className='flex flex-col gap-1'>
-          <span>{t('git.replace_title')}</span>
+          <span>{t('git.modify_title')}</span>
           <span className='text-soft text-sm font-normal'>{t('git.replace_subtitle')}</span>
         </div>
       }

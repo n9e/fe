@@ -13,7 +13,7 @@ const en_US = {
   versions: 'Version Distribution',
   other_versions: 'Other Versions',
   no_data: 'Unknown',
-  search_placeholder: 'Fuzzy search, separate multiple keywords with spaces',
+  search_placeholder: 'Separate multiple keywords with spaces, with "AND" relationship',
   cores: 'Cores',
   tags_popover_title: '{{count}} items',
   view_collects: 'View related collection configurations',
@@ -45,6 +45,8 @@ const en_US = {
   auth_level_channel_ident: 'Channel Identifier',
   ident: 'Identifier',
   agent_version_title: 'Agent version',
+  current_version: 'Current version',
+  upgrade_version: 'Upgrade version',
   status: 'Status',
   online: 'Online',
   offline: 'Offline',
@@ -133,6 +135,11 @@ const en_US = {
   meta_no_data: 'No data',
   all_no_data: 'No collector deployed? See <a>Installation Guide</a> for setup',
   categraf_doc: 'Categraf Docs',
+  empty_guide: {
+    title: 'No machines are reporting yet',
+    desc: 'Deploy the Categraf collector on your hosts and they will show up here automatically.',
+    deploy_btn: 'Deploy collector',
+  },
   hosts_select: {
     placeholder: 'Host identifier or IP',
     modal_title: 'Enter host identifiers or IP addresses',
@@ -141,6 +148,8 @@ const en_US = {
   force_cover: 'Force Override',
   force_delete: 'Force Delete',
   batch_failed: 'Batch Operation Failed',
+  upgrade_not_support_tip: 'This version does not support task channels. Please upgrade the Agent to ent-v0.5.27 or later',
+  go_upgrade: 'Upgrade',
 };
 
 export default en_US;

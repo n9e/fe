@@ -42,13 +42,21 @@ export default function index() {
 
   const { data, loading, run, mutate } = useRequest(getItems);
   let defaultFilter = {} as Filter;
+  let defaultPage = 1;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    defaultFilter = saved;
+    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
   const [filters, setFilters] = useState<Filter>(defaultFilter);
-  const saveFilter = (f: Filter) => window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(f));
+  const [current, setCurrent] = useState<number>(defaultPage);
+  const handleFilterChange = (newFilter: Filter) => {
+    setFilters(newFilter);
+    setCurrent(1);
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...newFilter, current: 1 }));
+  };
   const [selectedRows, setSelectedRows] = useState<ChannelItem[]>([]);
   const filteredData = useMemo(() => {
     return filter(data, (item) => {
@@ -128,8 +136,7 @@ export default function index() {
                       ...filters,
                       search: e.target.value,
                     };
-                    setFilters(newFilter);
-                    saveFilter(newFilter);
+                    handleFilterChange(newFilter);
                   }}
                 />
                 <Select
@@ -153,8 +160,7 @@ export default function index() {
                       ...filters,
                       enable: val === 'enable' ? true : val === 'disable' ? false : undefined,
                     };
-                    setFilters(newFilter);
-                    saveFilter(newFilter);
+                    handleFilterChange(newFilter);
                   }}
                 />
                 <Select
@@ -182,8 +188,7 @@ export default function index() {
                       ...filters,
                       idents: val,
                     };
-                    setFilters(newFilter);
-                    saveFilter(newFilter);
+                    handleFilterChange(newFilter);
                   }}
                 />
               </Space>
@@ -350,7 +355,12 @@ export default function index() {
                     setSelectedRows(selectedRows);
                   },
                 }}
-                pagination={pagination}
+                pagination={{ ...pagination, current }}
+                onChange={(pag) => {
+                  setCurrent(pag.current || 1);
+                  const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+                  window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...saved, current: pag.current || 1 }));
+                }}
                 scroll={{ y: 'calc(100% - 42px)' }}
               />
             </div>

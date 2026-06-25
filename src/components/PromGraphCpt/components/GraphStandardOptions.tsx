@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Checkbox, Space, Divider, Select } from 'antd';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
 
@@ -27,7 +27,32 @@ interface IProps {
 }
 
 export default function GraphStandardOptions(props: IProps) {
+  const { t } = useTranslation('promGraphCpt');
   const { type, showLegend = true, highLevelConfig, setHighLevelConfig } = props;
+
+  const tooltipMode = highLevelConfig.shared ? 'all' : 'single';
+
+  const handleTooltipModeChange = (mode: string) => {
+    setHighLevelConfig({ ...highLevelConfig, shared: mode === 'all' });
+  };
+
+  const handleSortDirectionChange = (val: string) => {
+    setHighLevelConfig({ ...highLevelConfig, sharedSortDirection: val });
+  };
+
+  const handleLegendChange = (e) => {
+    setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
+  };
+
+  const handleUnitChange = (val) => {
+    setHighLevelConfig({ ...highLevelConfig, unit: val });
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 12,
+    color: '#657386',
+    whiteSpace: 'nowrap',
+  };
 
   if (type === 'horizontal') {
     return (
@@ -39,116 +64,85 @@ export default function GraphStandardOptions(props: IProps) {
             right: -4,
           }}
         >
-          Unit
-          <UnitPicker
-            size='small'
-            optionLabelProp='cleanLabelLink'
-            bordered={false}
-            dropdownMatchSelectWidth={false}
-            value={highLevelConfig.unit}
-            onChange={(val) => {
-              setHighLevelConfig({ ...highLevelConfig, unit: val });
-            }}
-          />
+          {t('value_format')}
+          <UnitPicker size='small' optionLabelProp='cleanLabelLink' dropdownMatchSelectWidth={false} value={highLevelConfig.unit} onChange={handleUnitChange} />
         </span>
         <Space>
           {showLegend && (
             <Space>
               <Divider type='vertical' />
-              <Checkbox
-                checked={highLevelConfig.legend}
-                onChange={(e) => {
-                  setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
-                }}
-                className='n9e-checkbox-padding-right-0'
-              >
-                Show Legend
+              <Checkbox checked={highLevelConfig.legend} onChange={handleLegendChange} className='n9e-checkbox-padding-right-0'>
+                {t('show_legend')}
               </Checkbox>
             </Space>
           )}
           <Divider type='vertical' />
-          <span>
-            <Checkbox
-              checked={highLevelConfig.shared}
-              onChange={(e) => {
-                setHighLevelConfig({ ...highLevelConfig, shared: e.target.checked });
-              }}
-              className='n9e-checkbox-padding-right-0'
-            >
-              Multi Tooltip, order value
-            </Checkbox>
+          <Select
+            size='small'
+            value={tooltipMode}
+            onChange={handleTooltipModeChange}
+            style={{ minWidth: 70 }}
+            options={[
+              { label: t('tooltip_mode_single'), value: 'single' },
+              { label: t('tooltip_mode_all'), value: 'all' },
+            ]}
+          />
+          {tooltipMode === 'all' && (
             <Select
               size='small'
-              bordered={false}
-              options={[
-                {
-                  label: <a>desc</a>,
-                  value: 'desc',
-                },
-                {
-                  label: <a>asc</a>,
-                  value: 'asc',
-                },
-              ]}
               value={highLevelConfig.sharedSortDirection}
-              onChange={(val) => {
-                setHighLevelConfig({ ...highLevelConfig, sharedSortDirection: val });
-              }}
+              onChange={handleSortDirectionChange}
+              style={{ minWidth: 80 }}
+              options={[
+                { label: t('tooltip_sort_desc'), value: 'desc' },
+                { label: t('tooltip_sort_asc'), value: 'asc' },
+              ]}
             />
-          </span>
+          )}
         </Space>
       </>
     );
   }
 
   return (
-    <div style={{ minWidth: 300 }}>
-      <Checkbox
-        checked={highLevelConfig.shared}
-        onChange={(e) => {
-          setHighLevelConfig({ ...highLevelConfig, shared: e.target.checked });
-        }}
-      >
-        Multi Series in Tooltip, order value
-      </Checkbox>
-      <Select
-        size='small'
-        bordered={false}
-        options={[
-          {
-            label: <a>desc</a>,
-            value: 'desc',
-          },
-          {
-            label: <a>asc</a>,
-            value: 'asc',
-          },
-        ]}
-        value={highLevelConfig.sharedSortDirection}
-        onChange={(val) => {
-          setHighLevelConfig({ ...highLevelConfig, sharedSortDirection: val });
-        }}
-      />
-      <br />
-      <Checkbox
-        checked={highLevelConfig.legend}
-        onChange={(e) => {
-          setHighLevelConfig({ ...highLevelConfig, legend: e.target.checked });
-        }}
-      >
-        Show Legend
-      </Checkbox>
-      <br />
-      Value format with:{' '}
+    <div style={{ minWidth: 300, display: 'grid', gridTemplateColumns: 'max-content 1fr', gap: '8px 10px', alignItems: 'center' }}>
+      <span style={labelStyle}>{t('tooltip_mode')}</span>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <Select
+          size='small'
+          value={tooltipMode}
+          onChange={handleTooltipModeChange}
+          style={{ width: 'max-content' }}
+          options={[
+            { label: t('tooltip_mode_single'), value: 'single' },
+            { label: t('tooltip_mode_all'), value: 'all' },
+          ]}
+          dropdownMatchSelectWidth={false}
+        />
+        {tooltipMode === 'all' && (
+          <Select
+            size='small'
+            value={highLevelConfig.sharedSortDirection}
+            onChange={handleSortDirectionChange}
+            style={{ width: 'max-content' }}
+            options={[
+              { label: t('tooltip_sort_desc'), value: 'desc' },
+              { label: t('tooltip_sort_asc'), value: 'asc' },
+            ]}
+            dropdownMatchSelectWidth={false}
+          />
+        )}
+      </div>
+      <span style={labelStyle}>{t('show_legend')}</span>
+      <Checkbox checked={highLevelConfig.legend} onChange={handleLegendChange} style={{ width: 'max-content' }} />
+      <span style={labelStyle}>{t('value_format')}</span>
       <UnitPicker
         size='small'
         optionLabelProp='cleanLabelLink'
-        bordered={false}
         dropdownMatchSelectWidth={false}
         value={highLevelConfig.unit}
-        onChange={(val) => {
-          setHighLevelConfig({ ...highLevelConfig, unit: val });
-        }}
+        onChange={handleUnitChange}
+        style={{ width: 'max-content' }}
       />
     </div>
   );

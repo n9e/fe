@@ -39,11 +39,13 @@ import EllipsisText from '@/components/EllipsisText';
 import usePagination from '@/components/usePagination';
 import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getBusiGroups } from '@/components/BusinessGroup';
+import EmptyGuide from '@/components/EmptyGuide';
 
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
 import FormModal from './FormModal';
 import Export from './Export';
+import Import, { ModalType } from './Import';
 import { exportDataStringify } from './utils';
 import PublicForm from './PublicForm';
 
@@ -71,6 +73,7 @@ export default function index() {
   const [busiGroups, setBusiGroups] = useState<any[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [importData, setImportData] = useState<{ visible: boolean; busiId?: number; type?: ModalType }>({ visible: false });
 
   useUpdateEffect(() => {
     setGids(businessGroup.ids);
@@ -109,6 +112,9 @@ export default function index() {
       setBusiGroups(res);
     });
   }, []);
+
+  // 仅在选中具体叶子业务组（有 id，且非「全部」-1 /「未归组」-2）时，才允许在组内新建 / 导入大盘
+  const canManageInGroup = !!(businessGroup.isLeaf && businessGroup.id && gids && gids !== '-1' && gids !== '-2');
 
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/dashboard/'>
@@ -366,9 +372,59 @@ export default function index() {
               },
             }}
             pagination={pagination}
+            locale={{
+              emptyText: (
+                <EmptyGuide
+                  title={t('empty_guide.title')}
+                  description={t('empty_guide.desc')}
+                  actions={
+                    <>
+                      {canManageInGroup && (
+                        <Button
+                          type='primary'
+                          onClick={() => {
+                            FormModal({
+                              action: 'create',
+                              busiId: businessGroup.id,
+                              onOk: () => {
+                                setRefreshKey(_.uniqueId('refreshKey_'));
+                              },
+                            });
+                          }}
+                        >
+                          {t('common:btn.add')}
+                        </Button>
+                      )}
+                      {canManageInGroup ? (
+                        <a
+                          onClick={() => {
+                            setImportData({ visible: true, busiId: businessGroup.id, type: 'ImportBuiltin' });
+                          }}
+                        >
+                          {t('empty_guide.from_template')}
+                        </a>
+                      ) : (
+                        <Link to='/components'>{t('empty_guide.from_template')}</Link>
+                      )}
+                    </>
+                  }
+                />
+              ),
+            }}
           />
         </div>
       </div>
+      {importData.busiId && importData.type && (
+        <Import
+          visible={importData.visible}
+          busiId={importData.busiId}
+          type={importData.type}
+          onOk={() => {
+            setImportData({ ...importData, visible: false });
+            setRefreshKey(_.uniqueId('refreshKey_'));
+          }}
+        />
+      )}
     </PageLayout>
   );
 }

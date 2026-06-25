@@ -9,7 +9,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, DEFAULT_QUERY } from '../../constants';
 import GraphPreview from './GraphPreview';
 
 interface IProps {
@@ -34,6 +34,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
         initialValue={[
           {
             ref: 'A',
+            query: DEFAULT_QUERY,
           },
         ]}
       >
@@ -46,6 +47,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                   style={{ cursor: 'pointer' }}
                   onClick={() => {
                     add({
+                      query: DEFAULT_QUERY,
                       interval: 1,
                       interval_unit: 'min',
                     });

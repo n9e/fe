@@ -83,6 +83,9 @@ export default function index() {
                 setDetailVisible(true);
                 setDetailData(record);
               }}
+              onAdd={() => {
+                setChooseDataSourceTypeModalVisible(true);
+              }}
             />
           )}
           {detailVisible && (

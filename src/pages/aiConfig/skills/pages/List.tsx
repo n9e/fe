@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Button, Dropdown, Empty, Menu, Popconfirm, Spin, message } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Alert, Button, Dropdown, Empty, Menu, Modal, Popconfirm, Spin, message } from 'antd';
+import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
+import moment from 'moment';
 import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
@@ -36,6 +37,7 @@ export default function List() {
   const [gitInstallVisible, setGitInstallVisible] = useState(false);
   const [gitReplaceState, setGitReplaceState] = useState<{ visible: boolean; id?: number }>({ visible: false });
   const [gitUpdateState, setGitUpdateState] = useState<{ visible: boolean; id?: number }>({ visible: false });
+  const [builtinGitUpdating, setBuiltinGitUpdating] = useState(false);
 
   const {
     data = [],
@@ -230,12 +232,36 @@ export default function List() {
   }
 
   async function handleBuiltinGitUpdate(skillId: number) {
+    setBuiltinGitUpdating(true);
     try {
       await gitUpdate(skillId, {}, { silence: true });
-      message.success(t('common:success.modify'));
+      try {
+        const detail = await getItem(skillId);
+        const updatedAt = detail.updated_at ? moment.unix(detail.updated_at).format('YYYY-MM-DD HH:mm:ss') : '-';
+        const commit = detail.git_info?.current_commit || '-';
+        Modal.success({
+          title: t('git.update_success_title'),
+          content: (
+            <div>
+              <div className='flex items-baseline gap-2'>
+                <span className='inline-block w-[5em] whitespace-nowrap text-right'>{t('common:table.update_at')}:</span>
+                <span className='flex-1'>{updatedAt}</span>
+              </div>
+              <div className='flex items-baseline gap-2'>
+                <span className='inline-block w-[5em] whitespace-nowrap text-right'>Commit:</span>
+                <span className='break-all flex-1'>{commit}</span>
+              </div>
+            </div>
+          ),
+        });
+      } catch {
+        Modal.success({ title: t('git.update_success_title') });
+      }
       await refreshSkill(skillId);
     } catch (error) {
       showGitOperationError(t('git.error_update_title'), error, t('git.error_default_msg'));
+    } finally {
+      setBuiltinGitUpdating(false);
     }
   }
 
@@ -405,6 +431,7 @@ export default function List() {
                       onBuiltinGitUpdate={() => {
                         handleBuiltinGitUpdate(selectedSkillData.id);
                       }}
+                      builtinGitUpdating={builtinGitUpdating}
                     />
                   ) : (
                     <DocumentPreviewPanel

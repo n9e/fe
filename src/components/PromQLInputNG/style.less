@@ -5,17 +5,22 @@
     flex: 1;
     min-width: 0;
     padding: 5px 11px;
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
 
     &:hover {
       z-index: 2 !important; // TODO: 修复 promql 下拉层会被遮挡的问题
     }
   }
 
-  .ant-input-affix-wrapper>.ant-input {
+  .ant-input-affix-wrapper > .ant-input {
     padding: 0;
     border: none;
     outline: none;
+  }
+
+  &.has-builtin-metrics {
+    .ant-input-affix-wrapper {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+    }
   }
 }

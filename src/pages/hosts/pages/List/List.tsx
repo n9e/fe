@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
 import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import semver from 'semver';
 import { useAntdTable } from 'ahooks';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -14,6 +15,7 @@ import { copy2ClipBoard } from '@/utils';
 import getTextWidth from '@/utils/getTextWidth';
 import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import EmptyGuide from '@/components/EmptyGuide';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
 import Explorer from '@/pages/targets/components/Explorer';
 import EditBusinessGroups from '@/pages/targets/components/EditBusinessGroups';
@@ -119,6 +121,7 @@ export default function List(props: Props) {
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [metaDrawerOpen, setMetaDrawerOpen] = useState(false);
   const [metaDrawerIdent, setMetaDrawerIdent] = useState('');
+  const [upgradeTargetIdent, setUpgradeTargetIdent] = useState<string | null>(null);
 
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
@@ -174,6 +177,18 @@ export default function List(props: Props) {
       });
     }
   }, [refreshFlag]);
+
+  const openCategrafDoc = () => {
+    DocumentDrawer({
+      language: i18n.language,
+      darkMode,
+      title: t('categraf_doc'),
+      documentPath: '/n9e-docs/categraf',
+    });
+  };
+
+  // 有搜索/筛选时的空结果不代表「该业务组没有机器」，此时不展示部署引导，避免误导用户去重复部署采集器
+  const hasActiveFilter = !!(params.query || params.hosts || !_.isNil(params.downtime) || !_.isEmpty(params.agent_versions) || params.auth_level);
 
   const groupObjsColumn: {
     dataIndex: string;
@@ -375,24 +390,18 @@ export default function List(props: Props) {
           })}
           locale={{
             emptyText:
-              !IS_PLUS && (gids === undefined || gids === '-2') ? (
-                <Trans
-                  ns='targets'
-                  i18nKey='all_no_data'
-                  components={{
-                    a: (
-                      <a
-                        onClick={() => {
-                          DocumentDrawer({
-                            language: i18n.language,
-                            darkMode,
-                            title: t('categraf_doc'),
-                            documentPath: '/n9e-docs/categraf',
-                          });
-                        }}
-                      />
-                    ),
-                  }}
+              !IS_PLUS && !hasActiveFilter ? (
+                <EmptyGuide
+                  title={t('empty_guide.title')}
+                  description={t('empty_guide.desc')}
+                  actions={
+                    <>
+                      <Button type='primary' onClick={openCategrafDoc}>
+                        {t('empty_guide.deploy_btn')}
+                      </Button>
+                      <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
+                    </>
+                  }
                 />
               ) : undefined,
           }}
@@ -581,23 +590,75 @@ export default function List(props: Props) {
                 {
                   dataIndex: 'agent_version',
                   title: t('agent_version_title'),
-                  render: (_val, record) => {
+                  render: (val, record) => {
                     const display = record.agent_version || 'Null';
-                    const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(display) + 36) + 8;
+                    const hasUpgrade = record.new_version && record.agent_version !== record.new_version;
+                    const displayText = hasUpgrade ? `${display} / ${record.new_version}` : display;
+                    const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(displayText) + 36) + 8;
+
+                    // aiTaskMode 下检测 Agent 版本是否需要 ent 升级提示
+                    const needsEntUpgrade =
+                      aiTaskMode &&
+                      IS_PLUS &&
+                      record.agent_version &&
+                      (!record.agent_version.startsWith('ent') ||
+                        (() => {
+                          const ver = record.agent_version.replace('ent-', '');
+                          return !semver.valid(ver) || semver.lt(ver, '0.5.27');
+                        })());
+
+                    const badge = (
+                      <div
+                        className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
+                          'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
+                          'bg-alert/10': record.agent_version === '' || record.agent_version === null,
+                          'text-alert': record.agent_version === '' || record.agent_version === null,
+                          'text-soft': record.target_up === 0,
+                          'text-title': record.target_up !== 0,
+                        })}
+                      >
+                        <VersionIcon className='flex leading-none' style={needsEntUpgrade ? { color: 'var(--fc-fill-alert)' } : undefined} />
+                        <span className='leading-none'>{displayText}</span>
+                      </div>
+                    );
+
+                    const showTooltip = hasUpgrade || needsEntUpgrade;
+
                     return (
                       <div style={{ minWidth }}>
-                        <div
-                          className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
-                            'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
-                            'bg-alert/10': record.agent_version === '' || record.agent_version === null,
-                            'text-alert': record.agent_version === '' || record.agent_version === null,
-                            'text-soft': record.target_up === 0,
-                            'text-title': record.target_up !== 0,
-                          })}
-                        >
-                          <VersionIcon className='flex leading-none' />
-                          <span className='leading-none'>{display}</span>
-                        </div>
+                        {showTooltip ? (
+                          <Tooltip
+                            overlayClassName='ant-tooltip-with-link'
+                            title={
+                              <div>
+                                {hasUpgrade && (
+                                  <div className='mb-1'>
+                                    {t('current_version')}: {display}
+                                    <br />
+                                    {t('upgrade_version')}: {record.new_version}
+                                  </div>
+                                )}
+                                {needsEntUpgrade && (
+                                  <div>
+                                    {t('upgrade_not_support_tip')}{' '}
+                                    <a
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setUpgradeTargetIdent(record.ident);
+                                      }}
+                                    >
+                                      {t('go_upgrade')}
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            }
+                          >
+                            {badge}
+                          </Tooltip>
+                        ) : (
+                          badge
+                        )}
                       </div>
                     );
                   },
@@ -885,6 +946,19 @@ export default function List(props: Props) {
         }}
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
+      {upgradeTargetIdent && (
+        <UpgradeAgent
+          selectedIdents={[upgradeTargetIdent]}
+          visible
+          onVisibleChange={(v) => {
+            if (!v) setUpgradeTargetIdent(null);
+          }}
+          onOk={() => {
+            setUpgradeTargetIdent(null);
+            setRefreshFlag(_.uniqueId('refreshFlag_'));
+          }}
+        />
+      )}
     </>
   );
 }

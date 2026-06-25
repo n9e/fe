@@ -51,8 +51,8 @@ function index(props: Props & ModalWrapProps) {
           ident: initialValues?.ident,
           tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
           note: initialValues?.note,
-          graphTooltip: configs.graphTooltip,
-          graphZoom: configs.graphZoom,
+          graphTooltip: configs.graphTooltip || 'default',
+          graphZoom: configs.graphZoom || 'default',
         });
       });
     }
@@ -143,7 +143,7 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item label={t('common:table.note')} name='note'>
           <Input.TextArea autoSize={{ minRows: 1 }} />
         </Form.Item>
-        <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' tooltip={t('settings.graphTooltip.tip')}>
+        <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' initialValue='default' tooltip={t('settings.graphTooltip.tip')}>
           <Radio.Group
             optionType='button'
             options={[
@@ -162,7 +162,7 @@ function index(props: Props & ModalWrapProps) {
             ]}
           />
         </Form.Item>
-        <Form.Item label={t('settings.graphZoom.label')} name='graphZoom' tooltip={t('settings.graphZoom.tip')}>
+        <Form.Item label={t('settings.graphZoom.label')} name='graphZoom' initialValue='default' tooltip={t('settings.graphZoom.tip')}>
           <Radio.Group
             optionType='button'
             options={[

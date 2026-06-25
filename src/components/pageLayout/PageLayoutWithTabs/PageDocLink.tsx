@@ -22,7 +22,7 @@ export function getPageDocumentDrawerOptions(documentPath: string, title: string
   };
 }
 
-export default function PageDocLink({ link }: { link: string }) {
+export default function PageDocLink({ link, buttonText }: { link: string; buttonText?: string }) {
   const { t, i18n } = useTranslation();
   const { darkMode } = useContext(CommonStateContext);
 
@@ -38,7 +38,7 @@ export default function PageDocLink({ link }: { link: string }) {
           DocumentDrawer(getPageDocumentDrawerOptions(link, t(PAGE_DOCUMENT_LABEL_KEY), i18n.language, darkMode));
         }}
       >
-        {t(PAGE_DOCUMENT_LABEL_KEY)}
+        {buttonText || t(PAGE_DOCUMENT_LABEL_KEY)}
       </Button>
     </>
   );

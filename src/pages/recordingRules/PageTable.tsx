@@ -15,6 +15,7 @@ import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { tagsColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
+import usePagination from '@/components/usePagination';
 import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
@@ -32,7 +33,6 @@ interface Filter {
 const FILTER_SESSION_STORAGE_KEY = 'recording-rules-filter';
 
 const { confirm } = Modal;
-const pageSizeOptionsDefault = ['30', '50', '100', '300'];
 const exportIgnoreAttrsObj = {
   id: undefined,
   group_id: undefined,
@@ -51,8 +51,11 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const [selectedRows, setSelectedRows] = useState<strategyItem[]>([]);
   const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   let defaultFilter = {} as Filter;
+  let defaultPage = 1;
   try {
-    defaultFilter = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    defaultFilter = saved;
+    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
@@ -63,7 +66,9 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   const [loading, setLoading] = useState(false);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
-  const saveFilter = (patch: Partial<Filter>) => {
+  const [current, setCurrent] = useState<number>(defaultPage);
+  const pagination = usePagination({ pageSizeLocalstorageKey: 'recording-rules-pagesize' });
+  const saveState = (patch: Record<string, any>) => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
@@ -322,7 +327,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             value={datasourceIds}
             onChange={(val) => {
               setDatasourceIds(val);
-              saveFilter({ datasourceIds: val });
+              setCurrent(1);
+              saveState({ datasourceIds: val, current: 1 });
             }}
           >
             {_.map(groupedDatasourceList?.prometheus, (item) => (
@@ -336,7 +342,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             value={query}
             onSearch={(val) => {
               setQuery(val);
-              saveFilter({ query: val });
+              setCurrent(1);
+              saveState({ query: val, current: 1 });
             }}
             allowClear
           />
@@ -350,7 +357,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             value={filterDisabled}
             onChange={(val) => {
               setFilterDisabled(val);
-              saveFilter({ disabled: val });
+              setCurrent(1);
+              saveState({ disabled: val, current: 1 });
             }}
           />
         </Space>
@@ -382,14 +390,14 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         size='small'
         rowKey='id'
         pagination={{
+          ...pagination,
           total: currentStrategyData.length,
           showQuickJumper: true,
-          showSizeChanger: true,
-          showTotal: (total) => {
-            return t('common:table.total', { total });
+          current,
+          onChange: (page) => {
+            setCurrent(page);
+            saveState({ current: page });
           },
-          pageSizeOptions: pageSizeOptionsDefault,
-          defaultPageSize: 30,
         }}
         loading={loading}
         dataSource={currentStrategyData}

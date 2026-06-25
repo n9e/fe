@@ -14,7 +14,7 @@ const zh_CN = {
   versions: '版本号分布',
   other_versions: '其他版本',
   no_data: '未上报',
-  search_placeholder: '模糊搜索，多个关键词用空格分隔',
+  search_placeholder: '多个关键词用空格分隔，关系为"且"',
   cores: 'Cores',
   tags_popover_title: '{{count}} 个',
   view_collects: '查看关联采集配置',
@@ -46,6 +46,8 @@ const zh_CN = {
   auth_level_channel_ident: '通道标识',
   ident: '标识',
   agent_version_title: 'AGENT版本',
+  current_version: '当前版本',
+  upgrade_version: '可升级版本',
   status: '状态',
   online: '有心跳',
   offline: '无心跳',
@@ -134,6 +136,11 @@ const zh_CN = {
   meta_no_data: '暂无数据',
   all_no_data: '没有部署采集器？可参考 <a>安装手册</a> 安装部署',
   categraf_doc: 'categraf 文档',
+  empty_guide: {
+    title: '还没有机器上报',
+    desc: '在主机上部署 Categraf 采集器后，机器会自动出现在这里。',
+    deploy_btn: '部署采集器',
+  },
   hosts_select: {
     placeholder: '机器标识或者 IP',
     modal_title: '填写机器标识或者 IP',
@@ -142,6 +149,8 @@ const zh_CN = {
   force_cover: '强制覆盖',
   force_delete: '强制删除',
   batch_failed: '批量操作失败',
+  upgrade_not_support_tip: '该版本不支持任务通道，请升级 Agent 版本到 ent-v0.5.27 及以上',
+  go_upgrade: '去升级',
 };
 
 export default zh_CN;

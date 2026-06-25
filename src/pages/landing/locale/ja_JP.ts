@@ -1,5 +1,19 @@
 const ja_JP = {
   pageTitle: 'Nightingale へようこそ',
+  onboarding: {
+    title: 'はじめに',
+    subtitle: '数ステップで監視を立ち上げましょう',
+    progress: '{{done}}/{{total}} 完了',
+    hostTrack: 'ホスト監視',
+    dataTrack: 'データ連携',
+    steps: {
+      machine: { title: 'コレクタをデプロイ', desc: 'ホストに Categraf をデプロイすると、ホスト一覧に表示されます' },
+      hostDashboard: { title: 'ホストダッシュボードを適用', desc: 'テンプレートセンターから組み込みのホストダッシュボードをインポート' },
+      datasource: { title: 'データソースを設定', desc: 'Prometheus / VictoriaMetrics などを接続' },
+      dashboard: { title: 'ダッシュボードを作成', desc: '関心のあるメトリクスを可視化' },
+      alert: { title: 'アラートルールを設定', desc: '重要なメトリクスに最初のアラートルールを設定' },
+    },
+  },
   hero: {
     badge: 'オープンソース · オールインワン監視/アラート',
     highlight: '監視をよりシンプルに、よりスマートに',

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { GlobalOutlined } from '@ant-design/icons';
+import { Search } from 'lucide-react';
 import { PromQLMonacoEditor } from '@fc-components/monaco-editor';
 import type * as monacoTypes from 'monaco-editor/esm/vs/editor/editor.api';
 import _ from 'lodash';
@@ -82,7 +82,7 @@ export default function index(props: MonacoEditorPromQLProps) {
        * 解决 monaco-editor 在 Input.Group 下无法正常自动布局
        * https://github.com/microsoft/monaco-editor/issues/3393
        */}
-      <div className='promql-input-ng-container flex'>
+      <div className={`promql-input-ng-container flex${showBuiltinMetrics ? ' has-builtin-metrics' : ''}`}>
         {showBuiltinMetrics && (
           <BuiltinMetrics
             addonClassName='flex-shrink-0 w-max flex'
@@ -165,7 +165,8 @@ export default function index(props: MonacoEditorPromQLProps) {
           />
           {showGlobalMetrics && (
             <span className='ant-input-suffix'>
-              <GlobalOutlined
+              <Search
+                size={16}
                 className='prom-graph-metrics-target'
                 onClick={() => {
                   setMetricsExplorerVisible(true);
