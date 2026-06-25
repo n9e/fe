@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Table, Tooltip, Modal, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Space, Switch, Modal, message } from 'antd';
 import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../constants';
 import { getList, deleteItem, putItem } from '../services';
@@ -51,7 +52,7 @@ export default function List() {
               </Space>
             </div>
             <div className='min-h-0 flex-shrink-0'>
-              <Table
+              <EnhancedTable
                 rowKey='id'
                 size='small'
                 pagination={pagination}
@@ -65,6 +66,8 @@ export default function List() {
                   {
                     dataIndex: 'description',
                     title: t('description'),
+                    ellipsis: { showTitle: false },
+                    render: (val) => <EllipsisText text={val} />,
                   },
                   {
                     dataIndex: 'llm_config_name',
@@ -75,8 +78,15 @@ export default function List() {
                     title: t('use_case'),
                   },
                   {
-                    dataIndex: 'enabled',
-                    title: t('enabled'),
+                    ...getEnabledStatusColumn({
+                      title: t('enabled'),
+                      dataIndex: 'enabled',
+                      enabledText: t('enabled'),
+                      disabledText: t('disabled'),
+                      enabledValue: true,
+                      disabledValue: false,
+                    }),
+
                     render: (val, record) => {
                       return (
                         <Switch
@@ -95,49 +105,42 @@ export default function List() {
                       );
                     },
                   },
-                  {
-                    title: t('common:table.operations'),
-                    width: 100,
-                    render: (record) => {
-                      return (
-                        <Space size={2}>
-                          <Button
-                            size='small'
-                            type='text'
-                            className='p-0'
-                            icon={<EditOutlined />}
-                            onClick={() => {
-                              setEditDrawerState({
-                                visible: true,
-                                id: record.id,
-                              });
-                            }}
-                          />
-                          <Tooltip title={record.enable === true ? t('cannot_delete_when_enabled') : undefined}>
-                            <Button
-                              size='small'
-                              type='text'
-                              className='p-0'
-                              icon={<DeleteOutlined />}
-                              disabled={record.enable === true}
-                              onClick={() => {
-                                Modal.confirm({
-                                  title: t('common:confirm.delete'),
-                                  onOk: () => {
-                                    deleteItem(record.id).then(() => {
-                                      message.success(t('common:success.delete'));
-                                      run();
-                                    });
-                                  },
-                                });
-                              }}
-                            />
-                          </Tooltip>
-                        </Space>
-                      );
-                    },
-                  },
                 ]}
+                rowActions={(record) => ({
+                  menu: [
+                    {
+                      key: 'edit',
+                      icon: 'edit',
+                      text: t('common:btn.edit'),
+                      onClick: () => {
+                        setEditDrawerState({
+                          visible: true,
+                          id: record.id,
+                        });
+                      },
+                    },
+                    {
+                      key: 'delete',
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      danger: true,
+                      disabled: record.enabled === true,
+                      tooltip: record.enabled === true ? t('cannot_delete_when_enabled') : undefined,
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteItem(record.id).then(() => {
+                              message.success(t('common:success.delete'));
+                              run();
+                            });
+                          },
+                        });
+                      },
+                    },
+                  ],
+                })}
+                actionColumn={{ title: t('common:table.operations'), width: 64 }}
               />
             </div>
           </div>

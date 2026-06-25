@@ -6,6 +6,9 @@ const zh_HK = {
     from_template: '從模板中心導入',
   },
   search_placeholder: '搜尋名稱或標籤',
+  status_triggered: '告警中',
+  status_normal: '無告警',
+  notify_rule_not_found: '未找到對應的通知規則',
   prod: '監控類型',
   severity: '級別',
   notify_groups: '告警接收組',
@@ -328,7 +331,7 @@ const zh_HK = {
   filter_disabled: {
     placeholder: '啟用狀態',
     0: '啟用',
-    1: '未啟用',
+    1: '停用',
   },
   var_config: {
     enable: '啟用變量',

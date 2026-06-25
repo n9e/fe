@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { useRequest } from 'ahooks';
-import { Table, Space, Button, Upload, Modal, message, Popover, Input } from 'antd';
-import { EyeOutlined, DeleteOutlined, UploadOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Upload, Modal, message, Popover, Input } from 'antd';
+import { UploadOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
+import EnhancedTable from '@/components/EnhancedTable';
 import { NS } from '../constants';
 import { getItem, uploadFile, deleteFile } from '../services';
 import ResourceModal from './ResourceModal';
@@ -67,11 +68,41 @@ export default function ResourcesTable(props: Props) {
           </Button>
         </Upload> */}
       </div>
-      <Table
+      <EnhancedTable
         size='small'
         rowKey='id'
         loading={loading}
         dataSource={filteredFiles}
+        rowActions={(record) => ({
+          menu: [
+            {
+              key: 'view',
+              icon: 'view',
+              text: t('common:btn.view'),
+              onClick: () => {
+                setResourceState({ visible: true, id: record.id, name: record.name });
+              },
+            },
+            {
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              onClick: () => {
+                Modal.confirm({
+                  title: t('common:confirm.delete'),
+                  onOk: () => {
+                    deleteFile(record.id).then(() => {
+                      message.success(t('common:success.delete'));
+                      run();
+                    });
+                  },
+                });
+              },
+            },
+          ],
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
         columns={[
           {
             dataIndex: 'name',
@@ -143,45 +174,10 @@ export default function ResourcesTable(props: Props) {
               }
             },
           },
-          {
-            title: t('common:table.operations'),
-            width: 100,
-            render: (record) => {
-              return (
-                <Space size={2}>
-                  <Button
-                    size='small'
-                    type='text'
-                    className='p-0'
-                    icon={<EyeOutlined />}
-                    onClick={() => {
-                      setResourceState({ visible: true, id: record.id, name: record.name });
-                    }}
-                  />
-                  <Button
-                    size='small'
-                    type='text'
-                    className='p-0'
-                    icon={<DeleteOutlined />}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteFile(record.id).then(() => {
-                            message.success(t('common:success.delete'));
-                            run();
-                          });
-                        },
-                      });
-                    }}
-                  />
-                </Space>
-              );
-            },
-          },
         ]}
         pagination={false}
         scroll={{
+          x: 'max-content',
           y: 400,
         }}
       />

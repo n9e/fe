@@ -147,8 +147,11 @@ export default defineConfig(({ mode }) => {
             'table-bg': 'var(--fc-fill-2)',
             'table-header-bg': 'var(--fc-fill-2-5)',
             'table-header-color': 'var(--fc-text-3)',
-            'table-header-sort-bg': 'var(--fc-fill-2-5)',
-            'table-body-sort-bg': 'var(--fc-fill-2-5)',
+            'table-header-sort-bg': 'rgb(var(--fc-fill-5-rgb) / 0.4)',
+            // sorted column tints only the HEADER (above); body cells stay normal so the
+            // column doesn't look different from the rest (align design-system table spec —
+            // body bg only reacts to row hover/selection, never to which column is sorted).
+            'table-body-sort-bg': 'transparent',
             'table-row-hover-bg': 'rgb(var(--fc-fill-5-rgb) / 0.2)',
             'table-selected-row-color': 'inherit',
             // Keep Less color functions compile-safe; runtime CSS vars are patched in theme/default.less.

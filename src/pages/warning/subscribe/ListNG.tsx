@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Input, Table, message, Modal, Space, Switch, Tag, Dropdown, Menu, Tooltip, Select } from 'antd';
-import { ExclamationCircleOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { Button, Input, message, Modal, Space, Switch, Tag, Tooltip, Select } from 'antd';
+import { ExclamationCircleOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -13,7 +13,10 @@ import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
-import Tags from '@/components/Tags';
+import Tags from '@/components/TableTags/Tags';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import { userColumn } from '@/components/EnhancedTable/columns';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -47,7 +50,8 @@ interface Props {
 }
 
 const Subscribe = (props: Props) => {
-  const { t } = useTranslation('alertSubscribes');
+  const { t, i18n } = useTranslation('alertSubscribes');
+  const history = useHistory();
   const { datasourceList, busiGroups } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
@@ -71,52 +75,61 @@ const Subscribe = (props: Props) => {
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
 
   const columns: ColumnsType = _.concat(
-    hideBusinessGroupColumn
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
       {
         title: t('note'),
         dataIndex: 'note',
         render: (data, record: any) => {
+          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
           return (
-            <Link
-              to={{
-                pathname: `/alert-subscribes/edit/${record.id}`,
-                state: record,
-              }}
-              target={linkTarget}
-            >
-              {data}
-            </Link>
+            <div className='flex flex-col gap-0.5'>
+              <Link
+                to={{
+                  pathname: `/alert-subscribes/edit/${record.id}`,
+                  state: record,
+                }}
+                target={linkTarget}
+              >
+                {data}
+              </Link>
+              {!hideBusinessGroupColumn && groupName && <span className='text-soft text-xs'>{groupName}</span>}
+            </div>
           );
         },
       },
+    ] as any,
+    [
       {
         title: t('common:datasource.id'),
         dataIndex: 'datasource_ids',
-        render(value) {
+        render(value, record: any) {
           if (!value) return '-';
+          const cate = _.find(allCates, { value: record.cate });
+          const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+          let logoSrc = cate?.logo;
+          if (record.cate === 'host') {
+            logoSrc = '/image/logos/host.png';
+          }
           return (
-            <Tags
-              width={70}
-              data={_.compact(
-                _.map(value, (item) => {
-                  if (item === 0) return '$all';
-                  const name = _.find(datasourceList, { id: item })?.name;
-                  if (!name) return '';
-                  return name;
-                }),
+            <Space>
+              {logoSrc && (
+                <Tooltip title={cateLabel}>
+                  <img alt={record.cate} src={logoSrc} height={18} />
+                </Tooltip>
               )}
-            />
+              <Tags
+                type='outline'
+                maxWidth={180}
+                data={_.compact(
+                  _.map(value, (item) => {
+                    if (item === 0) return '$all';
+                    const name = _.find(datasourceList, { id: item })?.name;
+                    if (!name) return '';
+                    return name;
+                  }),
+                )}
+              />
+            </Space>
           );
         },
       },
@@ -125,27 +138,19 @@ const Subscribe = (props: Props) => {
         dataIndex: 'severities',
         render: (data) => {
           return (
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 4,
+            <Tags
+              type='fill'
+              borderRadius={6}
+              data={_.map(data, (severity) => `S${severity}`)}
+              bgColor={(tagname) => {
+                const bgColorMap = { S1: 'var(--fc-red-3)', S2: 'var(--fc-orange-3)', S3: 'var(--fc-yellow-3)' };
+                return bgColorMap[tagname as string] || 'var(--fc-gray-3)';
               }}
-            >
-              {_.map(data, (severity) => {
-                return (
-                  <Tag
-                    key={severity}
-                    color={priorityColor[severity - 1]}
-                    style={{
-                      marginRight: 0,
-                    }}
-                  >
-                    S{severity}
-                  </Tag>
-                );
-              })}
-            </div>
+              fontColor={(tagname) => {
+                const fontColorMap = { S1: 'var(--fc-red-11)', S2: 'var(--fc-orange-11)', S3: 'var(--fc-yellow-11)' };
+                return fontColorMap[tagname as string] || 'var(--fc-gray-11)';
+              }}
+            />
           );
         },
       },
@@ -163,13 +168,11 @@ const Subscribe = (props: Props) => {
         render: (text: any) => {
           if (!text) return '-';
           return (
-            <>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
-                  })
-                : ''}
-            </>
+            <Tags
+              type='outline'
+              maxWidth={180}
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+            />
           );
         },
       },
@@ -178,13 +181,11 @@ const Subscribe = (props: Props) => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? <div key={index}>{`${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}`}</div> : null;
-                  })
-                : ''}
-            </>
+            <Tags
+              type='outline'
+              maxWidth={180}
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${_.includes(['in', 'not in'], tag.func) ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+            />
           );
         },
       },
@@ -192,7 +193,7 @@ const Subscribe = (props: Props) => {
         title: t('user_groups'),
         dataIndex: 'user_groups',
         render: (data) => {
-          return <Tags width={110} data={_.map(data, 'name')} />;
+          return <Tags type='outline' maxWidth={180} data={_.map(data, 'name')} />;
         },
       },
       {
@@ -200,28 +201,14 @@ const Subscribe = (props: Props) => {
         dataIndex: 'notify_rule_ids',
         render: (data) => {
           return (
-            <div className='flex flex-wrap gap-[4px] max-w-[400px]'>
-              {_.map(data, (id) => {
-                const val = _.find(notificationRules, { id })?.name || id;
-                return (
-                  <Link to={`/${notificationRulesNS}/edit/${id}`} key={val} target='_blank'>
-                    <Tooltip title={val}>
-                      <Tag style={{ maxWidth: '100%', marginRight: 0 }}>
-                        <div
-                          style={{
-                            maxWidth: 'max-content',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                          }}
-                        >
-                          {val}
-                        </div>
-                      </Tag>
-                    </Tooltip>
-                  </Link>
-                );
-              })}
-            </div>
+            <Tags<number>
+              type='outline'
+              maxWidth={180}
+              data={data}
+              getKey={(id) => id}
+              getLabel={(id) => _.find(notificationRules, { id })?.name || _.toString(id)}
+              onTagClick={(id) => window.open(`/${notificationRulesNS}/edit/${id}`, '_blank')}
+            />
           );
         },
       },
@@ -239,22 +226,20 @@ const Subscribe = (props: Props) => {
           return '-';
         },
       },
-      {
-        title: t('common:table.username'),
-        ellipsis: true,
-        dataIndex: 'update_by',
-      },
-      {
-        title: t('common:table.nickname'),
-        ellipsis: true,
-        dataIndex: 'update_by_nickname',
-      },
+      userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     ],
     readonly
       ? [
           {
-            title: t('common:table.enabled'),
-            dataIndex: 'disabled',
+            ...getEnabledStatusColumn({
+              title: t('common:table.enabled'),
+              dataIndex: 'disabled',
+              enabledText: t('filter_disabled.0'),
+              disabledText: t('filter_disabled.1'),
+              enabledValue: 0,
+              disabledValue: 1,
+            }),
+
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === strategyStatus.Enable ? 'success' : 'error'}>
@@ -266,8 +251,15 @@ const Subscribe = (props: Props) => {
         ]
       : [
           {
-            title: t('common:table.enabled'),
-            dataIndex: 'disabled',
+            ...getEnabledStatusColumn({
+              title: t('common:table.enabled'),
+              dataIndex: 'disabled',
+              enabledText: t('filter_disabled.0'),
+              disabledText: t('filter_disabled.1'),
+              enabledValue: 0,
+              disabledValue: 1,
+            }),
+
             render: (disabled, record: any) => (
               <Switch
                 checked={disabled === strategyStatus.Enable}
@@ -287,69 +279,6 @@ const Subscribe = (props: Props) => {
                 }}
               />
             ),
-          },
-          {
-            title: t('common:table.operations'),
-            dataIndex: 'operation',
-            fixed: 'right',
-            render: (text: string, record: subscribeItem) => {
-              return (
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item>
-                        <Link
-                          to={{
-                            pathname: `/alert-subscribes/edit/${record.id}`,
-                          }}
-                        >
-                          {t('common:btn.edit')}
-                        </Link>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <Link
-                          to={{
-                            pathname: `/alert-subscribes/edit/${record.id}`,
-                            search: 'mode=clone',
-                          }}
-                        >
-                          {t('common:btn.clone')}
-                        </Link>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <Button
-                          danger
-                          type='link'
-                          className='p-0 h-auto'
-                          onClick={async () => {
-                            confirm({
-                              title: t('common:confirm.delete'),
-                              icon: <ExclamationCircleOutlined />,
-                              onOk: () => {
-                                deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
-                                  refreshList();
-                                  if (res.err) {
-                                    message.success(res.err);
-                                  } else {
-                                    message.success(t('common:success.delete'));
-                                  }
-                                });
-                              },
-
-                              onCancel() {},
-                            });
-                          }}
-                        >
-                          {t('common:btn.delete')}
-                        </Button>
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <Button type='link' icon={<MoreOutlined />} />
-                </Dropdown>
-              );
-            },
           },
         ],
   );
@@ -457,7 +386,7 @@ const Subscribe = (props: Props) => {
           />
         </Space>
       </div>
-      <Table
+      <EnhancedTable
         className='mt-2'
         size='small'
         rowKey='id'
@@ -471,6 +400,50 @@ const Subscribe = (props: Props) => {
         loading={loading}
         dataSource={filterData()}
         columns={ajustColumns(columns, columnsConfigs)}
+        rowActions={
+          readonly
+            ? undefined
+            : (record: subscribeItem) => ({
+                menu: [
+                  {
+                    key: 'edit',
+                    icon: 'edit',
+                    text: t('common:btn.edit'),
+                    onClick: () => history.push({ pathname: `/alert-subscribes/edit/${record.id}` }),
+                  },
+                  {
+                    key: 'clone',
+                    icon: 'copy',
+                    text: t('common:btn.clone'),
+                    onClick: () => history.push({ pathname: `/alert-subscribes/edit/${record.id}`, search: 'mode=clone' }),
+                  },
+                  {
+                    key: 'delete',
+                    icon: 'delete',
+                    text: t('common:btn.delete'),
+                    danger: true,
+                    onClick: () => {
+                      confirm({
+                        title: t('common:confirm.delete'),
+                        icon: <ExclamationCircleOutlined />,
+                        onOk: () => {
+                          deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
+                            refreshList();
+                            if (res.err) {
+                              message.success(res.err);
+                            } else {
+                              message.success(t('common:success.delete'));
+                            }
+                          });
+                        },
+                        onCancel() {},
+                      });
+                    },
+                  },
+                ],
+              })
+        }
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
     </>
   );

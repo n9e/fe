@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Input, Select, Space, Table, Button, Modal, Switch, message, Tooltip } from 'antd';
-import { NotificationOutlined, PlusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Input, Select, Space, Button, Modal, Switch, message } from 'antd';
+import { NotificationOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { map, upperCase, includes, filter } from 'lodash';
 import { Link } from 'react-router-dom';
@@ -10,6 +10,8 @@ import moment from 'moment';
 import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
 
 import { NS, NOTIFICATION_CHANNEL_TYPES } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
@@ -122,7 +124,7 @@ export default function index() {
             </div>
           </div>
           <div className='w-px bg-fc-300'></div>
-          <div className='ml-4 w-full flex-1 flex flex-col gap-4'>
+          <div className='ml-4 w-full min-w-0 flex-1 flex flex-col gap-4'>
             <div className='flex justify-between'>
               <Space>
                 <Input
@@ -228,7 +230,7 @@ export default function index() {
               </Space>
             </div>
             <div className='n9e-antd-table-height-full'>
-              <Table
+              <EnhancedTable
                 size='small'
                 loading={loading}
                 rowKey='id'
@@ -237,9 +239,12 @@ export default function index() {
                   {
                     title: t('common:table.name'),
                     dataIndex: 'name',
+                    width: 240,
+                    ellipsis: true,
                     render: (val, record) => {
                       return (
                         <Link
+                          className='block truncate'
                           to={{
                             pathname: `/${NS}/edit/${record.id}`,
                           }}
@@ -252,31 +257,41 @@ export default function index() {
                   {
                     title: t('ident'),
                     dataIndex: 'ident',
+                    width: 180,
+                    ellipsis: true,
                     render: (val) => {
                       const typeConfig = NOTIFICATION_CHANNEL_TYPES[val];
                       return (
-                        <div className='flex items-center gap-2'>
+                        <div className='flex min-w-0 items-center gap-2'>
                           {typeConfig ? <img height={16} src={typeConfig?.logo} alt={val} /> : null}
-                          {typeConfig ? t(`types.${val}`) : val}
+                          <span className='truncate'>{typeConfig ? t(`types.${val}`) : val}</span>
                         </div>
                       );
                     },
                   },
-                  {
+                  updateByColumn({
                     title: t('common:table.update_by'),
                     dataIndex: 'update_by',
-                  },
+                    width: 120,
+                  }),
                   {
                     title: t('common:table.update_at'),
                     dataIndex: 'update_at',
+                    width: 170,
                     render: (val) => {
                       return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
                     },
                   },
                   {
-                    title: t('common:table.enabled'),
-                    width: 100,
-                    dataIndex: 'enable',
+                    ...getEnabledStatusColumn({
+                      title: t('common:table.enabled'),
+                      dataIndex: 'enable',
+                      enabledText: t('common:table.enabled'),
+                      disabledText: t('disabled'),
+                      enabledValue: true,
+                      disabledValue: false,
+                    }),
+                    width: 96,
                     render: (val, record) => (
                       <Switch
                         checked={val}
@@ -301,46 +316,39 @@ export default function index() {
                       />
                     ),
                   },
-                  {
-                    title: t('common:table.operations'),
-                    width: 100,
-                    render: (record) => {
-                      return (
-                        <Space size={2}>
-                          <Link
-                            className='table-operator-area-normal'
-                            to={{
-                              pathname: `/${NS}/edit/${record.id}?mode=clone`,
-                            }}
-                            target='_blank'
-                          >
-                            <Button size='small' type='text' className='p-0' icon={<CopyOutlined />} />
-                          </Link>
-                          <Tooltip title={record.enable === true ? t('delete_disable_first') : undefined}>
-                            <Button
-                              size='small'
-                              type='text'
-                              className='p-0'
-                              icon={<DeleteOutlined />}
-                              disabled={record.enable === true}
-                              onClick={() => {
-                                Modal.confirm({
-                                  title: t('common:confirm.delete'),
-                                  onOk: () => {
-                                    deleteItems([record.id]).then(() => {
-                                      message.success(t('common:success.delete'));
-                                      run();
-                                    });
-                                  },
-                                });
-                              }}
-                            />
-                          </Tooltip>
-                        </Space>
-                      );
-                    },
-                  },
                 ]}
+                rowActions={(record) => ({
+                  menu: [
+                    {
+                      key: 'clone',
+                      icon: 'copy',
+                      text: t('common:btn.clone'),
+                      onClick: () => {
+                        window.open(`/${NS}/edit/${record.id}?mode=clone`, '_blank');
+                      },
+                    },
+                    {
+                      key: 'delete',
+                      danger: true,
+                      disabled: record.enable === true,
+                      tooltip: record.enable === true ? t('delete_disable_first') : undefined,
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteItems([record.id]).then(() => {
+                              message.success(t('common:success.delete'));
+                              run();
+                            });
+                          },
+                        });
+                      },
+                    },
+                  ],
+                })}
+                actionColumn={{ title: t('common:table.operations'), width: 64 }}
                 rowSelection={{
                   selectedRowKeys: map(selectedRows, 'id'),
                   onChange: (_selectedRowKeys, selectedRows: ChannelItem[]) => {

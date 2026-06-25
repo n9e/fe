@@ -6,6 +6,9 @@ const zh_CN = {
     from_template: '从模板导入',
   },
   search_placeholder: '搜索名称或标签',
+  status_triggered: '告警中',
+  status_normal: '无告警',
+  notify_rule_not_found: '未找到对应的通知规则',
   prod: '监控类型',
   severity: '级别',
   notify_groups: '告警接收组',
@@ -328,7 +331,7 @@ const zh_CN = {
   filter_disabled: {
     placeholder: '启用状态',
     0: '启用',
-    1: '未启用',
+    1: '停用',
   },
   var_config: {
     enable: '启用变量',

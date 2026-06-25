@@ -16,7 +16,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Divider, Tag, Row, Col, Button, Card } from 'antd';
+import { Divider, Tag, Row, Col, Button, Card } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import api from '@/utils/api';
 import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
+import EnhancedTable from '@/components/EnhancedTable';
 
 import FieldCopy from '../FieldCopy';
 import OutputDrawer from '../OutputDrawer';
@@ -181,23 +182,6 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
     },
   ];
 
-  if (!data.done) {
-    columns.push({
-      title: t('table.operations'),
-      render: (_text, record) => {
-        return (
-          <span>
-            <a onClick={() => handleHostAction(record.host, 'ignore')}>ignore</a>
-            <Divider type='vertical' />
-            <a onClick={() => handleHostAction(record.host, 'redo')}>redo</a>
-            <Divider type='vertical' />
-            <a onClick={() => handleHostAction(record.host, 'kill')}>kill</a>
-          </span>
-        );
-      },
-    });
-  }
-
   return (
     <>
       <div className={`${taskResultCls} p-4`}>
@@ -261,12 +245,24 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
               ) : null}
             </Col>
           </Row>
-          <Table
+          <EnhancedTable
             size='small'
             rowKey='host'
             columns={columns as any}
             dataSource={hosts}
             loading={loading}
+            {...(!data.done
+              ? {
+                  rowActions: (record) => ({
+                    menu: [
+                      { key: 'ignore', icon: 'default', text: 'ignore', onClick: () => handleHostAction(record.host, 'ignore') },
+                      { key: 'redo', icon: 'run', text: 'redo', onClick: () => handleHostAction(record.host, 'redo') },
+                      { key: 'kill', icon: 'delete', text: 'kill', danger: true, onClick: () => handleHostAction(record.host, 'kill') },
+                    ],
+                  }),
+                  actionColumn: { title: t('table.operations'), width: 64 },
+                }
+              : {})}
             pagination={
               {
                 showSizeChanger: true,

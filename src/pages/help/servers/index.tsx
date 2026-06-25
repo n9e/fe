@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useContext } from 'react';
-import { Space, Table } from 'antd';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
+import { Space } from 'antd';
 import Icon from '@ant-design/icons';
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
+import EnhancedTable from '@/components/EnhancedTable';
 import { getN9EServers } from '@/services/help';
 import { CommonStateContext } from '@/App';
 import SystemInfoSvg from '@/assets/n9e/image/system-info.svg?react';
@@ -63,14 +64,15 @@ export default function Servers() {
   const { profile, datasourceList } = useContext(CommonStateContext);
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  // 受控排序：rowSpan 合并依赖行的展示顺序，本地 sorter 改顺序后 row_span_map 会错位，故自己排序后再重算合并
+  const [sorter, setSorter] = useState<{ field?: string; order?: 'ascend' | 'descend' | null }>({});
   const columns = [
     {
       title: t('cluster'),
       dataIndex: 'cluster',
       key: 'cluster',
-      sorter: (a: any, b: any) => {
-        return localeCompare(a.cluster, b.cluster);
-      },
+      sorter: true,
+      sortOrder: sorter.field === 'cluster' ? sorter.order : undefined,
       onCell: (record) => {
         return {
           rowSpan: record.row_span_map?.['cluster'],
@@ -81,9 +83,8 @@ export default function Servers() {
       title: t('instance'),
       dataIndex: 'instance',
       key: 'instance',
-      sorter: (a: any, b: any) => {
-        return localeCompare(a.instance, b.instance);
-      },
+      sorter: true,
+      sortOrder: sorter.field === 'instance' ? sorter.order : undefined,
       onCell: (record) => {
         return {
           rowSpan: record.row_span_map?.['instance'],
@@ -94,34 +95,38 @@ export default function Servers() {
       title: t('datasource'),
       dataIndex: 'datasource_id',
       key: 'datasource_id',
-      sorter: (a: any, b: any) => {
-        return localeCompare(a.datasource_id, b.datasource_id);
-      },
+      sorter: true,
+      sortOrder: sorter.field === 'datasource_id' ? sorter.order : undefined,
       render: (text) => {
         return _.get(_.find(datasourceList, { id: text }), 'name');
       },
-      // onCell: (record) => {
-      //   return {
-      //     rowSpan: record.row_span_map?.['datasource_id'],
-      //   };
-      // },
     },
     {
       title: t('clock'),
       dataIndex: 'clock',
       key: 'clock',
-      sorter: (a: any, b: any) => {
-        return localeCompare(a.clock, b.clock);
-      },
+      sorter: true,
+      sortOrder: sorter.field === 'clock' ? sorter.order : undefined,
       render: (text) => {
         return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
       },
     },
   ];
+  // 先按受控排序状态排序，再重算 rowSpan，保证合并与展示顺序一致
+  const displayData = useMemo(() => {
+    const arr = _.cloneDeep(data);
+    if (sorter.field && sorter.order) {
+      arr.sort((a, b) => {
+        const r = localeCompare(a[sorter.field!], b[sorter.field!]);
+        return sorter.order === 'ascend' ? r : -r;
+      });
+    }
+    return convertDataToRowSpan(arr, columns);
+  }, [data, sorter, datasourceList]);
   const fetchData = () => {
     getN9EServers()
       .then((res) => {
-        setData(convertDataToRowSpan(res.dat, columns));
+        setData(res.dat || []);
       })
       .finally(() => {
         setLoading(false);
@@ -141,7 +146,19 @@ export default function Servers() {
       <div className='n9e'>
         {profile.admin ? (
           <div>
-            <Table bordered size='small' rowKey='id' tableLayout='fixed' loading={loading} dataSource={data} pagination={false} columns={columns} />
+            <EnhancedTable
+              bordered
+              size='small'
+              rowKey='id'
+              tableLayout='fixed'
+              loading={loading}
+              dataSource={displayData}
+              pagination={false}
+              columns={columns}
+              onChange={(_pagination, _filters, s: any) => {
+                setSorter({ field: s.field, order: s.order });
+              }}
+            />
           </div>
         ) : (
           <div>{t('unauthorized')}</div>

@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { message, Table, Modal, Button, Space, Popconfirm, Tooltip, Dropdown, Menu } from 'antd';
+import { message, Modal, Button, Space, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
-import { CheckCircleFilled, MinusCircleFilled, WarningOutlined, MoreOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import EmptyGuide from '@/components/EmptyGuide';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
@@ -157,21 +158,15 @@ const TableSource = (props: IPropsType) => {
       },
     },
     {
-      title: t('status.title'),
+      ...getEnabledStatusColumn({
+        title: t('status.title'),
+        dataIndex: 'status',
+        enabledText: t('status.enabled'),
+        disabledText: t('status.disabled'),
+        enabledValue: 'enabled',
+        disabledValue: 'disabled',
+      }),
       width: 300,
-      dataIndex: 'status',
-      sorter: (a, b) => localeCompare(a.status, b.status),
-      filters: [
-        {
-          text: t('status.enabled'),
-          value: 'enabled',
-        },
-        {
-          text: t('status.disabled'),
-          value: 'disabled',
-        },
-      ],
-      onFilter: (value: string, record) => record.status === value,
       render: (text) => {
         return text === 'enabled' ? (
           <>
@@ -187,67 +182,6 @@ const TableSource = (props: IPropsType) => {
               {t('status.disabled')}
             </span>
           </>
-        );
-      },
-    },
-
-    {
-      title: t('common:table.operations'),
-      width: 100,
-      render: (record) => {
-        return (
-          <Space>
-            <Popconfirm
-              placement='topLeft'
-              title={record.status === 'enabled' ? t('confirm.disable') : t('confirm.enable')}
-              onConfirm={() => {
-                updateDataSourceStatus({
-                  id: record.id,
-                  status: record.status === 'enabled' ? 'disabled' : 'enabled',
-                }).then(() => {
-                  message.success(record.status === 'enabled' ? t('success.disable') : t('success.enable'));
-                  setRefresh((oldVal) => !oldVal);
-                });
-              }}
-            >
-              <a>{record.status === 'enabled' ? t('disable') : t('enable')}</a>
-            </Popconfirm>
-
-            {record.status === 'disabled' && (
-              <Button
-                type='link'
-                size='small'
-                danger
-                onClick={() => {
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk() {
-                      deleteDataSourceById(record.id).then(() => {
-                        message.success(t('common:success.delete'));
-                        setRefresh((oldVal) => !oldVal);
-                      });
-                    },
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </Button>
-            )}
-
-            {record.plugin_type === 'cloudwatch' && (
-              <Dropdown
-                overlay={
-                  <Menu>
-                    <Menu.Item>
-                      <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' />
-                    </Menu.Item>
-                  </Menu>
-                }
-              >
-                <Button type='link' icon={<MoreOutlined />} />
-              </Dropdown>
-            )}
-          </Space>
         );
       },
     },
@@ -278,7 +212,7 @@ const TableSource = (props: IPropsType) => {
 
   return (
     <>
-      <Table
+      <EnhancedTable
         size='small'
         className='settings-data-source-list'
         rowKey='id'
@@ -291,6 +225,52 @@ const TableSource = (props: IPropsType) => {
         columns={defaultColumns}
         loading={loading}
         pagination={pagination}
+        rowActions={(record) => ({
+          menu: _.compact([
+            {
+              key: 'toggle',
+              icon: 'settings',
+              text: record.status === 'enabled' ? t('disable') : t('enable'),
+              onClick: () => {
+                Modal.confirm({
+                  title: record.status === 'enabled' ? t('confirm.disable') : t('confirm.enable'),
+                  onOk: () => {
+                    return updateDataSourceStatus({
+                      id: record.id,
+                      status: record.status === 'enabled' ? 'disabled' : 'enabled',
+                    }).then(() => {
+                      message.success(record.status === 'enabled' ? t('success.disable') : t('success.enable'));
+                      setRefresh((oldVal) => !oldVal);
+                    });
+                  },
+                });
+              },
+            },
+            record.plugin_type === 'cloudwatch'
+              ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> }
+              : undefined,
+            record.status === 'disabled'
+              ? {
+                  key: 'delete',
+                  icon: 'delete',
+                  text: t('common:btn.delete'),
+                  danger: true,
+                  onClick: () => {
+                    Modal.confirm({
+                      title: t('common:confirm.delete'),
+                      onOk() {
+                        return deleteDataSourceById(record.id).then(() => {
+                          message.success(t('common:success.delete'));
+                          setRefresh((oldVal) => !oldVal);
+                        });
+                      },
+                    });
+                  },
+                }
+              : undefined,
+          ]) as any,
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
         locale={{
           emptyText: (
             <EmptyGuide

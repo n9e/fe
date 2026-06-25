@@ -32,9 +32,9 @@ const zh_HK = {
     'not-support': '暫不支援',
   },
   status: {
-    title: '狀態',
-    enabled: '啟用中',
-    disabled: '停用中',
+    title: '啟用',
+    enabled: '啟用',
+    disabled: '停用',
   },
   form: {
     advanced_settings: '高級設置',

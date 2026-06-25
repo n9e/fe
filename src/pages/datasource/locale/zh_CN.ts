@@ -32,9 +32,9 @@ const zh_CN = {
     'not-support': '暂不支持',
   },
   status: {
-    title: '状态',
-    enabled: '启用中',
-    disabled: '停用中',
+    title: '启用',
+    enabled: '启用',
+    disabled: '停用',
   },
   form: {
     advanced_settings: '高级设置',

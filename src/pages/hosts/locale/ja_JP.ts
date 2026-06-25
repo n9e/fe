@@ -15,7 +15,7 @@ const ja_JP = {
   no_data: '未上報',
   search_placeholder: '複数キーワードをスペースで区切って検索、関係は"AND"',
   cores: 'Cores',
-  tags_popover_title: '{{count}} 個のタグ',
+  tags_popover_title: '{{count}} 個',
   view_collects: '関連する収集設定を表示',
   host_no_heartbeat_tip: 'ホストはハートビートなし',
   expand_busi_and_overview: '業務グループと概要を展開',

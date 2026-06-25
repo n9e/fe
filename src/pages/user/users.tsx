@@ -17,12 +17,14 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Table, Space, Dropdown, Menu } from 'antd';
-import { SearchOutlined, UserOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { Button, Input, message, Row, Modal, Space } from 'antd';
+import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
-import PageLayout, { HelpLink } from '@/components/pageLayout';
+import PageLayout from '@/components/pageLayout';
+import EnhancedTable from '@/components/EnhancedTable';
+import Tags from '@/components/TableTags/Tags';
 import UserInfoModal from './component/createModal';
 import { getUserInfoList, deleteUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
@@ -31,65 +33,58 @@ import usePagination from '@/components/usePagination';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
-import Tags from './component/Tags';
 import './index.less';
 import './locale';
 
 const { confirm } = Modal;
 
 const Resource: React.FC = () => {
-  const { t, i18n } = useTranslation('user');
+  const { t } = useTranslation('user');
   const [visible, setVisible] = useState<boolean>(false);
   const [action, setAction] = useState<ActionType>();
   const [userId, setUserId] = useState<string>('');
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [range, setRange] = useState<IRawTimeRange>();
-  const { profile, perms } = useContext(CommonStateContext);
+  const { perms } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
   const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
-  const userColumn: ColumnsType<User> = [
+
+  const userColumns: ColumnsType<User> = [
     {
       title: t('account:profile.username'),
       dataIndex: 'username',
+      width: 180,
       ellipsis: true,
+      sorter: true,
     },
     {
       title: t('account:profile.nickname'),
       dataIndex: 'nickname',
+      width: 180,
       ellipsis: true,
-      render: (text: string, record) => record.nickname || '-',
+      sorter: true,
+      render: (text: string) => <span>{text || '-'}</span>,
     },
-    {
-      title: t('account:profile.email'),
-      dataIndex: 'email',
-      render: (text: string, record) => record.email || '-',
-    },
-    {
-      title: t('account:profile.phone'),
-      dataIndex: 'phone',
-      render: (text: string, record) => record.phone || '-',
-    },
-  ];
-  const userColumns: ColumnsType<User> = [
-    ...userColumn,
     {
       title: t('account:profile.role'),
       dataIndex: 'roles',
+      width: 120,
       render: (text: []) => text.join(', '),
     },
     {
       title: t('user.busi_groups'),
       dataIndex: 'busi_groups',
-      render: (value) => {
+      width: 160,
+      render: (value: { id: number; name: string }[]) => {
         return (
           <Tags
             data={value}
-            tagLinkTo={(item) => {
-              return {
-                pathname: '/busi-groups',
-                search: `?id=${item.id}`,
-              };
+            maxWidth={220}
+            getKey={(item) => item.id}
+            getLabel={(item) => item.name}
+            onTagClick={(item) => {
+              if (typeof item !== 'string') window.open(`/busi-groups?id=${item.id}`, '_blank');
             }}
           />
         );
@@ -98,15 +93,16 @@ const Resource: React.FC = () => {
     {
       title: t('user.user_groups'),
       dataIndex: 'user_groups',
-      render: (value) => {
+      width: 160,
+      render: (value: { id: number; name: string }[]) => {
         return (
           <Tags
             data={value}
-            tagLinkTo={(item) => {
-              return {
-                pathname: '/user-groups',
-                search: `?id=${item.id}`,
-              };
+            maxWidth={220}
+            getKey={(item) => item.id}
+            getLabel={(item) => item.name}
+            onTagClick={(item) => {
+              if (typeof item !== 'string') window.open(`/user-groups?id=${item.id}`, '_blank');
             }}
           />
         );
@@ -115,6 +111,7 @@ const Resource: React.FC = () => {
     {
       title: t('common:table.create_at'),
       dataIndex: 'create_at',
+      width: 170,
       render: (text) => {
         return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
       },
@@ -123,6 +120,7 @@ const Resource: React.FC = () => {
     {
       title: t('user.last_active_time'),
       dataIndex: 'last_active_time',
+      width: 170,
       render: (text) => {
         if (!text) {
           return '-';
@@ -131,62 +129,9 @@ const Resource: React.FC = () => {
       },
       sorter: true,
     },
-    {
-      title: t('common:table.operations'),
-      width: i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 80 : 40,
-      render: (text: string, record) => {
-        return (
-          <Dropdown
-            overlay={
-              <Menu>
-                {_.includes(perms, '/users/put') && (
-                  <Menu.Item onClick={() => handleClick(ActionType.EditUser, record.id)}>
-                    <Button className='p-0 h-auto' type='link'>
-                      {t('common:btn.edit')}
-                    </Button>
-                  </Menu.Item>
-                )}
-                {_.includes(perms, '/users/put') && (
-                  <Menu.Item onClick={() => handleClick(ActionType.Reset, record.id)}>
-                    <Button className='p-0 h-auto' type='link'>
-                      {t('account:password.reset')}
-                    </Button>
-                  </Menu.Item>
-                )}
-                {_.includes(perms, '/users/del') && (
-                  <Menu.Item
-                    onClick={() => {
-                      confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteUser(record.id).then((_) => {
-                            message.success(t('common:success.delete'));
-                            handleClose();
-                          });
-                        },
-                        onCancel: () => {},
-                      });
-                    }}
-                  >
-                    <Button danger type='link' className='p-0 h-auto'>
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Menu.Item>
-                )}
-              </Menu>
-            }
-          >
-            <Button type='link' icon={<MoreOutlined />} />
-          </Dropdown>
-        );
-      },
-    },
   ];
 
-  // 根据权限动态调整表格列
-  if (!_.includes(perms, '/users/put') && !_.includes(perms, '/users/del')) {
-    userColumns.pop();
-  }
+  const hasRowActions = _.includes(perms, '/users/put') || _.includes(perms, '/users/del');
 
   const handleClick = (type: ActionType, id?: string, memberId?: string) => {
     if (id) {
@@ -294,11 +239,46 @@ const Resource: React.FC = () => {
             </Space>
           </div>
         </Row>
-        <Table
+        <EnhancedTable
           className='mt-2'
           size='small'
           rowKey='id'
           columns={ajustColumns(userColumns, columnsConfigs)}
+          rowActions={
+            hasRowActions
+              ? (record) => ({
+                  menu: _.compact([
+                    _.includes(perms, '/users/put')
+                      ? { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => handleClick(ActionType.EditUser, record.id) }
+                      : undefined,
+                    _.includes(perms, '/users/put')
+                      ? { key: 'reset', icon: 'settings', text: t('account:password.reset'), onClick: () => handleClick(ActionType.Reset, record.id) }
+                      : undefined,
+                    _.includes(perms, '/users/del')
+                      ? {
+                          key: 'delete',
+                          icon: 'delete',
+                          text: t('common:btn.delete'),
+                          danger: true,
+                          onClick: () => {
+                            confirm({
+                              title: t('common:confirm.delete'),
+                              onOk: () => {
+                                deleteUser(record.id).then((_) => {
+                                  message.success(t('common:success.delete'));
+                                  handleClose();
+                                });
+                              },
+                              onCancel: () => {},
+                            });
+                          },
+                        }
+                      : undefined,
+                  ]),
+                })
+              : undefined
+          }
+          actionColumn={{ title: t('common:table.operations'), width: 64 }}
           {...tableProps}
           pagination={{
             ...tableProps.pagination,

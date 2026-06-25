@@ -16,14 +16,14 @@
  */
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Tooltip, Dropdown, Menu } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
+import { Tag, Tooltip } from 'antd';
 import { useHistory, Link } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useAntdTable } from 'ahooks';
 import { CommonStateContext } from '@/App';
+import EnhancedTable from '@/components/EnhancedTable';
 import { parseRange } from '@/components/TimeRangePicker';
 import { getEvents } from './services';
 import { deleteAlertEventsModal } from './index';
@@ -127,74 +127,6 @@ export default function TableCpt(props: IProps) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
       },
     },
-    {
-      title: t('common:table.operations'),
-      dataIndex: 'operate',
-      width: 80,
-      render(value, record) {
-        return (
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item>
-                  <AckBtn
-                    data={record}
-                    onOk={() => {
-                      setRefreshFlag(_.uniqueId('refresh_'));
-                    }}
-                  />
-                </Menu.Item>
-                {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
-                  <Menu.Item>
-                    <Button
-                      style={{ padding: 0 }}
-                      size='small'
-                      type='link'
-                      onClick={() => {
-                        history.push({
-                          pathname: '/alert-mutes/add',
-                          search: queryString.stringify({
-                            busiGroup: record.group_id,
-                            prod: record.rule_prod,
-                            cate: record.cate,
-                            datasource_ids: [record.datasource_id],
-                            tags: record.tags,
-                          }),
-                        });
-                      }}
-                    >
-                      {t('shield')}
-                    </Button>
-                  </Menu.Item>
-                )}
-                <Menu.Item>
-                  <Button
-                    style={{ padding: 0 }}
-                    size='small'
-                    type='link'
-                    danger
-                    onClick={() =>
-                      deleteAlertEventsModal(
-                        [record.id],
-                        () => {
-                          setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                          setRefreshFlag(_.uniqueId('refresh_'));
-                        },
-                        t,
-                      )
-                    }
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type='link' icon={<MoreOutlined />} />
-          </Dropdown>
-        );
-      },
-    },
   ];
   if (import.meta.env.VITE_IS_PRO === 'true') {
     columns.splice(5, 0, {
@@ -237,12 +169,62 @@ export default function TableCpt(props: IProps) {
     <div className='event-content'>
       <div className='fc-border' style={{ padding: 16, width: '100%', overflowY: 'auto' }}>
         <div style={{ display: 'flex' }}>{header}</div>
-        <Table
+        <EnhancedTable
           className='mt-2'
           size='small'
           tableLayout='fixed'
           rowKey={(record) => record.id}
           columns={columns}
+          rowActions={(record) => ({
+            menu: _.compact([
+              {
+                key: 'ack',
+                node: (
+                  <AckBtn
+                    data={record}
+                    onOk={() => {
+                      setRefreshFlag(_.uniqueId('refresh_'));
+                    }}
+                  />
+                ),
+              },
+              !_.includes(['firemap', 'northstar'], record?.rule_prod)
+                ? {
+                    key: 'shield',
+                    icon: 'permission',
+                    text: t('shield'),
+                    onClick: () => {
+                      history.push({
+                        pathname: '/alert-mutes/add',
+                        search: queryString.stringify({
+                          busiGroup: record.group_id,
+                          prod: record.rule_prod,
+                          cate: record.cate,
+                          datasource_ids: [record.datasource_id],
+                          tags: record.tags,
+                        }),
+                      });
+                    },
+                  }
+                : undefined,
+              {
+                key: 'delete',
+                icon: 'delete',
+                text: t('common:btn.delete'),
+                danger: true,
+                onClick: () =>
+                  deleteAlertEventsModal(
+                    [record.id],
+                    () => {
+                      setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                      setRefreshFlag(_.uniqueId('refresh_'));
+                    },
+                    t,
+                  ),
+              },
+            ]),
+          })}
+          actionColumn={{ title: t('common:table.operations'), width: 64 }}
           {...tableProps}
           rowClassName={(record: { severity: number; is_recovered: number }) => {
             return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';

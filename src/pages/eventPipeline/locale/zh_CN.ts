@@ -32,9 +32,9 @@ const zh_CN = {
   },
   disabled: {
     form_label: '启用',
-    label: '状态',
-    false: '已启用',
-    true: '已禁用',
+    label: '启用',
+    false: '启用',
+    true: '停用',
   },
   inputs: {
     label: '前置变量',

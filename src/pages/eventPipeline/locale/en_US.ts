@@ -33,7 +33,7 @@ const en_US = {
   },
   disabled: {
     form_label: 'Enable',
-    label: 'Status',
+    label: 'Enable',
     false: 'Enabled',
     true: 'Disabled',
   },
