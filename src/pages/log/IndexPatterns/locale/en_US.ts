@@ -9,6 +9,7 @@ const en_US = {
   name_msg2: 'The same name already exists',
   time_field: 'Time field',
   allow_hide_system_indices: 'Match any index, including hidden ones',
+  weight: 'Weight',
   create_btn: 'Create Index Pattern',
   create_title: 'Create Index Pattern',
   edit_title: 'Edit Index Pattern',

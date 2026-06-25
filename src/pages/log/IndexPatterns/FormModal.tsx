@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Drawer, Button, Form, Input, Row, Col, Table, Select, Switch, Modal, message } from 'antd';
+import { Drawer, Button, Form, Input, InputNumber, Row, Col, Table, Select, Switch, Modal, message } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getFullIndices, getFullFields } from '@/pages/explorer/Elasticsearch/services';
@@ -243,6 +243,9 @@ function FormModal(props: Props & ModalWrapProps) {
             </Form.Item>
             <Form.Item name='note' label={t('common:table.note')}>
               <Input.TextArea />
+            </Form.Item>
+            <Form.Item name='weight' label={t('weight')} initialValue={0}>
+              <InputNumber style={{ width: '100%' }} />
             </Form.Item>
 
             <Form.Item>

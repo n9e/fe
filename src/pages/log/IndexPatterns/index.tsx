@@ -208,6 +208,12 @@ export default function Servers() {
                     title: t('time_field'),
                     dataIndex: 'time_field',
                   },
+                  {
+                    title: t('weight'),
+                    dataIndex: 'weight',
+                    width: 100,
+                    sorter: (a, b) => a.weight - b.weight,
+                  },
                 ]}
               />
             </div>

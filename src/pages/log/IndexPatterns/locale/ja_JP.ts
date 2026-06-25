@@ -6,6 +6,7 @@ const zh_HK = {
   name_msg2: '同名の規則が既に存在します',
   time_field: '時間フィールド',
   allow_hide_system_indices: 'システムインデックスを非表示にする',
+  weight: 'ウェイト',
   create_btn: 'インデックスパターンを作成',
   create_title: 'インデックスパターンを作成',
   indexes_empty: '一致するインデックスがありません',
