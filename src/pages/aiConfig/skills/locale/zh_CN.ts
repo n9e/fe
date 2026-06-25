@@ -20,6 +20,7 @@ const zh_CN = {
   upload_modal_dragger: '拖拽文件到此处，或点击上传',
   upload_modal_requirements: '文件要求',
   upload_modal_requirement_1: '.zip 或 .tar.gz 压缩包根目录必须包含 SKILL.md（含 YAML frontmatter）',
+  upload_modal_invalid_type: '仅支持 .zip 和 .tar.gz 格式的文件',
   edit_title: '编辑 Skill',
   document_empty: '暂无文档内容',
   search_placeholder: '请输入关键字搜索',

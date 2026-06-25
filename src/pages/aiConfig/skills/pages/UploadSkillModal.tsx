@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Upload } from 'antd';
+import { Modal, Upload, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 
 import { NS } from '../constants';
@@ -11,6 +11,13 @@ interface Props {
   showSubtitle?: boolean;
   onCancel: () => void;
   onSubmit: (file: File) => Promise<void> | void;
+}
+
+const ALLOWED_EXTENSIONS = ['.zip', '.tar.gz'];
+
+function isAllowedFileType(file: File): boolean {
+  const name = file.name.toLowerCase();
+  return ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext));
 }
 
 export default function UploadSkillModal(props: Props) {
@@ -40,11 +47,14 @@ export default function UploadSkillModal(props: Props) {
       keyboard={!submitting}
     >
       <Upload.Dragger
-        accept='.zip,.tgz,.tar.gz,.gz,application/gzip,application/x-gzip'
         showUploadList={false}
         multiple={false}
         disabled={submitting}
         beforeUpload={async (file) => {
+          if (!isAllowedFileType(file)) {
+            message.error(t('upload_modal_invalid_type'));
+            return Upload.LIST_IGNORE;
+          }
           setSubmitting(true);
           try {
             await onSubmit(file as File);

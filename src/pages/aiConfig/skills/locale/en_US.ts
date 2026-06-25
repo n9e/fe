@@ -20,6 +20,7 @@ const en_US = {
   upload_modal_dragger: 'Drag file here, or click to upload',
   upload_modal_requirements: 'File requirements',
   upload_modal_requirement_1: 'Root of .zip or .tar.gz package must include SKILL.md (with YAML frontmatter)',
+  upload_modal_invalid_type: 'Only .zip and .tar.gz files are supported',
   edit_title: 'Edit Skill',
   document_empty: 'No document content',
   search_placeholder: 'Search by keyword',
