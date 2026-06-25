@@ -32,9 +32,9 @@ const zh_HK = {
   },
   disabled: {
     form_label: '啟用',
-    label: '狀態',
-    false: '已啟用',
-    true: '已禁用',
+    label: '啟用',
+    false: '啟用',
+    true: '停用',
   },
   inputs: {
     label: '前置變量',

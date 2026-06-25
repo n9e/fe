@@ -122,6 +122,7 @@ const ja_JP = {
   },
   types_search_placeholder: 'タイプを検索',
   name_search_placeholder: '名前を検索',
+  disabled: '無効',
   status_select: {
     placeholder: 'ステータス',
     enable: '有効',

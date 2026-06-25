@@ -18,6 +18,7 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { Input, Table, Switch, Tag, Select, Modal, Space, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
 import moment from 'moment';
@@ -222,8 +223,15 @@ const ruleModal: React.FC<props> = (props) => {
       },
     },
     {
-      title: t('common:table.enabled'),
-      dataIndex: 'disabled',
+      ...getEnabledStatusColumn({
+        title: t('common:table.enabled'),
+        dataIndex: 'disabled',
+        enabledText: t('filter_disabled.0'),
+        disabledText: t('filter_disabled.1'),
+        enabledValue: 0,
+        disabledValue: 1,
+      }),
+
       render: (disabled, record) => (
         <Switch
           checked={disabled === strategyStatus.Enable}

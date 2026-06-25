@@ -1,0 +1,149 @@
+// EnhancedTable action column (inline + kebab). Visual baseline lives in theme/table.less.
+
+// Compact header (opt-in via `compactHeader` prop): tighter thead padding + smaller sort hit-area.
+// Default header is ~40px (small padding 8px + 24px sort hit-area); embedded sub-tables inside
+// tabs/cards want it shorter. Doubled class to outrank `.fc-enhanced-table .ant-table-column-sorter`
+// in theme/table.less and antd's `.ant-table-small` thead padding. Body rows are untouched.
+.fc-enhanced-table.fc-enhanced-table--compact-header {
+  .ant-table-thead > tr > th {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .ant-table-column-sorter {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+  }
+}
+
+.fc-table-action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.fc-table-action-inline-btn-wrap {
+  display: inline-flex;
+}
+
+// inline action: icon button
+.fc-table-action-inline-btn.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 6px;
+  color: var(--fc-text-3);
+  font-size: inherit;
+  line-height: 1;
+
+  .fc-table-action-menu-icon {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    stroke-width: 2;
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--fc-text-2);
+    background: rgb(var(--fc-fill-5-rgb) / 0.4);
+  }
+
+  &.is-danger {
+    color: var(--fc-fill-error);
+  }
+
+  &[disabled],
+  &[disabled]:hover {
+    color: var(--fc-text-4);
+    background: transparent;
+  }
+}
+
+// kebab trigger
+.fc-table-action-trigger.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  color: var(--fc-text-3);
+
+  &:hover,
+  &:focus {
+    color: var(--fc-text-2);
+    background: rgb(var(--fc-fill-5-rgb) / 0.4);
+  }
+}
+
+// kebab overlay
+.fc-table-action-dropdown {
+  .ant-dropdown-menu {
+    min-width: 112px;
+    padding: 8px 0;
+    border-radius: 8px;
+  }
+
+  .ant-dropdown-menu-item {
+    padding: 0;
+    line-height: normal;
+  }
+
+  .ant-dropdown-menu-item-divider {
+    margin: 4px 0;
+    background-color: var(--fc-border-color);
+  }
+
+  // wrapper for tooltip-on-(possibly-disabled)-item: span keeps the hint hoverable
+  .fc-table-action-menu-btn-wrap {
+    display: block;
+    width: 100%;
+  }
+
+  .fc-table-action-menu-btn.ant-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 32px;
+    padding: 0 16px;
+    color: var(--fc-text-3);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+
+    .fc-table-action-menu-icon {
+      flex: none;
+      width: 16px;
+      height: 16px;
+      margin-right: 12px;
+      stroke-width: 2;
+    }
+
+    &:hover,
+    &:focus {
+      color: var(--fc-text-2);
+    }
+
+    &.is-danger {
+      color: var(--fc-fill-error);
+    }
+
+    &.is-danger:hover,
+    &.is-danger:focus {
+      color: color-mix(in srgb, var(--fc-fill-error) 82%, #000);
+    }
+
+    &[disabled],
+    &[disabled]:hover {
+      color: var(--fc-text-4);
+    }
+  }
+}

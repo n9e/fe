@@ -16,7 +16,7 @@ const zh_HK = {
   filter_disabled: {
     placeholder: '啟用狀態',
     0: '啟用',
-    1: '未啟用',
+    1: '停用',
   },
   batch: {
     must_select_one: '未選擇任何規則',

@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Table, Tooltip, message, Modal, Switch, Space, Tag, Select } from 'antd';
+import { Button, Input, Tooltip, message, Modal, Switch, Space, Tag, Select } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -23,7 +23,9 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, Link } from 'react-router-dom';
 
-import Tags from '@/components/Tags';
+import Tags from '@/components/TableTags/Tags';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
@@ -125,7 +127,7 @@ const Shield: React.FC = () => {
           if (!value) return '-';
           return (
             <Tags
-              width={70}
+              maxWidth={120}
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';
@@ -143,17 +145,11 @@ const Shield: React.FC = () => {
         dataIndex: 'tags',
         render: (text: any) => {
           return (
-            <div>
-              {text
-                ? text.map((tag, index) => {
-                    return tag ? (
-                      <div className='max-w-[400px] break-all' key={index} style={{ lineHeight: '16px' }}>{`${tag.key} ${tag.func} ${
-                        tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value
-                      }`}</div>
-                    ) : null;
-                  })
-                : ''}
-            </div>
+            <Tags
+              type='outline'
+              maxWidth={180}
+              data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+            />
           );
         },
       },
@@ -239,20 +235,21 @@ const Shield: React.FC = () => {
           }
         },
       },
-      {
-        title: t('common:table.update_at'),
-        dataIndex: 'update_at',
-        render: (value) => {
-          return moment.unix(value).format('YYYY-MM-DD HH:mm:ss');
-        },
-      },
-      {
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
+      updateByColumn({
         title: t('common:table.update_by'),
         dataIndex: 'update_by',
-      },
+      }),
       {
-        title: t('common:table.enabled'),
-        dataIndex: 'disabled',
+        ...getEnabledStatusColumn({
+          title: t('common:table.enabled'),
+          dataIndex: 'disabled',
+          enabledText: t('filter_disabled.0'),
+          disabledText: t('filter_disabled.1'),
+          enabledValue: 0,
+          disabledValue: 1,
+        }),
+
         render: (disabled, record) => (
           <Switch
             checked={disabled === strategyStatus.Enable}
@@ -274,61 +271,6 @@ const Shield: React.FC = () => {
             }}
           />
         ),
-      },
-      {
-        title: t('common:table.operations'),
-        dataIndex: 'operation',
-        fixed: 'right',
-        render: (text: undefined, record: shieldItem) => {
-          return (
-            <>
-              <div className='table-operator-area'>
-                <div
-                  className='table-operator-area-normal'
-                  style={{
-                    cursor: 'pointer',
-                    display: 'inline-block',
-                  }}
-                  onClick={() => {
-                    history.push({
-                      pathname: `/alert-mutes/edit/${record.id}`,
-                      search: `?mode=clone&bgid=${record.group_id}`,
-                    });
-                  }}
-                >
-                  {t('common:btn.clone')}
-                </div>
-                <div
-                  className='table-operator-area-warning'
-                  style={{
-                    cursor: 'pointer',
-                    display: 'inline-block',
-                  }}
-                  onClick={() => {
-                    confirm({
-                      title: t('common:confirm.delete'),
-                      icon: <ExclamationCircleOutlined />,
-                      onOk: () => {
-                        deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
-                          refreshList();
-                          if (res.err) {
-                            message.success(res.err);
-                          } else {
-                            message.success(t('common:success.delete'));
-                          }
-                        });
-                      },
-
-                      onCancel() {},
-                    });
-                  }}
-                >
-                  {t('common:btn.delete')}
-                </div>
-              </div>
-            </>
-          );
-        },
       },
     ],
   );
@@ -457,7 +399,7 @@ const Shield: React.FC = () => {
               </Button>
             </Space>
           </div>
-          <Table
+          <EnhancedTable
             className='mt-2'
             size='small'
             rowKey='id'
@@ -471,6 +413,45 @@ const Shield: React.FC = () => {
             loading={loading}
             dataSource={currentShieldData}
             columns={columns}
+            rowActions={(record: shieldItem) => ({
+              menu: [
+                {
+                  key: 'clone',
+                  icon: 'copy',
+                  text: t('common:btn.clone'),
+                  onClick: () => {
+                    history.push({
+                      pathname: `/alert-mutes/edit/${record.id}`,
+                      search: `?mode=clone&bgid=${record.group_id}`,
+                    });
+                  },
+                },
+                {
+                  key: 'delete',
+                  icon: 'delete',
+                  text: t('common:btn.delete'),
+                  danger: true,
+                  onClick: () => {
+                    confirm({
+                      title: t('common:confirm.delete'),
+                      icon: <ExclamationCircleOutlined />,
+                      onOk: () => {
+                        deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
+                          refreshList();
+                          if (res.err) {
+                            message.success(res.err);
+                          } else {
+                            message.success(t('common:success.delete'));
+                          }
+                        });
+                      },
+                      onCancel() {},
+                    });
+                  },
+                },
+              ],
+            })}
+            actionColumn={{ title: t('common:table.operations'), width: 80 }}
           />
           <DeleteMutesModal
             visible={deleteMutesModalVisible}

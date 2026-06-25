@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Space, Button, Switch, Modal, Input, message } from 'antd';
+import { Space, Button, Switch, Modal, Input, message } from 'antd';
 import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
 
 import { getItems, putItem, deleteItems, postItems } from '../../services';
 import { NS } from '../../constants';
@@ -107,7 +109,7 @@ export default function List() {
             </Button>
           </Space>
         </div>
-        <Table
+        <EnhancedTable
           size='small'
           loading={loading}
           rowKey='id'
@@ -140,10 +142,10 @@ export default function List() {
                 );
               },
             },
-            {
+            updateByColumn({
               title: t('common:table.update_by'),
               dataIndex: 'update_by',
-            },
+            }),
             {
               title: t('common:table.update_at'),
               dataIndex: 'update_at',
@@ -152,9 +154,15 @@ export default function List() {
               },
             },
             {
-              title: t('common:table.enabled'),
+              ...getEnabledStatusColumn({
+                title: t('common:table.enabled'),
+                dataIndex: 'enable',
+                enabledText: t('common:table.enabled'),
+                disabledText: t('disabled'),
+                enabledValue: true,
+                disabledValue: false,
+              }),
               width: 100,
-              dataIndex: 'enable',
               render: (val, record) => (
                 <Switch
                   checked={val}
@@ -179,47 +187,37 @@ export default function List() {
                 />
               ),
             },
-            {
-              title: t('common:table.operations'),
-              width: 100,
-              render: (record) => {
-                return (
-                  <Space>
-                    <Link
-                      className='table-operator-area-normal'
-                      to={{
-                        pathname: `/${NS}/edit/${record.id}?mode=clone`,
-                      }}
-                      target='_blank'
-                    >
-                      {t('common:btn.clone')}
-                    </Link>
-                    <Button
-                      size='small'
-                      type='link'
-                      danger
-                      style={{
-                        padding: 0,
-                      }}
-                      onClick={() => {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk: () => {
-                            deleteItems([record.id]).then(() => {
-                              message.success(t('common:success.delete'));
-                              fetchData();
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Space>
-                );
-              },
-            },
           ]}
+          rowActions={(record) => ({
+            menu: [
+              {
+                key: 'clone',
+                icon: 'copy',
+                text: t('common:btn.clone'),
+                onClick: () => {
+                  window.open(`/${NS}/edit/${record.id}?mode=clone`, '_blank');
+                },
+              },
+              {
+                key: 'delete',
+                icon: 'delete',
+                text: t('common:btn.delete'),
+                danger: true,
+                onClick: () => {
+                  Modal.confirm({
+                    title: t('common:confirm.delete'),
+                    onOk: () => {
+                      deleteItems([record.id]).then(() => {
+                        message.success(t('common:success.delete'));
+                        fetchData();
+                      });
+                    },
+                  });
+                },
+              },
+            ],
+          })}
+          actionColumn={{ title: t('common:table.operations'), width: 64 }}
           rowSelection={{
             selectedRowKeys: _.map(selectedRows, 'id'),
             onChange: (_selectedRowKeys, selectedRows: ChannelItem[]) => {

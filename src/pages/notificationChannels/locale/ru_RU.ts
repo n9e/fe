@@ -124,6 +124,7 @@ const ru_RU = {
   },
   types_search_placeholder: 'Поиск типов',
   name_search_placeholder: 'Поиск по именам',
+  disabled: 'Отключено',
   status_select: {
     placeholder: 'Статус',
     enable: 'Включено',

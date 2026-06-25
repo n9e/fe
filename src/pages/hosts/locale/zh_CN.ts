@@ -16,7 +16,7 @@ const zh_CN = {
   no_data: '未上报',
   search_placeholder: '多个关键词用空格分隔，关系为"且"',
   cores: 'Cores',
-  tags_popover_title: '{{count}} 个标签',
+  tags_popover_title: '{{count}} 个',
   view_collects: '查看关联采集配置',
   host_no_heartbeat_tip: '机器无心跳',
   expand_busi_and_overview: '展开业务组和概览',

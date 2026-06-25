@@ -32,7 +32,7 @@ const ja_JP = {
     'not-support': '現在サポート中',
   },
   status: {
-    title: '状態',
+    title: '有効',
     enabled: '有効',
     disabled: '無効',
   },

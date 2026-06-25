@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Button, Table, Dropdown, Menu, Space } from 'antd';
-import { MoreOutlined } from '@ant-design/icons';
+import { Tag, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -15,14 +14,13 @@ import { allCates } from '@/components/AdvancedWrap/utils';
 import { IS_PLUS } from '@/utils/constant';
 import getTextWidth from '@/utils/getTextWidth';
 
-import { getEvents, getEventById } from '../../services';
+import { ackEvents, getEvents, getEventById } from '../../services';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { NS, SEVERITY_COLORS, EVENTS_TABLE_PAGESIZE_CACHE_KEY } from '../../constants';
 import { FilterType } from '../../types';
 import EventDetailDrawer from './EventDetailDrawer';
-
-// @ts-ignore
-import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
+import EnhancedTable from '@/components/EnhancedTable';
+import Tags from '@/components/TableTags/Tags';
 
 interface IProps {
   filter: FilterType;
@@ -32,6 +30,7 @@ interface IProps {
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
   setRefreshFlag: (refreshFlag: string) => void;
+  eventColumnExpanded: boolean;
 }
 
 function formatDuration(ms: number) {
@@ -58,7 +57,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, eventColumnExpanded } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
@@ -75,10 +74,16 @@ export default function AlertTable(props: IProps) {
       render(title, record) {
         const currentDatasourceCate = _.find(allCates, { value: record.cate });
         const currentDatasource = _.find(datasourceList, { id: record.datasource_id });
+        const tags = record.tags || [];
+        const addTagToFilter = (item: string) => {
+          if (!_.includes(filter.query, item)) {
+            setFilter({ query: filter.query ? `${filter.query.trim()} ${item}` : item });
+          }
+        };
 
         return (
-          <div className='max-w-[60vw]'>
-            <div className='mb-2'>
+          <div className='alert-event-content max-w-[60vw]'>
+            <div className='alert-event-title mb-2'>
               <Space>
                 {currentDatasourceCate && currentDatasource ? (
                   <Space>
@@ -106,31 +111,19 @@ export default function AlertTable(props: IProps) {
                 </a>
               </Space>
             </div>
-            <div>
-              {_.map(record.tags, (item) => {
-                return (
-                  <Tag
-                    key={item}
-                    style={{ maxWidth: '100%' }}
-                    onDoubleClick={() => {
-                      if (!_.includes(filter.query, item)) {
-                        setFilter({ query: filter.query ? `${filter.query.trim()} ${item}` : item });
-                      }
-                    }}
-                  >
-                    <div
-                      style={{
-                        maxWidth: 'max-content',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {item}
-                    </div>
+            {eventColumnExpanded ? (
+              // 展开态：全部标签内联铺开（双击加入筛选）
+              <div className='alert-event-tags is-expanded'>
+                {_.map(tags, (item) => (
+                  <Tag key={item} style={{ maxWidth: '100%' }} onDoubleClick={() => addTagToFilter(item)}>
+                    <div style={{ maxWidth: 'max-content', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item}</div>
                   </Tag>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : (
+              // 收起态：公共 Tags 组件，固定展示前 3 个（对齐原逻辑）+ N 悬浮弹层展示全部标签 + 复制（单击标签加入筛选）
+              <Tags data={tags} type='outline' maxCount={3} onTagClick={(item) => addTagToFilter(item as string)} />
+            )}
           </div>
         );
       },
@@ -179,81 +172,6 @@ export default function AlertTable(props: IProps) {
                 return <div key={idx} className={`duration-bar-segment ${colorClass} ${isActive ? 'active' : 'inactive'}`} />;
               })}
             </div>
-          </div>
-        );
-      },
-    },
-    {
-      title: t('common:table.operations'),
-      fixed: 'right' as const,
-      render(record) {
-        return (
-          <div
-            style={{
-              minWidth: getTextWidth(t('common:table.operations')),
-            }}
-          >
-            <Dropdown
-              overlay={
-                <Menu>
-                  {IS_PLUS && (
-                    <Menu.Item>
-                      <AckBtn
-                        data={record}
-                        onOk={() => {
-                          setRefreshFlag(_.uniqueId('refresh_'));
-                        }}
-                      />
-                    </Menu.Item>
-                  )}
-                  {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
-                    <Menu.Item>
-                      <Button
-                        style={{ padding: 0 }}
-                        size='small'
-                        type='link'
-                        onClick={() => {
-                          history.push({
-                            pathname: '/alert-mutes/add',
-                            search: queryString.stringify({
-                              busiGroup: record.group_id,
-                              prod: record.rule_prod,
-                              cate: record.cate,
-                              datasource_ids: [record.datasource_id],
-                              tags: record.tags,
-                            }),
-                          });
-                        }}
-                      >
-                        {t('shield')}
-                      </Button>
-                    </Menu.Item>
-                  )}
-                  <Menu.Item>
-                    <Button
-                      style={{ padding: 0 }}
-                      size='small'
-                      type='link'
-                      danger
-                      onClick={() =>
-                        deleteAlertEventsModal(
-                          [record.id],
-                          () => {
-                            setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                            setRefreshFlag(_.uniqueId('refresh_'));
-                          },
-                          t,
-                        )
-                      }
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Button type='link' icon={<MoreOutlined />} />
-            </Dropdown>
           </div>
         );
       },
@@ -309,7 +227,7 @@ export default function AlertTable(props: IProps) {
 
   return (
     <div className='n9e-antd-table-height-full'>
-      <Table
+      <EnhancedTable
         size='small'
         tableLayout='auto'
         scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content', y: 'calc(100% - 37px)' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
@@ -330,6 +248,57 @@ export default function AlertTable(props: IProps) {
           ...tableProps.pagination,
           pageSizeOptions: ['30', '100', '200', '500'],
         }}
+        rowActions={(record) => ({
+          menu: _.compact([
+            IS_PLUS
+              ? {
+                  key: 'ack',
+                  icon: record.status === 0 ? 'claim' : 'unclaim',
+                  text: record.status === 0 ? t('claim') : t('unclaim'),
+                  onClick: () => {
+                    ackEvents([record.id], record.status === 0 ? 'ack' : 'unack').then(() => {
+                      setRefreshFlag(_.uniqueId('refresh_'));
+                    });
+                  },
+                }
+              : undefined,
+            !_.includes(['firemap', 'northstar'], record?.rule_prod)
+              ? {
+                  key: 'shield',
+                  icon: 'permission',
+                  text: t('shield'),
+                  onClick: () => {
+                    history.push({
+                      pathname: '/alert-mutes/add',
+                      search: queryString.stringify({
+                        busiGroup: record.group_id,
+                        prod: record.rule_prod,
+                        cate: record.cate,
+                        datasource_ids: [record.datasource_id],
+                        tags: record.tags,
+                      }),
+                    });
+                  },
+                }
+              : undefined,
+            {
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              onClick: () =>
+                deleteAlertEventsModal(
+                  [record.id],
+                  () => {
+                    setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                    setRefreshFlag(_.uniqueId('refresh_'));
+                  },
+                  t,
+                ),
+            },
+          ]) as any,
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
       <EventDetailDrawer
         showAckBtn

@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
-import { Button, Modal, message, Dropdown, Table, Switch, Select, Space, Tag } from 'antd';
+import { Button, Modal, message, Dropdown, Switch, Select, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
-import moment from 'moment';
 import _ from 'lodash';
 import RefreshIcon from '@/components/RefreshIcon';
 import { DownOutlined } from '@ant-design/icons';
@@ -13,6 +12,9 @@ import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import { tagsColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import Tags from '@/components/TableTags/Tags';
 import usePagination from '@/components/usePagination';
 import EditModal from './components/editModal';
 import Import from './components/Import';
@@ -121,49 +123,36 @@ const PageTable: React.FC<Props> = ({ gids }) => {
     getRecordingRules();
   };
 
-  const columns: ColumnType<strategyItem>[] = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
-    [
-      {
-        title: t('common:datasource.name'),
-        dataIndex: 'datasource_ids',
-        render: (data) => {
-          return _.map(
-            _.filter(data, (item) => {
-              return _.find(groupedDatasourceList.prometheus, { id: item });
-            }),
-            (item) => {
-              if (item === 0) {
-                return (
-                  <Tag color='purple' key={item}>
-                    $all
-                  </Tag>
-                );
-              }
-              return <Tag key={item}>{_.find(groupedDatasourceList.prometheus, { id: item })?.name!}</Tag>;
-            },
-          );
-        },
+  const columns: ColumnType<strategyItem>[] = _.concat([
+    {
+      title: t('common:datasource.name'),
+      dataIndex: 'datasource_ids',
+      render: (data) => {
+        return (
+          <Tags
+            type='outline'
+            maxWidth={180}
+            data={_.map(
+              _.filter(data, (item) => item === 0 || _.find(groupedDatasourceList.prometheus, { id: item })),
+              (item) => {
+                if (item === 0) return '$all';
+                return _.find(groupedDatasourceList.prometheus, { id: item })?.name!;
+              },
+            )}
+          />
+        );
       },
-      {
-        title: t('name'),
-        dataIndex: 'name',
-        sorter: (a, b) => {
-          return localeCompare(a.name, b.name);
-        },
-        render: (data, record) => {
-          return (
+    },
+    {
+      title: t('name'),
+      dataIndex: 'name',
+      sorter: (a, b) => {
+        return localeCompare(a.name, b.name);
+      },
+      render: (data, record) => {
+        const groupName = !(businessGroup.isLeaf && gids !== '-2') ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
+        return (
+          <div className='flex flex-col gap-0.5'>
             <div
               className='table-active-text'
               onClick={() => {
@@ -172,100 +161,49 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             >
               {data}
             </div>
-          );
-        },
+            {groupName && <span className='text-soft text-xs'>{groupName}</span>}
+          </div>
+        );
       },
-      {
-        title: t('cron_pattern'),
-        dataIndex: 'cron_pattern',
-      },
-      {
-        title: t('append_tags'),
-        dataIndex: 'append_tags',
-        render: (data) => {
-          const array = data || [];
-          return (
-            (array.length &&
-              array.map((tag: string, index: number) => {
-                return (
-                  <Tag color='purple' key={index}>
-                    {tag}
-                  </Tag>
-                );
-              })) || <div></div>
-          );
-        },
-      },
-      {
-        title: t('common:table.update_at'),
-        dataIndex: 'update_at',
-        sorter: (a, b) => {
-          return a.update_at - b.update_at;
-        },
-        render: (text: number) => moment.unix(text).format('YYYY-MM-DD HH:mm:ss'),
-      },
-      {
+    },
+    {
+      title: t('cron_pattern'),
+      dataIndex: 'cron_pattern',
+    },
+    tagsColumn({ title: t('append_tags'), dataIndex: 'append_tags', maxWidth: 180 }),
+    dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
+    {
+      ...getEnabledStatusColumn({
         title: t('disabled'),
         dataIndex: 'disabled',
-        render: (disabled, record) => (
-          <Switch
-            checked={disabled === strategyStatus.Enable}
-            size='small'
-            onChange={() => {
-              const { id, disabled } = record;
-              updateRecordingRules(
-                {
-                  ids: [id],
-                  fields: {
-                    disabled: !disabled ? 1 : 0,
-                  },
-                },
-                record.group_id,
-              ).then(() => {
-                refreshList();
-              });
-            }}
-          />
-        ),
-      },
-      {
-        title: t('common:table.operations'),
-        dataIndex: 'operator',
-        render: (data, record) => {
-          return (
-            <div className='table-operator-area'>
-              <div
-                className='table-operator-area-normal'
-                onClick={() => {
-                  handleClickEdit(record.id, true);
-                }}
-              >
-                {t('common:btn.clone')}
-              </div>
-              <div
-                className='table-operator-area-warning'
-                onClick={() => {
-                  confirm({
-                    title: t('common:confirm.delete'),
-                    onOk: () => {
-                      deleteRecordingRule([record.id], record.group_id).then(() => {
-                        message.success(t('common:success.delete'));
-                        refreshList();
-                      });
-                    },
+        enabledText: t('filter_disabled.0'),
+        disabledText: t('filter_disabled.1'),
+        enabledValue: 0,
+        disabledValue: 1,
+      }),
 
-                    onCancel() {},
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </div>
-            </div>
-          );
-        },
-      },
-    ],
-  );
+      render: (disabled, record) => (
+        <Switch
+          checked={disabled === strategyStatus.Enable}
+          size='small'
+          onChange={() => {
+            const { id, disabled } = record;
+            updateRecordingRules(
+              {
+                ids: [id],
+                fields: {
+                  disabled: !disabled ? 1 : 0,
+                },
+              },
+              record.group_id,
+            ).then(() => {
+              refreshList();
+            });
+          }}
+        />
+      ),
+    },
+  ]);
 
   const toOneArr = (arr, res, name) => {
     arr.forEach((ele) => {
@@ -447,7 +385,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         )}
       </div>
 
-      <Table
+      <EnhancedTable
         className='mt-2'
         size='small'
         rowKey='id'
@@ -471,6 +409,38 @@ const PageTable: React.FC<Props> = ({ gids }) => {
           },
         }}
         columns={columns}
+        rowActions={(record) => ({
+          menu: [
+            {
+              key: 'clone',
+              icon: 'copy',
+              text: t('common:btn.clone'),
+              onClick: () => {
+                handleClickEdit(record.id, true);
+              },
+            },
+            {
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              onClick: () => {
+                confirm({
+                  title: t('common:confirm.delete'),
+                  onOk: () => {
+                    deleteRecordingRule([record.id], record.group_id).then(() => {
+                      message.success(t('common:success.delete'));
+                      refreshList();
+                    });
+                  },
+
+                  onCancel() {},
+                });
+              },
+            },
+          ],
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
       {isModalVisible && <EditModal isModalVisible={isModalVisible} editModalFinish={editModalFinish} />}
     </div>

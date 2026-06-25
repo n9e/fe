@@ -18,10 +18,14 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu, Tag } from 'antd';
-import { DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { Space, Button, Input, Dropdown, Select, message, Modal, Tooltip, Tag } from 'antd';
+import { DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { Copy, Pencil } from 'lucide-react';
 import { ColumnType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
+import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
+import EllipsisText from '@/components/EllipsisText';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
@@ -76,7 +80,7 @@ export default function index(props: Props) {
       defaultPageSize: pagination.pageSize,
     },
   );
-  let columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
+  const columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
     {
       title: t('collector'),
       dataIndex: 'collector',
@@ -126,11 +130,14 @@ export default function index(props: Props) {
     {
       title: t('note'),
       dataIndex: 'note',
+      ellipsis: { showTitle: false },
+      render: (val) => <EllipsisText text={val} />,
     },
-    {
+    updateByColumn({
       title: t('common:table.update_by'),
       dataIndex: 'updated_by',
       key: 'updated_by',
+      filterMode: 'none',
       render: (value) => {
         if (!value) return '-';
         if (value === 'system') {
@@ -138,82 +145,8 @@ export default function index(props: Props) {
         }
         return value;
       },
-    },
-    {
-      title: t('common:table.operations'),
-      dataIndex: 'operator',
-      render: (data, record: any) => {
-        return (
-          <Dropdown
-            overlay={
-              <Menu>
-                {actionAuth.add && (
-                  <Menu.Item>
-                    <FormModal
-                      component={component}
-                      mode='clone'
-                      initialValues={record}
-                      title={t('clone_title')}
-                      collectorsList={collectorsList}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refreshFlag_'));
-                      }}
-                    >
-                      <a>{t('common:btn.clone')}</a>
-                    </FormModal>
-                  </Menu.Item>
-                )}
-                {actionAuth.edit && record.updated_by !== 'system' && (
-                  <Menu.Item>
-                    <FormModal
-                      component={component}
-                      mode='edit'
-                      initialValues={record}
-                      title={t('edit_title')}
-                      collectorsList={collectorsList}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refreshFlag_'));
-                      }}
-                    >
-                      <a>{t('common:btn.edit')}</a>
-                    </FormModal>
-                  </Menu.Item>
-                )}
-                {actionAuth.delete && record.updated_by !== 'system' && (
-                  <Menu.Item>
-                    <Button
-                      danger
-                      type='link'
-                      className='p-0 h-auto'
-                      onClick={() => {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk() {
-                            deleteMetrics([record.id]).then(() => {
-                              message.success(t('common:success.delete'));
-                              setRefreshFlag(_.uniqueId('refreshFlag_'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Menu.Item>
-                )}
-              </Menu>
-            }
-          >
-            <Button type='link' icon={<MoreOutlined />} />
-          </Dropdown>
-        );
-      },
-    },
+    }),
   ];
-
-  if (!actionAuth.add && !actionAuth.edit && !actionAuth.delete) {
-    columns = _.filter(columns, (column) => column.dataIndex !== 'operator');
-  }
 
   const { run: queryChange } = useDebounceFn(
     (query) => {
@@ -412,7 +345,7 @@ export default function index(props: Props) {
           />
         </Space>
       </div>
-      <Table
+      <EnhancedTable
         className='mt-2'
         size='small'
         rowKey='id'
@@ -428,6 +361,75 @@ export default function index(props: Props) {
             setSelectedRows(selectedRows);
           },
         }}
+        rowActions={(record: any) => {
+          if (!actionAuth.add && !actionAuth.edit && !actionAuth.delete) return undefined;
+          return {
+            menu: _.compact([
+              actionAuth.add
+                ? {
+                    key: 'clone',
+                    node: (
+                      <FormModal
+                        component={component}
+                        mode='clone'
+                        initialValues={record}
+                        title={t('clone_title')}
+                        collectorsList={collectorsList}
+                        onOk={() => {
+                          setRefreshFlag(_.uniqueId('refreshFlag_'));
+                        }}
+                      >
+                        <Button type='link' className='fc-table-action-menu-btn' icon={<Copy className='fc-table-action-menu-icon' />}>
+                          {t('common:btn.clone')}
+                        </Button>
+                      </FormModal>
+                    ),
+                  }
+                : undefined,
+              actionAuth.edit && record.updated_by !== 'system'
+                ? {
+                    key: 'edit',
+                    node: (
+                      <FormModal
+                        component={component}
+                        mode='edit'
+                        initialValues={record}
+                        title={t('edit_title')}
+                        collectorsList={collectorsList}
+                        onOk={() => {
+                          setRefreshFlag(_.uniqueId('refreshFlag_'));
+                        }}
+                      >
+                        <Button type='link' className='fc-table-action-menu-btn' icon={<Pencil className='fc-table-action-menu-icon' />}>
+                          {t('common:btn.edit')}
+                        </Button>
+                      </FormModal>
+                    ),
+                  }
+                : undefined,
+              actionAuth.delete && record.updated_by !== 'system'
+                ? {
+                    key: 'delete',
+                    icon: 'delete',
+                    text: t('common:btn.delete'),
+                    danger: true,
+                    onClick: () => {
+                      Modal.confirm({
+                        title: t('common:confirm.delete'),
+                        onOk() {
+                          deleteMetrics([record.id]).then(() => {
+                            message.success(t('common:success.delete'));
+                            setRefreshFlag(_.uniqueId('refreshFlag_'));
+                          });
+                        },
+                      });
+                    },
+                  }
+                : undefined,
+            ]) as any,
+          };
+        }}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
     </>
   );

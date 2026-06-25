@@ -16,13 +16,14 @@
  */
 import React, { useContext, useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Table, Divider, Checkbox, Row, Col, Select, Button, Space } from 'antd';
+import { Checkbox, Row, Col, Select, Button, Space } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
+import EnhancedTable from '@/components/EnhancedTable';
+import { userColumn, dateColumn } from '@/components/EnhancedTable/columns';
 
 import request from '@/utils/request';
 import api from '@/utils/api';
@@ -122,60 +123,31 @@ const index = (_props: any) => {
       });
   };
 
+  const showBusinessGroup = !(businessGroup.isLeaf && gids !== '-2');
   const columns: ColumnProps<DataItem>[] = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            width: 100,
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
     [
-      {
-        title: 'ID',
-        dataIndex: 'id',
-        width: 100,
-      },
       {
         title: t('task.title'),
         dataIndex: 'title',
-        width: 200,
+        width: 240,
         render: (text, record) => {
-          return <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>;
-        },
-      },
-      {
-        title: t('table.operations'),
-        width: 150,
-        render: (_text, record) => {
+          const groupName = _.find(busiGroups, { id: record.group_id })?.name;
           return (
-            <span>
-              <Link to={{ pathname: '/job-tasks/add', search: `task=${record.id}` }}>{t('task.clone')}</Link>
-              <Divider type='vertical' />
-              <a onClick={() => handleOpenMetaDrawer(record)}>{t('task.meta')}</a>
-            </span>
+            <div className='flex flex-col gap-0.5'>
+              <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>
+              <span className='text-soft text-xs inline-flex items-center gap-2'>
+                <span>ID: {record.id}</span>
+                {showBusinessGroup && groupName && <span>{groupName}</span>}
+              </span>
+            </div>
           );
         },
       },
-      {
-        title: t('task.creator'),
-        dataIndex: 'create_by',
-        width: 100,
-      },
-      {
-        title: t('task.created'),
-        dataIndex: 'create_at',
-        width: 160,
-        render: (text) => {
-          return moment.unix(text).format('YYYY-MM-DD HH:mm:ss');
-        },
-      },
-    ],
+    ] as any,
+    [
+      userColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
+      dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true }),
+    ] as any,
   );
 
   return (
@@ -239,11 +211,23 @@ const index = (_props: any) => {
                 </Col>
               )}
             </Row>
-            <Table
+            <EnhancedTable
               className='mt-2'
               size='small'
               rowKey='id'
               columns={columns as any}
+              rowActions={(record) => ({
+                menu: [
+                  {
+                    key: 'clone',
+                    icon: 'copy',
+                    text: t('task.clone'),
+                    onClick: () => history.push({ pathname: '/job-tasks/add', search: `task=${record.id}` }),
+                  },
+                  { key: 'meta', icon: 'view', text: t('task.meta'), onClick: () => handleOpenMetaDrawer(record) },
+                ],
+              })}
+              actionColumn={{ title: t('table.operations'), width: 64 }}
               {...(tableProps as any)}
               pagination={{
                 ...pagination,
