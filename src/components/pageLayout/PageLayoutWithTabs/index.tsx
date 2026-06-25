@@ -53,9 +53,10 @@ interface IPageLayoutProps {
   doc?: string;
   productDocLink?: string;
   tabGroup?: string;
+  docButtonText?: string;
 }
 
-const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, productDocLink, tabGroup }) => {
+const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introIcon, children, customArea, showBack, backPath, doc, productDocLink, tabGroup, docButtonText }) => {
   const { t, i18n } = useTranslation('pageLayout');
   const history = useHistory();
   const location = useLocation();
@@ -124,7 +125,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     </div>
                   )}
                   <TabMenu currentMenu={currentMenu} />
-                  {shouldShowPageDocLink(doc) && <PageDocLink link={doc} />}
+                  {shouldShowPageDocLink(doc) && <PageDocLink link={doc} buttonText={docButtonText} />}
                 </div>
 
                 <div className={'page-header-right-area flex-shrink-0'} style={{ display: sessionStorage.getItem('menuHide') === '1' ? 'none' : undefined }}>
