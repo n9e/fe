@@ -20,6 +20,7 @@ const ru_RU = {
   upload_modal_dragger: 'Перетащите файл сюда или нажмите для загрузки',
   upload_modal_requirements: 'Требования к файлу',
   upload_modal_requirement_1: 'В корне архива .zip или .tar.gz должен быть SKILL.md (с YAML frontmatter)',
+  upload_modal_invalid_type: 'Поддерживаются только файлы .zip и .tar.gz',
   edit_title: 'Редактировать Skill',
   document_empty: 'Нет содержимого документа',
   search_placeholder: 'Поиск по ключевому слову',
