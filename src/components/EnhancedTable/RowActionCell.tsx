@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Dropdown, Menu, Tooltip } from 'antd';
 import { MoreVertical } from 'lucide-react';
 import classNames from 'classnames';
@@ -20,7 +20,25 @@ function getInlineTooltipTitle(action: RowAction) {
   );
 }
 
-function ActionButton({ action, className, withIcon, iconOnly }: { action: RowAction; className: string; withIcon?: boolean; iconOnly?: boolean }) {
+export function runRowAction(action: RowAction, event: React.MouseEvent, onAction?: () => void) {
+  event.stopPropagation();
+  onAction?.();
+  action.onClick?.(event);
+}
+
+function ActionButton({
+  action,
+  className,
+  withIcon,
+  iconOnly,
+  onAction,
+}: {
+  action: RowAction;
+  className: string;
+  withIcon?: boolean;
+  iconOnly?: boolean;
+  onAction?: () => void;
+}) {
   const Icon = withIcon ? resolveActionIcon(action, iconOnly) : undefined;
   return (
     <Button
@@ -31,8 +49,7 @@ function ActionButton({ action, className, withIcon, iconOnly }: { action: RowAc
       icon={Icon ? <Icon className='fc-table-action-menu-icon' /> : undefined}
       aria-label={typeof action.text === 'string' ? action.text : undefined}
       onClick={(e) => {
-        e.stopPropagation();
-        action.onClick?.(e);
+        runRowAction(action, e, onAction);
       }}
     >
       {iconOnly ? null : action.text}
@@ -56,7 +73,7 @@ function renderInlineAction(action: RowAction, key: string) {
 // and wrap the (possibly disabled) button in a span, so the hint still shows on
 // hover — a disabled button eats pointer events, and antd would also move the
 // button's className onto a wrapper span, dropping our styling.
-function renderMenuItem(action: RowAction, key: string) {
+function renderMenuItem(action: RowAction, key: string, onAction: () => void) {
   if (action.node) {
     return (
       <Menu.Item key={key} disabled={action.disabled}>
@@ -64,7 +81,7 @@ function renderMenuItem(action: RowAction, key: string) {
       </Menu.Item>
     );
   }
-  const btn = <ActionButton action={action} className='fc-table-action-menu-btn' withIcon />;
+  const btn = <ActionButton action={action} className='fc-table-action-menu-btn' withIcon onAction={onAction} />;
   if (action.tooltip) {
     return (
       <Menu.Item key={key}>
@@ -82,6 +99,7 @@ function renderMenuItem(action: RowAction, key: string) {
 }
 
 export function RowActionCell({ actions }: { actions: RowActions }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const inline = visibleOnly(actions.inline);
   const menu = visibleOnly(actions.menu);
   if (!inline.length && !menu.length) return null;
@@ -96,12 +114,14 @@ export function RowActionCell({ actions }: { actions: RowActions }) {
         <Dropdown
           trigger={['click']}
           placement='bottomRight'
+          visible={menuOpen}
+          onVisibleChange={setMenuOpen}
           overlayClassName='fc-table-action-dropdown'
           overlay={
             <Menu>
-              {normal.map((a, i) => renderMenuItem(a, a.key ?? `m-${i}`))}
+              {normal.map((a, i) => renderMenuItem(a, a.key ?? `m-${i}`, () => setMenuOpen(false)))}
               {normal.length > 0 && danger.length > 0 && <Menu.Divider />}
-              {danger.map((a, i) => renderMenuItem(a, a.key ?? `d-${i}`))}
+              {danger.map((a, i) => renderMenuItem(a, a.key ?? `d-${i}`, () => setMenuOpen(false)))}
             </Menu>
           }
         >
