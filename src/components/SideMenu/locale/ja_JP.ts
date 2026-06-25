@@ -65,6 +65,7 @@ const ja_JP = {
     sso: 'SSO',
     audit_log: '監査ログ',
     alert_servers: 'アラートエンジン',
+    log_conversion_engines: 'ログ変換エンジン',
     about: '製品について',
     license_management: 'ライセンス管理',
     ai_config: 'AI 設定',
