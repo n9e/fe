@@ -20,6 +20,7 @@ const zh_HK = {
   upload_modal_dragger: '拖曳檔案到此處，或點擊上傳',
   upload_modal_requirements: '檔案要求',
   upload_modal_requirement_1: '.zip 或 .tar.gz 壓縮包根目錄必須包含 SKILL.md（含 YAML frontmatter）',
+  upload_modal_invalid_type: '僅支援 .zip 和 .tar.gz 格式的檔案',
   edit_title: '編輯 Skill',
   document_empty: '暫無文件內容',
   search_placeholder: '請輸入關鍵字搜尋',
