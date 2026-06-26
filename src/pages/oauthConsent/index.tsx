@@ -26,30 +26,18 @@
 // browser back to the client's redirect_uri.
 import React, { useContext, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import queryString from 'query-string';
 import { Card, Button, Space, Typography, Result } from 'antd';
 import { ApiOutlined } from '@ant-design/icons';
-import i18next from 'i18next';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { CommonStateContext } from '@/App';
 
-const { Paragraph, Text } = Typography;
+import { NAME_SPACE } from './constants';
 
-const zh = i18next.language?.startsWith('zh');
-const T = {
-  title: zh ? '授权请求' : 'Authorization request',
-  intro: zh ? '以下应用申请以你的身份访问夜莺的 MCP / A2A 接口：' : 'The following application requests to access the Nightingale MCP / A2A API as you:',
-  asUser: zh ? '当前登录身份' : 'Signed in as',
-  redirectTo: zh ? '回调地址' : 'Redirect to',
-  scope: zh ? '申请权限' : 'Requested scope',
-  allow: zh ? '允许' : 'Allow',
-  deny: zh ? '拒绝' : 'Deny',
-  invalid: zh ? '授权请求无效或已过期，请回到客户端重新发起。' : 'The authorization request is invalid or expired. Please restart from the client.',
-  failed: zh ? '处理授权时出错，请重试。' : 'Failed to process the authorization. Please try again.',
-  unknownApp: zh ? '未命名应用' : 'Unnamed application',
-};
+const { Paragraph, Text } = Typography;
 
 // decodeJwtPayload reads a JWT's payload for display only (no signature check —
 // the backend re-verifies the signed ticket when the decision is submitted).
@@ -76,6 +64,7 @@ function hostOf(uri?: string): string {
 }
 
 export default function OAuthConsent() {
+  const { t } = useTranslation(NAME_SPACE);
   const location = useLocation();
   const { profile } = useContext(CommonStateContext);
   const req = queryString.parse(location.search).req as string | undefined;
@@ -83,7 +72,7 @@ export default function OAuthConsent() {
   const [submitting, setSubmitting] = useState<'allow' | 'deny' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const clientName = claims.client_name || T.unknownApp;
+  const clientName = claims.client_name || t('unknownApp');
   const redirectHost = hostOf(claims.redirect_uri);
   const scope = claims.scope || 'mcp';
   // 该 scope 对 MCP 与 A2A 两类接口一视同仁放行（后端不按 scope 细分鉴权），
@@ -93,7 +82,7 @@ export default function OAuthConsent() {
   if (!req) {
     return (
       <div style={wrapStyle}>
-        <Result status='error' title={T.title} subTitle={T.invalid} />
+        <Result status='error' title={t('title')} subTitle={t('invalid')} />
       </div>
     );
   }
@@ -110,12 +99,12 @@ export default function OAuthConsent() {
         if (redirect) {
           window.location.href = redirect;
         } else {
-          setError(T.failed);
+          setError(t('failed'));
           setSubmitting(null);
         }
       })
       .catch(() => {
-        setError(T.failed);
+        setError(t('failed'));
         setSubmitting(null);
       });
   };
@@ -127,24 +116,24 @@ export default function OAuthConsent() {
           <Space align='center'>
             <ApiOutlined style={{ fontSize: 22 }} />
             <Typography.Title level={4} style={{ margin: 0 }}>
-              {T.title}
+              {t('title')}
             </Typography.Title>
           </Space>
 
-          <Paragraph style={{ marginBottom: 0 }}>{T.intro}</Paragraph>
+          <Paragraph style={{ marginBottom: 0 }}>{t('intro')}</Paragraph>
 
           <Card size='small' type='inner' title={<Text strong>{clientName}</Text>}>
             <Paragraph style={{ marginBottom: 6 }}>
-              <Text type='secondary'>{T.asUser}：</Text>
+              <Text type='secondary'>{t('asUser')}：</Text>
               <Text strong>{profile?.nickname || profile?.username || '-'}</Text>
             </Paragraph>
             <Paragraph style={{ marginBottom: 6 }}>
-              <Text type='secondary'>{T.scope}：</Text>
+              <Text type='secondary'>{t('scope')}：</Text>
               <Text code>{scopeDisplay}</Text>
             </Paragraph>
             {redirectHost ? (
               <Paragraph style={{ marginBottom: 0 }}>
-                <Text type='secondary'>{T.redirectTo}：</Text>
+                <Text type='secondary'>{t('redirectTo')}：</Text>
                 <Text>{redirectHost}</Text>
               </Paragraph>
             ) : null}
@@ -154,10 +143,10 @@ export default function OAuthConsent() {
 
           <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
             <Button onClick={() => decide('deny')} loading={submitting === 'deny'} disabled={submitting !== null}>
-              {T.deny}
+              {t('deny')}
             </Button>
             <Button type='primary' onClick={() => decide('allow')} loading={submitting === 'allow'} disabled={submitting !== null}>
-              {T.allow}
+              {t('allow')}
             </Button>
           </Space>
         </Space>
