@@ -27,6 +27,7 @@ const zh_CN = {
       timeWindow: '起止时间：为当前页面时间窗里的时间',
       timeRangeMs: '起止时间（基本变量，单位毫秒）：$__from 和 $__to',
       timeRangeSeconds: '起止时间（单位秒）：基本变量基础上追加参数 $__time_format__=unix',
+      timeRangeUtc: '起止时间（UTC 格式）：基本变量基础上追加参数 $__time_format__=utc',
       timeRangeFormat: '起止时间（格式化）：基本变量基础上追加参数 $__time_format__=YYYY-MM-DD HH:mm:ss',
       timeRangeOffset:
         '起止时间（时间偏移）：基本变量基础上追加参数 $__start_time_margin__=-100000 和 $__end_time_margin__=100000，单位毫秒，正数向前偏移，负数向后偏移',
@@ -39,6 +40,7 @@ const zh_CN = {
       title: '参考样例',
       timeRangeMs: '跳转到目的页面带查询时间区间（单位：毫秒）',
       timeRangeSeconds: '跳转到目的页面带查询时间区间（单位：秒）',
+      timeRangeUtc: '跳转到目的页面带查询时间区间（UTC 格式）',
       timeRangeFormat: '跳转到目的页面带查询时间区间（时间格式化）',
       timeRangeOffset: '跳转到目的页面带查询时间区间（用时间偏移）',
       mappingParams: '跳转到目的页面带所有参数映射表里的参数',
@@ -46,7 +48,7 @@ const zh_CN = {
   },
   tip1: '其中{{value}}为指定字段的值，可在该变量的基础上增加信息。',
   'log-reg-extract': "e.g. address field 17:356:256291904:1740920581 after extraction by ':(d+)$', generates a new field phone 1740920581",
-  'link-tip-time-format': '默认单位为毫秒，如需格式化可带入$__time_format__，格式包括 unix YYYY-MM-DD HH:mm:ss等',
+  'link-tip-time-format': '默认单位为毫秒，如需格式化可带入$__time_format__，格式包括 unix、utc、YYYY-MM-DD HH:mm:ss 等',
   field: {
     alias1: '链接别名',
     fieldPlaceholder: '请选择字段',

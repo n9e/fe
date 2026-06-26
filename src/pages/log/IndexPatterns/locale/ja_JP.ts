@@ -47,6 +47,7 @@ const zh_HK = {
       timeWindow: '開始・終了時刻：現在ページの時間範囲',
       timeRangeMs: '開始・終了時刻（基本変数、ミリ秒）：$__from と $__to',
       timeRangeSeconds: '開始・終了時刻（秒）：基本変数に $__time_format__=unix を追加',
+      timeRangeUtc: '開始・終了時刻（UTC形式）：基本変数に $__time_format__=utc を追加',
       timeRangeFormat: '開始・終了時刻（フォーマット）：基本変数に $__time_format__=YYYY-MM-DD HH:mm:ss を追加',
       timeRangeOffset:
         '開始・終了時刻（時間オフセット）：基本変数に $__start_time_margin__=-100000 と $__end_time_margin__=100000 を追加。単位はミリ秒で、正数は前方、負数は後方へオフセットします',
@@ -59,6 +60,7 @@ const zh_HK = {
       title: '参考例',
       timeRangeMs: '遷移先ページに検索時間範囲を付ける（単位：ミリ秒）',
       timeRangeSeconds: '遷移先ページに検索時間範囲を付ける（単位：秒）',
+      timeRangeUtc: '遷移先ページに検索時間範囲を付ける（UTC形式）',
       timeRangeFormat: '遷移先ページに検索時間範囲を付ける（時刻フォーマット）',
       timeRangeOffset: '遷移先ページに検索時間範囲を付ける（時間オフセット）',
       mappingParams: '遷移先ページにすべてのパラメータマッピングテーブル内のパラメータを付ける',
@@ -76,7 +78,7 @@ const zh_HK = {
   '可以对日志中字段通过正则提取生成新字段，跳转链接中可以使用新字段。': 'ログフィールドから正規表現を使用して新しいフィールドを抽出し、ジャンプリンクで使用できます。',
   '只会提取一次，如需多次提取可以配置多行': '一度だけ抽出されます。数回抽出する必要がある場合は、数行を設定できます。',
   'log-reg-extract': "例：address フィールド17:356:256291904:1740920581 が ':(d+)$' の抽出後、新しいフィールドphone 1740920581を生成",
-  'link-tip-time-format': 'デフォルトの単位はミリ秒です。フォーマットが必要な場合は$__time_format__を使用できます。フォーマットにはunix、YYYY-MM-DD HH:mm:ssなどが含まれます。',
+  'link-tip-time-format': 'デフォルトの単位はミリ秒です。フォーマットが必要な場合は$__time_format__を使用できます。フォーマットにはunix、utc、YYYY-MM-DD HH:mm:ssなどが含まれます。',
   field: {
     alias1: 'リンク別名',
     fieldPlaceholder: 'フィールドを選択してください',
