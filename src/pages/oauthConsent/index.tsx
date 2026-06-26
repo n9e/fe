@@ -124,16 +124,16 @@ export default function OAuthConsent() {
 
           <Card size='small' type='inner' title={<Text strong>{clientName}</Text>}>
             <Paragraph style={{ marginBottom: 6 }}>
-              <Text type='secondary'>{t('asUser')}：</Text>
+              <Text type='secondary'>{t('asUser')}</Text>
               <Text strong>{profile?.nickname || profile?.username || '-'}</Text>
             </Paragraph>
             <Paragraph style={{ marginBottom: 6 }}>
-              <Text type='secondary'>{t('scope')}：</Text>
+              <Text type='secondary'>{t('scope')}</Text>
               <Text code>{scopeDisplay}</Text>
             </Paragraph>
             {redirectHost ? (
               <Paragraph style={{ marginBottom: 0 }}>
-                <Text type='secondary'>{t('redirectTo')}：</Text>
+                <Text type='secondary'>{t('redirectTo')}</Text>
                 <Text>{redirectHost}</Text>
               </Paragraph>
             ) : null}
