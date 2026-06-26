@@ -20,6 +20,7 @@ export function getRealStep(options: { minStep?: number; maxDataPoints?: number;
 
 export function interpolateString(options: { query: string; range?: IRawTimeRange; minStep?: number; maxDataPoints?: number }) {
   const { query, range, minStep = 15, maxDataPoints } = options;
+  const queryStr = String(query);
   if (range) {
     const parsedRange = parseRange(range);
     const from = moment(parsedRange.start);
@@ -37,7 +38,7 @@ export function interpolateString(options: { query: string; range?: IRawTimeRang
       toUnix,
     });
 
-    return query
+    return queryStr
       .replace(/\$__from_date_seconds/g, `${fromUnix}`)
       .replace(/\$__from_date_iso/g, fromDateISO)
       .replace(/\$__from_date/g, `${fromDateISO}`)
@@ -54,17 +55,18 @@ export function interpolateString(options: { query: string; range?: IRawTimeRang
       .replace(/\$__range/g, `${toUnix - fromUnix}s`);
   }
 
-  return query.replace(/\$__interval/g, `${minStep}s`).replace(/\$__rate_interval/g, `${minStep * 4}s`);
+  return queryStr.replace(/\$__interval/g, `${minStep}s`).replace(/\$__rate_interval/g, `${minStep * 4}s`);
 }
 
 export function instantInterpolateString(options: { query: string; time?: moment.Moment }) {
   const { query, time } = options;
+  const queryStr = String(query);
   const currentTime = time || moment();
   const currentTimeMs = currentTime.valueOf();
   const currentTimeUnix = currentTime.unix();
   const currentTimeDateISO = currentTime.toISOString();
 
-  return query
+  return queryStr
     .replace(/\$__from_date_seconds/g, `${currentTimeUnix}`)
     .replace(/\$__from_date_iso/g, currentTimeDateISO)
     .replace(/\$__from_date/g, `${currentTimeDateISO}`)
