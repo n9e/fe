@@ -202,7 +202,9 @@ export default function index(props: IProps) {
             <div className='flex-shrink-0'>
               {React.cloneElement(extra as React.ReactElement, {
                 onChange: (newValue?: string) => {
-                  setValue(newValue);
+                  if (typeof newValue === 'string') {
+                    setValue(newValue);
+                  }
                 },
               })}
             </div>
