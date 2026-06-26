@@ -14,23 +14,32 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { Button, Input, Modal, Tag, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import { arrayMoveImmutable } from 'array-move';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
-import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
-import { getESIndexPatterns, deleteESIndexPattern, putESIndexPattern } from './services';
+import { getESIndexPatterns, deleteESIndexPattern, putESIndexPattern, putESIndexPatternWeights } from './services';
 import FormModal from './FormModal';
 import { IndexPattern } from './types';
 import './locale';
-import { SearchOutlined } from '@ant-design/icons';
+import { MenuOutlined, SearchOutlined } from '@ant-design/icons';
 import EditField from './EditField';
 import { useQuery } from '@/utils';
+import './style.less';
+
+const DragHandle = SortableHandle((props: { disabled?: boolean }) => {
+  return <Button type='text' size='small' icon={<MenuOutlined />} className='index-pattern-row-drag-handle' disabled={props.disabled} />;
+});
+
+const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => <tbody {...props} />);
+const SortableRow = SortableElement((props: React.HTMLAttributes<HTMLTableRowElement>) => <tr {...props} />);
 
 export default function Servers() {
   const { t } = useTranslation('es-index-patterns');
@@ -38,10 +47,12 @@ export default function Servers() {
   const [search, setSearch] = useState('');
   const [data, setData] = useState<IndexPattern[]>([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const query = useQuery();
   const indexPatternId = query.get('indexPatternId');
   const fetchData = (init?: boolean) => {
-    getESIndexPatterns()
+    setLoading(true);
+    return getESIndexPatterns()
       .then((res) => {
         setData(res);
         if (init && indexPatternId) {
@@ -71,6 +82,19 @@ export default function Servers() {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const filteredData = useMemo(() => {
+    return _.filter(data, (item) => _.includes(_.toLower(item.name), _.toLower(search)));
+  }, [data, search]);
+
+  const DraggableBodyRow = (props: React.HTMLAttributes<HTMLTableRowElement>) => {
+    const rowKey = (props as any)['data-row-key'] as number | string | undefined;
+    const index = _.findIndex(filteredData, (item) => String(item.id) === String(rowKey));
+    if (index < 0) {
+      return <tr {...props} />;
+    }
+    return <SortableRow index={index} {...props} />;
   };
 
   useEffect(() => {
@@ -115,9 +139,9 @@ export default function Servers() {
                 rowKey='id'
                 tableLayout='fixed'
                 loading={loading}
-                dataSource={_.filter(data, (item) => _.includes(_.toLower(item.name), _.toLower(search)))}
+                dataSource={filteredData}
                 pagination={false}
-                actionColumn={{ title: t('common:table.operations'), width: 110 }}
+                actionColumn={{ title: t('common:table.operations'), width: 110, fixed: false }}
                 rowActions={(record) => ({
                   inline: [
                     {
@@ -186,6 +210,15 @@ export default function Servers() {
                 })}
                 columns={[
                   {
+                    title: '',
+                    dataIndex: '__sort',
+                    width: 40,
+                    className: 'index-pattern-sort-col',
+                    render: () => {
+                      return <DragHandle disabled={saving} />;
+                    },
+                  },
+                  {
                     title: t('common:datasource.id'),
                     dataIndex: 'datasource_id',
                     render: (val) => {
@@ -195,20 +228,66 @@ export default function Servers() {
                       }
                       return null;
                     },
-                    sorter: (a, b) => {
-                      return localeCompare(_.get(_.find(datasourceList, { id: a.datasource_id }), 'name'), _.get(_.find(datasourceList, { id: b.datasource_id }), 'name'));
-                    },
                   },
                   {
                     title: t('name'),
                     dataIndex: 'name',
-                    sorter: (a, b) => localeCompare(a.name, b.name),
                   },
                   {
                     title: t('time_field'),
                     dataIndex: 'time_field',
                   },
                 ]}
+                components={{
+                  body: {
+                    wrapper: (props: React.HTMLAttributes<HTMLTableSectionElement>) => {
+                      return (
+                        <SortableBody
+                          useDragHandle
+                          helperClass='index-pattern-row-dragging'
+                          hideSortableGhost
+                          onSortEnd={async ({ oldIndex, newIndex }) => {
+                            if (saving || oldIndex === newIndex) return;
+
+                            const oldData = data;
+                            const movedVisibleData = arrayMoveImmutable(filteredData, oldIndex, newIndex);
+                            const visibleIds = new Set(_.map(filteredData, 'id'));
+                            let visibleIndex = 0;
+                            const newData = _.map(data, (item) => {
+                              if (!visibleIds.has(item.id)) {
+                                return item;
+                              }
+                              return movedVisibleData[visibleIndex++];
+                            }).map((item, idx) => ({
+                              ...item,
+                              weight: idx,
+                            }));
+
+                            setData(newData);
+                            setSaving(true);
+                            try {
+                              await putESIndexPatternWeights(
+                                newData.map((item, idx) => ({
+                                  id: item.id,
+                                  weight: idx,
+                                })),
+                              );
+                              message.success(t('common:success.save'));
+                              fetchData();
+                            } catch (e) {
+                              setData(oldData);
+                              message.error(t('common:error.save'));
+                            } finally {
+                              setSaving(false);
+                            }
+                          }}
+                          {...props}
+                        />
+                      );
+                    },
+                    row: DraggableBodyRow,
+                  },
+                }}
               />
             </div>
           </AuthorizationWrapper>
