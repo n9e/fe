@@ -81,7 +81,7 @@ export default function OAuthConsent() {
 
   if (!req) {
     return (
-      <div style={wrapStyle}>
+      <div className='flex items-center justify-center h-full min-h-[70vh]'>
         <Result status='error' title={t('title')} subTitle={t('invalid')} />
       </div>
     );
@@ -110,29 +110,29 @@ export default function OAuthConsent() {
   };
 
   return (
-    <div style={wrapStyle}>
-      <Card style={{ width: 460 }} bodyStyle={{ padding: 28 }}>
-        <Space direction='vertical' size={16} style={{ width: '100%' }}>
+    <div className='flex items-center justify-center h-full min-h-[70vh]'>
+      <Card className='w-[460px] [&>.ant-card-body]:p-7'>
+        <Space direction='vertical' size={16} className='w-full'>
           <Space align='center'>
-            <ApiOutlined style={{ fontSize: 22 }} />
-            <Typography.Title level={4} style={{ margin: 0 }}>
+            <ApiOutlined className='text-[22px]' />
+            <Typography.Title level={4} className='m-0'>
               {t('title')}
             </Typography.Title>
           </Space>
 
-          <Paragraph style={{ marginBottom: 0 }}>{t('intro')}</Paragraph>
+          <Paragraph className='mb-0'>{t('intro')}</Paragraph>
 
           <Card size='small' type='inner' title={<Text strong>{clientName}</Text>}>
-            <Paragraph style={{ marginBottom: 6 }}>
+            <Paragraph className='mb-1.5'>
               <Text type='secondary'>{t('asUser')}</Text>
               <Text strong>{profile?.nickname || profile?.username || '-'}</Text>
             </Paragraph>
-            <Paragraph style={{ marginBottom: 6 }}>
+            <Paragraph className='mb-1.5'>
               <Text type='secondary'>{t('scope')}</Text>
               <Text code>{scopeDisplay}</Text>
             </Paragraph>
             {redirectHost ? (
-              <Paragraph style={{ marginBottom: 0 }}>
+              <Paragraph className='mb-0'>
                 <Text type='secondary'>{t('redirectTo')}</Text>
                 <Text>{redirectHost}</Text>
               </Paragraph>
@@ -141,7 +141,7 @@ export default function OAuthConsent() {
 
           {error ? <Text type='danger'>{error}</Text> : null}
 
-          <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+          <Space className='w-full justify-end'>
             <Button onClick={() => decide('deny')} loading={submitting === 'deny'} disabled={submitting !== null}>
               {t('deny')}
             </Button>
@@ -154,11 +154,3 @@ export default function OAuthConsent() {
     </div>
   );
 }
-
-const wrapStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  height: '100%',
-  minHeight: '70vh',
-};
