@@ -93,8 +93,8 @@
 }
 
 .n9e-onboarding-pop {
-  width: 322px;
-  padding: 13px 12px 8px;
+  width: 344px;
+  padding: 16px 14px 14px;
 }
 
 .n9e-onboarding-pop-head {
@@ -102,7 +102,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   padding: 0 4px;
 }
 
@@ -110,6 +110,7 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 20px;
+  letter-spacing: 0.2px;
   color: var(--fc-text-1);
 }
 
@@ -118,37 +119,54 @@
   font-size: 12px;
   font-weight: 600;
   line-height: 16px;
+  font-variant-numeric: tabular-nums;
   color: var(--fc-text-link);
   white-space: nowrap;
+}
+
+/* 顶部细进度条：给「已完成 x/y」一个视觉锚点，弱化纯文字带来的拥挤感 */
+.n9e-onboarding-pop-progress {
+  height: 5px;
+  margin: 0 4px 18px;
+  border-radius: 999px;
+  background: rgb(var(--fc-text-link-rgb) / 0.12);
+  overflow: hidden;
+}
+
+.n9e-onboarding-pop-progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(var(--fc-text-link-rgb) / 0.7), rgb(var(--fc-text-link-rgb)));
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .n9e-onboarding-pop-tracks {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 18px;
 }
 
 .n9e-onboarding-pop-track-tag {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 4px 4px 2px;
+  gap: 9px;
+  margin: 0 4px 8px;
 }
 
 .n9e-onboarding-pop-track-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
-  border-radius: 6px;
+  border-radius: 7px;
   background: rgb(var(--fc-text-link-rgb) / 0.1);
   color: var(--fc-text-link);
 
   svg {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
   }
 }
 
@@ -159,19 +177,8 @@
   color: var(--fc-text-1);
 }
 
-/* 竖向连接线（线），由不透明节点遮断，只在节点之间露出 */
 .n9e-onboarding-pop-steps {
   position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 16px;
-    top: 16px;
-    bottom: 16px;
-    width: 2px;
-    background: rgb(var(--fc-text-link-rgb) / 0.16);
-  }
 }
 
 .n9e-onboarding-pop-step {
@@ -179,15 +186,40 @@
   z-index: 1;
   display: flex;
   width: 100%;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px;
   border: 0;
   background: transparent;
-  border-radius: 8px;
+  border-radius: 9px;
   text-align: left;
   cursor: pointer;
   transition: background-color 0.16s ease;
+
+  /* 竖向连接线：逐段绘制（本步节点中心 → 下一步节点中心），描述换行高度不一时仍能对齐 */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 17px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgb(var(--fc-text-link-rgb) / 0.16);
+    z-index: -1;
+  }
+
+  &:first-child::before {
+    top: 18px;
+  }
+
+  &:last-child::before {
+    bottom: auto;
+    height: 18px;
+  }
+
+  &:only-child::before {
+    display: none;
+  }
 
   &:hover {
     background: rgb(var(--fc-text-link-rgb) / 0.07);
@@ -203,14 +235,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   border-radius: 50%;
+  background: var(--fc-fill-1); /* 不透明底，遮断穿过节点的连接线 */
 
   svg {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
   }
 
   &.is-done {
@@ -237,13 +270,15 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  gap: 3px;
   min-width: 0;
+  padding-top: 1px;
 }
 
 .n9e-onboarding-pop-step-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  line-height: 17px;
+  line-height: 18px;
   color: var(--fc-text-1);
 
   &.is-done {
@@ -253,17 +288,20 @@
   }
 }
 
+/* 描述最多两行，超出省略——不再单行截断半句话 */
 .n9e-onboarding-pop-step-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  font-size: 11px;
-  line-height: 15px;
+  font-size: 12px;
+  line-height: 17px;
   color: var(--fc-text-4);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .n9e-onboarding-pop-step-arrow {
   flex-shrink: 0;
+  align-self: center;
   color: var(--fc-text-link);
   opacity: 0;
   transform: translateX(-3px);

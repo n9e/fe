@@ -6,12 +6,15 @@ const ja_JP = {
     progress: '{{done}}/{{total}} 完了',
     hostTrack: 'ホスト監視',
     dataTrack: 'データ連携',
+    aiTrack: 'AI アシスタント',
     steps: {
       machine: { title: 'コレクタをデプロイ', desc: 'ホストに Categraf をデプロイすると、ホスト一覧に表示されます' },
       hostDashboard: { title: 'ホストダッシュボードを適用', desc: 'テンプレートセンターから組み込みのホストダッシュボードをインポート' },
       datasource: { title: 'データソースを設定', desc: 'Prometheus / VictoriaMetrics などを接続' },
       dashboard: { title: 'ダッシュボードを作成', desc: '関心のあるメトリクスを可視化' },
       alert: { title: 'アラートルールを設定', desc: '重要なメトリクスに最初のアラートルールを設定' },
+      notification: { title: '通知を設定', desc: 'DingTalk / メールなどでアラートを実際に届ける' },
+      llm: { title: 'LLM を接続', desc: 'LLM を設定して AI アシスタントと分析を有効化' },
     },
   },
   hero: {
@@ -29,6 +32,7 @@ const ja_JP = {
     notificationTag: '到達 · 通知チャネル',
     collectionTag: 'データ · 統一収集',
     integrationTag: 'データ · 統一連携',
+    integrationBrowseAll: '70+ の組み込み連携を見る',
     infrastructureTag: 'エンタープライズ基盤',
     dataIngestArrow: 'データ · 統一取込',
     alertEventArrow: 'アラート イベント',
