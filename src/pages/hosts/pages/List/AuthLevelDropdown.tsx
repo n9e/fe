@@ -9,6 +9,8 @@ import { Item } from '../../types';
 import { putAiTaskConfigs } from '../../services';
 import getAuthLevelDisplayMap from '../../utils/getAuthLevelDisplayMap';
 import Tags from './Tags';
+// @ts-ignore
+import UpgradeAgent from 'plus:/parcels/Targets/UpgradeAgent';
 
 interface Props {
   selectedIdents: string[];
@@ -28,6 +30,7 @@ export default function AuthLevelDropdown(props: Props) {
   const displayMap = getAuthLevelDisplayMap(t);
 
   function handleMenuClick({ key }: { key: string }) {
+    if (key === 'UpgradeAgent') return;
     const level = _.toNumber(key);
     setTargetLevel(level);
     setConfirmModalVisible(true);
@@ -95,6 +98,10 @@ export default function AuthLevelDropdown(props: Props) {
                   <div>{t('auth_level_action_0_label')}</div>
                   <div className='text-soft text-xs'>{t('auth_level_action_0_help')}</div>
                 </div>
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item key='UpgradeAgent'>
+                <UpgradeAgent selectedIdents={selectedIdents} onOk={onSuccess} />
               </Menu.Item>
             </Menu>
           }
