@@ -7,7 +7,6 @@ import { alphabet, DatasourceCateEnum } from '@/utils/constant';
 import AdvancedSettings from '../components/AdvancedSettings';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
-import SqlTemplates from '../components/SqlTemplates';
 import { MetaModal } from '../components/Meta';
 
 export default function IotDBQueryBuilder({ datasourceValue }) {
@@ -79,20 +78,6 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                       >
                         <Input />
                       </Form.Item>
-                    </Col>
-                    <Col flex='92px'>
-                      <div style={{ marginTop: 27 }}>
-                        <SqlTemplates
-                          cate={DatasourceCateEnum.iotdb}
-                          onSelect={(sql) => {
-                            const targets = _.cloneDeep(chartForm.getFieldValue('targets'));
-                            _.set(targets, [field.name, 'query', 'query'], sql);
-                            chartForm.setFieldsValue({
-                              targets,
-                            });
-                          }}
-                        />
-                      </div>
                     </Col>
                     <Col flex='62px'>
                       <div style={{ marginTop: 27 }}>

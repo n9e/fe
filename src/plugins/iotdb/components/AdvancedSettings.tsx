@@ -95,23 +95,6 @@ function AdvancedSettings(props: IProps) {
                       </Form.Item>
                     </InputGroupWithFormItem>
                   </Col>
-                  <Col span={span}>
-                    <InputGroupWithFormItem
-                      label={
-                        <span>
-                          TimeFormat{' '}
-                          <Tooltip title={t('query.advancedSettings.timeFormat_tip')}>
-                            <QuestionCircleOutlined />
-                          </Tooltip>
-                        </span>
-                      }
-                      labelWidth={100}
-                    >
-                      <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='2006-01-02T15:04:05'>
-                        <Input disabled={disabled} />
-                      </Form.Item>
-                    </InputGroupWithFormItem>
-                  </Col>
                 </>
               )}
               {showUnit && (

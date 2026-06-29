@@ -8,7 +8,6 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '../../components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
-import SqlTemplates from '../../components/SqlTemplates';
 import { MetaModal } from '../../components/Meta';
 import GraphPreview from './GraphPreview';
 
@@ -107,19 +106,6 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                           </Form.Item>
                         </span>
                       </Input.Group>
-                      <SqlTemplates
-                        cate={DatasourceCateEnum.iotdb}
-                        onSelect={(sql) => {
-                          const nextQueries = _.cloneDeep(form.getFieldValue([...prefixName, 'queries']));
-                          _.set(nextQueries, [field.name, 'query'], sql);
-                          form.setFieldsValue({
-                            rule_config: {
-                              ...form.getFieldValue('rule_config'),
-                              queries: nextQueries,
-                            },
-                          });
-                        }}
-                      />
                       <MetaModal
                         datasourceCate={DatasourceCateEnum.iotdb}
                         datasourceValue={datasourceID}

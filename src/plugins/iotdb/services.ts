@@ -89,11 +89,3 @@ export function getLogsQuery(
     return res.dat;
   });
 }
-
-export function getSqlTemplate(cate?: string): Promise<{ [index: string]: string }> {
-  return request(`/api/n9e/sql-template?cate=${getDatasourceCate(cate)}`, {
-    method: RequestMethod.Get,
-  }).then((res) => {
-    return res.dat;
-  });
-}

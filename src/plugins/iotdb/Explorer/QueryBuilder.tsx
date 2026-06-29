@@ -6,7 +6,6 @@ import { FormInstance } from 'antd/lib/form/Form';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
-import SqlTemplates from '../components/SqlTemplates';
 
 interface Props {
   form: FormInstance;
@@ -17,7 +16,7 @@ interface Props {
 
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('db_iotdb');
-  const { form, extra, setRefreshFlag } = props;
+  const { extra, setRefreshFlag } = props;
 
   return (
     <div style={{ width: '100%' }}>
@@ -52,17 +51,6 @@ export default function QueryBuilder(props: Props) {
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
           <TimeRangePicker />
         </Form.Item>
-        <SqlTemplates
-          onSelect={(sql) => {
-            const currentQuery = form.getFieldValue(['query']) || {};
-            form.setFieldsValue({
-              query: {
-                ...currentQuery,
-                query: sql,
-              },
-            });
-          }}
-        />
         {extra}
       </div>
     </div>

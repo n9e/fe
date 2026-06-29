@@ -112,7 +112,7 @@ export function processFormValues(values) {
       }
       return {
         ..._.omit(item, ['interval_unit', 'range']),
-        interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
+        interval: item.interval != null && item.interval !== '' ? normalizeTime(item.interval, item.interval_unit || 'min') : undefined,
         from: parsedRange?.start,
         to: parsedRange?.end,
         cumulative_window_from: parsedRange?.cumulative_window_from,
@@ -146,7 +146,7 @@ export function processFormValues(values) {
     }
     return {
       ..._.omit(item, ['interval_unit', 'range']),
-      interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
+      interval: item.interval != null && item.interval !== '' ? normalizeTime(item.interval, item.interval_unit || 'min') : undefined,
       from: parsedRange?.start,
       to: parsedRange?.end,
     };
