@@ -23,6 +23,8 @@ import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export const isPromise = (obj) => {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
@@ -279,4 +281,8 @@ export async function downloadExcel(fileName: string = 'download.xlsx', data: ID
   } catch (error) {
     throw new Error('下载错误: ' + error);
   }
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

@@ -2,13 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import { Form } from 'antd';
 import Queries from './Queries';
-import Triggers from '@/pages/alertRules/Form/components/Triggers';
+import Triggers from '@/pages/alertRules/FormNG/components/Triggers';
 
 export default function index({ hideIndexPattern, datasourceValue, disabled }: { hideIndexPattern?: boolean; datasourceValue: number; disabled?: boolean }) {
   const form = Form.useFormInstance();
   return (
     <>
-      <div style={{ marginBottom: 10 }}>
+      <div className='mb-4'>
         <Queries hideIndexPattern={hideIndexPattern} datasourceValue={datasourceValue} form={form} disabled={disabled} />
       </div>
       <Form.Item shouldUpdate noStyle>
