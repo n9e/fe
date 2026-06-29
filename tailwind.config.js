@@ -149,6 +149,15 @@ module.exports = {
       boxShadow: {
         mf: 'rgba(0, 0, 0, 0.09) 0px 3px 12px',
       },
+      animation: {
+        'dot-pulse': 'dotPulse 1.4s ease-in-out infinite both',
+      },
+      keyframes: {
+        dotPulse: {
+          '0%, 60%, 100%': { transform: 'scale(1)', opacity: '0.4' },
+          '30%': { transform: 'scale(1.3)', opacity: '1' },
+        },
+      },
       transitionProperty: {
         width: 'width',
         height: 'height',
@@ -186,6 +195,7 @@ module.exports = {
       '4xl': '1920px',
     },
     fontSize: {
+      xs: ['10px', '12px'],
       sm: ['12px', '18px'],
       base: ['12px', '22px'],
       l1: ['14px', '22px'],

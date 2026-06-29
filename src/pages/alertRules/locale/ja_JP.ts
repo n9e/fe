@@ -1,6 +1,14 @@
 const ja_JP = {
   title: 'アラートルール',
+  empty_guide: {
+    title: 'まだアラートルールがありません',
+    desc: 'アラートルールを新規作成するか、テンプレートセンターから組み込みのアラートルールパックをインポートできます。',
+    from_template: 'テンプレートセンターからインポート',
+  },
   search_placeholder: '名前またはタグを検索',
+  status_triggered: 'アラート中',
+  status_normal: '正常',
+  notify_rule_not_found: '対応する通知ルールが見つかりません',
   prod: '監視タイプ',
   severity: 'レベル',
   notify_groups: 'アラート受信グループ',
@@ -59,6 +67,9 @@ const ja_JP = {
   callbacks: 'コールバックURL',
   callbacks_tip: '変数の設定をサポートします。変数の使用方法については、<a>変数参照</a>ドキュメントを参照してください',
   override_global_webhook: 'グローバルコールバックを上書き',
+  enrich_queries: {
+    tip: 'アラートがトリガーされると、追加クエリが実行され、結果がイベントの extra_info（フォーマット済み文字列）および extra_info_map（生のキーと値のペア）フィールドに書き込まれます。通知テンプレートでは {{ .ExtraInfo }} または {{ .ExtraInfoMap }} を使用して参照できます',
+  },
   override_global_webhook_tip: 'このスイッチをオンにすると、アラートイベントはこのルールのコールバックアドレスのみに送信され、グローバルコールバックアドレスには送信されません',
   annotations: '追加情報',
   annotationsOptions: {
@@ -122,6 +133,7 @@ const ja_JP = {
       name: 'アラートルール',
       result: 'インポート結果',
       errmsg: 'エラー情報',
+      force_overwrite: '同名の場合は強制上書き',
     },
     import_builtin: '内蔵アラートルールをインポート',
     import_prometheus: 'Prometheus アラートルールをインポート',
@@ -272,6 +284,7 @@ const ja_JP = {
     title: '閾値判定',
     builder: 'シンプルモード',
     code: '式モード',
+    expr_invalid: '式の構文が不正です',
     label: '関連ラベル',
     exp_trigger_disable: '閾値判定を有効にする',
     advanced_settings: {
@@ -281,8 +294,8 @@ const ja_JP = {
       label: '復旧条件',
       judge_type: {
         0: 'データが見つからない場合に復旧',
-        1: '結果が条件を満たす場合に復旧',
-        2: 'データが見つからない場合に復旧しない',
+        1: 'データが取得でき、かつアラート条件を満たさない場合のみ復旧',
+        2: '結果がカスタム条件を満たす場合に復旧',
       },
       recover_exp_placeholder: 'e.g. $A < 50',
     },
@@ -349,6 +362,8 @@ const ja_JP = {
   pipeline_configuration_ng: {
     title: 'イベント処理',
     select_workflow: '既存ワークフローを選択',
+    select_workflow_tooltip:
+      '現在の業務グループの既存イベント処理ワークフローを再利用し、複数のアラートルールで同じプロセッサセットを共有できます。また、この入口で「新規ワークフロー」を選択して、本ルールのプロセッサを独立して管理することもできます。',
     add_workflow: '新規ワークフロー',
     add_pipeline: 'プロセッサを追加',
     enabled: '有効',

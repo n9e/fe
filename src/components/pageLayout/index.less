@@ -21,21 +21,44 @@
     .page-header-right-area {
       display: flex;
       align-items: center;
+      gap: 12px;
 
-      .ant-space > .ant-space-item > .ant-btn {
-        display: inline-flex;
+      .page-layout-intro-container:empty {
+        display: none;
+      }
+
+      .page-header-action-group {
+        display: flex;
         align-items: center;
-        justify-content: center;
-        height: 28px;
-        min-height: 28px;
-        line-height: 1;
-        vertical-align: middle;
+        gap: 12px;
 
-        .anticon {
+        .ant-btn {
           display: inline-flex;
           align-items: center;
           justify-content: center;
+          height: 28px;
+          min-height: 28px;
           line-height: 1;
+          vertical-align: middle;
+
+          .anticon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+          }
+        }
+
+        .page-layout-header-button.ant-btn,
+        .document-open-button.ant-btn {
+          font-size: 11px;
+          font-weight: 400;
+          color: var(--fc-text-3) !important;
+
+          .anticon {
+            font-size: 11px;
+            color: inherit;
+          }
         }
       }
 
@@ -83,6 +106,15 @@
         .ant-tabs-tab {
           padding-bottom: 5px !important;
         }
+      }
+
+      .page-layout-page-doc-button.ant-btn {
+        display: inline-flex;
+        align-items: center;
+        height: 28px;
+        min-height: 28px;
+        font-size: 12px;
+        line-height: 1;
       }
     }
 

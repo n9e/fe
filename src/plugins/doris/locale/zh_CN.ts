@@ -50,6 +50,13 @@ const zh_CN = {
     warn_message_content_2: '常用的时间宏: ',
     warn_message_content_3: '样例：',
     warn_message_content_4: '时间宏使用方法: <a>详情</a>',
+    editMode: {
+      switch_to_builder_confirm_title: '切换至构建器模式',
+      switch_to_builder_confirm_content: '当前 SQL 语句无法转换为构建器设置项，切换后将丢失已编辑的 SQL 内容，是否继续？',
+      no_builder_config: '请先配置查询条件',
+      require_db_table: '请先选择数据库和数据表',
+      build_sql_failed: 'SQL 生成失败',
+    },
     dashboard: {
       mode: {
         label: '查询模式',
@@ -172,6 +179,8 @@ const zh_CN = {
     preview_sql: '预览 SQL',
     btn_tip: '点击后，SQL 输入框的内容将被覆盖',
     btn_failed_tip: '转换失败，请重试，或修改表单',
+    preview_and_run: '预览 SQL & 查询',
+    builder_content_modified: 'Builder 内容已修改，请预览最新的 SQL',
   },
 };
 export default zh_CN;

@@ -1,6 +1,8 @@
 const zh_HK = {
   landing: '首頁',
   resizeWidth: '拖拽調整側欄寬度',
+  collapse: '收起側欄',
+  expand: '展開側欄',
   quickJump: '快捷跳轉',
   quickOpenClose: '打開/關閉',
   quickSearchPlaceholder: '輸入內容以檢索...',
@@ -10,7 +12,8 @@ const zh_HK = {
   menu: {
     infrastructure: '基礎設施',
     business_group: '業務組',
-    targets: '機器',
+    devices: '設備列表',
+    targets: '機器列表',
     collects: '采集規則',
     network_devices: '網絡設備',
     dashboards: '儀表盤',
@@ -25,6 +28,7 @@ const zh_HK = {
     recording_rules: '記錄規則',
     logs_explorer: '日誌',
     monitors: '告警',
+    alerts_notifications: '告警通知',
     rules: '規則管理',
     alert_rules: '告警規則',
     alert_mutes: '屏蔽規則',
@@ -68,6 +72,7 @@ const zh_HK = {
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
     ai_config_scheduled_task: '定時任務',
+    ai_task: '任務通道',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

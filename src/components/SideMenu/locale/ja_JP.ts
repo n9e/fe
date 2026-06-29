@@ -1,6 +1,8 @@
 const ja_JP = {
   landing: 'ホーム',
   resizeWidth: 'ドラッグしてサイドバー幅を変更',
+  collapse: 'サイドバーを折りたたむ',
+  expand: 'サイドバーを展開',
   quickJump: 'クイックジャンプ',
   quickOpenClose: 'クイックオープン/クローズ',
   quickSearchPlaceholder: '検索してください...',
@@ -10,6 +12,7 @@ const ja_JP = {
   menu: {
     infrastructure: 'インフラストラクチャ',
     business_group: 'ビジネスグループ',
+    devices: 'デバイスリスト',
     targets: 'ホスト',
     collects: 'データ収集設定',
     network_devices: 'ネットワークデバイス',
@@ -26,6 +29,7 @@ const ja_JP = {
     recording_rules: 'レコーディングルール',
     logs_explorer: 'ログ',
     monitors: 'アラート',
+    alerts_notifications: 'アラート通知',
     rules: 'ルール管理',
     alert_rules: 'アラートルール',
     alert_mutes: 'ミュートルール',
@@ -69,6 +73,7 @@ const ja_JP = {
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
     ai_config_scheduled_task: '定時任務',
+    ai_task: 'タスクチャンネル',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

@@ -9,7 +9,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
-import QueryInput from '@/pages/logExplorer/components/QueryInput';
+import LuceneQueryInput from '@/plugins/elasticsearch/components/LuceneQueryInput';
 
 import { NAME_SPACE } from '../../constants';
 import QueryInputAddonAfter from '../components/QueryInputAddonAfter';
@@ -46,7 +46,7 @@ export default function QueryInputCpt(props: Props) {
                   darkMode,
                   title: t('common:page_help'),
                   type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/log-analysis/elasticserch/',
+                  documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/logs/elasticserch/',
                 });
               }}
             />
@@ -58,7 +58,7 @@ export default function QueryInputCpt(props: Props) {
       <div className='relative'>
         {queryValues?.syntax === 'lucene' ? (
           <Form.Item name={['query', 'query']}>
-            <QueryInput
+            <LuceneQueryInput
               onEnterPress={() => {
                 snapRangeRef.current = {
                   from: undefined,

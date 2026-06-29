@@ -17,10 +17,12 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Table, Space, message, Popconfirm } from 'antd';
+import { Button, Input, Space, message, Modal } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import PageLayout from '@/components/pageLayout';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import EnhancedTable from '@/components/EnhancedTable';
+import EllipsisText from '@/components/EllipsisText';
 import { getVariableConfigs, VariableConfig, postVariableConfigs, deleteVariableConfigs, putVariableConfigs, getRSAConfig, RASConfig } from './services';
 import FormModal from './FormModal';
 import './locale';
@@ -48,7 +50,7 @@ export default function index() {
     <PageLayout
       title={<Space>{t('title')}</Space>}
       icon={<SettingOutlined />}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/system-configuration/variable/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/variable/'
     >
       <div className='n9e'>
         <div
@@ -84,7 +86,7 @@ export default function index() {
             {t('common:btn.create')}
           </Button>
         </div>
-        <Table
+        <EnhancedTable
           className='mt-2'
           rowKey='id'
           size='small'
@@ -107,71 +109,68 @@ export default function index() {
             {
               dataIndex: 'note',
               title: t('common:table.note'),
-            },
-            {
-              title: t('common:table.operations'),
-              width: 140,
-              render: (record) => {
-                return (
-                  <Space>
-                    <Button
-                      size='small'
-                      type='link'
-                      style={{ padding: 0 }}
-                      onClick={() => {
-                        FormModal({
-                          title: t('common:btn.clone'),
-                          rsaConfig,
-                          data: record,
-                          onOk: (values) => {
-                            return postVariableConfigs(values).then(() => {
-                              fetchData();
-                              message.success(t('common:success.clone'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.clone')}
-                    </Button>
-                    <Button
-                      size='small'
-                      type='link'
-                      style={{ padding: 0 }}
-                      onClick={() => {
-                        FormModal({
-                          title: t('common:btn.edit'),
-                          rsaConfig,
-                          data: record,
-                          onOk: (values) => {
-                            return putVariableConfigs(record.id, values).then(() => {
-                              fetchData();
-                              message.success(t('common:success.edit'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.edit')}
-                    </Button>
-                    <Popconfirm
-                      title={t('common:confirm.delete')}
-                      onConfirm={() => {
-                        deleteVariableConfigs(record.id).then(() => {
-                          message.success(t('common:success.delete'));
-                          fetchData();
-                        });
-                      }}
-                    >
-                      <Button size='small' type='link' danger style={{ padding: 0 }}>
-                        {t('common:btn.delete')}
-                      </Button>
-                    </Popconfirm>
-                  </Space>
-                );
-              },
+              ellipsis: { showTitle: false },
+              render: (val) => <EllipsisText text={val} />,
             },
           ]}
+          rowActions={(record: any) => ({
+            menu: [
+              {
+                key: 'clone',
+                icon: 'copy',
+                text: t('common:btn.clone'),
+                onClick: () => {
+                  FormModal({
+                    title: t('common:btn.clone'),
+                    rsaConfig,
+                    data: record,
+                    onOk: (values) => {
+                      return postVariableConfigs(values).then(() => {
+                        fetchData();
+                        message.success(t('common:success.clone'));
+                      });
+                    },
+                  });
+                },
+              },
+              {
+                key: 'edit',
+                icon: 'edit',
+                text: t('common:btn.edit'),
+                onClick: () => {
+                  FormModal({
+                    title: t('common:btn.edit'),
+                    rsaConfig,
+                    data: record,
+                    onOk: (values) => {
+                      return putVariableConfigs(record.id, values).then(() => {
+                        fetchData();
+                        message.success(t('common:success.edit'));
+                      });
+                    },
+                  });
+                },
+              },
+              {
+                key: 'delete',
+                icon: 'delete',
+                text: t('common:btn.delete'),
+                danger: true,
+                onClick: () => {
+                  Modal.confirm({
+                    title: t('common:confirm.delete'),
+                    onOk: () => {
+                      deleteVariableConfigs(record.id).then(() => {
+                        message.success(t('common:success.delete'));
+                        fetchData();
+                      });
+                    },
+                  });
+                },
+              },
+            ],
+          })}
+          actionColumn={{ title: t('common:table.operations'), width: 64 }}
           dataSource={_.filter(data, (item) => {
             if (search) {
               return _.includes(item.ckey, search) || _.includes(item.note, search);

@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button, Space, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Plus, History, PictureInPicture2, PanelRight, X } from 'lucide-react';
+import { Plus, History, Share2, PictureInPicture2, PanelRight, X } from 'lucide-react';
 
+import { NAME_SPACE } from './constants';
 import { AiChatMode } from './types';
 
 export type AiChatView = 'chat' | 'history';
@@ -15,13 +16,14 @@ interface IToolsBarProps {
   onCurrentChat: () => void;
   onNewChat: () => void;
   onViewHistory: () => void;
+  onShare?: () => void;
   onToggleMode: () => void;
   onClose?: () => void;
 }
 
 export default function ToolsBar(props: IToolsBarProps) {
-  const { t } = useTranslation('AiChat');
-  const { selectedChatId, activeView, mode, showClose, onCurrentChat, onNewChat, onViewHistory, onToggleMode, onClose } = props;
+  const { t } = useTranslation(NAME_SPACE);
+  const { selectedChatId, activeView, mode, showClose, onCurrentChat, onNewChat, onViewHistory, onShare, onToggleMode, onClose } = props;
   const modeIcon = mode === 'drawer' ? <PictureInPicture2 size={16} /> : <PanelRight size={16} />;
   const modeTooltip = mode === 'drawer' ? t('toolbar.switch_to_floating') : t('toolbar.switch_to_drawer');
 
@@ -38,6 +40,11 @@ export default function ToolsBar(props: IToolsBarProps) {
       <Tooltip title={t('toolbar.history')}>
         <Button size='small' type='text' icon={<History size={16} />} onClick={onViewHistory} />
       </Tooltip>
+      {selectedChatId && onShare && (
+        <Tooltip title={t('toolbar.share')}>
+          <Button size='small' type='text' icon={<Share2 size={16} />} onClick={onShare} />
+        </Tooltip>
+      )}
       <Tooltip title={modeTooltip}>
         <Button size='small' type='text' icon={modeIcon} onClick={onToggleMode} />
       </Tooltip>

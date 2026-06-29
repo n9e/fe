@@ -32,6 +32,7 @@ import LoginCallbackOAuth from '@/pages/loginCallback/oauth';
 import LoginCallbackCustom from '@/pages/loginCallback/Custom';
 import LoginCallbackDingTalk from '@/pages/loginCallback/DingTalk';
 import LoginCallbackFeishu from '@/pages/loginCallback/Feishu';
+import OAuthConsent from '@/pages/oauthConsent';
 import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/alertRules';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
@@ -50,6 +51,7 @@ import EventDetail from '@/pages/event/detail';
 import historyEvents from '@/pages/historyEvents';
 import Targets from '@/pages/targets';
 import Demo from '@/pages/demo';
+import LogViewerTestPage from '@/pages/logExplorer/LogViewerTestPage';
 import TaskTpl from '@/pages/taskTpl';
 import TaskTplAdd from '@/pages/taskTpl/add';
 import TaskTplDetail from '@/pages/taskTpl/detail';
@@ -71,6 +73,7 @@ import NotificationSettings from '@/pages/help/NotificationSettings';
 import MigrateDashboards from '@/pages/help/migrate';
 import VariableConfigs from '@/pages/variableConfigs';
 import SiteSettings from '@/pages/siteSettings';
+import Landing from '@/pages/landing';
 import { dynamicPackages, Entry, dynamicPages } from '@/utils';
 // @ts-ignore
 import { Jobs as StrategyBrain } from 'plus:/datasource/anomaly';
@@ -151,6 +154,7 @@ export default function Content() {
     <div className='content'>
       <Switch>
         <Route path='/demo' component={Demo} />
+        {import.meta.env.DEV && <Route path='/log-viewer-test' component={LogViewerTestPage} />}
         <Route path='/overview' component={Overview} />
         <Route path='/login' component={Login} exact />
         <Route path='/callback' component={LoginCallback} exact />
@@ -159,6 +163,7 @@ export default function Content() {
         <Route path='/callback/custom' component={LoginCallbackCustom} exact />
         <Route path='/callback/dingtalk' component={LoginCallbackDingTalk} exact />
         <Route path='/callback/feishu' component={LoginCallbackFeishu} exact />
+        <Route path='/oauth-consent' component={OAuthConsent} exact />
         <Route path='/metric/explorer' component={MetricExplore} exact />
         <Route path='/log/explorer' component={LogExplore} exact />
         <Route path='/log/index-patterns' component={IndexPatterns} exact />
@@ -225,6 +230,8 @@ export default function Content() {
 
         {import.meta.env.VITE_IS_ENT !== 'true' && <Route exact path='/system/site-settings' component={SiteSettings} />}
 
+        {!IS_ENT && <Route exact path='/landing' component={Landing} />}
+
         {lazyRoutes.map((route, i) => (
           <RouteWithSubRoutes key={i} {...route} />
         ))}
@@ -235,7 +242,7 @@ export default function Content() {
           <RouteWithSubRoutes key={i} {...route} />
         ))}
         <Route path='/' exact>
-          <Redirect to={siteInfo?.home_page_url || '/metric/explorer'} />
+          <Redirect to={siteInfo?.home_page_url || '/landing'} />
         </Route>
         <Route path='/403' component={Page403} />
         <Route path='/404' component={NotFound} />

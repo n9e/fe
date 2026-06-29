@@ -1,9 +1,12 @@
 const en_US = {
   profile: 'Profile',
   themeSetting: 'Theme',
+  language: 'Language',
   logout: 'Logout',
   docs: 'Docs',
+  docsCenter: 'Docs center',
   viewDemo: 'View demo',
+  submit_issue: 'Submit issue',
   theme: {
     title: 'Theme Setting',
     title_help: 'Setting only for current user',

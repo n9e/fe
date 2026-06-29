@@ -18,11 +18,12 @@ interface Props {
   onExpand: (expandedKeys: string[], node: SkillTreeNode, expanded: boolean) => void;
   onCreate: () => void;
   onImport: (file: File) => void;
+  onGitInstall: () => void;
 }
 
 export default function SkillSidebar(props: Props) {
   const { t } = useTranslation(NS);
-  const { searchValue, onSearchChange, treeData, selectedNodeKey, expandedKeys, onSelectNode, onExpand, onCreate, onImport } = props;
+  const { searchValue, onSearchChange, treeData, selectedNodeKey, expandedKeys, onSelectNode, onExpand, onCreate, onImport, onGitInstall } = props;
   const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
 
   return (
@@ -50,6 +51,9 @@ export default function SkillSidebar(props: Props) {
                 }}
               >
                 <span>{t('upload_skill')}</span>
+              </Menu.Item>
+              <Menu.Item key='git' onClick={onGitInstall}>
+                <span>{t('git.install_entry')}</span>
               </Menu.Item>
             </Menu>
           }
@@ -84,8 +88,15 @@ export default function SkillSidebar(props: Props) {
               if (node.nodeType === 'skill') {
                 return (
                   <div className='min-w-0 flex items-center justify-between gap-2 py-1'>
-                    <div className='truncate font-medium'>{node.title}</div>
-                    <Space size={4}>
+                    <div className='flex-1 truncate font-medium' title={node.title}>
+                      {node.title}
+                    </div>
+                    <Space size={4} className='flex-shrink-0 min-w-0'>
+                      {node.has_new_version === true && (
+                        <Tag className='m-0' color='red'>
+                          {t('git.new_version_tag')}
+                        </Tag>
+                      )}
                       {node.builtin === true && (
                         <Tag className='m-0' color='purple'>
                           {t('builtin')}
@@ -101,7 +112,7 @@ export default function SkillSidebar(props: Props) {
                 const isExpanded = _.includes(expandedKeys, node.key);
                 return (
                   <div
-                    className='min-w-0 flex items-center gap-2 py-1'
+                    className='min-w-0 flex items-center gap-2 py-1 overflow-hidden'
                     onClick={(event) => {
                       event.stopPropagation();
                       const nextExpandedKeys = isExpanded ? _.without(expandedKeys, node.key) : _.uniq([...expandedKeys, node.key]);

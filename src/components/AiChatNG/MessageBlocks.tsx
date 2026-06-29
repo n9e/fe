@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Collapse, Space } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
 import Markdown from '@/components/Markdown';
@@ -11,6 +11,7 @@ import QueryContentBlock from './ContentRenderer/QueryContentBlock';
 import FormSelectContentBlock from './ContentRenderer/FormSelectContentBlock';
 import AlertRuleContentBlock from './ContentRenderer/AlertRuleContentBlock';
 import DashboardContentBlock from './ContentRenderer/DashboardContentBlock';
+import { NAME_SPACE } from './constants';
 
 function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
   const fullText = `${prefix}${brand}`;
@@ -63,18 +64,44 @@ interface IAiChatResponseBlocksProps {
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
 }
 
-export function ThinkingBlock({ title, content }: { title: string; content: string }) {
+export function ThinkingBlock({ title, content, isFinish }: { title: string; content: string; isFinish?: boolean }) {
+  const { t } = useTranslation(NAME_SPACE);
+  const userInteractedRef = React.useRef(false);
+  const [activeKey, setActiveKey] = React.useState<string | undefined>('thinking');
+
+  // 流式时展开，收口后自动折叠（除非用户手动操作过）
+  React.useEffect(() => {
+    if (userInteractedRef.current) return;
+    if (isFinish) {
+      setActiveKey(undefined);
+    } else {
+      setActiveKey('thinking');
+    }
+  }, [isFinish]);
+
+  const displayTitle = isFinish ? title : `${t('message.generating').replace('...', '')}…`;
+
   return (
-    <Collapse ghost className='w-full rounded-lg border border-fc-200 bg-fc-50' defaultActiveKey={['thinking']}>
-      <Collapse.Panel header={<span className='text-sm font-medium text-main'>{title}</span>} key='thinking'>
-        <Markdown content={content || ''} />
+    <Collapse
+      ghost
+      className='w-full rounded-lg border border-fc-200 bg-fc-50'
+      activeKey={activeKey}
+      onChange={(keys) => {
+        userInteractedRef.current = true;
+        setActiveKey(Array.isArray(keys) ? (keys[0] as string) : undefined);
+      }}
+    >
+      <Collapse.Panel header={<span className='text-sm font-medium text-main'>{displayTitle}</span>} key='thinking'>
+        <div className='max-h-60 overflow-y-auto'>
+          <Markdown content={content || ''} />
+        </div>
       </Collapse.Panel>
     </Collapse>
   );
 }
 
 export function HintBlock({ response }: { response: IAiChatMessageResponse }) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
 
   return (
     <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
@@ -102,7 +129,7 @@ export function CurStepBlock({ curStep }: { curStep: string }) {
 }
 
 export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const { message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom } = props;
   const curStep = message.cur_step?.trim() || t('message.generating');
   const shouldShowCurStep = !message.is_finish && !message.err_code;
@@ -131,6 +158,24 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
   );
 
   if (message.err_code && message.err_code !== 0) {
+    if (message.err_code === 409) {
+      return (
+        <div className='rounded-lg border border-error/20 bg-error/10 px-4 py-3'>
+          <div className='text-sm font-medium text-title'>{t('message.no_llm_title')}</div>
+          <div className='mt-1 text-sm text-main'>
+            {
+              <Trans
+                ns={NAME_SPACE}
+                i18nKey='message.no_llm_content'
+                components={{
+                  a: <a href='/ai-config/llm-configs' target='_blank' />,
+                }}
+              />
+            }
+          </div>
+        </div>
+      );
+    }
     return (
       <div className='rounded-lg border border-error/20 bg-error/10 px-4 py-3'>
         <div className='text-sm font-medium text-title'>{message.err_title || (message.err_code === -2 ? t('message.stopped') : t('message.request_failed'))}</div>
@@ -157,7 +202,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
         switch (contentType) {
           case EAiChatContentType.Thinking:
           case EAiChatContentType.Reasoning:
-            return <ThinkingBlock key={`${response.content_type}-${index}`} title={t('message.thinking')} content={response.content} />;
+            return <ThinkingBlock key={`${response.content_type}-${index}`} title={t('message.thinking')} content={response.content} isFinish={response.is_finish} />;
           case EAiChatContentType.Markdown:
             return <MarkdownBlock key={`${response.content_type}-${index}`} response={response} />;
           case EAiChatContentType.Hint:
@@ -222,7 +267,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
 }
 
 export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string[]; onPromptClick: (prompt: string) => void }) {
-  const { t } = useTranslation('AiChat');
+  const { t } = useTranslation(NAME_SPACE);
   const greetingPrefix = t('empty.greeting_prefix');
 
   return (
@@ -231,7 +276,7 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
         <div className='text-l4 font-bold'>
           <Space align='baseline'>
             <img src='/image/ai-chat/ai.gif' className='w-[24px] h-[24px]' />
-            <TypedGreeting prefix={greetingPrefix} brand='FlashAI' />
+            <TypedGreeting prefix={greetingPrefix} brand='NightingaleAI' />
           </Space>
         </div>
       </div>
@@ -256,14 +301,24 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
   );
 }
 
-export function MessageItem({
-  message,
-  isStreaming,
-  onExecuteQueryForQueryContent,
-  onActionClick,
-  onOKForFormSelectContent,
-  maybeScrollToBottom,
-}: IAiChatResponseBlocksProps) {
+const bottomStatusContentTypes = [EAiChatContentType.Thinking, EAiChatContentType.Reasoning];
+
+function shouldShowInitialRunningStatus(isFinish?: boolean, responseList?: IAiChatMessageResponse[]) {
+  return !isFinish && !responseList?.length;
+}
+
+function shouldShowRunningStatusAtMessageBottom(isFinish?: boolean, responseList?: IAiChatMessageResponse[]) {
+  if (isFinish) return false;
+  const lastResponse = responseList?.[responseList.length - 1];
+  if (!lastResponse?.content_type) return false;
+  return bottomStatusContentTypes.includes(lastResponse.content_type as EAiChatContentType);
+}
+
+export function MessageItem({ message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
+  const { t } = useTranslation(NAME_SPACE);
+  const showInitialRunningStatus = shouldShowInitialRunningStatus(message.is_finish, message.response);
+  const showBottomRunningStatus = shouldShowRunningStatusAtMessageBottom(message.is_finish, message.response);
+
   return (
     <div className='w-full space-y-3 shadow-sm'>
       <div className='flex justify-end'>
@@ -280,6 +335,17 @@ export function MessageItem({
           onOKForFormSelectContent={onOKForFormSelectContent}
           maybeScrollToBottom={maybeScrollToBottom}
         />
+        {!message.is_finish && (
+          <div className='inline-flex items-center w-fit text-main text-sm'>
+            {!!showInitialRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.generating')}</span>}
+            {!!showBottomRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.processing')}</span>}
+            <span className='inline-flex items-center gap-[3px]' aria-hidden='true'>
+              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse' />
+              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:160ms]' />
+              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:320ms]' />
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

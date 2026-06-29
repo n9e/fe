@@ -19,7 +19,6 @@ import { Modal, Form, Input, Alert, Select, Table } from 'antd';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _, { debounce } from 'lodash';
-import classNames from 'classnames';
 import { bindTags, unbindTags, moveTargetBusi, deleteTargetBusi, updateTargetNote, deleteTargets, getTargetTags } from '@/services/targets';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroups } from '@/services/common';
@@ -339,39 +338,14 @@ const Targets: React.FC = () => {
   }, [businessGroup.ids]);
 
   return (
-    <PageLayout icon={<DatabaseOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/infrastructure/server-list/'>
+    <PageLayout icon={<DatabaseOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/infrastructure/server-list/'>
       <div className='object-manage-page-content'>
         <BusinessGroup2
-          showSelected={gids !== '0' && gids !== undefined}
-          renderHeadExtra={() => {
-            return (
-              <div>
-                <div className='n9e-biz-group-container-group-title'>{t('default_filter')}</div>
-                <div
-                  className={classNames({
-                    'n9e-biz-group-item': true,
-                    active: gids === '0',
-                  })}
-                  onClick={() => {
-                    setGids('0');
-                  }}
-                >
-                  {t('ungrouped_targets')}
-                </div>
-                <div
-                  className={classNames({
-                    'n9e-biz-group-item': true,
-                    active: gids === undefined,
-                  })}
-                  onClick={() => {
-                    setGids(undefined);
-                  }}
-                >
-                  {t('all_targets')}
-                </div>
-              </div>
-            );
-          }}
+          presetFilterTitle={t('default_filter')}
+          presetFilters={[
+            { value: '0', label: t('ungrouped_targets') },
+            { value: '-2', label: t('all_targets') },
+          ]}
           onSelect={(key) => {
             const ids = getCleanBusinessGroupIds(key);
             setGids(ids);

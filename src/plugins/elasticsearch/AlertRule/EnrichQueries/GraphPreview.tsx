@@ -1,9 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button, Popover, Form, Table } from 'antd';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { Button, Popover, Form, Table, Select, Space } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { normalizeTime } from '../../utils';
 import { getLogsQuery } from '../services';
 
@@ -14,6 +16,7 @@ interface IProps {
 
 export default function GraphPreview({ datasourceValue, disabled }: IProps) {
   const { t } = useTranslation('alertRules');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>({
@@ -22,6 +25,7 @@ export default function GraphPreview({ datasourceValue, disabled }: IProps) {
   });
   const [data, setData] = useState<any[]>([]);
   const [columnsKeys, setColumnsKeys] = useState<string[]>([]);
+  const [datasourceId, setDatasourceId] = useState<number>(datasourceValue);
   const queries = Form.useWatch(['extra_config', 'enrich_queries']);
   const cate = Form.useWatch('cate');
   const fetchSeries = () => {
@@ -30,7 +34,7 @@ export default function GraphPreview({ datasourceValue, disabled }: IProps) {
     const end = moment(parsedRange.end).unix();
     getLogsQuery({
       cate,
-      datasource_id: datasourceValue,
+      datasource_id: datasourceId,
       query: _.map(queries, (item) => {
         return {
           index_type: item.index_type || 'index',
@@ -60,7 +64,11 @@ export default function GraphPreview({ datasourceValue, disabled }: IProps) {
     if (visible) {
       fetchSeries();
     }
-  }, [JSON.stringify(range)]);
+  }, [JSON.stringify(range), datasourceId]);
+
+  useEffect(() => {
+    setDatasourceId(datasourceValue);
+  }, [datasourceValue]);
 
   return (
     <div ref={divRef}>
@@ -75,6 +83,7 @@ export default function GraphPreview({ datasourceValue, disabled }: IProps) {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
             <div
@@ -84,9 +93,22 @@ export default function GraphPreview({ datasourceValue, disabled }: IProps) {
             >
               {t('datasource:es.alert.query.preview')}
             </div>
-            <div>
+            <Space>
+              <InputGroupWithFormItem label={t('common:datasource.name')}>
+                <Select
+                  className='w-[200px]'
+                  value={datasourceId}
+                  onChange={setDatasourceId}
+                  options={_.map(groupedDatasourceList[cate], (item) => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  })}
+                />
+              </InputGroupWithFormItem>
               <TimeRangePicker value={range} onChange={setRange} />
-            </div>
+            </Space>
           </div>
         }
         content={

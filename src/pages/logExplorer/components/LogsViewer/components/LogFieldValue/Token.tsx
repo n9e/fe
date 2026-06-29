@@ -15,14 +15,14 @@ import { toString } from './util';
 import { LogsViewerStateContext } from '../../index';
 import { Field } from '../../../../types';
 import renderFieldValue from '../../../../utils/renderFieldValue';
-import { OnValueFilterParams } from '../../types';
+import { OnValueFilterParams, FieldValueType } from '../../types';
 
 interface Props {
   segmented: boolean;
   parentKey?: string; // 嵌套json渲染时可以传入，目前仅用在下钻的字段名判断中。目前仅在 sls 中使用
   name: string;
-  value: string; // 单个 token 的值
-  fieldValue: string; // 完整字段值
+  value: FieldValueType; // 单个 token 的值
+  fieldValue: FieldValueType; // 完整字段值
   tokenStart?: number;
   tokenEnd?: number;
   highlightKey?: string;
@@ -31,7 +31,7 @@ interface Props {
   highlight?: { [key: string]: string[] };
   enableTooltip?: boolean;
   fieldValueClassName?: string;
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean; // 是否展示 exists 操作，目前仅在 es 中使用
   /** 默认 click 打开菜单；textSelect 为划词后打开 */
   interactionMode?: 'popoverClick' | 'textSelect';
@@ -115,7 +115,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
   ) : tokenHighlights ? (
     <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(displayValue, tokenHighlights)) }} />
   ) : (
-    renderFieldValue(value)
+    renderFieldValue(displayValue)
   );
 
   const closePopover = useCallback(() => {
@@ -239,7 +239,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       name={name}
       fieldValue={fieldValue}
       fragmentValue={interactionMode === 'textSelect' ? selectedFragment : value}
-      showFragmentFilters={interactionMode === 'textSelect' ? !!selectedFragment.trim() : segmented}
+      showFragmentFilters={interactionMode === 'textSelect' ? !!selectedFragment.trim() && selectedFragment !== fieldValue : segmented}
       onTokenClick={onTokenClick}
       indexInfo={indexInfo}
       showExistsAction={showExistsAction}
@@ -272,7 +272,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
                 }}
               />
             ) : (
-              <span className='inline break-all text-hint m-0 p-0 cursor-text'>{adjustedValue}</span>
+              <span className='inline break-all text-main m-0 p-0 cursor-text'>{adjustedValue}</span>
             )}
           </Tooltip>
         </span>
@@ -330,7 +330,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
             }}
           />
         ) : (
-          <div className={`inline text-hint m-0 p-0 cursor-pointer hover:underline ${fieldValueClassName ?? ''}`}>{adjustedValue}</div>
+          <div className={`inline text-main m-0 p-0 cursor-pointer hover:underline ${fieldValueClassName ?? ''}`}>{adjustedValue}</div>
         )}
       </Tooltip>
     </Popover>

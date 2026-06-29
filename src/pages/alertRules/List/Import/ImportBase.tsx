@@ -17,7 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Input, Form, Table, Button, Divider, message, Select, Switch, Alert } from 'antd';
+import { Input, Form, Table, Button, Divider, message, Select, Switch, Alert, Space } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { importStrategy } from '@/services/warning';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
@@ -79,7 +79,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, reload
                 notify_rule_ids: [], // 同时清空规则里的通知规则设置
               };
             });
-            const { dat } = await importStrategy(importData, busiId);
+            const { dat } = await importStrategy(importData, busiId, vals.force);
             const dataSource = _.map(dat, (val, key) => {
               return {
                 name: key,
@@ -97,6 +97,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, reload
         }}
         initialValues={{
           enabled: false,
+          force: false,
         }}
       >
         {!allowSubmit && <Alert className='mb-2' message={t('builtInComponents:import_to_buisGroup_invaild')} type='error' showIcon />}
@@ -131,9 +132,14 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, reload
                 reloadGroupedDatasourceList={reloadGroupedDatasourceList}
               />
             )}
-            <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
-              <Switch />
-            </Form.Item>
+            <Space>
+              <Form.Item label={t('common:table.enabled')} name='enabled' valuePropName='checked'>
+                <Switch />
+              </Form.Item>
+              <Form.Item label={t('batch.import.force_overwrite')} name='force' valuePropName='checked'>
+                <Switch />
+              </Form.Item>
+            </Space>
           </>
         )}
         <Form.Item>

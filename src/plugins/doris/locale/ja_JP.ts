@@ -52,6 +52,13 @@ const ja_JP = {
     warn_message_content_2: '一般的な時間マクロ: ',
     warn_message_content_3: '例：',
     warn_message_content_4: '時間マクロの使用方法: <a>詳細</a>',
+    editMode: {
+      switch_to_builder_confirm_title: 'ビルダーモードに切り替え',
+      switch_to_builder_confirm_content: '現在のSQLをビルダー設定に変換できません。切り替えると編集したSQLが失われます。続行しますか？',
+      no_builder_config: 'クエリ条件を設定してください',
+      require_db_table: 'データベースとテーブルを選択してください',
+      build_sql_failed: 'SQLの生成に失敗しました',
+    },
     dashboard: {
       mode: {
         label: 'クエリモード',
@@ -177,6 +184,8 @@ const ja_JP = {
     preview_sql: 'SQLプレビュー',
     btn_tip: 'クリックすると、SQL入力欄の内容が上書きされます',
     btn_failed_tip: '変換に失敗しました。再試行するか、フォームを修正してください',
+    preview_and_run: 'SQLプレビュー＆クエリ',
+    builder_content_modified: 'Builder コンテンツが変更されました。最新の SQL をプレビューしてください',
   },
 };
 

@@ -3,6 +3,7 @@ const en_US = {
     none: 'raw value, no unit conversion',
     sishort: 'using the SI standard for conversion. e.g. 1K equals 1000.',
     count: 'count unit',
+    short: 'short number format, e.g. 1000 -> 1K, 1000000 -> 1M, 1000000000 -> 1B',
     bitsSI: 'bit, using the SI standard for conversion. e.g. 1K equals 1000.',
     bytesSI: 'byte, using the SI standard for conversion. e.g. 1K equals 1000.',
     bitsIEC: 'bit, using the IEC standard for conversion. e.g. 1K equals 1024.',

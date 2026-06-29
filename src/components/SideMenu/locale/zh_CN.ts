@@ -1,6 +1,8 @@
 const zh_CN = {
   landing: '首页',
   resizeWidth: '拖拽调整侧栏宽度',
+  collapse: '收起侧栏',
+  expand: '展开侧栏',
   quickJump: '快捷跳转',
   quickOpenClose: '打开/关闭',
   quickSearchPlaceholder: '输入内容以检索...',
@@ -10,7 +12,8 @@ const zh_CN = {
   menu: {
     infrastructure: '基础设施',
     business_group: '业务组',
-    targets: '机器',
+    devices: '设备列表',
+    targets: '机器列表',
     collects: '采集规则',
     network_devices: '网络设备',
     mobile_device: '移动设备',
@@ -26,6 +29,7 @@ const zh_CN = {
     recording_rules: '记录规则',
     logs_explorer: '日志',
     monitors: '告警',
+    alerts_notifications: '告警通知',
     rules: '规则管理',
     alert_rules: '告警规则',
     alert_mutes: '屏蔽规则',
@@ -69,6 +73,7 @@ const zh_CN = {
     ai_config_skills: 'Skill 管理',
     ai_config_mcp_servers: 'MCP 管理',
     ai_config_scheduled_task: '定时任务',
+    ai_task: '任务通道',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Upload } from 'antd';
+import { Modal, Upload, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 
 import { NS } from '../constants';
@@ -8,13 +8,21 @@ import { NS } from '../constants';
 interface Props {
   title: string;
   visible: boolean;
+  showSubtitle?: boolean;
   onCancel: () => void;
   onSubmit: (file: File) => Promise<void> | void;
 }
 
+const ALLOWED_EXTENSIONS = ['.zip', '.tar.gz'];
+
+function isAllowedFileType(file: File): boolean {
+  const name = file.name.toLowerCase();
+  return ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext));
+}
+
 export default function UploadSkillModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { title, visible, onCancel, onSubmit } = props;
+  const { title, visible, showSubtitle, onCancel, onSubmit } = props;
   const [submitting, setSubmitting] = React.useState(false);
 
   return (
@@ -22,7 +30,7 @@ export default function UploadSkillModal(props: Props) {
       title={
         <div className='flex items-center gap-4'>
           <span>{title}</span>
-          <span className='text-soft'>{t('upload_modal_subtitle')}</span>
+          {showSubtitle && <span className='text-soft'>{t('upload_modal_subtitle')}</span>}
         </div>
       }
       visible={visible}
@@ -39,11 +47,14 @@ export default function UploadSkillModal(props: Props) {
       keyboard={!submitting}
     >
       <Upload.Dragger
-        accept='.zip,.tgz,application/gzip,application/x-gzip'
         showUploadList={false}
         multiple={false}
         disabled={submitting}
         beforeUpload={async (file) => {
+          if (!isAllowedFileType(file)) {
+            message.error(t('upload_modal_invalid_type'));
+            return Upload.LIST_IGNORE;
+          }
           setSubmitting(true);
           try {
             await onSubmit(file as File);

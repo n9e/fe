@@ -33,6 +33,7 @@ const en_US = {
       download_title: 'Download Log Data',
       range: 'Time range',
       filter: 'Search query',
+      query_condition: 'Query condition',
       format: 'Data format',
       time_sort: 'Log sorting',
       count: 'Log count',

@@ -33,6 +33,7 @@ const zh_HK = {
       download_title: '下載日誌數據',
       range: '時間範圍',
       filter: '檢索語句',
+      query_condition: '查詢條件',
       format: '數據格式',
       time_sort: '日誌排序',
       count: '日誌數量',

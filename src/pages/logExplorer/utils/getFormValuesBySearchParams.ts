@@ -37,6 +37,10 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
       '__execute__',
       'filters',
       'allow_hide_system_indices',
+      'labelKey',
+      'valueKey',
+      'sql',
+      'sqlVizType',
     ]);
     _.forEach(validParmas, (value, key) => {
       if (value) {
@@ -141,6 +145,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const syntax = _.get(params, 'syntax');
       const mode = _.get(params, 'mode');
       const allow_hide_system_indices = _.get(params, 'allow_hide_system_indices') === 'true' ? true : false;
+      const sql = _.get(params, 'sql') || undefined;
+      const sqlVizType = _.get(params, 'sqlVizType') || undefined;
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
       let filters: any[] = [];
       try {
         if (params?.filters) {
@@ -165,6 +173,12 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             syntax,
             allow_hide_system_indices,
             filters,
+            sql,
+            sqlVizType,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+            },
           },
         };
       } else if (index) {
@@ -179,6 +193,12 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             syntax,
             allow_hide_system_indices,
             filters,
+            sql,
+            sqlVizType,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+            },
           },
         };
       }
@@ -227,6 +247,35 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             submode,
             logNamespace,
             logSource,
+            query,
+            keys: {
+              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              timeKey,
+            },
+          },
+        };
+      }
+    }
+    if (data_source_name === DatasourceCateEnum.bceBLS) {
+      const mode = _.get(params, 'mode');
+      const submode = _.get(params, 'submode');
+      const project = _.get(params, 'project');
+      const logstore = _.get(params, 'logstore');
+      const logstream = _.get(params, 'logstream') ?? '';
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
+      const timeKey = _.get(params, 'timeKey') ?? '';
+      if (project && logstore) {
+        return {
+          ...formValues,
+          query: {
+            range,
+            mode,
+            submode,
+            project,
+            logstore,
+            logstream,
             query,
             keys: {
               labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
@@ -339,6 +388,10 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.query = formValues.query?.query;
     query.allow_hide_system_indices = formValues.query?.allow_hide_system_indices ? 'true' : 'false';
     query.filters = filtersString;
+    query.sql = formValues.query?.sql;
+    query.sqlVizType = formValues.query?.sqlVizType;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.huaweiLTS) {
@@ -357,6 +410,18 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.submode = formValues.query?.submode;
     query.logset = formValues.query?.logNamespace;
     query.topic = formValues.query?.logSource;
+    query.query = formValues.query?.query;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
+    query.timeKey = formValues.query?.keys?.timeKey;
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.bceBLS) {
+    query.mode = formValues.query?.mode;
+    query.submode = formValues.query?.submode;
+    query.project = formValues.query?.project;
+    query.logstore = formValues.query?.logstore;
+    query.logstream = formValues.query?.logstream;
     query.query = formValues.query?.query;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;

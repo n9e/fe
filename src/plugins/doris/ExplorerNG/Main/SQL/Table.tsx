@@ -91,6 +91,7 @@ export default function Table(props: IProps) {
     const queryValues = form.getFieldValue('query');
     if (refreshFlag && datasourceValue && queryValues.sql) {
       setExecuteLoading(true);
+      setServiceParams({ current: 1, pageSize: DEFAULT_LOGS_PAGE_SIZE });
       const range = parseRange(queryValues.range);
       const queryStart = Date.now();
       return logQuery({
@@ -118,7 +119,7 @@ export default function Table(props: IProps) {
           setFields(columnsKeys);
 
           setLogs({
-            data: _.slice(newLogs, 0, serviceParams.pageSize),
+            data: _.slice(newLogs, 0, DEFAULT_LOGS_PAGE_SIZE),
             hash: _.uniqueId('logs_'),
           }); // 首次只加载一页数据
 
@@ -181,6 +182,7 @@ export default function Table(props: IProps) {
             <LogsViewer
               timeField={queryValues?.time_field}
               hideHistogram
+              hideTypeIcon
               loading={loading}
               logs={logs.data}
               logsHash={data?.hash + '_' + logs.hash}
@@ -307,6 +309,7 @@ export default function Table(props: IProps) {
               showPageLoadMode
               showLogMode={false}
               linesColumnFormat={(val) => {
+                if (pageLoadMode === 'infiniteScroll') return val;
                 return serviceParams.pageSize * (serviceParams.current - 1) + val;
               }}
             />

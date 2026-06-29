@@ -2,6 +2,7 @@ import moment from 'moment';
 import _ from 'lodash';
 
 export const processFormValues = (values) => {
+  values = _.cloneDeep(values);
   return {
     ...values,
     btime: moment(values.btime).unix(),

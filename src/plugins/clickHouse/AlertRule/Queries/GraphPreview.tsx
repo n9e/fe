@@ -1,15 +1,18 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Button, Popover, Alert, Spin, Empty, Table } from 'antd';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { Button, Popover, Alert, Spin, Empty, Table, Select, Space } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceCateEnum } from '@/utils/constant';
 import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 import { getLogsQuery } from '../../services';
 
 export default function GraphPreview({ cate, datasourceValue, query }) {
   const { t } = useTranslation('db_tdengine');
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const divRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [columns, setColumns] = useState<any[]>([]);
@@ -20,8 +23,9 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
     start: 'now-1h',
     end: 'now',
   });
+  const [datasourceId, setDatasourceId] = useState<number>(datasourceValue);
   const fetchData = () => {
-    if (datasourceValue) {
+    if (datasourceId) {
       const parsedRange = parseRange(range);
       const from = moment(parsedRange.start).unix();
       const to = moment(parsedRange.end).unix();
@@ -30,7 +34,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         queries: [
           {
             ds_cate: DatasourceCateEnum.ck,
-            ds_id: datasourceValue,
+            ds_id: datasourceId,
             ref: query.ref,
             query: {
               ref: query.ref,
@@ -77,7 +81,11 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
     if (visible) {
       fetchData();
     }
-  }, [JSON.stringify(range)]);
+  }, [JSON.stringify(range), datasourceId]);
+
+  useEffect(() => {
+    setDatasourceId(datasourceValue);
+  }, [datasourceValue]);
 
   return (
     <div ref={divRef}>
@@ -92,6 +100,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
             <div
@@ -101,9 +110,22 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
             >
               {t('datasource:es.alert.query.preview')}
             </div>
-            <div>
+            <Space>
+              <InputGroupWithFormItem label={t('common:datasource.name')}>
+                <Select
+                  className='w-[200px]'
+                  value={datasourceId}
+                  onChange={setDatasourceId}
+                  options={_.map(groupedDatasourceList[cate], (item) => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  })}
+                />
+              </InputGroupWithFormItem>
               <TimeRangePicker value={range} onChange={setRange} />
-            </div>
+            </Space>
           </div>
         }
         content={

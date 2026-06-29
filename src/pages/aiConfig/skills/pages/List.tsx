@@ -1,19 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Button, Dropdown, Empty, Menu, Popconfirm, Spin, message } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Alert, Button, Dropdown, Empty, Menu, Modal, Popconfirm, Spin, message } from 'antd';
+import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
+import moment from 'moment';
 import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
 
 import { NS } from '../constants';
-import { FileContent, Item, SkillDetail, deleteFile, deleteItem, getFile, getItem, getList, importItem, importItemToUpdate, putItem } from '../services';
+import { FileContent, Item, SkillDetail, deleteFile, deleteItem, getFile, getItem, getList, gitUpdate, importItem, importItemToUpdate, putItem } from '../services';
 import { SkillTreeNode } from '../types';
 import { buildSkillTree, getSkillNodeKey, isMarkdownFile } from '../utils/tree';
 import AddModal from './AddModal';
 import DocumentPreviewPanel from './DocumentPreviewPanel';
-import EditModal from './EditModal';
+import GitInstallModal from './GitInstallModal';
+import GitReplaceConfigModal from './GitReplaceConfigModal';
+import GitUpdateModal from './GitUpdateModal';
+import { showGitOperationError } from './gitErrorModal';
 import SkillDetailPanel from './SkillDetailPanel';
 import SkillSidebar from './SkillSidebar';
 import UploadSkillModal from './UploadSkillModal';
@@ -28,12 +32,12 @@ export default function List() {
   const [detailMap, setDetailMap] = useState<Record<number, SkillDetail | undefined>>({});
   const [detailLoadingMap, setDetailLoadingMap] = useState<Record<number, boolean>>({});
   const [addModalState, setAddModalState] = useState({ visible: false });
-  const [editModalState, setEditModalState] = useState<{
-    visible: boolean;
-    id?: number;
-  }>({ visible: false, id: undefined });
   const [mdFormat, setMdFormat] = useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [gitInstallVisible, setGitInstallVisible] = useState(false);
+  const [gitReplaceState, setGitReplaceState] = useState<{ visible: boolean; id?: number }>({ visible: false });
+  const [gitUpdateState, setGitUpdateState] = useState<{ visible: boolean; id?: number }>({ visible: false });
+  const [builtinGitUpdating, setBuiltinGitUpdating] = useState(false);
 
   const {
     data = [],
@@ -227,6 +231,40 @@ export default function List() {
     setSelectedNodeKey(getSkillNodeKey(skillId));
   }
 
+  async function handleBuiltinGitUpdate(skillId: number) {
+    setBuiltinGitUpdating(true);
+    try {
+      await gitUpdate(skillId, {}, { silence: true });
+      try {
+        const detail = await getItem(skillId);
+        const updatedAt = detail.updated_at ? moment.unix(detail.updated_at).format('YYYY-MM-DD HH:mm:ss') : '-';
+        const commit = detail.git_info?.current_commit || '-';
+        Modal.success({
+          title: t('git.update_success_title'),
+          content: (
+            <div>
+              <div className='flex items-baseline gap-2'>
+                <span className='inline-block w-[5em] whitespace-nowrap text-right'>{t('common:table.update_at')}:</span>
+                <span className='flex-1'>{updatedAt}</span>
+              </div>
+              <div className='flex items-baseline gap-2'>
+                <span className='inline-block w-[5em] whitespace-nowrap text-right'>Commit:</span>
+                <span className='break-all flex-1'>{commit}</span>
+              </div>
+            </div>
+          ),
+        });
+      } catch {
+        Modal.success({ title: t('git.update_success_title') });
+      }
+      await refreshSkill(skillId);
+    } catch (error) {
+      showGitOperationError(t('git.error_update_title'), error, t('git.error_default_msg'));
+    } finally {
+      setBuiltinGitUpdating(false);
+    }
+  }
+
   function handleSelectNode(node: SkillTreeNode) {
     setSelectedNodeKey(node.key);
     setExpandedKeys((prev) => {
@@ -251,7 +289,7 @@ export default function List() {
   if (_.isEmpty(data)) {
     if (loading) {
       return (
-        <PageLayout title={t('title')}>
+        <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/skills/'>
           <div className='fc-page n9e'>
             <div className='bg-fc-100 rounded flex items-center justify-center h-[200px]'>
               <Spin spinning />
@@ -263,7 +301,7 @@ export default function List() {
 
     return (
       <>
-        <PageLayout title={t('title')}>
+        <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/skills/'>
           <div className='n9e'>
             <div className='bg-fc-100 rounded flex items-center justify-center'>
               <Empty
@@ -294,6 +332,14 @@ export default function List() {
                       >
                         <span>{t('upload_skill')}</span>
                       </Menu.Item>
+                      <Menu.Item
+                        key='git'
+                        onClick={() => {
+                          setGitInstallVisible(true);
+                        }}
+                      >
+                        <span>{t('git.install_entry')}</span>
+                      </Menu.Item>
                     </Menu>
                   }
                 >
@@ -321,13 +367,23 @@ export default function List() {
           }}
           onSubmit={handleImport}
         />
+        <GitInstallModal
+          visible={gitInstallVisible}
+          onCancel={() => {
+            setGitInstallVisible(false);
+          }}
+          onOk={() => {
+            setGitInstallVisible(false);
+            run();
+          }}
+        />
       </>
     );
   }
 
   return (
     <>
-      <PageLayout title={t('title')}>
+      <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/skills/'>
         <div className='n9e h-full overflow-hidden children:h-full mr-0'>
           <Spin spinning={loading}>
             <div className='flex flex-col h-full gap-4'>
@@ -345,6 +401,9 @@ export default function List() {
                     setAddModalState({ visible: true });
                   }}
                   onImport={handleImport}
+                  onGitInstall={() => {
+                    setGitInstallVisible(true);
+                  }}
                 />
                 <div className='w-full min-w-0'>
                   {!selectedNode || !selectedSkillData ? (
@@ -357,18 +416,22 @@ export default function List() {
                       onToggleEnabled={() => {
                         handleToggleEnabled(selectedSkillData);
                       }}
-                      onEdit={() => {
-                        setEditModalState({
-                          visible: true,
-                          id: selectedSkillData.id,
-                        });
-                      }}
                       onImport={(file) => {
                         handleUpdateImport(selectedSkillData.id, file);
                       }}
                       onDelete={() => {
                         handleDeleteSkill(selectedSkillData.id);
                       }}
+                      onGitUpdate={() => {
+                        setGitUpdateState({ visible: true, id: selectedSkillData.id });
+                      }}
+                      onGitReplaceConfig={() => {
+                        setGitReplaceState({ visible: true, id: selectedSkillData.id });
+                      }}
+                      onBuiltinGitUpdate={() => {
+                        handleBuiltinGitUpdate(selectedSkillData.id);
+                      }}
+                      builtinGitUpdating={builtinGitUpdating}
                     />
                   ) : (
                     <DocumentPreviewPanel
@@ -410,19 +473,44 @@ export default function List() {
           setAddModalState({ visible: false });
         }}
       />
-      <EditModal
-        visible={editModalState.visible}
-        id={editModalState.id}
+      <GitInstallModal
+        visible={gitInstallVisible}
+        onCancel={() => {
+          setGitInstallVisible(false);
+        }}
         onOk={() => {
-          const currentEditId = editModalState.id;
-          if (currentEditId) {
-            setDetailMap((prev) => _.omit(prev, currentEditId) as Record<number, SkillDetail | undefined>);
-          }
-          setEditModalState({ visible: false, id: undefined });
+          setGitInstallVisible(false);
           run();
         }}
+      />
+      <GitReplaceConfigModal
+        visible={gitReplaceState.visible}
+        id={gitReplaceState.id}
+        gitInfo={gitReplaceState.id ? _.find(data, { id: gitReplaceState.id })?.git_info : undefined}
         onCancel={() => {
-          setEditModalState({ visible: false, id: undefined });
+          setGitReplaceState({ visible: false });
+        }}
+        onOk={() => {
+          const currentId = gitReplaceState.id;
+          setGitReplaceState({ visible: false });
+          if (currentId) {
+            refreshSkill(currentId);
+          }
+        }}
+      />
+      <GitUpdateModal
+        visible={gitUpdateState.visible}
+        id={gitUpdateState.id}
+        gitInfo={gitUpdateState.id ? _.find(data, { id: gitUpdateState.id })?.git_info : undefined}
+        onCancel={() => {
+          setGitUpdateState({ visible: false });
+        }}
+        onOk={() => {
+          const currentId = gitUpdateState.id;
+          setGitUpdateState({ visible: false });
+          if (currentId) {
+            refreshSkill(currentId);
+          }
         }}
       />
     </>

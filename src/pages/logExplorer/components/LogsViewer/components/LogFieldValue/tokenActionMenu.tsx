@@ -12,7 +12,7 @@ import ExistsIcon from '@/pages/explorer/components/RenderValue/ExistsIcon';
 import { normalizeRawValueForNav } from './tokenActionMenu.utils';
 import { toString } from './util';
 import { NAME_SPACE } from '../../../../constants';
-import { OnValueFilterParams } from '../../types';
+import { OnValueFilterParams, FieldValueType } from '../../types';
 
 /** handleNav / 外链菜单用到的 fieldConfig 子集 */
 export interface TokenMenuFieldConfig {
@@ -23,8 +23,8 @@ export interface TokenMenuFieldConfig {
 interface TokenActionMenuContentProps {
   close: () => void;
   name: string;
-  fieldValue: string;
-  fragmentValue: string;
+  fieldValue: FieldValueType;
+  fragmentValue: FieldValueType;
   showFragmentFilters: boolean;
   onTokenClick?: (parmas: OnValueFilterParams) => void;
   indexInfo: { isIndex: boolean; indexName: string };
@@ -58,7 +58,7 @@ export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
         className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
         onClick={() => {
           close();
-          copy2ClipBoard(fieldValue);
+          copy2ClipBoard(toString(fieldValue));
         }}
       >
         <Space>
@@ -70,7 +70,7 @@ export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
         <>
           {indexInfo.isIndex && (
             <>
-              {showFragmentFilters && (
+              {showFragmentFilters && fragmentValue !== fieldValue && (
                 <>
                   <li
                     className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'

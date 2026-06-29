@@ -38,7 +38,12 @@ const EventDetailPage = () => {
   }, [eventId]);
 
   return (
-    <PageLayout title={t('detail.title')} showBack backPath='/alert-his-events' doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/monitor/event/'>
+    <PageLayout
+      title={t('detail.title')}
+      showBack
+      backPath='/alert-his-events'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/events/alert-history/'
+    >
       <div className='n9e'>
         <Card size='small' className='mb-2'>
           <DetailNG data={eventDetail} showGraph />

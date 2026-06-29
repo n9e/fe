@@ -45,68 +45,82 @@ export default function Preview(props: IProps) {
         }}
         footer={false}
       >
-        <Table
-          size='small'
-          rowKey='id'
-          columns={[
-            {
-              title: t('common:table.ident'),
-              dataIndex: 'ident',
-            },
-            {
-              title: t('common:host.host_tags'),
-              dataIndex: 'host_tags',
-              render: (val) => {
-                return _.map(val, (item) => {
+        <div style={{ overflowX: 'auto' }}>
+          <Table
+            size='small'
+            rowKey='id'
+            columns={[
+              {
+                title: t('common:table.ident'),
+                dataIndex: 'ident',
+                width: 180,
+              },
+              {
+                title: t('common:host.host_tags'),
+                dataIndex: 'host_tags',
+                width: 280,
+                render: (val) => {
                   return (
-                    <Tag key={item} color='purple'>
-                      {item}
-                    </Tag>
+                    <div className='flex flex-wrap gap-1'>
+                      {_.map(val, (item) => {
+                        return (
+                          <Tag key={item} color='purple' className='max-w-[240px] overflow-hidden text-ellipsis whitespace-nowrap'>
+                            {item}
+                          </Tag>
+                        );
+                      })}
+                    </div>
                   );
-                });
+                },
               },
-            },
-            {
-              title: t('common:host.tags'),
-              dataIndex: 'tags',
-              render: (val) => {
-                return _.map(val, (item) => {
+              {
+                title: t('common:host.tags'),
+                dataIndex: 'tags',
+                width: 280,
+                render: (val) => {
                   return (
-                    <Tag key={item} color='purple'>
-                      {item}
-                    </Tag>
+                    <div className='flex flex-wrap gap-1'>
+                      {_.map(val, (item) => {
+                        return (
+                          <Tag key={item} color='purple' className='max-w-[240px] overflow-hidden text-ellipsis whitespace-nowrap'>
+                            {item}
+                          </Tag>
+                        );
+                      })}
+                    </div>
                   );
-                });
+                },
               },
-            },
-            {
-              title: t('common:business_group'),
-              dataIndex: 'group_objs',
-              render(groupObjs: any[]) {
-                return _.isEmpty(groupObjs)
-                  ? t('common:not_grouped')
-                  : _.map(groupObjs, (item) => {
-                      return (
-                        <Tag color='purple' key={item.id}>
-                          {item.name}
-                        </Tag>
-                      );
-                    });
+              {
+                title: t('common:business_group'),
+                dataIndex: 'group_objs',
+                width: 180,
+                render(groupObjs: any[]) {
+                  return _.isEmpty(groupObjs)
+                    ? t('common:not_grouped')
+                    : _.map(groupObjs, (item) => {
+                        return (
+                          <Tag color='purple' key={item.id}>
+                            {item.name}
+                          </Tag>
+                        );
+                      });
+                },
               },
-            },
-          ]}
-          dataSource={data}
-          pagination={{
-            current: page,
-            pageSize: limit,
-            total,
-            showSizeChanger: true,
-            onChange: (p, l) => {
-              setPage(p);
-              setLimit(l);
-            },
-          }}
-        />
+            ]}
+            dataSource={data}
+            pagination={{
+              current: page,
+              pageSize: limit,
+              total,
+              showSizeChanger: true,
+              onChange: (p, l) => {
+                setPage(p);
+                setLimit(l);
+              },
+            }}
+          />
+        </div>
       </Modal>
       <Button
         size='small'

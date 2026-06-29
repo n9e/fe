@@ -4,14 +4,14 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import HideButton from '@/pages/dashboard/Components/HideButton';
 import LegendInput from '@/pages/dashboard/Components/LegendInput';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import { Panel } from '../Collapse';
 
 export default function index({ fields, remove, field }) {
   const { t } = useTranslation('dashboard');
   const targets = Form.useWatch('targets');
   const target = targets?.[field.name] || {};
-  const name = target?.refId || alphabet[field.name];
+  const name = target?.refId || generateQueryNameByIndex(field.name);
 
   return (
     <Panel

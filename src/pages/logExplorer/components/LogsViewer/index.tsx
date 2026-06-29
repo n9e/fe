@@ -107,6 +107,7 @@ interface Props {
   };
   /** 为 true 时字段值不按 delimiter 分词，划选文本后弹出与点击 token 相同的菜单（与分词互斥） */
   enableLogTextSelectMenu?: boolean;
+  hideTypeIcon?: boolean;
 }
 
 interface LogsViewerState {
@@ -166,6 +167,7 @@ export default function LogsViewer(props: Props) {
     logClusting,
     customLogFieldRender,
     enableLogTextSelectMenu = false,
+    hideTypeIcon = false,
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
@@ -268,11 +270,12 @@ export default function LogsViewer(props: Props) {
           </>
         )}
         <FullscreenButton.Provider>
-          <div className='flex justify-between pb-2'>
-            <Space>
+          <div className='n9e-log-explorer-toolbar flex justify-between items-center gap-2 pb-2'>
+            <Space className='n9e-log-explorer-toolbar-main'>
               {addonBefore}
               {showLogMode && (
                 <Radio.Group
+                  className='n9e-log-explorer-log-mode'
                   size='small'
                   optionType='button'
                   options={_.concat(
@@ -321,7 +324,7 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {options.logMode === 'clustering' ? <div ref={clusteringExtraEleRef} /> : optionsExtraRender}
+            {options.logMode === 'clustering' ? <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} /> : optionsExtraRender}
           </div>
           <div className='h-full min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>
@@ -350,6 +353,7 @@ export default function LogsViewer(props: Props) {
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
                   customLogFieldRender={customLogFieldRender}
+                  hideTypeIcon={hideTypeIcon}
                 />
               )}
               {options.logMode === 'table' && (
@@ -383,6 +387,7 @@ export default function LogsViewer(props: Props) {
                   adjustFieldValue={adjustFieldValue}
                   showExistsAction={showExistsAction}
                   customLogFieldRender={customLogFieldRender}
+                  hideTypeIcon={hideTypeIcon}
                 />
               )}
               {options.logMode === 'clustering' && logClusting && (

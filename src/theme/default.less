@@ -4,13 +4,12 @@
 }
 
 mark {
-  background-color: mark !important;
-  color: marktext !important;
+  background-color: var(--fc-yellow-9) !important;
+  color: #181c25 !important;
 }
 
 // 当 table 作为 flex item 时，设置高度为 100%，以便在父容器中填满空间
 .n9e-antd-table-height-full {
-
   height: 100%;
   min-height: 0;
 
@@ -98,7 +97,7 @@ mark {
 }
 
 .n9e-checkbox-padding-right-0 {
-  .ant-checkbox+span {
+  .ant-checkbox + span {
     padding-right: 0 !important;
   }
 }
@@ -124,6 +123,12 @@ mark {
 
   .ant-collapse-content-box {
     padding-bottom: 0 !important;
+  }
+}
+
+.n9e-table-last-row-no-border {
+  .ant-table-tbody > tr:last-child > td {
+    border-bottom: none !important;
   }
 }
 
@@ -172,10 +177,15 @@ mark {
     &::-webkit-scrollbar-thumb {
       visibility: visible;
     }
-
   }
 
   &::-webkit-scrollbar-corner {
     background-color: transparent;
+  }
+}
+
+.n9e-advanced-settings-collapse {
+  .ant-collapse-header {
+    padding: 0 !important;
   }
 }

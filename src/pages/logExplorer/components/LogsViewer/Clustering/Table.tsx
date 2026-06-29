@@ -1,6 +1,6 @@
 // 日志聚类，目前仅支持了doris和es
 import React, { useState, useEffect } from 'react';
-import { Space, Tag, Select, Divider, Button } from 'antd';
+import { Space, Tag, Select, Divider, Button, Tooltip } from 'antd';
 import IconFont from '@/components/IconFont';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { BarChartOutlined, SyncOutlined } from '@ant-design/icons';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { NAME_SPACE } from '../../../constants';
 import getTextWidth from '@/utils/getTextWidth';
-import { getLogClustering, ClusteringItem, getQueryClustering, getLogPattern } from '../../../services';
+import { getLogClustering, ClusteringItem, getQueryClustering } from '../../../services';
 import { OnValueFilterParams, OptionsType } from '../types';
 import { Field } from '@/plugins/doris/ExplorerNG/types';
 import RDGTable from '../components/Table';
@@ -46,63 +46,69 @@ export default function TableCpt(props: Props) {
   const FIELD_CACHE_PREFIX = 'log_clustering_field__';
   const [isSampled, setIsSampled] = useState<boolean>(false);
 
-  const getDefaultField = (fields: Field[]) => {
+  const getDefaultGroupByFields = (fields: Field[]) => {
     const textFields = fields.filter((item) => item.type === 'text' && item.indexable);
     const priorityFields = ['message', 'data', 'msg'];
     const priorityField = priorityFields.map((name) => textFields.find((item) => item.field === name)).find(Boolean);
-    return priorityField?.field || textFields[0]?.field || '';
+    const defaultField = priorityField?.field || textFields[0]?.field || fields[0]?.field || '';
+    return defaultField ? [defaultField] : [];
   };
 
-  const getInitialField = () => {
+  const normalizeGroupByFields = (fields: string[]) => {
+    const availableFields = new Set(indexData.map((item) => item.field));
+    return _.uniq(fields).filter((item) => item && availableFields.has(item));
+  };
+
+  const getCachedGroupByFields = () => {
     const cached = localStorage.getItem(FIELD_CACHE_PREFIX + fieldCacheKey);
-    if (cached && indexData.some((item) => item.field === cached)) {
-      return cached;
+    if (!cached) {
+      return undefined;
     }
-    return getDefaultField(indexData);
+    try {
+      const parsed = JSON.parse(cached);
+      if (_.isArray(parsed)) {
+        return parsed;
+      }
+      if (_.isString(parsed)) {
+        return [parsed];
+      }
+    } catch {
+      return [cached];
+    }
+    return undefined;
   };
 
-  const [field, setField] = useState<string>(getInitialField);
+  const getInitialGroupByFields = () => {
+    const cachedFields = getCachedGroupByFields();
+    return cachedFields ? normalizeGroupByFields(cachedFields) : getDefaultGroupByFields(indexData);
+  };
 
-  const setCachedField = (value: string) => {
-    localStorage.setItem(FIELD_CACHE_PREFIX + fieldCacheKey, value);
-    setField(value);
+  const [groupByFields, setGroupByFields] = useState<string[]>(() => getInitialGroupByFields());
+
+  const setCachedGroupByFields = (value: string[]) => {
+    const nextFields = normalizeGroupByFields(value);
+    localStorage.setItem(FIELD_CACHE_PREFIX + fieldCacheKey, JSON.stringify(nextFields));
+    setGroupByFields(nextFields);
   };
 
   useEffect(() => {
-    const cached = localStorage.getItem(FIELD_CACHE_PREFIX + fieldCacheKey);
-    if (cached && indexData.some((item) => item.field === cached)) {
-      setField(cached);
-    } else {
-      setField(getDefaultField(indexData));
-    }
-  }, [fieldCacheKey]);
+    const nextFields = getInitialGroupByFields();
+    setGroupByFields((prev) => (_.isEqual(prev, nextFields) ? prev : nextFields));
+  }, [fieldCacheKey, indexData]);
 
   const id_key = 'uuid'; // 数据唯一标识字段
   const [data, setData] = useState<ClusteringItem[]>([]);
   const [fullAggregateLoading, setFullAggregateLoading] = useState(false);
 
-  useEffect(() => {
-    if (scope === 'current') {
-      if (field) {
-        getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
-          setData(res);
-        });
-      }
-    } else if (scope === 'full') {
-      handleFullAggregation(field);
+  const handleFullAggregation = (clusterFields: string[]) => {
+    if (_.isEmpty(clusterFields)) {
+      setData([]);
+      return;
     }
-  }, [logs, logsHash]);
-
-  useEffect(() => {
-    setPatternHistogramState({ visible: false });
-  }, [logsHash]);
-
-  const handleFullAggregation = (clusterField: string) => {
     setFullAggregateLoading(true);
-    getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', clusterField)
+    getQueryClustering(cate, datasourceValue, queryStrRef?.current || '', clusterFields)
       .then((res) => {
         setData(res.items);
-        setScope('full');
         setTimeCost(res.time_cost);
         setIsSampled(res.is_sampled);
       })
@@ -111,24 +117,79 @@ export default function TableCpt(props: Props) {
       });
   };
 
+  useEffect(() => {
+    if (_.isEmpty(groupByFields)) {
+      setData([]);
+      return;
+    }
+    if (scope === 'current') {
+      getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, groupByFields).then((res) => {
+        setData(res);
+      });
+    } else if (scope === 'full') {
+      handleFullAggregation(groupByFields);
+    }
+  }, [logs, logsHash, groupByFields, scope]);
+
+  useEffect(() => {
+    setPatternHistogramState({ visible: false });
+  }, [logsHash]);
+
   const getColumns = () => {
     const TAG_PADDING = 14;
     const CELL_PADDING = 16;
     const MIN_COL_WIDTH = 200;
     const SPACE_GAP = 8;
 
-    let partsColWidth = MIN_COL_WIDTH;
-    _.forEach(data, (row) => {
-      let rowWidth = 0;
-      _.forEach(row.parts, (part) => {
-        const textWidth = getTextWidth(part.data);
-        rowWidth += part.type === 'pattern' ? textWidth + TAG_PADDING + SPACE_GAP : textWidth + SPACE_GAP;
-      });
-      rowWidth += CELL_PADDING;
-      if (rowWidth > partsColWidth) {
-        partsColWidth = rowWidth;
+    const getPartsByField = (row: ClusteringItem, groupByField: string) => {
+      const parts = row.parts || [];
+      const partsByField = parts.filter((part) => part.field === groupByField);
+      if (_.isEmpty(partsByField) && groupByFields.length === 1) {
+        return parts;
       }
-    });
+      return partsByField;
+    };
+
+    const getPartsColumnWidth = (groupByField: string) => {
+      let partsColWidth = Math.max(MIN_COL_WIDTH, getTextWidth(groupByField) + CELL_PADDING * 2);
+      _.forEach(data, (row) => {
+        let rowWidth = 0;
+        _.forEach(getPartsByField(row, groupByField), (part) => {
+          const textWidth = getTextWidth(part.data || '');
+          rowWidth += part.type === 'pattern' ? textWidth + TAG_PADDING + SPACE_GAP : textWidth + SPACE_GAP;
+        });
+        rowWidth += CELL_PADDING;
+        if (rowWidth > partsColWidth) {
+          partsColWidth = rowWidth;
+        }
+      });
+      return partsColWidth + 15;
+    };
+
+    const renderParts = (row: ClusteringItem, groupByField: string) => {
+      return (
+        <Space size='small'>
+          {getPartsByField(row, groupByField).map((part, index) => {
+            const partField = part.field || groupByField;
+            const key = `${partField}-${part.part_id}-${index}`;
+            if (part.type === 'pattern') {
+              return (
+                <PatternPopover key={key} uuid={row.uuid || ''} partId={part.part_id} title={part.data}>
+                  <Tag className='mr-0 cursor-pointer' color='purple'>
+                    {part.data}
+                  </Tag>
+                </PatternPopover>
+              );
+            }
+            return (
+              <ConstPopover key={key} value={part.data} field={partField} cate={cate} onValueFilter={props.onValueFilter}>
+                <span className='cursor-pointer hover:underline'>{part.data}</span>
+              </ConstPopover>
+            );
+          })}
+        </Space>
+      );
+    };
 
     const columns: any[] = [
       {
@@ -136,37 +197,13 @@ export default function TableCpt(props: Props) {
         width: 40,
         name: t('clustering.count'),
       },
-      {
-        key: 'parts',
-        name: t('clustering.log_data'),
-        width: partsColWidth + 15,
+      ...groupByFields.map((groupByField) => ({
+        key: `parts_${groupByField}`,
+        name: groupByField,
+        width: getPartsColumnWidth(groupByField),
         minWidth: MIN_COL_WIDTH,
-        formatter: ({ row }) => {
-          return (
-            <Space size={'small'}>
-              {row.parts.map((part) => {
-                if (part.type === 'pattern') {
-                  return (
-                    <PatternPopover key={part.part_id} uuid={row.uuid} partId={part.part_id} title={part.data}>
-                      <Tag className='mr-0 cursor-pointer' color='purple'>
-                        {part.data}
-                      </Tag>
-                    </PatternPopover>
-                  );
-
-                } else {
-                  return (
-                    <ConstPopover key={part.part_id} value={part.data} field={field} cate={cate} onValueFilter={props.onValueFilter}>
-                      <span className='cursor-pointer hover:underline'>{part.data}</span>
-                    </ConstPopover>
-                  );
-
-                }
-              })}
-            </Space>
-          );
-        },
-      },
+        formatter: ({ row }) => renderParts(row, groupByField),
+      })),
     ];
     if (options?.lines === 'true') {
       columns.unshift({
@@ -228,24 +265,21 @@ export default function TableCpt(props: Props) {
           {t('clustering.field_label')}
         </span>
         <Select
+          mode='multiple'
           bordered={false}
           size='small'
-          value={field}
+          value={groupByFields}
           dropdownMatchSelectWidth={false}
+          maxTagCount='responsive'
+          showSearch
+          optionFilterProp='label'
           options={indexData.map((item) => ({ value: item.field, label: item.field }))}
           onChange={(value) => {
-            setCachedField(value);
-            if (scope === 'full') {
-              handleFullAggregation(value);
-            } else {
-              getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, value).then((res) => {
-                setData(res);
-              });
-            }
+            setCachedGroupByFields(value);
           }}
           getPopupContainer={() => clusteringOptionsEleRef.current as HTMLElement}
-          style={{ minWidth: 100 }}
-          className='best-looking-scroll'
+          style={{ minWidth: 240, maxWidth: 360 }}
+          className='best-looking-scroll log-clustering-group-by-select'
         />
         {/* 分隔线 */}
         <span style={{ width: 1, alignSelf: 'stretch', background: 'var(--fc-border-color2)' }} />
@@ -286,8 +320,8 @@ export default function TableCpt(props: Props) {
                 <div style={{ padding: '2px 0' }}>
                   <div>{t('clustering.scope_full')}</div>
                   <div style={{ color: 'var(--fc-text-3)', fontSize: 12 }}>
-                    {t('clustering.scope_full_desc_prefix')}{' '}
-                    <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span> {t('clustering.scope_full_desc_suffix')}
+                    {t('clustering.scope_full_desc_prefix')} <span style={{ color: 'var(--fc-primary-color)' }}>{logTotal?.toLocaleString()}</span>{' '}
+                    {t('clustering.scope_full_desc_suffix')}
                   </div>
                 </div>
               ),
@@ -295,13 +329,6 @@ export default function TableCpt(props: Props) {
           ]}
           onChange={(value: 'current' | 'full') => {
             setScope(value);
-            if (value === 'full') {
-              handleFullAggregation(field);
-            } else {
-              getLogClustering(cate, datasourceValue, queryStrRef?.current || '', logs, field).then((res) => {
-                setData(res);
-              });
-            }
           }}
           getPopupContainer={() => clusteringOptionsEleRef.current as HTMLElement}
           dropdownMatchSelectWidth={false}
@@ -320,7 +347,7 @@ export default function TableCpt(props: Props) {
           })
         }
       >
-        {t('说明文档')}
+        {t('common:page_help')}
       </Button>
     </Space>
   );
@@ -331,16 +358,20 @@ export default function TableCpt(props: Props) {
       {clusteringExtraEleRef.current &&
         createPortal(
           scope === 'full' ? (
-            <Space size='small'>
-              {isSampled ? <>
-                {t('clustering.sampled_tip')}
-                <Divider type='vertical' />
-              </> : null}
-              <span>{t('clustering.log_count')}</span>
-              <span>{logTotal?.toLocaleString()}</span>
-              <span>{t('clustering.duration')}</span>
-              <span>{timeCost}s</span>
-            </Space>
+            <div className='n9e-log-clustering-extra'>
+              {isSampled ? (
+                <>
+                  <Tooltip title={t('clustering.sampled_tip')}>
+                    <span className='n9e-log-clustering-sampled-tip'>{t('clustering.sampled_tip')}</span>
+                  </Tooltip>
+                  <Divider type='vertical' />
+                </>
+              ) : null}
+              <span className='n9e-log-clustering-meta'>{t('clustering.log_count')}</span>
+              <span className='n9e-log-clustering-meta'>{logTotal?.toLocaleString()}</span>
+              <span className='n9e-log-clustering-meta'>{t('clustering.duration')}</span>
+              <span className='n9e-log-clustering-meta'>{timeCost}s</span>
+            </div>
           ) : null,
           clusteringExtraEleRef.current,
         )}
@@ -353,7 +384,7 @@ export default function TableCpt(props: Props) {
             <span style={{ color: 'var(--fc-primary-color)', fontWeight: 'bold' }}>{logTotal?.toLocaleString()}</span>
             <span className='mx-1'>|</span>
             {t('clustering.loading_field')}
-            {field}
+            {groupByFields.join(', ')}
           </div>
           <div className='mt-2 text-l2'>
             {t('clustering.loading_tip')}

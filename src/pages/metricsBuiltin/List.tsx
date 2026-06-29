@@ -18,14 +18,18 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Input, Dropdown, Select, message, Modal, Tooltip, Menu, Tag } from 'antd';
-import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
+import { Space, Button, Input, Dropdown, Select, message, Modal, Tooltip, Tag } from 'antd';
+import { SettingOutlined, DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { ColumnType } from 'antd/lib/table';
 
 import { CommonStateContext } from '@/App';
 import Markdown from '@/components/Markdown';
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
+import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
+import EllipsisText from '@/components/EllipsisText';
+import Tags from '@/components/TableTags/Tags';
 import RefreshIcon from '@/components/RefreshIcon';
 import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
 import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
@@ -99,7 +103,7 @@ export default function index() {
       defaultPageSize: pagination.pageSize,
     },
   );
-  let columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
+  const columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
     {
       title: t('typ'),
       dataIndex: 'typ',
@@ -230,34 +234,22 @@ export default function index() {
       title: t('extra_fields'),
       dataIndex: 'extra_fields',
       render: (val) => {
-        return (
-          <Space wrap size={[0, 2]}>
-            {_.map(val, (item) => {
-              return <Tag key={item.name}>{`${item.name}: ${item.value}`}</Tag>;
-            })}
-          </Space>
-        );
+        return <Tags data={_.map(val, (item) => `${item.name}: ${item.value}`)} maxWidth={180} />;
       },
     },
     {
       title: t('note'),
       dataIndex: 'note',
+      ellipsis: { showTitle: false },
       render: (value) => {
-        return (
-          <div
-            style={{
-              wordBreak: 'break-all',
-            }}
-          >
-            {value}
-          </div>
-        );
+        return <EllipsisText text={value} />;
       },
     },
-    {
+    updateByColumn({
       title: t('common:table.update_by'),
       dataIndex: 'updated_by',
       key: 'updated_by',
+      filterMode: 'none',
       render: (value) => {
         if (!value) return '-';
         if (value === 'system') {
@@ -265,99 +257,8 @@ export default function index() {
         }
         return value;
       },
-    },
-    {
-      title: t('common:table.operations'),
-      dataIndex: 'operator',
-      render: (data, record: any) => {
-        return (
-          <Dropdown
-            overlay={
-              <Menu>
-                {actionAuth.add && (
-                  <Menu.Item>
-                    <a
-                      onClick={() => {
-                        setFormDrawerData({
-                          open: true,
-                          mode: 'clone',
-                          title: t('clone_title'),
-                          initialValues: record,
-                        });
-                      }}
-                    >
-                      {t('common:btn.clone')}
-                    </a>
-                  </Menu.Item>
-                )}
-                {actionAuth.edit && record.updated_by !== 'system' && (
-                  <Menu.Item>
-                    <a
-                      onClick={() => {
-                        setFormDrawerData({
-                          open: true,
-                          mode: 'edit',
-                          title: t('edit_title'),
-                          initialValues: record,
-                        });
-                      }}
-                    >
-                      {t('common:btn.edit')}
-                    </a>
-                  </Menu.Item>
-                )}
-                {actionAuth.delete && record.updated_by !== 'system' && (
-                  <Menu.Item>
-                    <Button
-                      danger
-                      type='link'
-                      className='p-0 h-auto'
-                      onClick={() => {
-                        Modal.confirm({
-                          title: t('common:confirm.delete'),
-                          onOk() {
-                            deleteMetrics([record.id]).then(() => {
-                              message.success(t('common:success.delete'));
-                              setRefreshFlag(_.uniqueId('refreshFlag_'));
-                            });
-                          },
-                        });
-                      }}
-                    >
-                      {t('common:btn.delete')}
-                    </Button>
-                  </Menu.Item>
-                )}
-                {record.expression_type === 'metric_name' && (
-                  <Menu.Item>
-                    <a
-                      onClick={() => {
-                        setNewMetricExplorerDrawerState((prev) => {
-                          return {
-                            ...prev,
-                            visible: true,
-                            metric: `tlast_over_time(${record.expression}[7d:1m])`,
-                          };
-                        });
-                      }}
-                    >
-                      {t('laset_over_time')}
-                    </a>
-                  </Menu.Item>
-                )}
-              </Menu>
-            }
-          >
-            <Button type='link' icon={<MoreOutlined />} />
-          </Dropdown>
-        );
-      },
-    },
+    }),
   ];
-
-  if (!actionAuth.add && !actionAuth.edit && !actionAuth.delete) {
-    columns = _.filter(columns, (column) => column.dataIndex !== 'operator');
-  }
 
   const { run: queryChange } = useDebounceFn(
     (query) => {
@@ -405,7 +306,11 @@ export default function index() {
 
   return (
     <>
-      <PageLayout title={t('title')} icon={<SettingOutlined />}>
+      <PageLayout
+        title={t('title')}
+        icon={<SettingOutlined />}
+        doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/metrics/metrics-built-in/'
+      >
         <div className='built-in-metrics-container'>
           <Collapse
             collapseLocalStorageKey='built-in-metrics-filters-collapse'
@@ -613,12 +518,87 @@ export default function index() {
                 />
               </Space>
             </div>
-            <Table
+            <EnhancedTable
               className='mt-2'
               size='small'
               rowKey='id'
               {...tableProps}
               columns={ajustColumns(columns, columnsConfigs)}
+              rowActions={(record: any) => {
+                if (!actionAuth.add && !actionAuth.edit && !actionAuth.delete) {
+                  return undefined;
+                }
+                return {
+                  menu: _.compact([
+                    actionAuth.add
+                      ? {
+                          key: 'clone',
+                          icon: 'copy' as const,
+                          text: t('common:btn.clone'),
+                          onClick: () => {
+                            setFormDrawerData({
+                              open: true,
+                              mode: 'clone',
+                              title: t('clone_title'),
+                              initialValues: record,
+                            });
+                          },
+                        }
+                      : undefined,
+                    actionAuth.edit && record.updated_by !== 'system'
+                      ? {
+                          key: 'edit',
+                          icon: 'edit' as const,
+                          text: t('common:btn.edit'),
+                          onClick: () => {
+                            setFormDrawerData({
+                              open: true,
+                              mode: 'edit',
+                              title: t('edit_title'),
+                              initialValues: record,
+                            });
+                          },
+                        }
+                      : undefined,
+                    record.expression_type === 'metric_name'
+                      ? {
+                          key: 'laset_over_time',
+                          icon: 'search' as const,
+                          text: t('laset_over_time'),
+                          onClick: () => {
+                            setNewMetricExplorerDrawerState((prev) => {
+                              return {
+                                ...prev,
+                                visible: true,
+                                metric: `tlast_over_time(${record.expression}[7d:1m])`,
+                              };
+                            });
+                          },
+                        }
+                      : undefined,
+                    actionAuth.delete && record.updated_by !== 'system'
+                      ? {
+                          key: 'delete',
+                          icon: 'delete' as const,
+                          text: t('common:btn.delete'),
+                          danger: true,
+                          onClick: () => {
+                            Modal.confirm({
+                              title: t('common:confirm.delete'),
+                              onOk() {
+                                deleteMetrics([record.id]).then(() => {
+                                  message.success(t('common:success.delete'));
+                                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                                });
+                              },
+                            });
+                          },
+                        }
+                      : undefined,
+                  ]),
+                };
+              }}
+              actionColumn={{ title: t('common:table.operations'), width: 64 }}
               pagination={{
                 ...pagination,
                 ...tableProps.pagination,

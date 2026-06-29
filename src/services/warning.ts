@@ -153,10 +153,13 @@ export const addStrategy = function (data: any[], busiId: number) {
   });
 };
 
-export const importStrategy = function (data: any[], busiId: number) {
+export const importStrategy = function (data: any[], busiId: number, force: boolean) {
   return request(`/api/n9e/busi-group/${busiId}/alert-rules/import`, {
     method: 'POST',
     data: data,
+    params: {
+      force,
+    },
   });
 };
 

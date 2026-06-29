@@ -6,7 +6,8 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
-import { IS_PLUS, alphabet } from '@/utils/constant';
+import { IS_PLUS } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import KQLInput from '@/components/KQLInput';
 import LegendInput from '@/pages/dashboard/Components/LegendInput';
@@ -36,7 +37,7 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
   const chartForm = Form.useFormInstance();
   const datasourceCate = Form.useWatch('datasourceCate');
   const targets = Form.useWatch('targets');
-  const refId = Form.useWatch([...prefixName, 'refId']) || alphabet[index];
+  const refId = Form.useWatch([...prefixName, 'refId']) || generateQueryNameByIndex(index);
   const indexType = Form.useWatch([...prefixName, 'query', 'index_type']);
   const indexValue = Form.useWatch([...prefixName, 'query', 'index']);
   const syntax = Form.useWatch([...prefixName, 'query', 'syntax']);

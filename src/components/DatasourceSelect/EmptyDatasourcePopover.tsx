@@ -5,10 +5,11 @@ import { TooltipPlacement } from 'antd/lib/tooltip';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { IS_ENT } from '@/utils/constant';
+import { IS_ENT, IS_PLUS } from '@/utils/constant';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 
 interface IProps {
-  datasourceCate?: string;
+  type?: 'metric' | 'logging';
   datasourceList: any[];
   children: React.ReactNode;
   placement?: TooltipPlacement;
@@ -16,23 +17,35 @@ interface IProps {
 }
 
 export default function EmptyDatasourcePopover(props: IProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profile } = useContext(CommonStateContext);
-  const { datasourceCate, datasourceList, children, placement, getPopupContainer } = props;
+  const { type = 'metric', datasourceList, children, placement, getPopupContainer } = props;
+
+  const supportedCates = _.filter(allCates, (cate) => {
+    if (!_.includes(cate.type, type)) return false;
+    return cate.graphPro ? IS_PLUS : true;
+  });
+  const supportedLabels = _.map(supportedCates, (cate) => getCateDisplayLabel(cate, i18n.language));
+
+  const emptyTitle = !_.isEmpty(supportedLabels)
+    ? t('common:datasource.empty_modal.title_with_types', { types: supportedLabels.join('、') })
+    : t('common:datasource.empty_modal.title');
+
   let linkUrl = IS_ENT ? '/settings/source/timeseries' : '/datasources';
-  if (datasourceCate === 'prometheus') {
-    linkUrl = IS_ENT ? '/settings/datasource/add/prometheus' : '/datasources/add/prometheus';
+
+  if (type === 'logging') {
+    linkUrl = IS_ENT ? '/settings/source/log' : '/datasources';
   }
 
   return (
     <Popover
       content={
         <>
-          {t('common:datasource.empty_modal.title')} {_.includes(profile?.roles, 'Admin') ? <Link to={linkUrl}>{t('common:datasource.empty_modal.btn1')}</Link> : null}
+          {emptyTitle} {_.includes(profile?.roles, 'Admin') ? <Link to={linkUrl}>{t('common:datasource.empty_modal.btn1')}</Link> : null}
         </>
       }
       visible={_.isEmpty(datasourceList)}
-      placement={placement ?? 'rightTop'}
+      placement={placement ?? 'bottomLeft'}
       getPopupContainer={getPopupContainer}
     >
       {children}

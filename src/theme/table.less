@@ -1,0 +1,241 @@
+// 全局表格基线。固定列穿透修复为全局；排序图标限定在已迁移表 .fc-enhanced-table 内。
+
+// 固定列（左/右）：不透明背景 + 层级，避免横向滚动 + 行 hover 时被其它列内容穿透。
+// 背景：n9e 通用行 hover 背景是 rgb(var(--fc-fill-5-rgb) / 0.2)（带透明度），落到固定列上会
+// 让横向滚过去的内容透出。这里针对固定列用不透明 token 覆盖（基础 --fc-fill-2 / hover
+// --fc-fill-2-5），并加 z-index 分层。亮暗通用、无 !important。
+// 来历：srm-fe 在 App.less 已有同款；fe 早期 default.less(617fcfe1a) 的修复在同步中丢失，这里补回。
+.ant-table-tbody .ant-table-cell-fix-left,
+.ant-table-tbody .ant-table-cell-fix-right {
+  background: var(--fc-fill-2);
+  z-index: 6;
+}
+
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right,
+.ant-table-tbody > tr > td.ant-table-cell-fix-left.ant-table-cell-row-hover,
+.ant-table-tbody > tr > td.ant-table-cell-fix-right.ant-table-cell-row-hover {
+  background: var(--fc-fill-2-5);
+  z-index: 7;
+}
+
+.ant-table-thead > tr > th.ant-table-cell-fix-left,
+.ant-table-thead > tr > th.ant-table-cell-fix-right {
+  z-index: 8;
+}
+
+// react-sortable-hoc 拖拽表格行时会把 tr clone 到 body，脱离 table/colgroup 上下文。
+// 固定列在 clone 中继续保持 sticky 会导致操作列（三个点）悬浮错位，这里仅在拖拽 helper 上还原固定列定位。
+.row-dragging {
+  .ant-table-cell-fix-left,
+  .ant-table-cell-fix-right {
+    position: static !important;
+    background: inherit;
+  }
+
+  .ant-table-cell-fix-left-last::after,
+  .ant-table-cell-fix-right-first::after,
+  .ant-table-cell-fix-right-last::after {
+    display: none;
+  }
+
+  // 克隆行里操作按钮无法点击、且单元格高度会错乱，拖拽期间直接隐藏（保留 <td> 占位不破坏列宽）。
+  .fc-table-action-cell {
+    display: none;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// 排序列图标 / 交互（与 design-system table-style-preview「更新时间」列 1:1 对齐）。
+// 仅作用于已迁移表 .fc-enhanced-table；未迁移表仍用 App.less 的默认 antd caret。
+// 关键：图标命中区「常驻保留 24px、仅切 opacity（hover 表头或已排序时显现）」，无 width 动画
+//      → 不会像之前的全局版那样让 auto 列宽表头 hover 时抖动（见迁移日志 #0 教训）。
+// 对齐点：表头内容 flex + gap 6px（图标紧贴文字）；按钮 = ghost-quaternary-xs（24px 命中区 +
+//      14px 图标 + hover/active 底色）；未排序 ArrowUpDown，升序 ArrowUp，降序 ArrowDown。
+.fc-enhanced-table {
+  // 表头：标题 + 排序图标紧贴（对齐 .th-content：flex + gap 6px，标题不撑开把图标推到右边）
+  .ant-table-column-sorters {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .ant-table-column-title {
+    flex: 0 1 auto;
+    // 短标题（更新人/启用/周期 等无 ellipsis 列）不逐字换行：antd 只给 ellipsis 列加 nowrap，
+    // 其余列 white-space:normal + 上面 flex 可收缩 → CJK 标题被排序/筛选图标挤到逐字竖排。
+    white-space: nowrap;
+  }
+
+  // 表头 hover：**每一列**（含不可排序列）整格底色 fill-5/0.4，对齐 design-system `thead th:hover`。
+  // antd v4 token 只给「可排序」表头 hover 上色（@table-header-sort-active-bg），不可排序列没有；
+  // v4 无「任意表头 hover」对应 token，故这里用 CSS 补齐。排除固定列表头（半透明底会引发穿透）。
+  // 已排序列不额外加底色——antd token @table-header-sort-bg = fill-2-5（与表头同色、不可见），保持。
+  .ant-table-thead > tr > th:not(.ant-table-cell-fix-left):not(.ant-table-cell-fix-right) {
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+    }
+  }
+
+  // 排序按钮（对齐 .fc-ghost-quaternary-xs：24px 命中区，14px 图标居中）
+  .ant-table-column-sorter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    margin: 0;
+    border-radius: 6px;
+    // lift the arrow above the .ant-table-column-sorters wrapper, which otherwise paints on top
+    // and swallows the hover → .ant-table-column-sorter:hover never fires → no hover pill.
+    position: relative;
+    z-index: 1;
+    color: var(--fc-text-4);
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+
+    .ant-table-column-sorter-inner {
+      display: none;
+    }
+
+    &::before {
+      width: 14px;
+      height: 14px;
+      content: '';
+      background: currentColor;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16l-4 4-4-4'/%3E%3Cpath d='M17 20V4'/%3E%3Cpath d='M3 8l4-4 4 4'/%3E%3Cpath d='M7 4v16'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 16l-4 4-4-4'/%3E%3Cpath d='M17 20V4'/%3E%3Cpath d='M3 8l4-4 4 4'/%3E%3Cpath d='M7 4v16'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    &:has(.ant-table-column-sorter-up.active)::before {
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='2 2 20 20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5'/%3E%3Cpath d='M5 12l7-7 7 7'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='2 2 20 20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19V5'/%3E%3Cpath d='M5 12l7-7 7 7'/%3E%3C/svg%3E");
+    }
+
+    &:has(.ant-table-column-sorter-down.active)::before {
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='2 2 20 20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='M19 12l-7 7-7-7'/%3E%3C/svg%3E");
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='2 2 20 20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14'/%3E%3Cpath d='M19 12l-7 7-7-7'/%3E%3C/svg%3E");
+    }
+
+    &:hover {
+      color: var(--fc-text-2);
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+    }
+
+    &:active {
+      color: var(--fc-text-1);
+      background: rgb(var(--fc-fill-5-rgb) / 0.7);
+    }
+
+    // 已排序：常显、text-3、透明底；hover 再叠底色（对齐 .table-head-sort.is-active）
+    &:has(.active) {
+      opacity: 1;
+      color: var(--fc-text-3);
+    }
+
+    &:has(.active):hover {
+      color: var(--fc-text-2);
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+    }
+  }
+
+  .ant-table-column-has-sorters:hover .ant-table-column-sorter {
+    opacity: 1;
+  }
+
+  // antd ships `.ant-table-column-sorters:hover .ant-table-column-sorter { color: darken(#bfbfbf,10%) }`
+  // — same specificity as our sorter rule, so it wins on source order and greys the icon on hover.
+  // Re-assert with the wrapper ancestor (one extra class → outranks antd); and give the icon the same
+  // hover pill the funnel gets natively (antd backgrounds the filter trigger but never the sorter).
+  .ant-table-column-sorters:hover .ant-table-column-sorter {
+    color: var(--fc-text-3);
+  }
+
+  .ant-table-column-sorters .ant-table-column-sorter:hover {
+    color: var(--fc-text-2);
+    background: rgb(var(--fc-fill-5-rgb) / 0.4);
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  // 列头筛选漏斗（对齐 design-system table-style-preview `.table-head-filter`）。
+  // 用 lucide Funnel(14px) mask 取代 antd 默认实心漏斗；命中区 24px、ghost-quaternary。
+  // 默认 opacity 0，表头 hover / 下拉打开 / 已筛选(.active) 时显现；已筛选用 violet-9 高亮。
+
+  // 漏斗紧跟排序图标之后：antd 默认 .ant-table-filter-column 用 space-between，会把漏斗推到
+  // 表头最右、与排序图标脱节；改 flex-start 让「标题 → 排序 → 漏斗」连成一组。
+  .ant-table-filter-column {
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  // 同时可排序 + 可筛选的列（如「更新人」「启用」）：antd 默认给 .ant-table-column-sorters 设 flex:auto，
+  // 让它撑满表头，把其后的漏斗一路顶到最右、与排序图标拉开一大段空隙，且常被相邻列裁掉一半。
+  // 收成 flex:0 1 auto → 标题/排序图标只占内容宽，漏斗紧跟其后（仅隔上面的 6px margin），不再溢出被遮。
+  .ant-table-filter-column .ant-table-column-sorters {
+    flex: 0 1 auto;
+  }
+
+  .ant-table-filter-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    margin: 0 0 0 6px;
+    border-radius: 6px;
+    color: var(--fc-text-4);
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+
+    // 隐藏 antd 默认实心漏斗，改用 lucide Funnel 描边图标
+    > .anticon {
+      display: none;
+    }
+
+    &::before {
+      width: 14px;
+      height: 14px;
+      content: '';
+      background: currentColor;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='2 6 20 20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 20a1 1 0 0 0 .553.895l3.447 1.724V14.87l5.446-5.446A.5.5 0 0 0 19.093 8.5H4.907a.5.5 0 0 0-.353.924L10 14.87Z'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='2 6 20 20' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 20a1 1 0 0 0 .553.895l3.447 1.724V14.87l5.446-5.446A.5.5 0 0 0 19.093 8.5H4.907a.5.5 0 0 0-.353.924L10 14.87Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+
+    &:hover {
+      color: var(--fc-text-2);
+      background: rgb(var(--fc-fill-5-rgb) / 0.4);
+    }
+
+    &:active {
+      color: var(--fc-text-1);
+      background: rgb(var(--fc-fill-5-rgb) / 0.7);
+    }
+
+    // 已筛选（antd 给 trigger 加 .active）：常显 + violet
+    &.active {
+      opacity: 1;
+      color: var(--fc-violet-9);
+
+      &:hover {
+        color: var(--fc-violet-9);
+        background: rgb(var(--fc-fill-5-rgb) / 0.4);
+      }
+    }
+
+    // 下拉打开时保持可见（即便鼠标移出表头）
+    &.ant-dropdown-open {
+      opacity: 1;
+    }
+  }
+
+  // 表头 hover 时显现漏斗（与排序图标同款显隐）
+  .ant-table-thead > tr > th:hover .ant-table-filter-trigger {
+    opacity: 1;
+  }
+}

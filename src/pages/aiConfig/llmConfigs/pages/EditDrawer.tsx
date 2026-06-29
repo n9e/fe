@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Drawer, Form, Space, Spin, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
@@ -32,13 +32,21 @@ export default function EditDrawer(props: Props) {
       refreshDeps: [id],
       onSuccess(data) {
         if (data) {
+          form.resetFields();
           form.setFieldsValue(adjustFormValues(data));
         }
       },
     },
   );
 
-  const [testLoading, setTestLoading] = React.useState(false);
+  const [testLoading, setTestLoading] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      form.resetFields();
+      setTestLoading(false);
+    }
+  }, [visible, form]);
 
   return (
     <Drawer

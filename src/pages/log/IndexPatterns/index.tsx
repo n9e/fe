@@ -15,11 +15,12 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Popconfirm, Space, Table, Tag, message } from 'antd';
+import { Button, Input, Modal, Tag, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
+import EnhancedTable from '@/components/EnhancedTable';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
@@ -108,7 +109,7 @@ export default function Servers() {
                   {t('create_btn')}
                 </Button>
               </div>
-              <Table
+              <EnhancedTable
                 className='mt-2'
                 size='small'
                 rowKey='id'
@@ -116,6 +117,73 @@ export default function Servers() {
                 loading={loading}
                 dataSource={_.filter(data, (item) => _.includes(_.toLower(item.name), _.toLower(search)))}
                 pagination={false}
+                actionColumn={{ title: t('common:table.operations'), width: 110 }}
+                rowActions={(record) => ({
+                  inline: [
+                    {
+                      key: 'config',
+                      text: t('common:btn.config'),
+                      onClick: () => {
+                        if (record) {
+                          EditField({
+                            id: record.id,
+                            datasourceList,
+                            onOk(values, name) {
+                              console.log('values', values);
+                              const newFieldConfig = {
+                                ...values,
+                                version: 2,
+                              };
+                              putESIndexPattern(record.id, {
+                                ..._.omit(record, ['fieldConfig', 'id']),
+                                fields_format: JSON.stringify(newFieldConfig),
+                                name,
+                              }).then(() => {
+                                fetchData();
+                                message.success(t('common:success.save'));
+                              });
+                            },
+                          });
+                        }
+                      },
+                    },
+                  ],
+                  menu: [
+                    {
+                      key: 'edit',
+                      icon: 'edit',
+                      text: t('common:btn.edit'),
+                      onClick: () => {
+                        FormModal({
+                          mode: 'edit',
+                          initialValues: record,
+                          indexPatterns: data,
+                          datasourceList: groupedDatasourceList.elasticsearch,
+                          onOk: () => {
+                            fetchData();
+                          },
+                        });
+                      },
+                    },
+                    {
+                      key: 'delete',
+                      icon: 'delete',
+                      danger: true,
+                      text: t('common:btn.delete'),
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteESIndexPattern(record.id).then(() => {
+                              message.success(t('common:success.delete'));
+                              fetchData();
+                            });
+                          },
+                        });
+                      },
+                    },
+                  ],
+                })}
                 columns={[
                   {
                     title: t('common:datasource.id'),
@@ -139,71 +207,6 @@ export default function Servers() {
                   {
                     title: t('time_field'),
                     dataIndex: 'time_field',
-                  },
-                  {
-                    title: t('common:table.operations'),
-                    width: 160,
-                    render: (record) => {
-                      return (
-                        <Space>
-                          <a
-                            onClick={() => {
-                              if (record) {
-                                EditField({
-                                  id: record.id,
-                                  datasourceList,
-                                  onOk(values, name) {
-                                    console.log('values', values);
-                                    const newFieldConfig = {
-                                      ...values,
-                                      version: 2,
-                                    };
-                                    putESIndexPattern(record.id, {
-                                      ..._.omit(record, ['fieldConfig', 'id']),
-                                      fields_format: JSON.stringify(newFieldConfig),
-                                      name,
-                                    }).then(() => {
-                                      fetchData();
-                                      message.success(t('common:success.save'));
-                                    });
-                                  },
-                                });
-                              }
-                            }}
-                          >
-                            {t('common:btn.config')}
-                          </a>
-                          <a
-                            onClick={() => {
-                              FormModal({
-                                mode: 'edit',
-                                initialValues: record,
-                                indexPatterns: data,
-                                datasourceList: groupedDatasourceList.elasticsearch,
-                                onOk: () => {
-                                  fetchData();
-                                },
-                              });
-                            }}
-                          >
-                            {t('common:btn.edit')}
-                          </a>
-                          <Popconfirm
-                            title={t('common:confirm.delete')}
-                            onConfirm={() => {
-                              deleteESIndexPattern(record.id).then(() => {
-                                message.success(t('common:success.delete'));
-                                fetchData();
-                              });
-                            }}
-                          >
-                            <Button type='link' style={{ padding: 0 }} danger>
-                              {t('common:btn.delete')}
-                            </Button>
-                          </Popconfirm>
-                        </Space>
-                      );
-                    },
                   },
                 ]}
               />

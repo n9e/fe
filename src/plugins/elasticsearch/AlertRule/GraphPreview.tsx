@@ -5,6 +5,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
+import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
 import { normalizeTime } from '../utils';
 import { getDsQuery } from './services';
@@ -34,9 +35,15 @@ export default function GraphPreview(props: IProps) {
   const [series, setSeries] = useState<any[]>([]);
   const [columnKeys, setColumnKeys] = useState<string[]>([]);
   const [datasourceValue, setDatasourceValue] = useState<number>(props.datasourceValue);
+  const [range, setRange] = useState<IRawTimeRange>({
+    start: 'now-1h',
+    end: 'now',
+  });
 
   const fetchSeries = () => {
-    const now = moment().unix();
+    const parsedRange = parseRange(range);
+    const start = moment(parsedRange.start).unix();
+    const end = moment(parsedRange.end).unix();
 
     getDsQuery(
       {
@@ -55,8 +62,8 @@ export default function GraphPreview(props: IProps) {
             date_field: item.date_field,
             offset: item.offset,
             interval,
-            start: now - interval,
-            end: now,
+            start,
+            end,
           };
         }),
       },
@@ -92,6 +99,12 @@ export default function GraphPreview(props: IProps) {
     setDatasourceValue(props.datasourceValue);
   }, [props.datasourceValue]);
 
+  useEffect(() => {
+    if (visible) {
+      fetchSeries();
+    }
+  }, [JSON.stringify(range)]);
+
   return (
     <div ref={divRef}>
       <Popover
@@ -105,6 +118,7 @@ export default function GraphPreview(props: IProps) {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
             <div
@@ -134,6 +148,7 @@ export default function GraphPreview(props: IProps) {
                   },
                 )}
               />
+              <TimeRangePicker value={range} onChange={setRange} />
             </Space>
           </div>
         }

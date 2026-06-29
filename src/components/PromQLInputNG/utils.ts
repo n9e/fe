@@ -20,6 +20,7 @@ export function getRealStep(options: { minStep?: number; maxDataPoints?: number;
 
 export function interpolateString(options: { query: string; range?: IRawTimeRange; minStep?: number; maxDataPoints?: number }) {
   const { query, range, minStep = 15, maxDataPoints } = options;
+  const queryStr = String(query);
   if (range) {
     const parsedRange = parseRange(range);
     const from = moment(parsedRange.start);
@@ -37,45 +38,49 @@ export function interpolateString(options: { query: string; range?: IRawTimeRang
       toUnix,
     });
 
-    return query
-      .replace(/\$__from/g, `${fromMs}`)
+    return queryStr
       .replace(/\$__from_date_seconds/g, `${fromUnix}`)
       .replace(/\$__from_date_iso/g, fromDateISO)
       .replace(/\$__from_date/g, `${fromDateISO}`)
-      .replace(/\$__to/g, `${toMs}`)
+      .replace(/\$__from/g, `${fromMs}`)
       .replace(/\$__to_date_seconds/g, `${toUnix}`)
       .replace(/\$__to_date_iso/g, toDateISO)
       .replace(/\$__to_date/g, `${toDateISO}`)
-      .replace(/\$__interval/g, `${interval}s`)
+      .replace(/\$__to/g, `${toMs}`)
       .replace(/\$__interval_ms/g, `${interval * 1000}`)
+      .replace(/\$__interval/g, `${interval}s`)
       .replace(/\$__rate_interval/g, `${interval * 4}s`)
-      .replace(/\$__range/g, `${toUnix - fromUnix}s`)
+      .replace(/\$__range_ms/g, `${(toUnix - fromUnix) * 1000}`)
       .replace(/\$__range_s/g, `${toUnix - fromUnix}`)
-      .replace(/\$__range_ms/g, `${(toUnix - fromUnix) * 1000}`);
+      .replace(/\$__range/g, `${toUnix - fromUnix}s`);
   }
 
-  return query.replace(/\$__interval/g, `${minStep}s`).replace(/\$__rate_interval/g, `${minStep * 4}s`);
+  return queryStr.replace(/\$__interval/g, `${minStep}s`).replace(/\$__rate_interval/g, `${minStep * 4}s`);
 }
 
 export function instantInterpolateString(options: { query: string; time?: moment.Moment }) {
   const { query, time } = options;
+  const queryStr = String(query);
   const currentTime = time || moment();
   const currentTimeMs = currentTime.valueOf();
   const currentTimeUnix = currentTime.unix();
   const currentTimeDateISO = currentTime.toISOString();
 
-  return query
-    .replace(/\$__from/g, `${currentTimeMs}`)
+  return queryStr
     .replace(/\$__from_date_seconds/g, `${currentTimeUnix}`)
     .replace(/\$__from_date_iso/g, currentTimeDateISO)
     .replace(/\$__from_date/g, `${currentTimeDateISO}`)
-    .replace(/\$__to/g, `${currentTimeMs}`)
+    .replace(/\$__from/g, `${currentTimeMs}`)
     .replace(/\$__to_date_seconds/g, `${currentTimeUnix}`)
     .replace(/\$__to_date_iso/g, currentTimeDateISO)
     .replace(/\$__to_date/g, `${currentTimeDateISO}`)
-    .replace(/\$__interval/g, '5m')
+    .replace(/\$__to/g, `${currentTimeMs}`)
     .replace(/\$__interval_ms/g, '300000')
-    .replace(/\$__rate_interval/g, '5m');
+    .replace(/\$__interval/g, '5m')
+    .replace(/\$__rate_interval/g, '5m')
+    .replace(/\$__range_ms/g, '300000')
+    .replace(/\$__range_s/g, '300')
+    .replace(/\$__range/g, '5m');
 }
 
 export function includesVariables(query: string) {

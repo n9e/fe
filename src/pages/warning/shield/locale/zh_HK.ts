@@ -45,6 +45,22 @@ const zh_HK = {
   preview_muted_save_and_delete: '保存並刪除相關事件',
   expired: '已過期',
   quick_mute: '快速屏蔽',
+  delete_mutes: {
+    title: '屏蔽規則清理',
+    alert_message: '一旦刪除將無法找回，請謹慎操作！',
+    timestamp: '時間篩選',
+    timestamp_options: {
+      1: '1 個月之前',
+      3: '3 個月之前',
+      6: '6 個月之前',
+      12: '1 年之前',
+    },
+  },
+  filter_disabled: {
+    placeholder: '啟用狀態',
+    0: '啟用',
+    1: '停用',
+  },
 };
 
 export default zh_HK;

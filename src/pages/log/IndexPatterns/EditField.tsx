@@ -25,7 +25,6 @@ import { FieldConfigVersion2, convertToVersion2, FieldConfig } from './types';
 import _ from 'lodash';
 import { copy2ClipBoard } from '@/utils';
 import InputEnlarge from '@/components/InputEnlarge';
-import { IS_ENT } from '@/utils/constant';
 import RegExtractModal from './regExtractModal';
 
 interface IField {
@@ -39,128 +38,86 @@ interface Props {
   onOk: (values: any, name: string) => void;
 }
 
+const linkTipBuiltinVariableKeys = [
+  'linkTip.builtin.timeWindow',
+  'linkTip.builtin.timeRangeMs',
+  'linkTip.builtin.timeRangeSeconds',
+  'linkTip.builtin.timeRangeFormat',
+  'linkTip.builtin.timeRangeOffset',
+  'linkTip.builtin.localUrl',
+  'linkTip.builtin.localProtocol',
+  'linkTip.builtin.localDomain',
+  'linkTip.builtin.mappingParams',
+];
+
+const linkTipExamples = [
+  {
+    labelKey: 'linkTip.examples.timeRangeMs',
+    address: 'https://flashcat.cloud/page?stime=$__from&etime=$__to',
+  },
+  {
+    labelKey: 'linkTip.examples.timeRangeSeconds',
+    address: '$local_url/page?stime=$__from&etime=$__to&$__time_format__=unix',
+  },
+  {
+    labelKey: 'linkTip.examples.timeRangeFormat',
+    address: '$local_url/page?stime=$__from&etime=$__to&$__time_format__=YYYY-MM-DD HH:mm',
+  },
+  {
+    labelKey: 'linkTip.examples.timeRangeOffset',
+    address: '$local_url/page?stime=$__from&etime=$__to&$__start_time_margin__=-100000&$__end_time_margin__=100000',
+  },
+  {
+    labelKey: 'linkTip.examples.mappingParams',
+    address: '$local_url/page?$__mapping_para__',
+  },
+];
+
+const LinkTipExample = ({ label, address, copyText }: { label: React.ReactNode; address: string; copyText: string }) => (
+  <li style={{ marginTop: 8 }}>
+    <div>{label}：</div>
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 2 }}>
+      <span style={{ wordBreak: 'break-all' }}>{address}</span>
+      <a
+        style={{
+          color: 'var(--fc-primary-color)',
+          flex: '0 0 auto',
+          fontWeight: 'bold',
+        }}
+        onClick={() => {
+          copy2ClipBoard(address);
+        }}
+      >
+        {copyText}
+      </a>
+    </div>
+  </li>
+);
+
 export const LinkTip = (t, collapse: boolean) => {
   if (collapse) {
-    return <div>{t('日志中的字段均可被作为变量引用，如')}$key1，$key2，$a.b ...</div>;
+    return <div>{t('linkTip.fieldVariableShort')}</div>;
   }
   return (
-    <>
-      <div>
-        {t('日志中的字段均可被作为变量引用，如')}$key1，$key2，$a.b {t('tip3')}
+    <div style={{ lineHeight: '22px' }}>
+      <div>{t('linkTip.fieldVariable')}</div>
+      <div style={{ marginTop: 8 }}>
+        <strong>{t('linkTip.builtin.title')}：</strong>
       </div>
-      <div>{t('内置变量')}：</div>
-      <ul style={{ paddingInlineStart: 24 }}>
-        <li>
-          {t('起止时间')}：$__from
-          {t('和')}$__to, {t('link-tip-time-format')}
-        </li>
-        <li>
-          {t('时间偏移(单位毫秒，可为负数)')}：$__start_time_margin__
-          {t('和')}$__end_time_margin__
-        </li>
-        <li>
-          {t('本系统地址')}：$local_url
-          {t('，包含了协议和域名')}
-        </li>
-        <li>
-          {t('本系统协议')}：$local_protocol
-          {t('，如')}: {t('“http')}:{t('” 或 “https')}:{t('”')}
-        </li>
-        <li>
-          {t('本系统的域名')}：$local_domain
-          {t('，如 flashcat.cloud')}
-        </li>
-        <li>{t('参数映射表')}：$__mapping_para__</li>
+      <ul style={{ paddingInlineStart: 24, marginBottom: 0 }}>
+        {linkTipBuiltinVariableKeys.map((key) => (
+          <li key={key}>{t(key)}</li>
+        ))}
       </ul>
-      <div>{t('样例')}：</div>
-      <ul style={{ paddingInlineStart: 24 }}>
-        <li style={{ marginTop: 8 }}>
-          {t('跳转到仪表盘')}: $local_url/dashboards/132?p1=$key1&p2=$key2&__from=$__from&__to=$__to
-          <a
-            style={{
-              fontWeight: 'bold',
-              marginLeft: 5,
-              marginRight: 5,
-            }}
-            onClick={() => {
-              const address = '$local_url/dashboards/132?p1=$key1&p2=$key2&__from=$__from&__to=$__to';
-              copy2ClipBoard(address);
-            }}
-          >
-            {t('复制')}
-          </a>
-        </li>
-        <li style={{ marginTop: 8 }}>
-          {t('跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）')}:
-          $local_url/dashboards/132?__from=$__from&__to=$__to&p1=$key1&p2=$key2&__variable_value_fixed=true
-          <a
-            style={{
-              fontWeight: 'bold',
-              marginLeft: 5,
-              marginRight: 5,
-            }}
-            onClick={() => {
-              const address = '$local_url/dashboards/132?__from=$__from&__to=$__to&p1=$key1&p2=$key2&__variable_value_fixed=true';
-              copy2ClipBoard(address);
-            }}
-          >
-            {t('复制')}
-          </a>
-        </li>
-        <li style={{ marginTop: 8 }}>
-          {t('时间偏移')}: $local_url/dashboards/132?__from=$__from&__to=$__to&$__start_time_margin__=100&$__end_time_margin__=100
-          <a
-            style={{
-              fontWeight: 'bold',
-              marginLeft: 5,
-              marginRight: 5,
-            }}
-            onClick={() => {
-              const address = '$local_url/dashboards/132?__from=$__from&__to=$__to&$__start_time_margin__=100&$__end_time_margin__=100';
-              copy2ClipBoard(address);
-            }}
-          >
-            {t('复制')}
-          </a>
-        </li>
-        {IS_ENT && (
-          <li style={{ marginTop: 8 }}>
-            {t('跳转到灭火图')}: $local_url/firemap?spaceId=2517270059626?label_1=$key1&label_2=$key2
-            <a
-              style={{
-                fontWeight: 'bold',
-                marginLeft: 5,
-                marginRight: 5,
-              }}
-              onClick={() => {
-                const address = '$local_url/firemap?spaceId=2517270059626&label_1=$key1&label_2=$key2';
-                copy2ClipBoard(address);
-              }}
-            >
-              {t('复制')}
-            </a>
-          </li>
-        )}
-        <li style={{ marginTop: 8 }}>
-          {t('跳转到日志查询')}: $local_url/log/explorer?data_source_name=elasticsearch&data_source_id=16&mode=Pattern&index_pattern=998&query_string=appname:$ key1 AND
-          logLevel:$key2&start=$__from&end=$__to
-          <a
-            style={{
-              fontWeight: 'bold',
-              marginLeft: 5,
-              marginRight: 5,
-            }}
-            onClick={() => {
-              const address =
-                '$local_url/log/explorer?data_source_name=elasticsearch&data_source_id=16&mode=Pattern&index_pattern=998&query_string=appname:$ key1 AND logLevel:$key2&start=$__from&end=$__to';
-              copy2ClipBoard(address);
-            }}
-          >
-            {t('复制')}
-          </a>
-        </li>
+      <div style={{ marginTop: 8 }}>
+        <strong>{t('linkTip.examples.title')}：</strong>
+      </div>
+      <ul style={{ paddingInlineStart: 24, marginBottom: 0 }}>
+        {linkTipExamples.map((item) => (
+          <LinkTipExample key={item.labelKey} label={t(item.labelKey)} address={item.address} copyText={t('复制')} />
+        ))}
       </ul>
-    </>
+    </div>
   );
 };
 

@@ -12,6 +12,7 @@ export function getList(params: {
   limit: number;
   p: number;
   hosts?: string;
+  auth_level?: string; // 逗号分隔的授权等级，如 '1,2,3'
   downtime?: number;
   agent_versions?: string;
 }): Promise<{ list: Item[]; total: number }> {
@@ -28,3 +29,15 @@ export function getStats(params: { gids?: string }): Promise<Stats> {
     params,
   }).then((res) => res.dat);
 }
+
+export const putAiTaskConfigs = function (data: {
+  idents: string[];
+  auth_level: number; // 0、1、2、3
+}): Promise<{
+  [host: string]: string;
+}> {
+  return request('/api/n9e-plus/ai-task-configs', {
+    method: RequestMethod.Put,
+    data,
+  }).then((res) => res.dat ?? []);
+};

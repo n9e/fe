@@ -12,12 +12,12 @@ export type { IndexDataItem, ClusteringItem };
 //   }).then((res) => res.dat);
 // };
 
-export const getLogClustering = (cate: DatasourceCateEnum, datasource_id: number, query: string, logs: any[], by: string): Promise<ClusteringItem[]> => {
+export const getLogClustering = (cate: DatasourceCateEnum, datasource_id: number, query: string, logs: any[], group_by: string[]): Promise<ClusteringItem[]> => {
   return request('/api/fc-model/log-clusting/logs', {
     method: RequestMethod.Post,
     data: {
       logs,
-      by,
+      group_by,
       cate,
       datasource_id,
       query,
@@ -29,14 +29,14 @@ export const getQueryClustering = (
   cate: DatasourceCateEnum,
   datasource_id: number,
   query: string,
-  by: string,
+  group_by: string[],
 ): Promise<{ items: ClusteringItem[]; time_cost: number; is_sampled: boolean }> => {
   return request('/api/fc-model/log-clusting/query', {
     method: RequestMethod.Post,
     data: {
       cate,
       query,
-      by,
+      group_by,
       datasource_id,
     },
   }).then((res) => res.data);

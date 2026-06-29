@@ -1,6 +1,8 @@
 const zh_HK = {
   auth: {
     403: '您沒有權限訪問該頁面，請聯絡管理員！',
+    '403_admin': '管理員：',
+    '403_back': '返回上一頁',
     404: '您訪問的頁面不存在！',
     '404_btn': '回到首頁',
   },
@@ -18,6 +20,7 @@ const zh_HK = {
   unit: '單位',
   page_help: '使用說明',
   document_title: '說明文檔',
+  product_document_title: '產品文檔',
   more_document_link: '更多文檔',
   and: '且',
   yes: '是',
@@ -93,6 +96,7 @@ const zh_HK = {
     preview: '數據源預覽',
     empty_modal: {
       title: '暫無數據源配置，請聯絡管理員去新增數據源',
+      title_with_types: '當前僅支援 {{types}} 數據源類型，其他數據源類型暫不支援。請聯絡管理員去新增數據源',
       btn1: '前往配置',
       btn2: '知道了',
     },
@@ -171,6 +175,7 @@ const zh_HK = {
   disabling: '禁用中',
   select_event: '選擇告警事件',
   click_to_view_doc: '點擊查看文檔',
+  format_sql: '格式化 SQL',
 
   tpl: '自愈腳本',
   'tpl.create': '創建',
@@ -237,6 +242,7 @@ const zh_HK = {
   'task.tip.title': '提示資訊',
   'task.tip.content': '如果你的角色是管理員，則可以在任意機器執行腳本；否則，只能對有管理權限的業務組下的機器執行腳本',
   'task.allOptionLabel': '全部任務',
+  'task.error.no_group': '業務組不存在無法建立任務，請聯絡管理員',
 
   'last.1.days': '最近 1 天',
   'last.7.days': '最近 7 天',
@@ -256,6 +262,7 @@ const zh_HK = {
   copy_success: '複製成功 {{num}} 條記錄',
   request_fail_msg: '請求失敗，請檢查網絡連線',
   trim_validator_msg: '前後有空格，請手動刪除',
+  tags_popover_title: '{{count}} 個',
 };
 
 export default zh_HK;

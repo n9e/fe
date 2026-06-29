@@ -19,13 +19,15 @@ import moment from 'moment';
 import _ from 'lodash';
 import classNames from 'classnames';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
-import { Button, Table, Input, message, Row, Col, Modal, Space } from 'antd';
+import { Button, Input, message, Row, Col, Modal, Space } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { deleteBusinessTeamMember, getBusinessTeamList, getBusinessTeamInfo, deleteBusinessTeam } from '@/services/manage';
 import { Team, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import { ColumnsType } from 'antd/lib/table';
+import EnhancedTable from '@/components/EnhancedTable';
+import EllipsisText from '@/components/EllipsisText';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@/utils';
 import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedKeys, getDefaultBusiness } from '@/components/BusinessGroup';
@@ -60,45 +62,12 @@ const Resource: React.FC = () => {
     {
       title: t('common:table.note'),
       dataIndex: ['user_group', 'note'],
-      ellipsis: true,
-      render: (text: string, record) => record['user_group'].note || '-',
+      ellipsis: { showTitle: false },
+      render: (text: string, record) => <EllipsisText text={record['user_group'].note || '-'} />,
     },
     {
       title: t('business.perm_flag'),
       dataIndex: 'perm_flag',
-    },
-    {
-      title: t('common:table.operations'),
-      width: '100px',
-      render: (text: string, record) => (
-        <Button
-          type='link'
-          danger={memberList.length > 1}
-          disabled={memberList.length <= 1}
-          onClick={() => {
-            if (memberList.length <= 1) return;
-
-            const params = [
-              {
-                user_group_id: record['user_group'].id,
-                busi_group_id: teamId,
-              },
-            ];
-            confirm({
-              title: t('common:confirm.delete'),
-              onOk: () => {
-                deleteBusinessTeamMember(teamId, params).then(() => {
-                  message.success(t('common:success.delete'));
-                  getTeamList();
-                });
-              },
-              onCancel: () => {},
-            });
-          }}
-        >
-          {t('common:btn.delete')}
-        </Button>
-      ),
     },
   ];
 
@@ -169,7 +138,7 @@ const Resource: React.FC = () => {
     <PageLayout
       title={<Space>{t('business.title')}</Space>}
       icon={<UserOutlined />}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/business-group/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/personnel-permissions/business-group/'
     >
       <div className='user-manage-content'>
         <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
@@ -319,7 +288,7 @@ const Resource: React.FC = () => {
                 </Button>
               </Row>
 
-              <Table
+              <EnhancedTable
                 className='mt-2'
                 size='small'
                 rowKey='id'
@@ -327,6 +296,38 @@ const Resource: React.FC = () => {
                 dataSource={memberList && memberList.length > 0 ? memberList.filter((item) => item.user_group && item.user_group.name.indexOf(searchMemberValue) !== -1) : []}
                 loading={memberLoading}
                 pagination={pagination}
+                actionColumn={{ title: t('common:table.operations'), width: 64 }}
+                rowActions={(record) => ({
+                  menu: [
+                    {
+                      key: 'delete',
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      danger: memberList.length > 1,
+                      disabled: memberList.length <= 1,
+                      onClick: () => {
+                        if (memberList.length <= 1) return;
+
+                        const params = [
+                          {
+                            user_group_id: record['user_group'].id,
+                            busi_group_id: teamId,
+                          },
+                        ];
+                        confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteBusinessTeamMember(teamId, params).then(() => {
+                              message.success(t('common:success.delete'));
+                              getTeamList();
+                            });
+                          },
+                          onCancel: () => {},
+                        });
+                      },
+                    },
+                  ],
+                })}
               />
             </div>
           ) : (

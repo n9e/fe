@@ -5,7 +5,9 @@ import _ from 'lodash';
 import ESEnrichQueries from '@/plugins/elasticsearch/AlertRule/EnrichQueries';
 import DorisEnrichQueries from '@/plugins/doris/AlertRule/EnrichQueries';
 
+// @ts-ignore
 import SLSEnrichQueries from 'plus:/datasource/aliyunSLS/AlertRule/EnrichQueries';
+// @ts-ignore
 import CLSEnrichQueries from 'plus:/datasource/tencentCLS/AlertRule/EnrichQueries';
 
 const ENABLED_DATASOURCE_CATES = ['elasticsearch', 'aliyun-sls', 'tencent-cls', 'doris'];

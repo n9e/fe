@@ -1,6 +1,8 @@
 const en_US = {
   auth: {
     403: 'You do not have permission to access this page, please contact the administrator!',
+    '403_admin': 'Administrators: ',
+    '403_back': 'Back to previous page',
     404: 'The page you visited does not exist!',
     '404_btn': 'Back to home',
   },
@@ -18,6 +20,7 @@ const en_US = {
   unit: 'Unit',
   page_help: 'Help',
   document_title: 'Documentation',
+  product_document_title: 'Product documentation',
   more_document_link: 'More documents',
   and: 'And',
   yes: 'Yes',
@@ -41,7 +44,7 @@ const en_US = {
     export_csv: 'Export (CSV)',
     import: 'Import',
     save: 'Save',
-    ok: 'Ok',
+    ok: 'OK',
     cancel: 'Cancel',
     view: 'View',
     more: 'More',
@@ -94,6 +97,8 @@ const en_US = {
     preview: 'Datasource preview',
     empty_modal: {
       title: 'Please contact the administrator to configure the datasource',
+      title_with_types:
+        'Currently only supports {{types}} datasource types. Other datasource types are not supported yet. Please contact the administrator to configure the datasource',
       btn1: 'Go to configure',
       btn2: 'OK',
     },
@@ -172,6 +177,7 @@ const en_US = {
   disabling: 'Disabling',
   select_event: 'Select an alert event',
   click_to_view_doc: 'Click to view documentation',
+  format_sql: 'Format SQL',
 
   tpl: 'Self-healing',
   'tpl.create': 'Create',
@@ -239,6 +245,7 @@ const en_US = {
   'task.tip.content':
     'If your role is an administrator, you can execute the script on any machine; otherwise, you can only execute the script on the machines under the business group with administrative rights',
   'task.allOptionLabel': 'All tasks',
+  'task.error.no_group': 'Business group does not exist, cannot create task. Please contact the administrator',
 
   'last.1.days': 'Last 1 day',
   'last.7.days': 'Last 7 days',
@@ -260,5 +267,6 @@ const en_US = {
   copy_success: 'Successful copy {{num}} items',
   request_fail_msg: 'Request failed, please try again later',
   trim_validator_msg: 'Leading or trailing spaces detected, please remove them manually',
+  tags_popover_title: '{{count}} items',
 };
 export default en_US;

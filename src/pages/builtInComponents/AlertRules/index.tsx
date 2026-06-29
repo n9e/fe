@@ -1,15 +1,18 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
 import _ from 'lodash';
-import { Table, Space, Button, Input, Select, Dropdown, Menu, Modal, Tag, message } from 'antd';
-import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { Space, Button, Input, Select, Modal, Tag, message } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useDebounceEffect } from 'ahooks';
 import usePagination from '@/components/usePagination';
 import Export from '@/pages/dashboard/List/Export';
-import AuthorizationWrapper from '@/components/AuthorizationWrapper';
+import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
+import EnhancedTable from '@/components/EnhancedTable';
+import { tagsColumn, updateByColumn } from '@/components/EnhancedTable/columns';
+import Tags from '@/components/TableTags/Tags';
 import { RuleType } from './types';
 import Import from './Import';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -26,6 +29,8 @@ export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
   const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
+  const canPut = useIsAuthorized(['/components/put']);
+  const canDel = useIsAuthorized(['/components/del']);
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;
@@ -109,7 +114,7 @@ export default function index(props: Props) {
           />
         </Space>
         <Space>
-          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/integration/alert-rule-template/' />
+          <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/templates/alert-rule-template/' />
           <AuthorizationWrapper allowedPerms={['/components/add']}>
             <Button
               type='primary'
@@ -167,7 +172,7 @@ export default function index(props: Props) {
           </Button>
         </Space>
       </div>
-      <Table
+      <EnhancedTable
         className='mt-2'
         size='small'
         rowKey='id'
@@ -199,39 +204,27 @@ export default function index(props: Props) {
               );
             },
           },
-          {
+          tagsColumn({
             title: t('tags'),
             dataIndex: 'tags',
             render: (val) => {
               const tags = _.compact(_.split(val, ' '));
               return (
-                <Space size={0}>
-                  {_.map(tags, (tag, idx) => {
-                    return (
-                      <Tag
-                        key={idx}
-                        color='purple'
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          const queryItem = _.compact(_.split(filter.query, ' '));
-                          if (_.includes(queryItem, tag)) return;
-                          setFilter((filter) => {
-                            return {
-                              ...filter,
-                              query: filter.query ? filter.query + ' ' + tag : tag,
-                            };
-                          });
-                        }}
-                      >
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </Space>
+                <Tags
+                  data={tags}
+                  onTagClick={(tag: string) => {
+                    const queryItem = _.compact(_.split(filter.query, ' '));
+                    if (_.includes(queryItem, tag)) return;
+                    setFilter((filter) => ({
+                      ...filter,
+                      query: filter.query ? filter.query + ' ' + tag : tag,
+                    }));
+                  }}
+                />
               );
             },
-          },
-          {
+          }),
+          updateByColumn({
             title: t('common:table.update_by'),
             dataIndex: 'updated_by',
             key: 'updated_by',
@@ -242,99 +235,78 @@ export default function index(props: Props) {
               }
               return value;
             },
-          },
-          {
-            title: t('common:table.operations'),
-            width: 100,
-            render: (record) => {
-              return (
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item>
-                        <a
-                          onClick={() => {
-                            Import({
-                              data: formatBeautifyJson(record.content),
-                              busiGroups,
-                              groupedDatasourceList,
-                              reloadGroupedDatasourceList,
-                              datasourceCateOptions,
-                            });
-                          }}
-                        >
-                          {t('import_to_buisGroup')}
-                        </a>
-                      </Menu.Item>
-                      <Menu.Item>
-                        <a
-                          onClick={() => {
-                            Export({
-                              data: formatBeautifyJson(record.content, 'array'),
-                            });
-                          }}
-                        >
-                          {t('common:btn.export')}
-                        </a>
-                      </Menu.Item>
-                      {record.updated_by !== 'system' && (
-                        <AuthorizationWrapper allowedPerms={['/components/put']}>
-                          <Menu.Item>
-                            <a
-                              onClick={() => {
-                                PayloadFormModal({
-                                  darkMode,
-                                  action: 'edit',
-                                  cateList,
-                                  contentMode: 'json',
-                                  showCate: true,
-                                  initialValues: record,
-                                  onOk: () => {
-                                    fetchData();
-                                    fetchCates();
-                                  },
-                                });
-                              }}
-                            >
-                              {t('common:btn.edit')}
-                            </a>
-                          </Menu.Item>
-                        </AuthorizationWrapper>
-                      )}
-                      {record.updated_by !== 'system' && (
-                        <AuthorizationWrapper allowedPerms={['/components/del']}>
-                          <Menu.Item>
-                            <Button
-                              type='link'
-                              danger
-                              className='p-0 h-auto'
-                              onClick={() => {
-                                Modal.confirm({
-                                  title: t('common:confirm.delete'),
-                                  onOk() {
-                                    deletePayloads([record.id]).then(() => {
-                                      fetchData();
-                                      fetchCates();
-                                    });
-                                  },
-                                });
-                              }}
-                            >
-                              {t('common:btn.delete')}
-                            </Button>
-                          </Menu.Item>
-                        </AuthorizationWrapper>
-                      )}
-                    </Menu>
-                  }
-                >
-                  <Button type='link' icon={<MoreOutlined />} />
-                </Dropdown>
-              );
-            },
-          },
+          }),
         ]}
         pagination={pagination}
+        rowActions={(record) => ({
+          menu: _.compact([
+            {
+              key: 'import',
+              icon: 'open',
+              text: t('import_to_buisGroup'),
+              onClick: () => {
+                Import({
+                  data: formatBeautifyJson(record.content),
+                  busiGroups,
+                  groupedDatasourceList,
+                  reloadGroupedDatasourceList,
+                  datasourceCateOptions,
+                });
+              },
+            },
+            {
+              key: 'export',
+              icon: 'open',
+              text: t('common:btn.export'),
+              onClick: () => {
+                Export({
+                  data: formatBeautifyJson(record.content, 'array'),
+                });
+              },
+            },
+            record.updated_by !== 'system' && canPut
+              ? {
+                  key: 'edit',
+                  icon: 'edit',
+                  text: t('common:btn.edit'),
+                  onClick: () => {
+                    PayloadFormModal({
+                      darkMode,
+                      action: 'edit',
+                      cateList,
+                      contentMode: 'json',
+                      showCate: true,
+                      initialValues: record,
+                      onOk: () => {
+                        fetchData();
+                        fetchCates();
+                      },
+                    });
+                  },
+                }
+              : undefined,
+            record.updated_by !== 'system' && canDel
+              ? {
+                  key: 'delete',
+                  icon: 'delete',
+                  text: t('common:btn.delete'),
+                  danger: true,
+                  onClick: () => {
+                    Modal.confirm({
+                      title: t('common:confirm.delete'),
+                      onOk() {
+                        deletePayloads([record.id]).then(() => {
+                          fetchData();
+                          fetchCates();
+                        });
+                      },
+                    });
+                  },
+                }
+              : undefined,
+          ]) as any,
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
     </>
   );

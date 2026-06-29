@@ -57,6 +57,9 @@ const AckBtnDefault = () => {
 };
 const getBrainLicense = null;
 const options = [];
+const esQueryBuilder = async () => {
+  return {};
+};
 export {
   AlertRule,
   QueryBuilder,
@@ -83,4 +86,5 @@ export {
   AckBtnDefault,
   getBrainLicense,
   options,
+  esQueryBuilder,
 };

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Table, Tooltip, Modal, Tag, Alert, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Space, Switch, Modal, Tag, Alert, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
 import usePagination from '@/components/usePagination';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../constants';
 import { getList, deleteItem, putItem } from '../services';
@@ -22,7 +24,7 @@ export default function List() {
 
   return (
     <>
-      <PageLayout title={t('title')}>
+      <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/ai-config/llm-configs/'>
         <div className='fc-page n9e'>
           <div className='flex flex-col gap-2'>
             <div className='fc-toolbar flex flex-wrap items-center justify-between gap-2'>
@@ -34,13 +36,48 @@ export default function List() {
               </Space>
             </div>
             <div className='min-h-0 flex-shrink-0'>
-              <Table
+              <EnhancedTable
                 size='small'
                 rowKey='id'
                 pagination={pagination}
                 loading={loading}
                 dataSource={data}
+                rowActions={(record) => ({
+                  menu: [
+                    {
+                      key: 'edit',
+                      icon: 'edit',
+                      text: t('common:btn.edit'),
+                      onClick: () => setEditDrawerState({ visible: true, id: record.id }),
+                    },
+                    {
+                      key: 'delete',
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      danger: true,
+                      disabled: record.enabled === true,
+                      tooltip: record.enabled === true ? t('cannot_delete_when_enabled') : undefined,
+                      onClick: () => {
+                        Modal.confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteItem(record.id).then(() => {
+                              message.success(t('common:success.delete'));
+                              run();
+                            });
+                          },
+                        });
+                      },
+                    },
+                  ],
+                })}
+                actionColumn={{ title: t('common:table.operations'), width: 64 }}
                 columns={[
+                  {
+                    dataIndex: 'id',
+                    title: t('id'),
+                    width: 80,
+                  },
                   {
                     dataIndex: 'name',
                     title: t('name'),
@@ -54,6 +91,8 @@ export default function List() {
                   {
                     dataIndex: 'description',
                     title: t('description'),
+                    ellipsis: { showTitle: false },
+                    render: (val) => <EllipsisText text={val} />,
                   },
                   {
                     dataIndex: 'api_type',
@@ -64,8 +103,15 @@ export default function List() {
                     title: t('model'),
                   },
                   {
-                    dataIndex: 'enabled',
-                    title: t('enabled'),
+                    ...getEnabledStatusColumn({
+                      title: t('enabled'),
+                      dataIndex: 'enabled',
+                      enabledText: t('enabled'),
+                      disabledText: t('disabled'),
+                      enabledValue: true,
+                      disabledValue: false,
+                    }),
+
                     render: (val, record) => (
                       <Switch
                         size='small'
@@ -80,35 +126,6 @@ export default function List() {
                           });
                         }}
                       />
-                    ),
-                  },
-                  {
-                    title: t('common:table.operations'),
-                    width: 100,
-                    render: (record) => (
-                      <Space size={2}>
-                        <Button size='small' type='text' className='p-0' icon={<EditOutlined />} onClick={() => setEditDrawerState({ visible: true, id: record.id })} />
-                        <Tooltip title={record.enabled === true ? t('cannot_delete_when_enabled') : undefined}>
-                          <Button
-                            size='small'
-                            type='text'
-                            className='p-0'
-                            icon={<DeleteOutlined />}
-                            disabled={record.enabled === true}
-                            onClick={() => {
-                              Modal.confirm({
-                                title: t('common:confirm.delete'),
-                                onOk: () => {
-                                  deleteItem(record.id).then(() => {
-                                    message.success(t('common:success.delete'));
-                                    run();
-                                  });
-                                },
-                              });
-                            }}
-                          />
-                        </Tooltip>
-                      </Space>
                     ),
                   },
                 ]}

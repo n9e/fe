@@ -1,5 +1,8 @@
+/**
+ * 这是开源版的菜单配置，专业版和企业版的配置在其他对应的仓库文件里
+ */
 import React from 'react';
-import { NotificationFilled } from '@ant-design/icons';
+import { RobotOutlined } from '@ant-design/icons';
 
 import IconFont from '@/components/IconFont';
 
@@ -11,43 +14,20 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'infrastructure',
       label: 'menu.infrastructure',
-      section: 'infrastructure',
-      icon: <IconFont type='icon-Menu_Infrastructure' />,
+      icon: <IconFont type='icon-nav_devicelist_light' />,
       children: [
         {
-          key: 'business_group',
-          label: 'menu.business_group',
+          key: 'devices',
+          label: 'menu.devices',
           type: 'tabs',
           children: [{ key: '/targets', label: 'menu.targets' }],
         },
       ],
     },
     {
-      key: 'integrations',
-      label: 'menu.integrations',
-      section: 'infrastructure',
-      icon: <IconFont type='icon-shujujicheng' />,
-      children: [
-        {
-          key: '/datasources',
-          label: 'menu.data_source',
-        },
-        {
-          key: '/components',
-          label: 'menu.built_in_components',
-        },
-        {
-          key: '/embedded-products',
-          label: 'menu.embedded_products',
-        },
-        ...embeddedProductMenu,
-      ],
-    },
-    {
       key: 'explorer',
       label: 'menu.explorer',
-      section: 'observability',
-      icon: <IconFont type='icon-IndexManagement1' />,
+      icon: <IconFont type='icon-nav_metrics_light' />,
       children: [
         {
           key: 'metrics',
@@ -73,10 +53,9 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
-      key: 'monitors',
-      label: 'menu.monitors',
-      section: 'analysis',
-      icon: <IconFont type='icon-Menu_AlarmManagement' />,
+      key: 'alerts_notifications',
+      label: 'menu.alerts_notifications',
+      icon: <IconFont type='icon-nav_alerts_light' />,
       children: [
         {
           key: 'rules',
@@ -107,23 +86,6 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
           ],
         },
         {
-          key: 'event-pipelines',
-          label: 'menu.event_pipeline',
-          type: 'tabs',
-          children: [
-            { key: '/event-pipelines', label: 'menu.event_pipeline' },
-            { key: '/event-pipelines-executions', label: 'menu.event_pipeline_executions' },
-          ],
-        },
-      ],
-    },
-    {
-      key: 'notification',
-      label: 'menu.notification',
-      section: 'analysis',
-      icon: <NotificationFilled />,
-      children: [
-        {
           key: '/notification-rules',
           label: 'menu.notification_rules',
         },
@@ -134,6 +96,15 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
         {
           key: '/notification-templates',
           label: 'menu.notification_templates',
+        },
+        {
+          key: 'event-pipelines',
+          label: 'menu.event_pipeline',
+          type: 'tabs',
+          children: [
+            { key: '/event-pipelines', label: 'menu.event_pipeline' },
+            { key: '/event-pipelines-executions', label: 'menu.event_pipeline_executions' },
+          ],
         },
         ...(hideDeprecatedMenus
           ? []
@@ -152,10 +123,41 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
+      key: 'integrations',
+      label: 'menu.integrations',
+      icon: <IconFont type='icon-nav_infrastructure_light' />,
+      children: [
+        {
+          key: '/datasources',
+          label: 'menu.data_source',
+        },
+        {
+          key: '/components',
+          label: 'menu.built_in_components',
+        },
+        {
+          key: '/embedded-products',
+          label: 'menu.embedded_products',
+        },
+        ...embeddedProductMenu,
+      ],
+    },
+    {
+      key: 'ai-config',
+      label: 'menu.ai_config',
+      type: 'tabs',
+      icon: <RobotOutlined />,
+      children: [
+        { key: '/ai-config/agents', label: 'menu.ai_config_agents' },
+        { key: '/ai-config/llm-configs', label: 'menu.ai_config_llm_configs' },
+        { key: '/ai-config/skills', label: 'menu.ai_config_skills' },
+        { key: '/ai-config/mcp-servers', label: 'menu.ai_config_mcp_servers' },
+      ],
+    },
+    {
       key: 'organization',
       label: 'menu.organization',
-      section: 'platform',
-      icon: <IconFont type='icon-Menu_PersonnelOrganization' />,
+      icon: <IconFont type='icon-nav_organization_light' />,
       children: [
         {
           key: '/users',
@@ -174,20 +176,8 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
     {
       key: 'setting',
       label: 'menu.setting',
-      section: 'platform',
-      icon: <IconFont type='icon-Menu_SystemInformation' />,
+      icon: <IconFont type='icon-nav_system_light' />,
       children: [
-        {
-          key: 'ai-config',
-          label: 'menu.ai_config',
-          type: 'tabs',
-          children: [
-            { key: '/ai-config/agents', label: 'menu.ai_config_agents' },
-            { key: '/ai-config/llm-configs', label: 'menu.ai_config_llm_configs' },
-            { key: '/ai-config/skills', label: 'menu.ai_config_skills' },
-            { key: '/ai-config/mcp-servers', label: 'menu.ai_config_mcp_servers' },
-          ],
-        },
         {
           key: '/system/site-settings',
           label: 'menu.site_setting',

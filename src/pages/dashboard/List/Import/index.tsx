@@ -269,7 +269,7 @@ export default function Import(props: IProps) {
             label={
               <Space>
                 {t('batch.import_grafana_url_label')}
-                <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/dashboard/integrated-dashboard/' />
+                <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/dashboard/integrated-dashboard/' />
               </Space>
             }
             name='iframe_url'

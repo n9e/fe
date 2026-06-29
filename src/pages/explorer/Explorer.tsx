@@ -68,16 +68,18 @@ interface IProps {
   };
 }
 
-function getDefaultDatasourceCate(datasourceList, defaultCate) {
+function getDefaultDatasourceCate(datasourceList, defaultCate, type: Type) {
   // 如果 defaultCate 存在于 datasourceList 中，直接返回
   if (_.find(datasourceList, { plugin_type: defaultCate })) {
     return defaultCate;
   }
   const findResult = _.find(datasourceList, (item) => {
     const cateObj = _.find(allCates, { value: item.plugin_type });
-    if (cateObj && _.includes(cateObj.type, 'logging')) {
-      return true;
+    if (cateObj && _.includes(cateObj.type, type)) {
+      // graphPro: true 的数据源，只有 Plus 版才可用
+      return cateObj.graphPro ? IS_PLUS : true;
     }
+    return false;
   });
   if (findResult) {
     return findResult.plugin_type;
@@ -115,7 +117,7 @@ const Panel = (props: IProps) => {
   const location = useLocation();
   const headerExtraRef = useRef<HTMLDivElement>(null);
   const params = new URLSearchParams(location.search);
-  const defaultDatasourceCate = params.get('data_source_name') || getDefaultDatasourceCate(datasourceList, defaultCate);
+  const defaultDatasourceCate = params.get('data_source_name') || getDefaultDatasourceCate(datasourceList, defaultCate, type);
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);
@@ -153,7 +155,7 @@ const Panel = (props: IProps) => {
                   setFilters={setViewSelectFilters}
                   modalState={viewModalState}
                   setModalState={setViewModalState}
-                  disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus], datasourceCate)}
+                  disabled={!_.includes([DatasourceCateEnum.doris, DatasourceCateEnum.prometheus, DatasourceCateEnum.gcm], datasourceCate)}
                   page={location.pathname}
                   getFilterValues={() => {
                     const formValues = form.getFieldsValue();
@@ -197,15 +199,18 @@ const Panel = (props: IProps) => {
                   onSelect={(filterValues) => {
                     filterValues.datasourceCate = filterValues.datasourceCate || defaultDatasourceCate;
                     filterValues.datasourceValue = filterValues.datasourceValue || defaultDatasourceValue;
-                    if (datasourceCate === DatasourceCateEnum.prometheus) {
+                    const targetCate = filterValues.datasourceCate;
+                    if (targetCate === DatasourceCateEnum.prometheus) {
                       form.setFieldsValue({
                         datasourceCate: filterValues.datasourceCate,
                         datasourceValue: filterValues.datasourceValue,
                       });
                       setPromql(filterValues.query?.query || '');
-                    } else if (datasourceCate === DatasourceCateEnum.doris) {
-                      // 完全重置表单后再设置新值，避免旧值残留
+                    } else {
+                      // 先重置 datasourceCate/datasourceValue，再完全重置 query
                       form.setFieldsValue({
+                        datasourceCate: filterValues.datasourceCate,
+                        datasourceValue: filterValues.datasourceValue,
                         query: undefined,
                       });
                       let range = filterValues.query?.range;
@@ -215,12 +220,13 @@ const Panel = (props: IProps) => {
                           end: moment.unix(range.end),
                         };
                       }
+
                       form.setFieldsValue({
                         ...filterValues,
                         refreshFlag: _.uniqueId('refreshFlag_'),
                         query: {
                           ...filterValues.query,
-                          mode: filterValues.query?.mode || 'query',
+                          query_type: targetCate === DatasourceCateEnum.gcm ? filterValues.query?.query_type || 'builder' : undefined,
                           range,
                         },
                       });
@@ -286,6 +292,7 @@ const Panel = (props: IProps) => {
                   >
                     <DatasourceSelectV3
                       style={{ minWidth: 220 }}
+                      type={type}
                       datasourceCateList={datasourceCateOptions}
                       ajustDatasourceList={(list) => {
                         return _.filter(list, (item) => {
@@ -306,6 +313,7 @@ const Panel = (props: IProps) => {
                           });
                           form.setFieldsValue({
                             query: {
+                              query_type: datasourceCate === DatasourceCateEnum.gcm ? 'builder' : undefined,
                               range: {
                                 start: 'now-1h',
                                 end: 'now',

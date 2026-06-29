@@ -1,8 +1,11 @@
 import React from 'react';
 import { Button, Select } from 'antd';
+import { CheckCircleOutlined, ProfileOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { NAME_SPACE } from '../constants';
+import ContentCard from './ContentCard';
 
-type FieldKey = 'busi_group_id' | 'datasource_id' | string;
+type FieldKey = 'busi_group_id' | 'datasource_id' | 'approval' | string;
 
 interface IFormSelectCandidate {
   id: number;
@@ -22,6 +25,10 @@ interface IFormSelectPayload {
   fields?: IFormSelectField[];
 }
 
+// approval 确认通道：对齐后端 aiagent.ApprovalParamKey 与候选 ID（1=确认，2=取消）。
+const APPROVAL_FIELD_KEY = 'approval';
+const APPROVAL_CANDIDATE_APPROVE = 1;
+
 function safeParsePayload(raw: string): IFormSelectPayload | undefined {
   if (!raw) return undefined;
   try {
@@ -38,25 +45,81 @@ function getDefaultCandidateId(candidates?: IFormSelectCandidate[]) {
   return candidates.find((c) => c.is_default)?.id;
 }
 
-function buildContentText(params: { busiGroupName?: string; datasourceName?: string }) {
-  const { busiGroupName, datasourceName } = params;
-  if (busiGroupName && datasourceName) return `业务组：${busiGroupName} 数据源：${datasourceName}`;
-  if (busiGroupName) return `业务组：${busiGroupName}`;
-  if (datasourceName) return `数据源：${datasourceName}`;
-  return '';
+function getDefaultCandidateIds(candidates?: IFormSelectCandidate[]) {
+  return (candidates || []).filter((c) => c.is_default).map((c) => c.id);
+}
+
+function buildContentText(params: { busiGroupName?: string; datasourceName?: string; teamNames?: string[] }) {
+  const { busiGroupName, datasourceName, teamNames } = params;
+  const parts: string[] = [];
+  if (busiGroupName) parts.push(`业务组：${busiGroupName}`);
+  if (datasourceName) parts.push(`数据源：${datasourceName}`);
+  if (teamNames?.length) parts.push(`团队：${teamNames.join('、')}`);
+  return parts.join(' ');
 }
 
 export interface IFormSelectConfirmResult {
   param: {
     busi_group_id?: number;
     datasource_id?: number;
+    team_ids?: number[];
+    approval?: number;
   };
   content: string;
 }
 
+// 含 approval 字段走确认按钮视图，否则走补全视图；拆子组件隔离各自 hooks，避免条件调用 hooks。
 export default function FormSelectContentBlock(props: { responseContent: string; onConfirm: (result: IFormSelectConfirmResult) => void }) {
-  const { t } = useTranslation('AiChat');
   const payload = React.useMemo(() => safeParsePayload(props.responseContent), [props.responseContent]);
+  const approvalField = React.useMemo(() => payload?.fields?.find((f) => f.key === APPROVAL_FIELD_KEY), [payload?.fields]);
+
+  if (approvalField) {
+    return <FormApprovalView field={approvalField} onConfirm={props.onConfirm} />;
+  }
+  return <FormFieldsView payload={payload} onConfirm={props.onConfirm} />;
+}
+
+// 候选名（含语言）由后端下发，直接用作按钮文案与回传 content；取消在前、确认主按钮靠右。
+function FormApprovalView(props: { field: IFormSelectField; onConfirm: (result: IFormSelectConfirmResult) => void }) {
+  const { t } = useTranslation(NAME_SPACE);
+  const [submitted, setSubmitted] = React.useState(false);
+  const candidates = props.field.candidates || [];
+
+  const orderedCandidates = React.useMemo(() => {
+    const approve = candidates.find((c) => c.id === APPROVAL_CANDIDATE_APPROVE);
+    const rest = candidates.filter((c) => c.id !== APPROVAL_CANDIDATE_APPROVE);
+    return approve ? [...rest, approve] : candidates;
+  }, [candidates]);
+
+  if (!candidates.length) {
+    return <div className='rounded-lg border border-dashed border-fc-200 bg-fc-50 px-4 py-3 text-sm text-hint'>{t('message.unsupported_type', { type: 'form_select' })}</div>;
+  }
+
+  return (
+    <ContentCard icon={<CheckCircleOutlined />} title={t('form_select.approval_title')}>
+      <div className='flex flex-wrap items-center justify-end gap-2'>
+        {orderedCandidates.map((c) => (
+          <Button
+            key={c.id}
+            type={c.id === APPROVAL_CANDIDATE_APPROVE ? 'primary' : 'default'}
+            disabled={submitted}
+            onClick={() => {
+              setSubmitted(true);
+              props.onConfirm({ param: { approval: c.id }, content: c.name });
+            }}
+          >
+            {c.name}
+          </Button>
+        ))}
+      </div>
+    </ContentCard>
+  );
+}
+
+// 业务组 / 数据源补全（原 form_select 行为）。
+function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (result: IFormSelectConfirmResult) => void }) {
+  const { t } = useTranslation(NAME_SPACE);
+  const { payload } = props;
 
   const busiGroupField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'busi_group_id'), [payload?.fields]);
   const datasourceField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'datasource_id'), [payload?.fields]);
@@ -78,22 +141,35 @@ export default function FormSelectContentBlock(props: { responseContent: string;
   const selectedBusiGroupName = React.useMemo(() => busiGroupOptions.find((o) => o.value === busiGroupId)?.label, [busiGroupId, busiGroupOptions]);
   const selectedDatasourceName = React.useMemo(() => datasourceOptions.find((o) => o.value === datasourceId)?.label, [datasourceId, datasourceOptions]);
 
-  const disabled = (!!busiGroupField && !busiGroupId) || (!!datasourceField && !datasourceId) || (!busiGroupField && !datasourceField) || !payload;
+  const teamField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'team_ids'), [payload?.fields]);
+  const teamOptions = React.useMemo(() => (teamField?.candidates || []).map((c) => ({ value: c.id, label: c.name })), [teamField?.candidates]);
+  const [teamIds, setTeamIds] = React.useState<number[]>(() => getDefaultCandidateIds(teamField?.candidates));
 
-  if (!payload || (!busiGroupField && !datasourceField)) {
+  React.useEffect(() => {
+    setTeamIds(getDefaultCandidateIds(teamField?.candidates));
+  }, [teamField?.candidates]);
+
+  const selectedTeamNames = React.useMemo(() => teamOptions.filter((o) => teamIds.includes(o.value)).map((o) => o.label), [teamIds, teamOptions]);
+
+  const disabled =
+    (!!busiGroupField && !busiGroupId) ||
+    (!!datasourceField && !datasourceId) ||
+    (!!teamField && !teamIds.length) ||
+    (!busiGroupField && !datasourceField && !teamField) ||
+    !payload;
+
+  if (!payload || (!busiGroupField && !datasourceField && !teamField)) {
     return <div className='rounded-lg border border-dashed border-fc-200 bg-fc-50 px-4 py-3 text-sm text-hint'>{t('message.unsupported_type', { type: 'form_select' })}</div>;
   }
 
   return (
-    <div className='rounded-lg border border-fc-200 bg-fc-100 px-4 py-3'>
-      <div className='text-sm font-medium text-title'>{t('form_select.title')}</div>
-
-      <div className='mt-3 space-y-3'>
+    <ContentCard icon={<ProfileOutlined />} title={t('form_select.title')}>
+      <div className='grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-3'>
         {busiGroupField ? (
-          <div className='flex items-center gap-3'>
-            <div className='w-20 shrink-0 text-sm text-title'>{t('form_select.busi_group')}</div>
+          <>
+            <div className='shrink-0 text-right text-sm text-title'>{t('form_select.busi_group')}</div>
             <Select
-              className='min-w-0 flex-1'
+              className='w-full min-w-0'
               placeholder={t('form_select.placeholder_select')}
               value={busiGroupId}
               onChange={(value) => setBusiGroupId(value)}
@@ -101,14 +177,14 @@ export default function FormSelectContentBlock(props: { responseContent: string;
               showSearch
               optionFilterProp='label'
             />
-          </div>
+          </>
         ) : null}
 
         {datasourceField ? (
-          <div className='flex items-center gap-3'>
-            <div className='w-20 shrink-0 text-sm text-title'>{t('form_select.datasource')}</div>
+          <>
+            <div className='shrink-0 text-right text-sm text-title'>{t('form_select.datasource')}</div>
             <Select
-              className='min-w-0 flex-1'
+              className='w-full min-w-0'
               placeholder={t('form_select.placeholder_select')}
               value={datasourceId}
               onChange={(value) => setDatasourceId(value)}
@@ -116,7 +192,23 @@ export default function FormSelectContentBlock(props: { responseContent: string;
               showSearch
               optionFilterProp='label'
             />
-          </div>
+          </>
+        ) : null}
+
+        {teamField ? (
+          <>
+            <div className='shrink-0 text-right text-sm text-title'>{t('form_select.team')}</div>
+            <Select
+              className='w-full min-w-0'
+              mode='multiple'
+              placeholder={t('form_select.placeholder_select')}
+              value={teamIds}
+              onChange={(value) => setTeamIds(value)}
+              options={teamOptions}
+              showSearch
+              optionFilterProp='label'
+            />
+          </>
         ) : null}
       </div>
 
@@ -125,15 +217,17 @@ export default function FormSelectContentBlock(props: { responseContent: string;
           type='primary'
           disabled={disabled}
           onClick={() => {
-            const param: { busi_group_id?: number; datasource_id?: number } = {};
+            const param: IFormSelectConfirmResult['param'] = {};
             if (busiGroupField && busiGroupId) param.busi_group_id = busiGroupId;
             if (datasourceField && datasourceId) param.datasource_id = datasourceId;
+            if (teamField && teamIds.length) param.team_ids = teamIds;
 
             props.onConfirm({
               param,
               content: buildContentText({
                 busiGroupName: selectedBusiGroupName,
                 datasourceName: selectedDatasourceName,
+                teamNames: selectedTeamNames,
               }),
             });
           }}
@@ -141,6 +235,6 @@ export default function FormSelectContentBlock(props: { responseContent: string;
           {t('form_select.confirm')}
         </Button>
       </div>
-    </div>
+    </ContentCard>
   );
 }

@@ -25,6 +25,8 @@ export interface IAiChatActionParam {
 }
 
 export interface IAiChatAction {
+  content?: string;
+  prefillOnly?: boolean; // 是否仅预填充内容，禁止自动发送消息
   key?: string;
   param?: IAiChatActionParam;
 }
@@ -44,6 +46,12 @@ export enum EAiChatContentType {
   FormSelect = 'form_select',
   AlertRule = 'alert_rule',
   Dashboard = 'dashboard',
+}
+
+export interface IAiChatStreamSegment {
+  kind: 'thinking' | 'text';
+  content: string;
+  done: boolean;
 }
 
 export interface IAiChatMessageResponse {
@@ -133,6 +141,7 @@ export interface IAiChatProps {
   queryAction?: IAiChatAction;
   welcomeSlot?: React.ReactNode;
   promptList?: string[];
+  initialMessage?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;
   onError?: (error: Error) => void;

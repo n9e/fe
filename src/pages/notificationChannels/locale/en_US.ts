@@ -124,6 +124,7 @@ const en_US = {
   },
   types_search_placeholder: 'Search types',
   name_search_placeholder: 'Search names',
+  disabled: 'Disable',
   status_select: {
     placeholder: 'Status',
     enable: 'Enable',

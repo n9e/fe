@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Button, Tag, Input, Modal, Drawer, Select } from 'antd';
+import { useHistory } from 'react-router-dom';
+import { Space, Button, Input, Modal, Drawer, Select } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import moment from 'moment';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 
 import usePagination from '@/components/usePagination';
+import Tags from '@/components/TableTags/Tags';
+import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
+import { tagsColumn, updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../../constants';
 import { Item, getList, deleteItems } from '../../services';
@@ -16,6 +19,7 @@ import MoreOperations from './MoreOperations';
 
 export default function List() {
   const { t } = useTranslation(NS);
+  const history = useHistory();
   const [filter, setFilter] = useState<{
     search?: string;
     use_case?: string;
@@ -66,10 +70,30 @@ export default function List() {
     featchData();
   }, []);
 
-  const disabledMap = {
-    false: <Tag color='green'>{t('disabled.false')}</Tag>,
-    true: <Tag color='red'>{t('disabled.true')}</Tag>,
-  };
+  const filteredData = _.filter(data.list, (item) => {
+    let pass = true;
+    if (filter?.search) {
+      if (!_.includes(item.name, filter.search)) {
+        pass = false;
+      }
+    }
+    if (filter?.use_case) {
+      if (item.use_case !== filter.use_case) {
+        pass = false;
+      }
+    }
+    if (filter?.trigger_mode) {
+      if (item.trigger_mode !== filter.trigger_mode) {
+        pass = false;
+      }
+    }
+    if (filter?.disabled !== undefined) {
+      if (item.disabled !== filter.disabled) {
+        pass = false;
+      }
+    }
+    return pass;
+  });
 
   return (
     <>
@@ -106,8 +130,8 @@ export default function List() {
           />
           <Select
             allowClear
-            placeholder={t('trigger_mode.label')}
             dropdownMatchSelectWidth={false}
+            placeholder={t('trigger_mode.label')}
             options={[
               {
                 label: t('trigger_mode.event'),
@@ -153,9 +177,10 @@ export default function List() {
           <MoreOperations selectedRows={selectedRows} />
         </Space>
       </div>
-      <Table
+      <EnhancedTable
         size='small'
         rowKey='id'
+        scroll={{ x: 'max-content' }}
         columns={[
           {
             title: t('common:table.name'),
@@ -179,13 +204,15 @@ export default function List() {
           {
             title: t('common:table.note'),
             dataIndex: 'description',
+            // 不用列 ellipsis：它会把 tableLayout 切成 fixed，页面变窄时无宽度列被无限压缩
+            render: (val) => <EllipsisText style={{ maxWidth: 280 }} text={val} />,
           },
           {
             title: t('use_case.label'),
             dataIndex: 'use_case',
             width: 100,
             render: (value) => {
-              return <Tag>{t(`use_case.${value}`)}</Tag>;
+              return <Tags type='outline' maxWidth={100} data={[t(`use_case.${value}`)]} />;
             },
           },
           {
@@ -193,116 +220,37 @@ export default function List() {
             dataIndex: 'trigger_mode',
             width: 100,
             render: (value) => {
-              return <Tag>{t(`trigger_mode.${value}`)}</Tag>;
+              return <Tags type='outline' maxWidth={100} data={[t(`trigger_mode.${value}`)]} />;
             },
           },
           {
-            title: t('disabled.label'),
-            dataIndex: 'disabled',
+            ...getEnabledStatusColumn({
+              title: t('disabled.label'),
+              dataIndex: 'disabled',
+              enabledText: t('disabled.false'),
+              disabledText: t('disabled.true'),
+              enabledValue: false,
+              disabledValue: true,
+            }),
             key: 'disabled',
             width: 100,
+
             render: (value) => {
-              return disabledMap[value] || value;
-            },
-          },
-          {
-            title: t('teams'),
-            dataIndex: 'team_names',
-            render: (val) => {
-              return _.map(val, (item) => {
-                return <Tag key={item}>{item}</Tag>;
-              });
-            },
-          },
-          {
-            title: t('common:table.update_by'),
-            dataIndex: 'update_by',
-          },
-          {
-            title: t('common:table.update_at'),
-            dataIndex: 'update_at',
-            render: (val) => {
-              return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
-            },
-          },
-          {
-            title: t('common:table.operations'),
-            width: 200,
-            render: (item: Item) => {
               return (
-                <Space>
-                  <a
-                    onClick={() => {
-                      setEventPipelineDrawerState({
-                        visible: true,
-                        action: 'clone',
-                        data: _.omit(item, 'id'),
-                      });
-                    }}
-                  >
-                    {t('common:btn.clone')}
-                  </a>
-                  <a
-                    onClick={() => {
-                      setEventPipelineDrawerState({
-                        visible: true,
-                        action: 'edit',
-                        id: item.id,
-                      });
-                    }}
-                  >
-                    {t('common:btn.edit')}
-                  </a>
-                  <Button
-                    type='link'
-                    size='small'
-                    style={{
-                      padding: 0,
-                    }}
-                    danger
-                    onClick={() => {
-                      Modal.confirm({
-                        title: t('common:confirm.delete'),
-                        onOk: () => {
-                          deleteItems([item.id]).then(() => {
-                            featchData();
-                          });
-                        },
-                      });
-                    }}
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                  <Link to={`/event-pipelines-executions?pipeline_id=${item.id}`}>{t('executions.title')}</Link>
-                </Space>
+                <Tags
+                  type='fill'
+                  data={[t(`disabled.${value}`)]}
+                  bgColor={() => (value === false ? 'var(--fc-green-3)' : 'var(--fc-red-3)')}
+                  fontColor={() => (value === false ? 'var(--fc-green-11)' : 'var(--fc-red-11)')}
+                />
               );
             },
           },
+          tagsColumn({ title: t('teams'), dataIndex: 'team_names', maxWidth: 180 }),
+          updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
+          dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
         ]}
-        dataSource={_.filter(data.list, (item) => {
-          let pass = true;
-          if (filter?.search) {
-            if (!_.includes(item.name, filter.search)) {
-              pass = false;
-            }
-          }
-          if (filter?.use_case) {
-            if (item.use_case !== filter.use_case) {
-              pass = false;
-            }
-          }
-          if (filter?.trigger_mode) {
-            if (item.trigger_mode !== filter.trigger_mode) {
-              pass = false;
-            }
-          }
-          if (filter?.disabled !== undefined) {
-            if (item.disabled !== filter.disabled) {
-              pass = false;
-            }
-          }
-          return pass;
-        })}
+        dataSource={filteredData}
         loading={data.loading}
         pagination={pagination}
         rowSelection={{
@@ -311,6 +259,58 @@ export default function List() {
             setSelectedRows(selectedRows);
           },
         }}
+        rowActions={(item: Item) => ({
+          inline: [
+            {
+              key: 'executions',
+              text: t('executions.title'),
+              onClick: () => history.push(`/event-pipelines-executions?pipeline_id=${item.id}`),
+            },
+          ],
+          menu: [
+            {
+              key: 'clone',
+              icon: 'copy',
+              text: t('common:btn.clone'),
+              onClick: () => {
+                setEventPipelineDrawerState({
+                  visible: true,
+                  action: 'clone',
+                  data: _.omit(item, 'id'),
+                });
+              },
+            },
+            {
+              key: 'edit',
+              icon: 'edit',
+              text: t('common:btn.edit'),
+              onClick: () => {
+                setEventPipelineDrawerState({
+                  visible: true,
+                  action: 'edit',
+                  id: item.id,
+                });
+              },
+            },
+            {
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              onClick: () => {
+                Modal.confirm({
+                  title: t('common:confirm.delete'),
+                  onOk: () => {
+                    deleteItems([item.id]).then(() => {
+                      featchData();
+                    });
+                  },
+                });
+              },
+            },
+          ],
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 110 }}
       />
       <Drawer
         title={t(`${NS}:title_${eventPipelineDrawerState.action}`)}

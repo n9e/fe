@@ -37,6 +37,10 @@ export function adjustSubmitValues(values: FormValues): Item {
     };
   }
 
+  adjustedValues.extra_config = {
+    ...adjustedValues.extra_config,
+    custom_params: {},
+  };
   if (values.extra_config?.custom_params) {
     try {
       adjustedValues.extra_config = {
@@ -45,10 +49,6 @@ export function adjustSubmitValues(values: FormValues): Item {
       };
     } catch (error) {
       console.warn('Invalid JSON in custom_params:', error);
-      adjustedValues.extra_config = {
-        ...adjustedValues.extra_config,
-        custom_params: {},
-      };
     }
   }
 

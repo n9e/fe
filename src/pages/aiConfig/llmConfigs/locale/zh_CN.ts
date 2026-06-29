@@ -1,4 +1,5 @@
 const zh_CN = {
+  id: 'ID',
   title: 'LLM 配置',
   help: 'LLM 配置用于为平台内 AI 能力提供模型支持。启用后，可用于 Skill 调用及智能问答、告警分析、日志排障、监控数据解读等场景；设为默认后，未单独指定模型的功能会使用该配置。',
   name: '名称',
@@ -6,6 +7,7 @@ const zh_CN = {
   api_type: '提供商类型',
   model: '模型',
   enabled: '启用',
+  disabled: '停用',
   is_default: '默认',
   is_default_tip: '打开之后，如果 agent 没有配置 LLM 模型，将使用此模型',
   add_btn: '新建 LLM 配置',

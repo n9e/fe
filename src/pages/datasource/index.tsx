@@ -41,7 +41,7 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/datasource/'>
       <div>
         <div
           className='fc-border'
@@ -82,6 +82,9 @@ export default function index() {
               nameClick={(record) => {
                 setDetailVisible(true);
                 setDetailData(record);
+              }}
+              onAdd={() => {
+                setChooseDataSourceTypeModalVisible(true);
               }}
             />
           )}

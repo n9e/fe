@@ -58,6 +58,7 @@ const ja_JP = {
   },
   user_group_id_invalid_tip: '権限のあるチームが存在しません',
   channel_invalid_tip: '通知メディアが存在しません',
+  disabled: '無効',
   pipeline_configuration: {
     title: 'イベント処理',
     name_placeholder: 'イベント処理を選択してください',

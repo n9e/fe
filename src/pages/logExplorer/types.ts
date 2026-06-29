@@ -46,10 +46,11 @@ export interface ClusteringItem {
 export interface Part {
   data: string;
   part_id: number;
+  field: string;
   /**
    * 类型，const 代表固定字符串，pattern 代表正则部分
    */
-  type: string;
+  type: 'const' | 'pattern';
 }
 
 export interface ClusterPattern {

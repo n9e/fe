@@ -83,12 +83,14 @@ export default function index(props: Props) {
     }, 0);
   };
 
-  const handleSetStackByField = (index) => {
+  const handleSetStackByField = (index?: string) => {
     form.setFieldsValue({
+      refreshFlag: undefined,
       query: {
         stackByField: index,
       },
     });
+    executeQuery();
   };
 
   const handleSetDefaultSearchField = (index) => {
@@ -115,8 +117,11 @@ export default function index(props: Props) {
         queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key} IS NOT NULL`;
       }
     } else {
-      // 转义 value 中的双引号
-      const escapedValue = _.replace(params.value, /"/g, '\\"');
+      let escapedValue = params.value;
+      if (_.isString(params.value)) {
+        // 对 fieldValue 里面的双引号进行转义
+        escapedValue = _.replace(params.value, /"/g, '\\"');
+      }
       if (params.operator === 'AND') {
         queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${escapedValue}"`;
       }

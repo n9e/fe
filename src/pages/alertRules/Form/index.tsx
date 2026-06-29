@@ -29,10 +29,8 @@ import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
 import Notify from './Notify';
-import EventSettings from './EventSettings';
 import { processFormValues, processInitialValues } from './utils';
 import { defaultValues } from './constants';
-import PipelineConfigs from './PipelineConfigs';
 import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
 
 interface IProps {
@@ -43,6 +41,7 @@ interface IProps {
 
 export const FormStateContext = createContext({
   disabled: false,
+  type: undefined as number | undefined,
 });
 
 export default function index(props: IProps) {
@@ -128,6 +127,7 @@ export default function index(props: IProps) {
     <FormStateContext.Provider
       value={{
         disabled,
+        type,
       }}
     >
       <div className='flex h-full'>
@@ -148,7 +148,7 @@ export default function index(props: IProps) {
               </Form.Item>
               <Base />
               <Rule form={form} />
-              <PipelineConfigsNG ref={pipelineConfigsRef} />
+              <PipelineConfigsNG ref={pipelineConfigsRef} initialValues={initialValues ? processInitialValues(initialValues) : defaultValues} />
               {/* <EventSettings initialValues={initialValues} /> */}
               <Effective initialValues={initialValues ? processInitialValues(initialValues) : defaultValues} />
               {/* <PipelineConfigs /> */}

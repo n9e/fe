@@ -2,6 +2,10 @@ const zh_CN = {
   title: '数据源管理',
   search_placeholder: '请输入搜索关键字',
   chooseDataSourceType: '选择数据源类型',
+  empty_guide: {
+    title: '还没有数据源',
+    desc: '先接入一个数据源，才能查询指标/日志、配置仪表盘与告警。推荐 Prometheus / VictoriaMetrics。',
+  },
   name: '数据源名称',
   id: '数据源ID',
   description: '备注',
@@ -28,9 +32,9 @@ const zh_CN = {
     'not-support': '暂不支持',
   },
   status: {
-    title: '状态',
-    enabled: '启用中',
-    disabled: '停用中',
+    title: '启用',
+    enabled: '启用',
+    disabled: '停用',
   },
   form: {
     advanced_settings: '高级设置',

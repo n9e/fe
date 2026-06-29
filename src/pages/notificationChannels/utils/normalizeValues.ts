@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { ChannelItem } from '../types';
 
 export function normalizeFormValues(values: ChannelItem): any {
+  values = _.cloneDeep(values);
   const request_config = values.request_config ?? {};
   const http_request_config = request_config.http_request_config ?? {};
 
@@ -25,6 +26,7 @@ export function normalizeFormValues(values: ChannelItem): any {
 }
 
 export function normalizeInitialValues(values: any): ChannelItem {
+  values = _.cloneDeep(values);
   const request_config = values.request_config ?? {};
   const http_request_config = request_config.http_request_config ?? {};
 

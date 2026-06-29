@@ -5,7 +5,8 @@ import { PRIMARY_COLOR } from '@/utils/constant';
 import { hexPalette } from '@/pages/dashboard/config';
 
 function customPalette() {
-  return [PRIMARY_COLOR, ...hexPalette];
+  // #E24D42 是默认的红色，和日志中的 error 颜色过于接近，导致在堆叠图中难以区分，所以这里过滤掉这个颜色，避免被使用
+  return [PRIMARY_COLOR, ...hexPalette.filter((c) => c !== '#E24D42')];
 }
 
 register('palette.custom', customPalette);
@@ -13,7 +14,7 @@ register('palette.custom', customPalette);
 export interface TimeSeriesDataPoint {
   time: number | string; // 时间戳或时间字符串
   value: number;
-  category?: string; // 用于堆叠图的分类
+  category?: string | null; // 用于堆叠图的分类
 }
 
 export interface TimeSeriesBarChartProps {
@@ -24,16 +25,16 @@ export interface TimeSeriesBarChartProps {
   onBarClick?: (data: TimeSeriesDataPoint) => void; // 柱子点击回调
   onBrushEnd?: (timeRange: [number, number]) => void; // 框选回调
   stacked?: boolean; // 是否堆叠
+  categoryColors?: Record<string, string>; // category → CSS 颜色覆盖映射，用于将特定类别标为特定颜色
   stepMs?: number; // x 轴步长（毫秒），用于刻度格式化
 }
 
-function categoryFormatter(category: string | number | null | undefined) {
+function categoryFormatter(category: string | null | undefined) {
   if (category === undefined) return 'default';
-  if (typeof category === 'string') return `"${category}"`;
-  return String(category);
+  return category === null || category === '' ? `"${category}"` : category;
 }
 
-const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs }) => {
+const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs, categoryColors }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
@@ -64,6 +65,24 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
       time: typeof item.time === 'number' ? item.time : new Date(item.time).getTime(),
       category: categoryFormatter(item.category),
     }));
+
+    // 构建颜色 scale：当 categoryColors 存在且堆叠时，用显式 ordinal scale 覆盖特定 category 的颜色
+    const defaultColors = customPalette();
+    const uniqueCategories = [...new Set(processedData.map((d) => d.category))];
+    const colorScaleConfig =
+      categoryColors && stacked
+        ? {
+            type: 'ordinal' as const,
+            domain: uniqueCategories,
+            range: uniqueCategories.map((cat, i) => {
+              // categoryFormatter 给字符串加引号，用 formatter 匹配 categoryColors 的原始 key
+              for (const [rawCat, color] of Object.entries(categoryColors)) {
+                if (categoryFormatter(rawCat) === cat) return color;
+              }
+              return defaultColors[i % defaultColors.length];
+            }),
+          }
+        : { palette: 'custom' as const };
 
     // 配置图表
     const intervalMark = chart
@@ -127,7 +146,7 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
           return date.toLocaleString('zh-CN');
         },
       })
-      .scale('color', { palette: 'custom' });
+      .scale('color', colorScaleConfig);
 
     // 如果是堆叠图，添加堆叠配置
     if (stacked) {
@@ -249,7 +268,7 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
         chartRef.current = null;
       }
     };
-  }, [data, width, height, onBarClick, onBrushEnd, stacked, stepMs]);
+  }, [data, width, height, onBarClick, onBrushEnd, stacked, stepMs, categoryColors]);
 
   return <div ref={containerRef} />;
 };

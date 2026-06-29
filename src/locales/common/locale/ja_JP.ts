@@ -1,6 +1,8 @@
 const ja_JP = {
   auth: {
     '403': 'このページにアクセスする権限がありません。管理者に連絡してください！',
+    '403_admin': '管理者：',
+    '403_back': '前のページに戻る',
     '404': 'アクセスしようとしたページは存在しません！',
     '404_btn': 'ホームに戻る',
   },
@@ -18,6 +20,7 @@ const ja_JP = {
   unit: '単位',
   page_help: '使用説明',
   document_title: 'ドキュメント',
+  product_document_title: '製品ドキュメント',
   more_document_link: 'さらにドキュメント',
   and: 'および',
   yes: 'はい',
@@ -94,6 +97,8 @@ const ja_JP = {
     preview: 'データソースプレビュー',
     empty_modal: {
       title: 'データソースの設定がありません。管理者に連絡してデータソースを追加してください',
+      title_with_types:
+        '現在 {{types}} データソースタイプのみサポートされています。その他のデータソースタイプはサポートされていません。管理者に連絡してデータソースを追加してください',
       btn1: '設定に移動',
       btn2: '了解',
     },
@@ -172,6 +177,7 @@ const ja_JP = {
   disabling: '無効化中',
   select_event: 'アラートイベントを選択',
   click_to_view_doc: 'クリックしてドキュメントを表示します',
+  format_sql: 'SQLをフォーマット',
 
   tpl: '自己修復スクリプト',
   'tpl.create': '作成',
@@ -238,6 +244,7 @@ const ja_JP = {
   'task.tip.title': 'ヒント情報',
   'task.tip.content': 'もしロールが管理者なら、どのマシンでもスクリプトを実行できます。それ以外は、管理権限のあるビジネスグループのマシンでのみスクリプトを実行できます',
   'task.allOptionLabel': '全スクリプト',
+  'task.error.no_group': 'ビジネスグループが存在しないためタスクを作成できません。管理者にお問い合わせください',
 
   'last.1.days': '最近 1 日',
   'last.7.days': '最近 7 日',
@@ -257,6 +264,7 @@ const ja_JP = {
   copy_success: 'コピー成功 {{num}} 件のレコード',
   request_fail_msg: 'ネットワークリクエストタイムアウト、しばらくしてから再試行してください',
   trim_validator_msg: '前後にスペースがあります。手動で削除してください',
+  tags_popover_title: '{{count}} 個',
 };
 
 export default ja_JP;

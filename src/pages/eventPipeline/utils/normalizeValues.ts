@@ -7,6 +7,7 @@ interface HeaderItem {
 }
 
 export function normalizeFormValues(values: Item): any {
+  values = _.cloneDeep(values);
   return {
     ...values,
     processors: _.map(values.processors, (processor: any) => {
@@ -29,6 +30,7 @@ export function normalizeFormValues(values: Item): any {
 }
 
 export function normalizeInitialValues(values: any): Item {
+  values = _.cloneDeep(values);
   return {
     ...values,
     processors: _.map(values.processors, (processor: any) => {

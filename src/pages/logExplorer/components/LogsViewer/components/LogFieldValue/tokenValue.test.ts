@@ -1,6 +1,17 @@
 /// <reference types="jest" />
 
+import moment from 'moment';
 import { getHighlightSource, getTokenDisplayValue } from './tokenValue';
+
+jest.mock('moment', () => {
+  const mockMoment = (date?: string) => ({
+    format: (pattern: string) => {
+      if (date === '2024-01-02' && pattern === 'YYYY-MM-DD') return '2024-01-02';
+      return String(date);
+    },
+  });
+  return { __esModule: true, default: mockMoment };
+});
 
 describe('tokenValue', () => {
   it('formats date value by pattern', () => {

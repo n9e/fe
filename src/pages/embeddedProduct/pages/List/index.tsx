@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Space, Table, Button, Modal, Tag, message, Switch } from 'antd';
+import { Button, Modal, message, Switch } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { MenuOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -11,18 +11,14 @@ import { arrayMoveImmutable } from 'array-move';
 
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
+import EnhancedTable from '@/components/EnhancedTable';
+import { updateByColumn } from '@/components/EnhancedTable/columns';
+import Tags from '@/components/TableTags/Tags';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
 import { NS, DETAIL_PATH } from '../../constants';
 import { EmbeddedProductParams, EmbeddedProductResponse } from '../../types';
-import {
-  getEmbeddedProducts,
-  addEmbeddedProducts,
-  updateEmbeddedProducts,
-  putEmbeddedProductsWeights,
-  deleteEmbeddedProducts,
-  putEmbeddedProductHide,
-} from '../../services';
+import { getEmbeddedProducts, addEmbeddedProducts, updateEmbeddedProducts, putEmbeddedProductsWeights, deleteEmbeddedProducts, putEmbeddedProductHide } from '../../services';
 import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 
 import './style.less';
@@ -70,10 +66,7 @@ export default function Index() {
         title: t('team_ids'),
         dataIndex: 'team_ids',
         render: (val) => {
-          return _.map(val, (item) => {
-            const name = _.find(userGroups, { id: item })?.name;
-            return <Tag key={item}>{name || item}</Tag>;
-          });
+          return <Tags<number> data={val} maxWidth={320} getKey={(item) => item} getLabel={(item) => _.find(userGroups, { id: item })?.name || String(item)} />;
         },
       },
       {
@@ -83,10 +76,10 @@ export default function Index() {
           return !val ? t('common:public') : t('common:private');
         },
       },
-      {
+      updateByColumn({
         title: <span style={{ whiteSpace: 'nowrap' }}>{t('common:table.update_by')}</span>,
         dataIndex: 'update_by',
-      },
+      }),
       {
         title: t('common:table.update_at'),
         dataIndex: 'update_at',
@@ -129,44 +122,6 @@ export default function Index() {
           );
         },
       },
-      {
-        title: t('common:table.operations'),
-        dataIndex: 'operator',
-        width: 120,
-        render: (_val, record: EmbeddedProductResponse) => {
-          return (
-            <Space>
-              <a
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentRecord(record);
-                  setModalVisible(true);
-                }}
-              >
-                {t('common:btn.edit')}
-              </a>
-              <a
-                className='table-operator-area-warning'
-                onClick={(e) => {
-                  e.preventDefault();
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk: () => {
-                      return deleteEmbeddedProducts(String(record.id)).then(() => {
-                        message.success(t('common:success.delete'));
-                        fetchData();
-                        eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
-                      });
-                    },
-                  });
-                }}
-              >
-                {t('common:btn.delete')}
-              </a>
-            </Space>
-          );
-        },
-      },
     ];
   }, [t, userGroups, saving, hideSavingId]);
 
@@ -204,7 +159,7 @@ export default function Index() {
   };
 
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/embedded-products/'>
       <div className='n9e'>
         <div className='flex justify-end items-center'>
           <Button
@@ -218,7 +173,7 @@ export default function Index() {
           </Button>
         </div>
 
-        <Table
+        <EnhancedTable
           className='mt-2 embedded-product-sortable-table'
           size='small'
           rowKey='id'
@@ -226,6 +181,39 @@ export default function Index() {
           pagination={false}
           dataSource={data}
           columns={columns}
+          rowActions={(record: EmbeddedProductResponse) => ({
+            menu: [
+              {
+                key: 'edit',
+                icon: 'edit',
+                text: t('common:btn.edit'),
+                onClick: () => {
+                  setCurrentRecord(record);
+                  setModalVisible(true);
+                },
+              },
+              {
+                key: 'delete',
+                icon: 'delete',
+                text: t('common:btn.delete'),
+                danger: true,
+                onClick: () => {
+                  Modal.confirm({
+                    title: t('common:confirm.delete'),
+                    onOk: () => {
+                      return deleteEmbeddedProducts(String(record.id)).then(() => {
+                        message.success(t('common:success.delete'));
+                        fetchData();
+                        eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                      });
+                    },
+                  });
+                },
+              },
+            ],
+          })}
+          // fixed:false：本表可拖拽排序，默认 fixed:'right' 的 sticky 单元格在拖拽克隆行里会脱离行浮起；本表无横向滚动，无需固定
+          actionColumn={{ title: t('common:table.operations'), width: 64, fixed: false }}
           onRow={(record) => {
             return {
               onDoubleClick: () => {

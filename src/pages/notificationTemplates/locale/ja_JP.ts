@@ -18,6 +18,7 @@ const ja_JP = {
     tip: '通知メディアで使用できるフィールド、$tpl.{{contentKey}}で参照される',
     prompt: 'コンテンツが変更されました。変更を破棄しますか？',
     value_msg: 'フィールドコンテンツを入力してください',
+    ai_generate: 'AI 生成',
   },
   preview: {
     select_events: 'アラームイベントを選択',

@@ -28,19 +28,26 @@ export default function Content(props: Props) {
       disabled: 0,
     }).then((res) => {
       setTypesList(res);
-      getCollectors().then((res) => {
-        setCollectorsList(res);
-        if (!defaultCollector) {
-          setFilter({ ...filter, collector: res[0] });
-        } else {
-          setFilter({ ...filter, collector: defaultCollector });
-        }
-        getDefaultTypes().then((res) => {
-          setDefaultTypesList(res);
-        });
-      });
+    });
+    getDefaultTypes().then((res) => {
+      setDefaultTypesList(res);
     });
   }, []);
+
+  useEffect(() => {
+    getCollectors({ typ: filter.typ }).then((res) => {
+      setCollectorsList(res);
+      setFilter((prev) => {
+        if (prev.collector && !_.isEmpty(res) && !res.includes(prev.collector)) {
+          return { ...prev, collector: res[0] };
+        }
+        if (!prev.collector && !_.isEmpty(res)) {
+          return { ...prev, collector: defaultCollector || res[0] };
+        }
+        return prev;
+      });
+    });
+  }, [filter.typ]);
 
   return (
     <div className='promql-dropdown-built-in-metrics-container'>

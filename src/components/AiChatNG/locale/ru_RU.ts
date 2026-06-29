@@ -3,6 +3,8 @@ const ru_RU = {
     current_chat: 'Текущий чат',
     new_chat: 'Новый чат',
     history: 'История чатов',
+    share: 'Поделиться',
+    share_copied: 'Ссылка скопирована',
     switch_to_drawer: 'Переключить в режим Drawer',
     switch_to_floating: 'Переключить в плавающую панель',
   },
@@ -17,6 +19,7 @@ const ru_RU = {
   },
   input: {
     placeholder: 'Введите вопрос. Enter для отправки, Shift + Enter для новой строки',
+    share_readonly_placeholder: 'Просмотр общего чата (только чтение)',
   },
   query: {
     title: 'Запрос',
@@ -29,8 +32,11 @@ const ru_RU = {
     query_generator: 'Сгенерировать запрос',
   },
   message: {
-    generating: 'Генерация ответа...',
+    generating: 'Думаю...',
+    processing: 'Все еще обрабатывается',
     hint: 'Подсказка',
+    no_llm_title: 'В текущей среде не настроена большая языковая модель',
+    no_llm_content: 'Перейдите на страницу <a>Управление LLM</a>, чтобы добавить конфигурацию большой языковой модели',
     stopped: 'Генерация остановлена',
     request_failed: 'Ошибка запроса',
     cancelled: 'Этот ответ был отменен.',
@@ -41,8 +47,10 @@ const ru_RU = {
   },
   form_select: {
     title: 'Пожалуйста, заполните следующую информацию, чтобы продолжить:',
+    approval_title: 'Пожалуйста, подтвердите указанное выше действие:',
     busi_group: 'Группа бизнеса',
     datasource: 'Источник данных',
+    team: 'Команды',
     placeholder_select: 'Выберите',
     confirm: 'Подтвердить',
   },

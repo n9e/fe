@@ -119,10 +119,11 @@ const zh_HK = {
   },
   types_search_placeholder: '搜索類型',
   name_search_placeholder: '搜索名稱',
+  disabled: '停用',
   status_select: {
     placeholder: '狀態',
     enable: '啟用',
-    disable: '禁用',
+    disable: '停用',
   },
   types_select_placeholder: '類型',
   delete_disable_first: '當前類型未禁用，無法刪除',

@@ -2,6 +2,10 @@ const zh_HK = {
   title: '數據源管理',
   search_placeholder: '請輸入搜索關鍵字',
   chooseDataSourceType: '選擇數據源類型',
+  empty_guide: {
+    title: '還沒有數據源',
+    desc: '先接入一個數據源，才能查詢指標/日誌、配置儀表盤與告警。推薦 Prometheus / VictoriaMetrics。',
+  },
   name: '數據源名稱',
   id: '數據源 ID',
   description: '備註',
@@ -28,9 +32,9 @@ const zh_HK = {
     'not-support': '暫不支援',
   },
   status: {
-    title: '狀態',
-    enabled: '啟用中',
-    disabled: '停用中',
+    title: '啟用',
+    enabled: '啟用',
+    disabled: '停用',
   },
   form: {
     advanced_settings: '高級設置',

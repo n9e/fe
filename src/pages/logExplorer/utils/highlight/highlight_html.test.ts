@@ -1,7 +1,8 @@
 /// <reference types="jest" />
 
-import { getMatchedHighlightFragments, getTokenHighlights } from './highlight_html';
+import { getMatchedHighlightFragments, getTokenHighlights, getHighlightHtml } from './highlight_html';
 import { highlightTags } from './highlight_tags';
+import { htmlTags } from './html_tags';
 
 describe('highlight_html helpers', () => {
   it('highlights the full token when the highlighted content contains the token', () => {
@@ -65,5 +66,77 @@ describe('highlight_html helpers', () => {
 
     expect(getMatchedHighlightFragments('3010', contentHighlights)).toBeUndefined();
     expect(getMatchedHighlightFragments(3010, contentHighlights)).toBeUndefined();
+  });
+
+  describe('object field values (nested structures)', () => {
+    it('getTokenHighlights stringifies object fieldValue without throwing', () => {
+      const obj = { key: 'value', num: 42 };
+      const serialized = JSON.stringify(obj);
+      const highlights = [`${highlightTags.pre}value${highlightTags.post}`];
+
+      expect(() => getTokenHighlights(obj, highlights, 0, serialized.length)).not.toThrow();
+    });
+
+    it('getTokenHighlights returns undefined for objects with no matching highlight', () => {
+      const obj = { foo: 'bar' };
+      const serialized = JSON.stringify(obj);
+      const highlights = [`${highlightTags.pre}nonexistent${highlightTags.post}`];
+
+      expect(getTokenHighlights(obj, highlights, 0, serialized.length)).toBeUndefined();
+    });
+
+    it('getTokenHighlights matches highlight inside stringified object', () => {
+      const obj = { status: 'error', code: 500 };
+      const serialized = JSON.stringify(obj);
+      // 'error' appears in the serialized string {"status":"error","code":500}
+      const highlights = [`${highlightTags.pre}error${highlightTags.post}`];
+
+      const result = getTokenHighlights(obj, highlights, 0, serialized.length);
+      expect(result).toBeDefined();
+      expect(result).toContain(`${highlightTags.pre}error${highlightTags.post}`);
+    });
+
+    it('getHighlightHtml stringifies object and escapes HTML safely', () => {
+      const obj = { x: '<script>alert(1)</script>' };
+      const result = getHighlightHtml(obj, undefined);
+
+      expect(result).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+      expect(result).not.toContain('<script>');
+    });
+
+    it('getHighlightHtml wraps highlighted fragments with html tags for objects', () => {
+      const obj = { msg: 'hello' };
+      const highlights = [`${highlightTags.pre}hello${highlightTags.post}`];
+      const result = getHighlightHtml(obj, highlights);
+
+      expect(result).toContain(`${htmlTags.pre}hello${htmlTags.post}`);
+    });
+
+    it('getMatchedHighlightFragments returns undefined for no matching highlight in object', () => {
+      const obj = { id: 123, name: 'test' };
+      const highlights = [`${highlightTags.pre}nonexistent${highlightTags.post}`];
+
+      expect(getMatchedHighlightFragments(obj, highlights)).toBeUndefined();
+    });
+
+    it('getMatchedHighlightFragments does not throw with object fieldValue', () => {
+      const obj = { id: 123, name: 'test' };
+
+      expect(() => getMatchedHighlightFragments(obj, undefined)).not.toThrow();
+      expect(() => getMatchedHighlightFragments(obj, [])).not.toThrow();
+    });
+
+    it('getMatchedHighlightFragments returns undefined for empty object', () => {
+      const highlights = [`${highlightTags.pre}anything${highlightTags.post}`];
+
+      expect(getMatchedHighlightFragments({}, highlights)).toBeUndefined();
+    });
+
+    it('getTokenHighlights handles nested array fieldValue', () => {
+      const arr = [1, [2, 3], { a: 'b' }];
+      const serialized = JSON.stringify(arr);
+
+      expect(() => getTokenHighlights(arr, undefined, 0, serialized.length)).not.toThrow();
+    });
   });
 });

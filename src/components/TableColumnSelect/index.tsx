@@ -31,6 +31,7 @@ interface IProps {
   sortable?: boolean;
   /** 是否显示全选 */
   showAll?: boolean;
+  buttonSize?: 'small' | 'middle' | 'large';
 }
 
 // 可拖拽的选项项
@@ -82,6 +83,7 @@ export default function TableColumnSelect(props: IProps) {
     sortable = true,
     showDropdown = true,
     showAll = false,
+    buttonSize = 'small',
   } = props;
 
   // 根据 showDropdown 和用户传入的 maxHeight 来决定最终的高度
@@ -281,7 +283,7 @@ export default function TableColumnSelect(props: IProps) {
 
   return (
     <Dropdown visible={open} onVisibleChange={setOpen} trigger={['click']} overlay={dropdownContent} placement='bottomRight' overlayClassName='table-column-select-overlay'>
-      <Button size='small' icon={<SettingOutlined />}>
+      <Button size={buttonSize} icon={<SettingOutlined />}>
         {buttonText}
       </Button>
     </Dropdown>

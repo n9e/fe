@@ -63,7 +63,7 @@ export default function index() {
 
   return (
     <>
-      <PageLayout title={t('executions.title')}>
+      <PageLayout title={t('executions.title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/executions/'>
         <div className='n9e'>
           <div className='flex items-center justify-between mb-4'>
             <Space wrap>

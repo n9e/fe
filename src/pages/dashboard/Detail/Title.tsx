@@ -24,11 +24,14 @@ import { Button, Space, Dropdown, Menu, notification, Input, Modal, message, Too
 import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 
-import { TimeRangePickerWithRefresh, IRawTimeRange } from '@/components/TimeRangePicker';
+import { TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
 import { updateDashboard, updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dashboardV2';
+import { AiButton } from '@/components/AiChatNG/FlashAiButton';
+import { getDashboardDetailPrompts } from '@/components/AiChatNG/recommend';
 
+import { useGlobalState } from '../globalState';
 import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
@@ -36,6 +39,7 @@ import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import { IDashboard, ILink, IPanel } from '../types';
 import { goBack, dashboardTimeCacheKey } from './utils';
+import { isValidPanelConfig } from '../Panels/utils';
 
 interface IProps {
   dashboard: IDashboard;
@@ -67,21 +71,8 @@ interface IProps {
 
 const cachePageTitle = document.title || 'Nightingale';
 
-const isValidPanelConfig = (value: string) => {
-  if (!value) {
-    return false;
-  }
-
-  try {
-    const parsed = JSON.parse(value) as IPanel;
-    return !!parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !!parsed.type;
-  } catch (error) {
-    return false;
-  }
-};
-
 export default function Title(props: IProps) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation('dashboard');
   const {
     dashboard,
     dashboardLinks,
@@ -111,8 +102,11 @@ export default function Title(props: IProps) {
   const history = useHistory();
   const location = useLocation();
   const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const query = querystring.parse(location.search);
   const { viewMode, __public__ } = query;
+  // AI 分析仅在正常已保存的仪表盘下展示：匿名公开、模板预览、内置组件场景要么调不通 assistant 接口，要么没有真实 dashboard_id
+  const showAiAnalysis = !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id;
   const isClickTrigger = useRef(false);
   const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
   const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
@@ -266,6 +260,24 @@ export default function Title(props: IProps) {
                 <span className='title'>{dashboard.name}</span> <DownOutlined />
               </span>
             </Dropdown>
+          )}
+          {showAiAnalysis && (
+            <span className='ml-2 inline-flex'>
+              <AiButton
+                size='small'
+                queryAction={{
+                  param: {
+                    dashboard_id: dashboard.id,
+                    variables: _.map(variablesWithOptions, (v) => ({ name: v.name, value: v.value })),
+                    range: timeRangeUnix(range),
+                  },
+                }}
+                promptList={getDashboardDetailPrompts(i18n.language)}
+                initialMessage={getDashboardDetailPrompts(i18n.language)[0]}
+              >
+                {t('detail.ai_analysis')}
+              </AiButton>
+            </span>
           )}
         </div>
 

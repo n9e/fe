@@ -1,13 +1,18 @@
 const zh_HK = {
   title: '監控儀表盤',
   list: '儀表盤列表',
-  back_icon_tip: '返返回上一頁，沒有上一頁則返回儀表板列表',
+  back_icon_tip: '返回上一頁，沒有上一頁則返回儀表盤列表',
   back_icon_tip_is_built_in: '返回上一頁，沒有上一頁則返回模板中心',
   name: '儀表盤名稱',
   tags: '分類標籤',
   ident: '英文標識',
   ident_msg: '請輸入英文字母、數字、中劃線',
   search_placeholder: '儀表盤名稱、分類標籤',
+  empty_guide: {
+    title: '還沒有儀表盤',
+    desc: '新建一個儀表盤，或從模板中心一鍵導入內置儀表盤。',
+    from_template: '從模板中心導入',
+  },
   refresh_tip: '刷新間隔小於 step({{num}}s) 將不會更新資料',
   refresh_btn: '刷新',
   share_btn: '分享',
@@ -32,8 +37,8 @@ const zh_HK = {
   default_filter: {
     title: '預置篩選',
     public: '公開儀表盤',
-    all: '所屬業務組儀表板',
-    all_tip: '此選項會顯示您所在業務群組下關聯的所有儀表板',
+    all: '所屬業務組儀表盤',
+    all_tip: '此選項會顯示您所在業務群組下關聯的所有儀表盤',
   },
   create_title: '創建儀表盤',
   edit_title: '編輯儀表盤',
@@ -46,11 +51,11 @@ const zh_HK = {
     import: '導入夜鶯儀表盤 JSON',
     label: '儀表盤 JSON',
     import_grafana: '匯入 Grafana 儀表盤（不推薦）',
-    import_grafana_tip: '只支援導入 Prometheus 類型資料來源的儀表板，以及夜鶯支援的圖表類型和功能 <a>問題反饋</a>',
+    import_grafana_tip: '只支援導入 Prometheus 類型資料來源的儀表盤，以及夜鶯支援的圖表類型和功能 <a>問題反饋</a>',
     import_grafana_tip_version_error: '不支援匯入小於 v7 版本的儀表盤配置',
     import_grafana_tip_version_warning: '匯入的儀表盤配置版本小於 v8，部分圖表可能無法正常顯示，是否繼續匯入？',
-    import_grafana_url: 'Grafana 儀表板地址（建議）',
-    import_grafana_url_label: 'Grafana 儀表板地址',
+    import_grafana_url: 'Grafana 儀表盤地址（建議）',
+    import_grafana_url_label: 'Grafana 儀表盤地址',
     continueToImport: '繼續匯入',
     noSelected: '請選擇儀表盤',
     import_builtin: '匯入內置儀表盤',
@@ -122,8 +127,8 @@ const zh_HK = {
       regex_tip: '可選，可通過正則來過濾可選項。這裡是填寫的<a>正規表示式字面量</a>，其由包含在斜線之間的模式組成',
     },
     hostIdent: {
-      invalid: '機器標識需要授權訪問，儀表板在匿名模式下會導致訪問失敗',
-      invalid2: '儀表板已配置機器識別變量，無法匿名訪問',
+      invalid: '機器標識需要授權訪問，儀表盤在匿名模式下會導致訪問失敗',
+      invalid2: '儀表盤已配置機器識別變量，無法匿名訪問',
     },
     help_tip: `
       變數使用說明
@@ -597,6 +602,7 @@ const zh_HK = {
     hide_response: '隱藏響應數據',
   },
   detail: {
+    ai_analysis: 'AI 分析',
     datasource_empty: '沒有數據源資訊，請先配置數據源',
     invalidTimeRange: '無效的 __from 和 __to 值',
     invalidDatasource: '無效的數據源',
@@ -607,7 +613,7 @@ const zh_HK = {
       },
     },
     saved: '保存成功',
-    expired: '儀表板已經被別人修改，為避免相互覆蓋，請刷新儀表板查看最新配置和數據',
+    expired: '儀表盤已經被別人修改，為避免相互覆蓋，請刷新儀表盤查看最新配置和數據',
     prompt: {
       title: '有更改未儲存',
       message: '您想儲存變更嗎？',
@@ -634,7 +640,7 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
-    save: '儲存儀表板',
+    save: '儲存儀表盤',
   },
   visualizations: {
     timeseries: '時序圖',

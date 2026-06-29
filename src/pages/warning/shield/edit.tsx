@@ -61,7 +61,7 @@ const EditShield: React.FC = () => {
   }, [busiId, id]);
 
   return (
-    <PageLayout title={t('title')} showBack doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/alert/alert-mute/'>
+    <PageLayout title={t('title')} showBack doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-mute/'>
       <div className='shield-add'>
         {!_.isEmpty(values) ? (
           <OperateForm detail={values} type={!isClone ? 1 : 2} />

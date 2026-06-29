@@ -42,6 +42,7 @@ export interface subscribeItem {
   prod: string;
   severities?: number[];
   note: string;
+  disabled: 0 | 1;
 }
 
 interface IuserItem {

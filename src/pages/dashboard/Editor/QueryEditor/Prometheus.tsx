@@ -4,7 +4,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import Resolution from '@/components/Resolution';
 import PromQLInputNG, { interpolateString } from '@/components/PromQLInputNG';
 import { useAiChatContext } from '@/components/AiChatNG';
@@ -55,7 +55,7 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                             panelWidth: panelWidth,
                             minStep: target?.step,
                           });
-                          const name = target?.refId || alphabet[index];
+                          const name = target?.refId || generateQueryNameByIndex(index);
                           return (
                             <Space>
                               {name}

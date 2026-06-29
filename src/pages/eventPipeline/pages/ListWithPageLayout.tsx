@@ -9,7 +9,7 @@ import List from './List';
 export default function ListWithPageLayout() {
   const { t } = useTranslation(NS);
   return (
-    <PageLayout title={t('title')}>
+    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/'>
       <div className='n9e'>
         <List />
       </div>

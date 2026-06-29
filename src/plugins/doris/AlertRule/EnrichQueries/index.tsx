@@ -1,16 +1,18 @@
 import React, { useContext } from 'react';
-import { Form, Space, Input, Row, Col, InputNumber, Tooltip, Select } from 'antd';
+import { Form, Space, Input, Row, Col, InputNumber, Tooltip, Select, Button } from 'antd';
 import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { SqlMonacoEditor } from '@fc-components/monaco-editor';
+import { WandSparkles } from 'lucide-react';
 
 import { CommonStateContext } from '@/App';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import EnhancedModal from '@/pages/alertRules/Form/components/EnhancedModal';
 import { normalizeTime } from '@/pages/alertRules/Form/utils';
+import { NS as EVENT_PIPELINE_NS } from '@/pages/eventPipeline/constants';
 
 import { NAME_SPACE } from '../../constants';
 import GraphPreview from '../GraphPreview';
@@ -37,6 +39,9 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
             <div className='mb-2'>
               <Space>
                 {t('enrich_queries.title')}
+                <Tooltip title={t('alertRules:enrich_queries.tip')}>
+                  <InfoCircleOutlined />
+                </Tooltip>
                 <PlusCircleOutlined
                   onClick={() => {
                     EnhancedModal({
@@ -53,7 +58,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                   <Row gutter={8}>
                     <Col flex='32px'>
                       <Form.Item>
-                        <Input readOnly style={{ width: 32 }} value={alphabet[index]} />
+                        <Input readOnly style={{ width: 32 }} value={generateQueryNameByIndex(index)} />
                       </Form.Item>
                     </Col>
                     <Col flex='auto'>
@@ -80,7 +85,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                           rules={[
                             {
                               required: true,
-                              message: t('annotation_qd.query_required'),
+                              message: t(`${EVENT_PIPELINE_NS}:annotation_qd.query_required`),
                             },
                             () => ({
                               validator(_, value) {
@@ -88,7 +93,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                                 if (typeof value === 'string' && /limit\s+\d+/i.test(value)) {
                                   return Promise.resolve();
                                 }
-                                return Promise.reject(new Error(t('annotation_qd.sql_limit_valid')));
+                                return Promise.reject(new Error(t(`${EVENT_PIPELINE_NS}:annotation_qd.sql_limit_valid`)));
                               },
                             }),
                           ]}
@@ -96,6 +101,14 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                           <SqlMonacoEditor
                             theme={darkMode ? 'dark' : 'light'}
                             placeholder='SELECT count(*) as count FROM db_name.table_name LIMIT 10'
+                            enableFormat
+                            renderFormatButton={() => {
+                              return (
+                                <Tooltip title={t('common:format_sql')}>
+                                  <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
+                                </Tooltip>
+                              );
+                            }}
                             editorDidMount={(editor) => {
                               editor.onKeyDown((e) => {
                                 if (e.code === 'Escape') {

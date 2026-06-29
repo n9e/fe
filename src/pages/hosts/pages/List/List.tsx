@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
 import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import semver from 'semver';
 import { useAntdTable } from 'ahooks';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -14,6 +15,7 @@ import { copy2ClipBoard } from '@/utils';
 import getTextWidth from '@/utils/getTextWidth';
 import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import EmptyGuide from '@/components/EmptyGuide';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
 import Explorer from '@/pages/targets/components/Explorer';
 import EditBusinessGroups from '@/pages/targets/components/EditBusinessGroups';
@@ -30,9 +32,11 @@ import VersionSelect from 'plus:/parcels/Targets/VersionSelect';
 import { NS } from '../../constants';
 import { Item, OperateType } from '../../types';
 import { getList } from '../../services';
+import getAuthLevelDisplayMap from '../../utils/getAuthLevelDisplayMap';
 import VersionIcon from './VersionIcon';
 import Tags from './Tags';
 import { formatBeatTimeDisplay } from './formatBeatTimeDisplay';
+import AuthLevelDropdown from './AuthLevelDropdown';
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
 
@@ -47,9 +51,20 @@ function isHostIpLikelyIpv6(hostIp: string): boolean {
   return hostIp.trim().includes(':');
 }
 
-function Unknown() {
+function Unknown({ record }: { record: Item }) {
   const { t } = useTranslation(NS);
-  return <Tooltip title={t('unknown_tip')}>Unknown</Tooltip>;
+  return (
+    <Tooltip title={t('unknown_tip')}>
+      <span
+        className={classNames({
+          'text-soft': record.target_up === 0,
+          'text-title': record.target_up !== 0,
+        })}
+      >
+        Unknown
+      </span>
+    </Tooltip>
+  );
 }
 
 function getStrokeColor(val: number) {
@@ -82,18 +97,31 @@ interface Props {
   refreshFlag?: string;
   setRefreshFlag: (refreshFlag: string) => void;
   setOperateType?: (operateType: OperateType) => void;
+  /*
+   * ai-task 页面里的通道管理
+   * 删除 机器标识或是 IP 筛选项
+   * 添加 通道等级 筛选项
+   * 删除 更新时间、各指标数据等列
+   * 添加 通道等级 列
+   * 调整 业务组 列位置到第一列
+   */
+  aiTaskMode?: boolean;
 }
 
 export default function List(props: Props) {
   const { t, i18n } = useTranslation(NS);
+  const { t: tTargets } = useTranslation('targets');
   const { darkMode } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'hosts-ng' });
 
-  const { allCollapseNode, editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType } = props;
+  const { allCollapseNode, editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType, aiTaskMode = false } = props;
   const selectedIdents = _.map(selectedRows, 'ident');
 
   const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
   const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
+  const [metaDrawerOpen, setMetaDrawerOpen] = useState(false);
+  const [metaDrawerIdent, setMetaDrawerIdent] = useState('');
+  const [upgradeTargetIdent, setUpgradeTargetIdent] = useState<string | null>(null);
 
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
@@ -104,6 +132,7 @@ export default function List(props: Props) {
     hosts?: string;
     downtime?: number;
     agent_versions?: string[];
+    auth_level?: string; // 逗号分隔，如 '1,2,3'
   }>({
     limit: pagination.pageSize,
     p: 1,
@@ -111,13 +140,14 @@ export default function List(props: Props) {
 
   const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
     return getList({
-      gids: gids,
+      gids: gids === '-2' ? undefined : gids,
       limit: pageSize,
       p: current,
       query: params.query,
       downtime: params.downtime,
       agent_versions: _.isEmpty(params.agent_versions) ? undefined : JSON.stringify(params.agent_versions),
       hosts: params.hosts,
+      auth_level: params.auth_level,
     }).then((res) => {
       return {
         total: res.total,
@@ -132,11 +162,12 @@ export default function List(props: Props) {
   });
 
   useEffect(() => {
+    setSelectedRows([]);
     run({
       current: 1,
       pageSize: tableProps.pagination.pageSize,
     });
-  }, [gids, params.query, params.downtime, params.agent_versions, params.hosts]);
+  }, [gids, params.query, params.downtime, params.agent_versions, params.hosts, params.auth_level]);
 
   useEffect(() => {
     if (refreshFlag) {
@@ -147,9 +178,46 @@ export default function List(props: Props) {
     }
   }, [refreshFlag]);
 
+  const openCategrafDoc = () => {
+    DocumentDrawer({
+      language: i18n.language,
+      darkMode,
+      title: t('categraf_doc'),
+      documentPath: '/n9e-docs/categraf',
+    });
+  };
+
+  // 有搜索/筛选时的空结果不代表「该业务组没有机器」，此时不展示部署引导，避免误导用户去重复部署采集器
+  const hasActiveFilter = !!(params.query || params.hosts || !_.isNil(params.downtime) || !_.isEmpty(params.agent_versions) || params.auth_level);
+
+  const groupObjsColumn: {
+    dataIndex: string;
+    title: React.ReactNode;
+    render: (val: any, record: any) => React.ReactNode;
+  } = {
+    dataIndex: 'group_objs',
+    title: t('group_objs'),
+    render: (val, record) => {
+      const minWidth = getTextWidth(t('group_objs')) + 4;
+      const groupNames = _.map(val, 'name');
+      if (_.isEmpty(groupNames)) {
+        return <div style={{ minWidth }}>-</div>;
+      }
+      return (
+        <div className='w-[200px]' style={{ minWidth }}>
+          <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
+        </div>
+      );
+    },
+  };
+
   return (
     <>
-      <div className='flex-shrink-0 bg-fc-100 fc-border rounded-lg p-4 flex justify-between'>
+      <div
+        className={classNames('flex-shrink-0 flex justify-between', {
+          'bg-fc-100 fc-border rounded-lg p-4': !aiTaskMode,
+        })}
+      >
         <Space>
           {allCollapseNode}
           <Button
@@ -172,16 +240,18 @@ export default function List(props: Props) {
               setParams((p) => ({ ...p, query: searchValue }));
             }}
           />
-          <HostsSelect
-            value={params.hosts}
-            onChange={(newHosts) => {
-              setParams((p) => ({ ...p, hosts: newHosts }));
-            }}
-          />
+          {!aiTaskMode && (
+            <HostsSelect
+              value={params.hosts}
+              onChange={(newHosts) => {
+                setParams((p) => ({ ...p, hosts: newHosts }));
+              }}
+            />
+          )}
           <Select
             allowClear
             placeholder={t('filterDowntime')}
-            style={{ width: 'max-content' }}
+            style={{ minWidth: 120 }}
             dropdownMatchSelectWidth={false}
             options={[
               {
@@ -214,9 +284,28 @@ export default function List(props: Props) {
               setParams((p) => ({ ...p, agent_versions: val }));
             }}
           />
+          {aiTaskMode && (
+            <Select
+              style={{ minWidth: 120 }}
+              allowClear
+              showArrow
+              mode='multiple'
+              placeholder={t('auth_level')}
+              dropdownMatchSelectWidth={false}
+              options={[
+                { label: t('auth_level_1'), value: 1 },
+                { label: t('auth_level_2'), value: 2 },
+                { label: t('auth_level_3'), value: 3 },
+              ]}
+              value={params.auth_level ? params.auth_level.split(',').map(Number) : undefined}
+              onChange={(val: number[]) => {
+                setParams((p) => ({ ...p, auth_level: val.length > 0 ? val.join(',') : undefined }));
+              }}
+            />
+          )}
         </Space>
         <Space>
-          {editable && (
+          {editable && aiTaskMode === false && (
             <Dropdown
               trigger={['click']}
               overlay={
@@ -258,6 +347,16 @@ export default function List(props: Props) {
               </Button>
             </Dropdown>
           )}
+          {IS_PLUS && aiTaskMode === true && (
+            <AuthLevelDropdown
+              selectedIdents={selectedIdents}
+              selectedRows={selectedRows}
+              onSuccess={() => {
+                setRefreshFlag(_.uniqueId('refreshFlag_'));
+                setSelectedRows([]);
+              }}
+            />
+          )}
           {explorable && (
             <Tooltip title={t('explorer_selected_metrics_tip')}>
               <span>
@@ -267,38 +366,48 @@ export default function List(props: Props) {
           )}
         </Space>
       </div>
-      <div className='n9e-antd-table-height-full n9e-hosts-ng-table mt-4'>
+      <div className={classNames('n9e-hosts-ng-table mt-4', { 'n9e-antd-table-height-full': !aiTaskMode })}>
         <Table
           {...tableProps}
           rowKey='id'
           size='small'
           tableLayout='auto'
           scroll={{ x: tableProps.dataSource.length > 0 ? 'max-content' : undefined, y: 'calc(100% - 38px)' }}
+          onRow={(record) => ({
+            className: 'group cursor-pointer',
+            onClick: (e) => {
+              const el = e.target as HTMLElement;
+              if (
+                el.closest(
+                  'button, a[href], input, textarea, select, label.ant-checkbox-wrapper, .ant-checkbox-wrapper, .ant-dropdown, .ant-select, .ant-picker, .ant-table-selection-column',
+                )
+              ) {
+                return;
+              }
+              setMetaDrawerIdent(record.ident);
+              setMetaDrawerOpen(true);
+            },
+          })}
           locale={{
             emptyText:
-              gids === undefined ? (
-                <Trans
-                  ns='targets'
-                  i18nKey='all_no_data'
-                  components={{
-                    a: (
-                      <a
-                        onClick={() => {
-                          DocumentDrawer({
-                            language: i18n.language,
-                            darkMode,
-                            title: t('categraf_doc'),
-                            documentPath: '/n9e-docs/categraf',
-                          });
-                        }}
-                      />
-                    ),
-                  }}
+              !IS_PLUS && !hasActiveFilter ? (
+                <EmptyGuide
+                  title={t('empty_guide.title')}
+                  description={t('empty_guide.desc')}
+                  actions={
+                    <>
+                      <Button type='primary' onClick={openCategrafDoc}>
+                        {t('empty_guide.deploy_btn')}
+                      </Button>
+                      <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
+                    </>
+                  }
                 />
               ) : undefined,
           }}
           rowSelection={{
             type: 'checkbox',
+            preserveSelectedRowKeys: true,
             selectedRowKeys: _.map(selectedRows, 'id'),
             onChange(_selectedRowKeys, selectedRows: Item[]) {
               setSelectedRows(selectedRows);
@@ -311,420 +420,545 @@ export default function List(props: Props) {
               localStorage.setItem('targetsListPageSize', _.toString(pageSize));
             },
           }}
-          rowClassName={(record) => {
-            return classNames('group', {
-              'n9e-hosts-ng-table-row-offline': record.target_up === 0,
-              'bg-fc-400/40': record.target_up === 0,
-            });
-          }}
-          onRow={(record) => {
-            if (record.target_up === 0) {
-              return {
-                title: t('host_no_heartbeat_tip'),
-              };
-            }
+          columns={
+            _.concat(
+              aiTaskMode ? [groupObjsColumn] : [],
+              [
+                {
+                  dataIndex: 'ident',
+                  title: (
+                    <Space>
+                      {t('ident')}
+                      <Dropdown
+                        trigger={['click']}
+                        overlay={
+                          <Menu
+                            onClick={async ({ key }) => {
+                              let tobeCopy = _.map(tableProps.dataSource, (item) => item.ident);
+                              if (key === 'all') {
+                                try {
+                                  const result = await featchData({ current: 1, pageSize: tableProps.pagination.total });
+                                  tobeCopy = _.map(result.list, (item) => item.ident);
+                                } catch (error) {
+                                  console.error(error);
+                                }
+                              } else if (key === 'selected') {
+                                tobeCopy = selectedIdents;
+                              }
 
-            return {};
-          }}
-          columns={[
-            {
-              dataIndex: 'ident',
-              title: (
-                <Space>
-                  {t('ident')}
-                  <Dropdown
-                    trigger={['click']}
-                    overlay={
-                      <Menu
-                        onClick={async ({ key }) => {
-                          let tobeCopy = _.map(tableProps.dataSource, (item) => item.ident);
-                          if (key === 'all') {
-                            try {
-                              const result = await featchData({ current: 1, pageSize: tableProps.pagination.total });
-                              tobeCopy = _.map(result.list, (item) => item.ident);
-                            } catch (error) {
-                              console.error(error);
-                            }
-                          } else if (key === 'selected') {
-                            tobeCopy = selectedIdents;
-                          }
+                              if (_.isEmpty(tobeCopy)) {
+                                message.warn(t('copy.no_data'));
+                                return;
+                              }
 
-                          if (_.isEmpty(tobeCopy)) {
-                            message.warn(t('copy.no_data'));
-                            return;
-                          }
+                              const tobeCopyStr = _.join(tobeCopy, '\n');
+                              const copySucceeded = copy2ClipBoard(tobeCopyStr);
 
-                          const tobeCopyStr = _.join(tobeCopy, '\n');
-                          const copySucceeded = copy2ClipBoard(tobeCopyStr);
-
-                          if (copySucceeded) {
-                            message.success(t('ident_copy_success', { num: tobeCopy.length }));
-                          } else {
-                            Modal.warning({
-                              title: t('common:copyToClipboardFailed'),
-                              content: <Input.TextArea defaultValue={tobeCopyStr} />,
-                            });
-                          }
-                        }}
-                      >
-                        <Menu.Item key='current_page'>{t('copy.current_page')}</Menu.Item>
-                        <Menu.Item key='all'>{t('copy.all')}</Menu.Item>
-                        <Menu.Item key='selected'>{t('copy.selected')}</Menu.Item>
-                      </Menu>
-                    }
-                  >
-                    <CopyOutlined className='cursor-pointer' />
-                  </Dropdown>
-                </Space>
-              ),
-              render: (ident, record) => {
-                const ipWidthSample = record.host_ip && isHostIpLikelyIpv6(record.host_ip) ? IDENT_IP_V6_MAX_SAMPLE : IDENT_IP_V4_MAX_SAMPLE;
-                const identIpWidth = getTextWidth(ipWidthSample);
-                const identMetaWidth = getTextWidth(`256 ${t('cores')} ${IDENT_META_MAX_SAMPLE_SUFFIX}`) + 20; // 14 的 icon + 间距 + 容错
-                const ipDisplay = record.host_ip ? `IP ${record.host_ip}` : '-';
-                const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
-                const osDisplay = record.os === '' ? '-' : record.os;
-                const archDisplay = record.arch === '' ? '-' : record.arch;
-
-                return (
-                  <div>
-                    <div className='flex items-center'>
-                      <TargetMetaDrawer
-                        ident={ident}
-                        targetNode={
-                          <span
-                            className={classNames('text-main text-l1 font-semibold mb-[2px] cursor-pointer hover:underline hover:text-title', {
-                              'text-soft': record.target_up === 0,
-                            })}
+                              if (copySucceeded) {
+                                message.success(t('ident_copy_success', { num: tobeCopy.length }));
+                              } else {
+                                Modal.warning({
+                                  title: t('common:copyToClipboardFailed'),
+                                  content: <Input.TextArea defaultValue={tobeCopyStr} />,
+                                });
+                              }
+                            }}
                           >
-                            {ident}
-                          </span>
+                            <Menu.Item key='current_page'>{t('copy.current_page')}</Menu.Item>
+                            <Menu.Item key='all'>{t('copy.all')}</Menu.Item>
+                            <Menu.Item key='selected'>{t('copy.selected')}</Menu.Item>
+                          </Menu>
                         }
-                      />
-                      {IS_PLUS && (
-                        <Tooltip title={t('view_collects')}>
-                          <Button
-                            className='ml-2 invisible group-hover:visible'
-                            size='small'
-                            icon={
-                              <ApartmentOutlined
-                                onClick={() => {
+                      >
+                        <CopyOutlined className='cursor-pointer' />
+                      </Dropdown>
+                    </Space>
+                  ),
+                  render: (ident, record) => {
+                    const ipWidthSample = record.host_ip && isHostIpLikelyIpv6(record.host_ip) ? IDENT_IP_V6_MAX_SAMPLE : IDENT_IP_V4_MAX_SAMPLE;
+                    const identIpWidth = getTextWidth(ipWidthSample);
+                    const identMetaWidth = getTextWidth(`256 ${t('cores')} ${IDENT_META_MAX_SAMPLE_SUFFIX}`) + 20; // 14 的 icon + 间距 + 容错
+                    const ipDisplay = record.host_ip ? `IP ${record.host_ip}` : '-';
+                    const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
+                    const archDisplay = record.arch === '' ? '-' : record.arch;
+
+                    return (
+                      <div>
+                        <div className='flex items-center'>
+                          <Tooltip title={tTargets('meta_tip')} placement='left'>
+                            <span
+                              className={classNames('mb-[2px]', {
+                                'text-soft': record.target_up === 0,
+                                'text-title': record.target_up !== 0,
+                              })}
+                            >
+                              {ident}
+                            </span>
+                          </Tooltip>
+                          {IS_PLUS && (
+                            <Tooltip title={t('view_collects')}>
+                              <Button
+                                className='ml-2 invisible group-hover:visible'
+                                size='small'
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setCollectsDrawerVisible(true);
                                   setCollectsDrawerIdent(ident);
                                 }}
+                                icon={<ApartmentOutlined />}
                               />
-                            }
-                          />
-                        </Tooltip>
-                      )}
-                    </div>
-                    <Space size={4} className='flex flex-wrap items-center'>
-                      {record.host_ip ? (
-                        <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
-                          {ipDisplay}
-                        </span>
-                      ) : (
-                        <span className='inline-block min-w-0 truncate align-bottom' style={{ width: identIpWidth }}>
-                          {ipDisplay}
-                        </span>
-                      )}
-                      <Divider type='vertical' />
-                      <div className='min-w-0 flex shrink items-center gap-1' style={{ width: identMetaWidth }}>
-                        {record.os === '' ? (
-                          <span className='shrink-0'>-</span>
-                        ) : (
-                          <>
-                            <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
-                            <span className='min-w-0 shrink truncate'>{osDisplay}</span>
-                          </>
-                        )}
-                        <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
-                        <span className='min-w-0 shrink truncate'>{archDisplay}</span>
+                            </Tooltip>
+                          )}
+                        </div>
+                        <Space size={4} className='flex flex-wrap items-center'>
+                          {record.host_ip ? (
+                            <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
+                              {ipDisplay}
+                            </span>
+                          ) : (
+                            <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
+                              {ipDisplay}
+                            </span>
+                          )}
+                          <Divider type='vertical' />
+                          <div className='min-w-0 flex shrink items-center gap-1 text-soft' style={{ width: identMetaWidth }}>
+                            {record.os === '' ? (
+                              <span className='shrink-0'>-</span>
+                            ) : (
+                              <>
+                                <img className='shrink-0 flex' src={`/image/sys_${record.os}.svg`} alt='' />
+                                <span className='min-w-0 shrink truncate'>{record.os}</span>
+                              </>
+                            )}
+                            <span className='min-w-0 shrink truncate'>{coresDisplay}</span>
+                            <span className='min-w-0 shrink truncate'>{archDisplay}</span>
+                          </div>
+                        </Space>
                       </div>
-                      <Divider type='vertical' />
+                    );
+                  },
+                },
+                {
+                  dataIndex: 'target_up',
+                  title: t('status'),
+                  render: (_val, record) => {
+                    const isOnline = record.target_up !== 0;
+                    const label = isOnline ? t('online') : t('offline');
+                    const minWidth = getTextWidth(label) + 28; // 6 圆点 + 4 间距 + 16 内边距 + 容错
+                    return (
+                      <div style={{ minWidth }}>
+                        <span
+                          className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
+                            'bg-success/10 text-success': isOnline,
+                            'bg-fc-200 text-soft': !isOnline,
+                          })}
+                        >
+                          <span
+                            className={classNames('h-2 w-2 shrink-0 rounded-full', {
+                              'bg-success': isOnline,
+                              'bg-fc-400': !isOnline,
+                            })}
+                          />
+                          <span className='leading-none'>{label}</span>
+                        </span>
+                      </div>
+                    );
+                  },
+                },
+              ],
+              aiTaskMode && IS_PLUS
+                ? [
+                    {
+                      dataIndex: 'ai_task_auth_level',
+                      title: t('auth_level'),
+                      render: (val) => {
+                        const minWidth = getTextWidth(t('auth_level')) + 4;
+                        if (val === null || val === undefined) {
+                          return <div style={{ minWidth }}>-</div>;
+                        }
+                        const authLevelDisplayMap = getAuthLevelDisplayMap(t);
+                        return (
+                          <div style={{ minWidth }}>
+                            <Tags type='fill' data={[authLevelDisplayMap[val]?.text]} bgColor={authLevelDisplayMap[val]?.bgColor} fontColor={authLevelDisplayMap[val]?.fontColor} />
+                          </div>
+                        );
+                      },
+                    },
+                  ]
+                : [],
+              [
+                {
+                  dataIndex: 'agent_version',
+                  title: t('agent_version_title'),
+                  render: (val, record) => {
+                    const display = record.agent_version || 'Null';
+                    const hasUpgrade = record.new_version && record.agent_version !== record.new_version;
+                    const displayText = hasUpgrade ? `${display} / ${record.new_version}` : display;
+                    const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(displayText) + 36) + 8;
+
+                    // aiTaskMode 下检测 Agent 版本是否需要 ent 升级提示
+                    const needsEntUpgrade =
+                      aiTaskMode &&
+                      IS_PLUS &&
+                      record.agent_version &&
+                      (!record.agent_version.startsWith('ent') ||
+                        (() => {
+                          const ver = record.agent_version.replace('ent-', '');
+                          return !semver.valid(ver) || semver.lt(ver, '0.5.27');
+                        })());
+
+                    const badge = (
                       <div
-                        className={classNames('flex items-center justify-center gap-1 py-1 px-2 rounded-[4px]', {
+                        className={classNames('inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-[4px] px-2 leading-none', {
                           'bg-fc-200': record.agent_version !== '' && record.agent_version !== null,
                           'bg-alert/10': record.agent_version === '' || record.agent_version === null,
                           'text-alert': record.agent_version === '' || record.agent_version === null,
                           'text-soft': record.target_up === 0,
+                          'text-title': record.target_up !== 0,
                         })}
                       >
-                        <VersionIcon className='text-l2 leading-none flex' />
-                        <span className='leading-none'>{record.agent_version || 'Null'}</span>
+                        <VersionIcon className='flex leading-none' style={needsEntUpgrade ? { color: 'var(--fc-fill-alert)' } : { color: 'var(--fc-fill-success)' }} />
+                        <span className='leading-none'>{displayText}</span>
                       </div>
-                    </Space>
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'host_tags',
-              title: (
-                <Space>
-                  {t('common:host.host_tags')}
-                  <Tooltip title={t('common:host.host_tags_tip')}>
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                </Space>
-              ),
-              render: (tags: string[]) => {
-                const minWidth = getTextWidth(t('common:host.host_tags')) + 24; // 12 的icon宽度 + 8 的间距 + 4 的容错
-                if (_.isEmpty(tags)) {
-                  return <div style={{ minWidth }}>-</div>;
-                }
-                return (
-                  <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags
-                      type='outline'
-                      data={tags}
-                      onTagClick={(tag) => {
-                        if (!_.includes(params.query, tag)) {
-                          const val = params.query ? `${params.query.trim()} ${tag}` : tag;
-                          setParams((p) => ({ ...p, query: val }));
-                          setSearchValue(val);
-                        }
-                      }}
-                    />
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'tags',
-              title: (
-                <Space>
-                  {t('common:host.tags')}
-                  <Tooltip title={t('common:host.tags_tip')}>
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                </Space>
-              ),
-              render: (tags: string[]) => {
-                const minWidth = getTextWidth(t('common:host.tags')) + 24;
-                if (_.isEmpty(tags)) {
-                  return <div style={{ minWidth }}>-</div>;
-                }
-                return (
-                  <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags
-                      type='outline'
-                      data={tags}
-                      onTagClick={(tag) => {
-                        if (!_.includes(params.query, tag)) {
-                          const val = params.query ? `${params.query.trim()} ${tag}` : tag;
-                          setParams((p) => ({ ...p, query: val }));
-                          setSearchValue(val);
-                        }
-                      }}
-                    />
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'group_objs',
-              title: t('group_objs'),
-              render: (val, record) => {
-                const minWidth = getTextWidth(t('group_objs')) + 4;
-                const groupNames = _.map(val, 'name');
-                if (_.isEmpty(groupNames)) {
-                  return <div style={{ minWidth }}>-</div>;
-                }
-                return (
-                  <div className='w-[200px]' style={{ minWidth }}>
-                    <Tags type='fill' data={groupNames} fontColor={record.target_up === 0 ? 'text-soft' : undefined} />
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'beat_time',
-              title: t('beat_time'),
-              render: (val, record) => {
-                const minWidth = Math.max(
-                  getTextWidth(t('beat_time')) + 24,
-                  getTextWidth(t('beat_time_just_now')),
-                  getTextWidth(t('beat_time_mins_ago', { count: 59 })),
-                  getTextWidth(t('beat_time_hours_ago', { count: 23 })),
-                );
-                if (record.cpu_num === -1 || !_.isNumber(val)) {
-                  return (
-                    <div style={{ minWidth }}>
-                      <Unknown />
-                    </div>
-                  );
-                }
-                let backgroundColor = 'var(--fc-fill-success)';
-                if (record.target_up === 0) {
-                  backgroundColor = 'rgb(var(--fc-fill-5-rgb) / 0.6)';
-                }
-                const nowMs = Date.now();
-                const display = formatBeatTimeDisplay(val, nowMs, t);
-                const absoluteTitle = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
-                const textBlock = (
-                  <div
-                    className={classNames('text-main', {
-                      'text-soft': record.target_up === 0,
-                    })}
-                  >
-                    {display.kind === 'relative' ? (
-                      <div>{display.relativeLabel}</div>
-                    ) : (
-                      <>
-                        <div>{display.absoluteDate}</div>
-                        <div>{display.absoluteTime}</div>
-                      </>
-                    )}
-                  </div>
-                );
-                return (
-                  <div style={{ minWidth }}>
-                    <Space size={8} align='center'>
-                      <div className='w-[4px] h-[16px] rounded' style={{ backgroundColor }} />
-                      {display.kind === 'relative' ? <Tooltip title={absoluteTitle}>{textBlock}</Tooltip> : textBlock}
-                    </Space>
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'mem_util',
-              title: t('mem_util'),
-              render: (val: number, record) => {
-                const minWidth = getTextWidth(t('mem_util')) + 4;
-                if (record.cpu_num === -1 || !_.isNumber(val)) {
-                  return (
-                    <div style={{ minWidth }}>
-                      <Unknown />
-                    </div>
-                  );
-                }
-                return (
-                  <div style={{ minWidth }} className='w-[90px] leading-none'>
-                    <div
-                      className={classNames('text-main leading-[18px]', {
-                        'text-soft': record.target_up === 0,
-                      })}
-                    >
-                      {val.toFixed(1)} %
-                    </div>
-                    <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'cpu_util',
-              title: 'CPU',
-              render: (val: number, record) => {
-                const minWidth = getTextWidth('CPU') + 4;
-                if (record.cpu_num === -1 || !_.isNumber(val)) {
-                  return (
-                    <div style={{ minWidth }}>
-                      <Unknown />
-                    </div>
-                  );
-                }
-                return (
-                  <div style={{ minWidth }} className='w-[90px] leading-none'>
-                    <div
-                      className={classNames('text-main leading-[18px]', {
-                        'text-soft': record.target_up === 0,
-                      })}
-                    >
-                      {val.toFixed(1)} %
-                    </div>
-                    <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'offset',
-              title: (
-                <Space>
-                  {t('offset')}
-                  <Tooltip title={t('offset_tip')}>
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                </Space>
-              ),
-              render: (val, record) => {
-                const minWidth = getTextWidth(t('offset')) + 24;
-                if (record.cpu_num === -1 || !_.isNumber(val)) {
-                  return (
-                    <div style={{ minWidth }}>
-                      <Unknown />
-                    </div>
-                  );
-                }
-                let backgroundColor = 'var(--fc-fill-error)';
-                if (Math.abs(val) < 2000) {
-                  backgroundColor = 'var(--fc-fill-alert)';
-                }
-                if (Math.abs(val) < 1000) {
-                  backgroundColor = 'var(--fc-fill-success)';
-                }
-                if (record.target_up === 0) {
-                  backgroundColor = 'rgb(var(--fc-fill-5-rgb) / 0.6)';
-                }
-                return (
-                  <div style={{ minWidth }}>
-                    <Space size={8} align='start'>
-                      <div className='w-[4px] h-[16px] rounded relative top-[2px]' style={{ backgroundColor }} />
-                      <div
-                        className={classNames('text-main', {
-                          'text-soft': record.target_up === 0,
-                        })}
-                      >
-                        {timeFormatter(val, 'milliseconds', 2)?.text}
+                    );
+
+                    const showTooltip = hasUpgrade || needsEntUpgrade;
+
+                    return (
+                      <div style={{ minWidth }}>
+                        {showTooltip ? (
+                          <Tooltip
+                            overlayClassName='ant-tooltip-with-link'
+                            title={
+                              <div>
+                                {hasUpgrade && (
+                                  <div className='mb-1'>
+                                    {t('current_version')}: {display}
+                                    <br />
+                                    {t('upgrade_version')}: {record.new_version}
+                                  </div>
+                                )}
+                                {needsEntUpgrade && (
+                                  <div>
+                                    {t('upgrade_not_support_tip')}{' '}
+                                    <a
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setUpgradeTargetIdent(record.ident);
+                                      }}
+                                    >
+                                      {t('go_upgrade')}
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            }
+                          >
+                            {badge}
+                          </Tooltip>
+                        ) : (
+                          badge
+                        )}
                       </div>
+                    );
+                  },
+                },
+                {
+                  dataIndex: 'host_tags',
+                  title: (
+                    <Space>
+                      {t('common:host.host_tags')}
+                      <Tooltip title={t('common:host.host_tags_tip')}>
+                        <QuestionCircleOutlined />
+                      </Tooltip>
                     </Space>
-                  </div>
-                );
-              },
-            },
-            {
-              dataIndex: 'remote_addr',
-              title: (
-                <Space>
-                  {t('remote_addr')}
-                  <Tooltip title={t('remote_addr_tip')}>
-                    <QuestionCircleOutlined />
-                  </Tooltip>
-                </Space>
-              ),
-              render: (val) => {
-                const minWidth = getTextWidth(t('remote_addr')) + 24;
-                return <div style={{ minWidth }}>{val}</div>;
-              },
-            },
-            {
-              dataIndex: 'note',
-              title: t('note'),
-              render: (val) => {
-                const minWidth = getTextWidth(t('note')) + 24;
-                const maxWidth = 100;
-                const displayVal = val ?? '-';
-                return (
-                  <Tooltip title={displayVal === '-' ? undefined : displayVal}>
-                    <div
-                      style={{ minWidth, maxWidth }}
-                      className={classNames('truncate', {
-                        'text-soft': displayVal === '-',
-                      })}
-                    >
-                      {displayVal}
-                    </div>
-                  </Tooltip>
-                );
-              },
-            },
-          ]}
+                  ),
+                  render: (tags: string[], record: Item) => {
+                    const minWidth = getTextWidth(t('common:host.host_tags')) + 24; // 12 的icon宽度 + 8 的间距 + 4 的容错
+                    if (_.isEmpty(tags)) {
+                      return <div style={{ minWidth }}>-</div>;
+                    }
+                    return (
+                      <div className='w-[200px]' style={{ minWidth }}>
+                        <Tags
+                          type='outline'
+                          data={tags}
+                          fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
+                          onTagClick={(tag) => {
+                            if (!_.includes(params.query, tag)) {
+                              const val = params.query ? `${params.query.trim()} ${tag}` : tag;
+                              setParams((p) => ({ ...p, query: val }));
+                              setSearchValue(val);
+                            }
+                          }}
+                        />
+                      </div>
+                    );
+                  },
+                },
+                {
+                  dataIndex: 'tags',
+                  title: (
+                    <Space>
+                      {t('common:host.tags')}
+                      <Tooltip title={t('common:host.tags_tip')}>
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+                    </Space>
+                  ),
+                  render: (tags: string[], record: Item) => {
+                    const minWidth = getTextWidth(t('common:host.tags')) + 24;
+                    if (_.isEmpty(tags)) {
+                      return <div style={{ minWidth }}>-</div>;
+                    }
+                    return (
+                      <div className='w-[200px]' style={{ minWidth }}>
+                        <Tags
+                          type='outline'
+                          data={tags}
+                          fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
+                          onTagClick={(tag) => {
+                            if (!_.includes(params.query, tag)) {
+                              const val = params.query ? `${params.query.trim()} ${tag}` : tag;
+                              setParams((p) => ({ ...p, query: val }));
+                              setSearchValue(val);
+                            }
+                          }}
+                        />
+                      </div>
+                    );
+                  },
+                },
+              ],
+              aiTaskMode
+                ? []
+                : [
+                    groupObjsColumn,
+                    {
+                      dataIndex: 'beat_time',
+                      title: t('beat_time'),
+                      render: (val, record) => {
+                        const minWidth = Math.max(
+                          getTextWidth(t('beat_time')) + 24,
+                          getTextWidth(t('beat_time_just_now')),
+                          getTextWidth(t('beat_time_mins_ago', { count: 59 })),
+                          getTextWidth(t('beat_time_hours_ago', { count: 23 })),
+                        );
+                        if (record.cpu_num === -1 || !_.isNumber(val)) {
+                          return (
+                            <div style={{ minWidth }}>
+                              <Unknown record={record} />
+                            </div>
+                          );
+                        }
+                        let backgroundColor = 'var(--fc-fill-success)';
+                        if (record.target_up === 0) {
+                          backgroundColor = 'rgb(var(--fc-fill-5-rgb) / 0.6)';
+                        }
+                        const nowMs = Date.now();
+                        const display = formatBeatTimeDisplay(val, nowMs, t);
+                        const absoluteTitle = moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
+                        const textBlock = (
+                          <div
+                            className={classNames({
+                              'text-soft': record.target_up === 0,
+                              'text-title': record.target_up !== 0,
+                            })}
+                          >
+                            {display.kind === 'relative' ? (
+                              <div>{display.relativeLabel}</div>
+                            ) : (
+                              <>
+                                <div>{display.absoluteDate}</div>
+                                <div>{display.absoluteTime}</div>
+                              </>
+                            )}
+                          </div>
+                        );
+                        return (
+                          <div style={{ minWidth }}>
+                            <Space size={8} align='center'>
+                              <div className='w-[4px] h-[16px] rounded' style={{ backgroundColor }} />
+                              {display.kind === 'relative' ? <Tooltip title={absoluteTitle}>{textBlock}</Tooltip> : textBlock}
+                            </Space>
+                          </div>
+                        );
+                      },
+                    },
+                    {
+                      dataIndex: 'mem_util',
+                      title: t('mem_util'),
+                      render: (val: number, record) => {
+                        const minWidth = getTextWidth(t('mem_util')) + 4;
+                        if (record.cpu_num === -1 || !_.isNumber(val)) {
+                          return (
+                            <div style={{ minWidth }}>
+                              <Unknown record={record} />
+                            </div>
+                          );
+                        }
+                        return (
+                          <div style={{ minWidth }} className='w-[90px] leading-none'>
+                            <div
+                              className={classNames('leading-[18px]', {
+                                'text-soft': record.target_up === 0,
+                                'text-title': record.target_up !== 0,
+                              })}
+                            >
+                              {val.toFixed(1)} %
+                            </div>
+                            <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
+                          </div>
+                        );
+                      },
+                    },
+                    {
+                      dataIndex: 'cpu_util',
+                      title: 'CPU',
+                      render: (val: number, record) => {
+                        const minWidth = getTextWidth('CPU') + 4;
+                        if (record.cpu_num === -1 || !_.isNumber(val)) {
+                          return (
+                            <div style={{ minWidth }}>
+                              <Unknown record={record} />
+                            </div>
+                          );
+                        }
+                        return (
+                          <div style={{ minWidth }} className='w-[90px] leading-none'>
+                            <div
+                              className={classNames('leading-[18px]', {
+                                'text-soft': record.target_up === 0,
+                                'text-title': record.target_up !== 0,
+                              })}
+                            >
+                              {val.toFixed(1)} %
+                            </div>
+                            <N9EProgress percent={val} strokeColor={getStrokeColor(val)} trailColor={getTrailColor(val)} status={record.target_up === 0 ? 'inactive' : 'default'} />
+                          </div>
+                        );
+                      },
+                    },
+                    {
+                      dataIndex: 'offset',
+                      title: (
+                        <Space>
+                          {t('offset')}
+                          <Tooltip title={t('offset_tip')}>
+                            <QuestionCircleOutlined />
+                          </Tooltip>
+                        </Space>
+                      ),
+                      render: (val, record) => {
+                        const minWidth = getTextWidth(t('offset')) + 24;
+                        if (record.cpu_num === -1 || !_.isNumber(val)) {
+                          return (
+                            <div style={{ minWidth }}>
+                              <Unknown record={record} />
+                            </div>
+                          );
+                        }
+                        let backgroundColor = 'var(--fc-fill-error)';
+                        if (Math.abs(val) < 2000) {
+                          backgroundColor = 'var(--fc-fill-alert)';
+                        }
+                        if (Math.abs(val) < 1000) {
+                          backgroundColor = 'var(--fc-fill-success)';
+                        }
+                        if (record.target_up === 0) {
+                          backgroundColor = 'rgb(var(--fc-fill-5-rgb) / 0.6)';
+                        }
+                        return (
+                          <div style={{ minWidth }}>
+                            <Space size={8} align='start'>
+                              <div className='w-[4px] h-[16px] rounded relative top-[2px]' style={{ backgroundColor }} />
+                              <div
+                                className={classNames({
+                                  'text-soft': record.target_up === 0,
+                                  'text-title': record.target_up !== 0,
+                                })}
+                              >
+                                {timeFormatter(val, 'milliseconds', 2)?.text}
+                              </div>
+                            </Space>
+                          </div>
+                        );
+                      },
+                    },
+                    {
+                      dataIndex: 'remote_addr',
+                      title: (
+                        <Space>
+                          {t('remote_addr')}
+                          <Tooltip title={t('remote_addr_tip')}>
+                            <QuestionCircleOutlined />
+                          </Tooltip>
+                        </Space>
+                      ),
+                      render: (val, record: Item) => {
+                        const minWidth = getTextWidth(t('remote_addr')) + 24;
+                        return (
+                          <div
+                            style={{ minWidth }}
+                            className={classNames({
+                              'text-soft': record.target_up === 0,
+                              'text-title': record.target_up !== 0,
+                            })}
+                          >
+                            {val}
+                          </div>
+                        );
+                      },
+                    },
+                    {
+                      dataIndex: 'note',
+                      title: t('note'),
+                      render: (val) => {
+                        const minWidth = getTextWidth(t('note')) + 24;
+                        const maxWidth = 100;
+                        const displayVal = val ?? '-';
+                        return (
+                          <Tooltip title={displayVal === '-' ? undefined : displayVal}>
+                            <div
+                              style={{ minWidth, maxWidth }}
+                              className={classNames('truncate', {
+                                'text-soft': displayVal === '-',
+                              })}
+                            >
+                              {displayVal}
+                            </div>
+                          </Tooltip>
+                        );
+                      },
+                    },
+                  ],
+            ) as any[]
+          }
         />
       </div>
+      <TargetMetaDrawer
+        ident={metaDrawerIdent}
+        drawerOnly
+        drawerOpen={metaDrawerOpen}
+        onDrawerOpenChange={(open) => {
+          setMetaDrawerOpen(open);
+          if (!open) setMetaDrawerIdent('');
+        }}
+      />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
+      {upgradeTargetIdent && (
+        <UpgradeAgent
+          selectedIdents={[upgradeTargetIdent]}
+          visible
+          onVisibleChange={(v) => {
+            if (!v) setUpgradeTargetIdent(null);
+          }}
+          onOk={() => {
+            setUpgradeTargetIdent(null);
+            setRefreshFlag(_.uniqueId('refreshFlag_'));
+          }}
+        />
+      )}
     </>
   );
 }

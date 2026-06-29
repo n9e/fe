@@ -184,6 +184,11 @@ export function dslBuilder(params: {
     interval: string;
     intervalkey: string;
   };
+  termsAgg?: {
+    field: string;
+    size: number;
+    name?: string;
+  };
   shouldHighlight?: boolean;
   version?: string;
 }) {
@@ -314,11 +319,27 @@ export function dslBuilder(params: {
       },
     });
   }
+  if (params.termsAgg) {
+    const aggName = params.termsAgg.name || `top${params.termsAgg.size}_${String(params.termsAgg.field).replace(/[^A-Za-z0-9_]/g, '_')}`;
+    body.size = 0;
+    _.set(body, ['aggs', aggName], {
+      terms: {
+        field: params.termsAgg.field,
+        size: params.termsAgg.size,
+        order: {
+          _count: 'desc',
+        },
+      },
+    });
+  }
   return `${JSON.stringify(header)}\n${JSON.stringify(body)}\n`;
 }
 
-export function ajustFieldParamValue(field: Field, version: string) {
-  if (semver.lt(version, '7.10.0') && field.type === 'text') {
+export function ajustFieldParamValue(field: Field) {
+  // text 字段不能直接做 terms 聚合，需要走 keyword 子字段。
+  // 不依赖 ES 版本：text fielddata 默认禁用，与版本无关。
+  if (field.type === 'text') {
+    if (field.name.endsWith('.keyword')) return field.name;
     return `${field.name}.keyword`;
   }
   return field.name;

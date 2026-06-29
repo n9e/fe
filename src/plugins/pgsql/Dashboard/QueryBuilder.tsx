@@ -8,7 +8,7 @@ import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import LogQL from '@/components/LogQL';
 import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
 import AddQueryButtons from '@/pages/dashboard/Editor/Components/AddQueryButtons';
-import { alphabet } from '@/utils/constant';
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 
 import AdvancedSettings from '../components/AdvancedSettings';
 import LegendInput from '../components/LegendInput';
@@ -41,7 +41,7 @@ export default function MySQLQueryBuilder({ datasourceValue }) {
                       header={
                         <Form.Item noStyle shouldUpdate>
                           {({ getFieldValue }) => {
-                            return getFieldValue([...prefixName, 'refId']) || alphabet[index];
+                            return getFieldValue([...prefixName, 'refId']) || generateQueryNameByIndex(index);
                           }}
                         </Form.Item>
                       }

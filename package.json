@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "v8.5.0",
+  "version": "v9.0.0-beta.3",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
@@ -36,7 +36,7 @@
     "@dnd-kit/sortable": "7.0.2",
     "@fc-components/codemirror-promql": "^0.19.13",
     "@fc-components/es-query": "^0.0.3",
-    "@fc-components/monaco-editor": "^0.1.27",
+    "@fc-components/monaco-editor": "^0.4.3",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
     "@fc-plot/ts-graph": "^0.27.2",
     "@microsoft/fetch-event-source": "^2.0.1",
@@ -60,6 +60,7 @@
     "color": "^4.0.1",
     "d3": "^4.10.0",
     "d3-hexbin": "^0.2.2",
+    "dagre": "^0.8.5",
     "diff": "^4.0.2",
     "dompurify": "^2.4.4",
     "exceljs": "^4.4.0",
@@ -69,9 +70,9 @@
     "intl-messageformat": "^10.7.18",
     "js-encrypt": "^2.3.4",
     "js-yaml": "^4.1.0",
-    "jszip": "^3.10.1",
     "jsencrypt": "^3.3.2",
     "json-2-csv": "^3.18.0",
+    "jszip": "^3.10.1",
     "lezer": "^0.13.5",
     "lezer-promql": "^0.22.0",
     "lodash": "^4.17.21",
@@ -117,6 +118,7 @@
   },
   "devDependencies": {
     "@rollup/pluginutils": "^4.1.1",
+    "@types/dagre": "^0.7.54",
     "@types/echarts": "^4.9.7",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",

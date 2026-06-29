@@ -1,6 +1,8 @@
 const ru_RU = {
   landing: 'Главная',
   resizeWidth: 'Перетащите, чтобы изменить ширину панели',
+  collapse: 'Свернуть боковую панель',
+  expand: 'Развернуть боковую панель',
   quickJump: 'Быстрый переход',
   quickOpenClose: 'Открыть/закрыть',
   quickSearchPlaceholder: 'Введите текст для поиска...',
@@ -10,6 +12,7 @@ const ru_RU = {
   menu: {
     infrastructure: 'Инфраструктура',
     business_group: 'Бизнес-группа',
+    devices: 'Список устройств',
     targets: 'хостов',
     collects: 'Настройка сбора данных',
     network_devices: 'Сетевые устройства',
@@ -26,6 +29,7 @@ const ru_RU = {
     recording_rules: 'Правила записи',
     logs_explorer: 'Логи',
     monitors: 'Оповещения',
+    alerts_notifications: 'Оповещения и уведомления',
     rules: 'Управление правилами',
     alert_rules: 'Правила оповещения',
     alert_mutes: 'Режим тишины',
@@ -69,6 +73,7 @@ const ru_RU = {
     ai_config_skills: 'Skill управление',
     ai_config_mcp_servers: 'MCP управление',
     ai_config_scheduled_task: 'Задачи настройки',
+    ai_task: 'Задачи канала',
   },
   section: {
     infrastructure: 'INFRASTRUCTURE',

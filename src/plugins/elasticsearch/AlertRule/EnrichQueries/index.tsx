@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Space } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Tooltip } from 'antd';
+import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
 import EnhancedModal from '@/pages/alertRules/Form/components/EnhancedModal';
 
+// @ts-ignore
+import EnrichQueryValuesMaxLen from 'plus:/parcels/AlertRule/NotifyExtra/EnrichQueryValuesMaxLen';
+
 import Query from './Query';
 import GraphPreview from './GraphPreview';
 import './style.less';
-// @ts-ignore
-import EnrichQueryValuesMaxLen from '@/plus/parcels/AlertRule/NotifyExtra/EnrichQueryValuesMaxLen';
 
 interface IProps {
   disabled?: boolean;
@@ -49,6 +50,9 @@ export default function index(props: IProps) {
             <div style={{ marginBottom: 8 }}>
               <Space>
                 <span>{t('db_aliyunSLS:enrich_queries.title')}</span>
+                <Tooltip title={t('alertRules:enrich_queries.tip')}>
+                  <InfoCircleOutlined />
+                </Tooltip>
                 <PlusCircleOutlined
                   disabled={disabled}
                   onClick={() => {

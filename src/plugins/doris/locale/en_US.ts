@@ -52,6 +52,13 @@ const en_US = {
     warn_message_content_2: 'Common time macros: ',
     warn_message_content_3: 'Example:',
     warn_message_content_4: 'Usage of time macros: <a>Details</a>',
+    editMode: {
+      switch_to_builder_confirm_title: 'Switch to Builder Mode',
+      switch_to_builder_confirm_content: 'The current SQL cannot be converted to Builder settings. Switching will discard the edited SQL. Continue?',
+      no_builder_config: 'Please configure query conditions first',
+      require_db_table: 'Please select database and table first',
+      build_sql_failed: 'SQL generation failed',
+    },
     dashboard: {
       mode: {
         label: 'Query Mode',
@@ -177,6 +184,8 @@ const en_US = {
     preview_sql: 'Preview SQL',
     btn_tip: 'Clicking will overwrite the SQL input content',
     btn_failed_tip: 'Conversion failed, please retry or modify the form',
+    preview_and_run: 'Preview SQL & Query',
+    builder_content_modified: 'Builder content modified, please preview the latest SQL',
   },
 };
 export default en_US;

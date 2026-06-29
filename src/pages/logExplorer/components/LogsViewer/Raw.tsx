@@ -10,7 +10,7 @@ import { useClickAway } from 'ahooks';
 import NavigableDrawer from '@/components/NavigableDrawer';
 
 import { NAME_SPACE } from '../../constants';
-import { OnValueFilterParams } from './types';
+import { OnValueFilterParams, FieldValueType } from './types';
 import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
 import LogFieldValue from './components/LogFieldValue';
@@ -18,8 +18,8 @@ import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 
 const explorerOriginInlineCellClassName = 'inline-block mr-1 my-[2px] align-top';
 const explorerOriginBreakCellClassName = 'break-all block mr-1 my-[2px]';
-const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-title inline-flex text-[12px] py-[1px] px-[3px]';
-const explorerOrigiFieldValClassName = 'inline text-main m-0 p-0 cursor-pointer';
+const explorerOriginFieldKeyClassName = 'bg-fc-300 rounded-sm text-hint inline-flex text-[12px] py-[1px] px-[3px]';
+const explorerOriginFieldValClassName = 'inline text-main m-0 p-0 cursor-pointer';
 const explorerOriginUlClassName = 'border-0 list-none bg-transparent p-0 m-0';
 const explorerOriginLiClassName = 'relative ml-0 pl-0 ';
 
@@ -51,7 +51,7 @@ interface Props {
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
   customLogFieldRender?: (
     key: string,
@@ -63,14 +63,15 @@ interface Props {
       onValueFilter?: (parmas: OnValueFilterParams) => void;
     },
   ) => React.ReactNode | false;
+  hideTypeIcon?: boolean;
 }
 
 interface RenderValueProps {
   name: string;
-  value: string;
+  value: FieldValueType;
   parentKey?: string;
   onValueFilter?: Props['onValueFilter'];
-  adjustFieldValue?: (formatedValue: string, highlightValue?: string[]) => React.ReactNode;
+  adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
   showExistsAction?: boolean;
 }
 
@@ -81,10 +82,14 @@ export function RenderValue({ name, value, parentKey, onValueFilter, adjustField
   const [expand, setExpand] = useState(false);
 
   if (typeof value === 'string' && value.indexOf('\n') > -1) {
-    const lines = !expand ? _.slice(value.split('\n'), 0, 18) : value.split('\n');
+    const allLines = value.split('\n');
+    const LINE_LIMIT = 18;
+    const exceedsLimit = allLines.length > LINE_LIMIT;
+    const lines = !expand && exceedsLimit ? _.slice(allLines, 0, LINE_LIMIT) : allLines;
     return (
-      <div className='inline text-hint m-0 p-0'>
+      <div className='inline text-main m-0 p-0'>
         {_.map(lines, (v, idx) => {
+          const isLastLine = idx === lines.length - 1;
           return (
             <div key={idx}>
               <LogFieldValue
@@ -97,7 +102,7 @@ export function RenderValue({ name, value, parentKey, onValueFilter, adjustField
                 adjustFieldValue={adjustFieldValue}
                 showExistsAction={showExistsAction}
               />
-              {idx === lines.length - 1 && (
+              {isLastLine && exceedsLimit && (
                 <a
                   onClick={() => {
                     setExpand(!expand);
@@ -169,7 +174,7 @@ function RenderSubJSON({
             {expand ? <CaretDownOutlined className='text-link' /> : <CaretRightOutlined className='text-link' />}
             <span className={`${explorerOriginFieldKeyClassName} ml-[2px]`}>{label}</span>
           </div>
-          <div className='text-link'>{`{}`}</div>
+          <div className='text-link'>{_.isArray(subJSON) ? '[]' : '{}'}</div>
         </div>
         {expand && (
           <ul className='list-none pl-[30px]'>
@@ -179,22 +184,37 @@ function RenderSubJSON({
                   <ul className={explorerOriginUlClassName}>
                     {_.isEmpty(v) ? (
                       <>
-                        <div className={explorerOriginFieldKeyClassName}>{k}</div>:<div className={explorerOrigiFieldValClassName}>{`[]`}</div>
+                        <div className={explorerOriginFieldKeyClassName}>{k}</div>:<div className={explorerOriginFieldValClassName}>{`[]`}</div>
                       </>
                     ) : (
                       _.map(_.isArray(v) ? v : [v], (item, idx) => {
+                        if (_.isPlainObject(item) || _.isArray(item)) {
+                          return (
+                            <RenderSubJSON
+                              key={idx}
+                              parentKey={parentKey ? parentKey + '.' + k : k}
+                              label={_.isArray(v) ? `${k}[${idx}]` : k}
+                              subJSON={item}
+                              options={options}
+                              currentExpandLevel={currentExpandLevel + 1}
+                              onValueFilter={onValueFilter}
+                              adjustFieldValue={adjustFieldValue}
+                              showExistsAction={showExistsAction}
+                            />
+                          );
+                        }
                         return (
-                          <RenderSubJSON
-                            key={idx}
-                            parentKey={parentKey ? parentKey + '.' + k : k}
-                            label={k}
-                            subJSON={item}
-                            options={options}
-                            currentExpandLevel={currentExpandLevel + 1}
-                            onValueFilter={onValueFilter}
-                            adjustFieldValue={adjustFieldValue}
-                            showExistsAction={showExistsAction}
-                          />
+                          <li key={idx}>
+                            <div className={explorerOriginFieldKeyClassName}>{_.isArray(v) ? `${k}[${idx}]` : k}</div>:
+                            <RenderValue
+                              parentKey={parentKey ? parentKey + '.' + k : k}
+                              name={_.isArray(v) ? `${k}[${idx}]` : k}
+                              value={item}
+                              onValueFilter={onValueFilter}
+                              adjustFieldValue={adjustFieldValue}
+                              showExistsAction={showExistsAction}
+                            />
+                          </li>
                         );
                       })
                     )}
@@ -225,7 +245,7 @@ function RenderSubJSON({
   return (
     <li className={explorerOriginLiClassName}>
       <div className={explorerOriginFieldKeyClassName}>{label}</div>:
-      <div className={explorerOrigiFieldValClassName}>
+      <div className={explorerOriginFieldValClassName}>
         <RenderValue name={label} value={JSON.stringify(subJSON)} onValueFilter={onValueFilter} adjustFieldValue={adjustFieldValue} showExistsAction={showExistsAction} />
       </div>
     </li>
@@ -264,6 +284,7 @@ function Raw(props: Props) {
     adjustFieldValue,
     showExistsAction,
     customLogFieldRender,
+    hideTypeIcon,
   } = props;
   const [logViewerDrawerState, setLogViewerDrawerState] = useState<{ visible: boolean; currentIndex: number }>({ visible: false, currentIndex: -1 });
   const columns: any[] = [
@@ -302,11 +323,11 @@ function Raw(props: Props) {
                       [explorerOriginBreakCellClassName]: options.lineBreak === 'true',
                     })}
                   >
-                    {_.isPlainObject(valToObj) || _.isArray(valToObj) ? (
+                    {_.isPlainObject(valToObj) || (_.isArray(valToObj) && options?.jsonDisplaType === 'tree') ? (
                       <ul className={explorerOriginUlClassName}>
                         {_.isEmpty(subJSON) ? (
                           <>
-                            <div className={explorerOriginFieldKeyClassName}>{key}</div>: <div className={explorerOrigiFieldValClassName}>{`[]`}</div>
+                            <div className={explorerOriginFieldKeyClassName}>{key}</div>: <div className={explorerOriginFieldValClassName}>{`[]`}</div>
                           </>
                         ) : (
                           _.map(subJSON, (item, idx) => {
@@ -314,7 +335,7 @@ function Raw(props: Props) {
                               <RenderSubJSON
                                 key={idx}
                                 parentKey={key}
-                                label={key}
+                                label={_.isArray(valToObj) ? `${key}[${idx}]` : key}
                                 subJSON={item}
                                 options={options}
                                 currentExpandLevel={1}
@@ -326,6 +347,11 @@ function Raw(props: Props) {
                           })
                         )}
                       </ul>
+                    ) : _.isArray(valToObj) ? (
+                      <>
+                        <div className={explorerOriginFieldKeyClassName}>{key}</div>:{' '}
+                        <RenderValue name={key} value={JSON.stringify(val)} onValueFilter={onValueFilter} adjustFieldValue={adjustFieldValue} showExistsAction={showExistsAction} />
+                      </>
                     ) : (
                       <>
                         <div className={explorerOriginFieldKeyClassName}>{key}</div>:{' '}
@@ -490,6 +516,7 @@ function Raw(props: Props) {
             logViewerFilterFields={logViewerFilterFields}
             logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
             customLogFieldRender={customLogFieldRender}
+            hideTypeIcon={hideTypeIcon}
           />
         ) : (
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />

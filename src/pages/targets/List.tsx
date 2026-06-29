@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Table, Tag, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
+import { Table, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownOutlined, ReloadOutlined, CopyOutlined, ApartmentOutlined, InfoCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
@@ -20,6 +20,7 @@ import TargetMetaDrawer from './TargetMetaDrawer';
 import Explorer from './components/Explorer';
 import EditBusinessGroups from './components/EditBusinessGroups';
 import HostsSelect from './components/HostsSelect';
+import Tags from '@/components/TableTags/Tags';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
@@ -92,6 +93,15 @@ export default function List(props: IProps) {
   const [hosts, setHosts] = useState<string>();
   const sorterRef = useRef<any>();
   const LOST_COLOR = darkMode ? LOST_COLOR_DARK : LOST_COLOR_LIGHT;
+  // 点击标签把它追加进搜索框（host_tags / tags 共用）
+  const addTagToQuery = (item: string) => {
+    if (!tableQueryContent.includes(item)) {
+      isAddTagToQueryInput.current = true;
+      const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
+      setTableQueryContent(val);
+      setSearchVal(val);
+    }
+  };
   const columns: ColumnsType<any> = [
     {
       title: (
@@ -197,35 +207,8 @@ export default function List(props: IProps) {
         ),
         dataIndex: 'host_tags',
         className: 'n9e-hosts-table-column-tags',
-        ellipsis: {
-          showTitle: false,
-        },
         render(tagArr) {
-          const content =
-            tagArr &&
-            tagArr.map((item) => (
-              <Tag
-                color='purple'
-                key={item}
-                onClick={(e) => {
-                  if (!tableQueryContent.includes(item)) {
-                    isAddTagToQueryInput.current = true;
-                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
-                    setTableQueryContent(val);
-                    setSearchVal(val);
-                  }
-                }}
-              >
-                {item}
-              </Tag>
-            ));
-          return (
-            tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
-            )
-          );
+          return <Tags type='fill' maxWidth={380} data={tagArr} onTagClick={addTagToQuery} />;
         },
       });
     }
@@ -241,35 +224,8 @@ export default function List(props: IProps) {
         ),
         dataIndex: 'tags',
         className: 'n9e-hosts-table-column-tags',
-        ellipsis: {
-          showTitle: false,
-        },
         render(tagArr) {
-          const content =
-            tagArr &&
-            tagArr.map((item) => (
-              <Tag
-                color='purple'
-                key={item}
-                onClick={(e) => {
-                  if (!tableQueryContent.includes(item)) {
-                    isAddTagToQueryInput.current = true;
-                    const val = tableQueryContent ? `${tableQueryContent.trim()} ${item}` : item;
-                    setTableQueryContent(val);
-                    setSearchVal(val);
-                  }
-                }}
-              >
-                {item}
-              </Tag>
-            ));
-          return (
-            tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body} overlayClassName='mon-manage-table-tooltip'>
-                {content}
-              </Tooltip>
-            )
-          );
+          return <Tags type='fill' maxWidth={380} data={tagArr} onTagClick={addTagToQuery} />;
         },
       });
     }
@@ -278,25 +234,9 @@ export default function List(props: IProps) {
         title: t('group_obj'),
         dataIndex: 'group_objs',
         className: 'n9e-hosts-table-column-tags',
-        ellipsis: {
-          showTitle: false,
-        },
         render(tagArr) {
           if (_.isEmpty(tagArr)) return t('common:not_grouped');
-          const content =
-            tagArr &&
-            tagArr.map((item) => (
-              <Tag color='purple' key={item.name}>
-                {item.name}
-              </Tag>
-            ));
-          return (
-            tagArr && (
-              <Tooltip title={content} placement='topLeft' getPopupContainer={() => document.body}>
-                {content}
-              </Tooltip>
-            )
-          );
+          return <Tags<{ name: string }> type='fill' maxWidth={380} data={tagArr} getKey={(item) => item.name} getLabel={(item) => item.name} />;
         },
       });
     }
@@ -496,7 +436,7 @@ export default function List(props: IProps) {
   const featchData = ({ current, pageSize, sorter }: { current: number; pageSize: number; sorter?: any }): Promise<any> => {
     const query = {
       query: tableQueryContent,
-      gids: gids,
+      gids: gids === '-2' ? undefined : gids,
       limit: pageSize,
       p: current,
       downtime,
@@ -688,7 +628,7 @@ export default function List(props: IProps) {
         scroll={{ x: 'max-content' }}
         locale={{
           emptyText:
-            gids === undefined ? (
+            gids === undefined || gids === '-2' ? (
               <Trans
                 ns='targets'
                 i18nKey='all_no_data'

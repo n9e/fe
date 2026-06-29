@@ -3,6 +3,8 @@ const ja_JP = {
     current_chat: '現在の会話',
     new_chat: '新規会話',
     history: '会話履歴',
+    share: 'シェア',
+    share_copied: '共有リンクをコピーしました',
     switch_to_drawer: 'ドロワーモードに切り替え',
     switch_to_floating: 'フローティングパネルに切り替え',
   },
@@ -17,6 +19,7 @@ const ja_JP = {
   },
   input: {
     placeholder: '質問を入力してください。Enter で送信、Shift + Enter で改行',
+    share_readonly_placeholder: '読み取り専用モードで共有されています',
   },
   query: {
     title: 'クエリ',
@@ -29,8 +32,11 @@ const ja_JP = {
     query_generator: 'クエリを生成',
   },
   message: {
-    generating: '応答を生成中...',
+    generating: '思考中...',
+    processing: '処理中',
     hint: 'ヒント',
+    no_llm_title: '現在の環境には大規模言語モデルの設定がありません',
+    no_llm_content: '大規模言語モデルの設定を追加するには、<a>LLM管理</a>ページに移動してください',
     stopped: '生成を停止しました',
     request_failed: 'リクエストに失敗しました',
     cancelled: '今回の応答はキャンセルされました。',
@@ -41,8 +47,10 @@ const ja_JP = {
   },
   form_select: {
     title: '続行するには以下の情報を入力してください:',
+    approval_title: '上記の操作を実行してもよろしいですか:',
     busi_group: 'ビジネスグループ',
     datasource: 'データソース',
+    team: 'チーム',
     placeholder_select: '選択してください',
     confirm: '確定',
   },

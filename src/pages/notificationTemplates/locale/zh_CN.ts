@@ -18,6 +18,7 @@ const zh_CN = {
     tip: '可以在通知媒介中使用的字段，通过 $tpl.{{contentKey}} 引用此字段的内容',
     prompt: '内容有修改，是否放弃修改的内容？',
     value_msg: '请输入字段内容',
+    ai_generate: 'AI 生成',
   },
   preview: {
     select_events: '选择告警事件',

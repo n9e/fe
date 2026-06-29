@@ -160,14 +160,26 @@ export function updatePanelsInsertNewPanel(panels: IPanel[], newPanel: IPanel) {
   return _.concat(panels, newPanel);
 }
 
+export function isValidPanelConfig(value: string) {
+  if (!value) {
+    return false;
+  }
+  try {
+    const parsed = JSON.parse(value) as IPanel;
+    return !!parsed && typeof parsed === 'object' && !Array.isArray(parsed) && !!parsed.type;
+  } catch {
+    return false;
+  }
+}
+
 // 新增面板的宽高初始值
 const PANEL_W = 12;
 const PANEL_H = 4;
 
 // 新增 panel 到全局
 export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: any, type: 'row' | 'chart', useDefaultSize = true) {
-  const w = type === 'row' ? 24 : useDefaultSize ? PANEL_W : panel.layout.w || PANEL_W;
-  const h = type === 'row' ? 1 : useDefaultSize ? PANEL_H : panel.layout.h || PANEL_H;
+  const w = type === 'row' ? 24 : useDefaultSize ? PANEL_W : panel.layout.w ?? PANEL_W;
+  const h = type === 'row' ? 1 : useDefaultSize ? PANEL_H : panel.layout.h ?? PANEL_H;
   const maxItem = _.maxBy(panels, (item: IPanel) => {
     return item.layout.y + item.layout.h;
   });
@@ -185,20 +197,22 @@ export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: any,
 }
 
 // 新增 panel 到分组
-export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string, panel: IPanel) {
+export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string, panel: IPanel, useDefaultSize = true) {
   const nextRow = getNextRow(panels, rowId);
   let nextRowIdx;
   if (nextRow?.id) {
     nextRowIdx = getRowIndex(panels, nextRow?.id);
   }
   const maxY = getRowPanelsMaxY(panels, rowId);
+  const w = useDefaultSize ? PANEL_W : panel.layout.w ?? PANEL_W;
+  const h = useDefaultSize ? PANEL_H : panel.layout.h ?? PANEL_H;
   const newPanel = {
     ...panel,
     layout: {
       x: 0,
       y: maxY,
-      w: PANEL_W,
-      h: PANEL_H,
+      w,
+      h,
       i: panel.id,
     },
   };
@@ -208,7 +222,7 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
         ...item,
         layout: {
           ...item.layout,
-          y: item.layout.y + PANEL_H,
+          y: item.layout.y + h,
         },
       };
     }

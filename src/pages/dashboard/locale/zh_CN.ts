@@ -8,6 +8,11 @@ const zh_CN = {
   ident: '英文标识',
   ident_msg: '请输入英文字母、数字、中划线',
   search_placeholder: '仪表盘名称、分类标签',
+  empty_guide: {
+    title: '还没有仪表盘',
+    desc: '新建一个仪表盘，或一键导入内置仪表盘模板。',
+    from_template: '从模板导入',
+  },
   refresh_tip: '刷新间隔小于 step({{num}}s) 将不会更新数据',
   refresh_btn: '刷新',
   share_btn: '分享',
@@ -613,6 +618,7 @@ const zh_CN = {
     hide_response: '隐藏查询结果',
   },
   detail: {
+    ai_analysis: 'AI 分析',
     datasource_empty: '没有数据源信息，请先配置数据源',
     invalidTimeRange: '无效的 __from 和 __to 值',
     invalidDatasource: '无效的数据源',

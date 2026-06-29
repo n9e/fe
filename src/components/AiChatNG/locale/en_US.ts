@@ -3,6 +3,8 @@ const en_US = {
     current_chat: 'Current Chat',
     new_chat: 'New Chat',
     history: 'Chat History',
+    share: 'Share',
+    share_copied: 'Share link copied',
     switch_to_drawer: 'Switch to Drawer Mode',
     switch_to_floating: 'Switch to Floating Panel',
   },
@@ -17,6 +19,7 @@ const en_US = {
   },
   input: {
     placeholder: 'Ask a question. Press Enter to send, Shift + Enter for a new line',
+    share_readonly_placeholder: 'Viewing a shared chat (read-only)',
   },
   query: {
     title: 'Query',
@@ -29,8 +32,11 @@ const en_US = {
     query_generator: 'Generate Query',
   },
   message: {
-    generating: 'Generating reply...',
+    generating: 'Thinking...',
+    processing: 'Still processing',
     hint: 'Hint',
+    no_llm_title: 'No LLM configured in the current environment',
+    no_llm_content: 'Please go to the <a>LLM Management</a> page to add a LLM configuration',
     stopped: 'Generation stopped',
     request_failed: 'Request failed',
     cancelled: 'This reply has been cancelled.',
@@ -41,8 +47,10 @@ const en_US = {
   },
   form_select: {
     title: 'Please fill in the following information to continue:',
+    approval_title: 'Please confirm the action above:',
     busi_group: 'Business Group',
     datasource: 'Datasource',
+    team: 'Teams',
     placeholder_select: 'Please select',
     confirm: 'Confirm',
   },

@@ -20,7 +20,7 @@ import _ from 'lodash';
 import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
-import { Button, Table, Input, message, List, Row, Col, Modal, Space, Tag } from 'antd';
+import { Button, Input, message, List, Row, Col, Modal, Space, Tag } from 'antd';
 import { EditOutlined, DeleteOutlined, SearchOutlined, UserOutlined, InfoCircleOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import UserInfoModal from './component/createModal';
 import { getTeamInfoList, getTeamInfo, deleteTeam, deleteMember } from '@/services/manage';
@@ -30,6 +30,8 @@ import { useTranslation } from 'react-i18next';
 import { listToTree } from '@/components/BusinessGroup';
 import { CommonStateContext } from '@/App';
 import Tree from '@/components/BusinessGroup/components/Tree';
+import EnhancedTable from '@/components/EnhancedTable';
+import Tags from '@/components/TableTags/Tags';
 import './index.less';
 import './locale';
 import usePagination from '@/components/usePagination';
@@ -102,44 +104,12 @@ const Resource: React.FC = () => {
       dataIndex: 'busi_groups',
       render: (text: string, record) => {
         if (_.isEmpty(record.busi_groups)) return '-';
-        return _.map(record.busi_groups, (item) => {
-          return <Tag key={item.id}>{item.name}</Tag>;
-        });
+        return <Tags data={record.busi_groups || []} maxWidth={180} getKey={(item) => item.id} getLabel={(item) => item.name} />;
       },
     },
   ];
 
-  const teamMemberColumns: ColumnsType<User> = [
-    ...userColumn,
-    {
-      title: t('common:table.operations'),
-      width: '100px',
-      render: (text: string, record) => (
-        <Button
-          type='link'
-          className='p-0'
-          danger
-          onClick={() => {
-            let params = {
-              ids: [record.id],
-            };
-            confirm({
-              title: t('common:confirm.delete'),
-              onOk: () => {
-                deleteMember(teamId, params).then((_) => {
-                  message.success(t('common:success.delete'));
-                  handleClose('updateMember');
-                });
-              },
-              onCancel: () => {},
-            });
-          }}
-        >
-          {t('common:btn.delete')}
-        </Button>
-      ),
-    },
-  ];
+  const teamMemberColumns: ColumnsType<User> = [...userColumn];
 
   useEffect(() => {
     getList();
@@ -235,7 +205,7 @@ const Resource: React.FC = () => {
     <PageLayout
       title={<Space>{t('team.title')}</Space>}
       icon={<UserOutlined />}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v7/usage/personnel-permissions/team-management/'
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/personnel-permissions/team-management/'
     >
       <div className='user-manage-content'>
         <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>
@@ -396,7 +366,41 @@ const Resource: React.FC = () => {
                 </Button>
               </Row>
 
-              <Table className='mt-2' size='small' rowKey='id' columns={teamMemberColumns} dataSource={memberList} loading={memberLoading} pagination={pagination} />
+              <EnhancedTable
+                className='mt-2'
+                size='small'
+                rowKey='id'
+                columns={teamMemberColumns}
+                dataSource={memberList}
+                loading={memberLoading}
+                pagination={pagination}
+                actionColumn={{ title: t('common:table.operations'), width: 64 }}
+                rowActions={(record) => ({
+                  menu: [
+                    {
+                      key: 'delete',
+                      icon: 'delete',
+                      text: t('common:btn.delete'),
+                      danger: true,
+                      onClick: () => {
+                        let params = {
+                          ids: [record.id],
+                        };
+                        confirm({
+                          title: t('common:confirm.delete'),
+                          onOk: () => {
+                            deleteMember(teamId, params).then((_) => {
+                              message.success(t('common:success.delete'));
+                              handleClose('updateMember');
+                            });
+                          },
+                          onCancel: () => {},
+                        });
+                      },
+                    },
+                  ],
+                })}
+              />
             </div>
           ) : (
             <div className='blank-busi-holder'>

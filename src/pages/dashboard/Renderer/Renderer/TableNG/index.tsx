@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useImperativeHandle } from 'react';
 import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
@@ -12,6 +12,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
 import { IPanel } from '../../../types';
+import { downloadCsv } from '../Table/utils';
 import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
 import getFormattedRowData from './utils/getFormattedRowData';
 import normalizeData from './utils/normalizeData';
@@ -59,7 +60,7 @@ interface Props {
   domLayout?: DomLayoutType;
 }
 
-function index(props: Props) {
+function index(props: Props, ref: React.Ref<any>) {
   const { t, i18n } = useTranslation('dashboard');
   const { siteInfo } = useContext(CommonStateContext);
   const {
@@ -123,6 +124,17 @@ function index(props: Props) {
       formattedData,
     };
   }, [activeIndex, JSON.stringify(_.map(series, 'id')), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      exportCsv() {
+        const csvData = [columns, ..._.map(formattedData, (row) => _.map(columns, (col) => row[col]?.text ?? ''))];
+        downloadCsv(csvData, values.name);
+      },
+    }),
+    [columns, formattedData, values.name],
+  );
 
   const theme = useMemo(() => {
     if (themeMode === 'dark') {
@@ -298,7 +310,7 @@ function index(props: Props) {
   );
 }
 
-export default React.memo(index, (prevProps, nextProps) => {
+export default React.memo(React.forwardRef(index), (prevProps, nextProps) => {
   const omitKeys = ['series'];
   const otherPropsEqual = _.isEqual(_.omit(prevProps, omitKeys), _.omit(nextProps, omitKeys));
   const seriesPropEqual = _.isEqual(_.map(prevProps.series, 'id'), _.map(nextProps.series, 'id'));

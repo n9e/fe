@@ -125,7 +125,9 @@ export default function Tags(props: Props) {
   const { visibleCount, overflowCount } = layout;
 
   return (
-    <div ref={containerRef} className='relative'>
+    // overflow-hidden 防止下方绝对定位的测量层向祖先（.ant-table-body）贡献可滚动宽度，
+    // 否则当某行存在很长的 tag 时，会出现表体比表头多一段横向滚动距离的错位现象
+    <div ref={containerRef} className='relative overflow-hidden'>
       {/* 隐藏测量层：绝对定位不占空间，用于获取各 tag 的真实渲染宽度 */}
       <div aria-hidden className='absolute top-0 left-0 invisible pointer-events-none flex'>
         {data.map((tag, i) => (
@@ -148,7 +150,16 @@ export default function Tags(props: Props) {
       {/* 可见布局层 */}
       <div className='flex flex-wrap gap-0.5 content-start'>
         {data.slice(0, visibleCount).map((tag, i) => (
-          <span key={i} className={visibleTagClass} style={fillStyle} title={tag} onClick={() => onTagClick?.(tag)}>
+          <span
+            key={i}
+            className={visibleTagClass}
+            style={fillStyle}
+            title={tag}
+            onClick={(e) => {
+              e.stopPropagation();
+              onTagClick?.(tag);
+            }}
+          >
             {tag}
           </span>
         ))}
@@ -156,7 +167,7 @@ export default function Tags(props: Props) {
           <Popover
             title={
               <div className='flex justify-between items-center'>
-                <Trans ns={NS} i18nKey='tags_popover_title' values={{ count: data.length }} />
+                <Trans ns='common' i18nKey='tags_popover_title' values={{ count: data.length }} />
                 <Button
                   type='text'
                   icon={<CopyOutlined />}
@@ -170,7 +181,14 @@ export default function Tags(props: Props) {
               <div>
                 {data.map((tag, i) => (
                   <div key={i} className='mb-1'>
-                    <div className={tagBaseClass} style={fillStyle} onClick={() => onTagClick?.(tag)}>
+                    <div
+                      className={tagBaseClass}
+                      style={fillStyle}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onTagClick?.(tag);
+                      }}
+                    >
                       {tag}
                     </div>
                   </div>
@@ -178,7 +196,13 @@ export default function Tags(props: Props) {
               </div>
             }
           >
-            <span className={`${tagBaseClass} shrink-0`} style={fillStyle}>
+            <span
+              className={`${tagBaseClass} shrink-0`}
+              style={fillStyle}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               +{overflowCount}
             </span>
           </Popover>

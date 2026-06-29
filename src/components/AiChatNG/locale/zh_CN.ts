@@ -3,6 +3,8 @@ const zh_CN = {
     current_chat: '当前会话',
     new_chat: '新建会话',
     history: '会话历史',
+    share: '分享',
+    share_copied: '分享链接已复制',
     switch_to_drawer: '切换为抽屉模式',
     switch_to_floating: '切换为浮窗模式',
   },
@@ -17,6 +19,7 @@ const zh_CN = {
   },
   input: {
     placeholder: '输入问题，Enter 发送，Shift + Enter 换行',
+    share_readonly_placeholder: '当前为只读分享模式',
   },
   query: {
     title: '查询语句',
@@ -29,8 +32,11 @@ const zh_CN = {
     query_generator: '生成查询语句',
   },
   message: {
-    generating: '正在生成回复...',
+    generating: '思考中...',
+    processing: '仍在处理中',
     hint: '提示',
+    no_llm_title: '当前环境没有大模型配置',
+    no_llm_content: '请前往<a>LLM管理</a>页面添加大模型配置',
     stopped: '已停止生成',
     request_failed: '请求失败',
     cancelled: '本次回复已被取消。',
@@ -41,8 +47,10 @@ const zh_CN = {
   },
   form_select: {
     title: '请先补充以下信息后继续：',
+    approval_title: '请确认是否执行以上操作：',
     busi_group: '业务组',
     datasource: '数据源',
+    team: '团队',
     placeholder_select: '请选择',
     confirm: '确定',
   },

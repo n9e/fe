@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Form, Input, Select, Alert, Table } from 'antd';
+import { Modal, Form, Input, Select, Alert, Table, Button } from 'antd';
 import { debounce } from 'lodash';
 import _ from 'lodash';
 
@@ -27,6 +27,11 @@ export default function OperationModal(props: OperateionModalProps) {
   const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
   const [identList, setIdentList] = useState<string[]>(idents);
   const [tagsList, setTagsList] = useState<string[]>([]);
+  const [errorModal, setErrorModal] = useState<{ visible: boolean; errData: { host: string; error_msg: string }[]; formData: any }>({
+    visible: false,
+    errData: [],
+    formData: null,
+  });
   const detailProp = operateType === OperateType.UnbindTag ? tagsList : busiGroups;
 
   // 绑定标签弹窗内容
@@ -179,6 +184,13 @@ export default function OperationModal(props: OperateionModalProps) {
     }
   }
 
+  function resetOperation() {
+    setOperateType(OperateType.None);
+    reloadList();
+    form.resetFields();
+    setConfirmLoading(false);
+  }
+
   // 提交表单
   function submitForm() {
     form.validateFields().then((data) => {
@@ -187,10 +199,7 @@ export default function OperationModal(props: OperateionModalProps) {
       requestFunc(data)
         .then((res) => {
           if (_.isEmpty(res?.dat)) {
-            setOperateType(OperateType.None);
-            reloadList();
-            form.resetFields();
-            setConfirmLoading(false);
+            resetOperation();
           } else {
             const errData = _.map(res.dat, (val, key) => {
               return {
@@ -198,34 +207,23 @@ export default function OperationModal(props: OperateionModalProps) {
                 error_msg: val,
               };
             });
-            Modal.error({
-              icon: null,
-              content: (
-                <Table
-                  size='small'
-                  columns={[
-                    {
-                      title: t('common:table.host'),
-                      dataIndex: 'host',
-                      key: 'host',
-                    },
-                    {
-                      title: t('common:table.error_msg'),
-                      dataIndex: 'error_msg',
-                      key: 'error_msg',
-                    },
-                  ]}
-                  dataSource={errData}
-                  pagination={false}
-                  rowKey='host'
-                />
-              ),
-            });
+            setErrorModal({ visible: true, errData, formData: data });
             setConfirmLoading(false);
           }
         })
         .catch(() => setConfirmLoading(false));
     });
+  }
+
+  function handleForceSubmit() {
+    requestFunc({ ...errorModal.formData, force: true })
+      .then((res) => {
+        if (_.isEmpty(res?.dat)) {
+          setErrorModal({ visible: false, errData: [], formData: null });
+          resetOperation();
+        }
+      })
+      .catch(() => setConfirmLoading(false));
   }
 
   // 初始化展示所有业务组
@@ -268,28 +266,66 @@ export default function OperationModal(props: OperateionModalProps) {
   }, [operateType, identList]);
 
   return (
-    <Modal
-      visible={operateType !== 'none'}
-      title={operateTitle}
-      confirmLoading={confirmLoading}
-      okButtonProps={{
-        danger: operateType === OperateType.RemoveBusi || operateType === OperateType.Delete,
-      }}
-      okText={operateType === OperateType.RemoveBusi ? t('remove_busi.btn') : operateType === OperateType.Delete ? t('batch_delete.btn') : t('common:btn.ok')}
-      onOk={submitForm}
-      onCancel={() => {
-        setOperateType(OperateType.None);
-        form.resetFields();
-      }}
-    >
-      {/* 基础展示表单项 */}
-      <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-        <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
-          <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t('targets_placeholder')} onBlur={formatValue} />
-        </Form.Item>
-        {isFormItem && render()}
-      </Form>
-      {!isFormItem && render()}
-    </Modal>
+    <>
+      <Modal
+        visible={operateType !== 'none'}
+        title={operateTitle}
+        confirmLoading={confirmLoading}
+        okButtonProps={{
+          danger: operateType === OperateType.RemoveBusi || operateType === OperateType.Delete,
+        }}
+        okText={operateType === OperateType.RemoveBusi ? t('remove_busi.btn') : operateType === OperateType.Delete ? t('batch_delete.btn') : t('common:btn.ok')}
+        onOk={submitForm}
+        onCancel={() => {
+          setOperateType(OperateType.None);
+          form.resetFields();
+        }}
+      >
+        {/* 基础展示表单项 */}
+        <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+          <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
+            <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t('targets_placeholder')} onBlur={formatValue} />
+          </Form.Item>
+          {isFormItem && render()}
+        </Form>
+        {!isFormItem && render()}
+      </Modal>
+      <Modal
+        visible={errorModal.visible}
+        title={t('hosts:batch_failed')}
+        onCancel={() => setErrorModal({ visible: false, errData: [], formData: null })}
+        footer={
+          <div className='flex justify-end gap-2'>
+            {operateType === OperateType.Delete && (
+              <Button danger onClick={handleForceSubmit}>
+                {t('hosts:force_delete')}
+              </Button>
+            )}
+            <Button type='primary' onClick={() => setErrorModal({ visible: false, errData: [], formData: null })}>
+              {t('common:btn.ok')}
+            </Button>
+          </div>
+        }
+      >
+        <Table
+          size='small'
+          columns={[
+            {
+              title: t('common:table.host'),
+              dataIndex: 'host',
+              key: 'host',
+            },
+            {
+              title: t('common:table.error_msg'),
+              dataIndex: 'error_msg',
+              key: 'error_msg',
+            },
+          ]}
+          dataSource={errorModal.errData}
+          pagination={false}
+          rowKey='host'
+        />
+      </Modal>
+    </>
   );
 }

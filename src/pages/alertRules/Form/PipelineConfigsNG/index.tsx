@@ -17,12 +17,33 @@ export interface PipelineConfigsNGRef {
   checkUnsavedAndNotify: () => boolean;
 }
 
-const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef>((_props, ref) => {
+interface PipelineConfigsNGProps {
+  initialValues?: any;
+}
+
+const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigsNGProps>((props, ref) => {
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
 
-  const [collapsed, setCollapsed] = useState(true);
-  const [relabelCollapsed, setRelabelCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(() => {
+    const { initialValues } = props;
+    const pipelineConfigs = initialValues?.pipeline_configs ?? [];
+    const eventRelabelConfig = initialValues?.rule_config?.event_relabel_config ?? [];
+    const annotations = initialValues?.annotations ?? [];
+    const enrichQueries = initialValues?.extra_config?.enrich_queries ?? [];
+
+    const hasPipelineId = pipelineConfigs.some((pc: any) => pc?.pipeline_id !== undefined && pc?.pipeline_id !== 0);
+    const hasEventRelabelConfig = eventRelabelConfig.length > 0;
+    const hasAnnotations = annotations.length > 0;
+    const hasEnrichQueries = enrichQueries.length > 0;
+
+    return !(hasPipelineId || hasEventRelabelConfig || hasAnnotations || hasEnrichQueries);
+  });
+  const [relabelCollapsed, setRelabelCollapsed] = useState(() => {
+    const { initialValues } = props;
+    const eventRelabelConfig = initialValues?.rule_config?.event_relabel_config ?? [];
+    return eventRelabelConfig.length === 0;
+  });
   const [activeWorkflowTabKey, setActiveWorkflowTabKey] = useState('0');
 
   const pipeline_configs = Form.useWatch('pipeline_configs');
@@ -120,6 +141,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef>((_props, ref) =
                           workflowId={workflowId}
                           workflowEnabled={workflowEnabled}
                           isMultiWorkflow={isMultiWorkflow}
+                          collapsed={collapsed}
                           remove={() => {
                             remove(field.name);
                           }}
@@ -144,6 +166,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef>((_props, ref) =
                     prefixNamePath={['pipeline_configs']}
                     workflowId={workflowId}
                     workflowEnabled={workflowEnabled}
+                    collapsed={collapsed}
                     remove={() => {
                       remove(field.name);
                     }}
