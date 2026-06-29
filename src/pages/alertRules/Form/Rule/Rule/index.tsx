@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { DatasourceCateEnum } from '@/utils/constant';
 import IntervalAndDuration from '@/pages/alertRules/Form/components/IntervalAndDuration';
 
+import { AlertRule as IotDB } from '@/plugins/iotdb';
 import { AlertRule as TDengine } from '@/plugins/TDengine';
 import { AlertRule as ClickHouse } from '@/plugins/clickHouse';
 import { AlertRule as ElasticsearchSettings } from '@/plugins/elasticsearch';
@@ -36,6 +37,7 @@ export default function index() {
       </Form.Item>
       <div style={{ marginBottom: 10 }}>
         {cate === DatasourceCateEnum.prometheus && <Prometheus datasourceCate={cate} datasourceValue={datasourceValue} />}
+        {cate === DatasourceCateEnum.iotdb && <IotDB datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.tdengine && <TDengine datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.ck && <ClickHouse datasourceValue={datasourceValue} />}
         {cate === DatasourceCateEnum.loki && <Loki datasourceCate={cate} datasourceValue={datasourceValue} />}
