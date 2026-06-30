@@ -20,6 +20,7 @@ import { Form } from 'antd';
 import { useDebounceFn } from 'ahooks';
 
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { datasource as iotdbQuery } from '@/plugins/iotdb';
 import { datasource as tdengineQuery } from '@/plugins/TDengine';
 import { datasource as ckQuery } from '@/plugins/clickHouse';
 import flatten from '@/utils/flatten';
@@ -71,6 +72,7 @@ export default function useQuery(props: IProps) {
   const fetchQueryMap = {
     prometheus: prometheusQuery,
     elasticsearch: elasticsearchQuery,
+    iotdb: iotdbQuery,
     tdengine: tdengineQuery,
     ck: ckQuery,
     ...plusDatasource,

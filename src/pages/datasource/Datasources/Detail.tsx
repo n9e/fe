@@ -11,6 +11,7 @@ import Victorialogs from '@/plugins/victorialogs/Datasource/Detail';
 import Prometheus from './Prometheus/Detail';
 import ElasticSearch from './ElasticSearch/Detail';
 import Jaeger from './Jaeger/Detail';
+import IotDB from './iotdb/Detail';
 import TDengine from './TDengine/Detail';
 import Loki from './Loki/Detail';
 
@@ -29,6 +30,9 @@ export default function Form(props) {
   }
   if (props.data.plugin_type === 'jaeger') {
     return <Jaeger {...props} />;
+  }
+  if (props.data.plugin_type === DatasourceCateEnum.iotdb) {
+    return <IotDB {...props} />;
   }
   if (props.data.plugin_type === DatasourceCateEnum.tdengine) {
     return <TDengine {...props} />;

@@ -137,6 +137,7 @@ const SideMenu = (props: SideMenuProps) => {
       sessionStorage.getItem('menuHide') === '1' ||
       query?.menu === 'hide' ||
       location.pathname === '/login' ||
+      location.pathname === '/oauth-consent' ||
       location.pathname.startsWith('/chart/') ||
       location.pathname.startsWith('/events/screen/') ||
       location.pathname.startsWith('/dashboards/share/') ||
