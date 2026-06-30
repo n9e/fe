@@ -2,6 +2,7 @@ import React from 'react';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 
+import { QueryBuilder as IotDB } from '@/plugins/iotdb';
 import { QueryBuilder as TDengine } from '@/plugins/TDengine';
 import { QueryBuilder as CK } from '@/plugins/clickHouse';
 import { IRawTimeRange } from '@/components/TimeRangePicker/types';
@@ -29,6 +30,9 @@ export default function QueryBuilder(props: Props) {
   }
   if (cate === DatasourceCateEnum.elasticsearch) {
     return <Elasticsearch datasourceValue={datasourceValue} />;
+  }
+  if (cate === DatasourceCateEnum.iotdb) {
+    return <IotDB datasourceValue={datasourceValue} />;
   }
   if (cate === DatasourceCateEnum.tdengine) {
     return <TDengine datasourceValue={datasourceValue} />;

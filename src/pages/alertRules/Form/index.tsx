@@ -29,7 +29,7 @@ import Base from './Base';
 import Rule from './Rule';
 import Effective from './Effective';
 import Notify from './Notify';
-import { processFormValues, processInitialValues } from './utils';
+import { processFormValues, processInitialValues, getDefaultValuesByCate } from './utils';
 import { defaultValues } from './constants';
 import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
 
@@ -119,7 +119,11 @@ export default function index(props: IProps) {
           newValues.cate = 'host';
         }
       }
-      form.setFieldsValue(newValues);
+      // 应用所选数据源类型的默认 rule_config（如 IoTDB 默认时间间隔），与手动切换类型时行为一致
+      form.setFieldsValue({
+        ...newValues,
+        ...getDefaultValuesByCate(newValues.prod, newValues.cate),
+      });
     }
   }, [initialValues]);
 
