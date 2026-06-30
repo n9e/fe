@@ -42,7 +42,7 @@ export default function CardContainer({ onClose, children, className }: IProps) 
           </div>
         ) : (
           <>
-            {closeButton && <div className='absolute right-2 top-2'>{closeButton}</div>}
+            {closeButton && <div className='absolute right-2 top-4'>{closeButton}</div>}
             <div className={cn(onClose && 'pr-8')}>{children}</div>
           </>
         )}

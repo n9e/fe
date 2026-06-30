@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, AutoComplete } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, RightOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
-import { getTeamInfoList, getNotifiesList } from '@/services/manage';
-import { getAlertRulesCallbacks } from '@/services/warning';
-import { getWebhooks } from '@/pages/help/NotificationSettings/services';
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 
 import SectionCard, { SectionItem } from '../components/SectionCard';
 import shouldShowAdvancedSettings from '../utils/shouldShowAdvancedSettings';
+import { useFormNGData } from '../context';
 import TaskTpls from './TaskTpls';
 import NotificationRuleSelect from './NotificationRuleSelect';
 import VersionSwitch from './VersionSwitch';
@@ -30,12 +28,9 @@ interface Props {
 
 export default function index({ item, advancedItem, sectionRefs, disabled, expandSignal }: Props) {
   const { t } = useTranslation('alertRules');
+  const { notifyChannels: contactList, teams: notifyGroups, webhooks, callbacks } = useFormNGData();
 
-  const [contactList, setContactList] = useState<{ key: string; label: string }[]>([]);
-  const [notifyGroups, setNotifyGroups] = useState<any[]>([]);
-  const [globalFlashdutyPushConfigured, setGlobalFlashdutyPushConfigured] = useState(false);
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
-  const [callbacks, setCallbacks] = useState<string[]>([]);
   const [effectiveCollapsed, setEffectiveCollapsed] = useState(true);
 
   const datasourceCate = Form.useWatch('cate');
@@ -45,36 +40,19 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
 
   const showadvancedSettings = shouldShowAdvancedSettings(notify_version, datasourceCate);
 
-  const getNotifyChannel = () => {
-    getNotifiesList().then((res) => {
-      setContactList(res || []);
+  const globalFlashdutyPushConfigured = useMemo(() => {
+    return _.some(webhooks, (item) => {
+      // TODO 糟糕的设计，需要根据 url pathname 这种匹配来判断是否配置了 flashduty
+      // 2024-03-05 排除掉事件墙的推送
+      return _.includes(item.url, '/event/push/alert/n9e') && !_.includes(item.url, '/api/v1/event/push/alert/n9e') && item.enable;
     });
-  };
-
-  const getGroups = async (str) => {
-    const res = await getTeamInfoList({ query: str });
-    const data = res.dat || res;
-    setNotifyGroups(data || []);
-  };
+  }, [webhooks]);
 
   useEffect(() => {
-    getGroups('');
-    getNotifyChannel();
-    getWebhooks().then((res) => {
-      const globalFlashdutyPushConfigured = _.some(res, (item) => {
-        // TODO 糟糕的设计，需要根据 url pathnam 这种匹配来判断是否配置了 flashduty
-        // 2024-03-05 排除掉事件墙的推送
-        return _.includes(item.url, '/event/push/alert/n9e') && !_.includes(item.url, '/api/v1/event/push/alert/n9e') && item.enable;
-      });
-      setGlobalFlashdutyPushConfigured(globalFlashdutyPushConfigured);
-      if (globalFlashdutyPushConfigured) {
-        setNotifyTargetCollapsed(true);
-      }
-    });
-    getAlertRulesCallbacks().then((res) => {
-      setCallbacks(res);
-    });
-  }, []);
+    if (globalFlashdutyPushConfigured) {
+      setNotifyTargetCollapsed(true);
+    }
+  }, [globalFlashdutyPushConfigured]);
 
   // Expand this section when sidebar triggers expansion
   useEffect(() => {

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Form, Select, Space, Drawer, Spin, message } from 'antd';
 import { SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
-import { getItems as getNotificationRules, getItem as getNotificationRule, putItem as putNotificationRule, RuleItem } from '@/pages/notificationRules/services';
-import { useIsAuthorized } from '@/components/AuthorizationWrapper';
-import { NS as notificationRulesNS, CN as notificationRulesCN, PERM } from '@/pages/notificationRules/constants';
+import { getItem as getNotificationRule, putItem as putNotificationRule, RuleItem } from '@/pages/notificationRules/services';
+import { NS as notificationRulesNS, CN as notificationRulesCN } from '@/pages/notificationRules/constants';
 import NotificationRuleForm from '@/pages/notificationRules/pages/Form';
 import { normalizeInitialValues } from '@/pages/notificationRules/utils/normalizeValues';
+import { useFormNGData } from '../context';
 
 interface Props {
   label?: React.ReactNode;
@@ -18,34 +18,20 @@ interface Props {
 export default function NotificationRuleSelect(props: Props) {
   const { t } = useTranslation('alertRules');
   const { label = t('notify_rule_ids') } = props;
-  const [options, setOptions] = useState<{ label: string; value: number }[]>([]);
-  const [loading, setLoading] = useState(false);
-  const isAuthorized = useIsAuthorized([PERM]);
+  const { permissions, notificationRules, notificationRulesLoading, refreshNotificationRules } = useFormNGData();
+  const isAuthorized = permissions.notificationRules;
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [drawerData, setDrawerData] = useState<RuleItem>();
-  const fetchData = () => {
-    getNotificationRules()
-      .then((res) => {
-        setOptions(
-          _.map(res, (item) => {
-            return {
-              label: item.name,
-              value: item.id,
-            };
-          }),
-        );
-      })
-      .catch(() => {
-        setOptions([]);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const options = useMemo(
+    () =>
+      _.map(notificationRules, (item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      }),
+    [notificationRules],
+  );
 
   return (
     <>
@@ -59,13 +45,15 @@ export default function NotificationRuleSelect(props: Props) {
                 <SettingOutlined />
               </Link>
             )}
-            <SyncOutlined
-              spin={loading}
-              onClick={(e) => {
-                fetchData();
-                e.preventDefault();
-              }}
-            />
+            {isAuthorized && (
+              <SyncOutlined
+                spin={notificationRulesLoading}
+                onClick={(e) => {
+                  refreshNotificationRules();
+                  e.preventDefault();
+                }}
+              />
+            )}
           </Space>
         }
       >
@@ -120,6 +108,7 @@ export default function NotificationRuleSelect(props: Props) {
                 putNotificationRule(values).then(() => {
                   message.success(t('common:success.add'));
                   setDrawerVisible(false);
+                  refreshNotificationRules();
                 });
               }}
               onCancel={() => {

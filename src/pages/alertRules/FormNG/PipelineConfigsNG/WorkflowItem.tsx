@@ -1,5 +1,4 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { useRequest } from 'ahooks';
 import { Space, Spin, Switch, Dropdown, Menu, Button, Form, Row, Col, Tag, Tooltip, Modal, Input, Popover, message, Alert } from 'antd';
 import { PlusOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
@@ -7,20 +6,19 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import { SIZE } from '@/utils/constant';
-import { getItem as getWorkflowItem, getList as getWorkflowList, postItem as postWorkflow, putItem as putWorkflow } from '@/pages/eventPipeline/services';
+import { postItem as postWorkflow, putItem as putWorkflow } from '@/pages/eventPipeline/services';
 import { DEFAULT_VALUES, NS as EVENTPIPELINE_NS } from '@/pages/eventPipeline/constants';
 import TestModal from '@/pages/eventPipeline/pages/Form/TestModal';
 
+import { useFormNGData } from '../context';
 import Processor from './Processor';
 
 export function WorkflowTabTitle(props: { workflowId?: number; fallbackTitle?: string }) {
   const { workflowId, fallbackTitle } = props;
+  const { workflowMap, workflowItemsLoading, workflowsLoading, permissions } = useFormNGData();
   const shouldFetchWorkflow = _.isNumber(workflowId);
-  const { data: item, loading } = useRequest(() => getWorkflowItem(workflowId as number), {
-    cacheKey: `workflow-item-${workflowId}`,
-    refreshDeps: [workflowId],
-    ready: shouldFetchWorkflow,
-  });
+  const item = shouldFetchWorkflow ? workflowMap[workflowId as number] : undefined;
+  const loading = permissions.eventPipelines && shouldFetchWorkflow && !item && (workflowItemsLoading || workflowsLoading);
 
   if (!shouldFetchWorkflow) return <span>{fallbackTitle ?? '--'}</span>;
   if (loading) return <Spin size='small' />;
@@ -48,6 +46,7 @@ export interface WorkflowItemRef {
 const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const { t } = useTranslation('alertRules');
   const { field, namePath = [], prefixNamePath = [], workflowId, workflowEnabled, isMultiWorkflow, collapsed = false, remove } = props;
+  const { workflows: workflowList, workflowMap, workflowItemsLoading, workflowsLoading, permissions, refreshWorkflows } = useFormNGData();
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [saveWorkflowName, setSaveWorkflowName] = useState('');
   const [savingWorkflow, setSavingWorkflow] = useState(false);
@@ -60,31 +59,18 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const form = Form.useFormInstance();
   const group_id = Form.useWatch('group_id');
   const processors = Form.useWatch([...prefixNamePath, ...namePath, 'processors']);
+  const item = workflowId ? workflowMap[workflowId] : undefined;
+  const loading = permissions.eventPipelines && !!workflowId && !item && (workflowItemsLoading || workflowsLoading);
 
-  const { data: workflowList } = useRequest(() => getWorkflowList({ group_id, use_case: 'alert_rule' }), {
-    cacheKey: 'workflow-list',
-    refreshDeps: [group_id],
-    ready: !collapsed && group_id !== undefined,
-  });
-
-  const { data: item, loading } = useRequest(
-    () => {
-      if (!workflowId) return Promise.reject(undefined);
-      return getWorkflowItem(workflowId);
-    },
-    {
-      cacheKey: `workflow-item-${workflowId}`,
-      refreshDeps: [workflowId],
-      ready: !!workflowId,
-      onSuccess: (data) => {
-        // 将 data.processors 设置到 form 中, path 是 [...prefixNamePath, ...namePath, 'processors']
-        // 使用 setFieldsValue 而非 setFields，避免 Form.List 内部 key 未正确初始化导致重复 key
-        const currentValues = _.cloneDeep(form.getFieldsValue());
-        _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], data.processors);
-        form.setFieldsValue(currentValues);
-      },
-    },
-  );
+  useEffect(() => {
+    if (workflowId && item?.processors) {
+      // 将 data.processors 设置到 form 中, path 是 [...prefixNamePath, ...namePath, 'processors']
+      // 使用 setFieldsValue 而非 setFields，避免 Form.List 内部 key 未正确初始化导致重复 key
+      const currentValues = _.cloneDeep(form.getFieldsValue());
+      _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], item.processors);
+      form.setFieldsValue(currentValues);
+    }
+  }, [workflowId, item?.processors]);
 
   useEffect(() => {
     if (workflowId !== undefined && item?.processors) {
@@ -158,6 +144,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
           processors,
         });
         setSavedProcessorsSnapshot(_.cloneDeep(processors));
+        refreshWorkflows();
         message.success(t('common:success.edit'));
       } else {
         const createdWorkflow = await postWorkflow({
@@ -175,6 +162,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
           form.setFieldsValue(currentValues);
           setSavedProcessorsSnapshot(_.cloneDeep(processors));
         }
+        refreshWorkflows();
         message.success(t('common:success.add'));
       }
       setSaveModalVisible(false);

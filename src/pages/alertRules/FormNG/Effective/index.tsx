@@ -11,6 +11,7 @@ import { CommonStateContext } from '@/App';
 import SectionCard, { SectionItem } from '../components/SectionCard';
 import { daysOfWeek } from '../../constants';
 import { getTimezones } from '../../services';
+import { useFormNGData } from '../context';
 
 // @ts-ignore
 import ServiceCalendarWithTimeSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarWithTimeSelect';
@@ -50,6 +51,7 @@ const isDefaultEffectiveConfig = (initialValues: any) => {
 export default function index({ item, sectionRefs, initialValues, expandSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
+  const { permissions, serviceCals, refreshServiceCals } = useFormNGData();
 
   const [collapsed, setCollapsed] = useState(() => isDefaultEffectiveConfig(initialValues));
 
@@ -204,7 +206,13 @@ export default function index({ item, sectionRefs, initialValues, expandSignal }
       </Form.List>
       {isPlus && (
         <div>
-          <ServiceCalendarWithTimeSelect namePath={['extra_config', 'service_cal_configs']} time_zone={time_zone} />
+          <ServiceCalendarWithTimeSelect
+            namePath={['extra_config', 'service_cal_configs']}
+            time_zone={time_zone}
+            serviceCals={serviceCals}
+            refreshServiceCals={refreshServiceCals}
+            showSetting={permissions.serviceCalendar}
+          />
         </div>
       )}
       <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>

@@ -6,14 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import moment from 'moment-timezone';
 
-import request from '@/utils/request';
-import { RequestMethod } from '@/store/common';
-
 import { cn } from '@/utils';
-import { getTeamInfoList, getNotifiesList } from '@/services/manage';
-import { getItem as getWorkflowItem } from '@/pages/eventPipeline/services';
-import { getItems as getNotificationRules } from '@/pages/notificationRules/services';
 
+import { useFormNGData } from '../../context';
 import { getDatasourcesByQueries } from '../DatasourceValueSelect/services';
 
 interface IProps {
@@ -144,25 +139,11 @@ function DatasourceSummary({ datasourceList }: { datasourceList: { id: number; n
 // ---- 事件处理卡片 ----
 function PipelineSummary() {
   const { t } = useTranslation('alertRules');
+  const { workflowMap } = useFormNGData();
   const pipelineConfigs = Form.useWatch('pipeline_configs');
   const eventRelabelConfig = Form.useWatch(['rule_config', 'event_relabel_config']);
   const annotations = Form.useWatch('annotations');
   const enrichQueries = Form.useWatch(['extra_config', 'enrich_queries']);
-
-  const pipelineIds = useMemo(() => {
-    if (!_.isArray(pipelineConfigs)) return [];
-    return pipelineConfigs.map((pc: any) => pc?.pipeline_id).filter((id: any) => _.isNumber(id));
-  }, [pipelineConfigs]);
-
-  const { data: workflowItems } = useRequest(() => Promise.all(pipelineIds.map((id: number) => getWorkflowItem(id))), {
-    ready: pipelineIds.length > 0,
-    refreshDeps: [JSON.stringify(pipelineIds)],
-  });
-
-  const workflowNameMap = useMemo(() => {
-    if (!_.isArray(workflowItems)) return {};
-    return _.keyBy(workflowItems, 'id');
-  }, [workflowItems]);
 
   const pipelineLabels = useMemo(() => {
     if (!_.isArray(pipelineConfigs)) return [];
@@ -170,12 +151,12 @@ function PipelineSummary() {
       .map((pc: any) => {
         const id = pc?.pipeline_id;
         if (_.isNumber(id)) {
-          return workflowNameMap[id]?.name ?? String(id);
+          return workflowMap[id]?.name ?? String(id);
         }
         return id;
       })
       .filter(Boolean);
-  }, [pipelineConfigs, workflowNameMap]);
+  }, [pipelineConfigs, workflowMap]);
 
   const hasRelabel = _.isArray(eventRelabelConfig) && eventRelabelConfig.length > 0;
   const hasAnnotations = _.isArray(annotations) && annotations.length > 0;
@@ -230,27 +211,13 @@ function PipelineSummary() {
 // ---- 生效配置卡片 ----
 function EffectiveSummary() {
   const { t } = useTranslation('alertRules');
+  const { serviceCalMap } = useFormNGData();
   const effectiveTime = Form.useWatch('effective_time');
   const enableInBg = Form.useWatch('enable_in_bg');
   const serviceCalConfigs = Form.useWatch(['extra_config', 'service_cal_configs']);
   const timeZone = Form.useWatch('time_zone');
 
   const hasServiceCal = _.isArray(serviceCalConfigs) && serviceCalConfigs.length > 0;
-
-  const { data: serviceCals } = useRequest(
-    () =>
-      request('/api/n9e-plus/service-cals', {
-        method: RequestMethod.Get,
-      }).then((res) => res.dat || []),
-    {
-      refreshDeps: [],
-    },
-  );
-
-  const calNameMap = useMemo(() => {
-    if (!_.isArray(serviceCals)) return {};
-    return _.keyBy(serviceCals, 'id');
-  }, [serviceCals]);
 
   const weekdays = useMemo(() => t('form_ng.weekdays_short', { returnObjects: true }) as string[], []);
 
@@ -316,7 +283,7 @@ function EffectiveSummary() {
                 return (
                   <div key={idx} className='flex items-center gap-1 flex-wrap mb-0.5'>
                     {calIds.map((id: number) => (
-                      <ThemeTag key={id}>{calNameMap[id]?.name ?? `${t('form_ng.service_calendar')} #${id}`}</ThemeTag>
+                      <ThemeTag key={id}>{serviceCalMap[id]?.name ?? `#${id}`}</ThemeTag>
                     ))}
                     {rangeLabel && (
                       <Tooltip title={rangeLocalText ? `${t('local_time')}: ${rangeLocalText}` : undefined}>
@@ -339,6 +306,7 @@ function EffectiveSummary() {
 // ---- 通知设置卡片 ----
 function NotifySummary() {
   const { t } = useTranslation('alertRules');
+  const { notificationRuleMap, teamMap, notifyChannelMap } = useFormNGData();
   const notifyVersion = Form.useWatch('notify_version');
   const notifyRuleIds = Form.useWatch('notify_rule_ids');
   const notifyChannels = Form.useWatch('notify_channels');
@@ -348,35 +316,10 @@ function NotifySummary() {
   const notifyRecovered = Form.useWatch('notify_recovered');
   const recoverDuration = Form.useWatch('recover_duration');
 
-  const { data: notifyRules } = useRequest(() => getNotificationRules(), {
-    cacheKey: 'notification-rules-list',
-  });
-
-  const { data: teamList } = useRequest(() => getTeamInfoList(), {
-    cacheKey: 'team-info-list',
-  });
-
-  const { data: channelList } = useRequest(() => getNotifiesList(), {
-    cacheKey: 'notify-channels-list',
-  });
-
-  const teamNameMap = useMemo(() => {
-    const list = _.isArray(teamList) ? teamList : teamList?.dat;
-    if (!_.isArray(list)) return {};
-    return _.keyBy(list, (item) => _.toString(item.id));
-  }, [teamList]);
-
-  const channelLabelMap = useMemo(() => {
-    if (!_.isArray(channelList)) return {};
-    return _.keyBy(channelList, 'key');
-  }, [channelList]);
-
   const notifyRuleNames = useMemo(() => {
-    if (!_.isArray(notifyRules)) return [];
     if (!_.isArray(notifyRuleIds) || notifyRuleIds.length === 0) return [];
-    const ruleMap = _.keyBy(notifyRules, 'id');
-    return notifyRuleIds.map((id: number) => ruleMap[id]?.name ?? String(id));
-  }, [notifyRules, notifyRuleIds]);
+    return notifyRuleIds.map((id: number) => notificationRuleMap[id]?.name ?? String(id));
+  }, [notificationRuleMap, notifyRuleIds]);
 
   const hasNotifyV1 = notifyVersion === 1 && notifyRuleNames.length > 0;
   const hasNotifyV0 = notifyVersion === 0 && (_.isArray(notifyChannels) || _.isArray(notifyGroups));
@@ -404,7 +347,7 @@ function NotifySummary() {
               <FieldLabel>{t('notify_channels')}</FieldLabel>
               <div className='flex flex-wrap gap-1'>
                 {notifyChannels.map((key: string) => (
-                  <ThemeTag key={key}>{channelLabelMap[key]?.label ?? key}</ThemeTag>
+                  <ThemeTag key={key}>{notifyChannelMap[key]?.label ?? key}</ThemeTag>
                 ))}
               </div>
             </Field>
@@ -414,7 +357,7 @@ function NotifySummary() {
               <FieldLabel>{t('notify_groups')}</FieldLabel>
               <div className='flex flex-wrap gap-1'>
                 {notifyGroups.map((id: string) => (
-                  <ThemeTag key={id}>{teamNameMap[id]?.name ?? id}</ThemeTag>
+                  <ThemeTag key={id}>{teamMap[id]?.name ?? id}</ThemeTag>
                 ))}
               </div>
             </Field>

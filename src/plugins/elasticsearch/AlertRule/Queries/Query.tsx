@@ -13,7 +13,6 @@ import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
-import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 
 import LuceneInput from '@/plugins/elasticsearch/components/LuceneInput';
 

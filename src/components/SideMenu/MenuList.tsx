@@ -634,6 +634,7 @@ export default function MenuList(
 
                   const groupNode = (
                     <div
+                      key={menu.key}
                       onMouseEnter={() => {
                         if (!hoverEnabled) return;
                         clearCloseTimer();
