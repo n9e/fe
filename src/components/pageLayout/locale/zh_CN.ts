@@ -7,6 +7,7 @@ const zh_CN = {
   docsCenter: '文档中心',
   viewDemo: '查看 DEMO',
   submit_issue: '提交问题',
+  book_meeting: '预约交流',
   theme: {
     title: '主题配置',
     title_help: '配置仅对当前用户生效',

@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { Space, Button } from 'antd';
-import { RollbackOutlined, HistoryOutlined, GithubOutlined } from '@ant-design/icons';
+import { RollbackOutlined, HistoryOutlined, GithubOutlined, CalendarOutlined } from '@ant-design/icons';
 
 import AdvancedWrap, { License } from '@/components/AdvancedWrap';
 import { CommonStateContext } from '@/App';
@@ -143,6 +143,17 @@ const PageLayout: React.FC<IPageLayoutProps> = ({ icon, title, rightArea, introI
                     {!IS_ENT && !IS_PLUS && (
                       <Button className='text-hint text-[11px]' target='_blank' href='https://github.com/ccfos/nightingale/issues' size='small' icon={<GithubOutlined />}>
                         {t('submit_issue')}
+                      </Button>
+                    )}
+                    {!IS_ENT && !IS_PLUS && ['zh_CN', 'zh_HK'].includes(i18n.language) && (
+                      <Button
+                        className='text-hint text-[11px]'
+                        target='_blank'
+                        href='https://c9xudyniiq.feishu.cn/scheduler/00d06ce64941261b'
+                        size='small'
+                        icon={<CalendarOutlined />}
+                      >
+                        {t('book_meeting')}
                       </Button>
                     )}
                     <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
