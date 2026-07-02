@@ -43,7 +43,7 @@ export default function List() {
                 loading={loading}
                 dataSource={data}
                 rowActions={(record) => ({
-                  menu: [
+                  inline: [
                     {
                       key: 'edit',
                       icon: 'edit',
@@ -71,7 +71,7 @@ export default function List() {
                     },
                   ],
                 })}
-                actionColumn={{ title: t('common:table.operations'), width: 64 }}
+                actionColumn={{ title: t('common:table.operations'), width: 80 }}
                 columns={[
                   {
                     dataIndex: 'id',
