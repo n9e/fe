@@ -24,7 +24,7 @@
 // through /login (incl. SSO) first; once authenticated it POSTs the decision to
 // the protected API which mints the authorization code, then navigates the
 // browser back to the client's redirect_uri.
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import queryString from 'query-string';
@@ -78,6 +78,18 @@ export default function OAuthConsent() {
   // 该 scope 对 MCP 与 A2A 两类接口一视同仁放行（后端不按 scope 细分鉴权），
   // 显式标注 mcp/a2a，避免被误读为仅授权 MCP。
   const scopeDisplay = scope === 'mcp' ? 'mcp/a2a' : scope;
+
+  // 整合版本中 .App 容器有 min-width 限制，此页面不希望受其影响，
+  // 挂载时取消，卸载时恢复。
+  useEffect(() => {
+    const el = document.querySelector<HTMLElement>('.App');
+    if (!el) return;
+    const saved = el.style.minWidth;
+    el.style.minWidth = '';
+    return () => {
+      el.style.minWidth = saved;
+    };
+  }, []);
 
   if (!req) {
     return (
