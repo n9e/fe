@@ -21,7 +21,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { NS, MY_GRPUPS_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
-import { readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
+import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
 import getProdOptions from '../../utils/getProdOptions';
 import getRequestParamsByFilter from '../../utils/getRequestParamsByFilter';
 import { ackEvents } from '../../services';
@@ -111,7 +111,7 @@ const AlertCurEvent: React.FC = () => {
   );
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [eventColumnExpanded, setEventColumnExpanded] = useState(readAlertEventTagsExpanded);
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY));
   const params = getRequestParamsByFilter(filter);
 
   type RuleCardsRequestParams = {
@@ -334,7 +334,7 @@ const AlertCurEvent: React.FC = () => {
                             onClick={() => {
                               setEventColumnExpanded((expanded) => {
                                 const next = !expanded;
-                                writeAlertEventTagsExpanded(next);
+                                writeAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
                                 return next;
                               });
                             }}

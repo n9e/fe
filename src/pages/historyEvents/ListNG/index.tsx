@@ -24,7 +24,7 @@ import { getEventById } from '@/pages/alertCurEvent/services';
 import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEventsModal';
 import EnhancedTable from '@/components/EnhancedTable';
 import Tags from '@/components/TableTags/Tags';
-import { readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '@/pages/alertCurEvent/utils/eventColumnExpandedStorage';
+import { HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '@/pages/alertCurEvent/utils/eventColumnExpandedStorage';
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
@@ -74,7 +74,7 @@ const Event = (props: Props) => {
     showClaimant = false,
   } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
-  const [eventColumnExpanded, setEventColumnExpanded] = useState(readAlertEventTagsExpanded);
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
     data?: any;
@@ -377,7 +377,7 @@ const Event = (props: Props) => {
                 onClick={() => {
                   setEventColumnExpanded((expanded) => {
                     const next = !expanded;
-                    writeAlertEventTagsExpanded(next);
+                    writeAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
                     return next;
                   });
                 }}
