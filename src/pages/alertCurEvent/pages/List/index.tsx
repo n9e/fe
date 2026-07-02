@@ -21,6 +21,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { NS, MY_GRPUPS_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
+import { readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
 import getProdOptions from '../../utils/getProdOptions';
 import getRequestParamsByFilter from '../../utils/getRequestParamsByFilter';
 import { ackEvents } from '../../services';
@@ -110,7 +111,7 @@ const AlertCurEvent: React.FC = () => {
   );
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [eventColumnExpanded, setEventColumnExpanded] = useState(false);
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(readAlertEventTagsExpanded);
   const params = getRequestParamsByFilter(filter);
 
   type RuleCardsRequestParams = {
@@ -331,7 +332,11 @@ const AlertCurEvent: React.FC = () => {
                             className='alert-event-expand-btn'
                             icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
                             onClick={() => {
-                              setEventColumnExpanded(!eventColumnExpanded);
+                              setEventColumnExpanded((expanded) => {
+                                const next = !expanded;
+                                writeAlertEventTagsExpanded(next);
+                                return next;
+                              });
                             }}
                           />
                         </Tooltip>
