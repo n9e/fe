@@ -24,6 +24,7 @@ import { getEventById } from '@/pages/alertCurEvent/services';
 import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEventsModal';
 import EnhancedTable from '@/components/EnhancedTable';
 import Tags from '@/components/TableTags/Tags';
+import { HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '@/pages/alertCurEvent/utils/eventColumnExpandedStorage';
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
@@ -73,7 +74,7 @@ const Event = (props: Props) => {
     showClaimant = false,
   } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
-  const [eventColumnExpanded, setEventColumnExpanded] = useState(false);
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
     data?: any;
@@ -374,7 +375,11 @@ const Event = (props: Props) => {
                 size='small'
                 icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
                 onClick={() => {
-                  setEventColumnExpanded(!eventColumnExpanded);
+                  setEventColumnExpanded((expanded) => {
+                    const next = !expanded;
+                    writeAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
+                    return next;
+                  });
                 }}
               />
             </Tooltip>
