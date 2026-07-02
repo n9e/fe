@@ -1,0 +1,105 @@
+{
+  "group_id": 265,
+  "cate": "prometheus",
+  "datasource_ids": [849],
+  "datasource_queries": [
+    {
+      "match_type": 0,
+      "op": "in",
+      "values": [849]
+    }
+  ],
+  "cluster": "",
+  "name": "prom-高级模式-阈值判断",
+  "note": "",
+  "prod": "metric",
+  "algorithm": "",
+  "algo_params": null,
+  "delay": 0,
+  "severity": 0,
+  "severities": [2],
+  "disabled": 0,
+  "prom_for_duration": 60,
+  "prom_ql": "",
+  "rule_config": {
+    "anomaly_trigger": {
+      "algo_params": {
+        "lower_bound": 1,
+        "lower_times_num": 1,
+        "seasonal_duration": 86400,
+        "upper_bound": 1,
+        "upper_times_num": 1
+      },
+      "severity": 2
+    },
+    "exp_trigger_disable": false,
+    "nodata_trigger": {
+      "enable": false,
+      "resolve_after": 1800,
+      "resolve_after_enable": false,
+      "severity": 2
+    },
+    "queries": [
+      {
+        "query": "cpu_usage_idle",
+        "ref": "A",
+        "unit": "none"
+      }
+    ],
+    "triggers": [
+      {
+        "exp": "$A < 0",
+        "expressions": [
+          {
+            "comparisonOperator": "<",
+            "logicalOperator": "&&",
+            "ref": "A",
+            "value": 0
+          }
+        ],
+        "join_ref": "A",
+        "mode": 0,
+        "recover_config": {
+          "judge_type": 1
+        },
+        "severity": 2
+      }
+    ],
+    "version": "v2"
+  },
+  "event_relabel_config": null,
+  "prom_eval_interval": 30,
+  "enable_stime": "00:00",
+  "enable_stimes": ["00:00"],
+  "enable_etime": "00:00",
+  "enable_etimes": ["00:00"],
+  "enable_days_of_week": ["0", "1", "2", "3", "4", "5", "6"],
+  "enable_days_of_weeks": [["0", "1", "2", "3", "4", "5", "6"]],
+  "enable_in_bg": 0,
+  "notify_recovered": 1,
+  "notify_channels": [],
+  "notify_groups_obj": [],
+  "notify_groups": [],
+  "notify_repeat_step": 60,
+  "notify_max_number": 0,
+  "recover_duration": 0,
+  "callbacks": [],
+  "runbook_url": "",
+  "append_tags": [],
+  "annotations": {},
+  "extra_config": {
+    "enrich_queries": [],
+    "network_device_config": null,
+    "service_cal_configs": []
+  },
+  "cron_pattern": "@every 60s",
+  "time_zone": "Local",
+  "notify_rule_ids": [],
+  "pipeline_configs": [
+    {
+      "pipeline_id": 0,
+      "enable": true
+    }
+  ],
+  "notify_version": 1
+}

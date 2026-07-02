@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Form, Space, Input, Row, Col, InputNumber, Tooltip, Select, Button } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { SqlMonacoEditor } from '@fc-components/monaco-editor';
@@ -13,6 +13,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import EnhancedModal from '@/pages/alertRules/Form/components/EnhancedModal';
 import { normalizeTime } from '@/pages/alertRules/Form/utils';
 import { NS as EVENT_PIPELINE_NS } from '@/pages/eventPipeline/constants';
+import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
 import { NAME_SPACE } from '../../constants';
 import GraphPreview from '../GraphPreview';
@@ -52,155 +53,153 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                 />
               </Space>
             </div>
-            {fields.map((field, index) => {
-              return (
-                <div key={field.key} className='bg-fc-200 p-4 mb-4 relative'>
-                  <Row gutter={8}>
-                    <Col flex='32px'>
-                      <Form.Item>
-                        <Input readOnly style={{ width: 32 }} value={generateQueryNameByIndex(index)} />
-                      </Form.Item>
-                    </Col>
-                    <Col flex='auto'>
-                      <InputGroupWithFormItem
-                        label={
-                          <Space>
-                            {t(`${NAME_SPACE}:query.query`)}
-                            <InfoCircleOutlined
-                              onClick={() => {
-                                DocumentDrawer({
-                                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                                  title: t('common:document_title'),
-                                  type: 'iframe',
-                                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
-                                });
-                              }}
-                            />
-                          </Space>
-                        }
-                      >
-                        <Form.Item
-                          {...field}
-                          name={[field.name, 'sql']}
-                          rules={[
-                            {
-                              required: true,
-                              message: t(`${EVENT_PIPELINE_NS}:annotation_qd.query_required`),
-                            },
-                            () => ({
-                              validator(_, value) {
-                                // 验证 SQL 语句中是否包含 LIMIT 子句
-                                if (typeof value === 'string' && /limit\s+\d+/i.test(value)) {
-                                  return Promise.resolve();
-                                }
-                                return Promise.reject(new Error(t(`${EVENT_PIPELINE_NS}:annotation_qd.sql_limit_valid`)));
-                              },
-                            }),
-                          ]}
-                        >
-                          <SqlMonacoEditor
-                            theme={darkMode ? 'dark' : 'light'}
-                            placeholder='SELECT count(*) as count FROM db_name.table_name LIMIT 10'
-                            enableFormat
-                            renderFormatButton={() => {
-                              return (
-                                <Tooltip title={t('common:format_sql')}>
-                                  <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
-                                </Tooltip>
-                              );
-                            }}
-                            editorDidMount={(editor) => {
-                              editor.onKeyDown((e) => {
-                                if (e.code === 'Escape') {
-                                  e.stopPropagation();
-                                }
-                              });
-                            }}
-                          />
-                        </Form.Item>
-                      </InputGroupWithFormItem>
-                    </Col>
-                  </Row>
-                  <div>
-                    <Space>
-                      <InputGroupWithFormItem
-                        label={
-                          <Space>
-                            {t('query.interval')}
-                            <Tooltip
-                              title={
-                                <Trans
-                                  ns={NAME_SPACE}
-                                  i18nKey='query.interval_tip'
-                                  components={{
-                                    br: <br />,
-                                  }}
-                                />
-                              }
-                            >
-                              <QuestionCircleOutlined />
-                            </Tooltip>
-                          </Space>
-                        }
-                        addonAfter={
-                          <Form.Item {...field} name={[field.name, 'interval_unit']} initialValue='min'>
-                            <Select disabled={disabled} style={{ width: 80 }}>
-                              <Select.Option value='second'>{t('common:time.second')}</Select.Option>
-                              <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
-                              <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
-                            </Select>
+            <div className='mb-4'>
+              {fields.map((field, index) => {
+                return (
+                  <CardContainer key={field.key} onClose={() => remove(field.name)}>
+                    <CardContainerHeader>
+                      <Row gutter={8}>
+                        <Col flex='32px'>
+                          <Form.Item>
+                            <Input readOnly style={{ width: 32 }} value={generateQueryNameByIndex(index)} />
                           </Form.Item>
-                        }
-                      >
-                        <Form.Item {...field} name={[field.name, 'interval']} initialValue={1}>
-                          <InputNumber disabled={disabled} style={{ width: 80 }} min={0} />
-                        </Form.Item>
-                      </InputGroupWithFormItem>
-                      <InputGroupWithFormItem
-                        label={
-                          <Space>
-                            {t('query.offset')}
-                            <Tooltip
-                              title={
-                                <Trans
-                                  ns={NAME_SPACE}
-                                  i18nKey='query.offset_tip'
-                                  components={{
-                                    br: <br />,
+                        </Col>
+                        <Col flex='auto'>
+                          <InputGroupWithFormItem
+                            label={
+                              <Space>
+                                {t(`${NAME_SPACE}:query.query`)}
+                                <InfoCircleOutlined
+                                  onClick={() => {
+                                    DocumentDrawer({
+                                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                                      title: t('common:document_title'),
+                                      type: 'iframe',
+                                      documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
+                                    });
                                   }}
                                 />
-                              }
+                              </Space>
+                            }
+                          >
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'sql']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: t(`${EVENT_PIPELINE_NS}:annotation_qd.query_required`),
+                                },
+                                () => ({
+                                  validator(_, value) {
+                                    // 验证 SQL 语句中是否包含 LIMIT 子句
+                                    if (typeof value === 'string' && /limit\s+\d+/i.test(value)) {
+                                      return Promise.resolve();
+                                    }
+                                    return Promise.reject(new Error(t(`${EVENT_PIPELINE_NS}:annotation_qd.sql_limit_valid`)));
+                                  },
+                                }),
+                              ]}
                             >
-                              <QuestionCircleOutlined />
-                            </Tooltip>
-                          </Space>
-                        }
-                      >
-                        <Form.Item {...field} name={[field.name, 'offset']} initialValue={0}>
-                          <InputNumber addonAfter={t('common:time.second')} min={0} className='w-full' />
-                        </Form.Item>
-                      </InputGroupWithFormItem>
-                    </Space>
-                  </div>
-                  <CloseCircleOutlined
-                    style={{ position: 'absolute', right: -4, top: -4 }}
-                    onClick={() => {
-                      remove(field.name);
-                    }}
-                  />
-                  <Form.Item shouldUpdate noStyle>
-                    {({ getFieldValue }) => {
-                      const cate = getFieldValue('cate');
-                      const datasourceValue = getFieldValue('datasource_value');
-                      const query = getFieldValue([...fullPrefixName, ...names, field.name]);
-                      const intervalValue = query ? normalizeTime(query.interval, query.interval_unit) : undefined;
+                              <SqlMonacoEditor
+                                theme={darkMode ? 'dark' : 'light'}
+                                placeholder='SELECT count(*) as count FROM db_name.table_name LIMIT 10'
+                                enableFormat
+                                renderFormatButton={() => {
+                                  return (
+                                    <Tooltip title={t('common:format_sql')}>
+                                      <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
+                                    </Tooltip>
+                                  );
+                                }}
+                                editorDidMount={(editor) => {
+                                  editor.onKeyDown((e) => {
+                                    if (e.code === 'Escape') {
+                                      e.stopPropagation();
+                                    }
+                                  });
+                                }}
+                              />
+                            </Form.Item>
+                          </InputGroupWithFormItem>
+                        </Col>
+                      </Row>
+                    </CardContainerHeader>
+                    <div>
+                      <Space>
+                        <InputGroupWithFormItem
+                          label={
+                            <Space>
+                              {t('query.interval')}
+                              <Tooltip
+                                title={
+                                  <Trans
+                                    ns={NAME_SPACE}
+                                    i18nKey='query.interval_tip'
+                                    components={{
+                                      br: <br />,
+                                    }}
+                                  />
+                                }
+                              >
+                                <QuestionCircleOutlined />
+                              </Tooltip>
+                            </Space>
+                          }
+                          addonAfter={
+                            <Form.Item {...field} name={[field.name, 'interval_unit']} initialValue='min'>
+                              <Select disabled={disabled} style={{ width: 80 }}>
+                                <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                                <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                                <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                              </Select>
+                            </Form.Item>
+                          }
+                        >
+                          <Form.Item {...field} name={[field.name, 'interval']} initialValue={1}>
+                            <InputNumber disabled={disabled} style={{ width: 80 }} min={0} />
+                          </Form.Item>
+                        </InputGroupWithFormItem>
+                        <InputGroupWithFormItem
+                          label={
+                            <Space>
+                              {t('query.offset')}
+                              <Tooltip
+                                title={
+                                  <Trans
+                                    ns={NAME_SPACE}
+                                    i18nKey='query.offset_tip'
+                                    components={{
+                                      br: <br />,
+                                    }}
+                                  />
+                                }
+                              >
+                                <QuestionCircleOutlined />
+                              </Tooltip>
+                            </Space>
+                          }
+                        >
+                          <Form.Item {...field} name={[field.name, 'offset']} initialValue={0}>
+                            <InputNumber addonAfter={t('common:time.second')} min={0} className='w-full' />
+                          </Form.Item>
+                        </InputGroupWithFormItem>
+                      </Space>
+                    </div>
+                    <Form.Item shouldUpdate noStyle>
+                      {({ getFieldValue }) => {
+                        const cate = getFieldValue('cate');
+                        const datasourceValue = getFieldValue('datasource_value');
+                        const query = getFieldValue([...fullPrefixName, ...names, field.name]);
+                        const intervalValue = query ? normalizeTime(query.interval, query.interval_unit) : undefined;
 
-                      return <GraphPreview cate={cate} datasourceValue={datasourceValue} sql={query?.sql} interval={intervalValue} offset={query?.offset} />;
-                    }}
-                  </Form.Item>
-                </div>
-              );
-            })}
+                        return <GraphPreview cate={cate} datasourceValue={datasourceValue} sql={query?.sql} interval={intervalValue} offset={query?.offset} />;
+                      }}
+                    </Form.Item>
+                  </CardContainer>
+                );
+              })}
+            </div>
           </div>
         )}
       </Form.List>

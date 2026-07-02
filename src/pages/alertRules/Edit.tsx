@@ -22,7 +22,7 @@ import queryString from 'query-string';
 import { useInterval } from 'ahooks';
 import PageLayout from '@/components/pageLayout';
 import { getWarningStrategy } from '@/services/warning';
-import Form from './Form';
+import Form from './FormNG';
 import { getAlertRulePure } from './services';
 
 export default function Edit() {
