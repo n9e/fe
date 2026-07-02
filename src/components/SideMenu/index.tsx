@@ -118,6 +118,7 @@ const SideMenu = (props: SideMenuProps) => {
       sessionStorage.getItem('menuHide') === '1' ||
       query?.menu === 'hide' ||
       location.pathname === '/login' ||
+      location.pathname === '/oauth-consent' ||
       location.pathname.startsWith('/chart/') ||
       location.pathname.startsWith('/events/screen/') ||
       location.pathname.startsWith('/dashboards/share/') ||
@@ -153,10 +154,10 @@ const SideMenu = (props: SideMenuProps) => {
         const items = res
           .filter((product) => !(product.hide ?? true))
           .map((product) => ({
-          key: `${embeddedProductDetailPath}/${product.id}`,
-          label: product.name,
-          children: [],
-        }));
+            key: `${embeddedProductDetailPath}/${product.id}`,
+            label: product.name,
+            children: [],
+          }));
         setEmbeddedProductMenu(items);
       }
     });
@@ -393,9 +394,7 @@ const SideMenu = (props: SideMenuProps) => {
         display: hideSideMenu ? 'none' : 'flex',
       }}
     >
-      <div
-        className={cn('relative flex h-screen shrink-0', collapsed ? 'w-[56px]' : '')}
-      >
+      <div className={cn('relative flex h-screen shrink-0', collapsed ? 'w-[56px]' : '')}>
         <aside
           className={cn(
             'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid bg-sidebar',
@@ -429,13 +428,7 @@ const SideMenu = (props: SideMenuProps) => {
               onToggleCollapse={toggleCollapsed}
               toggleTitle={collapsed ? t('expand') : t('collapse')}
             />
-            <div
-              className={cn(
-                'shrink-0 -mt-px h-px',
-                collapsed ? 'mx-2' : 'mx-3',
-                isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]',
-              )}
-            />
+            <div className={cn('shrink-0 -mt-px h-px', collapsed ? 'mx-2' : 'mx-3', isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]')} />
             <ScrollArea className='-mr-2 mt-3 flex-1'>
               <MenuList
                 list={menus}
@@ -457,26 +450,10 @@ const SideMenu = (props: SideMenuProps) => {
             </ScrollArea>
           </div>
           <div
-            className={cn(
-              'side-menu-footer shrink-0 border-0 border-t border-solid px-2',
-              isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]',
-            )}
+            className={cn('side-menu-footer shrink-0 border-0 border-t border-solid px-2', isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]')}
           >
-            <Dropdown
-              overlay={profileMenu}
-              trigger={['hover']}
-              placement='topLeft'
-              align={profileMenuAlign}
-              visible={profileMenuOpen}
-              onVisibleChange={setProfileMenuOpen}
-            >
-              <div
-                className={cn(
-                  'side-menu-profile-row rounded transition-colors',
-                  collapsed ? 'justify-center' : '',
-                  isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200',
-                )}
-              >
+            <Dropdown overlay={profileMenu} trigger={['hover']} placement='topLeft' align={profileMenuAlign} visible={profileMenuOpen} onVisibleChange={setProfileMenuOpen}>
+              <div className={cn('side-menu-profile-row rounded transition-colors', collapsed ? 'justify-center' : '', isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200')}>
                 <button
                   type='button'
                   className={cn(
@@ -491,7 +468,9 @@ const SideMenu = (props: SideMenuProps) => {
                   {!collapsed && (
                     <span className='min-w-0 flex-1'>
                       <span className='block truncate text-[13px] font-medium leading-5'>{profileDisplay.name}</span>
-                      {profileDisplay.detail && <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>}
+                      {profileDisplay.detail && (
+                        <span className={cn('block truncate text-[11px] leading-4', isCustomBg ? 'side-menu-profile-detail-on-dark' : 'text-hint')}>{profileDisplay.detail}</span>
+                      )}
                     </span>
                   )}
                 </button>
