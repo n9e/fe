@@ -27,9 +27,13 @@ export interface RowActions {
   menu?: RowAction[];
 }
 
+export type RowActionDisplay = 'menu' | 'inline';
+
 export interface EnhancedTableProps<RecordType> extends TableProps<RecordType> {
   /** declarative row actions; auto-renders a fixed-right action column */
   rowActions?: (record: RecordType, index: number) => RowActions | null | undefined;
+  /** how `rowActions.menu` is rendered: collapsed kebab by default, or surfaced inline */
+  rowActionDisplay?: RowActionDisplay;
   /** overrides for the generated action column (title / width / …) */
   actionColumn?: Partial<ColumnType<RecordType>>;
   /** compact header: tighter thead padding + smaller sort hit-area, for tables embedded inside tabs/cards */

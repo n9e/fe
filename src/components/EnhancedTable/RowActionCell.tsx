@@ -4,9 +4,20 @@ import { MoreVertical } from 'lucide-react';
 import classNames from 'classnames';
 
 import { resolveActionIcon } from './icons';
-import type { RowAction, RowActions } from './types';
+import type { RowAction, RowActionDisplay, RowActions } from './types';
 
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
+
+export function normalizeRowActions(actions: RowActions, display: RowActionDisplay = 'menu'): RowActions {
+  if (display !== 'inline' || !actions.menu?.length) {
+    return actions;
+  }
+
+  return {
+    inline: [...(actions.inline || []), ...actions.menu],
+    menu: [],
+  };
+}
 
 function getInlineTooltipTitle(action: RowAction) {
   if (!action.tooltip) return action.text;
