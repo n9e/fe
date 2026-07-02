@@ -4,7 +4,7 @@ import type { ColumnType, ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 
 import { injectColumnFilters } from './columns';
-import { normalizeRowActions, RowActionCell } from './RowActionCell';
+import { RowActionCell } from './RowActionCell';
 import type { EnhancedTableProps } from './types';
 import './style.less';
 import { defaultComparator } from './sorter';
@@ -18,7 +18,7 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, rowActionDisplay, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, ...rest } = props;
 
   const rowActionsRef = useRef(rowActions);
   rowActionsRef.current = rowActions;
@@ -46,14 +46,14 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
         ...actionColumn,
         render: (_value: unknown, record: RecordType, index: number) => {
           const cfg = rowActionsRef.current?.(record, index);
-          return cfg ? <RowActionCell actions={normalizeRowActions(cfg, rowActionDisplay)} /> : null;
+          return cfg ? <RowActionCell actions={cfg} /> : null;
         },
       };
       allColumns.push(opColumn);
     }
 
     return allColumns;
-  }, [columns, actionColumn, hasRowActions, autoSortColumns, dataSource, rowActionDisplay]);
+  }, [columns, actionColumn, hasRowActions, autoSortColumns, dataSource]);
 
   return (
     <Table<RecordType>

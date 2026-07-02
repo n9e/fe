@@ -227,7 +227,7 @@ export default function List() {
             },
           ]}
           rowActions={(record) => ({
-            menu: [
+            inline: [
               { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => history.push({ pathname: `/${NS}/edit/${record.id}` }) },
               { key: 'clone', icon: 'copy', text: t('common:btn.clone'), onClick: () => window.open(`/${NS}/edit/${record.id}?mode=clone`) },
               {
@@ -248,7 +248,7 @@ export default function List() {
               },
             ],
           })}
-          actionColumn={{ title: t('common:table.operations'), width: 64 }}
+          actionColumn={{ title: t('common:table.operations'), width: 100 }}
         />
       </div>
     </PageLayout>
