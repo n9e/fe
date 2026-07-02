@@ -610,7 +610,7 @@ export default function List(props: Props) {
                           'text-title': record.target_up !== 0,
                         })}
                       >
-                        <VersionIcon className='flex leading-none' style={needsEntUpgrade ? { color: 'var(--fc-fill-alert)' } : undefined} />
+                        <VersionIcon className='flex leading-none' style={needsEntUpgrade ? { color: 'var(--fc-fill-alert)' } : { color: 'var(--fc-fill-success)' }} />
                         <span className='leading-none'>{displayText}</span>
                       </div>
                     );
