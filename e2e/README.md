@@ -28,6 +28,7 @@ e2e/
 | `E2E_USERNAME`            | `root`                  | 登录用户名                                                                            |
 | `E2E_PASSWORD`            | `root`                  | 登录密码                                                                              |
 | `E2E_CONFIGS`             | 不过滤                  | 逗号分隔的配置文件名（不含 `.json`），只运行匹配的用例，例如 `es-index,prometheus-v1` |
+| `E2E_WORKERS`             | `4`                     | Playwright 并行 worker 数，默认 4；设为 `1` 可禁用并行方便调试                        |
 | `MIDSCENE_MODEL_NAME`     | —                       | AI 模型名称，例如 `qwen3.7-plus`                                                      |
 | `MIDSCENE_MODEL_API_KEY`  | —                       | AI 服务的 API Key                                                                     |
 | `MIDSCENE_MODEL_BASE_URL` | —                       | AI 服务的 base URL（兼容 OpenAI 接口）                                                |
