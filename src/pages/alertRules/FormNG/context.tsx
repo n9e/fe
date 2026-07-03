@@ -147,7 +147,8 @@ export function FormNGDataProvider(props: { children: React.ReactNode }) {
 
   const pipelineIds = useMemo(() => {
     if (!_.isArray(pipelineConfigs)) return [];
-    return _.uniq(pipelineConfigs.map((item: any) => item?.pipeline_id).filter((id: any) => _.isNumber(id)));
+    // 0 是后端补的一个无效 id，这里过滤掉无效的 pipeline_id
+    return _.uniq(pipelineConfigs.map((item: any) => item?.pipeline_id).filter((id: any) => _.isNumber(id) && id !== 0));
   }, [pipelineConfigs]);
 
   const workflowIdsNeedDetail = useMemo(() => {
