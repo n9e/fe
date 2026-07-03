@@ -297,7 +297,7 @@ export default function List() {
               icon: 'delete',
               text: t('common:btn.delete'),
               danger: true,
-              disabled: record.disabled === false,
+              disabled: item.disabled === false,
               onClick: () => {
                 Modal.confirm({
                   title: t('common:confirm.delete'),
