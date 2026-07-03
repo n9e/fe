@@ -60,11 +60,37 @@ export interface NormalizedDatasourceQuery {
 
 export interface NormalizedQuery {
   ref?: string;
+  indexPatternName?: string;
   promQl?: string;
   query?: string;
   sql?: string;
   severityName?: string;
   [key: string]: unknown;
+}
+
+export interface NormalizedRelabelConfig {
+  action: string;
+  regex: string;
+  replacement: string;
+  separator: string;
+  sourceLabels: string[];
+  targetLabel: string;
+}
+
+export interface NormalizedTimeRange {
+  start: string;
+  end: string;
+  daysOfWeek: string[];
+}
+
+export interface NormalizedServiceCalConfig {
+  serviceCalNames: string[];
+  timeRange: { start: string; end: string };
+}
+
+export interface NormalizedAnnotation {
+  key: string;
+  value: string;
 }
 
 export interface NormalizedAlertRuleConfig {
@@ -86,6 +112,31 @@ export interface NormalizedAlertRuleConfig {
   notifyRuleNames: string[];
   notifyGroupNames: string[];
   notifyChannelLabels: string[];
+
+  // Pipeline / Event processing
+  pipelineNames: string[];
+  pipelineConfigs: Array<{ pipelineId: number; enable: boolean }>;
+  eventRelabelConfigs: NormalizedRelabelConfig[];
+
+  // Annotations & tags
+  annotations: Record<string, string>;
+  annotationEntries: NormalizedAnnotation[];
+  appendTagStrings: string[];
+
+  // Effective config
+  timeZoneName?: string;
+  enableInBg: boolean;
+  effectiveTimeRanges: NormalizedTimeRange[];
+
+  // Service calendar
+  serviceCalNames: string[];
+  serviceCalConfigs: NormalizedServiceCalConfig[];
+
+  // Notify config
+  notifyRecovered: boolean;
+  recoverDuration: number;
+  notifyRepeatStep: number;
+  notifyMaxNumber: number;
 }
 
 import type { MidsceneFixtureMethods } from '../types';

@@ -6,7 +6,7 @@ async function fillVisible(locator: Locator, value: string, description: string)
   await locator.fill(value);
 }
 
-function antFormItem(page: Page, label: string, index: number) {
+export function antFormItem(page: Page, label: string, index = 0) {
   return page
     .locator('.ant-form-item')
     .filter({
@@ -42,6 +42,60 @@ export async function fillInputGroupNumber(page: Page, label: string, value: num
 export async function fillAntFormItemInput(page: Page, label: string, value: string, index = 0) {
   const input = antFormItem(page, label, index).locator('input:not([type="hidden"]), textarea').last();
   await fillVisible(input, value, `${label} form input`);
+}
+
+/** 向 antd 表单项中的数字输入框填入数值。 */
+export async function fillAntFormItemSpinButton(page: Page, label: string, value: number | string, index = 0) {
+  const input = antFormItem(page, label, index).getByRole('spinbutton').last();
+  await fillVisible(input, String(value), `${label} form number input`);
+}
+
+/** 向 antd Select tags/multiple 表单项填入一个或多个值。 */
+export async function fillAntFormItemTags(page: Page, label: string, values: string[], index = 0) {
+  if (values.length === 0) return;
+  const formItem = antFormItem(page, label, index);
+  const combobox = formItem.getByRole('combobox').last();
+  await expect(combobox, `${label} tags select`).toBeVisible();
+  for (const value of values) {
+    await combobox.click();
+    await combobox.fill(value);
+    await page.keyboard.press('Enter');
+    await expect(formItem.locator('.ant-tag, .ant-select-selection-item').filter({ hasText: value }).first(), `${label} selected tag ${value}`).toBeVisible();
+  }
+}
+
+/** 设置 antd 表单项内的 Switch。 */
+export async function setAntFormItemSwitch(page: Page, label: string, checked: boolean, index = 0) {
+  const switchControl = antFormItem(page, label, index).getByRole('switch').first();
+  await expect(switchControl, `${label} switch`).toBeVisible();
+  const current = await switchControl.isChecked();
+  if (current !== checked) {
+    await switchControl.click();
+    await expect(switchControl, `${label} switch checked state`).toBeChecked({ checked });
+  }
+}
+
+/** 用 Playwright 精确选择 antd Select / AutoComplete 表单项的选项。 */
+export async function selectAntFormItemOption(page: Page, label: string, optionText: string, index = 0) {
+  const combobox = antFormItem(page, label, index).getByRole('combobox').last();
+  await combobox.click();
+  await combobox.fill(optionText);
+  const dropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await expect(dropdown, `dropdown for ${label}`).toBeVisible();
+  const option = dropdown.getByText(optionText, { exact: true });
+  if (await option.isVisible().catch(() => false)) {
+    await option.click();
+  } else {
+    await page.keyboard.press('Enter');
+  }
+}
+
+/** 设置 antd TimePicker 表单项或行内时间输入。 */
+export async function fillTimePickerInput(input: Locator, value: string, description = 'time picker') {
+  await expect(input, description).toBeVisible();
+  await input.click();
+  await input.fill(value);
+  await input.press('Enter');
 }
 
 /** 定位紧跟指定文本节点之后的第 index 个 combobox，填入值后按 Enter 确认。 */
@@ -105,4 +159,44 @@ export async function fillLastSpinButton(page: Page, value: number | string, des
 export async function selectAntOption(aiTap: AiTap, fieldDescription: string, optionText: string) {
   await aiTap(fieldDescription);
   await aiTap(`选项：${optionText}`, { deepLocate: true });
+}
+
+export async function selectAntSelectOption(page: Page, select: Locator, optionText: string) {
+  const selectRoot = select.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]');
+  const clickable = selectRoot.locator('.ant-select-selector').first();
+  if (await clickable.isVisible().catch(() => false)) {
+    await clickable.click();
+  } else {
+    await select.click();
+  }
+  const dropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await expect(dropdown, `dropdown for option ${optionText}`).toBeVisible();
+  const option = dropdown.getByRole('option', { name: optionText }).first();
+  if (await option.isVisible().catch(() => false)) {
+    await option.click();
+  } else {
+    await dropdown.getByText(optionText, { exact: true }).first().click();
+  }
+  await expect(dropdown, `dropdown for option ${optionText} should close`).toBeHidden();
+}
+
+export async function selectAntSelectMultipleOption(page: Page, select: Locator, optionText: string) {
+  const selectRoot = select.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]');
+  await selectRoot.locator('.ant-select-selector').first().click();
+
+  const dropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await expect(dropdown, `dropdown for option ${optionText}`).toBeVisible();
+
+  const exactOptionText = new RegExp(`^${optionText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
+  const option = dropdown.getByRole('option', { name: exactOptionText }).first();
+  if (await option.isVisible().catch(() => false)) {
+    await option.click();
+  } else {
+    await dropdown.locator('.ant-select-item-option-content').filter({ hasText: exactOptionText }).first().click();
+  }
+
+  if (await dropdown.isVisible().catch(() => false)) {
+    await page.keyboard.press('Escape');
+  }
+  await expect(selectRoot.locator('.ant-select-selection-item').filter({ hasText: exactOptionText }).first(), `selected option ${optionText}`).toBeVisible();
 }

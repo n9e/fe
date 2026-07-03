@@ -77,6 +77,7 @@ export default function Query(props: Props) {
                     <Space>
                       <Form.Item {...field} name={[field.name, 'index_type']} noStyle initialValue='index'>
                         <Select
+                          data-testid={`es-query-${field.name}-index-type-select`}
                           bordered={false}
                           options={_.concat(
                             [

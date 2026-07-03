@@ -1,5 +1,6 @@
-import type { ReferenceData } from '../fixture';
-import type { AlertRuleConfig, NormalizedAlertRuleConfig } from './types';
+import type { ReferenceData } from './reference-data';
+import type { AlertRuleConfig, NormalizedAlertRuleConfig, NormalizedRelabelConfig, NormalizedTimeRange, NormalizedServiceCalConfig } from './types';
+import { processAlertRuleFormValuesForE2E, processAlertRuleInitialValuesForE2E } from './form-values';
 
 const MATCH_TYPE_LABEL_MAP: Record<number, string> = {
   0: '精确匹配',
@@ -34,11 +35,11 @@ const CATE_LABEL_MAP: Record<string, string> = {
   pgsql: 'PostgreSQL',
   doris: 'Doris',
   victorialogs: 'VictoriaLogs',
-  'aliyun-sls': '阿里云 SLS',
-  'tencent-cls': '腾讯云 CLS',
-  'volc-tls': '火山引擎 TLS',
-  'huawei-lts': '华为云 LTS',
-  'bce-bls': '百度云 BLS',
+  'aliyun-sls': '阿里云SLS',
+  'tencent-cls': '腾讯云CLS',
+  'volc-tls': '火山云TLS',
+  'huawei-lts': '华为云LTS',
+  'bce-bls': '百度云BLS',
   cloudwatchlogs: 'CloudWatch Logs',
   gcm: 'Google Cloud Monitoring',
   cloudwatch: 'CloudWatch',
@@ -96,9 +97,58 @@ function toRecordArray(value: unknown): Record<string, unknown>[] {
   return value.filter(isPlainObject);
 }
 
-function normalizeQuery(query: Record<string, unknown>, index: number) {
+function normalizeRelabelConfigs(raw: unknown): NormalizedRelabelConfig[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((item: Record<string, unknown>) => ({
+    action: String(item.action || ''),
+    regex: String(item.regex || ''),
+    replacement: String(item.replacement || ''),
+    separator: String(item.separator || ';'),
+    sourceLabels: Array.isArray(item.source_labels) ? item.source_labels.map(String) : [],
+    targetLabel: String(item.target_label || ''),
+  }));
+}
+
+function normalizeEffectiveTimeRanges(stimes: string[], etimes: string[], daysOfWeeks: string[][]): NormalizedTimeRange[] {
+  const count = Math.max(stimes.length, etimes.length, daysOfWeeks.length);
+  if (count === 0) return [];
+  return Array.from({ length: count }, (_, i) => ({
+    start: stimes[i] || '00:00',
+    end: etimes[i] || '00:00',
+    daysOfWeek: daysOfWeeks[i] || ['0', '1', '2', '3', '4', '5', '6'],
+  }));
+}
+
+function normalizeServiceCalConfigs(raw: unknown, refs: ReferenceData): NormalizedServiceCalConfig[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((cfg: Record<string, unknown>) => {
+    const ids = Array.isArray(cfg.service_cal_ids) ? cfg.service_cal_ids.map(Number) : [];
+    const timeRangeRaw = isPlainObject(cfg.time_range) ? (cfg.time_range as Record<string, string>) : {};
+    return {
+      serviceCalNames: ids.map((id: number) => requiredMapValue(refs.serviceCalNameMap, id, 'extra_config.service_cal_configs.service_cal_ids')),
+      timeRange: {
+        start: timeRangeRaw.start || '00:00',
+        end: timeRangeRaw.end || '00:00',
+      },
+    };
+  });
+}
+
+function normalizeAnnotations(raw: unknown) {
+  if (!isPlainObject(raw)) return {};
+  return Object.entries(raw).reduce<Record<string, string>>((acc, [key, value]) => {
+    acc[key] = String(value ?? '');
+    return acc;
+  }, {});
+}
+
+const DELETE_META_KEYS = ['id', 'create_at', 'create_by', 'update_at', 'update_by', 'uuid', 'cur_event_count', 'update_by_nickname'];
+
+function normalizeQuery(query: Record<string, unknown>, index: number, refs: ReferenceData) {
+  const indexPattern = typeof query.index_pattern === 'number' ? query.index_pattern : undefined;
   return {
     ...query,
+    indexPatternName: indexPattern !== undefined ? requiredMapValue(refs.indexPatternNameMap, indexPattern, `rule_config.queries[${index}].index_pattern`) : undefined,
     promQl: typeof query.prom_ql === 'string' ? query.prom_ql : undefined,
     severityName: getSeverityName(typeof query.severity === 'number' ? query.severity : undefined, `rule_config.queries[${index}].severity`),
   };
@@ -112,7 +162,10 @@ function normalizeTrigger(trigger: Record<string, unknown>, index: number) {
 }
 
 export function normalizeAlertRuleForUi(config: AlertRuleConfig, refs: ReferenceData): NormalizedAlertRuleConfig {
+  const formValues = processAlertRuleInitialValuesForE2E(config);
   const ruleVersion = typeof config.rule_config.version === 'string' ? config.rule_config.version : undefined;
+  const annotations = normalizeAnnotations(config.annotations);
+  const serviceCalConfigs = config.extra_config?.service_cal_configs ? normalizeServiceCalConfigs(config.extra_config.service_cal_configs, refs) : [];
 
   return {
     name: `${config.name}-${Date.now().toString(36)}`,
@@ -127,7 +180,7 @@ export function normalizeAlertRuleForUi(config: AlertRuleConfig, refs: Reference
       opName: requiredMapValue(OP_LABEL_MAP, query.op, 'datasource_queries.op'),
       datasourceNames: (query.values || []).map((id) => requiredMapValue(refs.datasourceNameMap, id, 'datasource_queries.values')),
     })),
-    queries: toRecordArray(config.rule_config.queries).map(normalizeQuery),
+    queries: toRecordArray(formValues.rule_config.queries).map((query, index) => normalizeQuery(query, index, refs)),
     triggers: toRecordArray(config.rule_config.triggers).map(normalizeTrigger),
     ruleConfig: config.rule_config,
     promForDuration: config.prom_for_duration,
@@ -137,24 +190,107 @@ export function normalizeAlertRuleForUi(config: AlertRuleConfig, refs: Reference
     notifyRuleNames: config.notify_rule_ids.map((id) => requiredMapValue(refs.notificationRuleNameMap, id, 'notify_rule_ids')),
     notifyGroupNames: config.notify_groups.map((id) => requiredMapValue(refs.teamNameMap, Number(id), 'notify_groups')),
     notifyChannelLabels: config.notify_channels.map((key) => requiredMapValue(refs.notifyChannelLabelMap, key, 'notify_channels')),
+
+    // Pipeline / Event processing
+    pipelineNames: (config.pipeline_configs || [])
+      .filter((pc: Record<string, unknown>) => Number(pc.pipeline_id) > 0)
+      .map((pc: Record<string, unknown>) => requiredMapValue(refs.pipelineNameMap, Number(pc.pipeline_id), 'pipeline_configs.pipeline_id')),
+    pipelineConfigs: (config.pipeline_configs || [])
+      .filter((pc: Record<string, unknown>) => Number(pc.pipeline_id) > 0)
+      .map((pc: Record<string, unknown>) => ({
+        pipelineId: Number(pc.pipeline_id),
+        enable: pc.enable !== false,
+      })),
+    eventRelabelConfigs: normalizeRelabelConfigs(config.rule_config?.event_relabel_config),
+
+    // Annotations & tags
+    annotations,
+    annotationEntries: Object.entries(annotations).map(([key, value]) => ({ key, value })),
+    appendTagStrings: (config.append_tags || []).map(String),
+
+    // Effective config
+    timeZoneName: config.time_zone === 'Local' ? undefined : config.time_zone,
+    enableInBg: config.enable_in_bg === 1,
+    effectiveTimeRanges: normalizeEffectiveTimeRanges(config.enable_stimes || [], config.enable_etimes || [], config.enable_days_of_weeks || []),
+
+    // Service calendar
+    serviceCalNames: serviceCalConfigs.flatMap((sc) => sc.serviceCalNames),
+    serviceCalConfigs,
+
+    // Notify config
+    notifyRecovered: config.notify_recovered === 1,
+    recoverDuration: config.recover_duration,
+    notifyRepeatStep: config.notify_repeat_step,
+    notifyMaxNumber: config.notify_max_number,
   };
 }
 
-export function buildExpectedAlertRule(config: AlertRuleConfig, uiConfig: NormalizedAlertRuleConfig) {
-  const expected = JSON.parse(JSON.stringify(config)) as AlertRuleConfig;
+/**
+ * @param refs 可选的引用数据，用于将 uiConfig 中的名称映射回 UI 实际保存的 ID。
+ *   当 datasource 名称在测试环境中对应的 ID 与 config 中的原始 ID 不同时，提供此参数可避免断言失败。
+ */
+export function buildExpectedAlertRule(config: AlertRuleConfig, uiConfig: NormalizedAlertRuleConfig, refs?: ReferenceData) {
+  const expected = processAlertRuleFormValuesForE2E(processAlertRuleInitialValuesForE2E(config)) as AlertRuleConfig;
   expected.name = uiConfig.name;
+
+  // Remove export/list metadata fields
+  for (const key of DELETE_META_KEYS) {
+    delete (expected as Record<string, unknown>)[key];
+  }
+
+  // datasource_ids is not returned or set during creation
   delete (expected as Partial<AlertRuleConfig>).datasource_ids;
+  delete (expected as Record<string, unknown>).enable_status;
+
+  // 使用引用数据中的 name→ID 映射替换 datasource_queries 中的 ID，
+  // 使其与实际 UI 选中的 ID 一致（UI 通过名称选择 datasource，最终 ID 可能与 config 原始值不同）
+  if (refs && uiConfig.datasourceQueries.length > 0) {
+    expected.datasource_queries = expected.datasource_queries.map((dq, dqIdx) => {
+      const uiDq = uiConfig.datasourceQueries[dqIdx];
+      if (!uiDq) return dq;
+      const newValues = uiDq.datasourceNames.map((name) => {
+        const id = refs!.datasourceIdByNameMap[name];
+        if (id === undefined) {
+          throw new Error(`Cannot find datasource ID for name "${name}" in datasource_queries[${dqIdx}]`);
+        }
+        return id;
+      });
+      return { ...dq, values: newValues };
+    });
+  }
+
+  // Top-level event_relabel_config is populated by backend from rule_config;
+  // UI writes to rule_config.event_relabel_config, so drop the top-level copy
+  // to avoid mismatch on non-form fields (RegexCompiled, IfRegex, modulus, etc.)
+  delete (expected as Partial<AlertRuleConfig>).event_relabel_config;
+
   if (expected.cate === 'prometheus' && expected.rule_config?.version === 'v1') {
     expected.rule_config.queries = toRecordArray(expected.rule_config.queries).map((query) => {
       const { ref, ...persistedQuery } = query;
       return persistedQuery;
     });
   }
-  if (expected.cate !== 'prometheus') {
-    expected.prom_for_duration = 0;
+  if (expected.cate === 'elasticsearch') {
+    expected.rule_config.queries = toRecordArray(expected.rule_config.queries).map((query) => {
+      if (Array.isArray(query.group_by) && query.group_by.length === 0) {
+        const { group_by, ...persistedQuery } = query;
+        return persistedQuery;
+      }
+      return query;
+    });
   }
   if (expected.extra_config?.network_device_config === null) {
     delete expected.extra_config.network_device_config;
   }
+
+  // FormNG add page does not expose prom_eval_interval. New rules keep the
+  // default form value even when an exported config contains a different value.
+  expected.prom_eval_interval = 30;
+
+  // rule_config.task_tpls 不是表单字段，后端可能不返回
+  if (expected.rule_config && 'task_tpls' in expected.rule_config) {
+    delete (expected.rule_config as Record<string, unknown>).task_tpls;
+  }
+
   return expected;
 }

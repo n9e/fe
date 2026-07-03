@@ -5,12 +5,15 @@ import type { Page, Response } from '@playwright/test';
 
 import { BASE_URL, loginAndSetTokens, test } from '../fixture';
 import { fetchReferenceData } from './reference-data';
-import { fillAntFormItemInput, selectAntOption } from '../helpers';
 import { loadAlertRuleConfigs } from '../config-loader';
 import type { AlertRuleConfig } from './types';
-import { getAlertRuleConditionHandler } from './queries';
 import { normalizeAlertRuleForUi, buildExpectedAlertRule, isPlainObject } from './normalizer';
-import { selectFirstDatasourceFilterValue } from './helpers';
+import { fillBasicStep } from './steps/basic';
+import { fillDatasourceStep } from './steps/datasource';
+import { fillRuleStep } from './steps/rule';
+import { fillPipelineStep } from './steps/pipeline';
+import { fillEffectiveStep } from './steps/effective';
+import { fillNotifyStep } from './steps/notify';
 
 const ALERT_RULE_CONFIGS = loadAlertRuleConfigs<AlertRuleConfig>(path.resolve(__dirname, 'configs'));
 
@@ -68,6 +71,7 @@ async function fetchAlertRulesForGroup(page: Page, groupId: number) {
   const accessToken = await getAccessToken(page);
   const resp = await page.request.get(`${BASE_URL}/api/n9e/busi-group/${groupId}/alert-rules`, {
     headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    params: { limit: 5000 },
   });
   expect(resp.ok()).toBeTruthy();
   return resp.json();
@@ -91,6 +95,7 @@ async function expectAlertRuleDeleted(page: Page, groupId: number, ruleName: str
 }
 
 test.describe('add alert rule', () => {
+  test.describe.configure({ mode: 'parallel' });
   test.setTimeout(120000);
 
   test.beforeEach(async ({ page }) => {
@@ -98,6 +103,8 @@ test.describe('add alert rule', () => {
   });
 
   test.afterEach(async ({}, testInfo) => {
+    // 并行跑时其他 worker 可能还在写报告，避免互相删除。
+    if (testInfo.config.workers > 1) return;
     // 测试通过则清理所有报告。失败时保留供人工排查。
     if (testInfo.status !== 'passed') return;
     const reportDir = 'midscene_run/report';
@@ -116,53 +123,46 @@ test.describe('add alert rule', () => {
       await page.goto(`${BASE_URL}/alert-rules/add/${alertRuleConfig.group_id}`);
       await page.waitForLoadState('networkidle');
 
-      const refs = await fetchReferenceData(page);
+      const refs = await fetchReferenceData(page, alertRuleConfig.group_id);
       const uiConfig = normalizeAlertRuleForUi(alertRuleConfig, refs);
+
+      // 清理之前测试可能残留的规则
+      const existingRules = await fetchAlertRulesForGroup(page, alertRuleConfig.group_id);
+      const rulesToClean = collectAlertRules(existingRules).filter((r) => {
+        // 同名规则（name 含时间戳）
+        if (r.name === uiConfig.name) return true;
+        // 之前测试失败残留的规则（名字以 base- 开头）
+        if (r.name && uiConfig.name.startsWith(`${alertRuleConfig.name}-`) && r.name.startsWith(`${alertRuleConfig.name}-`)) return true;
+        // 已知的特定残留规则名
+        if (r.name === 'source_labels') return true;
+        return false;
+      });
+      for (const r of rulesToClean) {
+        if (r.id) {
+          await deleteAlertRule(page, alertRuleConfig.group_id, r.id);
+        }
+      }
 
       // 等待 SPA 渲染完成后再调用 Midscene，避免 agent 初始化时因页面路由切换导致 style 注入失败
       await aiWaitFor('告警规则新增表单已显示，页面中有基础配置、数据源、告警条件等区域');
 
-      await fillAntFormItemInput(page, '规则名称', uiConfig.name);
+      // Phase: 基础配置
+      await fillBasicStep(page, uiConfig, aiTap);
 
-      if (
-        !(await page
-          .getByText(uiConfig.groupName)
-          .isVisible()
-          .catch(() => false))
-      ) {
-        await selectAntOption(aiTap, '业务组下拉选择框', uiConfig.groupName);
-      }
+      // Phase: 数据源筛选
+      await fillDatasourceStep(page, uiConfig, aiTap);
 
-      if (uiConfig.note) {
-        await fillAntFormItemInput(page, '备注', uiConfig.note);
-      }
+      // Phase: 告警条件
+      await fillRuleStep(page, uiConfig, aiAssert, aiScroll, aiTap, aiWaitFor);
 
-      if (uiConfig.cate !== 'prometheus') {
-        await aiTap(uiConfig.cateName);
-      }
-      await expect(page.getByText(uiConfig.cateName).first()).toBeVisible();
+      // Phase: 事件处理
+      await fillPipelineStep(page, uiConfig, aiTap, aiWaitFor);
 
-      const datasourceQuery = uiConfig.datasourceQueries[0];
-      await expect(page.getByText(datasourceQuery.matchTypeName).first()).toBeVisible();
-      await expect(page.getByText(datasourceQuery.opName).first()).toBeVisible();
-      for (const datasourceName of datasourceQuery.datasourceNames) {
-        await selectFirstDatasourceFilterValue(page, datasourceName);
-      }
+      // Phase: 生效配置
+      await fillEffectiveStep(page, uiConfig, aiTap, aiWaitFor);
 
-      const handleAlertRuleCondition = getAlertRuleConditionHandler(uiConfig.queryHandlerKey);
-      await handleAlertRuleCondition({ page, uiConfig, aiAssert, aiTap, aiScroll, aiWaitFor });
-
-      if (uiConfig.cronPattern !== '@every 60s') {
-        throw new Error(`TODO: non-default cron_pattern is not supported yet: ${uiConfig.cronPattern}`);
-      }
-
-      if (!uiConfig.effectiveIsDefault) {
-        throw new Error('TODO: non-default effective config is not supported yet');
-      }
-
-      if (!uiConfig.notifyIsDefault) {
-        throw new Error('TODO: non-default notify config is not supported yet');
-      }
+      // Phase: 通知配置
+      await fillNotifyStep(page, uiConfig, aiTap);
 
       const saveResponsePromise = page.waitForResponse((response: Response) => {
         const request = response.request();
@@ -175,23 +175,40 @@ test.describe('add alert rule', () => {
       const saveBody = await saveResponse.json().catch(() => undefined);
       expect(saveBody?.err || '').toBeFalsy();
 
-      const saveErrors = saveBody?.dat && typeof saveBody.dat === 'object' ? Object.values(saveBody.dat).filter(Boolean) : [];
-      expect(saveErrors, `save response contains business errors: ${JSON.stringify(saveBody)}`).toEqual([]);
+      // 从 save 响应中提取已创建规则的 ID
+      const createdId: number | undefined =
+        typeof saveBody?.dat === 'number'
+          ? saveBody.dat
+          : Array.isArray(saveBody?.dat)
+          ? (saveBody.dat[0] as number | undefined)
+          : typeof saveBody?.dat?.id === 'number'
+          ? saveBody.dat.id
+          : undefined;
+
+      // 检查 save 响应中的业务错误：dat 中任何非空字符串的 key 都表示字段级错误
+      const saveFieldErrors =
+        saveBody?.dat && typeof saveBody.dat === 'object' && !Array.isArray(saveBody.dat)
+          ? Object.entries(saveBody.dat as Record<string, unknown>)
+              .filter(([, v]) => v !== '' && v !== undefined && v !== null)
+              .map(([k, v]) => `${k}: ${v}`)
+          : [];
+      expect(saveFieldErrors, `save response contains business errors: ${JSON.stringify(saveBody)}`).toEqual([]);
 
       let createdRule: AlertRuleRecord | undefined;
       try {
-        await page.goto(`${BASE_URL}/alert-rules`);
-        await page.waitForLoadState('networkidle');
-
-        await page.getByPlaceholder('搜索名称或标签').fill(uiConfig.name);
-        await page.keyboard.press('Enter');
-        await page.waitForLoadState('networkidle');
-
+        // 优先通过 API 直接查询创建结果
         const alertRulesBody = await fetchAlertRulesForGroup(page, alertRuleConfig.group_id);
-        createdRule = collectAlertRules(alertRulesBody).find((rule) => rule.name === uiConfig.name);
+        const allRules = collectAlertRules(alertRulesBody);
 
-        expect(createdRule).toBeTruthy();
-        assertAlertRuleMatchesConfig(createdRule, buildExpectedAlertRule(alertRuleConfig, uiConfig));
+        if (createdId) {
+          createdRule = allRules.find((rule) => rule.id === createdId);
+        }
+        if (!createdRule) {
+          createdRule = allRules.find((rule) => rule.name === uiConfig.name);
+        }
+
+        expect(createdRule, `Created alert rule not found in group ${alertRuleConfig.group_id}. Save response: ${JSON.stringify(saveBody)}`).toBeTruthy();
+        assertAlertRuleMatchesConfig(createdRule, buildExpectedAlertRule(alertRuleConfig, uiConfig, refs));
 
         await recordToReport(`${uiConfig.cate} alert rule created`, {
           content: `Created and verified rule ${uiConfig.name}`,

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-import { fillComboboxAfterText, fillInputGroup, fillInputGroupNumber, fillTextboxAfterText, selectAntOption } from '../../helpers';
+import { fillComboboxAfterText, fillInputGroup, fillInputGroupNumber, fillTextboxAfterText, selectAntOption, selectAntSelectOption } from '../../helpers';
 import type { AiTap } from '../../types';
 import type { AlertRuleConditionHandler, NormalizedQuery } from '../types';
 import { fillTriggers, type AlertRuleTrigger } from '../helpers';
@@ -19,27 +19,23 @@ interface ElasticsearchQuery extends NormalizedQuery {
   filter?: string;
   group_by?: ElasticsearchGroupBy[];
   index?: string;
+  index_pattern?: number;
   index_type?: string;
+  indexPatternName?: string;
   interval?: number;
+  interval_unit?: 'second' | 'min' | 'hour';
   offset?: number;
   unit?: string;
   value?: {
+    field?: string;
     func?: string;
   };
 }
 
-function parseInterval(interval: number | undefined) {
-  if (!interval) {
-    return { value: interval, unitLabel: '分钟' };
-  }
-  if (interval < 60) {
-    return { value: interval, unitLabel: '秒' };
-  }
-  const minutes = interval / 60;
-  if (minutes < 60) {
-    return { value: minutes, unitLabel: '分钟' };
-  }
-  return { value: minutes / 60, unitLabel: '小时' };
+function getIntervalUnitLabel(unit: ElasticsearchQuery['interval_unit']) {
+  if (unit === 'second') return '秒';
+  if (unit === 'hour') return '小时';
+  return '分钟';
 }
 
 async function fillQueryAdvancedSettings(page: Page, query: ElasticsearchQuery) {
@@ -67,7 +63,7 @@ async function fillQueryAdvancedSettings(page: Page, query: ElasticsearchQuery) 
   }
 }
 
-async function addTermsGroupBy(page: Page, groupBy: ElasticsearchGroupBy, groupByIndex: number, aiTap: AiTap) {
+async function addTermsGroupBy(page: Page, groupBy: ElasticsearchGroupBy, groupByIndex: number, aiTap: AiTap, fieldKeyIndexOffset = 0) {
   if (groupBy.cate !== 'terms') {
     throw new Error(`TODO: elasticsearch rule_config.queries[0].group_by[${groupByIndex}].cate=${groupBy.cate} is not supported yet`);
   }
@@ -76,7 +72,7 @@ async function addTermsGroupBy(page: Page, groupBy: ElasticsearchGroupBy, groupB
   }
 
   await aiTap('Group By 右侧的添加按钮');
-  await fillInputGroup(page, 'Field key', groupBy.field, groupByIndex);
+  await fillInputGroup(page, 'Field key', groupBy.field, groupByIndex + fieldKeyIndexOffset);
 
   const needsAdvanced = groupBy.size !== undefined || groupBy.min_doc_count !== undefined || groupBy.order !== undefined || groupBy.order_by !== undefined;
 
@@ -103,6 +99,45 @@ async function addTermsGroupBy(page: Page, groupBy: ElasticsearchGroupBy, groupB
   }
 }
 
+async function fillIndexSelector(page: Page, item: ElasticsearchQuery, queryIndex: number) {
+  const indexType = item.index_type || 'index';
+
+  if (indexType === 'index') {
+    if (!item.index) {
+      throw new Error('Missing elasticsearch rule_config.queries[0].index');
+    }
+    await fillComboboxAfterText(page, '索引', item.index);
+    return;
+  }
+
+  if (indexType !== 'index_pattern') {
+    throw new Error(`TODO: elasticsearch rule_config.queries[0].index_type=${item.index_type} is not supported yet`);
+  }
+  if (item.index_pattern === undefined) {
+    throw new Error('Missing elasticsearch rule_config.queries[0].index_pattern');
+  }
+  if (!item.indexPatternName) {
+    throw new Error(`Missing normalized elasticsearch rule_config.queries[0].index_pattern name for id ${item.index_pattern}`);
+  }
+
+  await selectAntSelectOption(page, page.getByTestId(`es-query-${queryIndex}-index-type-select`), '索引模式');
+  await selectAntSelectOption(page, page.getByTestId(`es-query-${queryIndex}-index-pattern-select`), item.indexPatternName);
+}
+
+async function fillValue(page: Page, item: ElasticsearchQuery, aiTap: AiTap) {
+  const func = item.value?.func || 'count';
+  if (func !== 'count') {
+    await selectAntOption(aiTap, '数值提取函数下拉框', func);
+  }
+
+  if (func === 'count' || func === 'rawData') return;
+
+  if (!item.value?.field) {
+    throw new Error(`Missing elasticsearch rule_config.queries[0].value.field for value.func=${func}`);
+  }
+  await fillInputGroup(page, 'Field key', item.value.field);
+}
+
 const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiScroll, aiTap, aiWaitFor }) => {
   if (!aiAssert || !aiScroll || !aiTap || !aiWaitFor) {
     throw new Error('Missing Midscene aiAssert/aiScroll/aiTap/aiWaitFor fixtures for elasticsearch alert rule handler');
@@ -116,39 +151,35 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   if (item.ref !== 'A') {
     throw new Error(`TODO: elasticsearch rule_config.queries[0].ref=${item.ref} is not supported yet`);
   }
-  if (!item.index) {
-    throw new Error('Missing elasticsearch rule_config.queries[0].index');
-  }
-  if (!item.date_field) {
+  if ((item.index_type || 'index') === 'index' && !item.date_field) {
     throw new Error('Missing elasticsearch rule_config.queries[0].date_field');
-  }
-  if (item.index_type !== 'index') {
-    throw new Error(`TODO: elasticsearch rule_config.queries[0].index_type=${item.index_type} is not supported yet`);
-  }
-  if (item.value?.func !== 'count') {
-    throw new Error(`TODO: elasticsearch rule_config.queries[0].value.func=${item.value?.func} is not supported yet`);
   }
 
   await aiTap('左侧配置步骤中的告警条件');
   await aiWaitFor('告警条件区域已显示，并且可以看到查询统计、索引、过滤条件、日期字段和时间间隔');
   await aiAssert('存在查询统计');
 
-  await fillComboboxAfterText(page, '索引', item.index);
+  await fillIndexSelector(page, item, 0);
   await fillTextboxAfterText(page, '过滤条件', item.filter || '');
-  await fillComboboxAfterText(page, '日期字段', item.date_field);
+  if ((item.index_type || 'index') === 'index') {
+    await fillComboboxAfterText(page, '日期字段', item.date_field!);
+  }
 
-  const interval = parseInterval(item.interval);
-  if (interval.value !== undefined) {
-    await fillInputGroupNumber(page, '时间间隔', interval.value);
-    if (interval.unitLabel !== '分钟') {
-      await selectAntOption(aiTap, '时间间隔单位下拉框', interval.unitLabel);
+  if (item.interval !== undefined) {
+    await fillInputGroupNumber(page, '时间间隔', item.interval);
+    const intervalUnitLabel = getIntervalUnitLabel(item.interval_unit);
+    if (intervalUnitLabel !== '分钟') {
+      await selectAntOption(aiTap, '时间间隔单位下拉框', intervalUnitLabel);
     }
   }
 
   await aiAssert('存在数值提取');
+  await fillValue(page, item, aiTap);
+
+  const groupByFieldKeyIndexOffset = item.value?.func && item.value.func !== 'count' && item.value.func !== 'rawData' ? 1 : 0;
 
   for (const [index, groupBy] of (item.group_by || []).entries()) {
-    await addTermsGroupBy(page, groupBy, index, aiTap);
+    await addTermsGroupBy(page, groupBy, index, aiTap, groupByFieldKeyIndexOffset);
   }
 
   await fillQueryAdvancedSettings(page, item);

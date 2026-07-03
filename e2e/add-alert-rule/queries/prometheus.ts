@@ -50,8 +50,6 @@ async function fillPrometheusV1(page: Page, uiConfig: NormalizedAlertRuleConfig,
 
     await selectUnitIfNeeded(page, index, queryUnit(item.unit));
   }
-
-  await page.getByRole('spinbutton', { name: /持续时长/ }).fill(String(uiConfig.promForDuration));
 }
 
 async function addV2QueryIfNeeded(page: Page, queryIndex: number, aiTap: AiTap) {
@@ -111,8 +109,6 @@ async function fillPrometheusV2(page: Page, uiConfig: NormalizedAlertRuleConfig,
       throw new Error(`TODO: prometheus v2 rule_config.triggers[${index}].recover_config.judge_type=${trigger.recover_config.judge_type} is not supported yet`);
     }
   }
-
-  await page.getByRole('spinbutton', { name: /持续时长/ }).fill(String(uiConfig.promForDuration));
 }
 
 const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiTap, aiScroll, aiWaitFor }) => {
