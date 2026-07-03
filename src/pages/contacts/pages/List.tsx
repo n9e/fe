@@ -131,6 +131,7 @@ export default function Channels() {
                       icon: 'delete',
                       text: t('common:btn.delete'),
                       danger: true,
+                      disabled: record.hide === false,
                       onClick: () => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),

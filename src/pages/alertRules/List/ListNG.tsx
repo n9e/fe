@@ -514,6 +514,7 @@ export default function AlertRules(props: Props) {
                       icon: 'delete',
                       text: t('common:btn.delete'),
                       danger: true,
+                      disabled: record.disabled === 0,
                       onClick: () => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),

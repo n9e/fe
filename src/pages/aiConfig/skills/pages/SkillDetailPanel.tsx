@@ -132,6 +132,7 @@ export default function SkillDetailPanel(props: Props) {
           </Menu.Item>
           <Menu.Item
             key='delete'
+            disabled={item.enabled}
             onClick={() => {
               Modal.confirm({
                 title: t('edite_menu_3_confirm'),
