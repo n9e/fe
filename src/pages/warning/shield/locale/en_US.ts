@@ -61,5 +61,6 @@ const en_US = {
     0: 'Enabled',
     1: 'Disabled',
   },
+启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;

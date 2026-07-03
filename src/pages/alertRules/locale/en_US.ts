@@ -385,5 +385,6 @@ const en_US = {
   enrich_queries: {
     tip: "When an alert is triggered, the enrich query will be executed and the results will be written to the event's extra_info (formatted string) and extra_info_map (raw key-value pairs) fields. You can reference them in notification templates using {{ .ExtraInfo }} or {{ .ExtraInfoMap }}",
   },
+启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;

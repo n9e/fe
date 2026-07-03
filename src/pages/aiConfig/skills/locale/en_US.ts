@@ -97,5 +97,6 @@ const en_US = {
     abort_confirm_ok: 'Cancel update',
     abort_confirm_cancel: 'Close',
   },
+启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;

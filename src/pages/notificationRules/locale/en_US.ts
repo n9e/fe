@@ -160,5 +160,6 @@ const en_US = {
     rules: 'Alarm rules',
     sub_rules: 'Subscription rules',
   },
+启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;
