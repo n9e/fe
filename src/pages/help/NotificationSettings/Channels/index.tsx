@@ -142,6 +142,7 @@ export default function Channels() {
                   text: t('common:btn.delete'),
                   danger: true,
                   disabled: reocrd.hide === false,
+                  tooltip: reocrd.hide === false ? t("启用状态下不可删除") : undefined,
                   onClick: () => {
                     Modal.confirm({
                       title: t('common:confirm.delete'),
