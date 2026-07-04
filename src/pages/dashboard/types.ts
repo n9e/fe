@@ -108,6 +108,8 @@ export interface IOptions {
     detailUrl: string;
     behaviour: 'showItem' | 'hideItem';
     selectMode: 'single' | 'multiple';
+    sortBy?: string;
+    sortDir?: 'asc' | 'desc';
   };
   tooltip?: {
     mode: 'single' | 'all';
