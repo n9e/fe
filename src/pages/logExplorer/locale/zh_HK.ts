@@ -1,5 +1,8 @@
 const zh_HK = {
   title: '日誌檢索',
+  tab: {
+    rename: '重命名',
+  },
   query: '查詢條件',
   query_is_required: '查詢條件不能為空',
   execute: '查詢',
