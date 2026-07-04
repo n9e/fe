@@ -12,12 +12,57 @@
       margin-left: 0 !important;
       margin-right: -1px !important;
       background-color: var(--fc-fill-2) !important;
+
+      &:hover {
+        .log-explorer-ng-tab-edit {
+          opacity: 1;
+        }
+      }
+
+      .anticon-edit {
+        margin-right: 0 !important;
+      }
     }
 
     .ant-tabs-tab-active {
       border-top: 2px solid !important;
       border-bottom: none !important;
       background-color: var(--fc-fill-1) !important;
+    }
+
+    .ant-tabs-tab-remove {
+      margin-left: 0 !important;
+    }
+
+    .log-explorer-ng-tab-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 180px;
+      min-width: 0;
+      line-height: 1;
+    }
+
+    .log-explorer-ng-tab-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .log-explorer-ng-tab-edit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      color: var(--fc-text-3);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+
+      &:hover {
+        color: var(--fc-text-1);
+      }
     }
   }
 }

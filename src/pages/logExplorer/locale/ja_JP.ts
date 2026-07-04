@@ -1,5 +1,8 @@
 const ja_JP = {
   title: 'ログ検索',
+  tab: {
+    rename: '名前を変更',
+  },
   query: 'クエリ条件',
   query_is_required: 'クエリ条件は空にできません',
   execute: '検索',

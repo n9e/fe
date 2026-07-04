@@ -1,5 +1,8 @@
 const en_US = {
   title: 'Log Explorer',
+  tab: {
+    rename: 'Rename',
+  },
   query: 'Query Conditions',
   query_is_required: 'Query conditions cannot be empty',
   execute: 'Query',
