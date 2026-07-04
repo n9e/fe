@@ -8,6 +8,12 @@
   }
 
   .renderer-timeseries-ng-legend-table {
+    .ant-table-thead > tr > th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
     .renderer-timeseries-ng-legend-table-name-column {
       width: 100%;
       display: flex;
@@ -40,8 +46,13 @@
     .ant-table-tbody {
       .ant-table-cell {
         padding: 2px 4px !important;
-        white-space: nowrap; // 强制不换行解决换行可能会产生的宽度抖动问题
+        white-space: nowrap;
       }
+    }
+
+    .renderer-timeseries-ng-legend-table-spacer > td {
+      padding: 0 !important;
+      border: 0 !important;
     }
   }
 
@@ -75,11 +86,11 @@
     border-radius: 0 !important;
   }
 
-  .ant-table-container table>thead>tr:first-child th:first-child {
+  .ant-table-container table > thead > tr:first-child th:first-child {
     border-top-left-radius: 0 !important;
   }
 
-  .ant-table-container table>thead>tr:first-child th:last-child {
+  .ant-table-container table > thead > tr:first-child th:last-child {
     border-top-right-radius: 0 !important;
   }
 }
