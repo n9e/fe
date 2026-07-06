@@ -150,7 +150,7 @@ test.describe('add alert rule', () => {
       await fillBasicStep(page, uiConfig, aiTap);
 
       // Phase: 数据源筛选
-      await fillDatasourceStep(page, uiConfig, aiTap);
+      await fillDatasourceStep(page, uiConfig);
 
       // Phase: 告警条件
       await fillRuleStep(page, uiConfig, aiAssert, aiScroll, aiTap, aiWaitFor);

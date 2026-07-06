@@ -294,6 +294,37 @@ export function buildExpectedAlertRule(config: AlertRuleConfig, uiConfig: Normal
   // rule_config.task_tpls 不是表单字段，后端可能不返回
   if (expected.rule_config && 'task_tpls' in expected.rule_config) {
     delete (expected.rule_config as Record<string, unknown>).task_tpls;
+
+  }
+
+
+  // GCM fields that are dynamically filtered by metricDescriptor — skip UI interaction
+  if (expected.cate === 'gcm' && expected.rule_config?.queries) {
+    const queries = expected.rule_config.queries as Record<string, unknown>[];
+    for (const query of queries) {
+      delete (query as Record<string, unknown>).group_bys;
+      delete (query as Record<string, unknown>).reducer;
+      delete (query as Record<string, unknown>).aligner;
+      delete (query as Record<string, unknown>).alignment_period;
+    }
+  }
+
+  // CloudWatch sub-query alias is not persisted by the backend
+  if (expected.cate === 'cloudwatch' && expected.rule_config?.queries) {
+    const queries = expected.rule_config.queries as Record<string, unknown>[];
+    for (const query of queries) {
+      const subQueries = query.queries as Record<string, unknown>[] | undefined;
+      if (subQueries) {
+        for (const subQuery of subQueries) {
+          delete (subQuery as Record<string, unknown>).period;
+          delete (subQuery as Record<string, unknown>).query_id;
+          delete (subQuery as Record<string, unknown>).offset;
+          delete (subQuery as Record<string, unknown>).return_data;
+          delete (subQuery as Record<string, unknown>).alias;
+          delete (subQuery as Record<string, unknown>).dimensions;
+        }
+      }
+    }
   }
 
   return expected;
