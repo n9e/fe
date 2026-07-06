@@ -38,7 +38,7 @@ export default function FeishuApp() {
               <InputNumber min={1} className='w-full' />
             </Form.Item>
             <Form.Item label={t('http_request_config.retry_times')} name={[...names, 'retry_times']} initialValue={3}>
-              <InputNumber min={0} className='w-full' />
+              <InputNumber min={1} className='w-full' />
             </Form.Item>
             <Form.Item label={t('http_request_config.retry_interval')} name={[...names, 'retry_interval']} initialValue={3}>
               <InputNumber min={0} className='w-full' />
