@@ -21,6 +21,7 @@ interface Props {
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   initialValues?: any;
   expandSignal?: { key: string; ts: number } | null;
+  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }
 
 const isDefaultEffectiveTime = (effectiveTime: any) => {
@@ -48,7 +49,7 @@ const isDefaultEffectiveConfig = (initialValues: any) => {
   return initialValues.enable_status === true && initialValues.time_zone === 'Local' && isDefaultEffectiveTime(initialValues.effective_time);
 };
 
-export default function index({ item, sectionRefs, initialValues, expandSignal }: Props) {
+export default function index({ item, sectionRefs, initialValues, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
   const { permissions, serviceCals, refreshServiceCals } = useFormNGData();
@@ -64,6 +65,13 @@ export default function index({ item, sectionRefs, initialValues, expandSignal }
       setCollapsed(false);
     }
   }, [expandSignal]);
+
+  // Respond to global collapse/expand all
+  useEffect(() => {
+    if (toggleAllSignal) {
+      setCollapsed(toggleAllSignal.action === 'collapse');
+    }
+  }, [toggleAllSignal]);
 
   const { data: timezones } = useRequest(() => getTimezones());
 

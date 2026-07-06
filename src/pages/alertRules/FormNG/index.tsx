@@ -219,6 +219,7 @@ export default function FormNG(props: IProps) {
                               }
                               return { ...prev, ...next };
                             });
+                            scroll.setToggleAllSignal({ action: allExpanded ? 'collapse' : 'expand', ts: Date.now() });
                           }}
                           className='flex items-center gap-1'
                           size='small'
@@ -339,6 +340,7 @@ export default function FormNG(props: IProps) {
                   ref={pipelineConfigsRef}
                   initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
                   expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
                 />
 
                 <Effective
@@ -346,9 +348,10 @@ export default function FormNG(props: IProps) {
                   sectionRefs={scroll.sectionRefs}
                   initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
                   expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
                 />
 
-                <Notify item={sections[5]} advancedItem={sections[6]} sectionRefs={scroll.sectionRefs} disabled={disabled} expandSignal={scroll.expandSignal} />
+                <Notify item={sections[5]} advancedItem={sections[6]} sectionRefs={scroll.sectionRefs} disabled={disabled} expandSignal={scroll.expandSignal} toggleAllSignal={scroll.toggleAllSignal} />
               </div>
               <AffixWrapper>
                 <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>

@@ -22,6 +22,7 @@ interface PipelineConfigsNGProps {
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   initialValues?: any;
   expandSignal?: { key: string; ts: number } | null;
+  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }
 
 const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigsNGProps>((props, ref) => {
@@ -62,6 +63,13 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
       setCollapsed(false);
     }
   }, [props.expandSignal]);
+
+  // Respond to global collapse/expand all
+  useEffect(() => {
+    if (props.toggleAllSignal) {
+      setCollapsed(props.toggleAllSignal.action === 'collapse');
+    }
+  }, [props.toggleAllSignal]);
 
   useImperativeHandle(ref, () => ({
     checkUnsavedAndNotify: () => {

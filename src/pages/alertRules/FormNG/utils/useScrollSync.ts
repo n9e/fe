@@ -16,6 +16,8 @@ export interface UseScrollSyncReturn {
   sectionCollapsed: Record<string, boolean>;
   setSectionCollapsed: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   expandSignal: { key: string; ts: number } | null;
+  toggleAllSignal: { action: 'expand' | 'collapse'; ts: number } | null;
+  setToggleAllSignal: React.Dispatch<React.SetStateAction<{ action: 'expand' | 'collapse'; ts: number } | null>>;
   scrollToSection: (key: string) => void;
   handleScroll: () => void;
   handleUserScroll: () => void;
@@ -37,6 +39,7 @@ export default function useScrollSync(sections: SectionItem[]): UseScrollSyncRet
     advanced: true,
   });
   const [expandSignal, setExpandSignal] = useState<{ key: string; ts: number } | null>(null);
+  const [toggleAllSignal, setToggleAllSignal] = useState<{ action: 'expand' | 'collapse'; ts: number } | null>(null);
 
   const scrollToSection = useCallback((key: string) => {
     const node = sectionRefs.current[key];
@@ -109,6 +112,8 @@ export default function useScrollSync(sections: SectionItem[]): UseScrollSyncRet
     sectionCollapsed,
     setSectionCollapsed,
     expandSignal,
+    toggleAllSignal,
+    setToggleAllSignal,
     scrollToSection,
     handleScroll,
     handleUserScroll,

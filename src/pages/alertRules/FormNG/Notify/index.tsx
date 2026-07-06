@@ -24,9 +24,10 @@ interface Props {
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   disabled?: boolean;
   expandSignal?: { key: string; ts: number } | null;
+  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }
 
-export default function index({ item, advancedItem, sectionRefs, disabled, expandSignal }: Props) {
+export default function index({ item, advancedItem, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { notifyChannels: contactList, teams: notifyGroups, webhooks, callbacks } = useFormNGData();
 
@@ -60,6 +61,13 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
       setEffectiveCollapsed(false);
     }
   }, [expandSignal]);
+
+  // Respond to global collapse/expand all
+  useEffect(() => {
+    if (toggleAllSignal) {
+      setEffectiveCollapsed(toggleAllSignal.action === 'collapse');
+    }
+  }, [toggleAllSignal]);
 
   return (
     <>
@@ -259,7 +267,7 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
           </Space>
         </div>
       </SectionCard>
-      <NotifyExtraNG advancedItem={advancedItem} sectionRefs={sectionRefs} contactList={contactList} notifyGroups={notifyGroups} expandSignal={expandSignal} />
+      <NotifyExtraNG advancedItem={advancedItem} sectionRefs={sectionRefs} contactList={contactList} notifyGroups={notifyGroups} expandSignal={expandSignal} toggleAllSignal={toggleAllSignal} />
     </>
   );
 }
