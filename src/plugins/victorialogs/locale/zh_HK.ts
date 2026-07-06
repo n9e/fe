@@ -48,6 +48,14 @@ const zh_HK = {
       check_all: '全選',
     },
     copy_json: '複製 JSON',
+    timeseries: {
+      value_field: '值字段',
+      value_field_tip: '用於繪製時序圖的數值字段，支持輸入多個字段',
+      value_field_required: '請選擇值字段',
+      label_field: '標籤字段',
+      label_field_tip: '用於區分時序曲線的標籤字段，支持輸入多個字段',
+      unit: '單位',
+    },
   },
   datasource: {},
   alert: {

@@ -48,6 +48,14 @@ const zh_CN = {
       check_all: '全选',
     },
     copy_json: '复制 JSON',
+    timeseries: {
+      value_field: '值字段',
+      value_field_tip: '用于绘制时序图的数值字段，支持输入多个字段',
+      value_field_required: '请选择值字段',
+      label_field: '标签字段',
+      label_field_tip: '用于区分时序曲线的标签字段，支持输入多个字段',
+      unit: '单位',
+    },
   },
   datasource: {},
   alert: {

@@ -203,6 +203,17 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         };
       }
     }
+    if (data_source_name === DatasourceCateEnum.victorialogs) {
+      const mode = _.get(params, 'mode');
+      return {
+        ...formValues,
+        query: {
+          range,
+          mode,
+          query,
+        },
+      };
+    }
     if (data_source_name === DatasourceCateEnum.huaweiLTS) {
       const mode = _.get(params, 'mode');
       const submode = _.get(params, 'submode');
@@ -392,6 +403,11 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.sqlVizType = formValues.query?.sqlVizType;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.victorialogs) {
+    query.mode = formValues.query?.mode;
+    query.query = formValues.query?.query;
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.huaweiLTS) {

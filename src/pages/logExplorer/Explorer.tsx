@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { setDefaultDatasourceValue } from '@/utils';
-import { IS_PLUS } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { allCates, getGraphProByCate, getPrimaryTypeByCate } from '@/components/AdvancedWrap/utils';
 import ViewSelect, { ModalState } from '@/components/ViewSelect';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
@@ -249,7 +249,7 @@ export default function Explorer(props: Props) {
           <Form.Item name='datasourceValue' hidden>
             <div />
           </Form.Item>
-          {cateGraphPro ? (
+          {cateGraphPro && datasourceCate !== DatasourceCateEnum.victorialogs ? (
             <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />
           ) : (
             <ExplorerContent tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />

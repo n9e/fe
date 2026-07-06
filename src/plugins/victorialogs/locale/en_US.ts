@@ -48,6 +48,14 @@ const en_US = {
       check_all: 'Check all',
     },
     copy_json: 'Copy JSON',
+    timeseries: {
+      value_field: 'Value field',
+      value_field_tip: 'Numeric fields used to render the time series chart. Multiple fields are supported.',
+      value_field_required: 'Please select a value field',
+      label_field: 'Label field',
+      label_field_tip: 'Label fields used to split time series. Multiple fields are supported.',
+      unit: 'Unit',
+    },
   },
   datasource: {},
   alert: {
