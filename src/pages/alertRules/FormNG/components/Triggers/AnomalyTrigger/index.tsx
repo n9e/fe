@@ -39,7 +39,7 @@ export default function index(props: Props) {
         <div className='mb-4'>
           <Space>
             <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
-              <Switch />
+              <Switch size='small' />
             </Form.Item>
             {t('anomaly_trigger.enable')}
           </Space>
@@ -48,7 +48,11 @@ export default function index(props: Props) {
           <div>
             <Space align='baseline'>
               {t('anomaly_trigger.algorithm')}
-              <Form.Item name={[...names, 'algorithm']} rules={enable === true ? [{ required: false, message: t('anomaly_trigger.algorithm_required') }] : []} initialValue={_.keys(algorithms)[0]}>
+              <Form.Item
+                name={[...names, 'algorithm']}
+                rules={enable === true ? [{ required: false, message: t('anomaly_trigger.algorithm_required') }] : []}
+                initialValue={_.keys(algorithms)[0]}
+              >
                 <Select
                   style={{ width: 200 }}
                   disabled={disabled || enable !== true}

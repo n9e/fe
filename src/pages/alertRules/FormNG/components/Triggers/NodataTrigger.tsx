@@ -17,7 +17,7 @@ export default function NodataTrigger(props: Props) {
     <div>
       <Space className='mb-4'>
         <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
-          <Switch />
+          <Switch size='small' />
         </Form.Item>
         {t('nodata_trigger.enable')}
       </Space>

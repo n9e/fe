@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, AutoComplete } from 'antd';
-import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleFilled, RightOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined, RightOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 
@@ -134,16 +134,17 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
         >
           <NotificationRuleSelect />
         </div>
-        <Form.Item label={t('notify_recovered')}>
+        <div className='mb-4'>
           <Space>
-            <Form.Item name='notify_recovered' valuePropName='checked' style={{ marginBottom: 0 }}>
-              <Switch />
-            </Form.Item>
+            <span>{t('notify_recovered')}</span>
             <Tooltip title={t(`notify_recovered_tip`)}>
-              <QuestionCircleFilled />
+              <QuestionCircleOutlined />
             </Tooltip>
+            <Form.Item name='notify_recovered' valuePropName='checked' style={{ marginBottom: 0 }}>
+              <Switch size='small' />
+            </Form.Item>
           </Space>
-        </Form.Item>
+        </div>
         <Form.Item shouldUpdate noStyle>
           {({ getFieldValue }) => {
             return (
@@ -253,7 +254,7 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
               <InfoCircleOutlined />
             </Tooltip>
             <Form.Item name={['rule_config', 'override_global_webhook']} valuePropName='checked' noStyle>
-              <Switch />
+              <Switch size='small' />
             </Form.Item>
           </Space>
         </div>

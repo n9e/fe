@@ -83,64 +83,64 @@ export default function index(props: IProps) {
           setActiveKey(key);
         }}
       >
-       <div style={{ display: activeKey === 'triggers' ? 'flex' : 'none', flexDirection: 'column', gap: 10 }}>
-         <Space>
-           <Form.Item
-             noStyle
-             name={[...prefixName, 'exp_trigger_disable']}
-             valuePropName='checked'
-             getValueFromEvent={(checked) => !checked}
-             getValueProps={(value) => ({ checked: !value })}
-           >
-             <Switch />
-           </Form.Item>
-           {t('trigger.exp_trigger_disable')}
-           <Tag color='purple'>{t('trigger.threshold_tip')}</Tag>
-         </Space>
-         <div style={{ display: exp_trigger_disable !== false ? 'none' : 'block' }}>
-           <Inhibit triggersKey='triggers' />
-           <Form.List {...prefixField} name={[...prefixName, 'triggers']} initialValue={initialValue}>
-             {(fields, { add, remove }) => (
-               <>
-                 {fields.map((field) => {
-                   return (
-                     <div key={field.key} className='relative'>
-                       <Trigger
-                         prefixField={_.omit(field, 'key')}
-                         fullPrefixName={[...prefixName, 'triggers', field.name]}
-                         prefixName={[field.name]}
-                         queries={queries}
-                         disabled={disabled}
-                         onClose={fields.length > 1 ? () => remove(field.name) : undefined}
-                       />
-                     </div>
-                   );
-                 })}
-                 <Button
-                   className='w-full'
-                   type='dashed'
-                   icon={<PlusOutlined />}
-                   onClick={() => {
-                     add({
-                       mode: 0,
-                       expressions: [
-                         {
-                           ref: queries?.[0]?.ref || 'A',
-                           comparisonOperator: '==',
-                           logicalOperator: '&&',
-                         },
-                       ],
-                       severity: 2,
-                     });
-                   }}
-                 >
-                   {t('form_ng.threshold_judgment')}
-                 </Button>
-               </>
-             )}
-           </Form.List>
-         </div>
-       </div>
+        <div style={{ display: activeKey === 'triggers' ? 'flex' : 'none', flexDirection: 'column', gap: 10 }}>
+          <Space>
+            <Form.Item
+              noStyle
+              name={[...prefixName, 'exp_trigger_disable']}
+              valuePropName='checked'
+              getValueFromEvent={(checked) => !checked}
+              getValueProps={(value) => ({ checked: !value })}
+            >
+              <Switch size='small' />
+            </Form.Item>
+            {t('trigger.exp_trigger_disable')}
+            <Tag color='purple'>{t('trigger.threshold_tip')}</Tag>
+          </Space>
+          <div style={{ display: exp_trigger_disable !== false ? 'none' : 'block' }}>
+            <Inhibit triggersKey='triggers' />
+            <Form.List {...prefixField} name={[...prefixName, 'triggers']} initialValue={initialValue}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map((field) => {
+                    return (
+                      <div key={field.key} className='relative'>
+                        <Trigger
+                          prefixField={_.omit(field, 'key')}
+                          fullPrefixName={[...prefixName, 'triggers', field.name]}
+                          prefixName={[field.name]}
+                          queries={queries}
+                          disabled={disabled}
+                          onClose={fields.length > 1 ? () => remove(field.name) : undefined}
+                        />
+                      </div>
+                    );
+                  })}
+                  <Button
+                    className='w-full'
+                    type='dashed'
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      add({
+                        mode: 0,
+                        expressions: [
+                          {
+                            ref: queries?.[0]?.ref || 'A',
+                            comparisonOperator: '==',
+                            logicalOperator: '&&',
+                          },
+                        ],
+                        severity: 2,
+                      });
+                    }}
+                  >
+                    {t('form_ng.threshold_judgment')}
+                  </Button>
+                </>
+              )}
+            </Form.List>
+          </div>
+        </div>
         <div
           style={{
             display: activeKey === 'nodata_trigger' ? 'block' : 'none',

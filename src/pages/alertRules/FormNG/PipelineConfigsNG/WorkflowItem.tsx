@@ -186,19 +186,17 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
       <div>
         <Space>
           {isMultiWorkflow && <Button size='small' icon={<DeleteOutlined />} onClick={remove} />}
-          <span>
-            {t('pipeline_configuration_ng.enabled')}{' '}
-            <Switch
-              size='small'
-              checked={workflowEnabled}
-              onChange={(checked) => {
-                // 更新 pipeline_configs 中对应项的 enable 字段
-                const currentValues = _.cloneDeep(form.getFieldsValue());
-                _.set(currentValues, [...prefixNamePath, ...namePath, 'enable'], checked);
-                form.setFieldsValue(currentValues);
-              }}
-            />
-          </span>
+          <span>{t('pipeline_configuration_ng.enabled')}</span>
+          <Switch
+            size='small'
+            checked={workflowEnabled}
+            onChange={(checked) => {
+              // 更新 pipeline_configs 中对应项的 enable 字段
+              const currentValues = _.cloneDeep(form.getFieldsValue());
+              _.set(currentValues, [...prefixNamePath, ...namePath, 'enable'], checked);
+              form.setFieldsValue(currentValues);
+            }}
+          />
           {_.get(workflowList, 'length', 0) > 0 && (
             <Dropdown
               overlay={

@@ -81,7 +81,7 @@ export default function index({ item, sectionRefs, initialValues, expandSignal }
         <Space>
           <span>{t('enable_status')}</span>
           <Form.Item name='enable_status' valuePropName='checked' noStyle>
-            <Switch />
+            <Switch size='small' />
           </Form.Item>
         </Space>
       </div>
@@ -222,7 +222,7 @@ export default function index({ item, sectionRefs, initialValues, expandSignal }
               <Form.Item label={t('enable_in_bg')}>
                 <Space align='baseline'>
                   <Form.Item name='enable_in_bg' valuePropName='checked' noStyle>
-                    <Switch />
+                    <Switch size='small' />
                   </Form.Item>
                   {t('enable_in_bg_tip')}
                 </Space>
