@@ -74,7 +74,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
     let organizeFields: string[] = [];
     const rawOrganizeFields = params?.organize_fields;
     if (rawOrganizeFields) {
-      organizeFields = _.isArray(rawOrganizeFields) ? rawOrganizeFields : [rawOrganizeFields];
+      organizeFields = Array.isArray(rawOrganizeFields) ? rawOrganizeFields : [rawOrganizeFields];
     }
 
     if (data_source_name === DatasourceCateEnum.doris) {
@@ -106,8 +106,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           sql,
           organizeFields,
           keys: {
-            labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-            valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+            labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+            valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
           },
         },
       };
@@ -135,8 +135,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             power_sql,
             organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
               timeFormat,
             },
@@ -161,7 +161,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       try {
         if (params?.filters) {
           const parsedFilters = JSON.parse(params.filters);
-          if (_.isArray(parsedFilters)) {
+          if (Array.isArray(parsedFilters)) {
             filters = parsedFilters;
           }
         }
@@ -185,8 +185,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             sqlVizType,
             organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
             },
           },
         };
@@ -206,8 +206,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             sqlVizType,
             organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
             },
           },
         };
@@ -233,8 +233,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             query,
             organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -261,8 +261,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             query,
             organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -291,8 +291,8 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             query,
             organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -313,15 +313,15 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           ...formValues,
           query: {
             region,
-            log_group_names: _.isArray(log_group_names) ? log_group_names : [log_group_names],
+            log_group_names: Array.isArray(log_group_names) ? log_group_names : [log_group_names],
             stackByField,
             query_language,
             vizType,
             query,
             organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -368,7 +368,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.sql = formValues.query?.sql;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
-    if (formValues.query?.organizeFields && _.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
     return queryString.stringify(query);
@@ -384,7 +384,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
     query.timeFormat = formValues.query?.keys?.timeFormat;
-    if (formValues.query?.organizeFields && _.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
     return queryString.stringify(query);
@@ -392,7 +392,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
   if (data_source_name === DatasourceCateEnum.elasticsearch) {
     let filtersString = '';
     const filters = formValues.query?.filters;
-    if (filters && _.isArray(filters) && filters.length > 0) {
+    if (filters && Array.isArray(filters) && filters.length > 0) {
       try {
         filtersString = JSON.stringify(filters);
       } catch (error) {
@@ -412,7 +412,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.sqlVizType = formValues.query?.sqlVizType;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
-    if (formValues.query?.organizeFields && _.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
     return queryString.stringify(query);
@@ -426,7 +426,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
-    if (formValues.query?.organizeFields && _.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
     return queryString.stringify(query);
@@ -440,7 +440,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
-    if (formValues.query?.organizeFields && _.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
     return queryString.stringify(query);
@@ -455,7 +455,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
-    if (formValues.query?.organizeFields && _.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
     return queryString.stringify(query);
@@ -470,7 +470,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
-    if (formValues.query?.organizeFields && _.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
     return queryString.stringify(query);
