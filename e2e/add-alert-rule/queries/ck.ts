@@ -2,7 +2,7 @@ import { expect, type Page } from '@playwright/test';
 
 import type { AiAssert, AiScroll, AiTap, AiWaitFor } from '../../types';
 import type { AlertRuleConditionHandler, NormalizedQuery } from '../types';
-import { fillTriggers, type AlertRuleTrigger } from '../helpers';
+import { fillAdvancedSettings, fillTriggers, type AlertRuleTrigger } from '../helpers';
 
 interface CKQuery extends NormalizedQuery {
   sql?: string;
@@ -48,33 +48,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   await editor.fill(item.sql);
 
   // Fill keys in Advanced Settings (always expanded for CK)
-  if (item.keys) {
-    const valueKeys = Array.isArray(item.keys.valueKey) ? item.keys.valueKey : item.keys.valueKey ? [item.keys.valueKey] : [];
-    for (const key of valueKeys) {
-      const valueKeySelect = page
-        .locator('.ant-input-group')
-        .filter({ hasText: '值字段' })
-        .getByRole('combobox')
-        .last();
-      await valueKeySelect.click();
-      await valueKeySelect.fill(key);
-      await page.keyboard.press('Enter');
-      await page.waitForTimeout(200);
-    }
-
-    const labelKeys = Array.isArray(item.keys.labelKey) ? item.keys.labelKey : item.keys.labelKey ? [item.keys.labelKey] : [];
-    for (const key of labelKeys) {
-      const labelKeySelect = page
-        .locator('.ant-input-group')
-        .filter({ hasText: '标签字段' })
-        .getByRole('combobox')
-        .last();
-      await labelKeySelect.click();
-      await labelKeySelect.fill(key);
-      await page.keyboard.press('Enter');
-      await page.waitForTimeout(200);
-    }
-  }
+  await fillAdvancedSettings(page, item.keys);
 
   // Fill triggers using standard builder-mode (mode === 0) AI interaction
   await fillTriggers(page, uiConfig, aiTap, {

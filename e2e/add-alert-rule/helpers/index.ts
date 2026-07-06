@@ -5,6 +5,8 @@ import type { AiTap } from '../../types';
 import type { NormalizedAlertRuleConfig } from '../types';
 
 export * from './fill-trigger';
+export * from './range';
+export * from './advanced-settings';
 
 export async function fillIntervalAndDuration(page: Page, uiConfig: NormalizedAlertRuleConfig, aiTap: AiTap) {
   await selectAntOption(aiTap, '执行频率下拉选择框', uiConfig.cronPattern);

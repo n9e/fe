@@ -56,6 +56,7 @@ export interface NormalizedDatasourceQuery {
   matchTypeName: string;
   opName: string;
   datasourceNames: string[];
+  datasourceIds: number[];
 }
 
 export interface NormalizedQuery {

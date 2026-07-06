@@ -1,8 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
-import { fillInputGroup, selectAntSelectOption } from '../../helpers';
+import { fillAutoCompleteInputGroup, fillInputGroup } from '../../helpers';
 import type { AlertRuleConditionHandler, NormalizedQuery } from '../types';
-import { fillTriggers, type AlertRuleTrigger } from '../helpers';
+import { fillAdvancedSettings, fillRelativeTimeRange, fillTriggers, type AlertRuleTrigger } from '../helpers';
 
 interface SLSQuery extends NormalizedQuery {
   project?: string;
@@ -26,48 +26,6 @@ function inputGroup(page: Page, label: string, index = 0) {
   return page.locator('.ant-input-group').filter({ hasText: label }).nth(index);
 }
 
-async function fillAutoCompleteInputGroup(page: Page, label: string, value: string) {
-  await fillInputGroup(page, label, value);
-  await page.keyboard.press('Enter');
-}
-
-function getRelativeRangeLabel(range: SLSQuery['range']) {
-  if (!range) return undefined;
-  if (range.start === 'now-5m' && range.end === 'now') return '最近 5 分钟';
-  if (range.start === 'now-15m' && range.end === 'now') return '最近 15 分钟';
-  if (range.start === 'now-30m' && range.end === 'now') return '最近 30 分钟';
-  if (range.start === 'now-1h' && range.end === 'now') return '最近 1 小时';
-  if (range.start === 'now-3h' && range.end === 'now') return '最近 3 小时';
-  if (range.start === 'now-6h' && range.end === 'now') return '最近 6 小时';
-  if (range.start === 'now-12h' && range.end === 'now') return '最近 12 小时';
-  if (range.start === 'now-24h' && range.end === 'now') return '最近 24 小时';
-  if (range.start === 'now-2d' && range.end === 'now') return '最近 2 天';
-  if (range.start === 'now-7d' && range.end === 'now') return '最近 7 天';
-  if (range.start === 'now-30d' && range.end === 'now') return '最近 30 天';
-  if (range.start === 'now-90d' && range.end === 'now') return '最近 90 天';
-  if (range.start === 'now/d' && range.end === 'now/d') return '今天';
-  return undefined;
-}
-
-async function fillRelativeRange(page: Page, range: SLSQuery['range']) {
-  const label = getRelativeRangeLabel(range);
-  if (!range || !label) {
-    throw new Error(`TODO: aliyun-sls rule_config.queries[0].range=${JSON.stringify(range)} is not supported by the E2E handler yet`);
-  }
-
-  const rangeGroup = inputGroup(page, '查询区间');
-  const button = rangeGroup.locator('button.flashcat-timeRangePicker-target');
-  await expect(button, 'aliyun-sls query range picker').toBeVisible();
-  const currentText = (await button.innerText()).trim();
-  if (currentText.includes(label)) return;
-
-  await button.click();
-  const popover = page.locator('.flashcat-timeRangePicker-container').last();
-  await expect(popover, 'aliyun-sls query range popover').toBeVisible();
-  await popover.getByText(label, { exact: true }).click();
-  await expect(popover, 'aliyun-sls query range popover should close').toBeHidden();
-}
-
 async function setPowerSql(page: Page, checked: boolean | undefined) {
   if (checked === undefined) return;
   const switchControl = page.locator('#rule_config_queries_0_power_sql').or(page.locator('xpath=(//*[normalize-space(.)="SQL 增强"]/following::*[@role="switch"])[1]')).first();
@@ -85,49 +43,6 @@ async function fillLogQL(page: Page, value: string) {
   await editor.click();
   await page.keyboard.press(process.platform === 'darwin' ? 'Meta+A' : 'Control+A');
   await page.keyboard.type(value);
-}
-
-async function expandAdvancedSettings(page: Page) {
-  const toggle = page.getByText('辅助配置', { exact: true }).filter({ visible: true });
-  await expect(toggle, 'aliyun-sls advanced settings toggle').toBeVisible();
-  const advancedPanel = page.locator('.ant-input-group').filter({ hasText: 'ValueKey' });
-  if (await advancedPanel.isVisible().catch(() => false)) return;
-  await toggle.click();
-  await expect(advancedPanel, 'aliyun-sls advanced settings panel').toBeVisible();
-}
-
-async function fillInputGroupTags(page: Page, label: string, values: string[]) {
-  if (values.length === 0) return;
-  const group = inputGroup(page, label);
-  const combobox = group.getByRole('combobox').last();
-  await expect(combobox, `${label} tags select`).toBeVisible();
-  for (const value of values) {
-    await combobox.click();
-    await combobox.fill(value);
-    await page.keyboard.press('Enter');
-    await expect(group.locator('.ant-select-selection-item').filter({ hasText: value }).first(), `${label} selected tag ${value}`).toBeVisible();
-  }
-}
-
-async function fillAdvancedSettings(page: Page, item: SLSQuery) {
-  const needsAdvanced = Boolean(item.keys?.valueKey?.length || item.keys?.timeKey || item.keys?.timeFormat || item.unit);
-  if (!needsAdvanced) return;
-
-  await expandAdvancedSettings(page);
-
-  if (item.keys?.valueKey?.length) {
-    await fillInputGroupTags(page, 'ValueKey', item.keys.valueKey);
-  }
-  if (item.keys?.timeKey) {
-    await fillInputGroup(page, 'TimeKey', item.keys.timeKey);
-  }
-  if (item.keys?.timeFormat) {
-    await fillInputGroup(page, 'TimeFormat', item.keys.timeFormat);
-  }
-  if (item.unit && item.unit !== 'none') {
-    const unitSelect = inputGroup(page, '单位').getByRole('combobox').first();
-    await selectAntSelectOption(page, unitSelect as Locator, item.unit);
-  }
 }
 
 const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiScroll, aiTap, aiWaitFor }) => {
@@ -156,10 +71,14 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
 
   await fillAutoCompleteInputGroup(page, '项目', item.project);
   await fillAutoCompleteInputGroup(page, '日志库', item.logstore);
-  await fillRelativeRange(page, item.range);
+  await fillRelativeTimeRange(page, item.range, 'aliyun-sls');
   await setPowerSql(page, item.power_sql);
   await fillLogQL(page, item.query);
-  await fillAdvancedSettings(page, item);
+  // 辅助配置 — 展开面板 + 通用字段
+  const needsAdvanced = Boolean(item.keys?.valueKey?.length || item.keys?.timeKey || item.keys?.timeFormat || item.unit);
+  if (needsAdvanced) {
+    await fillAdvancedSettings(page, { ...item.keys, unit: item.unit });
+  }
 
   await fillTriggers(page, uiConfig, aiTap, {
     descriptions: {

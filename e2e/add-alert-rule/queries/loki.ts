@@ -15,7 +15,8 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiTap }) => {
     throw new Error('Missing Midscene aiTap fixture for loki alert rule handler');
   }
 
-  for (const [index, item] of uiConfig.queries.entries()) {
+  for (let index = 0; index < uiConfig.queries.length; index++) {
+    const item = uiConfig.queries[index];
     await addQueryIfNeeded(page, index, aiTap);
 
     if (!item.promQl) {

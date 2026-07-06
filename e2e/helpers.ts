@@ -38,6 +38,14 @@ export async function fillInputGroupNumber(page: Page, label: string, value: num
   await fillVisible(input, String(value), `${label} number input`);
 }
 
+/** 向匹配 label 文本的 `.ant-input-group` 填入文本后按 Enter 确认（适用于 AutoComplete 类型的输入框）。 */
+export async function fillAutoCompleteInputGroup(page: Page, label: string, value: string) {
+  const inputGroup = page.locator('.ant-input-group').filter({ hasText: label });
+  const input = inputGroup.locator('input').last();
+  await fillVisible(input, value, `${label} input`);
+  await page.keyboard.press('Enter');
+}
+
 /** 向 antd 表单项（`.ant-form-item`）中匹配 label 的文本输入框或文本域填入值。 */
 export async function fillAntFormItemInput(page: Page, label: string, value: string, index = 0) {
   const input = antFormItem(page, label, index).locator('input:not([type="hidden"]), textarea').last();

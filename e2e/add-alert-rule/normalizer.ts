@@ -179,6 +179,7 @@ export function normalizeAlertRuleForUi(config: AlertRuleConfig, refs: Reference
       matchTypeName: requiredMapValue(MATCH_TYPE_LABEL_MAP, query.match_type, 'datasource_queries.match_type'),
       opName: requiredMapValue(OP_LABEL_MAP, query.op, 'datasource_queries.op'),
       datasourceNames: (query.values || []).map((id) => requiredMapValue(refs.datasourceNameMap, id, 'datasource_queries.values')),
+      datasourceIds: query.values || [],
     })),
     queries: toRecordArray(formValues.rule_config.queries).map((query, index) => normalizeQuery(query, index, refs)),
     triggers: toRecordArray(config.rule_config.triggers).map(normalizeTrigger),

@@ -1,3 +1,4 @@
+// @ts-expect-error moment uses export =; tsc file-arg mode ignores tsconfig's esModuleInterop, but esbuild handles it at runtime
 import moment from 'moment';
 
 type RelativeTimeRange = {
@@ -168,7 +169,7 @@ function defaultEffectiveTime() {
   ];
 }
 
-export function processAlertRuleInitialValuesForE2E<T extends Record<string, any>>(rawValues: T): T {
+export function processAlertRuleInitialValuesForE2E(rawValues: Record<string, any>): Record<string, any> {
   const values = cloneJson(rawValues);
   if (Array.isArray(values.rule_config?.queries)) {
     values.rule_config.queries = values.rule_config.queries.map(normalizeQueryInitialValues);
@@ -208,7 +209,7 @@ export function processAlertRuleInitialValuesForE2E<T extends Record<string, any
   };
 }
 
-export function processAlertRuleFormValuesForE2E<T extends Record<string, any>>(rawValues: T): T {
+export function processAlertRuleFormValuesForE2E(rawValues: Record<string, any>): Record<string, any> {
   const values = { ...rawValues };
   let cate = values.cate;
   if (values.prod === 'host') cate = 'host';
@@ -286,5 +287,5 @@ export function processAlertRuleFormValuesForE2E<T extends Record<string, any>>(
         : [],
       enrich_queries: enrichQueries,
     },
-  } as T;
+  };
 }

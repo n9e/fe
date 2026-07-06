@@ -36,7 +36,8 @@ async function fillPrometheusV1(page: Page, uiConfig: NormalizedAlertRuleConfig,
   await focusAlertConditionSection(aiTap, aiWaitFor);
   await aiAssert(`存在${uiConfig.ruleVersionName}`);
 
-  for (const [index, item] of uiConfig.queries.entries()) {
+  for (let index = 0; index < uiConfig.queries.length; index++) {
+    const item = uiConfig.queries[index];
     await addQueryIfNeeded(page, index, aiTap);
 
     if (!item.promQl) {
@@ -69,7 +70,8 @@ async function fillPrometheusV2(page: Page, uiConfig: NormalizedAlertRuleConfig,
   await aiTap('规则模式中的高级模式');
   await aiWaitFor('高级模式已选中，并且可以看到查询语句和阈值判断');
 
-  for (const [index, item] of uiConfig.queries.entries()) {
+  for (let index = 0; index < uiConfig.queries.length; index++) {
+    const item = uiConfig.queries[index];
     await addV2QueryIfNeeded(page, index, aiTap);
 
     if (!item.query) {
@@ -88,7 +90,9 @@ async function fillPrometheusV2(page: Page, uiConfig: NormalizedAlertRuleConfig,
     throw new Error('Missing rule_config.triggers for prometheus v2 alert rule');
   }
 
-  for (const [index, trigger] of (uiConfig.triggers as unknown as AlertRuleTrigger[]).entries()) {
+  const triggers = uiConfig.triggers as unknown as AlertRuleTrigger[];
+  for (let index = 0; index < triggers.length; index++) {
+    const trigger = triggers[index];
     await addV2TriggerIfNeeded(page, index, aiTap);
     await fillBuilderTrigger(
       trigger,

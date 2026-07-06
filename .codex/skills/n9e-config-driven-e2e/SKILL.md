@@ -100,8 +100,12 @@ Step files should map normalized config into actual UI controls:
 - Prefer stable Playwright locators for deterministic Ant Design controls, especially Form.Item labels, Form.List rows, TimePicker, InputNumber, Switch, Select, and tags Select.
 - Reuse helper functions in this order:
   1. Global helpers in `e2e/helpers.ts` for generic Playwright/Ant Design patterns.
-  2. Feature-suite helpers such as `e2e/add-alert-rule/helpers/` for alert-rule-specific patterns.
+  2. Feature-suite helpers such as `e2e/add-alert-rule/helpers/index.ts` for feature-specific patterns.
   3. Local helper functions inside a single step/query file only when the behavior is genuinely one-off.
+ - **Do not casually create new helper files** under `helpers/`. Before creating a new `.ts` file, ask:
+   - Can this go into the existing `e2e/helpers.ts` (if globally reusable) or the feature-suite `helpers/index.ts` (if feature-specific)?
+   - Is this function genuinely distinct enough in concern to warrant a separate file, or just another variant of fill/select/set?
+   - If the answer to both is "it belongs in an existing file", add it there instead.
 - Before adding a local `fill*`, `select*`, `set*`, or locator helper, check whether it belongs in `e2e/helpers.ts` or the feature-suite helpers. If two files need it, promote it instead of duplicating it.
 - Keep local helpers small and domain-specific. Generic Ant Design mechanics such as opening Selects, selecting exact options, filling tags/multiple Selects, TimePicker inputs, Switches, InputNumber, and Form.Item fields belong in shared helpers.
 - Use Midscene for visible navigation and product-language interactions where it is robust:

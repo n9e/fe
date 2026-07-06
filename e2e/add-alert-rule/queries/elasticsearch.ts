@@ -178,7 +178,9 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
 
   const groupByFieldKeyIndexOffset = item.value?.func && item.value.func !== 'count' && item.value.func !== 'rawData' ? 1 : 0;
 
-  for (const [index, groupBy] of (item.group_by || []).entries()) {
+  const groupByList = item.group_by || [];
+  for (let index = 0; index < groupByList.length; index++) {
+    const groupBy = groupByList[index];
     await addTermsGroupBy(page, groupBy, index, aiTap, groupByFieldKeyIndexOffset);
   }
 

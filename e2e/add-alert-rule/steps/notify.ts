@@ -1,6 +1,6 @@
-import { type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
-import { fillAntFormItemSpinButton, selectAntFormItemOption, setAntFormItemSwitch } from '../../helpers';
+import { fillAntFormItemSpinButton, selectAntFormItemOption } from '../../helpers';
 import type { AiTap } from '../../types';
 import type { NormalizedAlertRuleConfig } from '../types';
 
@@ -26,7 +26,12 @@ export async function fillNotifyStep(page: Page, uiConfig: NormalizedAlertRuleCo
     }
   }
 
-  await setAntFormItemSwitch(page, '启用恢复通知', uiConfig.notifyRecovered);
+  // 启用恢复通知 — Switch 的 Form.Item 没有 label 属性，使用外层容器定位
+  const notifyRecoveredSwitch = page.locator('.mb-4').filter({ hasText: '启用恢复通知' }).getByRole('switch');
+  await expect(notifyRecoveredSwitch, '启用恢复通知 switch').toBeVisible();
+  if ((await notifyRecoveredSwitch.isChecked()) !== uiConfig.notifyRecovered) {
+    await notifyRecoveredSwitch.click();
+  }
 
   // 留观时长 — 界面标签为中文 "留观时长（秒）"
   await fillAntFormItemSpinButton(page, '留观时长（秒）', uiConfig.recoverDuration);

@@ -111,7 +111,8 @@ export async function fillTriggers(
   const desc = options?.descriptions;
   const queryCount = options?.queryCount ?? uiConfig.queries.length;
 
-  for (const [index, trigger] of triggers.entries()) {
+  for (let index = 0; index < triggers.length; index++) {
+    const trigger = triggers[index];
     if (index > 0) {
       await aiTap('添加阈值判断');
       await page.waitForTimeout(300);
