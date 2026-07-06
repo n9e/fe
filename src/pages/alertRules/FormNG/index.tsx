@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { Alert, Button, Card, Col, Form, Input, message, Row, Select, Space } from 'antd';
+import { Sparkles, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import _ from 'lodash';
@@ -184,6 +185,50 @@ export default function FormNG(props: IProps) {
               onTouchMove={scroll.handleUserScroll}
             >
               <div className='w-full max-w-[1200px] mx-auto p-5 pb-0'>
+                <div className='flex items-center justify-end gap-2 mb-4'>
+                  <Button
+                    onClick={() => {
+                      scroll.setSectionCollapsed((prev) => ({
+                        ...prev,
+                        basic: false,
+                        datasource: false,
+                        rule: false,
+                        pipeline: true,
+                        notify: true,
+                        effective: true,
+                        advanced: true,
+                      }));
+                    }}
+                    className='flex items-center gap-1'
+                    size='small'
+                    icon={<Sparkles size={12} className='text-error' />}
+                  >
+                    {t('form_ng.collapse_core_only')}
+                  </Button>
+{(() => {
+                      const visibleKeys = sections.map((s) => s.key);
+                      const allExpanded = visibleKeys.every((k) => scroll.sectionCollapsed[k] === false);
+                      return (
+                        <Button
+                          onClick={() => {
+                            scroll.setSectionCollapsed((prev) => {
+                              const anyCollapsed = visibleKeys.some((k) => prev[k] === true);
+                              const next = {};
+                              for (const k of visibleKeys) {
+                                next[k] = anyCollapsed ? false : true;
+                              }
+                              return { ...prev, ...next };
+                            });
+                          }}
+                          className='flex items-center gap-1'
+                          size='small'
+                          icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
+                        >
+                          {allExpanded ? t('form_ng.collapse_collapse_all') : t('form_ng.collapse_expand_all')}
+                        </Button>
+                      );
+                    })()}
+                </div>
                 {editable === false && <Alert type='warning' message={t('expired')} className='mb-4' />}
                 <Form.Item name='disabled' hidden>
                   <div />

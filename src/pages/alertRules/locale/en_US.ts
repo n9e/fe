@@ -423,6 +423,9 @@ const en_US = {
     triggers_desc: 'Decoupled QL & conditions: supports threshold judgment & no-data detection',
     triggers_desc_anomaly: 'Decoupled QL & conditions: supports threshold judgment, no-data detection & intelligent alerting',
     threshold_judgment: 'Threshold Judgment',
+    collapse_core_only: 'Core steps only',
+    collapse_expand_all: 'Expand all',
+    collapse_collapse_all: 'Collapse all',
   },
 
   enrich_queries: {

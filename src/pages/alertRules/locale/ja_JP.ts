@@ -421,6 +421,9 @@ const ja_JP = {
     triggers_desc: 'QL と判定条件の分離：閾値判定、データ欠落検出をサポート',
     triggers_desc_anomaly: 'QL と判定条件の分離：閾値判定、データ欠落検出、スマートアラートをサポート',
     threshold_judgment: '閾値判定',
+    collapse_core_only: '核心ステップのみ展開',
+    collapse_expand_all: 'すべて展開',
+    collapse_collapse_all: 'すべて折りたたむ',
   },
 };
 

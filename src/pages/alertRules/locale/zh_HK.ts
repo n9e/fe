@@ -421,6 +421,9 @@ const zh_HK = {
     triggers_desc: 'QL 與判定條件解耦：支援閾值判斷、數據缺失檢測',
     triggers_desc_anomaly: 'QL 與判定條件解耦：支援閾值判斷、數據缺失檢測與智能告警',
     threshold_judgment: '閾值判斷',
+    collapse_core_only: '僅展開核心步驟',
+    collapse_expand_all: '展開全部',
+    collapse_collapse_all: '收起全部',
   },
 };
 export default zh_HK;

@@ -421,6 +421,9 @@ const zh_CN = {
     triggers_desc: 'QL 与判定条件解耦：支持阈值判断、数据缺失检测',
     triggers_desc_anomaly: 'QL 与判定条件解耦：支持阈值判断、数据缺失检测与智能告警',
     threshold_judgment: '阈值判断',
+    collapse_core_only: '仅展开核心步骤',
+    collapse_expand_all: '展开全部',
+    collapse_collapse_all: '收起全部',
   },
 };
 export default zh_CN;
