@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { DatasourceCateEnum } from '@/utils/constant';
-import { withFlashcatFrom } from '@/utils/flashcatFrom';
 import { VariableQuerybuilder as ClickHouse } from '@/plugins/clickHouse';
 
 import { IVariable } from './definition';
@@ -51,7 +50,7 @@ export default function Querybuilder(props: Props) {
                 <QuestionCircleOutlined
                   onClick={() => {
                     if (datasourceCate === 'prometheus') {
-                      window.open(withFlashcatFrom('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA=='));
+                      window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
                     } else if (datasourceCate === 'elasticsearch') {
                       DocumentDrawer({
                         language: i18n.language,
