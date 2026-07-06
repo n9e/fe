@@ -18,12 +18,12 @@ import React from 'react';
 import { Space, Form, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-export default function index({ field, disabled }: { field: any; disabled?: boolean }) {
+export default function index({ field, disabled, validateDisabled }: { field: any; disabled?: boolean; validateDisabled?: boolean }) {
   const { t } = useTranslation('alertRules');
   return (
     <Space align='baseline'>
       {t('severity_label')}
-      <Form.Item {...field} name={[field.name, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle>
+      <Form.Item {...field} name={[field.name, 'severity']} rules={validateDisabled ? [] : [{ required: true, message: 'Missing severity' }]} noStyle>
         <Radio.Group disabled={disabled}>
           <Radio value={1}>{t('common:severity.1')}</Radio>
           <Radio value={2}>{t('common:severity.2')}</Radio>

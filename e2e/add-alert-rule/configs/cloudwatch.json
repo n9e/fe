@@ -1,0 +1,127 @@
+{
+  "group_id": 265,
+  "cate": "cloudwatch",
+  "datasource_ids": [10058],
+  "datasource_queries": [
+    {
+      "match_type": 0,
+      "op": "in",
+      "values": [10058]
+    }
+  ],
+  "cluster": "",
+  "name": "cloudwatch",
+  "note": "",
+  "prod": "metric",
+  "algorithm": "",
+  "algo_params": null,
+  "delay": 0,
+  "severity": 0,
+  "severities": [2],
+  "disabled": 1,
+  "prom_for_duration": 60,
+  "prom_ql": "",
+  "rule_config": {
+    "anomaly_trigger": {
+      "algo_params": {
+        "lower_bound": 1,
+        "lower_times_num": 1,
+        "seasonal_duration": 86400,
+        "upper_bound": 1,
+        "upper_times_num": 1
+      },
+      "severity": 2
+    },
+    "exp_trigger_disable": false,
+    "nodata_trigger": {
+      "enable": false,
+      "resolve_after": 1800,
+      "resolve_after_enable": false,
+      "severity": 2
+    },
+    "queries": [
+      {
+        "from": 300,
+        "queries": [
+          {
+            "alias": "alias",
+            "dimensions": [],
+            "match_exact": false,
+            "metric_editor_mode": 0,
+            "metric_name": "CPUUtilization",
+            "namespace": "AWS/EC2",
+            "offset": 10,
+            "period": "60",
+            "query_id": "id",
+            "query_type": "metric_search",
+            "region": "ap-southeast-2",
+            "return_data": true,
+            "statistic": "Minimum"
+          }
+        ],
+        "ref": "A",
+        "to": 0
+      }
+    ],
+    "triggers": [
+      {
+        "exp": "$A > 0",
+        "expressions": [
+          {
+            "comparisonOperator": ">",
+            "logicalOperator": "&&",
+            "ref": "A",
+            "value": 0
+          }
+        ],
+        "join_ref": "A",
+        "mode": 0,
+        "recover_config": {
+          "judge_type": 1
+        },
+        "severity": 2
+      }
+    ]
+  },
+  "event_relabel_config": null,
+  "prom_eval_interval": 15,
+  "enable_stime": "00:00",
+  "enable_stimes": ["00:00"],
+  "enable_etime": "00:00",
+  "enable_etimes": ["00:00"],
+  "enable_days_of_week": ["0", "1", "2", "3", "4", "5", "6"],
+  "enable_days_of_weeks": [["0", "1", "2", "3", "4", "5", "6"]],
+  "enable_in_bg": 0,
+  "notify_recovered": 1,
+  "notify_channels": [],
+  "notify_groups_obj": [],
+  "notify_groups": [],
+  "notify_repeat_step": 60,
+  "notify_max_number": 0,
+  "recover_duration": 0,
+  "callbacks": [],
+  "runbook_url": "",
+  "append_tags": [],
+  "annotations": {},
+  "extra_config": {
+    "enrich_queries": [],
+    "service_cal_configs": []
+  },
+  "create_at": 1783307722,
+  "create_by": "root",
+  "update_at": 1783307724,
+  "update_by": "root",
+  "uuid": 0,
+  "cur_event_count": 0,
+  "update_by_nickname": "",
+  "cron_pattern": "@every 60s",
+  "time_zone": "Local",
+  "notify_rule_ids": [],
+  "pipeline_configs": [
+    {
+      "pipeline_id": 0,
+      "enable": true
+    }
+  ],
+  "notify_version": 1
+}

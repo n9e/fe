@@ -16,18 +16,19 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
-import { Form, Card, Space } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import { CommonStateContext } from '@/App';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
-import Triggers from '@/pages/alertRules/Form/components/Triggers';
+import Triggers from '@/pages/alertRules/FormNG/components/Triggers';
 
 import { getDorisDatabases } from '../services';
 import { NAME_SPACE } from '../constants';
+import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import Query from './Query';
 
 const DATASOURCE_ALL = 0;
@@ -53,33 +54,41 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
 
   return (
     <>
-      <div className='mb-2'>
+      <div className='mb-4'>
         <Form.List name={['rule_config', 'queries']}>
           {(fields, { add, remove }) => (
-            <Card
-              title={
+            <div>
+              <FormItemLabel>
                 <Space>
-                  <span>{t('datasource:query.title')}</span>
-                  <PlusCircleOutlined
-                    onClick={() =>
-                      add({
-                        prom_ql: '',
-                        severity: 3,
-                        ref: generateQueryNameByIndex(fields.length),
-                      })
-                    }
-                  />
+                  {t('datasource:query.title')}
                   <Inhibit triggersKey='queries' />
                 </Space>
-              }
-              size='small'
-            >
-              <div className='alert-rule-triggers-container'>
-                {fields.map((field) => (
-                  <Query key={field.key} datasourceId={datasourceId} field={field} dbList={dbList} disabled={disabled} remove={remove} />
-                ))}
-              </div>
-            </Card>
+              </FormItemLabel>
+              {fields.map((field) => (
+                <Query
+                  key={field.key}
+                  datasourceId={datasourceId}
+                  field={field}
+                  dbList={dbList}
+                  disabled={disabled}
+                  onClose={fields.length > 1 ? () => remove(field.name) : undefined}
+                />
+              ))}
+              <Button
+                className='w-full'
+                type='dashed'
+                onClick={() =>
+                  add({
+                    prom_ql: '',
+                    severity: 3,
+                    ref: generateQueryNameByIndex(fields.length),
+                  })
+                }
+                icon={<PlusOutlined />}
+              >
+                {t('datasource:query.title')}
+              </Button>
+            </div>
           )}
         </Form.List>
       </div>

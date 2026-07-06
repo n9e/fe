@@ -20,3 +20,4 @@ coverage/
 .playwright-mcp/
 docs/
 midscene_run/
+test-results/

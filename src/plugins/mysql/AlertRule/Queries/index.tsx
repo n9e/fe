@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { Form, Space, Row, Col, Card } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Row, Col, Button } from 'antd';
+import { InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,8 @@ import QueryName, { generateQueryName } from '@/components/QueryName';
 import LogQL from '@/components/LogQL';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
+import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
 import AdvancedSettings from '../../components/AdvancedSettings';
 import { NAME_SPACE } from '../../constants';
@@ -42,65 +44,52 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
         ]}
       >
         {(fields, { add, remove }) => (
-          <Card
-            title={
-              <Space>
-                {t('datasource:query.title')}
-                <PlusCircleOutlined
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    add({
-                      interval: 1,
-                      interval_unit: 'min',
-                    });
-                  }}
-                />
-              </Space>
-            }
-            size='small'
-          >
+          <div>
+            <FormItemLabel>{t('alertRules:form_ng.query_statements')}</FormItemLabel>
             {fields.map((field) => {
               return (
-                <div key={field.key} className='bg-fc-200' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
-                  <Row gutter={8}>
-                    <Col flex='32px'>
-                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
-                        <QueryName existingNames={_.map(queries, 'ref')} />
-                      </Form.Item>
-                    </Col>
-                    <Col flex='auto'>
-                      <div className='tdengine-discover-query'>
-                        <InputGroupWithFormItem
-                          label={
-                            <Space>
-                              {t('query.query')}
-                              <InfoCircleOutlined
-                                onClick={() => {
-                                  DocumentDrawer({
-                                    language: i18n.language,
-                                    darkMode,
-                                    title: t('common:page_help'),
-                                    type: 'iframe',
-                                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/mysql/',
-                                  });
-                                }}
+                <CardContainer key={field.key} onClose={fields.length > 1 ? () => remove(field.name) : undefined}>
+                  <CardContainerHeader>
+                    <Row gutter={8}>
+                      <Col flex='32px'>
+                        <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                          <QueryName existingNames={_.map(queries, 'ref')} />
+                        </Form.Item>
+                      </Col>
+                      <Col flex='auto'>
+                        <div className='tdengine-discover-query'>
+                          <InputGroupWithFormItem
+                            label={
+                              <Space>
+                                {t('query.query')}
+                                <InfoCircleOutlined
+                                  onClick={() => {
+                                    DocumentDrawer({
+                                      language: i18n.language,
+                                      darkMode,
+                                      title: t('common:page_help'),
+                                      type: 'iframe',
+                                      documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/mysql/',
+                                    });
+                                  }}
+                                />
+                              </Space>
+                            }
+                          >
+                            <Form.Item {...field} name={[field.name, 'sql']}>
+                              <LogQL
+                                datasourceCate={DatasourceCateEnum.mysql}
+                                datasourceValue={datasourceID}
+                                query={{}}
+                                historicalRecords={[]}
+                                placeholder={t('query.query_placeholder2')}
                               />
-                            </Space>
-                          }
-                        >
-                          <Form.Item {...field} name={[field.name, 'sql']}>
-                            <LogQL
-                              datasourceCate={DatasourceCateEnum.mysql}
-                              datasourceValue={datasourceID}
-                              query={{}}
-                              historicalRecords={[]}
-                              placeholder={t('query.query_placeholder2')}
-                            />
-                          </Form.Item>
-                        </InputGroupWithFormItem>
-                      </div>
-                    </Col>
-                  </Row>
+                            </Form.Item>
+                          </InputGroupWithFormItem>
+                        </div>
+                      </Col>
+                    </Row>
+                  </CardContainerHeader>
                   <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit={IS_PLUS} />
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
@@ -110,18 +99,23 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       return <GraphPreview cate={cate} datasourceValue={datasourceID} query={query} />;
                     }}
                   </Form.Item>
-                  {fields.length > 1 && (
-                    <CloseCircleOutlined
-                      style={{ position: 'absolute', right: -4, top: -4 }}
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                    />
-                  )}
-                </div>
+                </CardContainer>
               );
             })}
-          </Card>
+            <Button
+              className='w-full'
+              type='dashed'
+              onClick={() => {
+                add({
+                  interval: 1,
+                  interval_unit: 'min',
+                });
+              }}
+              icon={<PlusOutlined />}
+            >
+              {t('alertRules:form_ng.query_statements')}
+            </Button>
+          </div>
         )}
       </Form.List>
     </>
