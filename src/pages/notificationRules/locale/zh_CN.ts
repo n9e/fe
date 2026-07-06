@@ -150,6 +150,7 @@ const zh_CN = {
     rules: '告警规则',
     sub_rules: '订阅规则',
   },
+启用状态下不可删除: '启用状态下不可删除',
 };
 
 export default zh_CN;

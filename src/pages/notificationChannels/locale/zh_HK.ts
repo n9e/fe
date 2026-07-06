@@ -155,6 +155,7 @@ const zh_HK = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
+启用状态下不可删除: '啟用狀態下不可刪除',
 };
 
 export default zh_HK;

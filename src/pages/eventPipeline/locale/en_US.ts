@@ -298,5 +298,6 @@ Example: Fill in Business Group==DefaultBusiGroup, which means only when the "Bu
       width: 'Image Width',
     },
   },
+启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;

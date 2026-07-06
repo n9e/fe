@@ -100,5 +100,6 @@ const zh_CN = {
     abort_confirm_ok: '取消更新',
     abort_confirm_cancel: '关闭',
   },
+启用状态下不可删除: '启用状态下不可删除',
 };
 export default zh_CN;
