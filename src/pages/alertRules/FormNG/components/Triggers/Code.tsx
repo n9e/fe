@@ -31,12 +31,13 @@ interface IProps {
   prefixName?: (string | number)[]; // 列表字段名
   disabled?: boolean;
   placeholder?: string;
+  validateDisabled?: boolean;
 }
 
 export default function Code(props: IProps) {
   const { darkMode } = React.useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
-  const { prefixField = {}, fullPrefixName = [], prefixName = [], disabled, placeholder = '$A > 0 && $B < $A' } = props;
+  const { prefixField = {}, fullPrefixName = [], prefixName = [], disabled, placeholder = '$A > 0 && $B < $A', validateDisabled } = props;
 
   const getValidateErrorMessage = (errors: unknown[]) => {
     const firstError = errors?.[0];
@@ -68,11 +69,7 @@ export default function Code(props: IProps) {
       {...prefixField}
       name={[...prefixName, 'exp']}
       validateTrigger={['onBlur']}
-      rules={[
-        {
-          validator: (_, value) => handleValidate(value),
-        },
-      ]}
+      rules={validateDisabled ? [] : [{ validator: (_, value) => handleValidate(value) }]}
     >
       <ExprMonacoEditor theme={darkMode ? 'dark' : 'light'} placeholder={placeholder} enableAutocomplete={true} disabled={disabled} />
     </Form.Item>

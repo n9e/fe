@@ -31,6 +31,8 @@ export default function index(props: Props) {
     }
   }, [active]);
 
+  const enable = Form.useWatch([...names, 'enable']);
+
   return (
     <Spin spinning={algorithmsLoading}>
       <div>
@@ -42,33 +44,35 @@ export default function index(props: Props) {
             {t('anomaly_trigger.enable')}
           </Space>
         </div>
-        <div>
-          <Space align='baseline'>
-            {t('anomaly_trigger.algorithm')}
-            <Form.Item name={[...names, 'algorithm']} rules={[{ required: false, message: t('anomaly_trigger.algorithm_required') }]} initialValue={_.keys(algorithms)[0]}>
-              <Select
-                style={{ width: 200 }}
-                disabled={disabled}
-                options={_.map(algorithms, (label, value) => {
-                  return { label, value };
-                })}
-              />
-            </Form.Item>
-          </Space>
+        <div style={{ display: enable !== true ? 'none' : 'block' }}>
+          <div>
+            <Space align='baseline'>
+              {t('anomaly_trigger.algorithm')}
+              <Form.Item name={[...names, 'algorithm']} rules={enable === true ? [{ required: false, message: t('anomaly_trigger.algorithm_required') }] : []} initialValue={_.keys(algorithms)[0]}>
+                <Select
+                  style={{ width: 200 }}
+                  disabled={disabled || enable !== true}
+                  options={_.map(algorithms, (label, value) => {
+                    return { label, value };
+                  })}
+                />
+              </Form.Item>
+            </Space>
+          </div>
+          <div className='mb-4'>
+            <Space align='baseline'>
+              {t('severity_label')}
+              <Form.Item name={[...names, 'severity']} rules={enable === true ? [{ required: true, message: 'Missing severity' }] : []} noStyle initialValue={2}>
+                <Radio.Group disabled={disabled || enable !== true}>
+                  <Radio value={1}>{t('common:severity.1')}</Radio>
+                  <Radio value={2}>{t('common:severity.2')}</Radio>
+                  <Radio value={3}>{t('common:severity.3')}</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Space>
+          </div>
+          <AbnormalDetection />
         </div>
-        <div className='mb-4'>
-          <Space align='baseline'>
-            {t('severity_label')}
-            <Form.Item name={[...names, 'severity']} rules={[{ required: true, message: 'Missing severity' }]} noStyle initialValue={2}>
-              <Radio.Group disabled={disabled}>
-                <Radio value={1}>{t('common:severity.1')}</Radio>
-                <Radio value={2}>{t('common:severity.2')}</Radio>
-                <Radio value={3}>{t('common:severity.3')}</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </Space>
-        </div>
-        <AbnormalDetection />
       </div>
     </Spin>
   );

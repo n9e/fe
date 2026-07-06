@@ -30,11 +30,12 @@ interface IProps {
   prefixName?: (string | number)[]; // 列表字段名
   queries: any[];
   disabled?: boolean;
+  validateDisabled?: boolean;
 }
 
 export default function Builder(props: IProps) {
   const { t } = useTranslation();
-  const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled } = props;
+  const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled, validateDisabled } = props;
 
   return (
     <div>
@@ -72,12 +73,7 @@ export default function Builder(props: IProps) {
                       <Form.Item
                         {...field}
                         name={[field.name, 'value']}
-                        rules={[
-                          {
-                            required: true,
-                            message: t('db_aliyunSLS:trigger.value_msg'),
-                          },
-                        ]}
+                        rules={validateDisabled ? [] : [{ required: true, message: t('db_aliyunSLS:trigger.value_msg') }]}
                       >
                         <InputNumber style={{ width: 200 }} disabled={disabled} />
                       </Form.Item>

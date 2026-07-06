@@ -24,6 +24,8 @@ interface IProps {
 export default function Trigger(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled, onClose } = props;
+  const exp_trigger_disable = Form.useWatch(['rule_config', 'exp_trigger_disable']);
+  const validateDisabled = disabled || exp_trigger_disable !== false;
   const [expanded, setExpanded] = React.useState(false);
 
   return (
@@ -40,15 +42,15 @@ export default function Trigger(props: IProps) {
         {({ getFieldValue }) => {
           const mode = getFieldValue([...fullPrefixName, 'mode']);
           if (mode == 0) {
-            return <Builder prefixField={prefixField} prefixName={prefixName} queries={queries} disabled={disabled} />;
+            return <Builder prefixField={prefixField} prefixName={prefixName} queries={queries} disabled={disabled} validateDisabled={validateDisabled} />;
           }
           if (mode === 1) {
-            return <Code prefixField={prefixField} prefixName={prefixName} disabled={disabled} />;
+            return <Code prefixField={prefixField} prefixName={prefixName} disabled={disabled} validateDisabled={validateDisabled} />;
           }
         }}
       </Form.Item>
       <div className='mb-4'>
-        <Severity field={prefixField} disabled={disabled} />
+        <Severity field={prefixField} disabled={disabled} validateDisabled={validateDisabled} />
       </div>
       <div>
         <div className='mb-2'>
