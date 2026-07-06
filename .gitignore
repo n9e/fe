@@ -18,3 +18,5 @@ public/bound
 .worktrees/
 coverage/
 .playwright-mcp/
+docs/
+midscene_run/
