@@ -101,6 +101,7 @@ const zh_CN = {
     current_anomaly_time: '本次异常时间',
     ai_analysis: 'AI 分析',
     ai_analysis_content: '分析这条告警事件的根因',
+    ai_analysis_content_ent: '分析告警事件 (id={{id}}) 的根因',
   },
 
   sharing_link: {

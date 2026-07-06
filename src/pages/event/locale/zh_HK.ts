@@ -99,6 +99,7 @@ const zh_HK = {
     current_anomaly_time: '本次異常時間',
     ai_analysis: 'AI 分析',
     ai_analysis_content: '分析這條告警事件的根因',
+    ai_analysis_content_ent: '分析告警事件 (id={{id}}) 的根因',
   },
 
   sharing_link: {

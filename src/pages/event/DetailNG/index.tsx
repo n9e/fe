@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
 import { getESIndexPatternsWithParmas } from '@/pages/log/IndexPatterns/services';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_ENT } from '@/utils/constant';
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { getAlertEventDetailPrompts } from '@/components/AiChatNG/recommend';
 
@@ -108,7 +108,12 @@ export default function DetailNG(props: Props) {
               <AiButton
                 size='small'
                 queryAction={{
-                  content: t('detail.ai_analysis_content'),
+                  content: IS_ENT
+                    ? t('detail.ai_analysis_content_ent', {
+                        id: eventDetail.id,
+                      })
+                    : t('detail.ai_analysis_content'),
+                  prefillOnly: false,
                   key: 'troubleshooting',
                   param: {
                     event_id: eventDetail.id,
