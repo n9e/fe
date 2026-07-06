@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { Space, InputNumber, Radio, Button, Popover, Tooltip } from 'antd';
@@ -57,6 +57,7 @@ interface IProps {
   graphStandardOptionsPlacement?: TooltipPlacement;
   defaultUnit?: string;
   panelWidth?: number; // 用于 Graph 组件的宽度计算
+  refetchOnZoom?: boolean;
 }
 
 enum ChartType {
@@ -100,8 +101,17 @@ export default function Graph(props: IProps) {
     graphStandardOptionsPlacement = 'left',
     defaultUnit,
     panelWidth,
+    refetchOnZoom = false,
   } = props;
   const [data, setData] = useState<any[]>([]);
+  const [zoomRangeState, setZoomRangeState] = useState<{ range: IRawTimeRange; sourceKey: string }>();
+  const [resetZoomVersion, setResetZoomVersion] = useState(0);
+  const querySeqRef = useRef(0);
+  const rangeKey = JSON.stringify(range);
+  const zoomSourceKey = JSON.stringify({ datasourceValue, promql, range });
+  const activeZoomRange = refetchOnZoom && zoomRangeState?.sourceKey === zoomSourceKey ? zoomRangeState.range : undefined;
+  const effectiveRange = activeZoomRange || range;
+  const effectiveRangeKey = JSON.stringify(effectiveRange);
   const [highLevelConfig, setHighLevelConfig] = useState({
     shared: false,
     sharedSortDirection: 'desc',
@@ -145,8 +155,34 @@ export default function Graph(props: IProps) {
   }, [defaultUnit]);
 
   useEffect(() => {
+    if (refetchOnZoom) {
+      setZoomRangeState(undefined);
+      setResetZoomVersion((v) => v + 1);
+    }
+  }, [refetchOnZoom, zoomSourceKey]);
+
+  const handleZoomWithoutDefault = useCallback(
+    (times?: Date[]) => {
+      if (!refetchOnZoom) return;
+      if (times?.length === 2) {
+        setZoomRangeState({
+          range: {
+            start: moment(times[0]),
+            end: moment(times[1]),
+          },
+          sourceKey: zoomSourceKey,
+        });
+      } else {
+        setZoomRangeState(undefined);
+        setResetZoomVersion((v) => v + 1);
+      }
+    },
+    [refetchOnZoom, zoomSourceKey],
+  );
+
+  useEffect(() => {
     if (datasourceValue && promql) {
-      const parsedRange = parseRange(range);
+      const parsedRange = parseRange(effectiveRange);
       const start = moment(parsedRange.start).unix();
       const end = moment(parsedRange.end).unix();
       const realStep = getRealStep({
@@ -156,11 +192,12 @@ export default function Graph(props: IProps) {
         toUnix: end,
       });
       const queryStart = Date.now();
+      const querySeq = ++querySeqRef.current;
       setLoading(true);
       getPromData(`${url}/${datasourceValue}/api/v1/query_range`, {
         query: interpolateString({
           query: promql,
-          range,
+          range: effectiveRange,
           minStep,
           maxDataPoints: maxDataPoints || panelWidth,
         }),
@@ -169,6 +206,7 @@ export default function Graph(props: IProps) {
         step: realStep,
       })
         .then((res) => {
+          if (querySeq !== querySeqRef.current) return;
           const series = _.map(res?.result, (item) => {
             return {
               id: _.uniqueId('series_'),
@@ -187,17 +225,19 @@ export default function Graph(props: IProps) {
           setErrorContent('');
         })
         .catch((err) => {
+          if (querySeq !== querySeqRef.current) return;
           const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
         })
         .finally(() => {
+          if (querySeq !== querySeqRef.current) return;
           setLoading(false);
         });
     }
-  }, [JSON.stringify(range), minStep, maxDataPoints, datasourceValue, promql, refreshFlag]);
+  }, [effectiveRangeKey, minStep, maxDataPoints, datasourceValue, promql, refreshFlag]);
 
   return (
-    <div className='prom-graph-graph-container'>
+    <div className={activeZoomRange ? 'prom-graph-graph-container prom-graph-graph-zoom-owner' : 'prom-graph-graph-container'}>
       <div className='prom-graph-graph-controls'>
         <Space wrap>
           <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
@@ -294,7 +334,7 @@ export default function Graph(props: IProps) {
                         version: DASHBOARD_VERSION,
                         name: promql,
                         step: minStep,
-                        range,
+                        range: effectiveRange,
                         ...lineGraphProps,
                         targets: [
                           {
@@ -336,7 +376,15 @@ export default function Graph(props: IProps) {
           )}
         </Space>
       </div>
-      <Timeseries inDashboard={false} values={lineGraphProps as any} series={data} time={range} themeMode={darkMode ? 'dark' : undefined} />
+      <Timeseries
+        key={refetchOnZoom ? `${resetZoomVersion}-${zoomSourceKey}` : undefined}
+        inDashboard={false}
+        values={lineGraphProps as any}
+        series={data}
+        time={effectiveRange}
+        themeMode={darkMode ? 'dark' : undefined}
+        onZoomWithoutDefult={refetchOnZoom ? (handleZoomWithoutDefault as any) : undefined}
+      />
     </div>
   );
 }
