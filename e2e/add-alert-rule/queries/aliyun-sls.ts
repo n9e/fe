@@ -1,6 +1,6 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
-import { fillAutoCompleteInputGroup, fillInputGroup } from '../../helpers';
+import { fillAutoCompleteInputGroup } from '../../helpers';
 import type { AlertRuleConditionHandler, NormalizedQuery } from '../types';
 import { fillAdvancedSettings, fillRelativeTimeRange, fillTriggers, type AlertRuleTrigger } from '../helpers';
 
