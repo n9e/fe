@@ -79,8 +79,6 @@ export interface DataResp {
 
 export interface FieldNameSuggestion {
   field: string;
-  type?: 'string' | 'number' | 'boolean' | 'unknown';
-  builtin?: boolean;
 }
 
 export interface FieldValueSuggestion {

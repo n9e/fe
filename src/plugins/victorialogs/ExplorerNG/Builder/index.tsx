@@ -88,6 +88,28 @@ function useFieldNameSuggestions(params: { datasourceValue?: number; range?: any
   );
 }
 
+function useAggregationFieldSuggestions(params: { datasourceValue?: number; range?: any; query: string; enabled?: boolean }) {
+  const range = React.useMemo(() => getRangeUnix(params.range), [JSON.stringify(params.range)]);
+  return useRequest(
+    () => {
+      return getFieldNames({
+        cate: DatasourceCateEnum.victorialogs,
+        datasource_id: params.datasourceValue!,
+        query: params.query || '*',
+        start: range!.start,
+        end: range!.end,
+        filter: '',
+        limit: 100,
+      });
+    },
+    {
+      refreshDeps: [params.datasourceValue, params.query, !!range?.start, !!range?.end],
+      ready: !!params.enabled && !!params.datasourceValue && !!range?.start && !!range?.end,
+      debounceWait: SUGGESTION_DEBOUNCE_WAIT,
+    },
+  );
+}
+
 function FieldSelect(props: {
   value?: string;
   onChange?: (value?: string) => void;
@@ -104,8 +126,8 @@ function FieldSelect(props: {
   const fields = fieldsFilter ? fieldsFilter(data || []) : data || [];
   const options = React.useMemo(() => {
     const manualField = _.trim(keyword || value);
-    const items = manualField && !_.find(fields, { field: manualField }) ? [{ field: manualField, type: 'unknown' as const }, ...fields] : fields;
-    return _.map(items, (item) => ({ label: item.field, value: item.field, type: item.type }));
+    const items = manualField && !_.find(fields, { field: manualField }) ? [{ field: manualField }, ...fields] : fields;
+    return _.map(items, (item) => ({ label: item.field, value: item.field }));
   }, [JSON.stringify(fields), value, keyword]);
 
   return (
@@ -129,18 +151,20 @@ function FieldSelect(props: {
   );
 }
 
-function LocalFieldSelect(props: { value?: string; onChange?: (value?: string) => void; disabled?: boolean; fields?: string[] }) {
-  const { value, onChange, disabled, fields } = props;
+function CachedFieldSelect(props: { value?: string; onChange?: (value?: string) => void; disabled?: boolean; fields?: FieldNameSuggestion[]; loading?: boolean }) {
+  const { value, onChange, disabled, fields, loading } = props;
   const [keyword, setKeyword] = useState('');
   const options = React.useMemo(() => {
     const manualField = _.trim(keyword || value);
-    return _.map(_.uniq(_.compact([manualField, value, ...(fields || [])])), (field) => ({ label: field, value: field }));
+    const manual = manualField && !_.find(fields, { field: manualField }) ? [{ field: manualField }] : [];
+    return _.map(_.uniqBy([...manual, ...(fields || [])], 'field'), (item) => ({ label: item.field, value: item.field }));
   }, [JSON.stringify(fields), value, keyword]);
 
   return (
     <Select
       allowClear
       disabled={disabled}
+      loading={!disabled && loading}
       showSearch
       optionFilterProp='label'
       dropdownClassName='doris-query-builder-popup'
@@ -154,15 +178,19 @@ function LocalFieldSelect(props: { value?: string; onChange?: (value?: string) =
   );
 }
 
-function FieldTagsSelect(props: { value?: string[]; onChange?: (value?: string[]) => void; datasourceValue?: number; range?: any; query: string }) {
-  const { value, onChange, datasourceValue, range, query } = props;
+function FieldTagsSelect(props: {
+  value?: string[];
+  onChange?: (value?: string[]) => void;
+  fields?: FieldNameSuggestion[];
+  loading?: boolean;
+}) {
+  const { value, onChange, fields, loading } = props;
   const [keyword, setKeyword] = useState('');
-  const { data, loading } = useFieldNameSuggestions({ datasourceValue, range, query, keyword, enabled: true });
   const options = React.useMemo(() => {
-    const current = _.map(value || [], (field) => ({ field, type: 'unknown' as const }));
-    const manual = _.trim(keyword) ? [{ field: _.trim(keyword), type: 'unknown' as const }] : [];
-    return _.map(_.uniqBy([...manual, ...(data || []), ...current], 'field'), (item) => ({ label: item.field, value: item.field }));
-  }, [JSON.stringify(data), JSON.stringify(value), keyword]);
+    const current = _.map(value || [], (field) => ({ field }));
+    const manual = _.trim(keyword) ? [{ field: _.trim(keyword) }] : [];
+    return _.map(_.uniqBy([...manual, ...(fields || []), ...current], 'field'), (item) => ({ label: item.field, value: item.field }));
+  }, [JSON.stringify(fields), JSON.stringify(value), keyword]);
 
   return (
     <Select
@@ -326,9 +354,9 @@ function FilterPopover(props: {
                     datasourceValue={datasourceValue}
                     range={range}
                     query={suggestionQuery}
-                    onFieldChange={(fieldData) => {
+                    onFieldChange={() => {
                       form.setFieldsValue({
-                        op: _.head(getOperatorsByFieldType(fieldData?.type)) || 'eq',
+                        op: _.head(getOperatorsByFieldType()) || 'eq',
                         value: undefined,
                       });
                     }}
@@ -415,17 +443,17 @@ function Filters(props: {
 function AggregationPopover(props: {
   children: React.ReactNode;
   data?: VictoriaLogsAggregation;
-  filters?: VictoriaLogsFilter[];
+  fields?: FieldNameSuggestion[];
+  fieldsLoading?: boolean;
   onChange?: (data: VictoriaLogsAggregation) => void;
   onAdd?: (data: VictoriaLogsAggregation) => void;
   ignoreNextOutsideClick: () => void;
 }) {
-  const { children, data, filters, onChange, onAdd, ignoreNextOutsideClick } = props;
+  const { children, data, fields, fieldsLoading, onChange, onAdd, ignoreNextOutsideClick } = props;
   const [visible, setVisible] = useState<boolean>();
   const [form] = Form.useForm();
   const func = Form.useWatch('func', form);
   const currentFunc = func || data?.func || 'count';
-  const fieldOptions = React.useMemo(() => _.uniq(_.compact([data?.field, ..._.map(filters || [], 'field')])), [data?.field, JSON.stringify(filters)]);
 
   return (
     <Popover
@@ -473,7 +501,7 @@ function AggregationPopover(props: {
               </Col>
               <Col span={12}>
                 <Form.Item label='字段' name='field' rules={[{ required: currentFunc !== 'count', message: '请输入字段' }]}>
-                  <LocalFieldSelect disabled={currentFunc === 'count'} fields={fieldOptions} />
+                  <CachedFieldSelect disabled={currentFunc === 'count'} fields={fields} loading={fieldsLoading} />
                 </Form.Item>
               </Col>
               {currentFunc === 'quantile' && (
@@ -502,9 +530,10 @@ function Aggregates(props: {
   value?: VictoriaLogsAggregation[];
   onChange?: (values: VictoriaLogsAggregation[]) => void;
   ignoreNextOutsideClick: () => void;
-  filters?: VictoriaLogsFilter[];
+  fields?: FieldNameSuggestion[];
+  fieldsLoading?: boolean;
 }) {
-  const { value, onChange, ignoreNextOutsideClick, filters } = props;
+  const { value, onChange, ignoreNextOutsideClick, fields, fieldsLoading } = props;
   return (
     <Space size={[SIZE, SIZE / 2]} wrap>
       {_.map(value, (item, index) => {
@@ -513,7 +542,8 @@ function Aggregates(props: {
           <AggregationPopover
             key={`${item.id}-${index}`}
             data={item}
-            filters={filters}
+            fields={fields}
+            fieldsLoading={fieldsLoading}
             ignoreNextOutsideClick={ignoreNextOutsideClick}
             onChange={(values) => {
               onChange?.(_.map(value, (v, i) => (i === index ? values : v)));
@@ -540,7 +570,8 @@ function Aggregates(props: {
         );
       })}
       <AggregationPopover
-        filters={filters}
+        fields={fields}
+        fieldsLoading={fieldsLoading}
         ignoreNextOutsideClick={ignoreNextOutsideClick}
         onAdd={(values) => onChange?.([...(value || []), values])}
       >
@@ -678,6 +709,12 @@ export default function Builder(props: Props) {
   const skipOutsideClickRef = React.useRef(false);
   const filterOnlyQuery = React.useMemo(() => getSuggestionBaseQuery(filters), [JSON.stringify(filters)]);
   const orderByFieldOptions = React.useMemo(() => getOrderByFieldOptions(aggregates, groupBy), [JSON.stringify(aggregates), JSON.stringify(groupBy)]);
+  const { data: aggregationFields, loading: aggregationFieldsLoading } = useAggregationFieldSuggestions({
+    datasourceValue,
+    range: queryValues?.range,
+    query: filterOnlyQuery,
+    enabled: visible && mode === 'metric' && Array.isArray(filters),
+  });
 
   const ignoreNextOutsideClick = () => {
     skipOutsideClickRef.current = true;
@@ -696,7 +733,11 @@ export default function Builder(props: Props) {
   });
 
   React.useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      form.resetFields();
+      return;
+    }
+    form.resetFields();
     const builder = queryValues?.builder || {};
     if (mode === 'metric') {
       form.setFieldsValue({
@@ -777,7 +818,11 @@ export default function Builder(props: Props) {
                 </div>
                 <div className='table-cell'>
                   <Form.Item name='aggregations' noStyle>
-                    <Aggregates filters={filters} ignoreNextOutsideClick={ignoreNextOutsideClick} />
+                    <Aggregates
+                      fields={aggregationFields}
+                      fieldsLoading={aggregationFieldsLoading}
+                      ignoreNextOutsideClick={ignoreNextOutsideClick}
+                    />
                   </Form.Item>
                 </div>
               </div>
@@ -798,7 +843,7 @@ export default function Builder(props: Props) {
                     </Form.Item>
                     <InputGroupWithFormItem size='small' label='分组'>
                       <Form.Item name='groupBy' noStyle>
-                        <FieldTagsSelect datasourceValue={datasourceValue} range={queryValues?.range} query={filterOnlyQuery} />
+                        <FieldTagsSelect fields={aggregationFields} loading={aggregationFieldsLoading} />
                       </Form.Item>
                     </InputGroupWithFormItem>
                     <InputGroupWithFormItem size='small' label='数量限制'>
