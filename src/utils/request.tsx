@@ -261,4 +261,11 @@ request.interceptors.response.use(
   },
 );
 
+export function buildWorkspaceHeaders(workspaceId?: number | string) {
+  if (workspaceId === undefined || workspaceId === null || workspaceId === '') return undefined;
+  return {
+    'FC-WORKSPACE-ID': `${workspaceId}`,
+  };
+}
+
 export default request;
