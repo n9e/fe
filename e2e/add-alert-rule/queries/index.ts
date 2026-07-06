@@ -3,12 +3,16 @@ import elasticsearchQuery from './elasticsearch';
 import prometheusQuery from './prometheus';
 import lokiQuery from './loki';
 import aliyunSlsQuery from './aliyun-sls';
+import ckQuery from './ck';
+import tencentClsQuery from './tencent-cls';
 
 const HANDLERS: Record<string, AlertRuleConditionHandler> = {
   elasticsearch: elasticsearchQuery,
   prometheus: prometheusQuery,
   loki: lokiQuery,
   'aliyun-sls': aliyunSlsQuery,
+  ck: ckQuery,
+  'tencent-cls': tencentClsQuery,
 };
 
 export function getAlertRuleConditionHandler(cate: string): AlertRuleConditionHandler {

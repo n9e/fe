@@ -241,6 +241,9 @@ export function buildExpectedAlertRule(config: AlertRuleConfig, uiConfig: Normal
   // datasource_ids is not returned or set during creation
   delete (expected as Partial<AlertRuleConfig>).datasource_ids;
   delete (expected as Record<string, unknown>).enable_status;
+  // The add form does not expose a disabled/enable toggle.
+  // New rules are always created as enabled (disabled: 0).
+  expected.disabled = 0;
 
   // 使用引用数据中的 name→ID 映射替换 datasource_queries 中的 ID，
   // 使其与实际 UI 选中的 ID 一致（UI 通过名称选择 datasource，最终 ID 可能与 config 原始值不同）
