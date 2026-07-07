@@ -327,6 +327,7 @@ const zh_HK = {
         right_exclude: '右斥',
       },
       join_type_placeholder: '選擇集合操作',
+      tooltip: '多個查詢條件時，才可配置集合操作',
       on: '標籤名',
     },
     threshold_tip: '請確保所有變量均有數據，且它們的標籤一致，否則無法進行閾值判斷。',

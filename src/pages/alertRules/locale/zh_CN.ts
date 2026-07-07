@@ -327,6 +327,7 @@ const zh_CN = {
         right_exclude: '右斥',
       },
       join_type_placeholder: '请选择集合操作',
+      tooltip: '多个查询条件时，才可配置集合操作',
       on: '标签名',
     },
     threshold_tip: '请确保所有变量均有数据，且它们的标签一致，否则无法进行阈值判断。',
