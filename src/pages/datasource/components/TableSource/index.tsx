@@ -6,6 +6,7 @@ import { ColumnProps } from 'antd/es/table';
 import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import { getCateByValue } from '@/components/AdvancedWrap/utils';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import EmptyGuide from '@/components/EmptyGuide';
@@ -94,7 +95,7 @@ const TableSource = (props: IPropsType) => {
       sorter: (a, b) => localeCompare(a.plugin_type, b.plugin_type),
       defaultSortOrder: 'ascend',
       render: (val) => {
-        const finded = _.find(allCates, { value: val });
+        const finded = getCateByValue(val);
         return (
           <Space>
             <img alt={val} src={finded?.logo} height={20} />

@@ -18,6 +18,6 @@ public/bound
 .worktrees/
 coverage/
 .playwright-mcp/
-midscene_run
-test-results
-docs
+docs/
+midscene_run/
+test-results/

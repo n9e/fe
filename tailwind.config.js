@@ -195,6 +195,7 @@ module.exports = {
       '4xl': '1920px',
     },
     fontSize: {
+      xs: ['10px', '12px'],
       sm: ['12px', '18px'],
       base: ['12px', '22px'],
       l1: ['14px', '22px'],

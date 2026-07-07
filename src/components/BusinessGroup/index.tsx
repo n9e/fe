@@ -274,7 +274,7 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
             placeholder={t('common:search_placeholder')}
           />
           {siteInfo?.businessGroupDisplayMode == 'list' ? (
-            <div className='scroll-container overflow-x-hidden overflow-y-auto min-h-0 h-full'>
+            <div className='best-looking-scroll overflow-x-hidden overflow-y-auto min-h-0 h-full'>
               {_.map(filterData(searchValue, busiGroups), (item) => {
                 const itemKey = _.toString(item.id);
                 return (
@@ -348,7 +348,7 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
               })}
             </div>
           ) : (
-            <div className='scroll-container overflow-x-hidden overflow-y-auto min-h-0 h-full'>
+            <div className='best-looking-scroll overflow-x-hidden overflow-y-auto min-h-0 h-full'>
               {!_.isEmpty(businessGroupTreeData) && (
                 <Tree
                   defaultExpandedKeys={getCollapsedKeys(businessGroupTreeData, getLocaleExpandedKeys(), selected)}

@@ -32,6 +32,7 @@ import LoginCallbackOAuth from '@/pages/loginCallback/oauth';
 import LoginCallbackCustom from '@/pages/loginCallback/Custom';
 import LoginCallbackDingTalk from '@/pages/loginCallback/DingTalk';
 import LoginCallbackFeishu from '@/pages/loginCallback/Feishu';
+import OAuthConsent from '@/pages/oauthConsent';
 import AlertRules, { Add as AlertRuleAdd, Edit as AlertRuleEdit } from '@/pages/alertRules';
 import Profile from '@/pages/account/profile';
 import { List as Dashboard, Detail as DashboardDetail, Share as DashboardShare } from '@/pages/dashboard';
@@ -121,7 +122,7 @@ export default function Content() {
      */
     if (
       profile?.roles?.length > 0 &&
-      !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token', '/alert-aggr-events'], location.pathname) &&
+      !_.includes(['/', '/account/profile/info', '/account/profile/pwd', '/account/profile/token', '/alert-aggr-events', '/oauth-consent'], location.pathname) &&
       !location.pathname.includes('/settings/datasource/edit/') &&
       !location.pathname.includes('/settings/infrastructure/add') &&
       !location.pathname.includes('/settings/source/') &&
@@ -162,6 +163,7 @@ export default function Content() {
         <Route path='/callback/custom' component={LoginCallbackCustom} exact />
         <Route path='/callback/dingtalk' component={LoginCallbackDingTalk} exact />
         <Route path='/callback/feishu' component={LoginCallbackFeishu} exact />
+        <Route path='/oauth-consent' component={OAuthConsent} exact />
         <Route path='/metric/explorer' component={MetricExplore} exact />
         <Route path='/log/explorer' component={LogExplore} exact />
         <Route path='/log/index-patterns' component={IndexPatterns} exact />

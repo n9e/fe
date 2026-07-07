@@ -19,7 +19,7 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { Modal, Space, message, Tooltip } from 'antd';
+import { Button, Modal, Space, message, Tooltip } from 'antd';
 import { FundViewOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';

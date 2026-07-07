@@ -114,7 +114,7 @@ export default function index() {
             },
           ]}
           rowActions={(record: any) => ({
-            menu: [
+            inline: [
               {
                 key: 'clone',
                 icon: 'copy',
@@ -170,7 +170,7 @@ export default function index() {
               },
             ],
           })}
-          actionColumn={{ title: t('common:table.operations'), width: 64 }}
+          actionColumn={{ title: t('common:table.operations'), width: 100 }}
           dataSource={_.filter(data, (item) => {
             if (search) {
               return _.includes(item.ckey, search) || _.includes(item.note, search);

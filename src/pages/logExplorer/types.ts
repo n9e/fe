@@ -20,6 +20,7 @@ export interface Query {
 
 export interface LogExplorerTabItem {
   key: string;
+  name?: string;
   isInited?: boolean;
   formValues?: any;
 }

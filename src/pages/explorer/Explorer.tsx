@@ -31,6 +31,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
+import { Explorer as IotDB } from '@/plugins/iotdb';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
 import { allCates } from '@/components/AdvancedWrap/utils';
@@ -118,6 +119,13 @@ const Panel = (props: IProps) => {
   const params = new URLSearchParams(location.search);
   const defaultDatasourceCate = params.get('data_source_name') || getDefaultDatasourceCate(datasourceList, defaultCate, type);
   const defaultDatasourceValue = params.get('data_source_id') ? _.toNumber(params.get('data_source_id')) : getDefaultDatasourceValue(defaultDatasourceCate, groupedDatasourceList);
+  // 从 URL 参数中提取 query/range，目前仅 CK 数据源支持从 URL 填充查询语句
+  const urlQuery = params.get('query');
+  const rangeStart = params.get('start');
+  const rangeEnd = params.get('end');
+  const urlRange = rangeStart && rangeEnd ? { start: rangeStart, end: rangeEnd } : undefined;
+  // 仅 CK 数据源从 URL 参数初始化 query，其他数据源暂不涉及以免影响面过大
+  const isCKUrlShare = defaultDatasourceCate === DatasourceCateEnum.ck && (urlQuery || urlRange);
   const datasourceCate = Form.useWatch('datasourceCate', form);
   const explorerContainerRef = useRef<HTMLDivElement>(null);
   const [promql, setPromql] = React.useState<string>();
@@ -139,6 +147,15 @@ const Panel = (props: IProps) => {
         initialValues={{
           datasourceCate: defaultDatasourceCate,
           datasourceValue: defaultDatasourceValue,
+          // 仅 CK 数据源支持从 URL 参数填充 query/range，避免影响其他数据源
+          ...(isCKUrlShare
+            ? {
+                query: {
+                  ...(urlQuery ? { query: urlQuery } : {}),
+                  ...(urlRange ? { range: urlRange } : {}),
+                },
+              }
+            : {}),
         }}
       >
         <div className='explorer-content'>
@@ -362,6 +379,8 @@ const Panel = (props: IProps) => {
                       showBuilder={false}
                     />
                   );
+                } else if (datasourceCate === DatasourceCateEnum.iotdb) {
+                  return <IotDB datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.tdengine) {
                   return <TDengine datasourceValue={datasourceValue} form={form} />;
                 } else if (datasourceCate === DatasourceCateEnum.loki) {

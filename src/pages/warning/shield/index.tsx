@@ -414,7 +414,7 @@ const Shield: React.FC = () => {
             dataSource={currentShieldData}
             columns={columns}
             rowActions={(record: shieldItem) => ({
-              menu: [
+              inline: [
                 {
                   key: 'clone',
                   icon: 'copy',
