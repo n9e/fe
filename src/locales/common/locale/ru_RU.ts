@@ -164,6 +164,8 @@ const ru_RU = {
     not_select: 'Пожалуйста, сначала выберите данные',
   },
   invalidDatasource: 'Недопустимый источник данных',
+  tips_title: 'Подсказка',
+  copied: 'Скопировано',
   copyToClipboard: 'Копировать в буфер обмена',
   copyToClipboardFailed: 'Не удалось скопировать в буфер обмена',
   manage: 'Управление',

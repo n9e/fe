@@ -162,6 +162,8 @@ const zh_CN = {
     not_select: '请先选择数据',
   },
   invalidDatasource: '无效的数据源',
+  tips_title: '说明提示',
+  copied: '复制成功',
   copyToClipboard: '复制到剪贴板',
   copyToClipboardFailed: '复制到剪贴板失败',
   manage: '管理',

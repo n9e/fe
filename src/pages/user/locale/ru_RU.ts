@@ -1,4 +1,5 @@
 const ru_RU = {
+  delete_confirm: 'Вы уверены, что хотите удалить?',
   user: {
     title: 'Пользователи',
     search_placeholder: 'Имя пользователя, электронная почта или номер телефона',
@@ -7,6 +8,7 @@ const ru_RU = {
     busi_groups: 'Бизнес-группа',
     user_groups: 'Команда',
     last_active_time: 'Последнее время активности',
+    delete_success: 'Пользователь успешно удалён',
   },
   team: {
     title: 'Команды',
@@ -18,6 +20,8 @@ const ru_RU = {
     empty: 'У вас нет команд, связанных с вами, пожалуйста,',
     name: 'Название команды',
     add_member_selected: 'Выбрано {{num}} элементов',
+    delete_success: 'Команда успешно удалена',
+    delete_member_success: 'Участник успешно удалён',
   },
   business: {
     title: 'Бизнес-группы',

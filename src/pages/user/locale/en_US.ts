@@ -1,4 +1,5 @@
 const en_US = {
+  delete_confirm: 'Are you sure you want to delete?',
   user: {
     title: 'User management',
     search_placeholder: 'Username, email or phone number',
@@ -7,6 +8,7 @@ const en_US = {
     busi_groups: 'Business groups',
     user_groups: 'Teams',
     last_active_time: 'Last active time',
+    delete_success: 'User deleted successfully',
   },
   team: {
     title: 'Team management',
@@ -18,6 +20,8 @@ const en_US = {
     empty: 'No team related to you, please',
     name: 'Team name',
     add_member_selected: 'Selected {num} items',
+    delete_success: 'Team deleted successfully',
+    delete_member_success: 'Member deleted successfully',
   },
   business: {
     title: 'Business group management',

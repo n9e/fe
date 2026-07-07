@@ -164,6 +164,8 @@ const en_US = {
     not_select: 'Please select data first',
   },
   invalidDatasource: 'Invalid datasource',
+  tips_title: 'Tips',
+  copied: 'Copied',
   copyToClipboard: 'Copy to clipboard successfully',
   copyToClipboardFailed: 'Copy to clipboard failed',
   manage: 'Manage',

@@ -23,9 +23,9 @@ export default function MysqlLike(props: Props) {
       if (!item || !item[`${type}.table.source`] || !item[`${type}.table.target`]) return;
 
       if (obj[item[`${type}.table.target`]]) {
-        obj[item[`${type}.table.target`]] += ' + ' + item[`${type}.table.source`] + ` ( ${item[`${type}.table.op`] === 'EQ' ? t('精确') : t('正则')} ) `;
+        obj[item[`${type}.table.target`]] += ' + ' + item[`${type}.table.source`] + ` ( ${item[`${type}.table.op`] === 'EQ' ? t(`${mysqlNS}:精确`) : t(`${mysqlNS}:正则`)} ) `;
       } else {
-        obj[item[`${type}.table.target`]] = item[`${type}.table.source`] + ` ( ${item[`${type}.table.op`] === 'EQ' ? t('精确') : t('正则')} ) `;
+        obj[item[`${type}.table.target`]] = item[`${type}.table.source`] + ` ( ${item[`${type}.table.op`] === 'EQ' ? t(`${mysqlNS}:精确`) : t(`${mysqlNS}:正则`)} ) `;
       }
     });
 

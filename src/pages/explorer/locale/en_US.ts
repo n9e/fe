@@ -74,6 +74,7 @@ const en_US = {
       },
     },
   },
+  drilldown_settings: 'Drilldown settings',
   historicalRecords: {
     button: 'Historical records',
     searchPlaceholder: 'Search historical records',

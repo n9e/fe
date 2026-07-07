@@ -74,6 +74,7 @@ const ru_RU = {
       },
     },
   },
+  drilldown_settings: 'Настройки детализации',
   historicalRecords: {
     button: 'История запросов',
     searchPlaceholder: 'Поиск по истории запросов',

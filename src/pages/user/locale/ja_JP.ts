@@ -1,4 +1,5 @@
 const ja_JP = {
+  delete_confirm: '削除してもよろしいですか？',
   user: {
     title: 'ユーザー管理',
     search_placeholder: 'ユーザー名、メール、または電話',
@@ -7,6 +8,7 @@ const ja_JP = {
     busi_groups: 'ビジネスグループ',
     user_groups: 'チーム',
     last_active_time: '最後のアクティブ時間',
+    delete_success: 'ユーザーを削除しました',
   },
   team: {
     title: 'チーム管理',
@@ -18,6 +20,8 @@ const ja_JP = {
     empty: '関連するチームがありません。まず',
     name: 'チーム名',
     add_member_selected: '選択された {{num}} 項',
+    delete_success: 'チームを削除しました',
+    delete_member_success: 'メンバーを削除しました',
   },
   business: {
     title: 'ビジネスグループ管理',

@@ -74,6 +74,7 @@ const zh_CN = {
       },
     },
   },
+  drilldown_settings: '下钻设置',
   historicalRecords: {
     button: '历史记录',
     searchPlaceholder: '搜索历史记录',

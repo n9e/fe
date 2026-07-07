@@ -164,6 +164,8 @@ const ja_JP = {
     not_select: 'データを選択してください',
   },
   invalidDatasource: '無効なデータソース',
+  tips_title: 'ヒント',
+  copied: 'コピーしました',
   copyToClipboard: 'クリップボードにコピー',
   copyToClipboardFailed: 'クリップボードにコピーできませんでした',
   manage: '管理',

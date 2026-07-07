@@ -74,6 +74,7 @@ const ja_JP = {
       },
     },
   },
+  drilldown_settings: 'ドリルダウン設定',
   historicalRecords: {
     button: '歴史レコード',
     searchPlaceholder: '歴史レコードを検索',

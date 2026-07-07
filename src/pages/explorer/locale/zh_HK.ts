@@ -74,6 +74,7 @@ const zh_HK = {
       },
     },
   },
+  drilldown_settings: '下鑽設置',
   historicalRecords: {
     button: '歷史記錄',
     searchPlaceholder: '搜索歷史記錄',

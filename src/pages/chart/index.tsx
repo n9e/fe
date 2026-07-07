@@ -125,7 +125,7 @@ export default function Chart() {
               fontSize: '30px',
             }}
           />
-          <span>{t('该分享链接无图表数据')}</span>
+          <span>{t('no_data')}</span>
         </h2>
       )}
     </div>

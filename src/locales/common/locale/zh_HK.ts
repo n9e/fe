@@ -162,6 +162,8 @@ const zh_HK = {
     not_select: '請先選擇數據',
   },
   invalidDatasource: '無效的數據源',
+  tips_title: '說明提示',
+  copied: '複製成功',
   copyToClipboard: '複製到剪貼板',
   copyToClipboardFailed: '複製到剪貼板失敗',
   manage: '管理',
