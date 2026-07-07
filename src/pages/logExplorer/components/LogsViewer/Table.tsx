@@ -52,6 +52,7 @@ interface Props {
   /** 排序反转回调 */
   onReverseChange?: (reverse: boolean) => void;
   onOpenOrganizeFieldsModal?: () => void;
+  timeColumnWidth?: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
@@ -89,6 +90,7 @@ function Table(props: Props) {
     onValueFilter,
     onReverseChange,
     onOpenOrganizeFieldsModal,
+    timeColumnWidth,
     timeFieldColumnFormat,
     linesColumnFormat,
     logViewerExtraRender,
@@ -123,6 +125,7 @@ function Table(props: Props) {
         tableColumnsWidthCacheKey,
         onOpenOrganizeFieldsModal,
         setLogViewerDrawerState,
+        timeColumnWidth,
         timeFieldColumnFormat,
         linesColumnFormat,
         adjustFieldValue,

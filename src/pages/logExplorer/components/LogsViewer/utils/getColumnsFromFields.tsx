@@ -24,6 +24,7 @@ export default function getColumnsFromFields(params: {
   tableColumnsWidthCacheKey?: string;
   onOpenOrganizeFieldsModal?: () => void;
   setLogViewerDrawerState?: React.Dispatch<React.SetStateAction<{ visible: boolean; currentIndex: number }>>;
+  timeColumnWidth?: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
   adjustFieldValue?: (formatedValue: FieldValueType, highlightValue?: string[]) => React.ReactNode;
@@ -42,6 +43,7 @@ export default function getColumnsFromFields(params: {
     tableColumnsWidthCacheKey,
     onOpenOrganizeFieldsModal,
     setLogViewerDrawerState,
+    timeColumnWidth = 140,
     timeFieldColumnFormat,
     linesColumnFormat,
     adjustFieldValue,
@@ -133,7 +135,7 @@ export default function getColumnsFromFields(params: {
     columns.unshift({
       name: i18next.t('log_explorer:logs.settings.time'),
       key: '___time___',
-      width: 140,
+      width: timeColumnWidth,
       sortable: true,
       resizable: false,
       formatter: ({ row }) => {
