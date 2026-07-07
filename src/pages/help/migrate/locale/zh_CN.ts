@@ -1,4 +1,13 @@
 const zh_CN = {
+  modal: {
+    title: '迁移设置',
+    success: '迁移成功',
+    datasource_variable: '数据源变量设置',
+    variable_name: '变量名称',
+    variable_name_required: '请填写变量名称',
+    datasource_type: '数据源类型',
+    datasource_default: '数据源默认值',
+  },
   title: '仪表盘迁移',
   migrate: '迁移',
   help: `

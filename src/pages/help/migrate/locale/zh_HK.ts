@@ -1,4 +1,13 @@
 const zh_HK = {
+  modal: {
+    title: '遷移設置',
+    success: '遷移成功',
+    datasource_variable: '數據源變量設置',
+    variable_name: '變量名稱',
+    variable_name_required: '請填寫變量名稱',
+    datasource_type: '數據源類型',
+    datasource_default: '數據源默認值',
+  },
   title: '儀表盤遷移',
   migrate: '遷移',
   help: `
