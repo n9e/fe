@@ -248,7 +248,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
       </div>
       <Form.List {...resetField} name={[...namePath, 'processors']}>
         {(fields, { add, remove, move }) => (
-          <Space direction='vertical' size={SIZE * 2} className='w-full'>
+          <Space direction='vertical' size={SIZE} className='w-full'>
             {fields.map((field) => {
               return (
                 <Processor

@@ -205,30 +205,30 @@ export default function FormNG(props: IProps) {
                   >
                     {t('form_ng.collapse_core_only')}
                   </Button>
-{(() => {
-                      const visibleKeys = sections.map((s) => s.key);
-                      const allExpanded = visibleKeys.every((k) => scroll.sectionCollapsed[k] === false);
-                      return (
-                        <Button
-                          onClick={() => {
-                            scroll.setSectionCollapsed((prev) => {
-                              const anyCollapsed = visibleKeys.some((k) => prev[k] === true);
-                              const next = {};
-                              for (const k of visibleKeys) {
-                                next[k] = anyCollapsed ? false : true;
-                              }
-                              return { ...prev, ...next };
-                            });
-                            scroll.setToggleAllSignal({ action: allExpanded ? 'collapse' : 'expand', ts: Date.now() });
-                          }}
-                          className='flex items-center gap-1'
-                          size='small'
-                          icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
-                        >
-                          {allExpanded ? t('form_ng.collapse_collapse_all') : t('form_ng.collapse_expand_all')}
-                        </Button>
-                      );
-                    })()}
+                  {(() => {
+                    const visibleKeys = sections.map((s) => s.key);
+                    const allExpanded = visibleKeys.every((k) => scroll.sectionCollapsed[k] === false);
+                    return (
+                      <Button
+                        onClick={() => {
+                          scroll.setSectionCollapsed((prev) => {
+                            const anyCollapsed = visibleKeys.some((k) => prev[k] === true);
+                            const next = {};
+                            for (const k of visibleKeys) {
+                              next[k] = anyCollapsed ? false : true;
+                            }
+                            return { ...prev, ...next };
+                          });
+                          scroll.setToggleAllSignal({ action: allExpanded ? 'collapse' : 'expand', ts: Date.now() });
+                        }}
+                        className='flex items-center gap-1'
+                        size='small'
+                        icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
+                      >
+                        {allExpanded ? t('form_ng.collapse_collapse_all') : t('form_ng.collapse_expand_all')}
+                      </Button>
+                    );
+                  })()}
                 </div>
                 {editable === false && <Alert type='warning' message={t('expired')} className='mb-4' />}
                 <Form.Item name='disabled' hidden>
@@ -297,7 +297,34 @@ export default function FormNG(props: IProps) {
                         const filtedCates = _.filter(cates, (item) => {
                           return !!item.alertRule && (item.alertPro ? IS_PLUS : true);
                         });
-                        return _.concat(filtedCates, {
+                        const sortedCateValues = [
+                          'prometheus',
+                          'ck',
+                          'influxdb',
+                          'loki',
+                          'doris',
+                          'mysql',
+                          'oracle',
+                          'redshift',
+                          'pgsql',
+                          'victorialogs',
+                          'elasticsearch',
+                          'opensearch',
+                          'aliyun-sls',
+                          'tencent-cls',
+                          'volc-tls',
+                          'huawei-lts',
+                          'bce-bls',
+                          'tdengine',
+                          'cloudwatch',
+                          'cloudwatchlogs',
+                          'gcm',
+                        ];
+                        const sorted = _.sortBy(filtedCates, (cate) => {
+                          const idx = _.indexOf(sortedCateValues, cate.value);
+                          return idx === -1 ? 999 : idx;
+                        });
+                        return _.concat(sorted, {
                           value: 'host',
                           label: 'Host',
                           type: ['host'],
@@ -351,7 +378,14 @@ export default function FormNG(props: IProps) {
                   toggleAllSignal={scroll.toggleAllSignal}
                 />
 
-                <Notify item={sections[5]} advancedItem={sections[6]} sectionRefs={scroll.sectionRefs} disabled={disabled} expandSignal={scroll.expandSignal} toggleAllSignal={scroll.toggleAllSignal} />
+                <Notify
+                  item={sections[5]}
+                  advancedItem={sections[6]}
+                  sectionRefs={scroll.sectionRefs}
+                  disabled={disabled}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
               </div>
               <AffixWrapper>
                 <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>

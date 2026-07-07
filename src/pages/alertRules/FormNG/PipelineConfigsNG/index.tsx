@@ -49,6 +49,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
     const eventRelabelConfig = initialValues?.rule_config?.event_relabel_config ?? [];
     return eventRelabelConfig.length === 0;
   });
+  const hasRelabelConfig = (props.initialValues?.rule_config?.event_relabel_config ?? []).length > 0;
   const [activeWorkflowTabKey, setActiveWorkflowTabKey] = useState('0');
 
   const pipeline_configs = Form.useWatch('pipeline_configs');
@@ -191,53 +192,51 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
           </>
         )}
       </Form.List>
-      <div
-        className='my-4'
-        style={{
-          borderBottom: '1px solid var(--fc-border-color)',
-        }}
-      />
-      <div>
-        <div className='mb-2'>
-          <Space
-            className='cursor-pointer'
-            onClick={() => {
-              setRelabelCollapsed(!relabelCollapsed);
+      {hasRelabelConfig && (
+        <>
+          <div
+            className='my-4'
+            style={{
+              borderBottom: '1px solid var(--fc-border-color)',
             }}
-          >
-            <span>{t('relabel.title')}</span>
-            {relabelCollapsed ? <RightOutlined /> : <DownOutlined />}
-            {!relabelCollapsed && (
-              <a
-                onClick={(event) => {
-                  event.stopPropagation();
-                  DocumentDrawer({
-                    language: i18n.language,
-                    darkMode,
-                    title: t('relabel.help_btn'),
-                    documentPath: '/n9e-docs/alert-event-relabel',
-                  });
+          />
+          <div>
+            <div className='mb-2'>
+              <Space
+                className='cursor-pointer'
+                onClick={() => {
+                  setRelabelCollapsed(!relabelCollapsed);
                 }}
               >
-                {t('relabel.help_btn')}
-              </a>
-            )}
-          </Space>
-        </div>
-        <div
-          style={{
-            display: relabelCollapsed ? 'none' : 'block',
-          }}
-        >
-          <Relabel />
-        </div>
-      </div>
-      <div
-        className='my-4'
-        style={{
-          borderBottom: '1px solid var(--fc-border-color)',
-        }}
-      />
+                <span>{t('relabel.title')}</span>
+                {relabelCollapsed ? <RightOutlined /> : <DownOutlined />}
+                {!relabelCollapsed && (
+                  <a
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      DocumentDrawer({
+                        language: i18n.language,
+                        darkMode,
+                        title: t('relabel.help_btn'),
+                        documentPath: '/n9e-docs/alert-event-relabel',
+                      });
+                    }}
+                  >
+                    {t('relabel.help_btn')}
+                  </a>
+                )}
+              </Space>
+            </div>
+            <div
+              style={{
+                display: relabelCollapsed ? 'none' : 'block',
+              }}
+            >
+              <Relabel />
+            </div>
+          </div>
+        </>
+      )}
       <Annotations />
       <EnrichQueries />
     </SectionCard>
