@@ -25,6 +25,7 @@ export default function IndexPatternSelect(props: Props) {
       ]}
     >
       <Select
+        data-testid={`es-query-${field.name}-index-pattern-select`}
         options={_.map(indexPatterns, (item) => {
           return {
             label: item.name,

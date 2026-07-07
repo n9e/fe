@@ -41,6 +41,8 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
             <Space>
               <InputGroupWithFormItem label={t('common:datasource.name')}>
                 <Select
+                  showSearch
+                  optionFilterProp='label'
                   value={datasourceId}
                   onChange={(value) => {
                     setDatasourceId(value);
