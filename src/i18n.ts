@@ -20,6 +20,8 @@ import _ from 'lodash';
 import { withTolgee, Tolgee, I18nextPlugin, DevTools } from '@tolgee/i18next';
 import { InContextTools } from '@tolgee/web/tools';
 
+import { syncMomentLocale } from './utils/momentLocale';
+
 const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
 
 function detectBrowserLanguage() {
@@ -143,5 +145,8 @@ if (!!API_URL && !!API_KEY) {
     },
   });
 }
+
+syncMomentLocale(language);
+i18n.on('languageChanged', syncMomentLocale);
 
 export { i18nInit, tolgee };
