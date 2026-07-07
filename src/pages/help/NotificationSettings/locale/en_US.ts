@@ -32,6 +32,7 @@ const en_US = {
     timeout: 'Timeout (unit: s)',
     type: ['Script', 'File Path'],
     path: 'Path',
+    content: 'Script content',
   },
   channels: {
     title: 'Channels',

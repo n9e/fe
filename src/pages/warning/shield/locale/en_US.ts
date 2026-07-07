@@ -1,6 +1,8 @@
 const en_US = {
   title: 'Blackout',
   search_placeholder: 'Search by rule name, tag, or blackout reason',
+  datasource_type: 'Datasource type',
+  datasource_id: 'Datasource',
   cause: 'Cause',
   time: 'Time',
   note: 'Name',

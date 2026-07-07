@@ -1,6 +1,6 @@
 const zh_CN = {
-    'The Flashcat webpage is': "Flashcat网页端",
-    'The Nightingale webpage is': "夜莺监控网页端",
-    'out of Service': "服务不可用"
+  网络开小差了: '网络开小差了',
+  可以刷新一下试试: '可以刷新一下试试',
+  刷新: '刷新',
 };
 export default zh_CN;

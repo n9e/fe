@@ -68,7 +68,7 @@ const en_US = {
       exists: 'Filter for field persent',
     },
     field_values_topn: {
-      label: 'Top {{n}} values',
+      title: 'Top {{n}} values',
       settings: {
         title: 'Top N values settings',
       },

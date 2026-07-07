@@ -81,6 +81,8 @@ const en_US = {
       tsdb_type: 'Time series database type',
     },
     es: {
+      write_config: 'Write settings',
+      disable_write: 'Disable Write',
       enable_write: 'Enable Write',
       version: 'Version',
       version_placeholder: 'Leave blank to auto-detect version. If no special requirements, leave it blank; if you need to specify, please fill in x.y.z format (e.g., 7.10.2)',

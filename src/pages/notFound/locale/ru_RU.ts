@@ -1,7 +1,7 @@
 const ru_RU = {
-  'The Flashcat webpage is': 'Веб-страница Flashcat',
-  'The Nightingale webpage is': 'Веб-страница мониторинга Nightingale',
-  'out of Service': 'недоступна',
+  网络开小差了: ' проблема с сетью',
+  可以刷新一下试试: 'Попробуйте обновить страницу',
+  刷新: 'Обновить',
 };
 
 export default ru_RU;

@@ -106,9 +106,9 @@ const en_US = {
       second: 's',
       millisecond: 'ms',
     },
-    prom_eval_interval_tip: 'promql 执行频率，每隔 {{num}} 秒查询时序库，查到的结果重新命名写回时序库',
+    prom_eval_interval_tip: 'PromQL execution frequency: the time-series database is queried every {{num}} seconds, and the results are renamed and written back to the time-series database',
     prom_for_duration_tip:
-      '通常持续时长大于执行频率，在持续时长内按照执行频率多次执行PromQL查询，每次都触发才生成告警；如果持续时长置为0，表示只要有一次PromQL查询触发阈值，就生成告警',
+      'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
   },
   metric: {
     query: {

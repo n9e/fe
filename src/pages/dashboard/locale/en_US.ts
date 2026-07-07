@@ -23,6 +23,7 @@ const en_US = {
   public: {
     name: 'Public',
     unpublic: 'Unpublic',
+    public_cate: 'Type',
     cate: {
       0: 'Anonymous access',
       1: 'Login access',
@@ -307,6 +308,21 @@ const en_US = {
         color: 'Color',
         operations: '',
       },
+      colors: {
+        name: 'Colors',
+        scheme: 'Color scheme',
+        reverse: 'Reverse colors',
+      },
+      links: {
+        label: 'Links',
+        add_btn: 'Add link',
+        edit_btn: 'Edit link',
+        title: 'Link title',
+        title_required: 'Link title is required',
+        url: 'Link URL',
+        url_required: 'Link URL is required',
+        target_blank: 'Open in new window',
+      },
     },
     standardOptions: {
       title: 'Standard options',
@@ -570,6 +586,7 @@ const en_US = {
     time: 'Time',
     time_tip: 'Default is the global time range of the dashboard',
     prometheus: {
+      query: 'Query (PromQL)',
       expression: 'Expression (PromQL)',
       maxDataPoints: {
         tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
@@ -667,6 +684,8 @@ const en_US = {
     sum: 'Sum',
     count: 'Count',
     origin: 'Origin',
+    variance: 'Variance',
+    stdDev: 'Std dev',
   },
   annotation: {
     add: 'Add annotation',
@@ -690,6 +709,20 @@ const en_US = {
       desc: 'Join multiple tables by matching the values of the specified fields.',
       mode: 'Mode',
       byField: 'Field',
+    },
+    timeSeriesTable: {
+      title: 'Time series to table',
+      desc: 'Merge the values of each time point of a series into a single value.',
+      fieldName: 'Field',
+      functions: 'Function',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: 'Group the table by one or more fields and aggregate the other fields.',
+      operation_map: {
+        aggregate: 'Aggregate',
+        groupby: 'Group by',
+      },
     },
   },
   add_transformation: 'Add transformation',
