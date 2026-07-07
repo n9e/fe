@@ -36,7 +36,7 @@ export default function Sidebar(props: IProps) {
   return (
     <aside className='w-[260px] flex-none h-full p-4 pr-3 border-r border-[var(--fc-border-color)] flex flex-col overflow-hidden'>
       <div>
-        <div className='font-medium text-soft/80 mb-2'>{t('step_title')}</div>
+        <div className='font-bold text-soft/80 mb-2'>{t('step_title')}</div>
         <div className='flex flex-col gap-1.5'>
           {sections.map((item, index) => (
             <button
@@ -65,7 +65,7 @@ export default function Sidebar(props: IProps) {
         </div>
       </div>
       <Divider />
-      <div className='font-medium text-soft/80 mb-3'>{t('form_ng.rule_summary')}</div>
+      <div className='font-bold text-soft/80 mb-2'>{t('form_ng.rule_summary')}</div>
       <div className='flex-1 min-h-0 overflow-x-hidden overflow-y-auto best-looking-scroll'>
         <RuleSummary datasourceList={datasourceList} />
       </div>

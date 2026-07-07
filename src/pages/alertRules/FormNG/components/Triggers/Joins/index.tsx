@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Form, Select, Space, Button } from 'antd';
+import { Row, Col, Form, Select, Space, Button, Tooltip } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -44,6 +44,7 @@ export default function index(props: Props) {
                   value: item.ref,
                 };
               })}
+              dropdownMatchSelectWidth={false}
             />
           </Form.Item>
         </Col>
@@ -52,14 +53,16 @@ export default function index(props: Props) {
             {(fields, { add, remove }) => (
               <div>
                 {fields.length === 0 ? (
-                  <Button
-                    onClick={() => {
-                      add({});
-                    }}
-                    disabled={queries?.length === 1}
-                  >
-                    {t('common:btn.add')}
-                  </Button>
+                  <Tooltip title={t('trigger.joins.tooltip')}>
+                    <Button
+                      onClick={() => {
+                        add({});
+                      }}
+                      disabled={queries?.length === 1}
+                    >
+                      {t('common:btn.add')}
+                    </Button>
+                  </Tooltip>
                 ) : (
                   fields.map((field) => {
                     const join_type = form.getFieldValue([...fullPrefixName, 'joins', field.name, 'join_type']);

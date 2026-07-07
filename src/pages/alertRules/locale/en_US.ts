@@ -260,7 +260,8 @@ const en_US = {
   relabel: {
     title: 'Relabel',
     help_btn: 'Help',
-    deprecation_warning: 'Event Relabel is deprecated. If the current rule has existing Relabel configurations, it is recommended to use the "Event Label Rewrite" processor in the "Event Processing Workflow" above to achieve equivalent functionality.',
+    deprecation_warning:
+      'Event Relabel is deprecated. If the current rule has existing Relabel configurations, it is recommended to use the "Event Label Rewrite" processor in the "Event Processing Workflow" above to achieve equivalent functionality.',
     if_tip: 'Optional, only events that meet this matching condition will be relabeled',
     target_label_tip: 'Key of the new label',
     replacement_tip:
@@ -328,6 +329,7 @@ const en_US = {
         right_exclude: 'Right exclude',
       },
       join_type_placeholder: 'Select join operation',
+      tooltip: 'Available when multiple queries are configured',
       on: 'Label key',
     },
     threshold_tip: 'Please ensure that all variables have data and their labels are consistent, otherwise threshold judgment cannot be performed.',

@@ -259,7 +259,8 @@ const ja_JP = {
   relabel: {
     title: 'イベント Relabel',
     help_btn: '使用説明',
-    deprecation_warning: 'イベント Relabel は間もなく廃止されます。検出された現在のルールには過去の Relabel 設定があります。上部の「イベント処理ワークフロー」の「イベントラベル書き換え」プロセッサを使用して同等の機能を実現することをお勧めします。',
+    deprecation_warning:
+      'イベント Relabel は間もなく廃止されます。検出された現在のルールには過去の Relabel 設定があります。上部の「イベント処理ワークフロー」の「イベントラベル書き換え」プロセッサを使用して同等の機能を実現することをお勧めします。',
     if_tip: '選択可能、この一致条件を満たすイベントのみラベルを Relabel します',
     target_label_tip: '新しいラベルのキー',
     replacement_tip:
@@ -326,6 +327,7 @@ const ja_JP = {
         right_exclude: '右除外',
       },
       join_type_placeholder: '集合操作を選択',
+      tooltip: '複数のクエリ条件がある場合のみ設定可能',
       on: 'ラベル名',
     },
     threshold_tip: 'すべての変数にデータがあり、それらのラベルが一致していることを確認してください。そうしないと、閾値判断を行うことができません。',

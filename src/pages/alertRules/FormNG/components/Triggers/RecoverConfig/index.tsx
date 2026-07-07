@@ -20,7 +20,7 @@ export default function index(props: Props) {
         <Col flex='none'>
           <div className='mt-2'>{t('trigger.recover_config.label')}</div>
         </Col>
-        <Col flex='200px'>
+        <Col flex='none'>
           <Form.Item {...prefixField} name={[...prefixName, 'recover_config', 'judge_type']} initialValue={1}>
             <Select
               disabled={disabled}
@@ -38,6 +38,7 @@ export default function index(props: Props) {
                   value: 2,
                 },
               ]}
+              dropdownMatchSelectWidth={false}
             />
           </Form.Item>
         </Col>
