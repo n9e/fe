@@ -587,7 +587,6 @@ const en_US = {
     time_tip: 'Default is the global time range of the dashboard',
     prometheus: {
       query: 'Query (PromQL)',
-      expression: 'Expression (PromQL)',
       maxDataPoints: {
         tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
         tip_2: 'The maximum number of points per series, default is panel width, calculate step = (end - start) / maxDataPoints',

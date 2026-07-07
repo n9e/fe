@@ -115,7 +115,6 @@ const zh_HK = {
           urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: '標籤模板',
           labelTemplatePlaceholder: '{{value}}',
-          'link-tip-time-format': '默認單位為毫秒, 如需格式化可帶入$__time_format__,格式包括 unix YYYY-MM-DD HH:mm:ss等',
         },
       },
     },

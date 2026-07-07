@@ -55,7 +55,6 @@ const en_US = {
     label_mapping: 'Label mappings',
     embedded_products: 'Embedded products',
     organization: 'Organization',
-    personnel_orgs: 'Personnel orgs',
     users: 'Users',
     teams: 'Teams',
     roles: 'Roles',
