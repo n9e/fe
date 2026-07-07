@@ -58,5 +58,6 @@ const zh_CN = {
   ibex: {
     title: '自愈配置',
   },
+启用状态下不可删除: '启用状态下不可删除',
 };
 export default zh_CN;

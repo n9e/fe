@@ -427,5 +427,6 @@ const zh_HK = {
     collapse_expand_all: '展開全部',
     collapse_collapse_all: '收起全部',
   },
+  启用状态下不可删除: '啟用狀態下不可刪除',
 };
 export default zh_HK;

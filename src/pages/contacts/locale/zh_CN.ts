@@ -3,5 +3,6 @@ const zh_CN = {
   add_title: '添加联系方式',
   edit_title: '编辑联系方式',
   disabled: '停用',
+启用状态下不可删除: '启用状态下不可删除',
 };
 export default zh_CN;

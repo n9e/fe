@@ -156,5 +156,6 @@ const zh_CN = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
+启用状态下不可删除: '启用状态下不可删除',
 };
 export default zh_CN;

@@ -160,5 +160,6 @@ const en_US = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
+启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;

@@ -150,6 +150,7 @@ const zh_HK = {
     rules: '告警規則',
     sub_rules: '訂閱規則',
   },
+启用状态下不可删除: '啟用狀態下不可刪除',
 };
 
 export default zh_HK;
