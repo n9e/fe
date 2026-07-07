@@ -128,6 +128,38 @@
 
 
 .n9e-biz-group-container {
+  .scroll-container {
+    --n9e-biz-group-scrollbar-thumb: color-mix(in srgb, var(--fc-text-1) 22%, transparent);
+
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    scrollbar-gutter: stable;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: transparent;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+    }
+
+    &::-webkit-scrollbar-track,
+    &::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    &:hover {
+      scrollbar-color: var(--n9e-biz-group-scrollbar-thumb) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--n9e-biz-group-scrollbar-thumb);
+      }
+    }
+  }
+
   .n9e-list-item {
     &:hover {
       background-color: rgba(0, 0, 0, 0.03);
@@ -148,6 +180,30 @@
 
 .theme-dark {
   .n9e-biz-group-container {
+    .scroll-container {
+      --n9e-biz-group-scrollbar-thumb: color-mix(in srgb, var(--fc-text-1) 28%, transparent);
+
+      scrollbar-color: transparent transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        box-shadow: none;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+        box-shadow: none;
+      }
+
+      &:hover {
+        scrollbar-color: var(--n9e-biz-group-scrollbar-thumb) transparent;
+
+        &::-webkit-scrollbar-thumb {
+          background-color: var(--n9e-biz-group-scrollbar-thumb);
+        }
+      }
+    }
+
     .n9e-list-item {
       &:hover {
         background-color: rgba(204, 204, 220, 0.12);
