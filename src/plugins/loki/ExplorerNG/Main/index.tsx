@@ -12,14 +12,12 @@ import { NAME_SPACE } from '../../constants';
 import { BUILDER_PINNED_CACHE_KEY, METRIC_DEFAULT_QUERY, RAW_DEFAULT_QUERY } from '../constants';
 import { Field } from '../types';
 import Builder from '../Builder';
-import { inferMetricTimeseriesKeys } from '../utils/logsQL';
 import MainMoreOperations from '../components/MainMoreOperations';
 import Metric from './Metric';
 import QueryInput from './QueryInput';
 import Raw from './Raw';
 
 interface Props {
-  tabKey: string;
   indexData: Field[];
   executeLoading: boolean;
   setExecuteLoading: (loading: boolean) => void;
@@ -29,17 +27,13 @@ interface Props {
 export default function Main(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);
-  const { tabKey, indexData, executeLoading, setExecuteLoading, executeQuery } = props;
+  const { indexData, executeLoading, setExecuteLoading, executeQuery } = props;
   const form = Form.useFormInstance();
   const queryValues = Form.useWatch('query', form);
   const mode = queryValues?.mode || 'raw';
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => localStorage.getItem(BUILDER_PINNED_CACHE_KEY) === 'true');
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
-  const tableSelector = {
-    antd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`,
-    rgd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table`,
-  };
 
   useEffect(() => {
     setExecuteLoading(false);
@@ -133,7 +127,6 @@ export default function Main(props: Props) {
           }}
           onPreviewQL={(query, values) => {
             const oldQuery = form.getFieldValue('query') || {};
-            const keys = values.metric ? inferMetricTimeseriesKeys(values.metric) : oldQuery.keys;
             form.setFieldsValue({
               query: {
                 ...oldQuery,
@@ -146,7 +139,7 @@ export default function Main(props: Props) {
                 builderStatus: 'synced',
                 querySource: 'builder',
                 vizType: values.vizType || oldQuery.vizType,
-                keys,
+                limit: values.raw?.limit || values.metric?.limit || oldQuery.limit,
               },
             });
             setIsContentChangedDotVisible(true);
@@ -154,7 +147,6 @@ export default function Main(props: Props) {
           }}
           onExecute={(query, values) => {
             const oldQuery = form.getFieldValue('query') || {};
-            const keys = values.metric ? inferMetricTimeseriesKeys(values.metric) : oldQuery.keys;
             form.setFieldsValue({
               query: {
                 ...oldQuery,
@@ -167,7 +159,7 @@ export default function Main(props: Props) {
                 builderStatus: 'synced',
                 querySource: 'builder',
                 vizType: values.vizType || oldQuery.vizType,
-                keys,
+                limit: values.raw?.limit || values.metric?.limit || oldQuery.limit,
               },
             });
             executeQuery();
@@ -189,7 +181,7 @@ export default function Main(props: Props) {
         {mode === 'metric' ? (
           <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
         ) : (
-          <Raw tableSelector={tableSelector} indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
+          <Raw indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
         )}
       </div>
     </div>

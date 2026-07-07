@@ -3,6 +3,11 @@ const zh_HK = {
   query: '查詢條件',
   query_is_required: '查詢條件不能為空',
   execute: '查詢',
+  mode: {
+    label: '模式',
+    raw_logs: '日誌原文',
+    statistical_charts: '統計圖表',
+  },
   before_query: '請點擊 <b>查詢</b>，展示數據',
   loading: '數據加載中 ...',
   no_data: '查詢無數據',
@@ -73,6 +78,8 @@ const zh_HK = {
   },
   logs: {
     title: '日誌數據',
+    stream_fields_count: '{{count}} 個',
+    text: '日誌文本',
     duration: '耗時',
     count: '條數',
     filter_fields: '篩選字段',
@@ -80,6 +87,7 @@ const zh_HK = {
       mode: {
         origin: '原始',
         table: '表格',
+        timeseries: '時序圖',
         clustering: '聚類',
       },
       breakLine: '換行',

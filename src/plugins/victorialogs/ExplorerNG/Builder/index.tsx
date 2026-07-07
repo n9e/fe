@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Button, Form, Input, InputNumber, Row, Col, Select, Segmented, Space, Tooltip, Popover } from 'antd';
+import { Alert, Button, Form, Input, InputNumber, Row, Col, Select, Segmented, Space, Tooltip, Popover } from 'antd';
 import { CloseOutlined, InfoCircleOutlined, PlusOutlined, PushpinOutlined, SearchOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { useRequest } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 
+import { NAME_SPACE as VICTORIALOGS_NS } from '../../constants';
 import { getFieldNames, getFieldValues } from '../services';
 import { FieldNameSuggestion, VictoriaLogsAggregation, VictoriaLogsFilter, VictoriaLogsMetricBuilderState, VictoriaLogsRawBuilderState } from '../types';
 import { renderLogsQL, renderMetricLogsQL } from '../utils/logsQL';
@@ -24,6 +26,17 @@ interface Props {
   onClose: () => void;
   onExecute: (query: string, values: { raw?: VictoriaLogsRawBuilderState; metric?: VictoriaLogsMetricBuilderState; vizType?: 'table' | 'timeseries' }) => void;
   onPreviewQL: (query: string, values: { raw?: VictoriaLogsRawBuilderState; metric?: VictoriaLogsMetricBuilderState; vizType?: 'table' | 'timeseries' }) => void;
+}
+
+function RequiredLabel(props: { children: React.ReactNode }) {
+  return (
+    <span className='relative inline-flex items-center'>
+      <span style={{ color: '#ff4d4f' }} className='absolute right-full mr-1'>
+        *
+      </span>
+      {props.children}
+    </span>
+  );
 }
 
 const filterOperators = [
@@ -121,6 +134,7 @@ function FieldSelect(props: {
   onFieldChange?: (field?: FieldNameSuggestion) => void;
 }) {
   const { value, onChange, datasourceValue, range, query, disabled, fieldsFilter, onFieldChange } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   const [keyword, setKeyword] = useState('');
   const { data, loading } = useFieldNameSuggestions({ datasourceValue, range, query, keyword, enabled: !disabled });
   const fields = fieldsFilter ? fieldsFilter(data || []) : data || [];
@@ -139,7 +153,7 @@ function FieldSelect(props: {
       optionFilterProp='label'
       dropdownClassName='doris-query-builder-popup'
       dropdownMatchSelectWidth={false}
-      placeholder='请输入字段'
+      placeholder={t('builder.field_placeholder')}
       value={value}
       options={options}
       onSearch={setKeyword}
@@ -153,6 +167,7 @@ function FieldSelect(props: {
 
 function CachedFieldSelect(props: { value?: string; onChange?: (value?: string) => void; disabled?: boolean; fields?: FieldNameSuggestion[]; loading?: boolean }) {
   const { value, onChange, disabled, fields, loading } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   const [keyword, setKeyword] = useState('');
   const options = React.useMemo(() => {
     const manualField = _.trim(keyword || value);
@@ -169,7 +184,7 @@ function CachedFieldSelect(props: { value?: string; onChange?: (value?: string) 
       optionFilterProp='label'
       dropdownClassName='doris-query-builder-popup'
       dropdownMatchSelectWidth={false}
-      placeholder='请输入字段'
+      placeholder={t('builder.field_placeholder')}
       value={value}
       options={options}
       onSearch={setKeyword}
@@ -178,12 +193,7 @@ function CachedFieldSelect(props: { value?: string; onChange?: (value?: string) 
   );
 }
 
-function FieldTagsSelect(props: {
-  value?: string[];
-  onChange?: (value?: string[]) => void;
-  fields?: FieldNameSuggestion[];
-  loading?: boolean;
-}) {
+function FieldTagsSelect(props: { value?: string[]; onChange?: (value?: string[]) => void; fields?: FieldNameSuggestion[]; loading?: boolean }) {
   const { value, onChange, fields, loading } = props;
   const [keyword, setKeyword] = useState('');
   const options = React.useMemo(() => {
@@ -213,6 +223,7 @@ function FieldTagsSelect(props: {
 
 function FieldValueSelect(props: { value?: any; onChange?: (value?: any) => void; datasourceValue?: number; range?: any; query: string; field?: string }) {
   const { value, onChange, datasourceValue, range, query, field } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   const [keyword, setKeyword] = useState('');
   const rangeUnix = React.useMemo(() => getRangeUnix(range), [JSON.stringify(range)]);
   const { data, loading } = useRequest(
@@ -250,7 +261,7 @@ function FieldValueSelect(props: { value?: any; onChange?: (value?: any) => void
       optionLabelProp='label'
       dropdownClassName='doris-query-builder-popup'
       dropdownMatchSelectWidth={false}
-      placeholder='请输入值'
+      placeholder={t('builder.value_placeholder')}
       value={value}
       onSearch={setKeyword}
       onChange={onChange}
@@ -272,8 +283,8 @@ function getOrderByFieldOptions(aggregations?: VictoriaLogsAggregation[], groupB
   return _.map(_.uniq(_.compact([...aggregationFields, ...(groupBy || [])])), (field) => ({ label: field, value: field }));
 }
 
-function Describe(props: { children: React.ReactNode; onClose: (e: React.MouseEvent) => void }) {
-  const { children, onClose } = props;
+function Describe(props: { children: React.ReactNode; onClose: (e: React.MouseEvent) => void; onCloseMouseDown?: (e: React.MouseEvent) => void }) {
+  const { children, onClose, onCloseMouseDown } = props;
   return (
     <div className='border border-antd rounded-sm hover:bg-fc-150 min-h-[24px] wrap-break-word whitespace-normal cursor-pointer flex items-center justify-between'>
       <div
@@ -284,7 +295,7 @@ function Describe(props: { children: React.ReactNode; onClose: (e: React.MouseEv
       >
         {children}
       </div>
-      <Button className='p-0 min-h-[22px] bg-fc-150 hover:bg-fc-200' size='small' icon={<CloseOutlined />} type='text' onClick={onClose} />
+      <Button className='p-0 min-h-[22px] bg-fc-150 hover:bg-fc-200' size='small' icon={<CloseOutlined />} type='text' onMouseDown={onCloseMouseDown} onClick={onClose} />
     </div>
   );
 }
@@ -307,6 +318,7 @@ function FilterPopover(props: {
   ignoreNextOutsideClick: () => void;
 }) {
   const { children, data, filters, index, datasourceValue, range, onChange, onAdd, ignoreNextOutsideClick } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   const [visible, setVisible] = useState<boolean>();
   const [form] = Form.useForm();
   const op = Form.useWatch('op', form);
@@ -323,20 +335,23 @@ function FilterPopover(props: {
         ignoreNextOutsideClick();
         setVisible(v);
         if (v === false) {
-          form.validateFields().then((values) => {
-            const next = {
-              id: data?.id || _.uniqueId('filter_'),
-              fieldSource: 'inferred',
-              valueType: 'unknown',
-              ...values,
-            } as VictoriaLogsFilter;
-            if (data) {
-              onChange?.(next);
-            } else {
-              form.resetFields();
-              onAdd?.(next);
-            }
-          }).catch(_.noop);
+          form
+            .validateFields()
+            .then((values) => {
+              const next = {
+                id: data?.id || _.uniqueId('filter_'),
+                fieldSource: 'inferred',
+                valueType: 'unknown',
+                ...values,
+              } as VictoriaLogsFilter;
+              if (data) {
+                onChange?.(next);
+              } else {
+                form.resetFields();
+                onAdd?.(next);
+              }
+            })
+            .catch(_.noop);
         } else if (v === true) {
           form.resetFields();
           if (data) {
@@ -349,7 +364,7 @@ function FilterPopover(props: {
           <Form form={form} layout='vertical' validateTrigger={[]}>
             <Row gutter={SIZE}>
               <Col span={12}>
-                <Form.Item label='字段' name='field' rules={[{ required: true, message: '请选择字段' }]}>
+                <Form.Item label={t('builder.field')} name='field' rules={[{ required: true, message: t('builder.select_field') }]}>
                   <FieldSelect
                     datasourceValue={datasourceValue}
                     range={range}
@@ -364,13 +379,13 @@ function FilterPopover(props: {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label='操作符' name='op' initialValue='eq' rules={[{ required: true, message: '请选择操作符' }]}>
-                  <Select dropdownClassName='doris-query-builder-popup' placeholder='请选择操作符' options={filterOperators} />
+                <Form.Item label={t('builder.operator')} name='op' initialValue='eq' rules={[{ required: true, message: t('builder.select_operator') }]}>
+                  <Select dropdownClassName='doris-query-builder-popup' placeholder={t('builder.operator_placeholder')} options={filterOperators} />
                 </Form.Item>
               </Col>
               {op !== 'exists' && op !== 'not_exists' && (
                 <Col span={24}>
-                  <Form.Item label='值' name='value' rules={[{ required: true, message: '请输入值' }]}>
+                  <Form.Item label={t('builder.value')} name='value' rules={[{ required: true, message: t('builder.input_value') }]}>
                     <FieldValueSelect datasourceValue={datasourceValue} range={range} query={suggestionQuery} field={field} />
                   </Form.Item>
                 </Col>
@@ -393,6 +408,7 @@ function Filters(props: {
   range?: any;
 }) {
   const { value, onChange, ignoreNextOutsideClick, datasourceValue, range } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   return (
     <Space size={[SIZE, SIZE / 2]} wrap style={{ maxWidth: 'calc(100% - 200px)' }}>
       {_.map(value, (item, index) => {
@@ -411,6 +427,10 @@ function Filters(props: {
             }}
           >
             <Describe
+              onCloseMouseDown={(e) => {
+                e.stopPropagation();
+                ignoreNextOutsideClick();
+              }}
               onClose={(e) => {
                 e.stopPropagation();
                 onChange?.(_.filter(value, (_, i) => i !== index));
@@ -433,7 +453,7 @@ function Filters(props: {
         onAdd={(values) => onChange?.([...(value || []), values])}
       >
         <Button size='small' type='text' icon={<PlusOutlined />} className='hover:bg-fc-150'>
-          添加
+          {t('builder.add')}
         </Button>
       </FilterPopover>
     </Space>
@@ -450,6 +470,7 @@ function AggregationPopover(props: {
   ignoreNextOutsideClick: () => void;
 }) {
   const { children, data, fields, fieldsLoading, onChange, onAdd, ignoreNextOutsideClick } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   const [visible, setVisible] = useState<boolean>();
   const [form] = Form.useForm();
   const func = Form.useWatch('func', form);
@@ -465,15 +486,18 @@ function AggregationPopover(props: {
         ignoreNextOutsideClick();
         setVisible(v);
         if (v === false) {
-          form.validateFields().then((values) => {
-            const next = { id: data?.id || _.uniqueId('aggregation_'), ...values } as VictoriaLogsAggregation;
-            if (data) {
-              onChange?.(next);
-            } else {
-              form.resetFields();
-              onAdd?.(next);
-            }
-          }).catch(_.noop);
+          form
+            .validateFields()
+            .then((values) => {
+              const next = { id: data?.id || _.uniqueId('aggregation_'), ...values } as VictoriaLogsAggregation;
+              if (data) {
+                onChange?.(next);
+              } else {
+                form.resetFields();
+                onAdd?.(next);
+              }
+            })
+            .catch(_.noop);
         } else if (v === true) {
           form.resetFields();
           if (data) {
@@ -486,10 +510,10 @@ function AggregationPopover(props: {
           <Form form={form} layout='vertical' validateTrigger={[]}>
             <Row gutter={SIZE}>
               <Col span={12}>
-                <Form.Item label='函数' name='func' initialValue='count' rules={[{ required: true, message: '请选择函数' }]}>
+                <Form.Item label={t('builder.function')} name='func' initialValue='count' rules={[{ required: true, message: t('builder.select_function') }]}>
                   <Select
                     dropdownClassName='doris-query-builder-popup'
-                    placeholder='请选择函数'
+                    placeholder={t('builder.function_placeholder')}
                     options={aggregationOptions}
                     onChange={(value) => {
                       if (value === 'count') {
@@ -500,20 +524,20 @@ function AggregationPopover(props: {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label='字段' name='field' rules={[{ required: currentFunc !== 'count', message: '请输入字段' }]}>
+                <Form.Item label={t('builder.field')} name='field' rules={[{ required: currentFunc !== 'count', message: t('builder.input_field') }]}>
                   <CachedFieldSelect disabled={currentFunc === 'count'} fields={fields} loading={fieldsLoading} />
                 </Form.Item>
               </Col>
               {currentFunc === 'quantile' && (
                 <Col span={12}>
-                  <Form.Item label='分位值' name={['params', 'quantile']} initialValue={0.99} rules={[{ required: true, message: '请输入分位值' }]}>
+                  <Form.Item label={t('builder.quantile')} name={['params', 'quantile']} initialValue={0.99} rules={[{ required: true, message: t('builder.input_quantile') }]}>
                     <InputNumber className='w-full' min={0} max={1} step={0.01} />
                   </Form.Item>
                 </Col>
               )}
               <Col span={currentFunc === 'quantile' ? 12 : 24}>
-                <Form.Item label='别名' name='alias'>
-                  <Input placeholder='请输入别名' />
+                <Form.Item label={t('builder.alias')} name='alias'>
+                  <Input placeholder={t('builder.alias_placeholder')} />
                 </Form.Item>
               </Col>
             </Row>
@@ -534,6 +558,7 @@ function Aggregates(props: {
   fieldsLoading?: boolean;
 }) {
   const { value, onChange, ignoreNextOutsideClick, fields, fieldsLoading } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   return (
     <Space size={[SIZE, SIZE / 2]} wrap>
       {_.map(value, (item, index) => {
@@ -550,6 +575,10 @@ function Aggregates(props: {
             }}
           >
             <Describe
+              onCloseMouseDown={(e) => {
+                e.stopPropagation();
+                ignoreNextOutsideClick();
+              }}
               onClose={(e) => {
                 e.stopPropagation();
                 onChange?.(_.filter(value, (_, i) => i !== index));
@@ -569,14 +598,9 @@ function Aggregates(props: {
           </AggregationPopover>
         );
       })}
-      <AggregationPopover
-        fields={fields}
-        fieldsLoading={fieldsLoading}
-        ignoreNextOutsideClick={ignoreNextOutsideClick}
-        onAdd={(values) => onChange?.([...(value || []), values])}
-      >
+      <AggregationPopover fields={fields} fieldsLoading={fieldsLoading} ignoreNextOutsideClick={ignoreNextOutsideClick} onAdd={(values) => onChange?.([...(value || []), values])}>
         <Button size='small' type='text' icon={<PlusOutlined />} className='hover:bg-fc-150'>
-          添加
+          {t('builder.add')}
         </Button>
       </AggregationPopover>
     </Space>
@@ -592,6 +616,7 @@ function OrderByPopover(props: {
   ignoreNextOutsideClick: () => void;
 }) {
   const { children, data, fieldOptions, onChange, onAdd, ignoreNextOutsideClick } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   const [visible, setVisible] = useState<boolean>();
   const [form] = Form.useForm();
 
@@ -622,19 +647,19 @@ function OrderByPopover(props: {
           <Form form={form} layout='vertical'>
             <Row gutter={SIZE}>
               <Col span={16}>
-                <Form.Item label='字段' name='field' rules={[{ required: true, message: '请输入字段' }]}>
+                <Form.Item label={t('builder.field')} name='field' rules={[{ required: true, message: t('builder.input_field') }]}>
                   <Select
                     dropdownClassName='doris-query-builder-popup'
                     dropdownMatchSelectWidth={false}
                     showSearch
                     optionFilterProp='label'
                     options={fieldOptions}
-                    placeholder='请输入字段'
+                    placeholder={t('builder.field_placeholder')}
                   />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item label='排序' name='direction' initialValue='desc' rules={[{ required: true, message: '请选择排序' }]}>
+                <Form.Item label={t('builder.direction')} name='direction' initialValue='desc' rules={[{ required: true, message: t('builder.select_direction') }]}>
                   <Select
                     dropdownClassName='doris-query-builder-popup'
                     options={[
@@ -661,6 +686,7 @@ function OrderBy(props: {
   fieldOptions: { label: string; value: string }[];
 }) {
   const { value, onChange, ignoreNextOutsideClick, fieldOptions } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   return (
     <Space size={SIZE} wrap>
       {_.map(value, (item, index) => {
@@ -689,7 +715,7 @@ function OrderBy(props: {
       })}
       <OrderByPopover fieldOptions={fieldOptions} ignoreNextOutsideClick={ignoreNextOutsideClick} onAdd={(values) => onChange?.([...(value || []), values])}>
         <Button size='small' type='text' icon={<PlusOutlined />} className='hover:bg-fc-150'>
-          添加
+          {t('builder.add')}
         </Button>
       </OrderByPopover>
     </Space>
@@ -698,8 +724,10 @@ function OrderBy(props: {
 
 export default function Builder(props: Props) {
   const { visible, mode, queryBuilderPinned, setQueryBuilderPinned, onClose, onExecute, onPreviewQL } = props;
+  const { t } = useTranslation(VICTORIALOGS_NS);
   const parentForm = Form.useFormInstance();
   const [form] = Form.useForm();
+  const [validationMessage, setValidationMessage] = useState<string>();
   const datasourceValue = Form.useWatch('datasourceValue', parentForm);
   const queryValues = Form.useWatch('query', parentForm);
   const filters = Form.useWatch('filters', form);
@@ -775,6 +803,16 @@ export default function Builder(props: Props) {
     };
   };
 
+  const validateBuilder = () => {
+    const values = form.getFieldsValue();
+    if (mode === 'metric' && !_.some(values.aggregations || [], (item) => item?.func)) {
+      setValidationMessage(t('builder.aggregation_required'));
+      return false;
+    }
+    setValidationMessage(undefined);
+    return true;
+  };
+
   return (
     <div
       ref={eleRef}
@@ -796,9 +834,9 @@ export default function Builder(props: Props) {
           <div className='table-row'>
             <div className='table-cell align-top'>
               <div className='h-[24px] flex items-center'>
-                <Tooltip title='所有筛选条件的关系为且。'>
+                <Tooltip title={t('builder.filter_relation_tip')}>
                   <Space size={SIZE / 2}>
-                    <span>筛选</span>
+                    <span>{t('builder.filter')}</span>
                     <InfoCircleOutlined />
                   </Space>
                 </Tooltip>
@@ -814,21 +852,19 @@ export default function Builder(props: Props) {
             <>
               <div className='table-row'>
                 <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>聚合</div>
+                  <div className='h-[24px] flex items-center'>
+                    <RequiredLabel>{t('builder.aggregation')}</RequiredLabel>
+                  </div>
                 </div>
                 <div className='table-cell'>
                   <Form.Item name='aggregations' noStyle>
-                    <Aggregates
-                      fields={aggregationFields}
-                      fieldsLoading={aggregationFieldsLoading}
-                      ignoreNextOutsideClick={ignoreNextOutsideClick}
-                    />
+                    <Aggregates fields={aggregationFields} fieldsLoading={aggregationFieldsLoading} ignoreNextOutsideClick={ignoreNextOutsideClick} />
                   </Form.Item>
                 </div>
               </div>
               <div className='table-row'>
                 <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>展示</div>
+                  <div className='h-[24px] flex items-center'>{t('builder.display')}</div>
                 </div>
                 <div className='table-cell'>
                   <Space size={SIZE} wrap>
@@ -836,17 +872,17 @@ export default function Builder(props: Props) {
                       <Segmented
                         size='small'
                         options={[
-                          { label: '统计值', value: 'table' },
-                          { label: '时序图', value: 'timeseries' },
+                          { label: t('builder.statistical_value'), value: 'table' },
+                          { label: t('builder.timeseries'), value: 'timeseries' },
                         ]}
                       />
                     </Form.Item>
-                    <InputGroupWithFormItem size='small' label='分组'>
+                    <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
                       <Form.Item name='groupBy' noStyle>
                         <FieldTagsSelect fields={aggregationFields} loading={aggregationFieldsLoading} />
                       </Form.Item>
                     </InputGroupWithFormItem>
-                    <InputGroupWithFormItem size='small' label='数量限制'>
+                    <InputGroupWithFormItem size='small' label={t('builder.limit')}>
                       <Form.Item name='limit' noStyle>
                         <InputNumber size='small' className='w-[100px]' min={1} max={10000000} />
                       </Form.Item>
@@ -856,7 +892,7 @@ export default function Builder(props: Props) {
               </div>
               <div className='table-row'>
                 <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>排序</div>
+                  <div className='h-[24px] flex items-center'>{t('builder.order_by')}</div>
                 </div>
                 <div className='table-cell'>
                   <Form.Item name='orderBy' noStyle>
@@ -867,31 +903,34 @@ export default function Builder(props: Props) {
             </>
           )}
         </div>
+        {validationMessage && <Alert className='mt-3' showIcon type='warning' message={validationMessage} />}
         <Space size={SIZE} className='mt-3'>
           <Button
             size='small'
             type='primary'
             icon={<SearchOutlined />}
             onClick={() => {
+              if (!validateBuilder()) return;
               const res = getRenderResult();
               onExecute(res.query, res.values);
             }}
           >
-            查询
+            {t('builder.execute')}
           </Button>
           <Button
             size='small'
             onClick={() => {
+              if (!validateBuilder()) return;
               const res = getRenderResult();
               onPreviewQL(res.query, res.values);
             }}
           >
-            预览 QL
+            {t('builder.preview_ql')}
           </Button>
         </Space>
       </Form>
       <div className='absolute top-2 right-2'>
-        <Tooltip title={queryBuilderPinned ? '取消固定' : '固定'}>
+        <Tooltip title={queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}>
           <Button
             type='text'
             icon={<PushpinOutlined />}
@@ -903,7 +942,7 @@ export default function Builder(props: Props) {
               setQueryBuilderPinned(!queryBuilderPinned);
             }}
           >
-            {queryBuilderPinned ? '取消固定' : '固定'}
+            {queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}
           </Button>
         </Tooltip>
       </div>

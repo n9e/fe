@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Empty, Form, Pagination, Radio, Select, Space, Spin, Tooltip } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { Empty, Form, Pagination, Radio, Space, Spin, Tooltip } from 'antd';
 import { AlignedData, Options } from 'uplot';
 import { useRequest, useSize } from 'ahooks';
 import { Trans, useTranslation } from 'react-i18next';
@@ -24,13 +23,12 @@ import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/
 import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/utils/getFieldsFromTableData';
 
-import { NAME_SPACE as VICTORIALOGS_NS } from '../../../constants';
+import { NAME_SPACE as LOKI_NS } from '../../../constants';
 import { DEFAULT_LOGS_PAGE_SIZE, METRIC_TABLE_COLUMNS_WIDTH_CACHE_KEY, METRIC_TABLE_OPTIONS_CACHE_KEY } from '../../constants';
 import { Field } from '../../types';
-import { dsQuery, logsQuery } from '../../services';
+import { dsQuery } from '../../services';
 import filteredFields, { filterOutBuiltinFields } from '../../utils/filteredFields';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
-import { inferMetricTimeseriesKeysFromQuery } from '../../utils/logsQL';
 import renderBuiltinFields from '../../utils/renderBuiltinFields';
 import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
 import ResetZoomButton from './ResetZoomButton';
@@ -75,7 +73,7 @@ function Graph(props: {
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const uplotRef = useRef<any>();
-  const id = useMemo(() => _.uniqueId('victorialogs_metric_'), []);
+  const id = useMemo(() => _.uniqueId('loki_metric_'), []);
   const uOptions: Options = useMemo(() => {
     return {
       width,
@@ -169,7 +167,7 @@ function Graph(props: {
 
 export default function Metric(props: Props) {
   const { indexData, setExecuteLoading, executeQuery } = props;
-  const { t } = useTranslation(VICTORIALOGS_NS);
+  const { t } = useTranslation(LOKI_NS);
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -195,13 +193,6 @@ export default function Metric(props: Props) {
     pageSize: DEFAULT_LOGS_PAGE_SIZE,
   });
   const pageLoadMode = options.pageLoadMode || 'pagination';
-  const inferredKeys = useMemo(() => inferMetricTimeseriesKeysFromQuery(queryValues?.query), [queryValues?.query]);
-  const valueKeyOptions = useMemo(() => {
-    return _.map(_.uniq([...(queryValues?.keys?.valueKey || []), ...inferredKeys.valueKey]), (item) => ({ label: item, value: item }));
-  }, [JSON.stringify(queryValues?.keys?.valueKey), JSON.stringify(inferredKeys.valueKey)]);
-  const labelKeyOptions = useMemo(() => {
-    return _.map(_.uniq([...(queryValues?.keys?.labelKey || []), ...inferredKeys.labelKey]), (item) => ({ label: item, value: item }));
-  }, [JSON.stringify(queryValues?.keys?.labelKey), JSON.stringify(inferredKeys.labelKey)]);
 
   const setVizType = (value: 'table' | 'timeseries') => {
     form.setFields([
@@ -250,22 +241,29 @@ export default function Metric(props: Props) {
     if (latestQueryValues?.vizType === 'table' && refreshFlag && datasourceValue && latestQueryValues?.range && _.trim(latestQueryValues?.query)) {
       const range = parseRange(latestQueryValues.range);
       const queryStart = Date.now();
-      return logsQuery({
-        cate: DatasourceCateEnum.victorialogs,
+      return dsQuery({
+        cate: DatasourceCateEnum.loki,
         datasource_id: datasourceValue,
         query: [
           {
             query: _.trim(latestQueryValues.query),
-            start: moment(range.start).unix(),
-            end: moment(range.end).unix(),
+            start: moment(range.start).valueOf(),
+            end: moment(range.end).valueOf(),
+            time: moment(range.end).valueOf(),
             ref: 'A',
           },
         ],
       })
         .then((res) => {
           loadTimeRef.current = Date.now() - queryStart;
-          const list = _.map(res.list || [], (item) => {
-            const row = flatten(item) || {};
+          const list = _.map(res || [], (item) => {
+            const lastValue = _.last(item.values || []);
+            const row =
+              flatten({
+                ...(item.metric || {}),
+                value: lastValue ? lastValue[1] : undefined,
+                timestamp: lastValue ? lastValue[0] : undefined,
+              }) || {};
             return {
               ...row,
               ___raw___: item,
@@ -310,39 +308,21 @@ export default function Metric(props: Props) {
   }, [refreshFlag]);
 
   useEffect(() => {
-    if (queryValues?.vizType !== 'timeseries') return;
-    if (!_.isEmpty(queryValues?.keys?.valueKey) || (_.isEmpty(inferredKeys.valueKey) && _.isEmpty(inferredKeys.labelKey))) return;
-    form.setFieldsValue({
-      query: {
-        ...queryValues,
-        keys: inferredKeys,
-      },
-    });
-  }, [queryValues?.vizType, queryValues?.query]);
-
-  useEffect(() => {
     const requestId = ++timeseriesRequestIdRef.current;
     if (!refreshFlag || !datasourceValue || !queryValues?.range || !_.trim(queryValues?.query) || queryValues?.vizType !== 'timeseries') {
       setTimeseriesLoading(false);
       return;
     }
     const range = parseRange(queryValues.range);
-    const valueKey = _.isEmpty(queryValues?.keys?.valueKey) ? inferredKeys.valueKey : queryValues.keys.valueKey;
-    const labelKey = _.isEmpty(queryValues?.keys?.labelKey) ? inferredKeys.labelKey : queryValues.keys.labelKey;
-    const keys = {
-      valueKey: _.join(valueKey, ' '),
-      labelKey: _.join(labelKey, ' '),
-    };
     setTimeseriesLoading(true);
     dsQuery({
-      cate: DatasourceCateEnum.victorialogs,
+      cate: DatasourceCateEnum.loki,
       datasource_id: datasourceValue,
       query: [
         {
           query: _.trim(queryValues.query),
-          start: moment(range.start).unix(),
-          end: moment(range.end).unix(),
-          keys,
+          start: moment(range.start).valueOf(),
+          end: moment(range.end).valueOf(),
           ref: 'A',
         },
       ],
@@ -363,7 +343,7 @@ export default function Metric(props: Props) {
       })
       .catch((err) => {
         if (requestId !== timeseriesRequestIdRef.current) return;
-        console.error('victorialogs dsQuery failed:', err);
+        console.error('loki dsQuery failed:', err);
         setSeries([]);
         setDataRefresh(_.uniqueId('dataRefresh_'));
       })
@@ -373,7 +353,7 @@ export default function Metric(props: Props) {
         setActiveLegend(undefined);
         setShowResetZoomBtn(false);
       });
-  }, [refreshFlag, queryValues?.vizType, JSON.stringify(queryValues?.keys)]);
+  }, [refreshFlag, queryValues?.vizType]);
 
   useEffect(() => {
     setExecuteLoading(queryValues?.vizType === 'table' ? tableLoading : timeseriesLoading);
@@ -526,67 +506,6 @@ export default function Metric(props: Props) {
           <Form.Item className='input-group-with-form-item-content-small' style={{ margin: 0 }}>
             {vizTypeRadio}
           </Form.Item>
-          <InputGroupWithFormItem
-            size='small'
-            label={
-              <Space>
-                {t('explorer.timeseries.value_field')}
-                <Tooltip title={t('explorer.timeseries.value_field_tip')}>
-                  <InfoCircleOutlined />
-                </Tooltip>
-              </Space>
-            }
-          >
-            <Form.Item
-              name={['query', 'keys', 'valueKey']}
-              rules={[
-                {
-                  required: true,
-                  message: t('explorer.timeseries.value_field_required'),
-                },
-              ]}
-              style={{ margin: 0 }}
-            >
-              <Select
-                allowClear
-                className='min-w-[120px] no-padding-small-multiple-select'
-                mode='tags'
-                size='small'
-                options={valueKeyOptions}
-                onChange={() => {
-                  form.setFieldsValue({
-                    refreshFlag: _.uniqueId('refreshFlag_'),
-                  });
-                }}
-              />
-            </Form.Item>
-          </InputGroupWithFormItem>
-          <InputGroupWithFormItem
-            size='small'
-            label={
-              <Space>
-                {t('explorer.timeseries.label_field')}
-                <Tooltip title={t('explorer.timeseries.label_field_tip')}>
-                  <InfoCircleOutlined />
-                </Tooltip>
-              </Space>
-            }
-          >
-            <Form.Item name={['query', 'keys', 'labelKey']} style={{ margin: 0 }}>
-              <Select
-                allowClear
-                className='min-w-[120px] no-padding-small-multiple-select'
-                mode='tags'
-                size='small'
-                options={labelKeyOptions}
-                onChange={() => {
-                  form.setFieldsValue({
-                    refreshFlag: _.uniqueId('refreshFlag_'),
-                  });
-                }}
-              />
-            </Form.Item>
-          </InputGroupWithFormItem>
           <InputGroupWithFormItem label={t('explorer.timeseries.unit')} size='small'>
             <Form.Item noStyle>
               <UnitPicker

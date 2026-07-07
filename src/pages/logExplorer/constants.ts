@@ -14,6 +14,7 @@ export const ENABLED_VIEW_CATES = [
   DatasourceCateEnum.aliyunSLS,
   DatasourceCateEnum.elasticsearch,
   DatasourceCateEnum.opensearch,
+  DatasourceCateEnum.loki,
   DatasourceCateEnum.victorialogs,
   DatasourceCateEnum.huaweiLTS,
   DatasourceCateEnum.tencentCLS,

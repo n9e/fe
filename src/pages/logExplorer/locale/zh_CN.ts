@@ -3,6 +3,11 @@ const zh_CN = {
   query: '查询条件',
   query_is_required: '查询条件不能为空',
   execute: '查询',
+  mode: {
+    label: '模式',
+    raw_logs: '日志原文',
+    statistical_charts: '统计图表',
+  },
   before_query: '请点击 <b>查询</b>，展示数据',
   loading: '数据加载中 ...',
   no_data: '查询无数据',
@@ -73,6 +78,8 @@ const zh_CN = {
   },
   logs: {
     title: '日志数据',
+    stream_fields_count: '{{count}} 个',
+    text: '日志文本',
     duration: '耗时',
     count: '条数',
     filter_fields: '筛选字段',
@@ -80,6 +87,7 @@ const zh_CN = {
       mode: {
         origin: '原始',
         table: '表格',
+        timeseries: '时序图',
         clustering: '聚类',
       },
       breakLine: '换行',

@@ -4,7 +4,7 @@ import moment from 'moment';
 import { Empty, Pagination, Space } from 'antd';
 import { Form } from 'antd';
 import { useRequest } from 'ahooks';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -19,6 +19,7 @@ import { Field } from '../../types';
 import filteredFields, { filterOutBuiltinFields } from '../../utils/filteredFields';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import renderBuiltinFields from '../../utils/renderBuiltinFields';
+import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
 import { getIsAtBottom, scrollToTop } from '../../utils/tableElementMethods';
 
 // @ts-ignore
@@ -288,6 +289,7 @@ export default function Raw(props: Props) {
           filterFields={(fieldKeys) => filteredFields(fieldKeys)}
           logViewerFilterFields={(log) => filteredFields(_.keys(log))}
           logViewerRenderCustomTagsArea={renderBuiltinFields}
+          customLogFieldRender={renderLogViewerFieldValueWithoutFilters}
           renderHistogramAddonAfterRender={(toggleNode) => {
             if (data) {
               return (
@@ -403,7 +405,26 @@ export default function Raw(props: Props) {
     </>
   ) : (
     <div className='h-full flex items-center justify-center'>
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t(`${logExplorerNS}:query.execute_tips`)} />
+      <Empty
+        className='ant-empty-normal'
+        image='/image/img_execute.svg'
+        description={
+          <Trans
+            ns={logExplorerNS}
+            i18nKey='before_query'
+            components={{
+              b: (
+                <a
+                  onClick={() => {
+                    executeQuery();
+                  }}
+                />
+              ),
+            }}
+          />
+        }
+        imageStyle={{ height: 80 }}
+      />
     </div>
   );
 }

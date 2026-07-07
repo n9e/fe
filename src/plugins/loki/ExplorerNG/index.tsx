@@ -8,7 +8,7 @@ import SideBar from '@/pages/logExplorer/components/SideBar';
 
 import { NAME_SPACE } from '../constants';
 import { Field } from './types';
-import { METRIC_DEFAULT_QUERY, QUERY_CACHE_KEY, RAW_DEFAULT_QUERY } from './constants';
+import { DEFAULT_RAW_LOG_LIMIT, METRIC_DEFAULT_QUERY, QUERY_CACHE_KEY, RAW_DEFAULT_QUERY } from './constants';
 import { classifyExplorerMode } from './utils/logsQL';
 import Main from './Main';
 import SideBarNav from './SideBarNav';
@@ -25,6 +25,7 @@ interface Props {
 export default function index(props: Props) {
   const { tabKey, defaultFormValuesControl, renderCommonSettings } = props;
   const form = Form.useFormInstance();
+  const datasourceValue = Form.useWatch('datasourceValue', form);
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [executeLoading, setExecuteLoading] = useState(false);
 
@@ -64,7 +65,7 @@ export default function index(props: Props) {
   };
 
   return (
-    <div className={`h-full ${NAME_SPACE}-explorer-container victorialogs-explorer-container-${tabKey}`}>
+    <div className={`h-full ${NAME_SPACE}-explorer-container loki-explorer-container-${tabKey}`}>
       <Form.Item name='refreshFlag' hidden>
         <div />
       </Form.Item>
@@ -86,14 +87,15 @@ export default function index(props: Props) {
                 mode,
                 query: queryValues.query || (mode === 'metric' ? METRIC_DEFAULT_QUERY : RAW_DEFAULT_QUERY),
                 vizType: queryValues.vizType || 'timeseries',
+                limit: queryValues.limit || DEFAULT_RAW_LOG_LIMIT,
               };
             },
             executeQuery,
           })}
-          <SideBarNav onFieldsChange={setIndexData} />
+          <SideBarNav datasourceValue={datasourceValue} onFieldsChange={setIndexData} />
         </SideBar>
         <div className='min-w-0 flex-1'>
-          <Main tabKey={tabKey} indexData={indexData} executeLoading={executeLoading} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
+          <Main indexData={indexData} executeLoading={executeLoading} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
         </div>
       </div>
     </div>

@@ -1,0 +1,327 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import _ from 'lodash';
+import moment from 'moment';
+import { Empty, Pagination, Space } from 'antd';
+import { Form } from 'antd';
+import { useRequest } from 'ahooks';
+import { Trans, useTranslation } from 'react-i18next';
+
+import { DatasourceCateEnum } from '@/utils/constant';
+import { parseRange } from '@/components/TimeRangePicker';
+import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
+import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
+import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/utils/getFieldsFromTableData';
+
+import { NAME_SPACE } from '../../../constants';
+import { DEFAULT_LOGS_PAGE_SIZE, DEFAULT_RAW_LOG_LIMIT, DEFAULT_TIME_FIELD, LOGS_OPTIONS_CACHE_KEY, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, MAX_RAW_LOG_LIMIT } from '../../constants';
+import { getHistogram, logsQuery } from '../../services';
+import { Field, LokiLogRow } from '../../types';
+import filteredFields from '../../utils/filteredFields';
+import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
+import renderBuiltinFields from '../../utils/renderBuiltinFields';
+import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
+
+interface Props {
+  indexData: Field[];
+  setExecuteLoading: (loading: boolean) => void;
+  executeQuery: () => void;
+}
+
+interface LogsData {
+  list: Record<string, any>[];
+  total: number;
+  limit: number;
+  hash: string;
+  colWidths?: Record<string, number>;
+  fields: string[];
+}
+
+interface HistogramData {
+  data: any[];
+  hash: string;
+}
+
+function normalizeLimit(limit?: number) {
+  const value = _.toNumber(limit || DEFAULT_RAW_LOG_LIMIT);
+  if (!Number.isFinite(value) || value <= 0) return DEFAULT_RAW_LOG_LIMIT;
+  return Math.min(Math.floor(value), MAX_RAW_LOG_LIMIT);
+}
+
+function flattenStreamFields(stream?: Record<string, string>) {
+  return _.mapKeys(stream || {}, (_value, key) => `stream.${key}`);
+}
+
+function transformLogRow(item: LokiLogRow) {
+  const row = {
+    ...flattenStreamFields(item.stream),
+    timestamp: item.timestamp,
+    __timestamp__: item.__timestamp__,
+    line: item.line || '',
+  };
+  return {
+    ...row,
+    ___raw___: _.omit(row, 'timestamp'),
+    ___id___: _.uniqueId('loki_log_'),
+  };
+}
+
+function pickVisibleFields(row: Record<string, any>) {
+  return _.pick(row, filteredFields(_.keys(row)));
+}
+
+function formatTimestamp(value?: string | number) {
+  if (!value) return '-';
+  return moment(value).format('MM-DD HH:mm:ss.SSS');
+}
+
+export default function Raw(props: Props) {
+  const { t } = useTranslation(NAME_SPACE);
+  const { indexData, setExecuteLoading, executeQuery } = props;
+  const form = Form.useFormInstance();
+  const refreshFlag = Form.useWatch('refreshFlag');
+  const datasourceValue = Form.useWatch('datasourceValue');
+  const queryValues = Form.useWatch('query');
+  const [options, setOptions] = useState({
+    ...getOptionsFromLocalstorage(LOGS_OPTIONS_CACHE_KEY),
+    pageLoadMode: 'pagination' as 'pagination',
+  });
+  const [serviceParams, setServiceParams] = useState({
+    current: 1,
+    pageSize: DEFAULT_LOGS_PAGE_SIZE,
+  });
+  const loadTimeRef = useRef<number | null>(null);
+
+  const updateOptions = (newOptions) => {
+    const mergedOptions = {
+      ...options,
+      ...newOptions,
+      pageLoadMode: 'pagination' as 'pagination',
+    };
+    setOptions(mergedOptions);
+    setOptionsToLocalstorage(LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+  };
+
+  const service = () => {
+    const latestQueryValues = form.getFieldValue('query');
+    if (refreshFlag && datasourceValue && latestQueryValues?.range) {
+      const parsedRange = parseRange(latestQueryValues.range);
+      const limit = normalizeLimit(latestQueryValues.limit);
+      const queryStart = Date.now();
+      return logsQuery({
+        cate: DatasourceCateEnum.loki,
+        datasource_id: datasourceValue,
+        query: [
+          {
+            query: _.trim(latestQueryValues.query || '{}') || '{}',
+            start: moment(parsedRange.start).valueOf(),
+            end: moment(parsedRange.end).valueOf(),
+            limit,
+            direction: 'backward',
+            ref: 'A',
+          },
+        ],
+      })
+        .then((res) => {
+          loadTimeRef.current = Date.now() - queryStart;
+          const list = _.map(res.list || [], transformLogRow);
+          const visibleList = _.map(list, pickVisibleFields);
+          return {
+            list,
+            total: _.toNumber(res.total || 0),
+            limit,
+            hash: _.uniqueId('logs_'),
+            colWidths: calcColWidthByData(visibleList),
+            fields: filteredFields(getFieldsFromTableData(visibleList)),
+          };
+        })
+        .catch(() => {
+          loadTimeRef.current = null;
+          return {
+            list: [],
+            total: 0,
+            limit,
+            hash: _.uniqueId('logs_'),
+            fields: [],
+          };
+        });
+    }
+    return Promise.resolve({
+      list: [],
+      total: 0,
+      limit: normalizeLimit(),
+      hash: _.uniqueId('logs_'),
+      fields: [],
+    });
+  };
+
+  const { data, loading } = useRequest<LogsData, any>(service, {
+    refreshDeps: [refreshFlag],
+  });
+
+  const histogramService = () => {
+    const latestQueryValues = form.getFieldValue('query');
+    if (refreshFlag && datasourceValue && latestQueryValues?.range) {
+      const range = parseRange(latestQueryValues.range);
+      return getHistogram({
+        cate: DatasourceCateEnum.loki,
+        datasource_id: datasourceValue,
+        query: [
+          {
+            query: _.trim(latestQueryValues.query || '{}') || '{}',
+            start: moment(range.start).valueOf(),
+            end: moment(range.end).valueOf(),
+          },
+        ],
+      })
+        .then((res) => {
+          return {
+            data: _.map(res, (item) => ({
+              id: _.uniqueId('series_'),
+              ref: item.ref,
+              name: _.isEmpty(item.metric)
+                ? item.ref || 'logs'
+                : _.join(
+                    _.map(item.metric, (value, key) => `${key}: ${value}`),
+                    ' ',
+                  ),
+              metric: item.metric || {},
+              data: _.map(item.values || [], (value) => [value[0], value[1] === null ? 0 : value[1]]),
+            })),
+            hash: _.uniqueId('histogram_'),
+          };
+        })
+        .catch(() => {
+          return {
+            data: [],
+            hash: _.uniqueId('histogram_'),
+          };
+        });
+    }
+    return Promise.resolve({
+      data: [],
+      hash: _.uniqueId('histogram_'),
+    });
+  };
+
+  const { data: histogramData, loading: histogramLoading } = useRequest<HistogramData, any>(histogramService, {
+    refreshDeps: [refreshFlag],
+  });
+
+  useEffect(() => {
+    if (refreshFlag) {
+      setServiceParams((prev) => ({ ...prev, current: 1 }));
+    }
+  }, [refreshFlag]);
+
+  useEffect(() => {
+    setExecuteLoading(loading || histogramLoading);
+  }, [loading, histogramLoading]);
+
+  const pageLogs = useMemo(() => {
+    const list = data?.list || [];
+    return _.slice(list, (serviceParams.current - 1) * serviceParams.pageSize, serviceParams.current * serviceParams.pageSize);
+  }, [data?.hash, serviceParams.current, serviceParams.pageSize]);
+
+  return refreshFlag ? (
+    <>
+      {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
+        <LogsViewer
+          indexData={indexData}
+          id_key='___id___'
+          raw_key='___raw___'
+          timeField={DEFAULT_TIME_FIELD}
+          range={queryValues?.range}
+          histogramLoading={histogramLoading}
+          histogram={histogramData?.data || []}
+          histogramHash={histogramData?.hash}
+          loading={loading}
+          logs={pageLogs}
+          logsHash={`${data?.hash}_${serviceParams.current}_${serviceParams.pageSize}`}
+          logTotal={data?.total}
+          fields={data?.fields || []}
+          colWidths={data?.colWidths}
+          options={options}
+          onOptionsChange={updateOptions}
+          filterFields={(fieldKeys) => filteredFields(fieldKeys)}
+          logViewerFilterFields={(log) => filteredFields(_.keys(log))}
+          logViewerRenderCustomTagsArea={renderBuiltinFields}
+          customLogFieldRender={renderLogViewerFieldValueWithoutFilters}
+          hideTypeIcon
+          onRangeChange={(range) => {
+            const query = form.getFieldValue('query') || {};
+            form.setFieldsValue({
+              query: {
+                ...query,
+                range,
+              },
+            });
+            executeQuery();
+          }}
+          tableColumnsWidthCacheKey={`${LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY}-${datasourceValue || 'default'}`}
+          timeFieldColumnFormat={formatTimestamp}
+          optionsExtraRender={
+            <Space>
+              {loadTimeRef.current !== null && (
+                <Space size={4}>
+                  <span>{t(`${logExplorerNS}:logs.duration`)} :</span>
+                  <span>{loadTimeRef.current} ms</span>
+                </Space>
+              )}
+              <Pagination
+                showQuickJumper
+                size='small'
+                total={data?.list.length || 0}
+                current={serviceParams.current}
+                pageSize={serviceParams.pageSize}
+                onChange={(current, pageSize) => {
+                  setServiceParams({ current, pageSize });
+                }}
+                showTotal={(total) => {
+                  return (
+                    <Space>
+                      <span>{t(`${logExplorerNS}:logs.count`)} :</span>
+                      <span>{data?.total ?? total}</span>
+                      <span className='text-hint'>/ limit {data?.limit || normalizeLimit(queryValues?.limit)}</span>
+                    </Space>
+                  );
+                }}
+              />
+            </Space>
+          }
+        />
+      ) : loading || histogramLoading ? (
+        <div className='flex justify-center'>
+          <Empty className='ant-empty-normal' image='/image/img_executing.svg' description={t(`${logExplorerNS}:loading`)} imageStyle={{ height: 80 }} />
+        </div>
+      ) : (
+        <div className='flex justify-center'>
+          <Empty className='ant-empty-normal' image='/image/img_empty.svg' description={t(`${logExplorerNS}:no_data`)} imageStyle={{ height: 80 }} />
+        </div>
+      )}
+    </>
+  ) : (
+    <div className='h-full flex items-center justify-center'>
+      <Empty
+        className='ant-empty-normal'
+        image='/image/img_execute.svg'
+        description={
+          <Trans
+            ns={logExplorerNS}
+            i18nKey='before_query'
+            components={{
+              b: (
+                <a
+                  onClick={() => {
+                    executeQuery();
+                  }}
+                />
+              ),
+            }}
+          />
+        }
+        imageStyle={{ height: 80 }}
+      />
+    </div>
+  );
+}

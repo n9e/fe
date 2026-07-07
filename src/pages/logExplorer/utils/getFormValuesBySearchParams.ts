@@ -203,14 +203,16 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         };
       }
     }
-    if (data_source_name === DatasourceCateEnum.victorialogs) {
+    if (data_source_name === DatasourceCateEnum.victorialogs || data_source_name === DatasourceCateEnum.loki) {
       const mode = _.get(params, 'mode');
+      const limit = _.get(params, 'limit');
       return {
         ...formValues,
         query: {
           range,
           mode,
           query,
+          limit: limit ? _.toNumber(limit) : undefined,
         },
       };
     }
@@ -405,9 +407,10 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.valueKey = formValues.query?.keys?.valueKey;
     return queryString.stringify(query);
   }
-  if (data_source_name === DatasourceCateEnum.victorialogs) {
+  if (data_source_name === DatasourceCateEnum.victorialogs || data_source_name === DatasourceCateEnum.loki) {
     query.mode = formValues.query?.mode;
     query.query = formValues.query?.query;
+    query.limit = formValues.query?.limit;
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.huaweiLTS) {

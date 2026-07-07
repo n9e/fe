@@ -4,8 +4,7 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { DatasourceCateEnum } from '@/utils/constant';
 
-import { DataResp, FieldNameSuggestion, FieldValueSuggestion, HistogramValue } from './types';
-import { filterOutBuilderSuggestionBlockedFields } from './utils/filteredFields';
+import { DataResp, FieldNameSuggestion, FieldValueSuggestion, HistogramValue, LokiLogRow } from './types';
 
 export function logsQuery(data: {
   cate: DatasourceCateEnum;
@@ -15,11 +14,11 @@ export function logsQuery(data: {
     start: number;
     end: number;
     limit?: number;
-    offset?: number;
+    direction?: 'forward' | 'backward';
     ref: string;
   }[];
 }): Promise<{
-  list: Record<string, any>[];
+  list: LokiLogRow[];
   total: number;
 }> {
   return request('/api/n9e/logs-query', {
@@ -37,43 +36,71 @@ export function dsQuery(data: { cate: DatasourceCateEnum; datasource_id: number;
   }).then((res) => res.dat || []);
 }
 
-export function getFieldNames(data: {
+export function getLabelNames(data: {
   cate: DatasourceCateEnum;
   datasource_id: number;
-  query: string;
+  query?: string;
   start: number;
   end: number;
   filter?: string;
   limit?: number;
 }): Promise<FieldNameSuggestion[]> {
-  return request('/api/n9e/victorialogs-field-names', {
+  return request('/api/n9e/loki-label-names', {
     method: RequestMethod.Post,
-    data: {
-      ...data,
-      scope: 'field',
-    },
+    data,
     silence: true,
-  }).then((res) => filterOutBuilderSuggestionBlockedFields(_.sortBy(res.dat || [], 'field')));
+  }).then((res) => {
+    return _.map(_.sortBy(res.dat || []), (field) => (_.isString(field) ? { field } : { field: field.field || field.name || field.label }));
+  });
 }
 
-export function getFieldValues(data: {
+export function getLabelValues(data: {
+  cate: DatasourceCateEnum;
+  datasource_id: number;
+  query?: string;
+  start: number;
+  end: number;
+  label: string;
+  filter?: string;
+  limit?: number;
+}): Promise<FieldValueSuggestion[]> {
+  return request('/api/n9e/loki-label-values', {
+    method: RequestMethod.Post,
+    data,
+    silence: true,
+  }).then((res) => {
+    return _.map(res.dat || [], (item) => (_.isString(item) ? { value: item } : { value: item.value }));
+  });
+}
+
+export function getParsedFields(data: {
   cate: DatasourceCateEnum;
   datasource_id: number;
   query: string;
   start: number;
   end: number;
-  field: string;
-  filter?: string;
   limit?: number;
-}): Promise<FieldValueSuggestion[]> {
-  return request('/api/n9e/victorialogs-field-values', {
+}): Promise<FieldNameSuggestion[]> {
+  return request('/api/n9e/loki-parsed-fields', {
     method: RequestMethod.Post,
-    data: {
-      ...data,
-      scope: 'field',
-    },
+    data,
     silence: true,
-  }).then((res) => res.dat || []);
+  }).then((res) => {
+    return _.sortBy(
+      _.filter(
+        _.map(res.dat || [], (item) => {
+          const field = _.isString(item) ? item : item.field || item.name;
+          return {
+            field,
+            inferred_type: item.inferred_type,
+            values: _.map(item.values || [], (value) => _.toString(value)),
+          };
+        }),
+        (item) => !!item.field,
+      ),
+      'field',
+    );
+  });
 }
 
 export function getHistogram(data: {
@@ -85,9 +112,10 @@ export function getHistogram(data: {
     end: number;
     step?: string;
     group_by?: string;
+    fields_limit?: number;
   }[];
 }): Promise<HistogramValue[]> {
-  return request('/api/n9e/victorialogs-histogram', {
+  return request('/api/n9e/loki-histogram', {
     method: RequestMethod.Post,
     data,
     silence: true,
