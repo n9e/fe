@@ -18,9 +18,6 @@ import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
 import { ConfigProvider, Modal, Spin } from 'antd';
-import zhCN from 'antd/lib/locale/zh_CN';
-import enUS from 'antd/lib/locale/en_US';
-import ruRU from 'antd/lib/locale/ru_RU';
 import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -36,6 +33,7 @@ import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } f
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
+import { getAntdLocale } from '@/utils/antdLocale';
 import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
 import { AiChatProvider, AiChatContainer } from '@/components/AiChatNG';
 import HocRenderer from './components/HocRenderer';
@@ -338,7 +336,7 @@ function App() {
     <AiChatProvider>
       <div className='App'>
         <CommonStateContext.Provider value={commonState}>
-          <ConfigProvider locale={i18n.language == 'en_US' ? enUS : i18n.language == 'ru_RU' ? ruRU : zhCN}>
+          <ConfigProvider locale={getAntdLocale(i18n.language)}>
             <Router
               getUserConfirmation={(message, callback) => {
                 if (message === 'CUSTOM') return;
