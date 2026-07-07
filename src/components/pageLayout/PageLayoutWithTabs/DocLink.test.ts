@@ -10,6 +10,20 @@ describe('getProductDocumentHref', () => {
     expect(getProductDocumentHref(pageDocumentUrl, false)).toBe(pageDocumentUrl);
     expect(getProductDocumentHref(pageDocumentUrl, true)).toBe('/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/');
   });
+
+  it('appends the language suffix for non-Chinese languages', () => {
+    const pageDocumentUrl = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/';
+
+    expect(getProductDocumentHref(pageDocumentUrl, false, 'zh_CN')).toBe(pageDocumentUrl);
+    expect(getProductDocumentHref(pageDocumentUrl, false, 'en_US')).toBe(
+      'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules_en/',
+    );
+    expect(getProductDocumentHref(pageDocumentUrl, false, 'zh_HK')).toBe(
+      'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules_hk/',
+    );
+    // ENT 场景保持相对地址、不加语言后缀
+    expect(getProductDocumentHref(pageDocumentUrl, true, 'en_US')).toBe('/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/');
+  });
 });
 
 describe('getProductDocumentLink', () => {

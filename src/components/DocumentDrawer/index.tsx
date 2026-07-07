@@ -6,6 +6,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { useTranslation } from 'react-i18next';
 
 import { IS_ENT } from '@/utils/constant';
+import { DOC_URL_LANG_SUFFIX } from '@/utils/docUrl';
 
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import Document from './Document';
@@ -23,14 +24,6 @@ interface Props {
   anchor?: string;
   onClose?: (destroy: () => void) => void;
 }
-
-const filenameMap = {
-  zh_CN: '',
-  zh_HK: '_hk',
-  en_US: '_en',
-  ja_JP: '_en',
-  ru_RU: '_en',
-};
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation();
@@ -77,7 +70,7 @@ function index(props: Props & ModalWrapProps) {
         <Space>
           {title}
           {type === 'iframe' && (
-            <a target='_blank' href={`${realDocumentPath}${filenameMap[language]}/${anchor || ''}`} className='text-[12px]'>
+            <a target='_blank' href={`${realDocumentPath}${DOC_URL_LANG_SUFFIX[language] || ''}/${anchor || ''}`} className='text-[12px]'>
               <Space size={4}>
                 {t('common:more_document_link')}
                 <ExportOutlined />
@@ -112,7 +105,7 @@ function index(props: Props & ModalWrapProps) {
       {type === 'iframe' && (
         <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
           <iframe
-            src={`${realDocumentPath}${filenameMap[language]}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}${anchor || ''}`}
+            src={`${realDocumentPath}${DOC_URL_LANG_SUFFIX[language] || ''}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}${anchor || ''}`}
             style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
             onLoad={() => {
               setLoading(false);

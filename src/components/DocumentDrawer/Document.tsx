@@ -6,6 +6,7 @@ import MDEditor from '@uiw/react-md-editor';
 
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
+import { DOC_URL_LANG_SUFFIX } from '@/utils/docUrl';
 
 import './style.less';
 
@@ -13,14 +14,6 @@ interface Props {
   documentPath: string;
   type?: 'md' | 'iframe';
 }
-
-const filenameMap = {
-  zh_CN: '',
-  zh_HK: '_hk',
-  en_US: '_en',
-  ja_JP: '_en',
-  ru_RU: '_en',
-};
 
 export default function index(props: Props) {
   const { i18n } = useTranslation();
@@ -76,7 +69,7 @@ export default function index(props: Props) {
       {type === 'iframe' && (
         <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
           <iframe
-            src={`${realDocumentPath}${filenameMap[i18n.language]}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}`}
+            src={`${realDocumentPath}${DOC_URL_LANG_SUFFIX[i18n.language] || ''}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}`}
             style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
             onLoad={() => {
               setLoading(false);
