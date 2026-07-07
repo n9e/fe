@@ -72,6 +72,7 @@ interface Props {
   showTopNSettings?: boolean;
   showLogMode?: boolean;
   addonBefore?: React.ReactNode;
+  timeColumnWidth?: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
   id_key?: string;
@@ -155,6 +156,7 @@ export default function LogsViewer(props: Props) {
     showTopNSettings,
     showLogMode = true,
     addonBefore,
+    timeColumnWidth,
     timeFieldColumnFormat,
     linesColumnFormat,
     id_key = '___id___',
@@ -345,6 +347,7 @@ export default function LogsViewer(props: Props) {
                   onValueFilter={onAddToQuery}
                   rowPrefixRender={rowPrefixRender}
                   filterFields={filterFields}
+                  timeColumnWidth={timeColumnWidth}
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
                   logViewerExtraRender={logViewerExtraRender}
@@ -379,6 +382,7 @@ export default function LogsViewer(props: Props) {
                   onOpenOrganizeFieldsModal={() => {
                     originSettingsRef.current?.setOrganizeFieldsModalVisible(true);
                   }}
+                  timeColumnWidth={timeColumnWidth}
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
                   logViewerExtraRender={logViewerExtraRender}
