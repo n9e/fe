@@ -171,12 +171,9 @@ export default function Query(props: Props) {
                 </Col>
               )}
               <Col span={5}>
-                <Input.Group>
-                  <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
-                  <Form.Item {...field} name={[field.name, 'interval']} noStyle initialValue={1}>
-                    <InputNumber disabled={disabled} style={{ width: '100%' }} min={0} />
-                  </Form.Item>
-                  <span className='ant-input-group-addon'>
+                <InputGroupWithFormItem
+                  label={t('datasource:es.interval')}
+                  addonAfter={
                     <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
                       <Select disabled={disabled}>
                         <Select.Option value='second'>{t('common:time.second')}</Select.Option>
@@ -184,8 +181,12 @@ export default function Query(props: Props) {
                         <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
                       </Select>
                     </Form.Item>
-                  </span>
-                </Input.Group>
+                  }
+                >
+                  <Form.Item {...field} name={[field.name, 'interval']} noStyle initialValue={1}>
+                    <InputNumber disabled={disabled} style={{ width: '100%' }} min={0} />
+                  </Form.Item>
+                </InputGroupWithFormItem>
               </Col>
             </Row>
           </Col>

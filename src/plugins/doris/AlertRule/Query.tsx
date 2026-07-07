@@ -131,31 +131,26 @@ export default function Query(props: Props) {
             </InputGroupWithFormItem>
           </Col>
           <Col flex='none'>
-            <Input.Group>
-              <span className='ant-input-group-addon'>
-                {
-                  <Space>
-                    {t('query.interval')}
-                    <Tooltip
-                      title={
-                        <Trans
-                          ns={NAME_SPACE}
-                          i18nKey='query.interval_tip'
-                          components={{
-                            br: <br />,
-                          }}
-                        />
-                      }
-                    >
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  </Space>
-                }
-              </span>
-              <Form.Item {...field} name={[field.name, 'interval']} noStyle>
-                <InputNumber disabled={disabled} style={{ width: 80 }} min={0} />
-              </Form.Item>
-              <span className='ant-input-group-addon'>
+            <InputGroupWithFormItem
+              label={
+                <Space>
+                  {t('query.interval')}
+                  <Tooltip
+                    title={
+                      <Trans
+                        ns={NAME_SPACE}
+                        i18nKey='query.interval_tip'
+                        components={{
+                          br: <br />,
+                        }}
+                      />
+                    }
+                  >
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </Space>
+              }
+              addonAfter={
                 <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
                   <Select disabled={disabled}>
                     <Select.Option value='second'>{t('common:time.second')}</Select.Option>
@@ -163,8 +158,12 @@ export default function Query(props: Props) {
                     <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
                   </Select>
                 </Form.Item>
-              </span>
-            </Input.Group>
+              }
+            >
+              <Form.Item {...field} name={[field.name, 'interval']} noStyle>
+                <InputNumber disabled={disabled} style={{ width: 80 }} min={0} />
+              </Form.Item>
+            </InputGroupWithFormItem>
           </Col>
         </Row>
       </CardContainerHeader>
