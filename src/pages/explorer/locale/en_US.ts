@@ -21,6 +21,8 @@ const en_US = {
     copyToClipboard: 'Copy to clipboard',
     show_conext: 'Show context',
     context: 'Log context',
+    context_result_count: 'Results',
+    context_lines: '{{num}} lines of context',
     limit: 'Limit',
     sort: {
       NEWEST_FIRST: 'Newest first',
@@ -116,6 +118,7 @@ const en_US = {
         allFields: 'All fields',
         showFields: 'Show fields',
         showFields_empty: 'Show all fields by default',
+        tip: 'Only fields {{fields}} are displayed. Click the settings icon to show all fields',
       },
       jsonSettings: {
         title: 'JSON settings',

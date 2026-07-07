@@ -1,4 +1,6 @@
 const zh_HK = {
+  validate_metric_msg: '請先校驗指標',
+  smart_rule_limit_msg: '可添加的智能告警規則數量已達上限，請聯繫客服',
   title: '告警規則',
   empty_guide: {
     title: '還沒有告警規則',

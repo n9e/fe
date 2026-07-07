@@ -341,7 +341,7 @@ function index(props: IProps) {
                 ) : (
                   <div className='dashboards-panels-item-invalid'>
                     <div>
-                      <div>无效的图表配置</div>
+                      <div>{t('detail.invalidPanelConfig')}</div>
                       <a
                         onClick={() => {
                           const newPanels = _.filter(panels, (panel) => panel.id !== item.id);

@@ -18,6 +18,9 @@ const ja_JP = {
     value: '値の抽出',
     func: '関数',
     funcField: 'フィールド名',
+    histogram: {
+      interval: '間隔',
+    },
     terms: {
       label: '指定フィールドによるグループ化',
       more: '高度な設定',

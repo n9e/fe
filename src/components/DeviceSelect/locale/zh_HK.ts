@@ -1,5 +1,6 @@
 const zh_HK = {
   host: {
+    and: '且',
     title: '機器篩選',
     key: {
       all_hosts: '全部機器',

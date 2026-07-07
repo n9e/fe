@@ -1,4 +1,5 @@
 const en_US = {
+  no_busi_group_id: 'This alert did not return a business group ID',
   title: 'Active alerts',
   search_placeholder: 'Multiple keywords separated by spaces',
   hours: {

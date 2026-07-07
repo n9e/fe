@@ -606,11 +606,21 @@ const zh_HK = {
     copy_query: '複製查詢',
     hide_response: '隱藏響應數據',
   },
+  migrate: {
+    title: '遷移大盤',
+    close_and_dismiss: '關閉並不再提示',
+    batch_migrate: '前往批量遷移大盤',
+    migrate_current: '遷移當前大盤',
+    desc_1: 'v6 版本將不再支持全局 Prometheus 集群切換，新版本可通過圖表關聯數據源變量來實現該能力。',
+    desc_2: '遷移工具會創建數據源變量以及關聯所有未關聯數據源的圖表。',
+  },
   detail: {
     ai_analysis: 'AI 分析',
     datasource_empty: '沒有數據源資訊，請先配置數據源',
     invalidTimeRange: '無效的 __from 和 __to 值',
     invalidDatasource: '無效的數據源',
+    invalidPanelConfig: '無效的圖表配置',
+    invalidPanelType: '無效的圖表類型',
     fullscreen: {
       notification: {
         esc: '按 ESC 鍵退出全螢幕模式',

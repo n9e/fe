@@ -21,6 +21,8 @@ const ru_RU = {
     copyToClipboard: 'Копировать в буфер обмена',
     show_conext: 'Показать контекст',
     context: 'Контекст журнала',
+    context_result_count: 'Кол-во строк',
+    context_lines: '{{num}} строк контекста',
     limit: 'Количество результатов',
     sort: {
       NEWEST_FIRST: 'Сначала новые',
@@ -116,6 +118,7 @@ const ru_RU = {
         allFields: 'Доступные поля',
         showFields: 'Отображаемые поля',
         showFields_empty: 'По умолчанию отображаются все поля журнала',
+        tip: 'Отображаются только поля {{fields}}. Нажмите значок настроек, чтобы показать все поля',
       },
       jsonSettings: {
         title: 'Настройки JSON',

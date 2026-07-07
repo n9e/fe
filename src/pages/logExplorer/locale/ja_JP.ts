@@ -94,6 +94,7 @@ const ja_JP = {
         allFields: '利用可能なフィールド',
         showFields: 'フィールドを表示',
         showFields_empty: 'ログはデフォルトで全てのフィールドを表示します',
+        tip: '現在フィールド {{fields}} のみ表示しています。設定アイコンから全フィールドを表示できます',
       },
       jsonSettings: {
         title: 'JSON 設定',

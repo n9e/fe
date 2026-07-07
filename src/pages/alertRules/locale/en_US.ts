@@ -1,4 +1,6 @@
 const en_US = {
+  validate_metric_msg: 'Please validate the metric first',
+  smart_rule_limit_msg: 'The number of smart alert rules has reached the limit, please contact support',
   title: 'Alert rules',
   empty_guide: {
     title: 'No alert rule yet',

@@ -166,6 +166,8 @@ const zh_HK = {
   copied: '複製成功',
   copyToClipboard: '複製到剪貼板',
   copyToClipboardFailed: '複製到剪貼板失敗',
+  copy_items_success: '複製 {{num}} 條數據到剪貼板',
+  password_too_long: '密碼過長，加密失敗, 最長{{num}}位',
   manage: '管理',
   reload: '刷新',
   public: '公開',

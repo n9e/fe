@@ -21,6 +21,8 @@ const zh_HK = {
     copyToClipboard: '複製到剪貼板',
     show_conext: 'Show Context',
     context: '日誌上下文',
+    context_result_count: '結果數',
+    context_lines: '上下{{num}}條日誌',
     limit: '結果數',
     sort: {
       NEWEST_FIRST: '最新優先',
@@ -116,6 +118,7 @@ const zh_HK = {
         allFields: '可用字段',
         showFields: '顯示字段',
         showFields_empty: '日誌默認顯示全部字段',
+        tip: '當前只顯示字段 {{fields}}，可點擊設置圖標設置顯示所有字段',
       },
       jsonSettings: {
         title: 'JSON 設置',

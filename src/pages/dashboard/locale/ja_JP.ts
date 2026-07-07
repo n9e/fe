@@ -603,11 +603,21 @@ const ja_JP = {
     copy_query: 'クエリをコピー',
     hide_response: 'レスポンスを非表示',
   },
+  migrate: {
+    title: 'ダッシュボードの移行',
+    close_and_dismiss: '閉じて今後表示しない',
+    batch_migrate: '一括移行ページへ',
+    migrate_current: '現在のダッシュボードを移行',
+    desc_1: 'v6 ではグローバル Prometheus クラスター切替はサポートされません。新バージョンではチャートにデータソース変数を関連付けることで実現します。',
+    desc_2: '移行ツールはデータソース変数を作成し、データソース未関連付けのチャートをすべて関連付けます。',
+  },
   detail: {
     ai_analysis: 'AI 分析',
     datasource_empty: 'データソース情報がありません。まずデータソースを設定してください',
     invalidTimeRange: '無効な__fromと__toの値',
     invalidDatasource: '無効なデータソース',
+    invalidPanelConfig: '無効なチャート設定',
+    invalidPanelType: '無効なチャートタイプ',
     fullscreen: {
       notification: {
         esc: '全画面モードを終了するにはESCキーを押してください',

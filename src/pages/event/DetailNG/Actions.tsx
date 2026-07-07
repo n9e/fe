@@ -61,7 +61,7 @@ export default function getActions(options: Options) {
                     t,
                   );
                 } else {
-                  message.warn('该告警未返回业务组ID');
+                  message.warn(t('no_busi_group_id'));
                 }
               }}
             >

@@ -168,6 +168,8 @@ const ru_RU = {
   copied: 'Скопировано',
   copyToClipboard: 'Копировать в буфер обмена',
   copyToClipboardFailed: 'Не удалось скопировать в буфер обмена',
+  copy_items_success: 'Скопировано {{num}} записей в буфер обмена',
+  password_too_long: 'Пароль слишком длинный, шифрование не удалось (макс. {{num}} символов)',
   manage: 'Управление',
   reload: 'Обновить',
   public: 'Публичное',

@@ -616,11 +616,21 @@ const en_US = {
     copy_query: 'Copy query',
     hide_response: 'Hide response data',
   },
+  migrate: {
+    title: 'Migrate dashboard',
+    close_and_dismiss: 'Close and do not remind again',
+    batch_migrate: 'Batch migrate dashboards',
+    migrate_current: 'Migrate current dashboard',
+    desc_1: 'v6 no longer supports global Prometheus cluster switching; the new version achieves this by binding panels to a datasource variable.',
+    desc_2: 'The migration tool creates a datasource variable and binds all panels that have no datasource yet.',
+  },
   detail: {
     ai_analysis: 'AI Analysis',
     datasource_empty: 'Please configure the data source first',
     invalidTimeRange: 'Invalid __from and __to values',
     invalidDatasource: 'Invalid datasource',
+    invalidPanelConfig: 'Invalid panel configuration',
+    invalidPanelType: 'Invalid panel type',
     fullscreen: {
       notification: {
         esc: 'Press ESC to exit full screen mode',

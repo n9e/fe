@@ -168,6 +168,8 @@ const ja_JP = {
   copied: 'コピーしました',
   copyToClipboard: 'クリップボードにコピー',
   copyToClipboardFailed: 'クリップボードにコピーできませんでした',
+  copy_items_success: '{{num}} 件のデータをクリップボードにコピーしました',
+  password_too_long: 'パスワードが長すぎます。暗号化に失敗しました（最大 {{num}} 文字）',
   manage: '管理',
   reload: 'リロード',
   public: '公開',

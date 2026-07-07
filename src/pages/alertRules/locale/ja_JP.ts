@@ -1,4 +1,6 @@
 const ja_JP = {
+  validate_metric_msg: '先に指標を検証してください',
+  smart_rule_limit_msg: 'インテリジェントアラートルールの数が上限に達しました。サポートにお問い合わせください',
   title: 'アラートルール',
   empty_guide: {
     title: 'まだアラートルールがありません',

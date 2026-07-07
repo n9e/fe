@@ -168,6 +168,8 @@ const en_US = {
   copied: 'Copied',
   copyToClipboard: 'Copy to clipboard successfully',
   copyToClipboardFailed: 'Copy to clipboard failed',
+  copy_items_success: 'Copied {{num}} items to clipboard',
+  password_too_long: 'Password too long, encryption failed (max {{num}} characters)',
   manage: 'Manage',
   reload: 'Reload',
   public: 'Public',

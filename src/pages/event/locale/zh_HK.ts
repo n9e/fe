@@ -1,4 +1,5 @@
 const zh_HK = {
+  no_busi_group_id: '該告警未返回業務組ID',
   title: '活躍告警',
   search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
   hours: {
