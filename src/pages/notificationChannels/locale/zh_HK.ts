@@ -126,7 +126,6 @@ const zh_HK = {
     disable: '停用',
   },
   types_select_placeholder: '類型',
-  delete_disable_first: '當前類型未禁用，無法刪除',
   types: {
     flashduty: 'FlashDuty',
     callback: '回調',
@@ -155,7 +154,6 @@ const zh_HK = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
-启用状态下不可删除: '啟用狀態下不可刪除',
 };
 
 export default zh_HK;

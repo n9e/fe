@@ -298,7 +298,7 @@ export default function List() {
               text: t('common:btn.delete'),
               danger: true,
               disabled: item.disabled === false,
-              tooltip: item.disabled === false ? t("启用状态下不可删除") : undefined,
+              tooltip: item.disabled === false ? t('common:delete_disable_first') : undefined,
               onClick: () => {
                 Modal.confirm({
                   title: t('common:confirm.delete'),

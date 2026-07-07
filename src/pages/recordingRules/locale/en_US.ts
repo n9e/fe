@@ -41,6 +41,5 @@ const en_US = {
       },
     },
   },
-启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;

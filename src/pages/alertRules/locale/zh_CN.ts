@@ -380,6 +380,5 @@ const zh_CN = {
     no_changes: '处理器配置没有变化',
     save_workflow_tip: '点击保存处理器后，才会真正生成或修改事件处理器',
   },
-启用状态下不可删除: '启用状态下不可删除',
 };
 export default zh_CN;

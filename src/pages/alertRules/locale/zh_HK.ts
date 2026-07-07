@@ -380,7 +380,6 @@ const zh_HK = {
     no_changes: '處理器配置沒有變化',
     save_workflow_tip: '點擊保存處理器後，才會真正生成或修改事件處理器',
   },
-启用状态下不可删除: '啟用狀態下不可刪除',
 };
 
 export default zh_HK;

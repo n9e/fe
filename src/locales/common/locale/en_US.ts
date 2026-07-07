@@ -175,6 +175,7 @@ const en_US = {
   enabling: 'Enabling',
   disabled: 'Disabled',
   disabling: 'Disabling',
+  delete_disable_first: 'Cannot delete while enabled. Disable first.',
   select_event: 'Select an alert event',
   click_to_view_doc: 'Click to view documentation',
   format_sql: 'Format SQL',
