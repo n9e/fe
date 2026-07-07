@@ -97,6 +97,7 @@ const ru_RU = {
       inhibit_qd: 'Подавление событий по данным запроса',
       annotation_qd: 'Обогащение аннотаций по данным запроса',
       event_recover: 'Восстановление события',
+      alert_shot: 'Скриншот предупреждения',
     },
   },
   label_enrich: {
@@ -198,6 +199,8 @@ const ru_RU = {
     match_attribute_keys: 'Атрибуты',
     match_attribute_keys_required: 'Атрибуты обязательны',
     keys_at_least_one_required: 'Требуется по крайней мере одна метка или атрибут',
+    labels_conflict: 'Значения метки {{label}} различаются, подавление невозможно',
+    attributes_conflict: 'Значения атрибута {{attribute}} различаются, подавление невозможно',
     preview:
       'Предварительный просмотр правила: Когда «<b>Новое предупреждение: {{newAlertLabelsAttrs}}</b>» и в течение последних «<b>{{duration}} секунд</b>» существует «<b>Активное предупреждение: {{activeAlertLabelsAttrs}}</b>», и оба совпадают в «<b>{{matchLabelsAttrs}}</b>», подавить уведомления нового предупреждения.',
     labels_filter: {

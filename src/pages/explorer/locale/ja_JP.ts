@@ -70,7 +70,7 @@ const ja_JP = {
       exists: 'フィールドが存在するドキュメントをフィルタリング',
     },
     field_values_topn: {
-      label: 'トップ {{n}} の値',
+      title: 'トップ {{n}} の値',
       settings: {
         title: 'トップ N の値設定',
       },

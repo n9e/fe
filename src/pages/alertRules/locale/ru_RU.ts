@@ -304,6 +304,7 @@ const ru_RU = {
     title: 'Пороговая проверка',
     builder: 'Простой режим',
     code: 'Режим выражений',
+    expr_invalid: 'Синтаксическая ошибка в выражении',
     label: 'Связанная метка',
     exp_trigger_disable: 'Включить пороговую проверку',
     advanced_settings: {

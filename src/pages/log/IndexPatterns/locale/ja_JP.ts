@@ -1,6 +1,7 @@
-const zh_HK = {
+const ja_JP = {
   请输入: '入力してください',
   请选择: '選択してください',
+  tip3: '（変数の直後に & が続く場合、または URL の末尾にある場合のみ使用可能）。任意の位置で使用できる ${key3} もサポートしています',
   unauthorized: '権限がありません',
   title: 'インデックスパターン',
   name: '名前',
@@ -10,6 +11,8 @@ const zh_HK = {
   allow_hide_system_indices: 'システムインデックスを非表示にする',
   create_btn: 'インデックスパターンを作成',
   create_title: 'インデックスパターンを作成',
+  edit_title: 'インデックスパターンを編集',
+  cross_cluster_enabled: 'クロスクラスター',
   indexes_empty: '一致するインデックスがありません',
   keyword: 'フィールド',
   should_not_empty: '空にすることはできません',
@@ -104,6 +107,7 @@ const zh_HK = {
           urlTemplateTip1: '例えばtracingシステムへのリンク：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplateTip2: 'リンクの設定と変更は「リンクを跳ぶ」の中で行ってください。同じフィールドのリンクが「リンクを跳ぶ」に設定されている場合、この設定は無効になります。',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
+          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: 'ラベルテンプレート',
           labelTemplatePlaceholder: '{{value}}',
         },
@@ -112,4 +116,4 @@ const zh_HK = {
   },
 };
 
-export default zh_HK;
+export default ja_JP;

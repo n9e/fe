@@ -1,5 +1,6 @@
 const zh_HK = {
   title: '站點設置',
+  link_icon_url: '鏈接圖標',
   favicon_url: '網站圖示 ( Favicon )',
   favicon_url_tip: '輸入圖片資源地址，建議尺寸 32x32',
   login_page_logo_url: '登錄頁 Logo',

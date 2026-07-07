@@ -7,6 +7,7 @@ const zh_HK = {
   api_type: '提供商類型',
   model: '模型',
   enabled: '啟用',
+  disabled: '停用',
   is_default: '默認',
   is_default_tip: '打開之後，如果 agent 沒有配置 LLM 模型，將使用此模型',
   add_btn: '新建 LLM 配置',

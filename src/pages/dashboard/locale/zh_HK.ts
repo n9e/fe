@@ -23,6 +23,7 @@ const zh_HK = {
   public: {
     name: '公開',
     unpublic: '未公開',
+    public_cate: '類型',
     cate: {
       0: '匿名訪問',
       1: '登錄訪問',
@@ -306,6 +307,21 @@ const zh_HK = {
         text_placeholder: '可選',
         color: '顏色',
         operations: '操作',
+      },
+      colors: {
+        name: '顏色設置',
+        scheme: '顏色方案',
+        reverse: '反轉顏色',
+      },
+      links: {
+        label: '連結',
+        add_btn: '添加連結',
+        edit_btn: '編輯連結',
+        title: '連結標題',
+        title_required: '連結標題不能為空',
+        url: '連結地址',
+        url_required: '連結地址不能為空',
+        target_blank: '新視窗打開',
       },
     },
     standardOptions: {
@@ -684,6 +700,8 @@ const zh_HK = {
     sum: '總和',
     count: '數量',
     origin: '原始值',
+    variance: '方差',
+    stdDev: '標準差',
   },
   annotation: {
     add: '新增注釋',
@@ -696,11 +714,34 @@ const zh_HK = {
   transformations: {
     organize: {
       title: '整理字段',
+      desc: '重新排序、隱藏或重命名字段',
     },
     merge: {
       title: '合併',
+      desc: '將多個表合併為一個表',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: '根據相關字段合併多個表的行',
+      mode: '模式',
+      byField: '字段',
+    },
+    timeSeriesTable: {
+      title: 'Time series to table',
+      desc: '將時序數據的每個時間點的值合併計算為一個值',
+      fieldName: '字段',
+      functions: '方法',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: '將表按一個或多個字段分組，並對其他字段進行聚合計算',
+      operation_map: {
+        aggregate: '計算',
+        groupby: '分組',
+      },
     },
   },
+  add_transformation: '添加數據轉換',
 };
 
 export default zh_HK;

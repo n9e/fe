@@ -24,6 +24,12 @@ import { syncMomentLocale } from './utils/momentLocale';
 
 const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
 
+// 缺失 key 时的回退链：繁体优先回退简体；其他语言（ja/ru 等）优先回退英文，最终兜底 zh_CN
+const fallbackLng = {
+  zh_HK: ['zh_CN'],
+  default: ['en_US', 'zh_CN'],
+};
+
 function detectBrowserLanguage() {
   const browserLanguages = navigator.languages || [navigator.language];
   for (const browserLanguage of browserLanguages) {
@@ -121,7 +127,7 @@ if (!!API_URL && !!API_KEY) {
   i18nInit = withTolgee(i18n, tolgee).use(initReactI18next);
   i18nInit.init({
     lng: language,
-    fallbackLng: 'zh_CN',
+    fallbackLng,
     interpolation: {
       escapeValue: false,
     },
@@ -134,7 +140,7 @@ if (!!API_URL && !!API_KEY) {
   i18nInit = i18n.use(initReactI18next);
   i18nInit.init({
     lng: language,
-    fallbackLng: 'zh_CN',
+    fallbackLng,
     resources: getI18nextTranslations(),
     interpolation: {
       escapeValue: false,

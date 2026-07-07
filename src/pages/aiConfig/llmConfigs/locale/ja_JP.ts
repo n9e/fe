@@ -7,6 +7,7 @@ const ja_JP = {
   api_type: 'プロバイダー種別',
   model: 'モデル',
   enabled: '有効',
+  disabled: '無効',
   is_default: 'デフォルト',
   is_default_tip: '有効にすると、エージェントに特定の LLM モデルが設定されていない場合、このモデルがデフォルトとして使用されます',
   add_btn: 'LLM 設定を作成',

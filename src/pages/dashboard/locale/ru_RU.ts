@@ -284,6 +284,16 @@ const ru_RU = {
         scheme: 'Схема цветов',
         reverse: 'Инвертировать цвет',
       },
+      links: {
+        label: 'Ссылки',
+        add_btn: 'Добавить ссылку',
+        edit_btn: 'Редактировать ссылку',
+        title: 'Заголовок ссылки',
+        title_required: 'Заголовок ссылки обязателен',
+        url: 'URL ссылки',
+        url_required: 'URL ссылки обязателен',
+        target_blank: 'Открыть в новом окне',
+      },
     },
     standardOptions: {
       title: 'Расширенные настройки',
@@ -548,6 +558,7 @@ const ru_RU = {
     time: 'Выбор времени',
     time_tip: 'Вы можете указать временной диапазон, по умолчанию используется глобальный временной диапазон панели',
     prometheus: {
+      query: 'Запрос (PromQL)',
       expression: 'Выражение (PromQL)',
       maxDataPoints: {
         tip: 'Максимальное количество точек на кривую, по умолчанию — ширина панели (по умолчанию — 240 при добавлении новой), рассчитывается как шаг = (конец — начало) / maxDataPoints',
@@ -658,6 +669,8 @@ const ru_RU = {
     sum: 'Сумма',
     count: 'Количество',
     origin: 'Исходное значение',
+    variance: 'Дисперсия',
+    stdDev: 'Стандартное отклонение',
   },
   annotation: {
     add: 'Добавить аннотацию',
@@ -667,6 +680,37 @@ const ru_RU = {
     updated: 'Аннотация обновлена',
     deleted: 'Аннотация удалена',
   },
+  transformations: {
+    organize: {
+      title: 'Organize fields by name',
+      desc: 'Переупорядочить, скрыть или переименовать поля',
+    },
+    merge: {
+      title: 'Merge tables',
+      desc: 'Объединить несколько таблиц в одну',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: 'Объединить строки нескольких таблиц по связанным полям',
+      mode: 'Режим',
+      byField: 'Поле',
+    },
+    timeSeriesTable: {
+      title: 'Time series to table',
+      desc: 'Объединить значения каждой временной точки ряда в одно значение',
+      fieldName: 'Поле',
+      functions: 'Функция',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: 'Сгруппировать таблицу по одному или нескольким полям и агрегировать остальные поля',
+      operation_map: {
+        aggregate: 'Агрегация',
+        groupby: 'Группировка',
+      },
+    },
+  },
+  add_transformation: 'Добавить преобразование данных',
 };
 
 export default ru_RU;

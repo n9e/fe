@@ -70,7 +70,7 @@ const zh_HK = {
       exists: '過濾存在該欄位的文檔',
     },
     field_values_topn: {
-      label: '前 {{n}} 個值',
+      title: '前 {{n}} 個值',
       settings: {
         title: '前 N 個值設置',
       },

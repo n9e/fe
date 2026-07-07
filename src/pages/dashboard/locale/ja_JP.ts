@@ -30,6 +30,10 @@ const ja_JP = {
       '2': '認証アクセス',
     },
     bgids: '認証ビジネスグループ',
+    theme_link: {
+      dark: 'ダークテーマリンク',
+      light: 'ライトテーマリンク',
+    },
   },
   default_filter: {
     title: 'デフォルトフィルタ',
@@ -53,6 +57,8 @@ const ja_JP = {
     import_grafana_tip_version_error: 'v7未満のバージョンのダッシュボード設定をインポートすることはできません',
     import_grafana_tip_version_warning:
       'v8未満のバージョンのダッシュボード設定をインポートする場合、部分のグラフがサポートされていない、またはグラフが正常にレンダリングされない問題が発生する可能性があります',
+    import_grafana_url: 'Grafana ダッシュボードリンク（推奨）',
+    import_grafana_url_label: 'Grafana ダッシュボードリンク',
     continueToImport: 'インポートを続行',
     noSelected: 'ダッシュボードを選択してください',
     import_builtin: '内蔵ダッシュボードをインポート',
@@ -308,6 +314,16 @@ const ja_JP = {
         name: '色設定',
         scheme: '色のスキーム',
         reverse: '色を反転',
+      },
+      links: {
+        label: 'リンク',
+        add_btn: 'リンクを追加',
+        edit_btn: 'リンクを編集',
+        title: 'リンクタイトル',
+        title_required: 'リンクタイトルは必須です',
+        url: 'リンクURL',
+        url_required: 'リンクURLは必須です',
+        target_blank: '新しいウィンドウで開く',
       },
     },
     standardOptions: {
@@ -574,6 +590,7 @@ const ja_JP = {
     time: '時間選択',
     time_tip: '時間範囲を指定できます。デフォルトはダッシュボード全体の時間範囲です',
     prometheus: {
+      query: 'クエリ文（PromQL）',
       expression: 'PromQL 式',
       maxDataPoints: {
         tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
@@ -681,6 +698,8 @@ const ja_JP = {
     sum: '合計',
     count: '数',
     origin: '元の値',
+    variance: '分散',
+    stdDev: '標準偏差',
   },
   annotation: {
     add: '注釈を追加',
@@ -693,11 +712,34 @@ const ja_JP = {
   transformations: {
     organize: {
       title: 'フィールドの整理',
+      desc: 'フィールドの並べ替え、非表示、名前変更を行います',
     },
     merge: {
       title: 'マージ',
+      desc: '複数のテーブルを1つのテーブルにマージします',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: '関連フィールドに基づいて複数のテーブルの行を結合します',
+      mode: 'モード',
+      byField: 'フィールド',
+    },
+    timeSeriesTable: {
+      title: 'Time series to table',
+      desc: '時系列データの各時点の値を1つの値に集計します',
+      fieldName: 'フィールド',
+      functions: '関数',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: '1つ以上のフィールドでテーブルをグループ化し、他のフィールドを集計します',
+      operation_map: {
+        aggregate: '集計',
+        groupby: 'グループ化',
+      },
     },
   },
+  add_transformation: 'データ変換を追加',
 };
 
 export default ja_JP;

@@ -50,6 +50,7 @@ const ru_RU = {
     access_key_id_placeholder: 'Введите AccessKey ID',
     access_key_secret_placeholder: 'Введите AccessKey Secret',
     skip_ssl_verify: 'Пропустить проверку SSL',
+    skip_tls_verify: 'Пропустить проверку TLS',
     yes: 'Да',
     no: 'Нет',
     headers: 'Пользовательские HTTP-заголовки',

@@ -25,6 +25,7 @@ const ja_JP = {
   document_empty: 'ドキュメント内容がありません',
   search_placeholder: 'キーワードで検索',
   builtin: '組み込み',
+  description: '説明',
   frontmatter_title: 'メタデータ',
 
   form: {
@@ -46,6 +47,8 @@ const ja_JP = {
     metadata: 'メタデータ',
     metadata_key_value_required: '必須です',
     add_metadata: 'メタデータを追加',
+    formatted_tip: 'フォーマット済み',
+    code_tip: '原文',
   },
 
   git: {

@@ -97,6 +97,7 @@ const ja_JP = {
       inhibit_qd: 'クエリデータによるイベント抑制',
       annotation_qd: 'クエリデータによる注釈の充実化',
       event_recover: 'イベント回復',
+      alert_shot: 'アラートスクリーンショット',
     },
   },
   label_enrich: {
@@ -195,6 +196,8 @@ const ja_JP = {
     match_attribute_keys: '属性',
     match_attribute_keys_required: '属性は必須です',
     keys_at_least_one_required: '少なくとも1つのラベルまたは属性が必要です',
+    labels_conflict: 'ラベル {{label}} の値が異なるため、抑制できません',
+    attributes_conflict: '属性 {{attribute}} の値が異なるため、抑制できません',
     preview:
       'ルールプレビュー：「<b>新しいアラート：{{newAlertLabelsAttrs}}</b>」かつ過去「<b>{{duration}}秒</b>」以内に「<b>アクティブアラート：{{activeAlertLabelsAttrs}}</b>」が存在し、両者が「<b>{{matchLabelsAttrs}}</b>」で一致する場合、新しいアラートの通知を抑制します。',
     labels_filter: {
