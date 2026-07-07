@@ -12,12 +12,12 @@ describe('BusinessGroup scrollbar style', () => {
     expect(businessGroupStyle).not.toContain('scrollbar-width: thin;');
   });
 
-  it('keeps best-looking-scroll transparent until hover across themes', () => {
+  it('keeps best-looking-scroll transparent until hover with theme variables', () => {
     expect(defaultThemeStyle).toContain('.best-looking-scroll {');
     expect(defaultThemeStyle).toContain('--best-looking-scrollbar-thumb: color-mix(in srgb, var(--fc-text-1) 22%, transparent);');
     expect(defaultThemeStyle).toContain('scrollbar-color: transparent transparent;');
     expect(defaultThemeStyle).toContain('scrollbar-color: var(--best-looking-scrollbar-thumb) transparent;');
     expect(defaultThemeStyle).toContain('background-color: var(--best-looking-scrollbar-thumb);');
-    expect(darkThemeStyle).toMatch(/\.best-looking-scroll[\s\S]*--best-looking-scrollbar-thumb: color-mix\(in srgb, var\(--fc-text-1\) 28%, transparent\);/);
+    expect(darkThemeStyle).not.toMatch(/\.best-looking-scroll\s*\{/);
   });
 });
