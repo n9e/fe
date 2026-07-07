@@ -173,6 +173,7 @@ const zh_CN = {
   enabling: '启用中',
   disabled: '禁用',
   disabling: '禁用中',
+  delete_disable_first: '启用状态下不可删除',
   select_event: '选择告警事件',
   click_to_view_doc: '点击查看文档',
   format_sql: '格式化 SQL',

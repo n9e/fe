@@ -129,7 +129,6 @@ const ja_JP = {
     disable: '無効',
   },
   types_select_placeholder: 'タイプ',
-  delete_disable_first: '現在のタイプは無効化されていないため、削除できません',
   types: {
     flashduty: 'FlashDuty',
     callback: 'コールバック',

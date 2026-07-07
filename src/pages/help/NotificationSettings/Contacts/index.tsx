@@ -142,6 +142,8 @@ export default function Channels() {
                   icon: 'delete',
                   text: t('common:btn.delete'),
                   danger: true,
+                  disabled: reocrd.hide === false,
+                  tooltip: reocrd.hide === false ? t('common:delete_disable_first') : undefined,
                   onClick: () => {
                     Modal.confirm({
                       title: t('common:confirm.delete'),

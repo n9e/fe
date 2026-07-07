@@ -127,7 +127,6 @@ const zh_CN = {
     disable: '停用',
   },
   types_select_placeholder: '类型',
-  delete_disable_first: '当前类型未禁用，无法删除',
   types: {
     flashduty: 'FlashDuty',
     callback: '回调',

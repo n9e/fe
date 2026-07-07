@@ -175,6 +175,7 @@ const ja_JP = {
   enabling: '有効化中',
   disabled: '無効',
   disabling: '無効化中',
+  delete_disable_first: '有効な状態では削除できません。先に無効化してください。',
   select_event: 'アラートイベントを選択',
   click_to_view_doc: 'クリックしてドキュメントを表示します',
   format_sql: 'SQLをフォーマット',

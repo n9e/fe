@@ -131,7 +131,6 @@ const en_US = {
     disable: 'Disable',
   },
   types_select_placeholder: 'Type',
-  delete_disable_first: 'The current type is not disabled and cannot be deleted',
   types: {
     flashduty: 'FlashDuty',
     callback: 'Callback',
