@@ -9,7 +9,7 @@ export function getEvents(params) {
   if (import.meta.env.VITE_IS_PRO === 'true') {
     url = '/api/n9e-plus/alert-cur-events/list';
   }
-  // event_ids 可能多达数千个，拼到 URL query 会超长被 nginx 中断(414)，因此改用 POST 放入请求体
+  // event_ids 可能多达数千个，拼到 URL query 会超长被 nginx 中断(414)，因此改用 POST 以数组形式放入请求体
   const { event_ids, ...query } = params;
   return request(url, {
     method: RequestMethod.Post,
