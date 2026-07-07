@@ -260,6 +260,7 @@ const en_US = {
   relabel: {
     title: 'Relabel',
     help_btn: 'Help',
+    deprecation_warning: 'Event Relabel is deprecated. If the current rule has existing Relabel configurations, it is recommended to use the "Event Label Rewrite" processor in the "Event Processing Workflow" above to achieve equivalent functionality.',
     if_tip: 'Optional, only events that meet this matching condition will be relabeled',
     target_label_tip: 'Key of the new label',
     replacement_tip:

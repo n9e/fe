@@ -261,6 +261,7 @@ const zh_HK = {
   relabel: {
     title: '事件 Relabel',
     help_btn: '使用說明',
+    deprecation_warning: '事件 Relabel 即將下線。檢測到當前規則已配置歷史 Relabel 配置，建議改用上方的「事件處理工作流」中的「事件標籤重寫」處理器實現等價能力。',
     if_tip: '選填，滿足此匹配條件的事件才進行標籤 Relabel',
     target_label_tip: '新增標籤的 key',
     replacement_tip: '標籤最終的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正則中匹配的內容來構建最終的目標值',

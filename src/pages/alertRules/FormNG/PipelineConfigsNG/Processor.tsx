@@ -34,6 +34,15 @@ export default function Processor(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { darkMode } = useContext(CommonStateContext);
   const { disabled, fields, field, namePath = [], prefixNamePath = [], add, remove, move } = props;
+  const indexToColumnLabel = (n: number): string => {
+    let result = '';
+    let num = n;
+    while (num >= 0) {
+      result = String.fromCharCode(65 + (num % 26)) + result;
+      num = Math.floor(num / 26) - 1;
+    }
+    return result;
+  };
   const resetField = _.omit(field, ['name', 'key']);
   const form = Form.useFormInstance();
   const processorConfig = Form.useWatch([...prefixNamePath, ...namePath]);
@@ -44,7 +53,7 @@ export default function Processor(props: Props) {
       size='small'
       title={
         <span>
-          <Tag color='purple'>{field.name}</Tag>
+          <Tag color='purple'>{indexToColumnLabel(field.name)}</Tag>
           {/* <Tag color='purple'>{t(`processor.options.${processorType}`)}</Tag> */}
           {/* <TestModal type='processor' config={processorConfig} size='small' /> */}
         </span>
@@ -83,6 +92,8 @@ export default function Processor(props: Props) {
           </Space>
         )
       }
+      headStyle={{ background: 'rgba(var(--fc-fill-2-5-rgb) / 0.5)' }}
+      bodyStyle={{ background: 'rgba(var(--fc-fill-2-5-rgb) / 0.5)' }}
     >
       <Form.Item
         {...resetField}

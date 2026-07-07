@@ -261,6 +261,7 @@ const zh_CN = {
   relabel: {
     title: '事件 Relabel',
     help_btn: '使用说明',
+    deprecation_warning: '事件 Relabel 即将下线。检测到当前规则已配置历史 Relabel 配置，建议改用上方的「事件处理工作流」中的「事件标签重写」处理器实现等价能力。',
     if_tip: '选填，满足此匹配条件的事件才进行标签 Relabel',
     target_label_tip: '新增标签的 key',
     replacement_tip: '标签最终的 value，如果配置了 separator 此字段可不填，如果配置了 regex 此字段可使用正则中匹配的内容来构建最终的目标值',

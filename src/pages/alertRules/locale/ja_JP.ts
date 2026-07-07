@@ -259,6 +259,7 @@ const ja_JP = {
   relabel: {
     title: 'イベント Relabel',
     help_btn: '使用説明',
+    deprecation_warning: 'イベント Relabel は間もなく廃止されます。検出された現在のルールには過去の Relabel 設定があります。上部の「イベント処理ワークフロー」の「イベントラベル書き換え」プロセッサを使用して同等の機能を実現することをお勧めします。',
     if_tip: '選択可能、この一致条件を満たすイベントのみラベルを Relabel します',
     target_label_tip: '新しいラベルのキー',
     replacement_tip:

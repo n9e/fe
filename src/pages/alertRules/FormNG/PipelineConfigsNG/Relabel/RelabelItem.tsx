@@ -22,8 +22,8 @@ export default function RelabelItem(props: Props) {
   const currentConfig = Form.useWatch([...prefixName, field.name]);
 
   return (
-    <div className='n9e-alert-relabel-item'>
-      <div className='n9e-alert-relabel-item-actions'>
+    <div className='relative p-4 fc-border rounded-lg' style={{ background: 'rgba(var(--fc-fill-2-5-rgb) / 0.5)' }}>
+      <div className='absolute right-[-4px] top-[-8px]'>
         <Space>
           <CopyOutlined
             onClick={() => {
