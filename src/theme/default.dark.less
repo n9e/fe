@@ -124,27 +124,4 @@
     background: unset;
   }
 
-  .best-looking-scroll {
-    --best-looking-scrollbar-thumb: color-mix(in srgb, var(--fc-text-1) 28%, transparent);
-
-    scrollbar-color: transparent transparent;
-
-    &::-webkit-scrollbar-thumb {
-      background-color: transparent;
-      box-shadow: none;
-    }
-
-    &::-webkit-scrollbar-track {
-      background-color: transparent;
-      box-shadow: none;
-    }
-
-    &:hover {
-      scrollbar-color: var(--best-looking-scrollbar-thumb) transparent;
-
-      &::-webkit-scrollbar-thumb {
-        background-color: var(--best-looking-scrollbar-thumb);
-      }
-    }
-  }
 }
