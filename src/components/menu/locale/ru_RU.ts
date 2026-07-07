@@ -56,6 +56,10 @@ const ru_RU = {
   notification_rules: 'Правила уведомлений',
   notification_channels: 'Каналы связи',
   notification_templates: 'Шаблоны сообщений',
+  网络探测: 'Pingmesh',
+  数据采集: 'Сбор данных',
+  对象列表: 'Список объектов',
+  站内公告: 'Объявления',
 };
 
 export default ru_RU;

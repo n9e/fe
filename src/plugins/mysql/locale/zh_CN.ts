@@ -1,4 +1,6 @@
 const zh_CN = {
+  精确: '精确',
+  正则: '正则',
   preview: '数据预览',
   query: {
     title: '查询统计',

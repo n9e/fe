@@ -427,7 +427,7 @@ const ru_RU = {
     triggers: 'Условия срабатывания',
     triggers_desc: 'Разделение QL и условий: поддержка порогов и обнаружения отсутствия данных',
     triggers_desc_anomaly: 'Разделение QL и условий: поддержка порогов, обнаружения отсутствия данных и интеллектуальных оповещений',
-    threshold_judgment: 'Пороговое判定',
+    threshold_judgment: 'Пороговое условие',
     collapse_core_only: 'Только основные шаги',
     collapse_expand_all: 'Развернуть все',
     collapse_collapse_all: 'Свернуть все',
