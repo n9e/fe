@@ -58,6 +58,16 @@ const ru_RU = {
   payload_by_system: 'Встроенный в систему',
   firemap: {
     drill_path: 'Путь сверху',
+    generate_rule: 'Создать правило',
+    custom_rule: 'Пользовательское правило',
+    update_match_degree: 'Обновить совпадение',
+    match_degree_updated: 'Оценка совпадения обновлена',
+    match_degree: {
+      title: 'Оценка совпадения',
+      high: 'Высокое совпадение',
+      medium: 'Среднее совпадение',
+      low: 'Низкое совпадение',
+    },
     urlConfig: 'Ссылка',
     dashboardConfig: 'Панель мониторинга',
     logExplore: 'Поиск логов',

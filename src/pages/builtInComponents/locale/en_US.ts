@@ -58,6 +58,16 @@ const en_US = {
   payload_by_system: 'System',
   firemap: {
     drill_path: 'Drill down path',
+    generate_rule: 'Generate rule',
+    custom_rule: 'Custom rule',
+    update_match_degree: 'Update match score',
+    match_degree_updated: 'Match score updated',
+    match_degree: {
+      title: 'Rule match score',
+      high: 'High match',
+      medium: 'Medium match',
+      low: 'Low match',
+    },
     urlConfig: 'Jump address',
     dashboardConfig: 'Dashboard',
     logExplore: 'Log search',

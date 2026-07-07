@@ -58,6 +58,16 @@ const zh_CN = {
   payload_by_system: '系统内置',
   firemap: {
     drill_path: '下钻路径',
+    generate_rule: '生成规则',
+    custom_rule: '自定义规则',
+    update_match_degree: '一键更新匹配度',
+    match_degree_updated: '匹配度已更新',
+    match_degree: {
+      title: '规则匹配度',
+      high: '匹配度高',
+      medium: '匹配度中',
+      low: '匹配度低',
+    },
     urlConfig: '跳转地址',
     dashboardConfig: '仪表盘',
     logExplore: '日志检索',
