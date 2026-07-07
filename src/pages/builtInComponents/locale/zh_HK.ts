@@ -58,6 +58,16 @@ const zh_HK = {
   payload_by_system: '系統內置',
   firemap: {
     drill_path: '下鑽路徑',
+    generate_rule: '生成規則',
+    custom_rule: '自定義規則',
+    update_match_degree: '一鍵更新匹配度',
+    match_degree_updated: '匹配度已更新',
+    match_degree: {
+      title: '規則匹配度',
+      high: '匹配度高',
+      medium: '匹配度中',
+      low: '匹配度低',
+    },
     urlConfig: '跳轉地址',
     dashboardConfig: '儀表盤',
     logExplore: '日誌檢索',
