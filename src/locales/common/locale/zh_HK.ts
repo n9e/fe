@@ -4,7 +4,7 @@ const zh_HK = {
     '403_admin': '管理員：',
     '403_back': '返回上一頁',
     404: '您訪問的頁面不存在！',
-    '404_btn': '返回首頁',
+    '404_btn': '回到首頁',
   },
   business_group: '業務組',
   business_groups: '業務組',
