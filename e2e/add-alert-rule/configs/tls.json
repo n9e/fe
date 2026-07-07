@@ -1,0 +1,119 @@
+{
+  "group_id": 265,
+  "cate": "volc-tls",
+  "datasource_ids": [1007],
+  "datasource_queries": [
+    {
+      "match_type": 0,
+      "op": "in",
+      "values": [1007]
+    }
+  ],
+  "cluster": "",
+  "name": "tls",
+  "note": "",
+  "prod": "logging",
+  "algorithm": "",
+  "algo_params": null,
+  "delay": 0,
+  "severity": 0,
+  "severities": [2],
+  "disabled": 1,
+  "prom_for_duration": 60,
+  "prom_ql": "",
+  "rule_config": {
+    "anomaly_trigger": {
+      "algo_params": {
+        "lower_bound": 1,
+        "lower_times_num": 1,
+        "seasonal_duration": 86400,
+        "upper_bound": 1,
+        "upper_times_num": 1
+      },
+      "severity": 2
+    },
+    "exp_trigger_disable": false,
+    "nodata_trigger": {
+      "enable": false,
+      "resolve_after": 1800,
+      "resolve_after_enable": false,
+      "severity": 2
+    },
+    "queries": [
+      {
+        "from": 300,
+        "keys": {
+          "labelKey": "label",
+          "timeKey": "Time",
+          "valueKey": "cnt"
+        },
+        "project_id": "47a18e20-273d-4e17-8cd9-f0958b9076e9",
+        "query": "tls query",
+        "ref": "A",
+        "to": 0,
+        "topic_id": "950b4dd4-ac50-4d00-8dc1-e245e6da6834",
+        "unit": "none"
+      }
+    ],
+    "triggers": [
+      {
+        "exp": "$A > 0",
+        "expressions": [
+          {
+            "comparisonOperator": ">",
+            "logicalOperator": "&&",
+            "ref": "A",
+            "value": 0
+          }
+        ],
+        "join_ref": "A",
+        "mode": 0,
+        "recover_config": {
+          "judge_type": 0
+        },
+        "severity": 2
+      }
+    ]
+  },
+  "event_relabel_config": null,
+  "prom_eval_interval": 15,
+  "enable_stime": "00:00",
+  "enable_stimes": ["00:00"],
+  "enable_etime": "00:00",
+  "enable_etimes": ["00:00"],
+  "enable_days_of_week": ["0", "1", "2", "3", "4", "5", "6"],
+  "enable_days_of_weeks": [["0", "1", "2", "3", "4", "5", "6"]],
+  "enable_in_bg": 0,
+  "notify_recovered": 1,
+  "notify_channels": [],
+  "notify_groups_obj": [],
+  "notify_groups": [],
+  "notify_repeat_step": 60,
+  "notify_max_number": 0,
+  "recover_duration": 0,
+  "callbacks": [],
+  "runbook_url": "",
+  "append_tags": [],
+  "annotations": {},
+  "extra_config": {
+    "enrich_queries": [],
+    "service_cal_configs": []
+  },
+  "create_at": 1783307497,
+  "create_by": "root",
+  "update_at": 1783307532,
+  "update_by": "root",
+  "uuid": 0,
+  "cur_event_count": 0,
+  "update_by_nickname": "",
+  "cron_pattern": "@every 60s",
+  "time_zone": "Local",
+  "notify_rule_ids": [],
+  "pipeline_configs": [
+    {
+      "pipeline_id": 0,
+      "enable": true
+    }
+  ],
+  "notify_version": 1
+}

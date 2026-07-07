@@ -12,6 +12,7 @@ import { CommonStateContext } from '@/App';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import IndexPatternSettingsBtn from '@/pages/explorer/Elasticsearch/components/IndexPatternSettingsBtn';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
+import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
 import LuceneInput from '@/plugins/elasticsearch/components/LuceneInput';
 
@@ -27,14 +28,14 @@ interface Props {
   datasourceValue: number;
   indexOptions: any[];
   disabled?: boolean;
-  children?: React.ReactNode;
+  onClose?: () => void;
 }
 
 export default function Query(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
   const { field } = props;
-  const { hideIndexPattern, datasourceValue, indexOptions, disabled, children } = props;
+  const { hideIndexPattern, datasourceValue, indexOptions, disabled, onClose } = props;
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
   const [indexSearch, setIndexSearch] = useState('');
   const [indexPatternsRefreshFlag, setIndexPatternsRefreshFlag] = useState(_.uniqueId('indexPatternsRefreshFlag_'));
@@ -60,133 +61,137 @@ export default function Query(props: Props) {
   }, [datasourceValue, indexPatternsRefreshFlag]);
 
   return (
-    <div key={field.key} className='bg-fc-200 p-4 mb-4' style={{ position: 'relative' }}>
-      <Row gutter={8}>
-        <Col flex='32px'>
-          <Form.Item {...field} name={[field.name, 'ref']} initialValue='A'>
-            <QueryName existingNames={_.map(queries, 'ref')} />
-          </Form.Item>
-        </Col>
-        <Col flex='auto'>
-          <Row gutter={8}>
-            <Col span={7}>
-              <InputGroupWithFormItem
-                label={
-                  <Space>
-                    <Form.Item {...field} name={[field.name, 'index_type']} noStyle initialValue='index'>
-                      <Select
-                        bordered={false}
-                        options={_.concat(
-                          [
-                            {
-                              label: t('datasource:es.index'),
-                              value: 'index',
-                            },
-                          ],
-                          hideIndexPattern ? [] : [{ label: t('datasource:es.indexPatterns'), value: 'index_pattern' }],
-                        )}
-                        dropdownMatchSelectWidth={false}
-                        showArrow={hideIndexPattern ? false : true}
-                      />
-                    </Form.Item>
-                    <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
-                      <QuestionCircleOutlined />
-                    </Tooltip>
-                  </Space>
-                }
-                addonAfter={
-                  indexType === 'index_pattern' &&
-                  indexPatternsAuthorized && (
-                    <IndexPatternSettingsBtn
-                      onReload={() => {
-                        setIndexPatternsRefreshFlag(_.uniqueId('indexPatternsRefreshFlag_'));
-                      }}
-                    />
-                  )
-                }
-              >
-                {indexType === 'index' && (
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'index']}
-                    rules={[
-                      {
-                        required: true,
-                        message: t('datasource:es.index_msg'),
-                      },
-                    ]}
-                  >
-                    <AutoComplete
-                      style={{ width: '100%' }}
-                      dropdownMatchSelectWidth={false}
-                      options={_.filter(indexOptions, (item) => {
-                        if (indexSearch) {
-                          return item.value.includes(indexSearch);
-                        }
-                        return true;
-                      })}
-                      onSearch={(val) => {
-                        setIndexSearch(val);
-                      }}
-                      disabled={disabled}
-                    />
-                  </Form.Item>
-                )}
-                {indexType === 'index_pattern' && <IndexPatternSelect field={field} indexPatterns={indexPatterns} />}
-              </InputGroupWithFormItem>
-            </Col>
-            <Col span={indexType === 'index' ? 7 : 12}>
-              <InputGroupWithFormItem
-                label={
-                  <span>
-                    {t('datasource:es.filter')}{' '}
-                    <Tooltip title={t('common:page_help')}>
-                      <QuestionCircleOutlined
-                        onClick={() => {
-                          DocumentDrawer({
-                            language: i18n.language,
-                            darkMode,
-                            title: t('common:page_help'),
-                            type: 'iframe',
-                            documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/es/',
-                          });
+    <CardContainer key={field.key} onClose={onClose}>
+      <CardContainerHeader>
+        <Row gutter={8}>
+          <Col flex='32px'>
+            <Form.Item {...field} name={[field.name, 'ref']} initialValue='A'>
+              <QueryName existingNames={_.map(queries, 'ref')} />
+            </Form.Item>
+          </Col>
+          <Col flex='auto'>
+            <Row gutter={8}>
+              <Col span={7}>
+                <InputGroupWithFormItem
+                  label={
+                    <Space>
+                      <Form.Item {...field} name={[field.name, 'index_type']} noStyle initialValue='index'>
+                        <Select
+                          data-testid={`es-query-${field.name}-index-type-select`}
+                          bordered={false}
+                          options={_.concat(
+                            [
+                              {
+                                label: t('datasource:es.index'),
+                                value: 'index',
+                              },
+                            ],
+                            hideIndexPattern ? [] : [{ label: t('datasource:es.indexPatterns'), value: 'index_pattern' }],
+                          )}
+                          dropdownMatchSelectWidth={false}
+                          showArrow={hideIndexPattern ? false : true}
+                        />
+                      </Form.Item>
+                      <Tooltip title={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}>
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+                    </Space>
+                  }
+                  addonAfter={
+                    indexType === 'index_pattern' &&
+                    indexPatternsAuthorized && (
+                      <IndexPatternSettingsBtn
+                        onReload={() => {
+                          setIndexPatternsRefreshFlag(_.uniqueId('indexPatternsRefreshFlag_'));
                         }}
                       />
-                    </Tooltip>
-                  </span>
-                }
-                addonAfter='Lucene'
-              >
-                <Form.Item {...field} name={[field.name, 'filter']}>
-                  <LuceneInput disabled={disabled} />
-                </Form.Item>
-              </InputGroupWithFormItem>
-            </Col>
-            {indexType === 'index' && (
-              <Col span={5}>
-                <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
+                    )
+                  }
+                >
+                  {indexType === 'index' && (
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'index']}
+                      rules={[
+                        {
+                          required: true,
+                          message: t('datasource:es.index_msg'),
+                        },
+                      ]}
+                    >
+                      <AutoComplete
+                        style={{ width: '100%' }}
+                        dropdownMatchSelectWidth={false}
+                        options={_.filter(indexOptions, (item) => {
+                          if (indexSearch) {
+                            return item.value.includes(indexSearch);
+                          }
+                          return true;
+                        })}
+                        onSearch={(val) => {
+                          setIndexSearch(val);
+                        }}
+                        disabled={disabled}
+                      />
+                    </Form.Item>
+                  )}
+                  {indexType === 'index_pattern' && <IndexPatternSelect field={field} indexPatterns={indexPatterns} />}
+                </InputGroupWithFormItem>
               </Col>
-            )}
-            <Col span={5}>
-              <Input.Group>
-                <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
-                <Form.Item {...field} name={[field.name, 'interval']} noStyle initialValue={1}>
-                  <InputNumber disabled={disabled} style={{ width: '100%' }} min={0} />
-                </Form.Item>
-                <span className='ant-input-group-addon'>
-                  <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
-                    <Select disabled={disabled}>
-                      <Select.Option value='second'>{t('common:time.second')}</Select.Option>
-                      <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
-                      <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
-                    </Select>
+              <Col span={indexType === 'index' ? 7 : 12}>
+                <InputGroupWithFormItem
+                  label={
+                    <span>
+                      {t('datasource:es.filter')}{' '}
+                      <Tooltip title={t('common:page_help')}>
+                        <QuestionCircleOutlined
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('common:page_help'),
+                              type: 'iframe',
+                              documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/es/',
+                            });
+                          }}
+                        />
+                      </Tooltip>
+                    </span>
+                  }
+                  addonAfter='Lucene'
+                >
+                  <Form.Item {...field} name={[field.name, 'filter']}>
+                    <LuceneInput disabled={disabled} />
                   </Form.Item>
-                </span>
-              </Input.Group>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+                </InputGroupWithFormItem>
+              </Col>
+              {indexType === 'index' && (
+                <Col span={5}>
+                  <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
+                </Col>
+              )}
+              <Col span={5}>
+                <InputGroupWithFormItem
+                  label={t('datasource:es.interval')}
+                  addonAfter={
+                    <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
+                      <Select disabled={disabled}>
+                        <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                        <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                        <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                      </Select>
+                    </Form.Item>
+                  }
+                >
+                  <Form.Item {...field} name={[field.name, 'interval']} noStyle initialValue={1}>
+                    <InputNumber disabled={disabled} style={{ width: '100%' }} min={0} />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </CardContainerHeader>
       <Value
         datasourceValue={datasourceValue}
         index={curIndexValue}
@@ -199,8 +204,7 @@ export default function Query(props: Props) {
         <GroupBy datasourceValue={datasourceValue} index={curIndexValue} parentNames={names} prefixField={field} prefixFieldNames={[field.name]} disabled={disabled} />
       </div>
       <AdvancedSettings field={field} />
-      {children}
       <GraphPreview datasourceValue={datasourceValue} data={queries?.[field.name]} />
-    </div>
+    </CardContainer>
   );
 }

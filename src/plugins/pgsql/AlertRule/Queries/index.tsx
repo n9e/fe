@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
-import { Form, Space, Row, Col, Card } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Row, Col, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
+import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -41,51 +43,30 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
         ]}
       >
         {(fields, { add, remove }) => (
-          <Card
-            title={
-              <Space>
-                {t('datasource:query.title')}
-                <PlusCircleOutlined
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    add({
-                      interval: 1,
-                      interval_unit: 'min',
-                    });
-                  }}
-                />
-              </Space>
-            }
-            size='small'
-          >
+          <div>
+            <FormItemLabel>{t('datasource:query.title')}</FormItemLabel>
             {fields.map((field, index) => {
               return (
-                <div key={field.key} className='bg-fc-200' style={{ padding: 16, marginBottom: 16, position: 'relative' }}>
-                  <Row gutter={8}>
-                    <Col flex='32px'>
-                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
-                        <QueryName existingNames={_.map(queries, 'ref')} />
-                      </Form.Item>
-                    </Col>
-                    <Col flex='auto'>
-                      <div className='tdengine-discover-query'>
-                        <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
-                          <Form.Item {...field} name={[field.name, QUERY_KEY]}>
-                            <LogQL datasourceCate={NAME_SPACE} datasourceValue={datasourceID} query={{}} historicalRecords={[]} placeholder={t('query.query_placeholder2')} />
-                          </Form.Item>
-                        </InputGroupWithFormItem>
-                      </div>
-                    </Col>
-                  </Row>
+                <CardContainer key={field.key} onClose={fields.length > 1 ? () => remove(field.name) : undefined}>
+                  <CardContainerHeader>
+                    <Row gutter={8}>
+                      <Col flex='32px'>
+                        <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                          <QueryName existingNames={_.map(queries, 'ref')} />
+                        </Form.Item>
+                      </Col>
+                      <Col flex='auto'>
+                        <div className='tdengine-discover-query'>
+                          <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
+                            <Form.Item {...field} name={[field.name, QUERY_KEY]}>
+                              <LogQL datasourceCate={NAME_SPACE} datasourceValue={datasourceID} query={{}} historicalRecords={[]} placeholder={t('query.query_placeholder2')} />
+                            </Form.Item>
+                          </InputGroupWithFormItem>
+                        </div>
+                      </Col>
+                    </Row>
+                  </CardContainerHeader>
                   <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} expanded showUnit={IS_PLUS} />
-                  {fields.length > 1 && (
-                    <CloseCircleOutlined
-                      style={{ position: 'absolute', right: -4, top: -4 }}
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                    />
-                  )}
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const cate = getFieldValue('cate');
@@ -94,10 +75,23 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       return <GraphPreview cate={cate} datasourceValue={datasourceID} query={query} />;
                     }}
                   </Form.Item>
-                </div>
+                </CardContainer>
               );
             })}
-          </Card>
+            <Button
+              className='w-full'
+              type='dashed'
+              onClick={() => {
+                add({
+                  interval: 1,
+                  interval_unit: 'min',
+                });
+              }}
+              icon={<PlusOutlined />}
+            >
+              {t('datasource:query.title')}
+            </Button>
+          </div>
         )}
       </Form.List>
     </>
