@@ -46,7 +46,7 @@ export default function LogView(props: Props) {
     jsonValue = JSON.stringify(value.___raw___, null, 4);
   } catch (e) {
     console.warn(e);
-    jsonValue = '无法解析';
+    jsonValue = t('common:parse_failed');
   }
 
   return (

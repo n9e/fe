@@ -557,6 +557,9 @@ const ru_RU = {
     datasource_msg: 'Пожалуйста, выберите источник данных',
     time: 'Выбор времени',
     time_tip: 'Вы можете указать временной диапазон, по умолчанию используется глобальный временной диапазон панели',
+    es: {
+      field_key_msg: 'Необходимо указать field key',
+    },
     prometheus: {
       query: 'Запрос (PromQL)',
       maxDataPoints: {
@@ -604,6 +607,7 @@ const ru_RU = {
     invalidTimeRange: 'Недопустимые значения __from и __to',
     invalidDatasource: 'Недопустимый источник данных',
     invalidPanelConfig: 'Недопустимая конфигурация панели',
+    deletePanel_confirm: 'Вы уверены, что хотите удалить панель: {{name}}?',
     invalidPanelType: 'Недопустимый тип панели',
     fullscreen: {
       notification: {

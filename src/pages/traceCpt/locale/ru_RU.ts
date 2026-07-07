@@ -5,6 +5,12 @@ const ru_RU = {
     depth: 'Глубина',
     total: 'Всего',
   },
+  time_unit: {
+    days: 'д',
+    hours: 'ч',
+    minutes: 'мин',
+    seconds: 'с',
+  },
   chart: {
     start_time: 'Время',
     duration: 'Длительность',

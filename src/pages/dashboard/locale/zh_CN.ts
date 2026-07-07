@@ -592,6 +592,9 @@ const zh_CN = {
     datasource_msg: '请选择数据源',
     time: '时间选择',
     time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
+    es: {
+      field_key_msg: '必须填写 field key',
+    },
     prometheus: {
       query: '查询语句（PromQL）',
       maxDataPoints: {
@@ -636,6 +639,7 @@ const zh_CN = {
     invalidTimeRange: '无效的 __from 和 __to 值',
     invalidDatasource: '无效的数据源',
     invalidPanelConfig: '无效的图表配置',
+    deletePanel_confirm: '是否删除图表：{{name}}',
     invalidPanelType: '无效的图表类型',
     fullscreen: {
       notification: {

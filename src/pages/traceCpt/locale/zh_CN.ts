@@ -5,6 +5,12 @@ const zh_CN = {
     depth: '深度',
     total: '总共',
   },
+  time_unit: {
+    days: '天',
+    hours: '小时',
+    minutes: '分',
+    seconds: '秒',
+  },
   chart: {
     start_time: '发生时间',
     duration: '持续时间',

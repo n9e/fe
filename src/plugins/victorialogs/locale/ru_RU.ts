@@ -48,6 +48,7 @@ const ru_RU = {
       check_all: 'Выбрать все',
     },
     copy_json: 'Копировать JSON',
+    parse_failed: 'Не удалось разобрать',
   },
   datasource: {},
   alert: {

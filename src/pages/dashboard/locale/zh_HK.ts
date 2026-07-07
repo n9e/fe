@@ -592,6 +592,9 @@ const zh_HK = {
     datasource_msg: '請選擇數據源',
     time: '時間選擇',
     time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
+    es: {
+      field_key_msg: '必須填寫 field key',
+    },
     prometheus: {
       query: '查詢語句 (PromQL)',
       maxDataPoints: {
@@ -636,6 +639,7 @@ const zh_HK = {
     invalidTimeRange: '無效的 __from 和 __to 值',
     invalidDatasource: '無效的數據源',
     invalidPanelConfig: '無效的圖表配置',
+    deletePanel_confirm: '是否刪除圖表：{{name}}',
     invalidPanelType: '無效的圖表類型',
     fullscreen: {
       notification: {

@@ -22,7 +22,7 @@ export default function JSONCpt(props: Props) {
       return JSON.stringify(data.logs, null, 4);
     } catch (e) {
       console.error(e);
-      return '无法解析';
+      return t('explorer.parse_failed');
     }
   }, [data.version]);
 

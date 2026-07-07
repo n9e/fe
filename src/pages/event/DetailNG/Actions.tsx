@@ -142,7 +142,7 @@ export default function getActions(options: Options) {
         <Button
           type='primary'
           onClick={() => {
-            window.open(eventDetail.rule_config.detail_url.replace('identifier', 'muteMetric') + '&mute=1&muteName=' + '屏蔽-' + eventDetail.rule_name, '_blank');
+            window.open(eventDetail.rule_config.detail_url.replace('identifier', 'muteMetric') + '&mute=1&muteName=' + t('shield') + '-' + eventDetail.rule_name, '_blank');
           }}
         >
           {t('shield')}

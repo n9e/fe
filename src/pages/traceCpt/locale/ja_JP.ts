@@ -5,6 +5,12 @@ const ja_JP = {
     depth: '深さ',
     total: '合計',
   },
+  time_unit: {
+    days: '日',
+    hours: '時間',
+    minutes: '分',
+    seconds: '秒',
+  },
   chart: {
     start_time: '発生時刻',
     duration: '継続時間',

@@ -5,6 +5,12 @@ const zh_HK = {
     depth: '深度',
     total: '總共',
   },
+  time_unit: {
+    days: '天',
+    hours: '小時',
+    minutes: '分',
+    seconds: '秒',
+  },
   chart: {
     start_time: '發生時間',
     duration: '持續時間',

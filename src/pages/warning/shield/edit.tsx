@@ -70,7 +70,7 @@ const EditShield: React.FC = () => {
             <div className='w-full h-[200px]' />
           </Spin>
         ) : (
-          <div>缺少必要参数，无法编辑，请联系管理员</div>
+          <div>{t('edit_missing_params')}</div>
         )}
       </div>
     </PageLayout>

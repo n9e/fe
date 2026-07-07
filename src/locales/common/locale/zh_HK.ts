@@ -25,6 +25,10 @@ const zh_HK = {
   and: '且',
   yes: '是',
   no: '否',
+  please_select: '請選擇',
+  parse_failed: '無法解析',
+  link: '鏈接',
+  content_limit_size_msg: '配置不能超過 {{num}} 個字符',
   host: {
     tags: '自定義標籤',
     tags_tip: '用戶在頁面配置的標籤，會追加到此機器上報的時序數據中',

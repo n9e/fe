@@ -107,12 +107,12 @@ export default function FormNG(props: IProps) {
   const handleCheck = (values) => {
     if (values.cate === 'prometheus') {
       if (values.rule_config.checked && values.prod === 'anomaly') {
-        message.warning('请先校验指标');
+        message.warning(t('validate_metric_msg'));
         return false;
       }
     } else if (type !== 1) {
       if (licenseRulesRemaining === 0 && values.prod === 'anomaly') {
-        message.error('可添加的智能告警规则数量已达上限，请联系客服');
+        message.error(t('smart_rule_limit_msg'));
         return false;
       }
     }

@@ -25,6 +25,10 @@ const en_US = {
   and: 'And',
   yes: 'Yes',
   no: 'No',
+  please_select: 'Please select',
+  parse_failed: 'Unable to parse',
+  link: 'Link',
+  content_limit_size_msg: 'Content cannot exceed {{num}} characters',
   host: {
     tags: 'Custom tags',
     tags_tip: 'Tags configured by the user on the page will be appended to the time series data reported by this machine',

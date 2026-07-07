@@ -25,6 +25,10 @@ const ja_JP = {
   and: 'および',
   yes: 'はい',
   no: 'いいえ',
+  please_select: '選択してください',
+  parse_failed: '解析できません',
+  link: 'リンク',
+  content_limit_size_msg: '設定は {{num}} 文字を超えることはできません',
   host: {
     tags: 'ユーザータグ',
     tags_tip: 'ユーザーがページで構成したタグは、このマシンが報告した時系列データに追加されます',

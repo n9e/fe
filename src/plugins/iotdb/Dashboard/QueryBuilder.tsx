@@ -50,13 +50,13 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                       <Form.Item
                         label={
                           <span>
-                            查询条件{' '}
+                            {t('db_iotdb:query.query')}{' '}
                             <Tooltip
                               title={
                                 <span>
-                                  IoTDB 查询语法可参考
+                                  {t('db_iotdb:query.query_tip1')}
                                   <a target='_blank' href='https://iotdb.apache.org/UserGuide/latest-Table/API/SQL-Manual.html'>
-                                    官方文档
+                                    {t('db_iotdb:query.query_tip2')}
                                   </a>
                                 </span>
                               }

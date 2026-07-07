@@ -163,7 +163,7 @@ export const defaultCustomValuesMap = {
     valueField: 'Value',
     textSize: {},
     legengPosition: 'right',
-    detailName: '详情',
+    detailName: '',
   },
   table: {
     showHeader: true,

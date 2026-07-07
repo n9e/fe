@@ -35,6 +35,7 @@ const zh_CN = {
   agent_version: 'Agent 版本',
   note: '备注',
   unknown_tip: '机器元信息的展示，categraf 的版本需要高于 0.2.35',
+  view_related_collects: '查看关联采集配置',
   organize_columns: {
     title: '显示列',
   },

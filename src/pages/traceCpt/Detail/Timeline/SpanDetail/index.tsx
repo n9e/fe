@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Divider } from 'antd';
 import AccordianKeyValues from './AccordianKeyValues';
 import AccordianLogs from './AccordianLogs';
@@ -38,6 +39,7 @@ type SpanDetailProps = {
 };
 
 export default function SpanDetail(props: SpanDetailProps) {
+  const { t } = useTranslation('trace');
   const { detailState, linksGetter, logItemToggle, logsToggle, processToggle, span, tagsToggle, traceStartTime, warningsToggle, referencesToggle, focusSpan } = props;
   const { isTagsOpen, isProcessOpen, logs: logsState } = detailState;
   const { relativeStartTime, spanID, tags, operationName, duration } = span;
@@ -50,12 +52,12 @@ export default function SpanDetail(props: SpanDetailProps) {
     },
     {
       key: 'duration',
-      label: '耗时:',
+      label: `${t('detail.duration')}:`,
       value: formatDuration(duration),
     },
     {
       key: 'start',
-      label: '开始时间:',
+      label: `${t('detail.start_time')}:`,
       value: formatDuration(relativeStartTime),
     },
   ];

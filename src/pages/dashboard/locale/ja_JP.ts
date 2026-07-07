@@ -587,6 +587,9 @@ const ja_JP = {
     datasource_msg: 'データソースを選択してください',
     time: '時間選択',
     time_tip: '時間範囲を指定できます。デフォルトはダッシュボード全体の時間範囲です',
+    es: {
+      field_key_msg: 'Field key は必須です',
+    },
     prometheus: {
       query: 'クエリ文（PromQL）',
       maxDataPoints: {
@@ -631,6 +634,7 @@ const ja_JP = {
     invalidTimeRange: '無効な__fromと__toの値',
     invalidDatasource: '無効なデータソース',
     invalidPanelConfig: '無効なチャート設定',
+    deletePanel_confirm: 'チャート {{name}} を削除してもよろしいですか？',
     invalidPanelType: '無効なチャートタイプ',
     fullscreen: {
       notification: {

@@ -585,6 +585,9 @@ const en_US = {
     datasource_msg: 'Please select datasource',
     time: 'Time',
     time_tip: 'Default is the global time range of the dashboard',
+    es: {
+      field_key_msg: 'Field key is required',
+    },
     prometheus: {
       query: 'Query (PromQL)',
       maxDataPoints: {
@@ -629,6 +632,7 @@ const en_US = {
     invalidTimeRange: 'Invalid __from and __to values',
     invalidDatasource: 'Invalid datasource',
     invalidPanelConfig: 'Invalid panel configuration',
+    deletePanel_confirm: 'Are you sure to delete the panel: {{name}}?',
     invalidPanelType: 'Invalid panel type',
     fullscreen: {
       notification: {

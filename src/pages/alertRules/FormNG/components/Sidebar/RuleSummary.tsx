@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import _ from 'lodash';
+import i18next from 'i18next';
 import { Form, Row, Col, Divider, Tooltip } from 'antd';
 import { useRequest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
@@ -61,7 +62,7 @@ interface SwitchFieldProps {
   noMargin?: boolean;
 }
 
-function SwitchField({ label, value, trueText = '是', falseText = '否', noMargin }: SwitchFieldProps) {
+function SwitchField({ label, value, trueText = i18next.t('common:yes'), falseText = i18next.t('common:no'), noMargin }: SwitchFieldProps) {
   if (value === undefined) return null;
   return (
     <div className={cn('flex items-center gap-1 text-[11px]', noMargin ? '' : 'mb-2')}>

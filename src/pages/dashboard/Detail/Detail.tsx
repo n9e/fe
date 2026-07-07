@@ -87,7 +87,7 @@ const builtinParamsToID = (builtinParams) => {
 
 export default function DetailV2(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, hideGoBack, hideGoList } = props;
-  const { t, i18n } = useTranslation('dashboard');
+  const { t } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
   const { dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode, datasourceList } = useContext(CommonStateContext);
@@ -374,7 +374,7 @@ export default function DetailV2(props: IProps) {
                       {
                         type: 'row',
                         id: uuidv4(),
-                        name: i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'Row' : '分组',
+                        name: t('visualizations.row'),
                         collapsed: true,
                       },
                       'row',

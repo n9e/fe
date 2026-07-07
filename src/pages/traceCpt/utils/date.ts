@@ -1,6 +1,7 @@
 import moment, { unitOfTime } from 'moment';
 import _dropWhile from 'lodash/dropWhile';
 import _round from 'lodash/round';
+import i18next from 'i18next';
 
 import { toFloatPrecision } from './number';
 
@@ -18,13 +19,16 @@ export const ONE_DAY = 24 * ONE_HOUR;
 export const DEFAULT_MS_PRECISION = Math.log10(ONE_MILLISECOND);
 
 const UNIT_STEPS: { unit: string; microseconds: number; ofPrevious: number }[] = [
-  { unit: '天', microseconds: ONE_DAY, ofPrevious: 24 },
-  { unit: '小时', microseconds: ONE_HOUR, ofPrevious: 60 },
-  { unit: '分', microseconds: ONE_MINUTE, ofPrevious: 60 },
-  { unit: '秒', microseconds: ONE_SECOND, ofPrevious: 1000 },
+  { unit: 'days', microseconds: ONE_DAY, ofPrevious: 24 },
+  { unit: 'hours', microseconds: ONE_HOUR, ofPrevious: 60 },
+  { unit: 'minutes', microseconds: ONE_MINUTE, ofPrevious: 60 },
+  { unit: 'seconds', microseconds: ONE_SECOND, ofPrevious: 1000 },
   { unit: 'ms', microseconds: ONE_MILLISECOND, ofPrevious: 1000 },
   { unit: 'μs', microseconds: 1, ofPrevious: 1000 },
 ];
+
+// 在调用时（而非模块加载时）取 i18n 文案，保证语言切换后生效
+const getUnitLabel = (unit: string) => (unit === 'ms' || unit === 'μs' ? unit : i18next.t(`trace:time_unit.${unit}`));
 
 const timeUnitToShortTermMapper = {
   milliseconds: 'ms',
@@ -106,13 +110,13 @@ export function formatDuration(duration: number): string {
 
   if (primaryUnit.ofPrevious === 1000) {
     // If the unit is decimal based, display as a decimal
-    return `${_round(_duration / primaryUnit.microseconds, 2)}${primaryUnit.unit}`;
+    return `${_round(_duration / primaryUnit.microseconds, 2)}${getUnitLabel(primaryUnit.unit)}`;
   }
 
   const primaryValue = Math.floor(_duration / primaryUnit.microseconds);
-  const primaryUnitString = `${primaryValue}${primaryUnit.unit}`;
+  const primaryUnitString = `${primaryValue}${getUnitLabel(primaryUnit.unit)}`;
   const secondaryValue = Math.round((_duration / secondaryUnit.microseconds) % primaryUnit.ofPrevious);
-  const secondaryUnitString = `${secondaryValue}${secondaryUnit.unit}`;
+  const secondaryUnitString = `${secondaryValue}${getUnitLabel(secondaryUnit.unit)}`;
   return secondaryValue === 0 ? primaryUnitString : `${primaryUnitString}${secondaryUnitString}`;
 }
 

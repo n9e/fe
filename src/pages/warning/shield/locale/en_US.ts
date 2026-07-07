@@ -1,5 +1,6 @@
 const en_US = {
   title: 'Blackout',
+  edit_missing_params: 'Missing required parameters, unable to edit, please contact the administrator',
   search_placeholder: 'Search by rule name, tag, or blackout reason',
   datasource_type: 'Datasource type',
   datasource_id: 'Datasource',

@@ -48,7 +48,7 @@ interface Props {
 const taskResultCls = 'job-task-result';
 
 const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAlias, initialOutputMode, onOutputOpen, onOutputClose }) => {
-  const { t, i18n } = useTranslation('common');
+  const { t } = useTranslation('common');
   const [activeStatus, setActiveStatus] = useState<string[]>();
   const [data, setData] = useState({} as any);
   const [hosts, setHosts] = useState<HostItem[]>([]);
@@ -268,7 +268,7 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
                 showSizeChanger: true,
                 pageSizeOptions: ['10', '50', '100', '500', '1000'],
                 showTotal: (total) => {
-                  return i18n.language == 'en' ? `Total ${total} items` : `共 ${total} 条`;
+                  return t('common:table.total', { total });
                 },
               } as any
             }

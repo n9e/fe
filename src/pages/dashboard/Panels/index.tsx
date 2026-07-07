@@ -313,7 +313,7 @@ function index(props: IProps) {
                       }}
                       onDeleteClick={() => {
                         Modal.confirm({
-                          title: `是否删除图表：${item.name}`,
+                          title: t('detail.deletePanel_confirm', { name: item.name }),
                           onOk: async () => {
                             setPanels((panels) => {
                               const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
@@ -358,7 +358,7 @@ function index(props: IProps) {
                             });
                         }}
                       >
-                        删除
+                        {t('common:btn.delete')}
                       </a>
                     </div>
                   </div>

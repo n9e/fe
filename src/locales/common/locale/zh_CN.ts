@@ -25,6 +25,10 @@ const zh_CN = {
   and: '且',
   yes: '是',
   no: '否',
+  please_select: '请选择',
+  parse_failed: '无法解析',
+  link: '链接',
+  content_limit_size_msg: '配置不能超过 {{num}} 个字符',
   host: {
     tags: '自定义标签',
     tags_tip: '用户在页面配置的标签，会追加到此机器上报的时序数据中',
