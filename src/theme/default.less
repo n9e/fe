@@ -164,7 +164,11 @@ mark {
 }
 
 .best-looking-scroll {
+  --best-looking-scrollbar-thumb: color-mix(in srgb, var(--fc-text-1) 22%, transparent);
+
   overflow: auto; // 隐藏滚动条
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 
   &::-webkit-scrollbar {
     width: 6px; // 竖向滚动条宽度
@@ -173,23 +177,28 @@ mark {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1); // 增加透明度
+    background-color: transparent;
     border-radius: 3px;
+    transition: background-color 0.2s ease;
     visibility: hidden;
   }
 
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
   &:hover {
+    scrollbar-color: var(--best-looking-scrollbar-thumb) transparent;
+
     &::-webkit-scrollbar {
       visibility: visible;
     }
 
     &::-webkit-scrollbar-thumb {
+      background-color: var(--best-looking-scrollbar-thumb);
       visibility: visible;
     }
-  }
-
-  &::-webkit-scrollbar-corner {
-    background-color: transparent;
   }
 }
 
