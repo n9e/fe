@@ -72,6 +72,35 @@ export default function index() {
           </Form.Item>
         </Col>
         <Col span={12}>
+          <Form.Item label={t('panel.options.legend.sortBy')} name={[...namePrefix, 'sortBy']} tooltip={t('panel.options.legend.sortBy_tip')} hidden={displayMode === 'hidden'}>
+            <Select allowClear placeholder={t('panel.options.legend.sortBy_tip')}>
+              {_.map(tableColumn, (item) => {
+                return (
+                  <Select.Option key={item} value={item}>
+                    {t(`panel.options.legend.${item}`)}
+                  </Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label={t('panel.options.legend.sortDir')} name={[...namePrefix, 'sortDir']} initialValue='asc' hidden={displayMode === 'hidden'}>
+            <Select
+              options={[
+                {
+                  label: t('panel.options.legend.sortDirAsc'),
+                  value: 'asc',
+                },
+                {
+                  label: t('panel.options.legend.sortDirDesc'),
+                  value: 'desc',
+                },
+              ]}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
           <Form.Item label={t('panel.options.legend.behaviour.label')} name={[...namePrefix, 'behaviour']} initialValue='showItem' hidden={displayMode === 'hidden'}>
             <Select
               options={[

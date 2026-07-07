@@ -143,13 +143,28 @@ export default function index(props: Props) {
     if (defaultFormValuesControl?.isInited) {
       const datasourceValue = form.getFieldValue('datasourceValue');
       const queryValues = form.getFieldValue('query');
-      setOrganizeFields(
-        getOrganizeFieldsFromLocalstorage({
-          datasourceValue,
-          database: queryValues?.database,
-          table: queryValues?.table,
-        }),
-      );
+
+      // 优先使用 URL 传入的 organizeFields
+      const urlOrganizeFields = queryValues?.organizeFields;
+      if (urlOrganizeFields && _.isArray(urlOrganizeFields) && urlOrganizeFields.length > 0) {
+        setOrganizeFields(urlOrganizeFields);
+        setOrganizeFieldsToLocalstorage(
+          {
+            datasourceValue,
+            database: queryValues?.database,
+            table: queryValues?.table,
+          },
+          urlOrganizeFields,
+        );
+      } else {
+        setOrganizeFields(
+          getOrganizeFieldsFromLocalstorage({
+            datasourceValue,
+            database: queryValues?.database,
+            table: queryValues?.table,
+          }),
+        );
+      }
     }
   }, [defaultFormValuesControl?.isInited]);
 

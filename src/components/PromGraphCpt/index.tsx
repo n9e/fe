@@ -64,6 +64,7 @@ interface IProps {
   promQLInputTooltip?: string;
   extra?: React.ReactElement;
   showExportButton?: boolean; // 是否显示导出按钮
+  refetchOnZoom?: boolean;
 }
 
 const TabPane = Tabs.TabPane;
@@ -98,6 +99,7 @@ export default function index(props: IProps) {
     extra,
     defaultRange,
     showExportButton,
+    refetchOnZoom = false,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
@@ -292,6 +294,7 @@ export default function index(props: IProps) {
                 graphStandardOptionsType={graphStandardOptionsType}
                 graphStandardOptionsPlacement={graphStandardOptionsPlacement}
                 defaultUnit={defaultUnit}
+                refetchOnZoom={refetchOnZoom}
               />
             </Panel>
           </TabPane>

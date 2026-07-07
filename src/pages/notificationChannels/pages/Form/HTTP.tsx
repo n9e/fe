@@ -121,7 +121,7 @@ export default function HTTP() {
           <InputNumber min={0} />
         </Form.Item>
         <Form.Item label={t('http_request_config.retry_times')} name={[...names, 'retry_times']}>
-          <InputNumber min={0} />
+          <InputNumber min={1} />
         </Form.Item>
         <Form.Item label={t('http_request_config.retry_interval')} name={[...names, 'retry_interval']}>
           <InputNumber min={0} />

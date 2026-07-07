@@ -20,9 +20,13 @@ import { i18nInit } from './i18n'; // loaded and initialized first
 import App from './App';
 import { I18nextProvider } from 'react-i18next';
 import { initTheme } from './utils/darkMode';
+import { initFlashcatFrom } from './utils/flashcatFrom';
 
 // 在页面渲染前初始化主题，避免样式闪烁
 initTheme();
+
+// 指向官网/Flashduty 的链接统一携带 from=n9e-user 渠道参数
+initFlashcatFrom();
 
 ReactDOM.render(
   <I18nextProvider i18n={i18nInit}>

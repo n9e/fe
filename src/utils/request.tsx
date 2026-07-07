@@ -9,12 +9,21 @@ import i18next from 'i18next';
 import { basePrefix } from '@/App';
 import ErrorWithDetail from '@/components/ErrorWithDetail';
 
+const getErrorStatus = (error: any) => {
+  return error?.response?.status ?? error?.status;
+};
+
+const isServiceUnavailableError = (error: any) => {
+  const status = getErrorStatus(error);
+  return status >= 500 && status < 600;
+};
+
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
 const errorHandler = (error: ResponseError<any>): Response => {
   // 忽略掉 setting getter-only property "data" 的错误
   // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
   if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"' && !Request.isCancel(error)) {
-    if (error.request.options.sourcePathname !== location.pathname) {
+    if (error.request?.options?.sourcePathname && error.request.options.sourcePathname !== location.pathname) {
       throw error;
     }
     // @ts-ignore
@@ -26,7 +35,7 @@ const errorHandler = (error: ResponseError<any>): Response => {
     }
     // 暂时认定只有开启 silence 的时候才需要传递 error 详情以便更加精确的处理错误
     // @ts-ignore
-    if (error.silence) {
+    if (error.silence || isServiceUnavailableError(error)) {
       throw error;
     } else {
       throw new Error(error.message);
@@ -144,6 +153,7 @@ request.interceptors.response.use(
                 silence: options.silence,
                 data,
                 response,
+                status,
               };
             }
           } else {
@@ -157,6 +167,7 @@ request.interceptors.response.use(
                 silence: options.silence,
                 data,
                 response,
+                status,
               };
             }
           }
@@ -208,9 +219,13 @@ request.interceptors.response.use(
             return data;
           });
       }
-    } else if ([502, 503, 504].includes(status)) {
+    } else if (status >= 500 && status < 600) {
       throw {
+        name: i18next.t('common:request_fail_msg'),
         message: i18next.t('common:request_fail_msg'),
+        silence: options.silence,
+        response,
+        status,
       };
     } else {
       return response
@@ -235,6 +250,8 @@ request.interceptors.response.use(
           throw {
             ...errObj,
             silence: options.silence,
+            response,
+            status,
           };
         });
     }
