@@ -1,4 +1,17 @@
 const zh_HK = {
+  detail: {
+    start_time: '開始時間',
+    duration: '耗時',
+    depth: '深度',
+    total: '總共',
+  },
+  chart: {
+    start_time: '發生時間',
+    duration: '持續時間',
+    span_count: '數量',
+    duration_axis: '耗時',
+    time_axis: '時間',
+  },
   title: '即時查詢',
   dependencies: '拓撲分析',
   mode: {

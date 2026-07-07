@@ -1,4 +1,17 @@
 const ru_RU = {
+  detail: {
+    start_time: 'Время начала',
+    duration: 'Длительность',
+    depth: 'Глубина',
+    total: 'Всего',
+  },
+  chart: {
+    start_time: 'Время',
+    duration: 'Длительность',
+    span_count: 'Кол-во span',
+    duration_axis: 'Длительность',
+    time_axis: 'Время',
+  },
   title: 'Быстрый запрос',
   dependencies: 'Топология',
   mode: {

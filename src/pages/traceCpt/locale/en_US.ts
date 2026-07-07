@@ -1,4 +1,17 @@
 const en_US = {
+  detail: {
+    start_time: 'Start time',
+    duration: 'Duration',
+    depth: 'Depth',
+    total: 'Total',
+  },
+  chart: {
+    start_time: 'Start time',
+    duration: 'Duration',
+    span_count: 'Spans',
+    duration_axis: 'Duration',
+    time_axis: 'Time',
+  },
   title: 'Explorer',
   dependencies: 'Dependencies',
   mode: {
