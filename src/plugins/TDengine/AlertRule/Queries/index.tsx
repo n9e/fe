@@ -80,53 +80,60 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                               <Input />
                             </Form.Item>
                           </InputGroupWithFormItem>
-                          <Input.Group style={{ height: 32, width: 380 }}>
-                            <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
-                            <Form.Item {...field} name={[field.name, 'interval']} noStyle>
-                              <InputNumber disabled={disabled} style={{ width: '100%' }} />
-                            </Form.Item>
-                            <span className='ant-input-group-addon'>
-                              <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
-                                <Select disabled={disabled}>
-                                  <Select.Option value='second'>{t('common:time.second')}</Select.Option>
-                                  <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
-                                  <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
-                                </Select>
-                              </Form.Item>
-                            </span>
-                          </Input.Group>
-                          <SqlTemplates
-                            onSelect={(sql) => {
-                              const queries = _.cloneDeep(form.getFieldValue([...prefixName, 'queries']));
-                              _.set(queries, [field.name, 'query'], sql);
-                              form.setFieldsValue({
-                                rule_config: {
-                                  ...form.getFieldValue('rule_config'),
-                                  queries,
-                                },
-                              });
-                            }}
-                          />
-                          <MetaModal
-                            datasourceValue={datasourceID}
-                            onTreeNodeClick={(nodeData) => {
-                              const queries = _.cloneDeep(form.getFieldValue([...prefixName, 'queries']));
-                              _.set(queries, [field.name, 'query'], `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
-                              if (nodeData.levelType === 'field') {
-                                _.set(queries, [field.name, 'keys'], {
-                                  ...(queries?.[field.name]?.keys || {}),
-                                  metricKey: [nodeData.field],
-                                });
-                              }
-                              form.setFieldsValue({
-                                rule_config: {
-                                  ...form.getFieldValue('rule_config'),
-                                  queries,
-                                },
-                              });
-                            }}
-                          />
                         </div>
+                      </Col>
+                      <Col flex='none'>
+                        <InputGroupWithFormItem
+                          label={t('datasource:es.interval')}
+                          addonAfter={
+                            <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
+                              <Select disabled={disabled}>
+                                <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                                <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                                <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                              </Select>
+                            </Form.Item>
+                          }
+                        >
+                          <Form.Item {...field} name={[field.name, 'interval']} noStyle>
+                            <InputNumber disabled={disabled} style={{ width: 80 }} />
+                          </Form.Item>
+                        </InputGroupWithFormItem>
+                      </Col>
+                      <Col flex='none'>
+                        <SqlTemplates
+                          onSelect={(sql) => {
+                            const queries = _.cloneDeep(form.getFieldValue([...prefixName, 'queries']));
+                            _.set(queries, [field.name, 'query'], sql);
+                            form.setFieldsValue({
+                              rule_config: {
+                                ...form.getFieldValue('rule_config'),
+                                queries,
+                              },
+                            });
+                          }}
+                        />
+                      </Col>
+                      <Col flex='none'>
+                        <MetaModal
+                          datasourceValue={datasourceID}
+                          onTreeNodeClick={(nodeData) => {
+                            const queries = _.cloneDeep(form.getFieldValue([...prefixName, 'queries']));
+                            _.set(queries, [field.name, 'query'], `select * from ${nodeData.database}.${nodeData.table} where _ts >= $from and _ts < $to`);
+                            if (nodeData.levelType === 'field') {
+                              _.set(queries, [field.name, 'keys'], {
+                                ...(queries?.[field.name]?.keys || {}),
+                                metricKey: [nodeData.field],
+                              });
+                            }
+                            form.setFieldsValue({
+                              rule_config: {
+                                ...form.getFieldValue('rule_config'),
+                                queries,
+                              },
+                            });
+                          }}
+                        />
                       </Col>
                     </Row>
                   </CardContainerHeader>

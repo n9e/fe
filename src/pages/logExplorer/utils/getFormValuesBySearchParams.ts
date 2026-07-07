@@ -9,7 +9,7 @@ import { isMathString, IRawTimeRange } from '@/components/TimeRangePicker';
  * 从 URL query 中获取 filter
  * 存在 query || query_string 时直接作为 filter 值
  * 否则排查掉 data_source_name, data_source_id, index_name, timestamp, index_pattern 之后的参数合并为 filter
- * 合并后的 filter 为 AND 关系
+ * 合并后的 filter 为 AND 关系（2026-07-07 起废弃）
  */
 
 const getESFilterByQuery = (query: { [index: string]: string | null }) => {
@@ -19,35 +19,37 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
   } else if (query?.query_string) {
     return query?.query_string;
   } else {
+    return '';
+    // 2026-07-07 废弃，注释掉一下逻辑
     // @deprecated 2024-11-26 未来会废弃，后面标准化为 query
-    const filtersArr: string[] = [];
-    const validParmas = _.omit(query, [
-      'data_source_name',
-      'data_source_id',
-      'index',
-      'index_name',
-      'date_field',
-      'timestamp',
-      'index_pattern',
-      'start',
-      'end',
-      'mode',
-      'syntax',
-      'query',
-      '__execute__',
-      'filters',
-      'allow_hide_system_indices',
-      'labelKey',
-      'valueKey',
-      'sql',
-      'sqlVizType',
-    ]);
-    _.forEach(validParmas, (value, key) => {
-      if (value) {
-        filtersArr.push(`${key}:"${value}"`);
-      }
-    });
-    return _.join(filtersArr, ' AND ');
+    // const filtersArr: string[] = [];
+    // const validParmas = _.omit(query, [
+    //   'data_source_name',
+    //   'data_source_id',
+    //   'index',
+    //   'index_name',
+    //   'date_field',
+    //   'timestamp',
+    //   'index_pattern',
+    //   'start',
+    //   'end',
+    //   'mode',
+    //   'syntax',
+    //   'query',
+    //   '__execute__',
+    //   'filters',
+    //   'allow_hide_system_indices',
+    //   'labelKey',
+    //   'valueKey',
+    //   'sql',
+    //   'sqlVizType',
+    // ]);
+    // _.forEach(validParmas, (value, key) => {
+    //   if (value) {
+    //     filtersArr.push(`${key}:"${value}"`);
+    //   }
+    // });
+    // return _.join(filtersArr, ' AND ');
   }
 };
 
