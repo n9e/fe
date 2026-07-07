@@ -131,7 +131,6 @@ const en_US = {
     disable: 'Disable',
   },
   types_select_placeholder: 'Type',
-  delete_disable_first: 'The current type is not disabled and cannot be deleted',
   types: {
     flashduty: 'FlashDuty',
     callback: 'Callback',
@@ -160,6 +159,5 @@ const en_US = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
-启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;

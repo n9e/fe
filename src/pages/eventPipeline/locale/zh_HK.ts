@@ -297,7 +297,6 @@ const zh_HK = {
       width: '圖片寬度',
     },
   },
-启用状态下不可删除: '啟用狀態下不可刪除',
 };
 
 export default zh_HK;

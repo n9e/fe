@@ -41,6 +41,5 @@ const zh_CN = {
       },
     },
   },
-启用状态下不可删除: '启用状态下不可删除',
 };
 export default zh_CN;

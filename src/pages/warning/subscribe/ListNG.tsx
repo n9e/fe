@@ -423,7 +423,7 @@ const Subscribe = (props: Props) => {
                     text: t('common:btn.delete'),
                     danger: true,
                     disabled: record.disabled === 0,
-                    tooltip: record.disabled === 0 ? t("启用状态下不可删除") : undefined,
+                    tooltip: record.disabled === 0 ? t('common:delete_disable_first') : undefined,
                     onClick: () => {
                       confirm({
                         title: t('common:confirm.delete'),

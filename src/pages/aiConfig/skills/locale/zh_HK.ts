@@ -97,7 +97,6 @@ const zh_HK = {
     abort_confirm_ok: '取消更新',
     abort_confirm_cancel: '關閉',
   },
-启用状态下不可删除: '啟用狀態下不可刪除',
 };
 
 export default zh_HK;

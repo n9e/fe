@@ -427,6 +427,5 @@ const zh_CN = {
     collapse_expand_all: '展开全部',
     collapse_collapse_all: '收起全部',
   },
-  启用状态下不可删除: '启用状态下不可删除',
 };
 export default zh_CN;

@@ -57,6 +57,5 @@ const en_US = {
   ibex: {
     title: 'Ibex settings',
   },
-启用状态下不可删除: 'Cannot delete while enabled. Disable first.',
 };
 export default en_US;
