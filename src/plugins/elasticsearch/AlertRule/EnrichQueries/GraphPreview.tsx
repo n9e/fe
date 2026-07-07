@@ -96,6 +96,8 @@ export default function GraphPreview({ datasourceValue, disabled }: IProps) {
             <Space>
               <InputGroupWithFormItem label={t('common:datasource.name')}>
                 <Select
+                  showSearch
+                  optionFilterProp='label'
                   className='w-[200px]'
                   value={datasourceId}
                   onChange={setDatasourceId}

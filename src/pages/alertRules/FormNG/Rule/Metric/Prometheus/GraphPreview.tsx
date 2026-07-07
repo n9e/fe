@@ -41,6 +41,8 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
             <Space>
               <InputGroupWithFormItem label={t('common:datasource.name')}>
                 <Select
+                  showSearch
+                  optionFilterProp='label'
                   value={datasourceId}
                   onChange={(value) => {
                     setDatasourceId(value);
@@ -54,7 +56,7 @@ export default function GraphPreview({ form, fieldName, promqlFieldName = 'prom_
                   })}
                 />
               </InputGroupWithFormItem>
-              <div ref={controlsPortalDomNodeRef} />
+              <div ref={controlsPortalDomNodeRef} className='text-[0] leading-none' />
             </Space>
           </div>
         }

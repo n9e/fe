@@ -1,19 +1,3 @@
-/*
- * Copyright 2022 Nightingale Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import moment from 'moment';
@@ -143,51 +127,48 @@ export default function Table(props: IProps) {
   });
   const [unit, setUnit] = useState(defaultUnit || 'sishort');
   const controls = (
-    <div className='prom-graph-table-controls'>
-      <Space>
-        <Input.Group>
-          <span className='ant-input-group-addon'>{t('promGraphCpt:time')}</span>
-          <DatePicker
-            value={timestamp ? moment.unix(timestamp) : undefined}
+    <Space>
+      <InputGroupWithFormItem label={t('promGraphCpt:time')}>
+        <DatePicker
+          value={timestamp ? moment.unix(timestamp) : undefined}
+          onChange={(val) => {
+            setTimestamp(val ? val.unix() : undefined);
+          }}
+          showTime
+          placeholder={t('promGraphCpt:evaluation_time')}
+          getPopupContainer={() => document.body}
+          disabledDate={(current) => current > moment()}
+        />
+      </InputGroupWithFormItem>
+      {showUnitPicker && (
+        <InputGroupWithFormItem label={t('promGraphCpt:unit')}>
+          <UnitPicker
+            dropdownMatchSelectWidth={false}
+            value={unit}
             onChange={(val) => {
-              setTimestamp(val ? val.unix() : undefined);
+              setUnit(val);
             }}
-            showTime
-            placeholder={t('promGraphCpt:evaluation_time')}
-            getPopupContainer={() => document.body}
-            disabledDate={(current) => current > moment()}
           />
-        </Input.Group>
-        {showUnitPicker && (
-          <InputGroupWithFormItem label={t('promGraphCpt:unit')}>
-            <UnitPicker
-              dropdownMatchSelectWidth={false}
-              value={unit}
-              onChange={(val) => {
-                setUnit(val);
-              }}
-            />
-          </InputGroupWithFormItem>
-        )}
-        {showExportButton && (
-          <Button
-            disabled={_.isEmpty(data.result)}
-            onClick={() => {
-              json2csv(data.result, (err, csv) => {
-                if (err) {
-                  message.error(t('common:error.export'));
-                  console.warn('导出 prometheus 即时查询 Table 数据失败', err);
-                } else {
-                  downloadFile(csv, `prometheus_explorer_table_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
-                }
-              });
-            }}
-          >
-            {t('common:btn.export_csv')}
-          </Button>
-        )}
-      </Space>
-    </div>
+        </InputGroupWithFormItem>
+      )}
+      {showExportButton && (
+        <Button
+          disabled={_.isEmpty(data.result)}
+          onClick={() => {
+            json2csv(data.result, (err, csv) => {
+              if (err) {
+                message.error(t('common:error.export'));
+                console.warn('导出 prometheus 即时查询 Table 数据失败', err);
+              } else {
+                downloadFile(csv, `prometheus_explorer_table_${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`);
+              }
+            });
+          }}
+        >
+          {t('common:btn.export_csv')}
+        </Button>
+      )}
+    </Space>
   );
 
   useEffect(() => {
