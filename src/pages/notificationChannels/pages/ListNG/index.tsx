@@ -13,7 +13,7 @@ import { Import, Export } from '@/components/ExportImport';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { updateByColumn } from '@/components/EnhancedTable/columns';
 
-import { NS, NOTIFICATION_CHANNEL_TYPES } from '../../constants';
+import { NS, getNotificationChannelTypes } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
 import { ChannelItem } from '../../types';
 
@@ -27,12 +27,13 @@ const FILTER_SESSION_STORAGE_KEY = 'notification-channels-filter';
 
 export default function index() {
   const { t } = useTranslation(NS);
+  const channelTypes = getNotificationChannelTypes();
   const pagination = usePagination({ PAGESIZE_KEY: 'notification-channels-pagesize' });
 
   const [typesSearch, setTypesSearch] = useState('');
   const filteredTypes = useMemo(() => {
-    const types = {} as typeof NOTIFICATION_CHANNEL_TYPES;
-    map(NOTIFICATION_CHANNEL_TYPES, (val, key) => {
+    const types = {} as typeof channelTypes;
+    map(channelTypes, (val, key) => {
       if (includes(upperCase(key), upperCase(typesSearch)) || includes(upperCase(t(`types.${key}`)), upperCase(typesSearch))) {
         types[key] = val;
       }
@@ -171,7 +172,7 @@ export default function index() {
                   dropdownMatchSelectWidth={false}
                   showSearch
                   optionFilterProp='labelSearch'
-                  options={map(NOTIFICATION_CHANNEL_TYPES, (value, key) => {
+                  options={map(channelTypes, (value, key) => {
                     return {
                       label: (
                         <div className='flex items-center gap-2'>
@@ -260,7 +261,7 @@ export default function index() {
                     width: 180,
                     ellipsis: true,
                     render: (val) => {
-                      const typeConfig = NOTIFICATION_CHANNEL_TYPES[val];
+                      const typeConfig = channelTypes[val];
                       return (
                         <div className='flex min-w-0 items-center gap-2'>
                           {typeConfig ? <img height={16} src={typeConfig?.logo} alt={val} /> : null}

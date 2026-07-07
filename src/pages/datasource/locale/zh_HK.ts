@@ -47,6 +47,8 @@ const zh_HK = {
     auth: '授權',
     username: '使用者名稱',
     password: '密碼',
+    access_key_id_placeholder: '請輸入AccessKey ID',
+    access_key_secret_placeholder: '請輸入AccessKey Secret',
     skip_ssl_verify: '跳過 SSL 驗證',
     skip_tls_verify: '跳過 TLS 驗證',
     yes: '是',

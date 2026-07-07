@@ -47,6 +47,8 @@ const ja_JP = {
     auth: '認証',
     username: 'ユーザー名',
     password: 'パスワード',
+    access_key_id_placeholder: 'AccessKey ID を入力してください',
+    access_key_secret_placeholder: 'AccessKey Secret を入力してください',
     skip_ssl_verify: 'SSL検証をスキップ',
     skip_tls_verify: 'TLS検証をスキップ',
     yes: 'はい',

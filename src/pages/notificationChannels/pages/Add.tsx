@@ -6,7 +6,7 @@ import queryString from 'query-string';
 
 import PageLayout from '@/components/pageLayout';
 
-import { NS, NOTIFICATION_CHANNEL_TYPES, DEFAULT_VALUES } from '../constants';
+import { NS, getNotificationChannelTypes, DEFAULT_VALUES } from '../constants';
 import { postItems } from '../services';
 import { ChannelItem } from '../types';
 import { normalizeFormValues, normalizeInitialValues } from '../utils/normalizeValues';
@@ -17,7 +17,8 @@ export default function Add() {
   const history = useHistory();
   const query = queryString.parse(useLocation().search);
   const ident = (query.ident as string) || 'callback';
-  const identConfig = NOTIFICATION_CHANNEL_TYPES[ident] ? NOTIFICATION_CHANNEL_TYPES[ident] : NOTIFICATION_CHANNEL_TYPES['callback'];
+  const channelTypes = getNotificationChannelTypes();
+  const identConfig = channelTypes[ident] ? channelTypes[ident] : channelTypes['callback'];
 
   return (
     <PageLayout

@@ -47,6 +47,8 @@ const ru_RU = {
     auth: 'Авторизация',
     username: 'Имя пользователя',
     password: 'Пароль',
+    access_key_id_placeholder: 'Введите AccessKey ID',
+    access_key_secret_placeholder: 'Введите AccessKey Secret',
     skip_ssl_verify: 'Пропустить проверку SSL',
     yes: 'Да',
     no: 'Нет',

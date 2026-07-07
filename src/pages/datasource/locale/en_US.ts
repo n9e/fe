@@ -47,6 +47,8 @@ const en_US = {
     auth: 'Auth',
     username: 'User',
     password: 'Password',
+    access_key_id_placeholder: 'Please enter AccessKey ID',
+    access_key_secret_placeholder: 'Please enter AccessKey Secret',
     skip_ssl_verify: 'Skip SSL verify',
     skip_tls_verify: 'Skip TLS verify',
     yes: 'Yes',
