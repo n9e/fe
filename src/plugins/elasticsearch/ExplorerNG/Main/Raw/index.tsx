@@ -445,6 +445,7 @@ export default function index(props: Props) {
               showTopNSettings
               showPageLoadMode
               options={options}
+              timeColumnWidth={240}
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}
               filterFields={(fieldKeys) => {
