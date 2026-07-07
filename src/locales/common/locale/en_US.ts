@@ -4,7 +4,7 @@ const en_US = {
     '403_admin': 'Administrators: ',
     '403_back': 'Back to previous page',
     404: 'The page you visited does not exist!',
-    '404_btn': 'Back to home',
+    '404_btn': 'Return to home',
   },
   business_group: 'Business group',
   business_groups: 'Business groups',
