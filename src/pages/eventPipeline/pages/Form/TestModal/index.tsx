@@ -14,11 +14,12 @@ interface Props {
   config: any;
   size?: 'small' | 'middle' | 'large';
   disabled?: boolean;
+  namePath?: (string | number)[];
 }
 
 export default function TestModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { type, config, size, disabled } = props;
+  const { type, config, size, disabled, namePath } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [eventID, setEventID] = useState<number>();
   const [data, setData] = useState<{
@@ -37,9 +38,16 @@ export default function TestModal(props: Props) {
         disabled={disabled}
         size={size}
         onClick={() => {
-          form.validateFields().then(() => {
+          if (namePath) {
+            // 在 4.21.0 是不支持的，等于直接打开弹窗，不校验表单
+            // form.validateFields([namePath]).then(() => {
             setVisible(true);
-          });
+            // });
+          } else {
+            form.validateFields().then(() => {
+              setVisible(true);
+            });
+          }
         }}
       >
         {t('common:btn.test')}
