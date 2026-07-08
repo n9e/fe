@@ -95,6 +95,7 @@ const en_US = {
         allFields: 'Available Fields',
         showFields: 'Show Fields',
         showFields_empty: 'Logs display all fields by default',
+        tip: 'Only fields {{fields}} are displayed. Click the settings icon to show all fields',
       },
       jsonSettings: {
         title: 'JSON Settings',

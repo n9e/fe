@@ -6,7 +6,7 @@ const zh_CN = {
   url: 'MCP Server URL',
   enabled: '启用',
   disabled: '停用',
-  cannot_delete_when_enabled: '启用状态的 LLM 配置无法删除',
+  cannot_delete_when_enabled: '启用状态的 MCP Server 无法删除',
 
   form: {
     add_title: '新增 MCP Server',

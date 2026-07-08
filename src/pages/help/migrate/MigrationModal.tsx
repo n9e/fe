@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import { Modal, Button, Form, Input, Select, Space, message } from 'antd';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { CommonStateContext } from '@/App';
@@ -13,6 +14,7 @@ interface MigrationModalProps {
 }
 
 export default function MigrationModal(props: MigrationModalProps) {
+  const { t } = useTranslation('migrationDashboard');
   const { boards, visible, setVisible, onOk } = props;
   const [migrating, setMigrating] = useState(false);
   const [form] = Form.useForm();
@@ -20,7 +22,7 @@ export default function MigrationModal(props: MigrationModalProps) {
 
   return (
     <Modal
-      title='迁移设置'
+      title={t('modal.title')}
       destroyOnClose
       maskClosable={false}
       closable={false}
@@ -33,7 +35,7 @@ export default function MigrationModal(props: MigrationModalProps) {
             setVisible(false);
           }}
         >
-          取消
+          {t('common:btn.cancel')}
         </Button>,
         <Button
           key='submit'
@@ -53,33 +55,33 @@ export default function MigrationModal(props: MigrationModalProps) {
               Promise.all(requests).then(() => {
                 setVisible(false);
                 setMigrating(false);
-                message.success('迁移成功');
+                message.success(t('modal.success'));
                 onOk();
               });
             });
           }}
         >
-          迁移
+          {t('migrate')}
         </Button>,
       ]}
     >
       <Form form={form}>
-        <div style={{ marginBottom: 10 }}>数据源变量设置</div>
+        <div style={{ marginBottom: 10 }}>{t('modal.datasource_variable')}</div>
         <div>
-          <InputGroupWithFormItem label='变量名称'>
-            <Form.Item name='name' rules={[{ required: true, message: '请填写变量名称' }]} initialValue='datasource'>
+          <InputGroupWithFormItem label={t('modal.variable_name')}>
+            <Form.Item name='name' rules={[{ required: true, message: t('modal.variable_name_required') }]} initialValue='datasource'>
               <Input />
             </Form.Item>
           </InputGroupWithFormItem>
         </div>
         <div>
           <Space>
-            <InputGroupWithFormItem label='数据源类型'>
+            <InputGroupWithFormItem label={t('modal.datasource_type')}>
               <Form.Item>
                 <Input disabled value='Prometheus' />
               </Form.Item>
             </InputGroupWithFormItem>
-            <InputGroupWithFormItem label='数据源默认值'>
+            <InputGroupWithFormItem label={t('modal.datasource_default')}>
               <Form.Item name='datasourceDefaultValue'>
                 <Select allowClear style={{ width: 168 }}>
                   {_.map(groupedDatasourceList.prometheus, (item) => {

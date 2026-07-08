@@ -141,7 +141,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                             {func !== 'count' && func !== 'rawData' && (
                               <Col span={12}>
                                 <InputGroupWithFormItem label='Field key' labelWidth={80}>
-                                  <Form.Item {...field} name={[field.name, 'field']} rules={[{ required: true, message: '必须填写 field key' }]}>
+                                  <Form.Item {...field} name={[field.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
                                     <AutoComplete
                                       options={_.filter(fieldsOptions, (item) => {
                                         if (search) {

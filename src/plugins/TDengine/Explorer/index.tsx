@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { Resizable } from 're-resizable';
 import { Button, Tabs } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
+import { useTranslation } from 'react-i18next';
 import AdvancedSettings from '../components/AdvancedSettings';
 import QueryBuilder from './QueryBuilder';
 import Meta from '../components/Meta';
@@ -30,6 +31,7 @@ export const setDefaultValues = (form: FormInstance) => {
 };
 
 export default function Prometheus(props: IProps) {
+  const { t } = useTranslation('db_tdengine');
   const { datasourceValue, form } = props;
   const [mode, setMode] = useState<string>('table');
   const [refreshFlag, setRefreshFlag] = useState<string>();
@@ -91,7 +93,7 @@ export default function Prometheus(props: IProps) {
                   setRefreshFlag(_.uniqueId('refreshFlag_'));
                 }}
               >
-                查询
+                {t('query.execute')}
               </Button>
             }
             setRefreshFlag={setRefreshFlag}

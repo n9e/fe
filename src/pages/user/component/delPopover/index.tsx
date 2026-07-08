@@ -23,21 +23,21 @@ import './index.less';
 import { useTranslation } from 'react-i18next';
 
 const DelPopover: React.FC<PopoverProps> = (props: PopoverProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('user');
   const { userId, teamId, memberId, userType, onClose, isIcon } = props;
   const [visible, setVisible] = useState<boolean>(false);
 
   const handleDelete = () => {
     if (userType === 'user' && userId) {
       deleteUser(userId).then((_) => {
-        message.success(t('用户删除成功'));
+        message.success(t('user.delete_success'));
         onClose();
       });
     }
 
     if (userType === 'team' && teamId) {
       deleteTeam(teamId).then((_) => {
-        message.success(t('团队删除成功'));
+        message.success(t('team.delete_success'));
         onClose();
       });
     }
@@ -47,7 +47,7 @@ const DelPopover: React.FC<PopoverProps> = (props: PopoverProps) => {
         ids: [memberId],
       };
       deleteMember(teamId, params).then((_) => {
-        message.success(t('成员删除成功'));
+        message.success(t('team.delete_member_success'));
         onClose();
       });
     }
@@ -65,13 +65,13 @@ const DelPopover: React.FC<PopoverProps> = (props: PopoverProps) => {
               color: '#E6A23C',
             }}
           />
-          {t('确定要删除么？')}
+          {t('delete_confirm')}
           <div className='popover-content'>
             <Button type='primary' size='small' onClick={() => handleDelete()}>
-              {t('确定')}
+              {t('common:btn.ok')}
             </Button>
             <Button size='small' onClick={() => setVisible(false)}>
-              {t('取消')}
+              {t('common:btn.cancel')}
             </Button>
           </div>
         </div>
@@ -88,7 +88,7 @@ const DelPopover: React.FC<PopoverProps> = (props: PopoverProps) => {
         />
       ) : (
         <Button className='oper-name' type='text' danger onClick={() => setVisible(true)}>
-          {t('删除')}
+          {t('common:btn.delete')}
         </Button>
       )}
     </Popover>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import CodeMirror from '@/components/CodeMirror';
 import _ from 'lodash';
+import i18next from 'i18next';
 import { previewTemplate } from '../../../services';
 import './style.less';
 
@@ -20,7 +21,7 @@ export const generateRules = (limitSize) => {
     {
       validator: (_field, value) => {
         if (_.size(value) > limitSize) {
-          return Promise.reject(`配置不能超过 ${limitSize} 个字符`);
+          return Promise.reject(i18next.t('common:content_limit_size_msg', { num: limitSize }));
         }
         return Promise.resolve();
       },

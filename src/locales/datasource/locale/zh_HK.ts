@@ -26,6 +26,9 @@ const zh_HK = {
     value: '數值提取',
     func: '函數',
     funcField: '字段名',
+    histogram: {
+      interval: '步長',
+    },
     terms: {
       label: '根據指定 field 分組',
       more: '高階設定',

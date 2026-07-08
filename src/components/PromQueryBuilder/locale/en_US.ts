@@ -3,5 +3,6 @@ const en_US = {
   metric: 'Metric',
   labelFilter: 'Label Filter',
   addOperations: 'Add Operations',
+  noParams: 'No parameters',
 };
 export default en_US;

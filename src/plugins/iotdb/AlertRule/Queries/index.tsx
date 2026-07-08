@@ -75,7 +75,7 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                             <Tooltip
                               title={
                                 <span>
-                                  IoTDB 查询语法可参考
+                                  {t('query.query_tip1')}
                                   <a className='pl-2' target='_blank' href='https://iotdb.apache.org/UserGuide/latest-Table/API/SQL-Manual.html'>
                                     {t('query.query_tip2')}
                                   </a>

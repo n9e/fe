@@ -17,14 +17,18 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import queryString from 'query-string';
-import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { IS_PLUS } from '@/utils/constant';
 import { authCallbackCustom } from '@/services/login';
 import { AccessTokenKey } from '@/utils/constant';
 import { getSsoConfig } from '@/services/login';
+import { NAME_SPACE } from '@/pages/login/constants';
+
+import CallbackFailed from './CallbackFailed';
 
 export default function Custom() {
+  const { t } = useTranslation(NAME_SPACE);
   const location = useLocation();
   const query = queryString.parse(location.search);
   const [err, setErr] = useState<string>();
@@ -78,7 +82,7 @@ export default function Custom() {
                   setErr(e?.message ?? 'Unknown error');
                 }
               } else {
-                setErr('不被支持的第三方登录方式');
+                setErr(t('callback.unsupported_type'));
               }
             };
             window.addEventListener('message', messageHandler);
@@ -104,7 +108,7 @@ export default function Custom() {
                 setErr(res.message);
               });
           } else {
-            setErr('不被支持的第三方登录方式');
+            setErr(t('callback.unsupported_type'));
           }
         })
         .catch((res) => {
@@ -112,7 +116,7 @@ export default function Custom() {
         });
     } else {
       // 非 PLUS 版本不支持，就直接显示错误信息
-      setErr('只支持 Plus 版本');
+      setErr(t('callback.plus_only'));
     }
 
     return () => {
@@ -126,20 +130,10 @@ export default function Custom() {
     return (
       <div className='flex justify-center items-center h-full text-center'>
         <div>
-          <h1>第三方登录验证中, 请稍候...</h1>
+          <h1>{t('callback.verifying')}</h1>
         </div>
       </div>
     );
 
-  return (
-    <div className='flex justify-center items-center h-full text-center'>
-      <div>
-        <h1>第三方登录验证失败</h1>
-        <div className='text-sm'>{err}</div>
-        <div>
-          <Link to='/login'>返回登录页</Link>
-        </div>
-      </div>
-    </div>
-  );
+  return <CallbackFailed err={err} />;
 }

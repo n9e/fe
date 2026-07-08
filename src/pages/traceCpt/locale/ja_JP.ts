@@ -1,4 +1,23 @@
 const ja_JP = {
+  detail: {
+    start_time: '開始時刻',
+    duration: '所要時間',
+    depth: '深さ',
+    total: '合計',
+  },
+  time_unit: {
+    days: '日',
+    hours: '時間',
+    minutes: '分',
+    seconds: '秒',
+  },
+  chart: {
+    start_time: '発生時刻',
+    duration: '継続時間',
+    span_count: '件数',
+    duration_axis: '所要時間',
+    time_axis: '時刻',
+  },
   title: "即時クエリ",
   dependencies: "拓扑分析",
   mode: {

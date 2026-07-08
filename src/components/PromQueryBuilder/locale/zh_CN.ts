@@ -3,5 +3,6 @@ const zh_CN = {
   metric: '指标',
   labelFilter: '标签过滤',
   addOperations: '添加操作',
+  noParams: '无参数',
 };
 export default zh_CN;

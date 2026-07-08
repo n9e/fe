@@ -35,6 +35,7 @@ const en_US = {
   agent_version: 'Agent version',
   note: 'Note',
   unknown_tip: 'The display of machine meta information requires categraf version to be higher than 0.2.35',
+  view_related_collects: 'View related collect configurations',
   organize_columns: {
     title: 'Organize columns',
   },

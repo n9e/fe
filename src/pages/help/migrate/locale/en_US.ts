@@ -1,4 +1,13 @@
 const en_US = {
+  modal: {
+    title: 'Migration settings',
+    success: 'Migration succeeded',
+    datasource_variable: 'Datasource variable settings',
+    variable_name: 'Variable name',
+    variable_name_required: 'Variable name is required',
+    datasource_type: 'Datasource type',
+    datasource_default: 'Default datasource',
+  },
   title: 'Dashboard Migration',
   migrate: 'Migration',
   help: `

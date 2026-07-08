@@ -198,7 +198,7 @@ export default function EventsModal(props: Props) {
               },
             },
             {
-              title: t('rule_name'),
+              title: t('AlertCurEvents:rule_name'),
               dataIndex: 'rule_name',
               render(title, { id, tags }) {
                 const content =

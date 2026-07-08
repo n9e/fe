@@ -48,6 +48,7 @@ const zh_HK = {
       check_all: '全選',
     },
     copy_json: '複製 JSON',
+    parse_failed: '無法解析',
   },
   datasource: {},
   alert: {

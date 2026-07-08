@@ -25,7 +25,7 @@ export default function TipsBox(props: IProps) {
     <div className='tipsBox' style={{ ...customStyle }}>
       {showTitle && (
         <div className='tipsTitle'>
-          <div>{t('说明提示')}</div>
+          <div>{t('common:tips_title')}</div>
           {showFold && (
             <div
               onClick={() => {

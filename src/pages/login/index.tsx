@@ -77,7 +77,7 @@ export default function Login() {
     feishu: 'Feishu',
   });
   const [showcaptcha, setShowcaptcha] = useState(false);
-  const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || '中文');
+  const [curLanguage, setCurLanguage] = useState(i18nMap[i18n.language] || i18nMap.zh_CN);
   const verifyimgRef = useRef<HTMLImageElement>(null);
   const captchaidRef = useRef<string>();
   const refreshCaptcha = () => {
@@ -86,7 +86,7 @@ export default function Login() {
         verifyimgRef.current.src = res.dat.imgdata;
         captchaidRef.current = res.dat.captchaid;
       } else {
-        message.warning('获取验证码失败');
+        message.warning(t('get_captcha_failed'));
       }
     });
   };
@@ -114,7 +114,7 @@ export default function Login() {
             verifyimgRef.current.src = res.dat.imgdata;
             captchaidRef.current = res.dat.captchaid;
           } else {
-            message.warning('获取验证码失败');
+            message.warning(t('get_captcha_failed'));
           }
         });
       }
@@ -231,7 +231,7 @@ export default function Login() {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
-                            message.warning('没有配置 OIDC 登录地址！');
+                            message.warning(t('sso_no_url', { name: 'OIDC' }));
                           }
                         });
                       }}
@@ -247,7 +247,7 @@ export default function Login() {
                             window.location.href = res.dat.redirect;
                             localStorage.setItem('CAS_state', res.dat.state);
                           } else {
-                            message.warning('没有配置 CAS 登录地址！');
+                            message.warning(t('sso_no_url', { name: 'CAS' }));
                           }
                         });
                       }}
@@ -262,7 +262,7 @@ export default function Login() {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
-                            message.warning('没有配置 OAuth 登录地址！');
+                            message.warning(t('sso_no_url', { name: 'OAuth' }));
                           }
                         });
                       }}
@@ -277,7 +277,7 @@ export default function Login() {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
-                            message.warning('没有配置 custom 登录地址！');
+                            message.warning(t('sso_no_url', { name: 'custom' }));
                           }
                         });
                       }}
@@ -292,7 +292,7 @@ export default function Login() {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
-                            message.warning('没有配置 dingTalk 登录地址！');
+                            message.warning(t('sso_no_url', { name: 'dingTalk' }));
                           }
                         });
                       }}
@@ -307,7 +307,7 @@ export default function Login() {
                           if (res.dat) {
                             window.location.href = res.dat;
                           } else {
-                            message.warning('没有配置 feishu 登录地址！');
+                            message.warning(t('sso_no_url', { name: 'feishu' }));
                           }
                         });
                       }}

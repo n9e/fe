@@ -1,4 +1,6 @@
 const zh_HK = {
+  请输入: '請輸入',
+  请选择: '請選擇',
   tip3: '（僅當變量後緊跟 & 或位於 URL 末尾時可用），也支持${key3}（可用於任意位置）',
   '跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）':
     '跳轉到儀表盤，並支持固定變量（用於下鑽鏈接傳入的變量和儀表盤篩選變量不能對齊的場景，比如儀表盤有3個篩選變量，但是下鑽鏈接只傳入1個變量）',
@@ -53,8 +55,7 @@ const zh_HK = {
       timeRangeSeconds: '起止時間（單位秒）：基本變量基礎上追加參數 $__time_format__=unix',
       timeRangeUtc: '起止時間（UTC 格式）：基本變量基礎上追加參數 $__time_format__=utc',
       timeRangeFormat: '起止時間（格式化）：基本變量基礎上追加參數 $__time_format__=YYYY-MM-DD HH:mm:ss',
-      timeRangeOffset:
-        '起止時間（時間偏移）：基本變量基礎上追加參數 $__start_time_margin__=-100000 和 $__end_time_margin__=100000，單位毫秒，正數向前偏移，負數向後偏移',
+      timeRangeOffset: '起止時間（時間偏移）：基本變量基礎上追加參數 $__start_time_margin__=-100000 和 $__end_time_margin__=100000，單位毫秒，正數向前偏移，負數向後偏移',
       localUrl: '本系統地址：$local_url，包含了協議和域名，如 “https://flashcat.cloud”',
       localProtocol: '本系統協議：$local_protocol，如 “http:” 或 “https:”',
       localDomain: '本系統的域名：$local_domain，如 flashcat.cloud',
@@ -120,6 +121,8 @@ const zh_HK = {
       },
     },
   },
+  '可为指定字段设置链接。': '可為指定字段設置連結。',
+  参数映射表: '參數映射表',
 };
 
 export default zh_HK;

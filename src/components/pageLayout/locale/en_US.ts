@@ -7,6 +7,7 @@ const en_US = {
   docsCenter: 'Docs center',
   viewDemo: 'View demo',
   submit_issue: 'Submit issue',
+  book_meeting: 'Book a meeting',
   theme: {
     title: 'Theme Setting',
     title_help: 'Setting only for current user',

@@ -25,6 +25,7 @@ const en_US = {
   document_empty: 'No document content',
   search_placeholder: 'Search by keyword',
   builtin: 'Builtin',
+  description: 'Description',
   frontmatter_title: 'Metadata',
 
   form: {
@@ -46,6 +47,8 @@ const en_US = {
     metadata: 'Metadata',
     metadata_key_value_required: 'Required',
     add_metadata: 'Add metadata',
+    formatted_tip: 'Formatted',
+    code_tip: 'Raw',
   },
 
   git: {

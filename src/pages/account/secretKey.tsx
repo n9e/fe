@@ -19,7 +19,7 @@ import { Table, Tag, Space, Button, message } from 'antd';
 import { GetSecret, UpdateSecret, CreateSecret } from '@/services/account';
 import { useTranslation } from 'react-i18next';
 export default function SecretKey() {
-  const { t } = useTranslation();
+  const { t } = useTranslation('account');
   const [data, setData] = useState([]); // 为什么不写useEffect就会一直请求   因为GetSecret后一直重绘，本方法就一直调用
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function SecretKey() {
     await UpdateSecret({
       token,
     });
-    message.success(t('Token更新成功'));
+    message.success(t('token.updateSuccess'));
     getSecret();
   };
 
@@ -43,7 +43,7 @@ export default function SecretKey() {
 
   const createSecret = async () => {
     await CreateSecret();
-    message.success(t('Token创建成功'));
+    message.success(t('token.createSuccess'));
     getSecret();
   };
 
@@ -53,11 +53,11 @@ export default function SecretKey() {
       dataIndex: 'token',
     },
     {
-      title: t('操作'),
+      title: t('common:btn.operations'),
       key: 'action',
       render: (text, record) => (
         <Space size='middle'>
-          <a onClick={() => updateSecret(record.token)}>{t('重新生成')}</a>
+          <a onClick={() => updateSecret(record.token)}>{t('token.regenerate')}</a>
         </Space>
       ),
     },
@@ -72,7 +72,7 @@ export default function SecretKey() {
             marginTop: 10,
           }}
         >
-          {t('生成')}
+          {t('token.generate')}
         </Button>
       )}
     </>

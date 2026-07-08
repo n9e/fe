@@ -32,8 +32,8 @@ export enum IsRecovery {
 }
 
 export enum warningLabel {
-  Enable = '已触发',
-  UnEnable = '已屏蔽',
+  Enable = 'triggered',
+  UnEnable = 'muted',
 }
 
 export type warningEventItem = {

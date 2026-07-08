@@ -73,7 +73,7 @@ export default function Builder(props: IProps) {
                       <Form.Item
                         {...field}
                         name={[field.name, 'value']}
-                        rules={validateDisabled ? [] : [{ required: true, message: t('db_aliyunSLS:trigger.value_msg') }]}
+                        rules={validateDisabled ? [] : [{ required: true, message: t('alertRules:trigger.value_msg') }]}
                       >
                         <InputNumber style={{ width: 200 }} disabled={disabled} />
                       </Form.Item>

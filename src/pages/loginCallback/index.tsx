@@ -19,6 +19,7 @@ import { useLocation } from 'react-router';
 import queryString from 'query-string';
 import { authCallback } from '@/services/login';
 import { AccessTokenKey } from '@/utils/constant';
+import CallbackFailed from './CallbackFailed';
 
 export default function index() {
   const location = useLocation();
@@ -49,23 +50,5 @@ export default function index() {
       });
   }, []);
   if (err === undefined) return null;
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        textAlign: 'center',
-      }}
-    >
-      <div>
-        <h1>第三方登录验证失败</h1>
-        <div style={{ fontSize: 14 }}>{err}</div>
-        <div>
-          <a href='/login'>返回登录页</a>
-        </div>
-      </div>
-    </div>
-  );
+  return <CallbackFailed err={err} />;
 }

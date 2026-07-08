@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Select } from 'antd';
 import { CheckCircleOutlined, ProfileOutlined } from '@ant-design/icons';
+import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { NAME_SPACE } from '../constants';
 import ContentCard from './ContentCard';
@@ -51,10 +52,14 @@ function getDefaultCandidateIds(candidates?: IFormSelectCandidate[]) {
 
 function buildContentText(params: { busiGroupName?: string; datasourceName?: string; teamNames?: string[] }) {
   const { busiGroupName, datasourceName, teamNames } = params;
+  const isZh = i18next.language?.startsWith('zh');
+  const colon = isZh ? '：' : ': ';
+  const separator = isZh ? '、' : ', ';
+  const label = (key: string) => i18next.t(`${NAME_SPACE}:form_select.${key}`);
   const parts: string[] = [];
-  if (busiGroupName) parts.push(`业务组：${busiGroupName}`);
-  if (datasourceName) parts.push(`数据源：${datasourceName}`);
-  if (teamNames?.length) parts.push(`团队：${teamNames.join('、')}`);
+  if (busiGroupName) parts.push(`${label('busi_group')}${colon}${busiGroupName}`);
+  if (datasourceName) parts.push(`${label('datasource')}${colon}${datasourceName}`);
+  if (teamNames?.length) parts.push(`${label('team')}${colon}${teamNames.join(separator)}`);
   return parts.join(' ');
 }
 

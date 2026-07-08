@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { Input, Form, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form/Form';
+import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import SqlTemplates from '../components/SqlTemplates';
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function QueryBuilder(props: Props) {
+  const { t } = useTranslation('db_tdengine');
   const { form, extra, setRefreshFlag } = props;
 
   return (
@@ -22,13 +24,13 @@ export default function QueryBuilder(props: Props) {
         <InputGroupWithFormItem
           label={
             <span>
-              查询条件{' '}
+              {t('query.query')}{' '}
               <Tooltip
                 title={
                   <span>
-                    TDengine 查询语法可参考
+                    {t('query.query_tip1')}
                     <a target='_blank' href='https://docs.taosdata.com/basic/query/'>
-                      官方文档
+                      {t('query.query_tip2')}
                     </a>
                   </span>
                 }

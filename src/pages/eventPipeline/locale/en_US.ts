@@ -97,6 +97,7 @@ const en_US = {
       inhibit_qd: 'Event inhibit by query data',
       annotation_qd: 'Annotation enrich by query data',
       event_recover: 'Event recover',
+      alert_shot: 'Alert screenshot',
     },
   },
   label_enrich: {
@@ -194,6 +195,8 @@ The summary should be concise and help O&M staff quickly understand the alert si
     match_attribute_keys: 'Attributes',
     match_attribute_keys_required: 'Attributes cannot be empty',
     keys_at_least_one_required: 'At least one label or attribute is required',
+    labels_conflict: 'Label {{label}} has different values, cannot inhibit',
+    attributes_conflict: 'Attribute {{attribute}} has different values, cannot inhibit',
     preview:
       'Rule preview: When "<b>New alert: {{newAlertLabelsAttrs}}</b>" and there exists "<b>Active alert: {{activeAlertLabelsAttrs}}</b>" within the past "<b>{{duration}} seconds</b>", and both are the same in "<b>{{matchLabelsAttrs}}</b>", suppress notifications for the new alert.',
     labels_filter: {

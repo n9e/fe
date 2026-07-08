@@ -16,6 +16,7 @@ const zh_HK = {
     targets: '機器列表',
     collects: '采集規則',
     network_devices: '網絡設備',
+    mobile_device: '移動設備',
     dashboards: '儀表盤',
     reports: '巡檢報告',
     heartbeat: '撥測',

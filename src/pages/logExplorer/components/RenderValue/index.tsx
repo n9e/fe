@@ -80,7 +80,7 @@ export default function RenderValue(props: IProps) {
         >
           <Space>
             <ExistsIcon />
-            {t('log.field_actions.exists')}
+            {t('field_actions.exists')}
           </Space>
         </li>
       }

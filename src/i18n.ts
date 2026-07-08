@@ -20,9 +20,32 @@ import _ from 'lodash';
 import { withTolgee, Tolgee, I18nextPlugin, DevTools } from '@tolgee/i18next';
 import { InContextTools } from '@tolgee/web/tools';
 
+import { syncMomentLocale } from './utils/momentLocale';
+
 const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
+
+// 缺失 key 时的回退链：繁体优先回退简体；其他语言（ja/ru 等）优先回退英文，最终兜底 zh_CN
+const fallbackLng = {
+  zh_HK: ['zh_CN'],
+  default: ['en_US', 'zh_CN'],
+};
+
+function detectBrowserLanguage() {
+  const browserLanguages = navigator.languages || [navigator.language];
+  for (const browserLanguage of browserLanguages) {
+    const lang = _.toLower(browserLanguage);
+    if (_.startsWith(lang, 'zh')) {
+      return _.includes(['zh-tw', 'zh-hk', 'zh-mo'], lang) ? 'zh_HK' : 'zh_CN';
+    }
+    if (_.startsWith(lang, 'ja')) return 'ja_JP';
+    if (_.startsWith(lang, 'ru')) return 'ru_RU';
+    if (_.startsWith(lang, 'en')) return 'en_US';
+  }
+  return 'en_US';
+}
+
 const localStorageLanguage = localStorage.getItem('language');
-let language = 'zh_CN';
+let language = detectBrowserLanguage();
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
   language = localStorageLanguage;
 }
@@ -110,6 +133,7 @@ if (!!API_URL && !!API_KEY) {
   i18nInit = withTolgee(i18n, tolgee).use(initReactI18next);
   i18nInit.init({
     lng: language,
+    fallbackLng,
     interpolation: {
       escapeValue: false,
     },
@@ -122,6 +146,7 @@ if (!!API_URL && !!API_KEY) {
   i18nInit = i18n.use(initReactI18next);
   i18nInit.init({
     lng: language,
+    fallbackLng,
     resources: getI18nextTranslations(),
     interpolation: {
       escapeValue: false,
@@ -132,5 +157,8 @@ if (!!API_URL && !!API_KEY) {
     },
   });
 }
+
+syncMomentLocale(language);
+i18n.on('languageChanged', syncMomentLocale);
 
 export { i18nInit, tolgee };

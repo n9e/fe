@@ -112,7 +112,7 @@ export default function LabelsValues(props: IProps) {
                 {expaned.filters ? <UpOutlined /> : <DownOutlined />}
               </Space>
             </div>
-            {expaned.filters && <div className='n9e-metric-views-filters'>{filtersStr ? filtersStr : '暂无数据'}</div>}
+            {expaned.filters && <div className='n9e-metric-views-filters'>{filtersStr ? filtersStr : t('common:nodata')}</div>}
           </div>
         )}
         {!_.isEmpty(dynamicLabels) && (

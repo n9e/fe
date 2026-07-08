@@ -1,4 +1,23 @@
 const zh_CN = {
+  detail: {
+    start_time: '开始时间',
+    duration: '耗时',
+    depth: '深度',
+    total: '总共',
+  },
+  time_unit: {
+    days: '天',
+    hours: '小时',
+    minutes: '分',
+    seconds: '秒',
+  },
+  chart: {
+    start_time: '发生时间',
+    duration: '持续时间',
+    span_count: '数量',
+    duration_axis: '耗时',
+    time_axis: '时间',
+  },
   title: '即时查询',
   dependencies: '拓扑分析',
   mode: {

@@ -26,6 +26,9 @@ const zh_CN = {
     value: '数值提取',
     func: '函数',
     funcField: '字段名',
+    histogram: {
+      interval: '步长',
+    },
     terms: {
       label: '根据指定 field 分组',
       more: '高级设置',

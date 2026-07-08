@@ -52,13 +52,13 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
                         <Form.Item
                           label={
                             <span>
-                              查询条件{' '}
+                              {t('db_tdengine:query.query')}{' '}
                               <Tooltip
                                 title={
                                   <span>
-                                    TDengine 查询语法可参考
+                                    {t('db_tdengine:query.query_tip1')}
                                     <a target='_blank' href='https://docs.taosdata.com/basic/query/'>
-                                      官方文档
+                                      {t('db_tdengine:query.query_tip2')}
                                     </a>
                                   </span>
                                 }

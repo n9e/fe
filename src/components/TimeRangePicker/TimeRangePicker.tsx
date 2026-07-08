@@ -33,11 +33,9 @@ import { getTimeZoneInfo } from '@/utils/datetime/timezones';
 
 import { isValid, describeTimeRange, valueAsString, isMathString, parseRange } from './utils';
 import { IRawTimeRange, ITimeRangePickerProps } from './types';
-import { rangeOptions, momentLocaleZhCN } from './config';
+import { rangeOptions } from './config';
 import TimeZonePicker from './TimeZonePicker';
 import './style.less';
-
-moment.locale('zh-cn', momentLocaleZhCN);
 
 const localeMap = {
   zh_CN: zh_CN,

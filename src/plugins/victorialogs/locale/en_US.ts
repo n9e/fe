@@ -48,6 +48,7 @@ const en_US = {
       check_all: 'Check all',
     },
     copy_json: 'Copy JSON',
+    parse_failed: 'Failed to parse',
   },
   datasource: {},
   alert: {

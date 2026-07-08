@@ -7,6 +7,7 @@ const ja_JP = {
   docsCenter: 'ドキュメントセンター',
   viewDemo: 'デモを見る',
   submit_issue: '問題を提出',
+  book_meeting: 'ミーティングを予約',
   theme: {
     title: 'テーマ設定',
     title_help: '設定は現在のユーザーにのみ適用されます',

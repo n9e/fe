@@ -1,4 +1,5 @@
 const zh_CN = {
+  delete_confirm: '确定要删除么？',
   user: {
     title: '用户管理',
     search_placeholder: '用户名、邮箱或手机',
@@ -7,6 +8,7 @@ const zh_CN = {
     busi_groups: '业务组',
     user_groups: '团队',
     last_active_time: '最后活跃时间',
+    delete_success: '用户删除成功',
   },
   team: {
     title: '团队管理',
@@ -18,6 +20,8 @@ const zh_CN = {
     empty: '没有与您相关的团队，请先',
     name: '团队名称',
     add_member_selected: '已选择 {{num}} 项',
+    delete_success: '团队删除成功',
+    delete_member_success: '成员删除成功',
   },
   business: {
     title: '业务组管理',

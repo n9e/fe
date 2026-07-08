@@ -48,6 +48,7 @@ const zh_CN = {
       check_all: '全选',
     },
     copy_json: '复制 JSON',
+    parse_failed: '无法解析',
   },
   datasource: {},
   alert: {

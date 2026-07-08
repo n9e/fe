@@ -82,7 +82,7 @@ export default function Token(props: Props) {
               >
                 <Space>
                   <PlusCircleOutlined />
-                  {t('log.field_actions.and')}
+                  {t('field_actions.and')}
                 </Space>
               </li>
               <li
@@ -98,7 +98,7 @@ export default function Token(props: Props) {
               >
                 <Space>
                   <MinusCircleOutlined />
-                  {t('log.field_actions.not')}
+                  {t('field_actions.not')}
                 </Space>
               </li>
             </>

@@ -40,7 +40,7 @@ export default function LinkBuilder({
   mappingParamsArr?: ILogMappingParams[];
 }) {
   const [form] = Form.useForm();
-  const { t } = useTranslation();
+  const { t } = useTranslation('inputEnlarge');
 
   const handleClose = () => {
     onClose();
@@ -69,7 +69,7 @@ export default function LinkBuilder({
   };
 
   return (
-    <Modal width={600} bodyStyle={{ padding: 12 }} title={t('跳转链接生成器')} visible={visible} okText={t('生成')} onCancel={handleClose} onOk={handleOk}>
+    <Modal width={600} bodyStyle={{ padding: 12 }} title={t('linkBuilderTip')} visible={visible} okText={t('生成')} onCancel={handleClose} onOk={handleOk}>
       <Form layout='vertical' form={form}>
         <Form.Item label={t('下钻到')} name={['target_type']} initialValue={Type.Custom}>
           <Select style={{ width: '100%' }}>

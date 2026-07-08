@@ -1,5 +1,6 @@
 const en_US = {
   title: 'Site settings',
+  link_icon_url: 'Link icon',
   favicon_url: 'Favicon',
   favicon_url_tip: 'Enter the image resource address, recommended size 32x32',
   login_page_logo_url: 'Login page logo',
