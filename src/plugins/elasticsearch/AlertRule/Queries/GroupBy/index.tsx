@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Row, Col, Button } from 'antd';
+import { Form, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 
 import { getFullFields } from '@/pages/explorer/Elasticsearch/services';
-import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
+import CardContainer from '@/pages/alertRules/FormNG/components/CardContainer';
 
 import Filters from './Filters';
 import Terms from './Terms';
@@ -90,7 +90,7 @@ export default function GroupBy({ prefixField = {}, prefixFieldNames = [], paren
             }}
             icon={<PlusOutlined />}
           >
-            添加 Group By
+            {t('common:btn.add')} Group By
           </Button>
         </div>
       )}
