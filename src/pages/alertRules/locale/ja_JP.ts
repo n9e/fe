@@ -82,6 +82,7 @@ const ja_JP = {
   callbacks_tip: '変数の設定をサポートします。変数の使用方法については、<a>変数参照</a>ドキュメントを参照してください',
   override_global_webhook: 'グローバルコールバックを上書き',
   enrich_queries: {
+    title: '追加クエリ',
     tip: 'アラートがトリガーされると、追加クエリが実行され、結果がイベントの extra_info（フォーマット済み文字列）および extra_info_map（生のキーと値のペア）フィールドに書き込まれます。通知テンプレートでは {{ .ExtraInfo }} または {{ .ExtraInfoMap }} を使用して参照できます',
   },
   override_global_webhook_tip: 'このスイッチをオンにすると、アラートイベントはこのルールのコールバックアドレスのみに送信され、グローバルコールバックアドレスには送信されません',
@@ -300,6 +301,7 @@ const ja_JP = {
   },
   trigger: {
     title: '閾値判定',
+    value_msg: '値を入力してください',
     builder: 'シンプルモード',
     code: '式モード',
     expr_invalid: '式の構文が不正です',

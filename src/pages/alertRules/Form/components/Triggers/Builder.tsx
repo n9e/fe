@@ -75,7 +75,7 @@ export default function Builder(props: IProps) {
                         rules={[
                           {
                             required: true,
-                            message: t('db_aliyunSLS:trigger.value_msg'),
+                            message: t('alertRules:trigger.value_msg'),
                           },
                         ]}
                       >

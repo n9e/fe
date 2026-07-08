@@ -98,7 +98,7 @@ export default function FormNG(props: IProps) {
         tag: 'optional',
       },
     ];
-    return showAdvanced ? allSections : allSections.filter((s) => s.key !== 'advanced');
+    return IS_PLUS && showAdvanced ? allSections : allSections.filter((s) => s.key !== 'advanced');
   }, [i18n.language, showAdvanced]);
 
   const pipelineConfigsRef = React.useRef<PipelineConfigsNGRef>(null);

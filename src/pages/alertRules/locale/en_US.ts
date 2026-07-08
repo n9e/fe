@@ -302,6 +302,7 @@ const en_US = {
   },
   trigger: {
     title: 'Threshold Judgment',
+    value_msg: 'Please enter a value',
     builder: 'Builder',
     code: 'Code',
     expr_invalid: 'Expression syntax is invalid',
@@ -434,6 +435,7 @@ const en_US = {
   },
 
   enrich_queries: {
+    title: 'Enrich Queries',
     tip: "When an alert is triggered, the enrich query will be executed and the results will be written to the event's extra_info (formatted string) and extra_info_map (raw key-value pairs) fields. You can reference them in notification templates using {{ .ExtraInfo }} or {{ .ExtraInfoMap }}",
   },
 };
