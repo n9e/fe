@@ -145,7 +145,6 @@ const ru_RU = {
     disable: 'Отключено',
   },
   types_select_placeholder: 'Тип',
-  delete_disable_first: 'Текущий тип не отключен, удаление невозможно',
   types: {
     flashduty: 'FlashDuty',
     callback: 'Обратный вызов',

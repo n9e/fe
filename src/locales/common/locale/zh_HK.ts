@@ -181,6 +181,7 @@ const zh_HK = {
   enabling: '啟用中',
   disabled: '禁用',
   disabling: '禁用中',
+  delete_disable_first: '啟用狀態下不可刪除',
   select_event: '選擇告警事件',
   click_to_view_doc: '點擊查看文檔',
   format_sql: '格式化 SQL',

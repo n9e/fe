@@ -140,7 +140,6 @@ const zh_HK = {
     disable: '停用',
   },
   types_select_placeholder: '類型',
-  delete_disable_first: '當前類型未禁用，無法刪除',
   types: {
     flashduty: 'FlashDuty',
     callback: '回調',

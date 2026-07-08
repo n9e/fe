@@ -38,6 +38,7 @@ export default function index(props: Props) {
   const datasourceValue = Form.useWatch('datasourceValue', form);
 
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
+  const urlOrganizeFieldsRef = useRef<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
 
   // 聚合粒度设置
@@ -154,21 +155,27 @@ export default function index(props: Props) {
       // 优先使用 URL 传入的 organizeFields
       const urlOrganizeFields = queryValues?.organizeFields;
       if (urlOrganizeFields && _.isArray(urlOrganizeFields) && urlOrganizeFields.length > 0) {
+        urlOrganizeFieldsRef.current = urlOrganizeFields;
         setOrganizeFields(urlOrganizeFields);
-        setOrganizeFieldsToLocalstorage(
-          {
-            datasourceValue,
-            index: queryValues?.index,
-          },
-          urlOrganizeFields,
-        );
+        if (datasourceValue && queryValues?.index) {
+          setOrganizeFieldsToLocalstorage(
+            {
+              datasourceValue,
+              index: queryValues.index,
+            },
+            urlOrganizeFields,
+          );
+        }
       } else {
-        setOrganizeFields(
-          getOrganizeFieldsFromLocalstorage({
-            datasourceValue,
-            index: queryValues?.index,
-          }),
-        );
+        urlOrganizeFieldsRef.current = [];
+        if (datasourceValue && queryValues?.index) {
+          setOrganizeFields(
+            getOrganizeFieldsFromLocalstorage({
+              datasourceValue,
+              index: queryValues.index,
+            }),
+          );
+        }
       }
     }
   }, [defaultFormValuesControl?.isInited]);
@@ -194,6 +201,9 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'keys']} hidden>
           <div />
         </Form.Item>
+        <Form.Item name={['query', 'organizeFields']} hidden>
+          <div />
+        </Form.Item>
         <div className='h-full flex'>
           <SideBar ns={NAME_SPACE}>
             {renderCommonSettings({
@@ -212,17 +222,43 @@ export default function index(props: Props) {
               setOrganizeFields={(value, setLocalstorage = true) => {
                 const datasourceValue = form.getFieldValue('datasourceValue');
                 const queryValues = form.getFieldValue('query');
+                if (setLocalstorage === false && _.isEmpty(value) && !_.isEmpty(urlOrganizeFieldsRef.current)) {
+                  const urlOrganizeFields = urlOrganizeFieldsRef.current;
+                  setOrganizeFields(urlOrganizeFields);
+                  form.setFieldsValue({
+                    query: {
+                      organizeFields: urlOrganizeFields,
+                    },
+                  });
+                  if (datasourceValue && queryValues?.index) {
+                    setOrganizeFieldsToLocalstorage(
+                      {
+                        datasourceValue,
+                        index: queryValues.index,
+                      },
+                      urlOrganizeFields,
+                    );
+                    urlOrganizeFieldsRef.current = [];
+                  }
+                  return;
+                }
                 // 初始化时从本地获取，query、sql 都有可能设置
                 setOrganizeFields(value);
+                form.setFieldsValue({
+                  query: {
+                    organizeFields: value,
+                  },
+                });
                 // 字段列表选择 "显示字段" 时更新本地缓存，这里只更新 query 模式的，sql 模式是在右侧表格设置项里设置的
-                if (setLocalstorage) {
+                if (setLocalstorage && datasourceValue && queryValues?.index) {
                   setOrganizeFieldsToLocalstorage(
                     {
                       datasourceValue,
-                      index: queryValues?.index,
+                      index: queryValues.index,
                     },
                     value,
                   );
+                  urlOrganizeFieldsRef.current = [];
                 }
               }}
               onIndexDataChange={setIndexData}
@@ -241,13 +277,21 @@ export default function index(props: Props) {
                 const datasourceValue = form.getFieldValue('datasourceValue');
                 const queryValues = form.getFieldValue('query');
                 setOrganizeFields(value);
-                setOrganizeFieldsToLocalstorage(
-                  {
-                    datasourceValue,
-                    index: queryValues?.index,
+                form.setFieldsValue({
+                  query: {
+                    organizeFields: value,
                   },
-                  value,
-                );
+                });
+                if (datasourceValue && queryValues?.index) {
+                  setOrganizeFieldsToLocalstorage(
+                    {
+                      datasourceValue,
+                      index: queryValues.index,
+                    },
+                    value,
+                  );
+                  urlOrganizeFieldsRef.current = [];
+                }
               }}
               executeQuery={executeQuery}
               handleValueFilter={handleValueFilter}

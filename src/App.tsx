@@ -22,8 +22,6 @@ import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import TaskOutput from '@/pages/taskOutput';
-import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList, getMenuPerm, getInstallDate } from '@/services/common';
@@ -34,7 +32,6 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 import { getAntdLocale } from '@/utils/antdLocale';
-import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
 import { AiChatProvider, AiChatContainer } from '@/components/AiChatNG';
 import HocRenderer from './components/HocRenderer';
 import HeaderMenu from './components/SideMenu';
@@ -47,6 +44,12 @@ import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatBut
 
 import './App.less';
 import './global.variable.less';
+
+// 顶层路由组件懒加载：SharedDetail 会连带引入事件详情 + 全部数据源插件注册表（近千个模块），
+// 只在 /share/alert-his-events 路由用到，改为懒加载后登录页等页面不再 eager 拉起这些依赖。
+const TaskOutput = React.lazy(() => import('@/pages/taskOutput'));
+const TaskHostOutput = React.lazy(() => import('@/pages/taskOutput/host'));
+const SharedDetail = React.lazy(() => import('@/pages/event/DetailNG/SharedDetail'));
 
 interface IProfile {
   admin?: boolean;
@@ -344,16 +347,18 @@ function App() {
               }}
               basename={basePrefix}
             >
-              <Switch>
-                <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
-                <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
-                <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
-                <>
-                  {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
-                  <Content />
-                  <HocRenderer></HocRenderer>
-                </>
-              </Switch>
+              <React.Suspense fallback={<Spin spinning style={{ width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }} />}>
+                <Switch>
+                  <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
+                  <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
+                  <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
+                  <>
+                    {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
+                    <Content />
+                    <HocRenderer></HocRenderer>
+                  </>
+                </Switch>
+              </React.Suspense>
             </Router>
           </ConfigProvider>
         </CommonStateContext.Provider>

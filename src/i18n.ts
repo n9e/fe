@@ -49,6 +49,12 @@ let language = detectBrowserLanguage();
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
   language = localStorageLanguage;
 }
+// 开发环境仅加载单一语言（见 plugins/vite-plugin-dev-locale），此处需与之对齐，
+// 否则运行时语言与已加载语言不一致会显示成翻译 key。可用 VITE_DEV_LOCALE 指定，默认 zh_CN。
+if (import.meta.env.DEV) {
+  const devLocale = import.meta.env.VITE_DEV_LOCALE as string | undefined;
+  language = devLocale && _.includes(languages, devLocale) ? devLocale : 'zh_CN';
+}
 
 function getTranslations() {
   const translations: any = import.meta.glob('../src/**/{locale,locales}/index.(ts|js)', { eager: true });

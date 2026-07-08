@@ -332,7 +332,7 @@ export default function index() {
                       key: 'delete',
                       danger: true,
                       disabled: record.enable === true,
-                      tooltip: record.enable === true ? t('delete_disable_first') : undefined,
+                      tooltip: record.enable === true ? t('common:delete_disable_first') : undefined,
                       icon: 'delete',
                       text: t('common:btn.delete'),
                       onClick: () => {

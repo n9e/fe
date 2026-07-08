@@ -1,16 +1,14 @@
 import React from 'react';
 
 import { PATH as agentPath } from './agents/constants';
-import AgentList from './agents/pages/List';
-
 import { PATH as llmConfigPath } from './llmConfigs/constants';
-import LLMConfigList from './llmConfigs/pages/List';
-
 import { PATH as skillPath } from './skills/constants';
-import SkillList from './skills/pages/List';
-
 import { PATH as mcpServerPath } from './mcpServers/constants';
-import MCPServerList from './mcpServers/pages/List';
+
+const AgentList = React.lazy(() => import('./agents/pages/List'));
+const LLMConfigList = React.lazy(() => import('./llmConfigs/pages/List'));
+const SkillList = React.lazy(() => import('./skills/pages/List'));
+const MCPServerList = React.lazy(() => import('./mcpServers/pages/List'));
 
 export default {
   routes: [

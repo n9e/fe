@@ -2,9 +2,10 @@ import React from 'react';
 
 import './locale';
 import { NS } from './constants';
-import ListNG from './pages/ListNG';
-import Add from './pages/Add';
-import Edit from './pages/Edit';
+
+const ListNG = React.lazy(() => import('./pages/ListNG'));
+const Add = React.lazy(() => import('./pages/Add'));
+const Edit = React.lazy(() => import('./pages/Edit'));
 
 export default {
   routes: [
