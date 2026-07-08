@@ -15,7 +15,7 @@ import Builder from '../Builder';
 import { inferMetricTimeseriesKeys } from '../utils/logsQL';
 import MainMoreOperations from '../components/MainMoreOperations';
 import Metric from './Metric';
-import QueryInput from './QueryInput';
+import QueryInput, { QueryInputHandle } from './QueryInput';
 import Raw from './Raw';
 
 interface Props {
@@ -36,6 +36,7 @@ export default function Main(props: Props) {
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => localStorage.getItem(BUILDER_PINNED_CACHE_KEY) === 'true');
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+  const queryInputRef = React.useRef<QueryInputHandle>(null);
   const tableSelector = {
     antd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`,
     rgd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table`,
@@ -44,6 +45,12 @@ export default function Main(props: Props) {
   useEffect(() => {
     setExecuteLoading(false);
   }, [mode]);
+
+  const executeCommittedQuery = () => {
+    queryInputRef.current?.commit();
+    setIsContentChangedDotVisible(false);
+    executeQuery();
+  };
 
   return (
     <div className='flex flex-col h-full'>
@@ -72,6 +79,7 @@ export default function Main(props: Props) {
           </Col>
           <Col flex='auto' style={{ minWidth: 0 }}>
             <QueryInput
+              ref={queryInputRef}
               executeQuery={() => {
                 setIsContentChangedDotVisible(false);
                 executeQuery();
@@ -90,8 +98,7 @@ export default function Main(props: Props) {
             <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
               <TimeRangePicker
                 onChange={() => {
-                  setIsContentChangedDotVisible(false);
-                  executeQuery();
+                  executeCommittedQuery();
                 }}
                 showMillisecond
               />
@@ -103,8 +110,7 @@ export default function Main(props: Props) {
                 type='primary'
                 loading={executeLoading}
                 onClick={() => {
-                  setIsContentChangedDotVisible(false);
-                  executeQuery();
+                  executeCommittedQuery();
                 }}
               >
                 {t(`${logExplorerNS}:execute`)}
@@ -187,9 +193,9 @@ export default function Main(props: Props) {
           <div />
         </Form.Item>
         {mode === 'metric' ? (
-          <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
+          <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
         ) : (
-          <Raw tableSelector={tableSelector} indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
+          <Raw tableSelector={tableSelector} indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
         )}
       </div>
     </div>

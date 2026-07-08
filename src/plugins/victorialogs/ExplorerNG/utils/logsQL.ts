@@ -5,6 +5,10 @@ import { VictoriaLogsAggregation, VictoriaLogsFilter, VictoriaLogsMetricBuilderS
 const AGGREGATION_PIPE_NAMES = ['stats', 'uniq', 'rate', 'histogram'];
 const RAW_EXPLORER_COMPATIBLE_PIPE_NAMES = ['filter', 'extract', 'replace', 'json', 'pack_json', 'unpack_json'];
 
+interface RenderLogsQLOptions {
+  multiline?: boolean;
+}
+
 export function splitLogsQLPipes(input: string) {
   const parts: string[] = [];
   let current = '';
@@ -62,8 +66,17 @@ export function getPipeName(pipe: string) {
   return _.split(lower, /\s+/, 1)[0];
 }
 
-function joinPipes(parts: string[]) {
-  return _.join(_.filter(_.map(parts, _.trim), Boolean), ' | ');
+function joinPipes(parts: string[], options?: RenderLogsQLOptions) {
+  const normalized = _.filter(_.map(parts, _.trim), Boolean);
+  if (!options?.multiline) return _.join(normalized, ' | ');
+  const [head, ...tail] = normalized;
+  return _.join([head, ..._.map(tail, (pipe) => `| ${pipe}`)], '\n');
+}
+
+export function formatLogsQL(query: string) {
+  const parts = splitLogsQLPipes(query);
+  if (parts.length <= 1) return _.trim(query);
+  return joinPipes(parts, { multiline: true });
 }
 
 function isAggregationPipe(pipe: string) {
@@ -190,7 +203,7 @@ function renderOrderBy(orderBy?: VictoriaLogsOrderBy[]) {
   return `sort by (${_.join(items, ', ')})`;
 }
 
-export function renderMetricLogsQL(builder?: VictoriaLogsMetricBuilderState) {
+export function renderMetricLogsQL(builder?: VictoriaLogsMetricBuilderState, options?: RenderLogsQLOptions) {
   const baseQuery = renderLogsQL({ filters: builder?.filters || [] });
   const aggregations = _.compact(_.map(builder?.aggregations || [], renderAggregation));
   if (_.isEmpty(aggregations)) return baseQuery;
@@ -200,5 +213,5 @@ export function renderMetricLogsQL(builder?: VictoriaLogsMetricBuilderState) {
   if (builder?.limit) {
     pipes.push(`limit ${builder.limit}`);
   }
-  return joinPipes([baseQuery, ..._.compact(pipes)]);
+  return joinPipes([baseQuery, ..._.compact(pipes)], options);
 }

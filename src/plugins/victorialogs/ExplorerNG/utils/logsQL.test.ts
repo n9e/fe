@@ -1,4 +1,4 @@
-import { classifyExplorerMode, getPipeName, splitLogsQLPipes } from './logsQL';
+import { classifyExplorerMode, formatLogsQL, getPipeName, renderMetricLogsQL, splitLogsQLPipes } from './logsQL';
 
 describe('VictoriaLogs ExplorerNG logsQL utils', () => {
   test.each([
@@ -39,5 +39,29 @@ describe('VictoriaLogs ExplorerNG logsQL utils', () => {
     expect(getPipeName('  stats  by (level) count()')).toBe('stats');
     expect(getPipeName('SORT BY (_time desc)')).toBe('sort by');
     expect(getPipeName('filter level:error')).toBe('filter');
+  });
+
+  it('formats LogsQL pipes without splitting quoted or nested pipes', () => {
+    const query = formatLogsQL('level:"a|b" | filter status:500 | stats by (domain) count(if(level="x|y")) as count | limit 10');
+
+    expect(query).toBe(['level:"a|b"', '| filter status:500', '| stats by (domain) count(if(level="x|y")) as count', '| limit 10'].join('\n'));
+    expect(classifyExplorerMode(query)).toBe('metric');
+  });
+
+  it('renders multiline metric LogsQL from builder state', () => {
+    const query = renderMetricLogsQL(
+      {
+        filters: [{ id: '1', field: 'level', op: 'eq', value: 'error' }],
+        aggregations: [{ id: '2', func: 'count', alias: 'count' }],
+        groupBy: ['domain'],
+        orderBy: [{ id: '3', field: 'count', direction: 'desc' }],
+        limit: 10,
+        vizType: 'table',
+      },
+      { multiline: true },
+    );
+
+    expect(query).toBe(['level:error', '| stats by (domain) count() as count', '| sort by (count desc)', '| limit 10'].join('\n'));
+    expect(classifyExplorerMode(query)).toBe('metric');
   });
 });

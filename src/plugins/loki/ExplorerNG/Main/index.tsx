@@ -1,20 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Badge, Button, Col, Form, Row, Segmented } from 'antd';
+import { Badge, Button, Col, Form, InputNumber, Row, Segmented } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../../constants';
-import { BUILDER_PINNED_CACHE_KEY, METRIC_DEFAULT_QUERY, RAW_DEFAULT_QUERY } from '../constants';
+import { BUILDER_PINNED_CACHE_KEY, DEFAULT_RAW_LOG_LIMIT, MAX_RAW_LOG_LIMIT, METRIC_DEFAULT_QUERY, RAW_DEFAULT_QUERY } from '../constants';
 import { Field } from '../types';
 import Builder from '../Builder';
 import MainMoreOperations from '../components/MainMoreOperations';
 import Metric from './Metric';
-import QueryInput from './QueryInput';
+import QueryInput, { QueryInputHandle } from './QueryInput';
 import Raw from './Raw';
 
 interface Props {
@@ -34,10 +35,45 @@ export default function Main(props: Props) {
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => localStorage.getItem(BUILDER_PINNED_CACHE_KEY) === 'true');
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+  const queryInputRef = React.useRef<QueryInputHandle>(null);
 
   useEffect(() => {
     setExecuteLoading(false);
   }, [mode]);
+
+  const normalizeLimit = (value?: string | number | null) => {
+    const parsed = _.toNumber(value);
+    if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_RAW_LOG_LIMIT;
+    return Math.max(1, Math.min(Math.floor(parsed), MAX_RAW_LOG_LIMIT));
+  };
+
+  const handleLimitChange = (value?: string | number | null) => {
+    const limit = normalizeLimit(value);
+    const query = form.getFieldValue('query') || {};
+    const builder = query.builder || {};
+    form.setFieldsValue({
+      query: {
+        ...query,
+        limit,
+        builder: builder.raw
+          ? {
+              ...builder,
+              raw: {
+                ...builder.raw,
+                limit,
+              },
+            }
+          : builder,
+      },
+    });
+    setIsContentChangedDotVisible(true);
+  };
+
+  const executeCommittedQuery = () => {
+    queryInputRef.current?.commit();
+    setIsContentChangedDotVisible(false);
+    executeQuery();
+  };
 
   return (
     <div className='flex flex-col h-full'>
@@ -66,6 +102,7 @@ export default function Main(props: Props) {
           </Col>
           <Col flex='auto' style={{ minWidth: 0 }}>
             <QueryInput
+              ref={queryInputRef}
               executeQuery={() => {
                 setIsContentChangedDotVisible(false);
                 executeQuery();
@@ -80,12 +117,20 @@ export default function Main(props: Props) {
               }}
             />
           </Col>
+          {mode === 'raw' && (
+            <Col flex='none'>
+              <InputGroupWithFormItem label={t('builder.limit')}>
+                <Form.Item name={['query', 'limit']} initialValue={DEFAULT_RAW_LOG_LIMIT} noStyle>
+                  <InputNumber className='w-[96px]' min={1} max={MAX_RAW_LOG_LIMIT} onChange={handleLimitChange} />
+                </Form.Item>
+              </InputGroupWithFormItem>
+            </Col>
+          )}
           <Col flex='none'>
             <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
               <TimeRangePicker
                 onChange={() => {
-                  setIsContentChangedDotVisible(false);
-                  executeQuery();
+                  executeCommittedQuery();
                 }}
                 showMillisecond
               />
@@ -97,8 +142,7 @@ export default function Main(props: Props) {
                 type='primary'
                 loading={executeLoading}
                 onClick={() => {
-                  setIsContentChangedDotVisible(false);
-                  executeQuery();
+                  executeCommittedQuery();
                 }}
               >
                 {t(`${logExplorerNS}:execute`)}
@@ -127,6 +171,7 @@ export default function Main(props: Props) {
           }}
           onPreviewQL={(query, values) => {
             const oldQuery = form.getFieldValue('query') || {};
+            const nextLimit = mode === 'raw' ? values.raw?.limit || oldQuery.limit : oldQuery.limit;
             form.setFieldsValue({
               query: {
                 ...oldQuery,
@@ -139,7 +184,7 @@ export default function Main(props: Props) {
                 builderStatus: 'synced',
                 querySource: 'builder',
                 vizType: values.vizType || oldQuery.vizType,
-                limit: values.raw?.limit || values.metric?.limit || oldQuery.limit,
+                limit: nextLimit,
               },
             });
             setIsContentChangedDotVisible(true);
@@ -147,6 +192,7 @@ export default function Main(props: Props) {
           }}
           onExecute={(query, values) => {
             const oldQuery = form.getFieldValue('query') || {};
+            const nextLimit = mode === 'raw' ? values.raw?.limit || oldQuery.limit : oldQuery.limit;
             form.setFieldsValue({
               query: {
                 ...oldQuery,
@@ -159,7 +205,7 @@ export default function Main(props: Props) {
                 builderStatus: 'synced',
                 querySource: 'builder',
                 vizType: values.vizType || oldQuery.vizType,
-                limit: values.raw?.limit || values.metric?.limit || oldQuery.limit,
+                limit: nextLimit,
               },
             });
             executeQuery();
@@ -179,9 +225,9 @@ export default function Main(props: Props) {
           <div />
         </Form.Item>
         {mode === 'metric' ? (
-          <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
+          <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
         ) : (
-          <Raw indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
+          <Raw indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
         )}
       </div>
     </div>

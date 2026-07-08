@@ -788,7 +788,7 @@ export default function Builder(props: Props) {
     if (mode === 'metric') {
       const metric = values as VictoriaLogsMetricBuilderState;
       return {
-        query: renderMetricLogsQL(metric),
+        query: renderMetricLogsQL(metric, { multiline: true }),
         values: {
           metric,
           raw: { filters: values.filters || [] },
@@ -818,7 +818,7 @@ export default function Builder(props: Props) {
       ref={eleRef}
       className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
         absolute: !queryBuilderPinned,
-        'top-[32px]': !queryBuilderPinned,
+        'top-full': !queryBuilderPinned,
         'border-primary': !queryBuilderPinned,
         relative: queryBuilderPinned,
       })}

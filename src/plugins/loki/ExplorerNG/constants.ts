@@ -11,4 +11,4 @@ export const RAW_DEFAULT_QUERY = '{}';
 export const METRIC_DEFAULT_QUERY = '';
 export const DEFAULT_TIME_FIELD = 'timestamp';
 export const DEFAULT_RAW_LOG_LIMIT = 500;
-export const MAX_RAW_LOG_LIMIT = 10000;
+export const MAX_RAW_LOG_LIMIT = 5000;

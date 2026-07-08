@@ -731,6 +731,15 @@ export default function Builder(props: Props) {
     });
   }, [visible, mode]);
 
+  React.useEffect(() => {
+    if (visible && mode === 'raw') {
+      if (form.isFieldTouched('limit')) return;
+      form.setFieldsValue({
+        limit: queryValues?.limit || DEFAULT_RAW_LOG_LIMIT,
+      });
+    }
+  }, [queryValues?.limit, visible, mode]);
+
   const getRenderResult = () => {
     const values = form.getFieldsValue();
     const raw: LokiRawBuilderState = {
@@ -753,12 +762,12 @@ export default function Builder(props: Props) {
         vizType: values.vizType || 'timeseries',
       };
       return {
-        query: renderLogQLByMode('metric', metric),
+        query: renderLogQLByMode('metric', metric, { multiline: true }),
         values: { raw, metric, vizType: metric.vizType },
       };
     }
     return {
-      query: renderLogQLByMode('raw', raw),
+      query: renderLogQLByMode('raw', raw, { multiline: true }),
       values: { raw },
     };
   };
@@ -788,7 +797,7 @@ export default function Builder(props: Props) {
       ref={eleRef}
       className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
         absolute: !queryBuilderPinned,
-        'top-[32px]': !queryBuilderPinned,
+        'top-full': !queryBuilderPinned,
         'border-primary': !queryBuilderPinned,
         relative: queryBuilderPinned,
       })}
@@ -847,16 +856,18 @@ export default function Builder(props: Props) {
               </Form.Item>
             </div>
           </div>
-          <div className='table-row'>
-            <div className='table-cell align-top'>
-              <div className='h-[24px] flex items-center'>{t('builder.limit')}</div>
+          {mode === 'raw' && (
+            <div className='table-row'>
+              <div className='table-cell align-top'>
+                <div className='h-[24px] flex items-center'>{t('builder.limit')}</div>
+              </div>
+              <div className='table-cell'>
+                <Form.Item name='limit' noStyle initialValue={DEFAULT_RAW_LOG_LIMIT}>
+                  <InputNumber size='small' className='w-[120px]' min={1} max={MAX_RAW_LOG_LIMIT} />
+                </Form.Item>
+              </div>
             </div>
-            <div className='table-cell'>
-              <Form.Item name='limit' noStyle initialValue={DEFAULT_RAW_LOG_LIMIT}>
-                <InputNumber size='small' className='w-[120px]' min={1} max={MAX_RAW_LOG_LIMIT} />
-              </Form.Item>
-            </div>
-          </div>
+          )}
           {mode === 'metric' && (
             <>
               <div className='table-row'>
