@@ -39,6 +39,7 @@ export default function index(props: IProps) {
                 <QuestionCircleOutlined />
               </Tooltip>
               <Switch
+                size='small'
                 checked={getFieldValue(['rule_config', 'inhibit'])}
                 onChange={(checked) => {
                   setFieldsValue({
