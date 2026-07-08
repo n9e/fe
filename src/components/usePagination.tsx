@@ -27,6 +27,7 @@ export default function usePagination(props: PaginationProps) {
 
   return {
     showSizeChanger,
+    showQuickJumper: true,
     pageSize,
     pageSizeOptions,
     showTotal: (total) => {
