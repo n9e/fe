@@ -31,6 +31,24 @@ The back-end api proxy config is https://github.com/n9e/fe/blob/main/vite.config
 
 Trouble shooting: https://answer.flashcat.cloud/questions/10010000000003759
 
+> **💡 Dev locale switching**  
+> To speed up the dev server, only **Chinese (zh_CN)** locale files are loaded by default in development mode; other languages are replaced with empty objects to reduce unnecessary module requests.  
+> To switch to another language, create a `.env` file in the project root and set the `VITE_DEV_LOCALE` environment variable:
+>
+> ```bash
+> # .env
+> VITE_DEV_LOCALE=en_US
+> ```
+>
+> Or specify it inline when starting the dev server:
+>
+> ```bash
+> VITE_DEV_LOCALE=en_US npm run dev
+> ```
+>
+> Supported locales: `zh_CN`, `en_US`, `zh_HK`, `ru_RU`, `ja_JP`.  
+> This optimization only applies to the `serve` phase; production builds are unaffected.
+
 ## Build
 
 ```

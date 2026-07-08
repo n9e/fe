@@ -18,6 +18,8 @@ import { defineConfig, loadEnv } from 'vite';
 import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
 import prefixPlugin from './plugins/vite-plugin-prefix';
+import lazyToEagerOnBuild from './plugins/vite-plugin-lazy-eager';
+import devSingleLocale from './plugins/vite-plugin-dev-locale';
 import getFontFamilyByEnv from './src/utils/getFontFamilyByEnv';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
@@ -55,6 +57,8 @@ export default defineConfig(({ mode }) => {
   return {
     base: baseName + '/',
     plugins: [
+      lazyToEagerOnBuild(),
+      devSingleLocale(env.VITE_DEV_LOCALE || 'zh_CN'),
       react(),
       svgr({
         svgrOptions: {

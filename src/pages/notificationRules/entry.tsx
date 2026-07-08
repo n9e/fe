@@ -1,12 +1,13 @@
 import React from 'react';
 
 import { NS } from './constants';
-import List from './pages/List';
-import Add from './pages/Add';
-import Edit from './pages/Edit';
-import Detail from './pages/Detail';
 import './style.less';
 import './locale';
+
+const List = React.lazy(() => import('./pages/List'));
+const Add = React.lazy(() => import('./pages/Add'));
+const Edit = React.lazy(() => import('./pages/Edit'));
+const Detail = React.lazy(() => import('./pages/Detail'));
 
 export default {
   routes: [
