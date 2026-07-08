@@ -16,6 +16,7 @@ interface Props {
   onTreeNodeClick?: (node: any) => void;
   hideHeader?: boolean;
   allowSelect?: boolean;
+  size?: 'small' | 'middle' | 'large';
 }
 
 interface DataNode {
@@ -184,6 +185,7 @@ export default function Meta(props: Props) {
 }
 
 export function MetaModal(props: Props) {
+  const { size } = props;
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceValue, onTreeNodeClick, allowSelect } = props;
   const [open, setOpen] = useState(false);
@@ -254,6 +256,7 @@ export function MetaModal(props: Props) {
         <Meta datasourceValue={datasourceValue} onTreeNodeClick={onTreeNodeClick} hideHeader allowSelect={false} />
       </Modal>
       <Button
+        size={size}
         onClick={() => {
           setOpen(true);
         }}
