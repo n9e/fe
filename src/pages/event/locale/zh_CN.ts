@@ -1,4 +1,5 @@
 const zh_CN = {
+  no_busi_group_id: '该告警未返回业务组ID',
   title: '活跃告警',
   search_placeholder: '模糊搜索规则和标签(多个关键词请用空格分隔)',
   hours: {
@@ -101,6 +102,7 @@ const zh_CN = {
     current_anomaly_time: '本次异常时间',
     ai_analysis: 'AI 分析',
     ai_analysis_content: '分析这条告警事件的根因',
+    ai_analysis_content_ent: '分析告警事件 (id={{id}}) 的根因',
   },
 
   sharing_link: {

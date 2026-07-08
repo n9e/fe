@@ -1,6 +1,27 @@
 const en_US = {
   title: 'Agent',
+  name: 'Name',
+  description: 'Description',
+  llm_config_name: 'LLM config',
+  llm_config_is_default: 'Default',
+  use_case: 'Use case',
   enabled: 'Enabled',
   disabled: 'Disabled',
+  add_btn: 'Add Agent',
+  cannot_delete_when_enabled: 'Enabled agents cannot be deleted',
+  form: {
+    add_title: 'Add Agent',
+    edit_title: 'Edit Agent',
+    description_placeholder: 'Please enter the agent description',
+    llm_config: 'Select LLM',
+    add_llm_config: 'Add LLM',
+    llm_config_placeholder: 'Please select the LLM config used by the agent',
+    skill: 'Associated skills',
+    skill_tip: 'Associated skills will be used first',
+    skill_placeholder: 'Please select the skills associated with the agent',
+    mcp: 'Associated MCP Servers',
+    mcp_tip: 'Configure which MCP Servers this agent can use',
+    mcp_placeholder: 'Please select the MCP Servers associated with the agent',
+  },
 };
 export default en_US;

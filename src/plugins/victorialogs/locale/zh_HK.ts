@@ -48,6 +48,7 @@ const zh_HK = {
       check_all: '全選',
     },
     copy_json: '複製 JSON',
+    parse_failed: '無法解析',
     timeseries: {
       value_field: '值字段',
       value_field_tip: '用於繪製時序圖的數值字段，支持輸入多個字段',

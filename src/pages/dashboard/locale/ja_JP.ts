@@ -30,6 +30,10 @@ const ja_JP = {
       '2': '認証アクセス',
     },
     bgids: '認証ビジネスグループ',
+    theme_link: {
+      dark: 'ダークテーマリンク',
+      light: 'ライトテーマリンク',
+    },
   },
   default_filter: {
     title: 'デフォルトフィルタ',
@@ -53,6 +57,8 @@ const ja_JP = {
     import_grafana_tip_version_error: 'v7未満のバージョンのダッシュボード設定をインポートすることはできません',
     import_grafana_tip_version_warning:
       'v8未満のバージョンのダッシュボード設定をインポートする場合、部分のグラフがサポートされていない、またはグラフが正常にレンダリングされない問題が発生する可能性があります',
+    import_grafana_url: 'Grafana ダッシュボードリンク（推奨）',
+    import_grafana_url_label: 'Grafana ダッシュボードリンク',
     continueToImport: 'インポートを続行',
     noSelected: 'ダッシュボードを選択してください',
     import_builtin: '内蔵ダッシュボードをインポート',
@@ -67,8 +73,6 @@ const ja_JP = {
     title: 'ダッシュボードリンク',
     name: 'リンク名',
     url: 'リンクアドレス',
-    url_tip:
-      '\n      変数の使用方法\n      <1 />\n      ${variable_name}: ダッシュボード変数値を表示\n      <1 />\n      ${__field.name}: シーケンス名を表示\n      <1 />\n      ${__field.value}: シーケンス値を表示\n      <1 />\n      ${__field.labels.X}: 指定したラベル値を表示\n      <1 />\n      ${__field.labels.__name__}: 指標名を表示\n      <1 />\n      ${__from}: 開始時間, ミリ秒\n      <1 />\n      ${__from_date_seconds}: 開始時間, 秒\n      <1 />\n      ${__from_date_iso}: 開始時間, ISO 8601/RFC 3339\n      <1 />\n      上記の構文は ${__to} に適用されます\n      ',
     isNewBlank: '新しいウィンドウで開くかどうか',
     dashboardIds_placeholder: 'ダッシュボードを選択してください',
   },
@@ -256,6 +260,11 @@ const ja_JP = {
           multiple: '複数選択',
         },
         heightInPercentage: '高さパーセンテージ',
+        sortBy: '並び替え列',
+        sortBy_tip: '並び替える統計列を選択。未選択の場合は元の順序を維持',
+        sortDir: '並び替え方向',
+        sortDirAsc: '昇順',
+        sortDirDesc: '降順',
         heightInPercentage_tip: 'Legendの高さはパネルの最大高さのパーセンテージを占めます。最小値は20%、最大値は80%です',
         widthInPercentage: '幅パーセンテージ',
         widthInPercentage_tip: 'Legendの幅はパネルの最大幅のパーセンテージを占めます。最小値は20%、最大値は80%です',
@@ -303,6 +312,16 @@ const ja_JP = {
         name: '色設定',
         scheme: '色のスキーム',
         reverse: '色を反転',
+      },
+      links: {
+        label: 'リンク',
+        add_btn: 'リンクを追加',
+        edit_btn: 'リンクを編集',
+        title: 'リンクタイトル',
+        title_required: 'リンクタイトルは必須です',
+        url: 'リンクURL',
+        url_required: 'リンクURLは必須です',
+        target_blank: '新しいウィンドウで開く',
       },
     },
     standardOptions: {
@@ -568,8 +587,11 @@ const ja_JP = {
     datasource_msg: 'データソースを選択してください',
     time: '時間選択',
     time_tip: '時間範囲を指定できます。デフォルトはダッシュボード全体の時間範囲です',
+    es: {
+      field_key_msg: 'Field key は必須です',
+    },
     prometheus: {
-      expression: 'PromQL 式',
+      query: 'クエリ文（PromQL）',
       maxDataPoints: {
         tip: '最大データポイント数、計算式: step = max((end - start) / maxDataPoints, minStep, safeStep)、safeStep = (end - start) / 11000',
         tip_2: '最大データポイント数、計算式: step = (end - start) / maxDataPoints',
@@ -598,11 +620,22 @@ const ja_JP = {
     copy_query: 'クエリをコピー',
     hide_response: 'レスポンスを非表示',
   },
+  migrate: {
+    title: 'ダッシュボードの移行',
+    close_and_dismiss: '閉じて今後表示しない',
+    batch_migrate: '一括移行ページへ',
+    migrate_current: '現在のダッシュボードを移行',
+    desc_1: 'v6 ではグローバル Prometheus クラスター切替はサポートされません。新バージョンではチャートにデータソース変数を関連付けることで実現します。',
+    desc_2: '移行ツールはデータソース変数を作成し、データソース未関連付けのチャートをすべて関連付けます。',
+  },
   detail: {
     ai_analysis: 'AI 分析',
     datasource_empty: 'データソース情報がありません。まずデータソースを設定してください',
     invalidTimeRange: '無効な__fromと__toの値',
     invalidDatasource: '無効なデータソース',
+    invalidPanelConfig: '無効なチャート設定',
+    deletePanel_confirm: 'チャート {{name}} を削除してもよろしいですか？',
+    invalidPanelType: '無効なチャートタイプ',
     fullscreen: {
       notification: {
         esc: '全画面モードを終了するにはESCキーを押してください',
@@ -666,6 +699,8 @@ const ja_JP = {
     sum: '合計',
     count: '数',
     origin: '元の値',
+    variance: '分散',
+    stdDev: '標準偏差',
   },
   annotation: {
     add: '注釈を追加',
@@ -678,11 +713,34 @@ const ja_JP = {
   transformations: {
     organize: {
       title: 'フィールドの整理',
+      desc: 'フィールドの並べ替え、非表示、名前変更を行います',
     },
     merge: {
       title: 'マージ',
+      desc: '複数のテーブルを1つのテーブルにマージします',
+    },
+    joinByField: {
+      title: 'Join by field',
+      desc: '関連フィールドに基づいて複数のテーブルの行を結合します',
+      mode: 'モード',
+      byField: 'フィールド',
+    },
+    timeSeriesTable: {
+      title: 'Time series to table',
+      desc: '時系列データの各時点の値を1つの値に集計します',
+      fieldName: 'フィールド',
+      functions: '関数',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: '1つ以上のフィールドでテーブルをグループ化し、他のフィールドを集計します',
+      operation_map: {
+        aggregate: '集計',
+        groupby: 'グループ化',
+      },
     },
   },
+  add_transformation: 'データ変換を追加',
 };
 
 export default ja_JP;

@@ -1,5 +1,8 @@
 const ja_JP = {
   title: 'ログ検索',
+  tab: {
+    rename: '名前を変更',
+  },
   query: 'クエリ条件',
   query_is_required: 'クエリ条件は空にできません',
   execute: '検索',
@@ -99,6 +102,7 @@ const ja_JP = {
         allFields: '利用可能なフィールド',
         showFields: 'フィールドを表示',
         showFields_empty: 'ログはデフォルトで全てのフィールドを表示します',
+        tip: '現在フィールド {{fields}} のみ表示しています。設定アイコンから全フィールドを表示できます',
       },
       jsonSettings: {
         title: 'JSON 設定',
@@ -142,6 +146,14 @@ const ja_JP = {
     need_aggregate: '',
     click_to_aggregate: 'ログを集約するには、クリック',
     full_aggregate: '全量集約',
+    field_label: '集約フィールド',
+    scope_current_page: '現在のページ',
+    scope_current_page_desc: '現在のページのフィールドのみを集約します',
+    scope_full: '全量集約',
+    scope_full_desc_prefix: '現在のクエリで取得した',
+    scope_full_desc_disable_prefix: '一時的に集約できません：クエリで取得した',
+    scope_full_desc_suffix: '件のログを集約します',
+    scope_label: '範囲',
     aggregate_field: '集約フィールド:',
     log_count: 'ログ数:',
     duration: '所要時間:',

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import _get from 'lodash/get';
 import _maxBy from 'lodash/maxBy';
@@ -17,11 +18,12 @@ interface IProps {
 }
 
 export default function TraceDetailHeader(props: IProps) {
+  const { t } = useTranslation('trace');
   const { trace, viewRange, updateNextViewRangeTime, updateViewRangeTime } = props;
   const HEADER_ITEMS = [
     {
       key: 'timestamp',
-      label: '开始时间',
+      label: t('detail.start_time'),
       renderer: (trace: Trace) => {
         const dateStr = formatDatetime(trace.startTime);
         const match = dateStr.match(/^(.+)(\.\d+)$/);
@@ -37,7 +39,7 @@ export default function TraceDetailHeader(props: IProps) {
     },
     {
       key: 'duration',
-      label: '耗时',
+      label: t('detail.duration'),
       renderer: (trace: Trace) => formatDuration(trace.duration),
     },
     {
@@ -47,12 +49,12 @@ export default function TraceDetailHeader(props: IProps) {
     },
     {
       key: 'depth',
-      label: '深度',
+      label: t('detail.depth'),
       renderer: (trace: Trace) => _get(_maxBy(trace.spans, 'depth'), 'depth', 0) + 1,
     },
     {
       key: 'span-count',
-      label: '总共',
+      label: t('detail.total'),
       renderer: (trace: Trace) => trace.spans.length,
     },
   ];

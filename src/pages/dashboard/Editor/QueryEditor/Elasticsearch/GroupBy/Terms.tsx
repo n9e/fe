@@ -28,7 +28,7 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
           </Col>
           <Col span={expanded ? 6 : 12}>
             <InputGroupWithFormItem label='Field key' labelWidth={80}>
-              <Form.Item {...prefixField} name={[prefixField.name, 'field']} rules={[{ required: true, message: '必须填写 field key' }]}>
+              <Form.Item {...prefixField} name={[prefixField.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
                 <AutoComplete
                   dropdownMatchSelectWidth={false}
                   options={_.filter(fieldsOptions, (item) => {

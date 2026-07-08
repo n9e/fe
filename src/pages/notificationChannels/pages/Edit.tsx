@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
 
-import { NS, NOTIFICATION_CHANNEL_TYPES } from '../constants';
+import { NS, getNotificationChannelTypes } from '../constants';
 import { getItem, putItem, postItems } from '../services';
 import { ChannelItem } from '../types';
 import { normalizeInitialValues, normalizeFormValues } from '../utils/normalizeValues';
@@ -21,7 +21,8 @@ export default function Add() {
   const { mode } = queryString.parse(search);
   const [data, setData] = useState<ChannelItem>();
   const ident = (data?.ident as string) || 'callback';
-  const identConfig = NOTIFICATION_CHANNEL_TYPES[ident] ? NOTIFICATION_CHANNEL_TYPES[ident] : NOTIFICATION_CHANNEL_TYPES['callback'];
+  const channelTypes = getNotificationChannelTypes();
+  const identConfig = channelTypes[ident] ? channelTypes[ident] : channelTypes['callback'];
 
   useEffect(() => {
     if (id) {

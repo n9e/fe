@@ -31,6 +31,7 @@ const ru_RU = {
   agent_version: 'Версия агента',
   note: 'Примечание',
   unknown_tip: 'Показ информации о хосте, версия categraf должна быть выше 0.2.35',
+  view_related_collects: 'Просмотр связанных конфигураций сбора',
   organize_columns: {
     title: 'Поля для отображения',
   },

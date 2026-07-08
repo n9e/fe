@@ -23,11 +23,9 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { isValid, describeTimeRange, valueAsString, isMathString } from '../utils';
 import { IRawTimeRange, ITimeRangePickerProps } from '../types';
-import { rangeOptions, momentLocaleZhCN } from '../config';
+import { rangeOptions } from '../config';
 import { isRelativeFormat } from './utils';
 import '../style.less';
-
-moment.locale('zh-cn', momentLocaleZhCN);
 
 const validOptions = rangeOptions.filter((o) => isRelativeFormat(o.start));
 const historyCacheKey = 'flashcat-timeRangePicker-relative-history';

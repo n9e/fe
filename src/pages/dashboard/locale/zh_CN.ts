@@ -257,6 +257,11 @@ const zh_CN = {
           multiple: '多选',
         },
         heightInPercentage: '高度百分比',
+        sortBy: '排序列',
+        sortBy_tip: '选择按哪个统计列排序，不选则不排序',
+        sortDir: '排序方向',
+        sortDirAsc: '升序',
+        sortDirDesc: '降序',
         heightInPercentage_tip: 'Legend 高度占据面板的最大高度百分比，最小值为 20%，最大值为 80%',
         widthInPercentage: '宽度百分比',
         widthInPercentage_tip: 'Legend 宽度占据面板的最大宽度百分比，最小值为 20%，最大值为 80%',
@@ -587,6 +592,9 @@ const zh_CN = {
     datasource_msg: '请选择数据源',
     time: '时间选择',
     time_tip: '可指定时间范围，默认为仪表盘全局时间范围',
+    es: {
+      field_key_msg: '必须填写 field key',
+    },
     prometheus: {
       query: '查询语句（PromQL）',
       maxDataPoints: {
@@ -617,11 +625,22 @@ const zh_CN = {
     copy_query: '复制查询',
     hide_response: '隐藏查询结果',
   },
+  migrate: {
+    title: '迁移大盘',
+    close_and_dismiss: '关闭并不再提示',
+    batch_migrate: '前往批量迁移大盘',
+    migrate_current: '迁移当前大盘',
+    desc_1: 'v6 版本将不再支持全局 Prometheus 集群切换，新版本可通过图表关联数据源变量来实现该能力。',
+    desc_2: '迁移工具会创建数据源变量以及关联所有未关联数据源的图表。',
+  },
   detail: {
     ai_analysis: 'AI 分析',
     datasource_empty: '没有数据源信息，请先配置数据源',
     invalidTimeRange: '无效的 __from 和 __to 值',
     invalidDatasource: '无效的数据源',
+    invalidPanelConfig: '无效的图表配置',
+    deletePanel_confirm: '是否删除图表：{{name}}',
+    invalidPanelType: '无效的图表类型',
     fullscreen: {
       notification: {
         esc: '按 ESC 键退出全屏模式',

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Card, Space } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
 import { generateQueryName } from '@/components/QueryName';
+import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import Query from './Query';
 
 interface IProps {
@@ -45,46 +46,41 @@ export default function index(props: IProps) {
       ]}
     >
       {(fields, { add, remove }) => (
-        <Card
-          title={
-            <Space>
-              <span>{t('datasource:es.alert.query.title')}</span>
-              <PlusCircleOutlined
-                disabled={disabled}
-                onClick={() =>
-                  add({
-                    ref: generateQueryName(_.map(queries, 'ref')),
-                    interval_unit: 'min',
-                    interval: 5,
-                    date_field: '@timestamp',
-                    value: {
-                      func: 'count',
-                    },
-                  })
-                }
-              />
-            </Space>
-          }
-          size='small'
-        >
+        <div>
+          <FormItemLabel>{t('datasource:es.alert.query.title')}</FormItemLabel>
           {fields.map((field) => {
             return (
-              <>
-                <Query key={field.key} field={field} hideIndexPattern={hideIndexPattern} datasourceValue={datasourceValue} indexOptions={indexOptions} disabled={disabled}>
-                  {fields.length > 1 && (
-                    <CloseCircleOutlined
-                      style={{ position: 'absolute', right: -4, top: -4 }}
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                      disabled={disabled}
-                    />
-                  )}
-                </Query>
-              </>
+              <Query
+                key={field.key}
+                field={field}
+                hideIndexPattern={hideIndexPattern}
+                datasourceValue={datasourceValue}
+                indexOptions={indexOptions}
+                disabled={disabled}
+                onClose={fields.length > 1 ? () => remove(field.name) : undefined}
+              />
             );
           })}
-        </Card>
+          <Button
+            className='w-full'
+            type='dashed'
+            disabled={disabled}
+            onClick={() =>
+              add({
+                ref: generateQueryName(_.map(queries, 'ref')),
+                interval_unit: 'min',
+                interval: 5,
+                date_field: '@timestamp',
+                value: {
+                  func: 'count',
+                },
+              })
+            }
+            icon={<PlusOutlined />}
+          >
+            {t('datasource:es.alert.query.title')}
+          </Button>
+        </div>
       )}
     </Form.List>
   );

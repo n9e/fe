@@ -26,6 +26,9 @@ const en_US = {
     value: 'Metric',
     func: 'Function',
     funcField: 'Field',
+    histogram: {
+      interval: 'Interval',
+    },
     terms: {
       label: 'Group by field',
       more: 'More',

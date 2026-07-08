@@ -1,4 +1,6 @@
 const zh_HK = {
+  精确: '精確',
+  正则: '正則',
   preview: '資料預覽',
   query: {
     title: '查詢統計',

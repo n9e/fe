@@ -420,7 +420,7 @@ function index(
             {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
               <PanelEmpty values={values} bodyWrapRef={bodyWrapRef} />
             ) : (
-              <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`无效的图表类型 ${values.type}`}</div>}</>
+              <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`${t('detail.invalidPanelType')} ${values.type}`}</div>}</>
             )}
           </div>
         )}

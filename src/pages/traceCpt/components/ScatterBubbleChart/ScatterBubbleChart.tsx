@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Scatter, ScatterConfig } from '@ant-design/plots';
 import _ from 'lodash';
 import moment from 'moment';
@@ -10,14 +11,14 @@ interface Props {
   elClick?: (value: Trace) => void; // 点击事件
 }
 
-const tooltipNameMap = {
-  startTime: '发生时间',
-  duration: '持续时间',
-  spansLengh: '数量',
-};
-
 const ScatterBulleChart = (props: Props) => {
+  const { t } = useTranslation('trace');
   const { data, elClick } = props;
+  const tooltipNameMap = {
+    startTime: t('chart.start_time'),
+    duration: t('chart.duration'),
+    spansLengh: t('chart.span_count'),
+  };
   const [scatterData, setScatterData] = useState<Trace[]>([]);
 
   useEffect(() => {
@@ -56,7 +57,7 @@ const ScatterBulleChart = (props: Props) => {
       max: 3,
       tickCount: 4,
       title: {
-        text: '耗时',
+        text: t('chart.duration_axis'),
         position: 'end',
         autoRotate: false,
         offset: -20,
@@ -77,7 +78,7 @@ const ScatterBulleChart = (props: Props) => {
     },
     xAxis: {
       title: {
-        text: '时间',
+        text: t('chart.time_axis'),
         position: 'end',
         offset: -10,
       },
@@ -103,13 +104,14 @@ const ScatterBulleChart = (props: Props) => {
       customItems: (originalItems) => {
         let result = _.cloneDeep(originalItems);
         result.forEach((el) => {
+          const key = el.name;
           // @ts-ignore
-          el.name = tooltipNameMap[el.name];
-          if (el.name === '发生时间') {
+          el.name = tooltipNameMap[key] ?? el.name;
+          if (key === 'startTime') {
             // @ts-ignore
             el.value = moment(el.value / 1e6).format('hh:mm:ss');
           }
-          if (el.name == '持续时间') {
+          if (key === 'duration') {
             // @ts-ignore
             el.value = formatDuration(el.value);
           }

@@ -1,5 +1,6 @@
 const zh_CN = {
   host: {
+    and: '且',
     title: '机器筛选',
     key: {
       all_hosts: '全部机器',

@@ -9,7 +9,7 @@ import { isMathString, IRawTimeRange } from '@/components/TimeRangePicker';
  * 从 URL query 中获取 filter
  * 存在 query || query_string 时直接作为 filter 值
  * 否则排查掉 data_source_name, data_source_id, index_name, timestamp, index_pattern 之后的参数合并为 filter
- * 合并后的 filter 为 AND 关系
+ * 合并后的 filter 为 AND 关系（2026-07-07 起废弃）
  */
 
 const getESFilterByQuery = (query: { [index: string]: string | null }) => {
@@ -19,35 +19,37 @@ const getESFilterByQuery = (query: { [index: string]: string | null }) => {
   } else if (query?.query_string) {
     return query?.query_string;
   } else {
+    return '';
+    // 2026-07-07 废弃，注释掉一下逻辑
     // @deprecated 2024-11-26 未来会废弃，后面标准化为 query
-    const filtersArr: string[] = [];
-    const validParmas = _.omit(query, [
-      'data_source_name',
-      'data_source_id',
-      'index',
-      'index_name',
-      'date_field',
-      'timestamp',
-      'index_pattern',
-      'start',
-      'end',
-      'mode',
-      'syntax',
-      'query',
-      '__execute__',
-      'filters',
-      'allow_hide_system_indices',
-      'labelKey',
-      'valueKey',
-      'sql',
-      'sqlVizType',
-    ]);
-    _.forEach(validParmas, (value, key) => {
-      if (value) {
-        filtersArr.push(`${key}:"${value}"`);
-      }
-    });
-    return _.join(filtersArr, ' AND ');
+    // const filtersArr: string[] = [];
+    // const validParmas = _.omit(query, [
+    //   'data_source_name',
+    //   'data_source_id',
+    //   'index',
+    //   'index_name',
+    //   'date_field',
+    //   'timestamp',
+    //   'index_pattern',
+    //   'start',
+    //   'end',
+    //   'mode',
+    //   'syntax',
+    //   'query',
+    //   '__execute__',
+    //   'filters',
+    //   'allow_hide_system_indices',
+    //   'labelKey',
+    //   'valueKey',
+    //   'sql',
+    //   'sqlVizType',
+    // ]);
+    // _.forEach(validParmas, (value, key) => {
+    //   if (value) {
+    //     filtersArr.push(`${key}:"${value}"`);
+    //   }
+    // });
+    // return _.join(filtersArr, ' AND ');
   }
 };
 
@@ -70,6 +72,12 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       range_start && range_end
         ? { start: !isMathString(range_start) ? moment(Number(range_start)) : range_start, end: !isMathString(range_end) ? moment(Number(range_end)) : range_end }
         : undefined;
+
+    let organizeFields: string[] = [];
+    const rawOrganizeFields = params?.organize_fields;
+    if (rawOrganizeFields) {
+      organizeFields = Array.isArray(rawOrganizeFields) ? rawOrganizeFields : [rawOrganizeFields];
+    }
 
     if (data_source_name === DatasourceCateEnum.doris) {
       const navMode = _.get(params, 'navMode');
@@ -98,9 +106,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           defaultSearchField,
           query,
           sql,
+          organizeFields,
           keys: {
-            labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-            valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+            labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+            valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
           },
         },
       };
@@ -126,9 +135,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             logstore,
             query,
             power_sql,
+            organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
               timeFormat,
             },
@@ -153,7 +163,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       try {
         if (params?.filters) {
           const parsedFilters = JSON.parse(params.filters);
-          if (_.isArray(parsedFilters)) {
+          if (Array.isArray(parsedFilters)) {
             filters = parsedFilters;
           }
         }
@@ -175,9 +185,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             filters,
             sql,
             sqlVizType,
+            organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
             },
           },
         };
@@ -195,9 +206,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             filters,
             sql,
             sqlVizType,
+            organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
             },
           },
         };
@@ -234,9 +246,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             group_id,
             stream_id,
             query,
+            organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -261,9 +274,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             logNamespace,
             logSource,
             query,
+            organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -290,9 +304,10 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
             logstore,
             logstream,
             query,
+            organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -313,14 +328,15 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           ...formValues,
           query: {
             region,
-            log_group_names: _.isArray(log_group_names) ? log_group_names : [log_group_names],
+            log_group_names: Array.isArray(log_group_names) ? log_group_names : [log_group_names],
             stackByField,
             query_language,
             vizType,
             query,
+            organizeFields,
             keys: {
-              labelKey: _.isArray(labelKey) ? labelKey : [labelKey],
-              valueKey: _.isArray(valueKey) ? valueKey : [valueKey],
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
               timeKey,
             },
           },
@@ -367,6 +383,9 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.sql = formValues.query?.sql;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.aliyunSLS) {
@@ -380,12 +399,15 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
     query.timeFormat = formValues.query?.keys?.timeFormat;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.elasticsearch) {
     let filtersString = '';
     const filters = formValues.query?.filters;
-    if (filters && _.isArray(filters) && filters.length > 0) {
+    if (filters && Array.isArray(filters) && filters.length > 0) {
       try {
         filtersString = JSON.stringify(filters);
       } catch (error) {
@@ -405,6 +427,9 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.sqlVizType = formValues.query?.sqlVizType;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.victorialogs || data_source_name === DatasourceCateEnum.loki) {
@@ -422,6 +447,9 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.tencentCLS) {
@@ -433,6 +461,9 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.bceBLS) {
@@ -445,6 +476,9 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.cloudwatchLogs) {
@@ -457,6 +491,9 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
     query.timeKey = formValues.query?.keys?.timeKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
     return queryString.stringify(query);
   }
   return '';

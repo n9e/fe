@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
-import { Form, Space, Row, Col, Card, Input, Alert } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Row, Col, Input, Alert, Button } from 'antd';
+import { PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
+import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -39,27 +41,11 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
         ]}
       >
         {(fields, { add, remove }) => (
-          <Card
-            title={
-              <Space>
-                {t('datasource:query.title')}
-                <PlusCircleOutlined
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => {
-                    add({
-                      query: DEFAULT_QUERY,
-                      interval: 1,
-                      interval_unit: 'min',
-                    });
-                  }}
-                />
-              </Space>
-            }
-            size='small'
-          >
+          <div>
+            <FormItemLabel>{t('datasource:query.title')}</FormItemLabel>
             {fields.map((field) => {
               return (
-                <div key={field.key} className='bg-fc-200 p-4 mb-4 relative'>
+                <CardContainer key={field.key} onClose={fields.length > 1 ? () => remove(field.name) : undefined}>
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const query = getFieldValue([...fullPrefixName, ...prefixName, 'queries', field.name]);
@@ -68,40 +54,42 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                       return <Alert className='mb-2' type='warning' message={<Trans ns={NAME_SPACE} i18nKey='alert.query_warning_no_time' components={{ b: <strong /> }} />} />;
                     }}
                   </Form.Item>
-                  <Row gutter={8}>
-                    <Col flex='32px'>
-                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
-                        <QueryName existingNames={_.map(queries, 'ref')} />
-                      </Form.Item>
-                    </Col>
-                    <Col flex='auto'>
-                      <div className='tdengine-discover-query'>
-                        <InputGroupWithFormItem
-                          label={
-                            <Space>
-                              {t('explorer.query')}
-                              <InfoCircleOutlined
-                                onClick={() => {
-                                  DocumentDrawer({
-                                    language: i18n.language,
-                                    darkMode,
-                                    title: t('common:page_help'),
-                                    type: 'iframe',
-                                    documentPath:
-                                      'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
-                                  });
-                                }}
-                              />
-                            </Space>
-                          }
-                        >
-                          <Form.Item {...field} name={[field.name, 'query']}>
-                            <Input.TextArea autoSize={{ minRows: 0 }} />
-                          </Form.Item>
-                        </InputGroupWithFormItem>
-                      </div>
-                    </Col>
-                  </Row>
+                  <CardContainerHeader>
+                    <Row gutter={8}>
+                      <Col flex='32px'>
+                        <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                          <QueryName existingNames={_.map(queries, 'ref')} />
+                        </Form.Item>
+                      </Col>
+                      <Col flex='auto'>
+                        <div className='tdengine-discover-query'>
+                          <InputGroupWithFormItem
+                            label={
+                              <Space>
+                                {t('explorer.query')}
+                                <InfoCircleOutlined
+                                  onClick={() => {
+                                    DocumentDrawer({
+                                      language: i18n.language,
+                                      darkMode,
+                                      title: t('common:page_help'),
+                                      type: 'iframe',
+                                      documentPath:
+                                        'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
+                                    });
+                                  }}
+                                />
+                              </Space>
+                            }
+                          >
+                            <Form.Item {...field} name={[field.name, 'query']}>
+                              <Input.TextArea autoSize={{ minRows: 0 }} />
+                            </Form.Item>
+                          </InputGroupWithFormItem>
+                        </div>
+                      </Col>
+                    </Row>
+                  </CardContainerHeader>
                   <Form.Item shouldUpdate noStyle>
                     {({ getFieldValue }) => {
                       const query = getFieldValue([...fullPrefixName, ...prefixName, 'queries', field.name]);
@@ -109,18 +97,24 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                       return <GraphPreview datasourceValue={datasourceID} query={query} />;
                     }}
                   </Form.Item>
-                  {fields.length > 1 && (
-                    <CloseCircleOutlined
-                      style={{ position: 'absolute', right: -4, top: -4 }}
-                      onClick={() => {
-                        remove(field.name);
-                      }}
-                    />
-                  )}
-                </div>
+                </CardContainer>
               );
             })}
-          </Card>
+            <Button
+              className='w-full'
+              type='dashed'
+              onClick={() => {
+                add({
+                  query: DEFAULT_QUERY,
+                  interval: 1,
+                  interval_unit: 'min',
+                });
+              }}
+              icon={<PlusOutlined />}
+            >
+              {t('datasource:query.title')}
+            </Button>
+          </div>
         )}
       </Form.List>
     </>

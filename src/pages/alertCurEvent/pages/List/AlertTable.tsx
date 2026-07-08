@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, Space } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -61,12 +61,29 @@ export default function AlertTable(props: IProps) {
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
+  const location = useLocation();
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
     data?: any;
   }>({
     visible: false,
   });
+  const lastInitiatedViewIdRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const parsed = queryString.parse(location.search);
+    const viewId = parsed.viewId;
+    if (viewId && Number(viewId) !== lastInitiatedViewIdRef.current) {
+      lastInitiatedViewIdRef.current = Number(viewId);
+      getEventById(Number(viewId)).then((res) => {
+        setEventDetailDrawerData({
+          visible: true,
+          data: res.dat,
+        });
+      });
+    }
+  }, [location.search]);
+
   const columns = [
     {
       title: t('event_name'),
@@ -99,10 +116,16 @@ export default function AlertTable(props: IProps) {
                 ) : null}
                 <a
                   onClick={() => {
+                    lastInitiatedViewIdRef.current = record.id;
                     getEventById(record.id).then((res) => {
                       setEventDetailDrawerData({
                         visible: true,
                         data: res.dat,
+                      });
+                      const parsed = queryString.parse(location.search);
+                      parsed.viewId = String(record.id);
+                      history.replace({
+                        search: queryString.stringify(parsed, { arrayFormat: 'comma' }),
                       });
                     });
                   }}
@@ -304,7 +327,14 @@ export default function AlertTable(props: IProps) {
         showAckBtn
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
-        onClose={() => setEventDetailDrawerData({ visible: false })}
+        onClose={() => {
+          setEventDetailDrawerData({ visible: false });
+          const parsed = queryString.parse(location.search);
+          delete parsed.viewId;
+          history.replace({
+            search: queryString.stringify(parsed, { arrayFormat: 'comma' }),
+          });
+        }}
         onDeleteSuccess={() => {
           setRefreshFlag(_.uniqueId('refresh_'));
           setSelectedRowKeys([]);

@@ -114,7 +114,7 @@ export default function Chart() {
               if (semver.valid(item.dataProps?.version) && containerSize?.width) {
                 return <Main key={index} range={range} item={item} width={containerSize.width} />;
               }
-              return <Alert type='warning' message='v6 版本不再支持 < v5.4.0 的配置，请重新生成临时图' />;
+              return <Alert type='warning' message={t('not_support_tip')} />;
             })}
           </div>
         </>
@@ -125,7 +125,7 @@ export default function Chart() {
               fontSize: '30px',
             }}
           />
-          <span>{t('该分享链接无图表数据')}</span>
+          <span>{t('no_data')}</span>
         </h2>
       )}
     </div>

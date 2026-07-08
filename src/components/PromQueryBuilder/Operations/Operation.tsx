@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Col, Row, Select, Input, InputNumber, Switch } from 'antd';
 import { CloseCircleOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -100,6 +101,7 @@ function renderOperationParamEditor(
 }
 
 export default function Operation(props: IProps) {
+  const { t } = useTranslation('PromQueryBuilder');
   const { metric, datasourceValue, params, query, onChange, operation, index } = props;
   const { operations } = query;
   const addOperationOptions = getOperationDefinitions();
@@ -218,7 +220,7 @@ export default function Operation(props: IProps) {
         <div className='prom-query-builder-operation-content'>
           {operationElements}
           {restParam}
-          {_.isEmpty(operationDef.params) && <div>无参数</div>}
+          {_.isEmpty(operationDef.params) && <div>{t('noParams')}</div>}
         </div>
       </div>
     </SortableItem>

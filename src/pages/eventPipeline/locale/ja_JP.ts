@@ -97,6 +97,7 @@ const ja_JP = {
       inhibit_qd: 'クエリデータによるイベント抑制',
       annotation_qd: 'クエリデータによる注釈の充実化',
       event_recover: 'イベント回復',
+      alert_shot: 'アラートスクリーンショット',
     },
   },
   label_enrich: {
@@ -179,7 +180,6 @@ const ja_JP = {
     content: 'スクリプトの内容',
     content_tooltip: 'イベントを JSON オブジェクトとして標準出力に出力するようにスクリプトを記述します',
     content_placeholder: 'スクリプトの内容を入力してください',
-    script_content: 'スクリプトの内容',
   },
   inhibit: {
     help: 'イベント抑制プロセッサー。あるアラートが送信された際、他のアラート通知を抑制し、通知数を減らします。よくあるシナリオとしては、同じアラートルールでP1レベルのアクティブ障害が存在する場合、P2やP3レベルのアラート通知を無視します。詳細は<a>使用文書</a>を参照してください',
@@ -195,6 +195,8 @@ const ja_JP = {
     match_attribute_keys: '属性',
     match_attribute_keys_required: '属性は必須です',
     keys_at_least_one_required: '少なくとも1つのラベルまたは属性が必要です',
+    labels_conflict: 'ラベル {{label}} の値が異なるため、抑制できません',
+    attributes_conflict: '属性 {{attribute}} の値が異なるため、抑制できません',
     preview:
       'ルールプレビュー：「<b>新しいアラート：{{newAlertLabelsAttrs}}</b>」かつ過去「<b>{{duration}}秒</b>」以内に「<b>アクティブアラート：{{activeAlertLabelsAttrs}}</b>」が存在し、両者が「<b>{{matchLabelsAttrs}}</b>」で一致する場合、新しいアラートの通知を抑制します。',
     labels_filter: {

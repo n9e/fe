@@ -5,11 +5,12 @@
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
     "build": "tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build",
-    "build:advanced": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build --mode advanced",
+    "build:advanced": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=4096 tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build --mode advanced",
     "build:prefix": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 VITE_PREFIX=/flashcat vite build --mode advanced",
     "build:prefix_advanced": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 VITE_PREFIX=/flashcat vite build --mode advanced",
     "serve": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "e2e-test": "playwright test e2e/"
   },
   "dependencies": {
     "@ag-grid-community/locale": "^34.1.1",
@@ -117,6 +118,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@midscene/web": "^1.10.0",
+    "@playwright/test": "^1.61.1",
     "@rollup/pluginutils": "^4.1.1",
     "@types/dagre": "^0.7.54",
     "@types/echarts": "^4.9.7",
@@ -133,6 +136,7 @@
     "jest": "^29.7.0",
     "jscodeshift": "^0.11.0",
     "less": "^4.1.1",
+    "playwright": "^1.61.1",
     "postcss": "^8.4.31",
     "postcss-nested": "^5.0.5",
     "prettier": "^2.2.1",

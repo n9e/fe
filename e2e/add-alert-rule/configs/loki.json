@@ -1,0 +1,74 @@
+{
+  "group_id": 265,
+  "cate": "loki",
+  "datasource_ids": [1012],
+  "datasource_queries": [
+    {
+      "match_type": 0,
+      "op": "in",
+      "values": [1012]
+    }
+  ],
+  "cluster": "",
+  "name": "loki",
+  "note": "",
+  "prod": "logging",
+  "algorithm": "",
+  "algo_params": null,
+  "delay": 0,
+  "severity": 0,
+  "severities": [2],
+  "disabled": 1,
+  "prom_for_duration": 60,
+  "prom_ql": "",
+  "rule_config": {
+    "queries": [
+      {
+        "prom_ql": "loki query string",
+        "severity": 2,
+        "unit": "none"
+      }
+    ]
+  },
+  "event_relabel_config": null,
+  "prom_eval_interval": 15,
+  "enable_stime": "00:00",
+  "enable_stimes": ["00:00"],
+  "enable_etime": "00:00",
+  "enable_etimes": ["00:00"],
+  "enable_days_of_week": ["0", "1", "2", "3", "4", "5", "6"],
+  "enable_days_of_weeks": [["0", "1", "2", "3", "4", "5", "6"]],
+  "enable_in_bg": 0,
+  "notify_recovered": 1,
+  "notify_channels": [],
+  "notify_groups_obj": [],
+  "notify_groups": [],
+  "notify_repeat_step": 60,
+  "notify_max_number": 0,
+  "recover_duration": 0,
+  "callbacks": [],
+  "runbook_url": "",
+  "append_tags": [],
+  "annotations": {},
+  "extra_config": {
+    "enrich_queries": [],
+    "service_cal_configs": []
+  },
+  "create_at": 1783307352,
+  "create_by": "root",
+  "update_at": 1783307353,
+  "update_by": "root",
+  "uuid": 0,
+  "cur_event_count": 0,
+  "update_by_nickname": "",
+  "cron_pattern": "@every 60s",
+  "time_zone": "Local",
+  "notify_rule_ids": [],
+  "pipeline_configs": [
+    {
+      "pipeline_id": 0,
+      "enable": true
+    }
+  ],
+  "notify_version": 1
+}

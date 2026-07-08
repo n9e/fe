@@ -414,7 +414,7 @@ const Shield: React.FC = () => {
             dataSource={currentShieldData}
             columns={columns}
             rowActions={(record: shieldItem) => ({
-              menu: [
+              inline: [
                 {
                   key: 'clone',
                   icon: 'copy',
@@ -431,6 +431,8 @@ const Shield: React.FC = () => {
                   icon: 'delete',
                   text: t('common:btn.delete'),
                   danger: true,
+                  disabled: record.disabled === 0,
+                  tooltip: record.disabled === 0 ? t('common:delete_disable_first') : undefined,
                   onClick: () => {
                     confirm({
                       title: t('common:confirm.delete'),

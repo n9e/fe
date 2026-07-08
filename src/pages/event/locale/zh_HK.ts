@@ -1,4 +1,5 @@
 const zh_HK = {
+  no_busi_group_id: '該告警未返回業務組ID',
   title: '活躍告警',
   search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
   hours: {
@@ -99,6 +100,7 @@ const zh_HK = {
     current_anomaly_time: '本次異常時間',
     ai_analysis: 'AI 分析',
     ai_analysis_content: '分析這條告警事件的根因',
+    ai_analysis_content_ent: '分析告警事件 (id={{id}}) 的根因',
   },
 
   sharing_link: {

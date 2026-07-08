@@ -23,6 +23,7 @@ const en_US = {
   public: {
     name: 'Public',
     unpublic: 'Unpublic',
+    public_cate: 'Type',
     cate: {
       0: 'Anonymous access',
       1: 'Login access',
@@ -256,6 +257,11 @@ const en_US = {
           multiple: 'Multiple',
         },
         heightInPercentage: 'Height in percentage',
+        sortBy: 'Sort column',
+        sortBy_tip: 'Select a statistic column to sort by. Leave empty to keep original order',
+        sortDir: 'Sort direction',
+        sortDirAsc: 'Ascending',
+        sortDirDesc: 'Descending',
         heightInPercentage_tip: 'Legend height occupies the maximum height percentage of the panel, the minimum value is 20%, the maximum value is 80%',
         widthInPercentage: 'Width in percentage',
         widthInPercentage_tip: 'Legend width occupies the maximum width percentage of the panel, the minimum value is 20%, the maximum value is 80%',
@@ -301,6 +307,21 @@ const en_US = {
         text_placeholder: 'Optional',
         color: 'Color',
         operations: '',
+      },
+      colors: {
+        name: 'Colors',
+        scheme: 'Color scheme',
+        reverse: 'Reverse colors',
+      },
+      links: {
+        label: 'Links',
+        add_btn: 'Add link',
+        edit_btn: 'Edit link',
+        title: 'Link title',
+        title_required: 'Link title is required',
+        url: 'Link URL',
+        url_required: 'Link URL is required',
+        target_blank: 'Open in new window',
       },
     },
     standardOptions: {
@@ -564,8 +585,11 @@ const en_US = {
     datasource_msg: 'Please select datasource',
     time: 'Time',
     time_tip: 'Default is the global time range of the dashboard',
+    es: {
+      field_key_msg: 'Field key is required',
+    },
     prometheus: {
-      expression: 'Expression (PromQL)',
+      query: 'Query (PromQL)',
       maxDataPoints: {
         tip: 'The maximum number of points per series, default is panel width (default 240), calculate step = (end - start) / maxDataPoints',
         tip_2: 'The maximum number of points per series, default is panel width, calculate step = (end - start) / maxDataPoints',
@@ -594,11 +618,22 @@ const en_US = {
     copy_query: 'Copy query',
     hide_response: 'Hide response data',
   },
+  migrate: {
+    title: 'Migrate dashboard',
+    close_and_dismiss: 'Close and do not remind again',
+    batch_migrate: 'Batch migrate dashboards',
+    migrate_current: 'Migrate current dashboard',
+    desc_1: 'v6 no longer supports global Prometheus cluster switching; the new version achieves this by binding panels to a datasource variable.',
+    desc_2: 'The migration tool creates a datasource variable and binds all panels that have no datasource yet.',
+  },
   detail: {
     ai_analysis: 'AI Analysis',
     datasource_empty: 'Please configure the data source first',
     invalidTimeRange: 'Invalid __from and __to values',
     invalidDatasource: 'Invalid datasource',
+    invalidPanelConfig: 'Invalid panel configuration',
+    deletePanel_confirm: 'Are you sure to delete the panel: {{name}}?',
+    invalidPanelType: 'Invalid panel type',
     fullscreen: {
       notification: {
         esc: 'Press ESC to exit full screen mode',
@@ -662,6 +697,8 @@ const en_US = {
     sum: 'Sum',
     count: 'Count',
     origin: 'Origin',
+    variance: 'Variance',
+    stdDev: 'Std dev',
   },
   annotation: {
     add: 'Add annotation',
@@ -685,6 +722,20 @@ const en_US = {
       desc: 'Join multiple tables by matching the values of the specified fields.',
       mode: 'Mode',
       byField: 'Field',
+    },
+    timeSeriesTable: {
+      title: 'Time series to table',
+      desc: 'Merge the values of each time point of a series into a single value.',
+      fieldName: 'Field',
+      functions: 'Function',
+    },
+    groupedAggregateTable: {
+      title: 'Grouped aggregate table',
+      desc: 'Group the table by one or more fields and aggregate the other fields.',
+      operation_map: {
+        aggregate: 'Aggregate',
+        groupby: 'Group by',
+      },
     },
   },
   add_transformation: 'Add transformation',

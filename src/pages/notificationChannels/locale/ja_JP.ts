@@ -1,6 +1,20 @@
 const ja_JP = {
   title: '通知渠道',
   basic_configuration: '基本設定',
+  default_values: {
+    access_key_id: '実際の access_key_id に置き換えてください',
+    access_key_secret: '実際の access_key_secret に置き換えてください',
+    show_number: '実際の show_number に置き換えてください。空の場合は表示されません',
+    voice_code: '実際の voice_code に置き換えてください',
+    sign_name: '実際の署名に置き換えてください',
+    template_id: '実際のテンプレート ID に置き換えてください',
+    secret_id: '実際の secret_id に置き換えてください',
+    secret_key: '実際の secret_key に置き換えてください',
+    region: '実際の region に置き換えてください',
+    app_id: '実際の appid に置き換えてください',
+    ali_voice_tts_param: '障害 {{$tpl.incident}}、確認するには 1 を押してください',
+    ali_sms_template_param: '障害 {{$tpl.incident}}、速やかに対応してください',
+  },
   ident: '通知チャネル',
   ident_tip:
     '通知チャネルの分類、たとえば複数の DingTalk 通知チャネルの場合、タイプはすべて dingtalk に設定できます。タイプは手動で入力でき、ドロップダウンリストのオプションに制限されません。通知チャネルとメッセージテンプレートは、タイプフィールドを介して関連付けられます',
@@ -129,7 +143,6 @@ const ja_JP = {
     disable: '無効',
   },
   types_select_placeholder: 'タイプ',
-  delete_disable_first: '現在のタイプは無効化されていないため、削除できません',
   types: {
     flashduty: 'FlashDuty',
     callback: 'コールバック',

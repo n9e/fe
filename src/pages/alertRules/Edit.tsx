@@ -22,7 +22,7 @@ import queryString from 'query-string';
 import { useInterval } from 'ahooks';
 import PageLayout from '@/components/pageLayout';
 import { getWarningStrategy } from '@/services/warning';
-import Form from './Form';
+import Form from './FormNG';
 import { getAlertRulePure } from './services';
 
 export default function Edit() {
@@ -63,7 +63,7 @@ export default function Edit() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/alert-rules'>
-      <div className='n9e h-full overflow-hidden'>{!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />}</div>
+      <div className='n9e h-full overflow-hidden p-0'>{!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />}</div>
     </PageLayout>
   );
 }

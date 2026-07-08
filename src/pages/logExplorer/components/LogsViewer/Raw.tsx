@@ -44,6 +44,7 @@ interface Props {
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   /** 排序反转回调 */
   onReverseChange: (reverse: boolean) => void;
+  timeColumnWidth?: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
   id_key: string;
@@ -274,6 +275,7 @@ function Raw(props: Props) {
     onReverseChange,
     rowPrefixRender,
     filterFields,
+    timeColumnWidth = 140,
     timeFieldColumnFormat,
     linesColumnFormat,
     id_key,
@@ -371,7 +373,7 @@ function Raw(props: Props) {
   if (timeField && options.time === 'true') {
     columns.unshift({
       title: t('logs.settings.time'),
-      width: 140,
+      width: timeColumnWidth,
       dataIndex: timeField,
       key: 'time',
       render: (val, record, index) => {

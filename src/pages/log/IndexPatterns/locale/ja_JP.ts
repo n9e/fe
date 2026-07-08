@@ -1,4 +1,7 @@
-const zh_HK = {
+const ja_JP = {
+  请输入: '入力してください',
+  请选择: '選択してください',
+  tip3: '（変数の直後に & が続く場合、または URL の末尾にある場合のみ使用可能）。任意の位置で使用できる ${key3} もサポートしています',
   unauthorized: '権限がありません',
   title: 'インデックスパターン',
   name: '名前',
@@ -8,6 +11,8 @@ const zh_HK = {
   allow_hide_system_indices: 'システムインデックスを非表示にする',
   create_btn: 'インデックスパターンを作成',
   create_title: 'インデックスパターンを作成',
+  edit_title: 'インデックスパターンを編集',
+  cross_cluster_enabled: 'クロスクラスター',
   indexes_empty: '一致するインデックスがありません',
   keyword: 'フィールド',
   should_not_empty: '空にすることはできません',
@@ -102,12 +107,20 @@ const zh_HK = {
           urlTemplateTip1: '例えばtracingシステムへのリンク：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplateTip2: 'リンクの設定と変更は「リンクを跳ぶ」の中で行ってください。同じフィールドのリンクが「リンクを跳ぶ」に設定されている場合、この設定は無効になります。',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
+          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: 'ラベルテンプレート',
           labelTemplatePlaceholder: '{{value}}',
         },
       },
     },
   },
+  '跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）':
+    'ダッシュボードにジャンプし、固定変数をサポートします（ドリルダウンリンクで渡す変数とダッシュボードのフィルター変数が一致しない場合に使用します。例：ダッシュボードに3つのフィルター変数があるが、ドリルダウンリンクは1つの変数しか渡さない場合）',
+  '可为指定字段设置展示样式，如，格式、别名等。': '指定したフィールドに表示スタイル（フォーマット、エイリアスなど）を設定できます。',
+  '如：设置字段的链接为': '例：フィールドのリンクを次のように設定します',
+  或将该字段显示的值展示为: 'またはこのフィールドの表示値を次のように表示します',
+  '可为指定字段设置链接。': '指定したフィールドにリンクを設定できます。',
+  参数映射表: 'パラメータマッピングテーブル',
 };
 
-export default zh_HK;
+export default ja_JP;

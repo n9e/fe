@@ -141,7 +141,7 @@ export default function index(props: IProps) {
   const heightInPercentage = options.legend?.heightInPercentage || 30;
   const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : displayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
   const detailUrl = options.legend?.detailUrl || undefined;
-  const detailName = options.legend?.detailName || undefined;
+  const detailName = options.legend?.detailName || t('common:btn.detail');
   const legendBehaviour = options.legend?.behaviour || 'showItem';
   const legendSelectMode = options.legend?.selectMode || 'single';
   const hasLegend = displayMode !== 'hidden';

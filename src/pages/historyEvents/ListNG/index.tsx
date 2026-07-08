@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -7,7 +7,7 @@ import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Select, message, Tooltip } from 'antd';
 import { ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react';
 import queryString from 'query-string';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
@@ -24,6 +24,7 @@ import { getEventById } from '@/pages/alertCurEvent/services';
 import deleteAlertEventsModal from '@/pages/alertCurEvent/utils/deleteAlertEventsModal';
 import EnhancedTable from '@/components/EnhancedTable';
 import Tags from '@/components/TableTags/Tags';
+import { HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '@/pages/alertCurEvent/utils/eventColumnExpandedStorage';
 
 import exportEvents, { downloadFile } from '../exportEvents';
 import { SeverityColor } from '../../event';
@@ -73,13 +74,30 @@ const Event = (props: Props) => {
     showClaimant = false,
   } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
-  const [eventColumnExpanded, setEventColumnExpanded] = useState(false);
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
     data?: any;
   }>({
     visible: false,
   });
+  const lastInitiatedViewIdRef = useRef<number | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const parsed = queryString.parse(location.search);
+    const viewId = parsed.viewId;
+    if (viewId && Number(viewId) !== lastInitiatedViewIdRef.current) {
+      lastInitiatedViewIdRef.current = Number(viewId);
+      getEventById(Number(viewId)).then((res) => {
+        setEventDetailDrawerData({
+          visible: true,
+          data: res.dat,
+        });
+      });
+    }
+  }, [location.search]);
+
   let columns = [
     {
       title: t('event_name'),
@@ -115,10 +133,16 @@ const Event = (props: Props) => {
                 ) : null}
                 <a
                   onClick={() => {
+                    lastInitiatedViewIdRef.current = record.id;
                     getEventById(record.id).then((res) => {
                       setEventDetailDrawerData({
                         visible: true,
                         data: res.dat,
+                      });
+                      const parsed = queryString.parse(location.search);
+                      parsed.viewId = String(record.id);
+                      history.replace({
+                        search: queryString.stringify(parsed, { arrayFormat: 'comma' }),
                       });
                     });
                   }}
@@ -374,7 +398,11 @@ const Event = (props: Props) => {
                 size='small'
                 icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
                 onClick={() => {
-                  setEventColumnExpanded(!eventColumnExpanded);
+                  setEventColumnExpanded((expanded) => {
+                    const next = !expanded;
+                    writeAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
+                    return next;
+                  });
                 }}
               />
             </Tooltip>
@@ -456,7 +484,14 @@ const Event = (props: Props) => {
         showAckBtn
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
-        onClose={() => setEventDetailDrawerData({ visible: false })}
+        onClose={() => {
+          setEventDetailDrawerData({ visible: false });
+          const parsed = queryString.parse(location.search);
+          delete parsed.viewId;
+          history.replace({
+            search: queryString.stringify(parsed, { arrayFormat: 'comma' }),
+          });
+        }}
         onDeleteSuccess={() => {
           setRefreshFlag(_.uniqueId('refresh_'));
         }}

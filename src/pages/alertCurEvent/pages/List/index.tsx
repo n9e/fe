@@ -21,6 +21,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { NS, MY_GRPUPS_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
+import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
 import getProdOptions from '../../utils/getProdOptions';
 import getRequestParamsByFilter from '../../utils/getRequestParamsByFilter';
 import { ackEvents } from '../../services';
@@ -110,7 +111,7 @@ const AlertCurEvent: React.FC = () => {
   );
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [eventColumnExpanded, setEventColumnExpanded] = useState(false);
+  const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY));
   const params = getRequestParamsByFilter(filter);
 
   type RuleCardsRequestParams = {
@@ -125,7 +126,8 @@ const AlertCurEvent: React.FC = () => {
     const requestParams: RuleCardsRequestParams = {
       view_id: filter.aggr_rule_id,
       my_groups: String(params.my_groups) === 'true',
-      ..._.omit(params, ['range', 'my_groups']),
+      // card 接口按聚合规则自行分组，无需 event_ids；其数量可能极大，去掉以免 URL 超长(414)
+      ..._.omit(params, ['range', 'my_groups', 'event_ids']),
     };
     if (params.range) {
       const parsedRange = parseRange(params.range);
@@ -331,7 +333,11 @@ const AlertCurEvent: React.FC = () => {
                             className='alert-event-expand-btn'
                             icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
                             onClick={() => {
-                              setEventColumnExpanded(!eventColumnExpanded);
+                              setEventColumnExpanded((expanded) => {
+                                const next = !expanded;
+                                writeAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
+                                return next;
+                              });
                             }}
                           />
                         </Tooltip>

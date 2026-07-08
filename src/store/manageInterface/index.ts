@@ -56,8 +56,8 @@ export interface TeamList {
   total: number;
 }
 export enum UserType {
-  User = '用户',
-  Team = '团队',
+  User = 'user',
+  Team = 'team',
 }
 export interface TeamInfo {
   user_groups?: Team;
@@ -65,22 +65,22 @@ export interface TeamInfo {
   users: Array<User>;
 }
 export enum ActionType {
-  CreateUser = '创建用户',
-  CreateTeam = '创建团队',
-  CreateBusiness = '创建业务组',
-  AddBusinessMember = '添加业务组成员',
-  EditBusiness = '编辑业务组',
-  EditUser = '编辑用户信息',
-  EditTeam = '编辑团队信息',
-  Reset = '重置密码',
-  Disable = '禁用',
-  Undisable = '启用',
-  AddUser = '添加成员',
+  CreateUser = 'create_user',
+  CreateTeam = 'create_team',
+  CreateBusiness = 'create_business',
+  AddBusinessMember = 'add_business_member',
+  EditBusiness = 'edit_business',
+  EditUser = 'edit_user',
+  EditTeam = 'edit_team',
+  Reset = 'reset_password',
+  Disable = 'disable',
+  Undisable = 'enable',
+  AddUser = 'add_user',
 }
 export enum RoleType {
-  Admin = '管理员',
-  Standard = '普通用户',
-  Guest = '游客',
+  Admin = 'admin',
+  Standard = 'standard',
+  Guest = 'guest',
 }
 export interface Title {
   create: string;

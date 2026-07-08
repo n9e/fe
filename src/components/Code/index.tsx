@@ -39,7 +39,7 @@ export default function Code(props: Props) {
     <div className='code-area'>
       <span className='code-text'>{children}</span>
       <span className='copy-btn' onClick={handleCopy}>
-        {copied ? t('复制成功') : t('复制')}
+        {copied ? t('common:copied') : t('common:btn.copy2')}
       </span>
     </div>
   );

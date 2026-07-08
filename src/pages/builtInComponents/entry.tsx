@@ -14,12 +14,14 @@
  * limitations under the License.
  *
  */
+import React from 'react';
 import { pathname } from './constants';
-import List from './List';
-import AlertDetail from './AlertRules/Detail';
-import DashboardDetail from './Dashboards/Detail';
 import './locale';
 import './style.less';
+
+const List = React.lazy(() => import('./List'));
+const AlertDetail = React.lazy(() => import('./AlertRules/Detail'));
+const DashboardDetail = React.lazy(() => import('./Dashboards/Detail'));
 
 export default {
   routes: [

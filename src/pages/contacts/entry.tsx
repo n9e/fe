@@ -2,7 +2,8 @@ import React from 'react';
 
 import './locale';
 import { NS } from './constants';
-import List from './pages/List';
+
+const List = React.lazy(() => import('./pages/List'));
 
 export default {
   routes: [

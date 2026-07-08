@@ -37,7 +37,7 @@ export default function Pagerduty() {
         <InputNumber min={0} className='w-full' />
       </Form.Item>
       <Form.Item label={t('pagerduty_request_config.retry_times')} name={[...names, 'retry_times']}>
-        <InputNumber min={0} className='w-full' />
+        <InputNumber min={1} className='w-full' />
       </Form.Item>
     </div>
   );

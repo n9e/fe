@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import _ from 'lodash';
 import { ConfigProvider } from 'antd';
-import antdZhCN from 'antd/lib/locale/zh_CN';
-import antdEnUS from 'antd/lib/locale/en_US';
-import antdRuRU from 'antd/lib/locale/ru_RU';
+
+import { getAntdLocale } from '@/utils/antdLocale';
 
 export interface ModalWrapProps {
   visible: boolean;
@@ -33,7 +32,7 @@ export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
 
     function render(props: any) {
       ReactDOM.render(
-        <ConfigProvider locale={language === 'en_US' ? antdEnUS : language === 'ru_RU' ? antdRuRU : antdZhCN}>
+        <ConfigProvider locale={getAntdLocale(language)}>
           <Router>
             <Component {...props} />
           </Router>

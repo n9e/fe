@@ -23,6 +23,8 @@ import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export const isPromise = (obj) => {
   return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
@@ -58,12 +60,12 @@ export const copyToClipBoard = (text: string, spliter?: string): boolean => {
   try {
     succeeded = document.execCommand('copy');
     if (spliter && text.includes(spliter)) {
-      message.success(`${i18next.t('复制')}${text.split('\n').length}${i18next.t('条数据到剪贴板')}`);
+      message.success(i18next.t('common:copy_items_success', { num: text.split('\n').length }));
     } else {
-      message.success(i18next.t('复制到剪贴板'));
+      message.success(i18next.t('common:copyToClipboard'));
     }
   } catch (err) {
-    message.error(i18next.t('复制失败'));
+    message.error(i18next.t('common:copyToClipboardFailed'));
     succeeded = false;
   }
   if (succeeded) {
@@ -221,7 +223,7 @@ export const RSAEncrypt = (str: string): string => {
   -----END PUBLIC KEY-----`);
   result = encrypt.encrypt(str);
   if (result === false) {
-    message.error('密码过长，加密失败, 最长64位');
+    message.error(i18next.t('common:password_too_long', { num: 64 }));
     throw new Error('密码过长，加密失败');
   }
   return encrypt.encrypt(str);
@@ -249,7 +251,7 @@ export function RSAEncrypt4096(str: string): string {
 
   result = encrypt.encrypt(str);
   if (result === false) {
-    message.error('密码过长，加密失败, 最长490位');
+    message.error(i18next.t('common:password_too_long', { num: 490 }));
     throw new Error('密码过长，加密失败');
   }
   return result as string;
@@ -279,4 +281,8 @@ export async function downloadExcel(fileName: string = 'download.xlsx', data: ID
   } catch (error) {
     throw new Error('下载错误: ' + error);
   }
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

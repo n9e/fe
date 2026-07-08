@@ -48,6 +48,7 @@ const zh_CN = {
       check_all: '全选',
     },
     copy_json: '复制 JSON',
+    parse_failed: '无法解析',
     timeseries: {
       value_field: '值字段',
       value_field_tip: '用于绘制时序图的数值字段，支持输入多个字段',

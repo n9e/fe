@@ -1,4 +1,6 @@
 const en_US = {
+  精确: 'Exact',
+  正则: 'Regex',
   preview: 'Preview',
   query: {
     title: 'Query',

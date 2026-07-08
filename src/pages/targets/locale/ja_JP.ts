@@ -31,6 +31,7 @@ const ja_JP = {
   agent_version: 'エージェントバージョン',
   note: '備考',
   unknown_tip: 'マシンのメタ情報の表示には、categrafのバージョンが0.2.35より高い必要があります',
+  view_related_collects: '関連する収集設定を表示',
   organize_columns: {
     title: '表示する列',
   },

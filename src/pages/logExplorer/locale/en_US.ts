@@ -1,5 +1,8 @@
 const en_US = {
   title: 'Log Explorer',
+  tab: {
+    rename: 'Rename',
+  },
   query: 'Query Conditions',
   query_is_required: 'Query conditions cannot be empty',
   execute: 'Query',
@@ -100,6 +103,7 @@ const en_US = {
         allFields: 'Available Fields',
         showFields: 'Show Fields',
         showFields_empty: 'Logs display all fields by default',
+        tip: 'Only fields {{fields}} are displayed. Click the settings icon to show all fields',
       },
       jsonSettings: {
         title: 'JSON Settings',

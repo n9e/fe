@@ -120,7 +120,7 @@ const HeaderExtra = ({ mode, setMode, allowHideSystemIndices, setAllowHideSystem
         )}
       </Space>
       <Space>
-        {isPlus && mode === IMode.indexPatterns && <Button onClick={() => window.open(`/log/index-patterns${queryString}`, '_blank')}>{t('下钻设置')}</Button>}
+        {isPlus && mode === IMode.indexPatterns && <Button onClick={() => window.open(`/log/index-patterns${queryString}`, '_blank')}>{t('drilldown_settings')}</Button>}
         {isPlus && mode === IMode.indices && <DrilldownBtn dataSourceId={datasourceValue} />}
         {isPlus && <ExportModal datasourceValue={datasourceValue} />}
         <Share />

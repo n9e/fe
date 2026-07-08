@@ -1,4 +1,5 @@
 const ja_JP = {
+  no_busi_group_id: 'このアラートはビジネスグループ ID を返しませんでした',
   title: 'アクティブアラート',
   search_placeholder: 'ルールとタグを模糊検索（複数のキーワードはスペースで区切ってください）',
   hours: {
@@ -99,6 +100,7 @@ const ja_JP = {
     current_anomaly_time: '今回の異常時間',
     ai_analysis: 'AI 解析',
     ai_analysis_content: 'このアラートイベントの原因を分析',
+    ai_analysis_content_ent: 'アラートイベント (id={{id}}) の原因を分析',
   },
 
   sharing_link: {

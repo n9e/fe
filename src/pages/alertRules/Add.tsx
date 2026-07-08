@@ -21,7 +21,7 @@ import queryString from 'query-string';
 import _ from 'lodash';
 import PageLayout from '@/components/pageLayout';
 import { generateQueryNameByIndex } from '@/components/QueryName';
-import Form from './Form';
+import Form from './FormNG';
 import { defaultValues } from './Form/constants';
 
 export default function Add() {
@@ -65,7 +65,7 @@ export default function Add() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/alert-rules'>
-      <div className='n9e h-full overflow-hidden'>
+      <div className='n9e h-full overflow-hidden p-0'>
         <Form initialValues={initialValues} />
       </div>
     </PageLayout>

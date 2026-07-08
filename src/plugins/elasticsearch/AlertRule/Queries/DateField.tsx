@@ -52,7 +52,7 @@ export default function DateField(props: IProps) {
   }, [datasourceValue, index]);
 
   return (
-    <InputGroupWithFormItem label={t('datasource:es.date_field')} labelWidth={80}>
+    <InputGroupWithFormItem label={t('datasource:es.date_field')}>
       <Form.Item
         {...field}
         name={[field.name, ...midName, 'date_field']}

@@ -1,4 +1,5 @@
 const ru_RU = {
+  no_busi_group_id: 'Это оповещение не вернуло ID бизнес-группы',
   title: 'Действующие оповещения',
   search_placeholder: 'Поиск по правилам и меткам (несколько ключевых слов через пробел)',
   hours: {
@@ -99,6 +100,7 @@ const ru_RU = {
     current_anomaly_time: 'Время текущей аномалии',
     ai_analysis: 'AI Анализ',
     ai_analysis_content: 'Анализировать причину этого события предупреждения',
+    ai_analysis_content_ent: 'Анализировать причину события предупреждения (id={{id}})',
   },
 
   sharing_link: {

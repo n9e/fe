@@ -17,5 +17,9 @@ const en_US = {
   预览结果: 'Preview result',
   请输入地址: 'Please input address',
   请输入: 'Please input',
+  生成: 'Generate',
+  下钻到: 'Drill down to',
+  自定义链接: 'Custom link',
+  日志检索: 'Log explorer',
 };
 export default en_US;

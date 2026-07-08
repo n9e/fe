@@ -82,7 +82,7 @@ function LogContext(props: IProps & ModalWrapProps) {
       <div style={{ marginBottom: 10 }}>
         <Space>
           <Input.Group>
-            <span className='ant-input-group-addon'>结果数</span>
+            <span className='ant-input-group-addon'>{t('log.context_result_count')}</span>
             <Select
               value={limit}
               onChange={(val) => {
@@ -90,12 +90,12 @@ function LogContext(props: IProps & ModalWrapProps) {
               }}
               style={{ minWidth: 60 }}
             >
-              <Select.Option value={10}>上下10条日志</Select.Option>
-              <Select.Option value={20}>上下20条日志</Select.Option>
-              <Select.Option value={50}>上下50条日志</Select.Option>
-              <Select.Option value={100}>上下100条日志</Select.Option>
-              <Select.Option value={200}>上下200条日志</Select.Option>
-              <Select.Option value={500}>上下500条日志</Select.Option>
+              <Select.Option value={10}>{t('log.context_lines', { num: 10 })}</Select.Option>
+              <Select.Option value={20}>{t('log.context_lines', { num: 20 })}</Select.Option>
+              <Select.Option value={50}>{t('log.context_lines', { num: 50 })}</Select.Option>
+              <Select.Option value={100}>{t('log.context_lines', { num: 100 })}</Select.Option>
+              <Select.Option value={200}>{t('log.context_lines', { num: 200 })}</Select.Option>
+              <Select.Option value={500}>{t('log.context_lines', { num: 500 })}</Select.Option>
             </Select>
           </Input.Group>
           <SelectSort onChange={(v) => setSortOrder(v)} />

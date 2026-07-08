@@ -16,6 +16,7 @@
  */
 import React, { useEffect } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import G2PieChart from '@/components/G2PieChart';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
@@ -45,6 +46,7 @@ const getColumnsKeys = (data: any[]) => {
 };
 
 export default function Pie(props: IProps) {
+  const { t } = useTranslation('dashboard');
   const [, setStatFields] = useGlobalState('statFields');
   const { values, series, themeMode, isPreview } = props;
   const { custom, options } = values;
@@ -151,7 +153,7 @@ export default function Pie(props: IProps) {
         labelWithValue={labelWithValue}
         dataFormatter={dataFormatter}
         detailFormatter={detailFormatter}
-        detailName={detailName}
+        detailName={detailName || t('common:btn.detail')}
         detailUrl={detailUrl}
         donut={donut}
         decimals={options?.standardOptions?.decimals}

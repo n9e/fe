@@ -131,6 +131,8 @@ export default function GraphPreview(props: IProps) {
             <Space>
               <span>{t('common:datasource.name')}:</span>
               <Select
+                showSearch
+                optionFilterProp='label'
                 value={datasourceValue}
                 onChange={(value) => {
                   setDatasourceValue(value);

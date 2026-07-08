@@ -1,4 +1,5 @@
 const zh_HK = {
+  delete_confirm: '確定要刪除麼？',
   user: {
     title: '使用者管理',
     search_placeholder: '使用者名稱、郵箱或手機',
@@ -7,6 +8,7 @@ const zh_HK = {
     busi_groups: '業務組',
     user_groups: '團隊',
     last_active_time: '最後活躍時間',
+    delete_success: '用戶刪除成功',
   },
   team: {
     title: '團隊管理',
@@ -18,6 +20,8 @@ const zh_HK = {
     empty: '沒有與你相關的團隊，請先',
     name: '團隊名稱',
     add_member_selected: '已選擇 {{num}} 項',
+    delete_success: '團隊刪除成功',
+    delete_member_success: '成員刪除成功',
   },
   business: {
     title: '業務組管理',

@@ -1,5 +1,8 @@
 const ru_RU = {
   title: 'Поиск по логам',
+  tab: {
+    rename: 'Переименовать',
+  },
   query: 'Условия запроса',
   query_is_required: 'Условия запроса не могут быть пустыми',
   execute: 'Запрос',
@@ -100,6 +103,7 @@ const ru_RU = {
         allFields: 'Доступные поля',
         showFields: 'Показать поля',
         showFields_empty: 'Логи по умолчанию отображают все поля',
+        tip: 'Отображаются только поля {{fields}}. Нажмите значок настроек, чтобы показать все поля',
       },
       jsonSettings: {
         title: 'Настройки JSON',
@@ -143,6 +147,14 @@ const ru_RU = {
     need_aggregate: 'Для агрегации',
     click_to_aggregate: 'логов, нажмите',
     full_aggregate: 'Полная агрегация',
+    field_label: 'Поле агрегации',
+    scope_current_page: 'Текущая страница',
+    scope_current_page_desc: 'Агрегировать только поля текущей страницы',
+    scope_full: 'Полная агрегация',
+    scope_full_desc_prefix: 'Агрегировать все',
+    scope_full_desc_disable_prefix: 'Невозможно агрегировать',
+    scope_full_desc_suffix: 'логов текущего запроса',
+    scope_label: 'Область',
     aggregate_field: 'Поле агрегации:',
     log_count: 'Количество логов:',
     duration: 'Время выполнения:',

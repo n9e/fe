@@ -117,7 +117,7 @@ export default function index() {
             />
           </div>
         ) : (
-          <BlankBusinessPlaceholder text='监控仪表盘' />
+          <BlankBusinessPlaceholder text={t('title')} />
         )}
       </div>
       <MigrationModal

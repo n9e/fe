@@ -158,7 +158,7 @@ export default forwardRef(function OriginSettings(
           <SettingOutlined />
         </Dropdown>
         {!_.isEmpty(options.organizeFields) && (
-          <Tooltip title={`当前只显示字段 ${_.join(options.organizeFields, '、')}，可点击设置图标设置显示所有字段`}>
+          <Tooltip title={t('logs.settings.organizeFields.tip', { fields: _.join(options.organizeFields, '、') })}>
             <EyeInvisibleOutlined
               style={{
                 color: '#999',

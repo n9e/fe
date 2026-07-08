@@ -69,9 +69,11 @@ export default function index(props: Props) {
   const legend = options?.legend;
   const legendPlacement = legend?.placement || 'bottom'; // 适配旧版的默认值
   const legendDisplayMode = options.legend?.displayMode || 'table';
-  const legendColumns = !_.isEmpty(options.legend?.columns) ? options.legend?.columns : legendDisplayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
-  const legendBehaviour = options.legend?.behaviour || 'showItem';
-  const legendSelectMode = options.legend?.selectMode || 'single';
+  const legendColumns = !_.isEmpty(legend?.columns) ? legend?.columns : legendDisplayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
+  const legendBehaviour = legend?.behaviour || 'showItem';
+  const legendSelectMode = legend?.selectMode || 'single';
+  const legendSortBy = legend?.sortBy;
+  const legendSortDir = legend?.sortDir || 'asc';
   const chartContainerSize = getChartContainerSize(PADDING, containerSize, legendSize, legendDisplayMode, legendPlacement);
   const [dataRefresh, setDataRefresh] = useState(_.uniqueId('dataRefresh_'));
   const [activeLegend, setActiveLegend] = useState<string>(); // legendSelectMode === 'single'
@@ -161,6 +163,8 @@ export default function index(props: Props) {
               panel={mainProps.panel}
               data={legendData}
               legendColumns={legendColumns}
+              legendSortBy={legendSortBy}
+              legendSortDir={legendSortDir}
               onRowClick={(record) => {
                 if (legendSelectMode === 'multiple') {
                   setActiveLegends(_.xor(activeLegends, [record.id]));

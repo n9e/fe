@@ -18,15 +18,10 @@ import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
 import { ConfigProvider, Modal, Spin } from 'antd';
-import zhCN from 'antd/lib/locale/zh_CN';
-import enUS from 'antd/lib/locale/en_US';
-import ruRU from 'antd/lib/locale/ru_RU';
 import 'antd/dist/antd.less';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import TaskOutput from '@/pages/taskOutput';
-import TaskHostOutput from '@/pages/taskOutput/host';
 import { getAuthorizedDatasourceCates, Cate } from '@/components/AdvancedWrap';
 import { GetProfile } from '@/services/account';
 import { getBusiGroups, getDatasourceBriefList, getMenuPerm, getInstallDate } from '@/services/common';
@@ -36,7 +31,7 @@ import { getCleanBusinessGroupIds, getDefaultBusiness, getVaildBusinessGroup } f
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
-import SharedDetail from '@/pages/event/DetailNG/SharedDetail';
+import { getAntdLocale } from '@/utils/antdLocale';
 import { AiChatProvider, AiChatContainer } from '@/components/AiChatNG';
 import HocRenderer from './components/HocRenderer';
 import HeaderMenu from './components/SideMenu';
@@ -49,6 +44,12 @@ import CustomerServiceFloatButton from 'plus:/components/CustomerServiceFloatBut
 
 import './App.less';
 import './global.variable.less';
+
+// 顶层路由组件懒加载：SharedDetail 会连带引入事件详情 + 全部数据源插件注册表（近千个模块），
+// 只在 /share/alert-his-events 路由用到，改为懒加载后登录页等页面不再 eager 拉起这些依赖。
+const TaskOutput = React.lazy(() => import('@/pages/taskOutput'));
+const TaskHostOutput = React.lazy(() => import('@/pages/taskOutput/host'));
+const SharedDetail = React.lazy(() => import('@/pages/event/DetailNG/SharedDetail'));
 
 interface IProfile {
   admin?: boolean;
@@ -338,7 +339,7 @@ function App() {
     <AiChatProvider>
       <div className='App'>
         <CommonStateContext.Provider value={commonState}>
-          <ConfigProvider locale={i18n.language == 'en_US' ? enUS : i18n.language == 'ru_RU' ? ruRU : zhCN}>
+          <ConfigProvider locale={getAntdLocale(i18n.language)}>
             <Router
               getUserConfirmation={(message, callback) => {
                 if (message === 'CUSTOM') return;
@@ -346,16 +347,18 @@ function App() {
               }}
               basename={basePrefix}
             >
-              <Switch>
-                <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
-                <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
-                <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
-                <>
-                  {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
-                  <Content />
-                  <HocRenderer></HocRenderer>
-                </>
-              </Switch>
+              <React.Suspense fallback={<Spin spinning style={{ width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }} />}>
+                <Switch>
+                  <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
+                  <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
+                  <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
+                  <>
+                    {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
+                    <Content />
+                    <HocRenderer></HocRenderer>
+                  </>
+                </Switch>
+              </React.Suspense>
             </Router>
           </ConfigProvider>
         </CommonStateContext.Provider>

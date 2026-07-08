@@ -48,6 +48,7 @@ const ja_JP = {
       check_all: 'すべて選択',
     },
     copy_json: 'JSONをコピー',
+    parse_failed: '解析できません',
     timeseries: {
       value_field: '値フィールド',
       value_field_tip: '時系列グラフの描画に使用する数値フィールドです。複数指定できます。',

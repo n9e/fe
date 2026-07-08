@@ -48,6 +48,7 @@ const en_US = {
       check_all: 'Check all',
     },
     copy_json: 'Copy JSON',
+    parse_failed: 'Failed to parse',
     timeseries: {
       value_field: 'Value field',
       value_field_tip: 'Numeric fields used to render the time series chart. Multiple fields are supported.',

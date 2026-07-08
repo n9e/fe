@@ -147,15 +147,21 @@ export default function indexCpt(props: Props) {
 
   useEffect(() => {
     if (datasourceValue && queryValues?.index) {
-      setOrganizeFields(
-        getOrganizeFieldsFromLocalstorage({
-          datasourceValue,
-          index: queryValues.index,
-        }),
-        false,
-      );
+      const urlOrganizeFields = queryValues?.organizeFields;
+
+      if (_.isArray(urlOrganizeFields) && urlOrganizeFields.length > 0) {
+        setOrganizeFields(urlOrganizeFields);
+      } else {
+        setOrganizeFields(
+          getOrganizeFieldsFromLocalstorage({
+            datasourceValue,
+            index: queryValues.index,
+          }),
+          false,
+        );
+      }
     }
-  }, [datasourceValue, queryValues?.index]);
+  }, [datasourceValue, queryValues?.index, queryValues?.organizeFields]);
 
   return (
     <>

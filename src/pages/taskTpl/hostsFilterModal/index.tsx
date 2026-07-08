@@ -70,7 +70,7 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
             {fields.map((field, idx) => (
               <div key={field.key}>
                 <Space align='baseline'>
-                  {idx > 0 && <div className='alert-rule-host-condition-tips'>且</div>}
+                  {idx > 0 && <div className='alert-rule-host-condition-tips'>{t('common:and')}</div>}
                   <Form.Item {...field} name={[field.name, 'key']} rules={[{ required: true, message: 'Missing key' }]}>
                     <Select
                       style={{ minWidth: idx > 0 ? 100 : 142 }}

@@ -1,4 +1,5 @@
 const en_US = {
+  no_busi_group_id: 'This alert did not return a business group ID',
   title: 'Active alerts',
   search_placeholder: 'Multiple keywords separated by spaces',
   hours: {
@@ -101,6 +102,7 @@ const en_US = {
     current_anomaly_time: 'Current Anomaly Time',
     ai_analysis: 'AI Analysis',
     ai_analysis_content: 'Analyze the root cause of this alert event',
+    ai_analysis_content_ent: 'Analyze the root cause of alert event (id={{id}})',
   },
 
   sharing_link: {
