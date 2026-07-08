@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Card, Col, Form, Input, message, Row, Select, Space } from 'antd';
-import { Sparkles, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
+import { Sparkles, ChevronsUpDown, ChevronsDownUp, PanelLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import _ from 'lodash';
@@ -52,14 +52,23 @@ export default function FormNG(props: IProps) {
   const cate = Form.useWatch('cate', form);
   const notifyVersion = Form.useWatch('notify_version', form);
   const showAdvanced = shouldShowAdvancedSettings(notifyVersion, cate);
+  const [sidebarVisible, setSidebarVisible] = useState(() => localStorage.getItem('alert_rule_form_ng_sidebar_visible') !== 'false');
+
+  useEffect(() => {
+    localStorage.setItem('alert_rule_form_ng_sidebar_visible', String(sidebarVisible));
+  }, [sidebarVisible]);
 
   const sections = useMemo(() => {
+    const showRuleHelp = prod === 'metric' && cate === 'prometheus';
     const allSections: SectionItem[] = [
       {
         key: 'basic',
         title: t('basic_configs'),
         description: t('name_severities_appendtags'),
         tag: 'default',
+        helpDoc: {
+          documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/alert-basic-conf/',
+        },
       },
       {
         key: 'datasource',
@@ -72,6 +81,13 @@ export default function FormNG(props: IProps) {
         title: t('rule_configs'),
         description: t('rule_configs_desc'),
         tag: 'core',
+        ...(showRuleHelp
+          ? {
+              helpDoc: {
+                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/promethues/',
+              },
+            }
+          : {}),
       },
       {
         key: 'pipeline',
@@ -84,6 +100,9 @@ export default function FormNG(props: IProps) {
         title: t('effective_configs'),
         description: t('effective_configs_desc'),
         tag: 'optional',
+        helpDoc: {
+          documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/effective-configuration/',
+        },
       },
       {
         key: 'notify',
@@ -99,7 +118,7 @@ export default function FormNG(props: IProps) {
       },
     ];
     return IS_PLUS && showAdvanced ? allSections : allSections.filter((s) => s.key !== 'advanced');
-  }, [i18n.language, showAdvanced]);
+  }, [i18n.language, showAdvanced, prod, cate]);
 
   const pipelineConfigsRef = React.useRef<PipelineConfigsNGRef>(null);
   const scroll = useScrollSync(sections);
@@ -175,8 +194,10 @@ export default function FormNG(props: IProps) {
     >
       <Form form={form} layout='vertical' disabled={disabled} className='h-full'>
         <FormNGDataProvider>
-          <div className='flex h-full min-h-0 overflow-hidden bg-fc-100'>
-            <Sidebar sections={sections} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
+          <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
+            {sidebarVisible && (
+              <Sidebar sections={sections} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
+            )}
             <div
               className='flex-1 min-w-0 h-full overflow-auto'
               ref={scroll.containerRef}
@@ -185,50 +206,62 @@ export default function FormNG(props: IProps) {
               onTouchMove={scroll.handleUserScroll}
             >
               <div className='w-full max-w-[1200px] mx-auto p-5 pb-0'>
-                <div className='flex items-center justify-end gap-2 mb-4'>
+                <div className='flex items-center justify-between gap-2 mb-4'>
                   <Button
                     onClick={() => {
-                      scroll.setSectionCollapsed((prev) => ({
-                        ...prev,
-                        basic: false,
-                        datasource: false,
-                        rule: false,
-                        pipeline: true,
-                        notify: true,
-                        effective: true,
-                        advanced: true,
-                      }));
+                      setSidebarVisible((prev) => !prev);
                     }}
                     className='flex items-center gap-1'
                     size='small'
-                    icon={<Sparkles size={12} className='text-error' />}
+                    icon={<PanelLeft size={12} />}
                   >
-                    {t('form_ng.collapse_core_only')}
+                    {sidebarVisible ? t('form_ng.collapse_sidebar') : t('form_ng.expand_sidebar')}
                   </Button>
-                  {(() => {
-                    const visibleKeys = sections.map((s) => s.key);
-                    const allExpanded = visibleKeys.every((k) => scroll.sectionCollapsed[k] === false);
-                    return (
-                      <Button
-                        onClick={() => {
-                          scroll.setSectionCollapsed((prev) => {
-                            const anyCollapsed = visibleKeys.some((k) => prev[k] === true);
-                            const next = {};
-                            for (const k of visibleKeys) {
-                              next[k] = anyCollapsed ? false : true;
-                            }
-                            return { ...prev, ...next };
-                          });
-                          scroll.setToggleAllSignal({ action: allExpanded ? 'collapse' : 'expand', ts: Date.now() });
-                        }}
-                        className='flex items-center gap-1'
-                        size='small'
-                        icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
-                      >
-                        {allExpanded ? t('form_ng.collapse_collapse_all') : t('form_ng.collapse_expand_all')}
-                      </Button>
-                    );
-                  })()}
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      onClick={() => {
+                        scroll.setSectionCollapsed((prev) => ({
+                          ...prev,
+                          basic: false,
+                          datasource: false,
+                          rule: false,
+                          pipeline: true,
+                          notify: true,
+                          effective: true,
+                          advanced: true,
+                        }));
+                      }}
+                      className='flex items-center gap-1'
+                      size='small'
+                      icon={<Sparkles size={12} className='text-error' />}
+                    >
+                      {t('form_ng.collapse_core_only')}
+                    </Button>
+                    {(() => {
+                      const visibleKeys = sections.map((s) => s.key);
+                      const allExpanded = visibleKeys.every((k) => scroll.sectionCollapsed[k] === false);
+                      return (
+                        <Button
+                          onClick={() => {
+                            scroll.setSectionCollapsed((prev) => {
+                              const anyCollapsed = visibleKeys.some((k) => prev[k] === true);
+                              const next = {};
+                              for (const k of visibleKeys) {
+                                next[k] = anyCollapsed ? false : true;
+                              }
+                              return { ...prev, ...next };
+                            });
+                            scroll.setToggleAllSignal({ action: allExpanded ? 'collapse' : 'expand', ts: Date.now() });
+                          }}
+                          className='flex items-center gap-1'
+                          size='small'
+                          icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
+                        >
+                          {allExpanded ? t('form_ng.collapse_collapse_all') : t('form_ng.collapse_expand_all')}
+                        </Button>
+                      );
+                    })()}
+                  </div>
                 </div>
                 {editable === false && <Alert type='warning' message={t('expired')} className='mb-4' />}
                 <Form.Item name='disabled' hidden>

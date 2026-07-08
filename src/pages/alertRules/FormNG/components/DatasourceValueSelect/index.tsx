@@ -316,7 +316,7 @@ export default function index(props: IProps) {
                       reloadGroupedDatasourceList();
                     }}
                   />
-                  {showExtra && <DatasourceSelectExtra />}
+                  {showExtra && <DatasourceSelectExtra size='small' />}
                 </Space>
               </div>
             </div>

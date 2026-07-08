@@ -83,7 +83,7 @@ export default function index(props: IProps) {
           setActiveKey(key);
         }}
       >
-        <div style={{ display: activeKey === 'triggers' ? 'flex' : 'none', flexDirection: 'column', gap: 10 }}>
+        <div className='flex-col gap-4' style={{ display: activeKey === 'triggers' ? 'flex' : 'none' }}>
           <Space>
             <Form.Item
               noStyle
@@ -98,7 +98,9 @@ export default function index(props: IProps) {
             <Tag color='purple'>{t('trigger.threshold_tip')}</Tag>
           </Space>
           <div style={{ display: exp_trigger_disable !== false ? 'none' : 'block' }}>
-            <Inhibit triggersKey='triggers' />
+            <div className='mb-4'>
+              <Inhibit triggersKey='triggers' />
+            </div>
             <Form.List {...prefixField} name={[...prefixName, 'triggers']} initialValue={initialValue}>
               {(fields, { add, remove }) => (
                 <>
