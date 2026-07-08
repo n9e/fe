@@ -28,13 +28,19 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     let finalColumns: ColumnsType<RecordType> | undefined = injectColumnFilters(columns, Array.isArray(dataSource) ? dataSource : undefined);
 
     const allColumns: ColumnType<RecordType>[] = ((finalColumns ?? []) as ColumnsType<RecordType>).filter(Boolean).map((col: ColumnType<RecordType>) => {
-      if (!autoSortColumns) {
-        return col;
-      }
       const dataIndex = col.dataIndex;
-      // 操作列不排序
-      const sorter = col.sorter !== undefined ? col.sorter : !!dataIndex && !['operate'].includes(dataIndex as string) ? defaultComparator(dataIndex as string) : false;
-      return { ...col, sorter };
+      // 手写操作列（dataIndex='operate' 或标题为「操作」）统一打标 + 左对齐；
+      // .fc-table-op-column 由 style.less 去掉首个内联 link/text 按钮的左内边距，
+      // 使按钮文字与表头「操作」左对齐（与中央 rowActions 的 .fc-table-action-cell 一致）。
+      const isOpColumn = dataIndex === 'operate' || col.title === '操作';
+      let next: ColumnType<RecordType> = isOpColumn ? { ...col, align: col.align ?? 'left', className: classNames(col.className, 'fc-table-op-column') } : col;
+
+      if (autoSortColumns) {
+        // 操作列不排序
+        const sorter = next.sorter !== undefined ? next.sorter : !isOpColumn && !!dataIndex ? defaultComparator(dataIndex as string) : false;
+        next = { ...next, sorter };
+      }
+      return next;
     });
 
     if (hasRowActions) {

@@ -24,6 +24,18 @@
   gap: 4px;
 }
 
+// 手写操作列（EnhancedTable 给操作列 td 注入 .fc-table-op-column）：
+// 首个内联 link/text 按钮去左内边距，让文字与「操作」表头左对齐（与 .fc-table-action-cell 一致）。
+// class 开头（不加 td 前缀）：只动 link/text 按钮，不影响 <a>/自定义 span 与多按钮间距。
+.fc-table-op-column {
+  > .ant-btn-link:first-child,
+  > .ant-btn-text:first-child,
+  > .ant-space > .ant-space-item:first-child > .ant-btn-link,
+  > .ant-space > .ant-space-item:first-child > .ant-btn-text {
+    padding-left: 0;
+  }
+}
+
 .fc-table-action-inline-btn-wrap {
   display: inline-flex;
 }
