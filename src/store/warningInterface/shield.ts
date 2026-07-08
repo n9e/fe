@@ -26,6 +26,7 @@ export interface shieldItem {
   cate: string;
   datasource_ids: number[];
   mute_time_type: 0 | 1;
+  mute_type?: 0 | 1; // 屏蔽方式: 0-屏蔽事件与通知(默认); 1-只屏蔽通知
   periodic_mutes: any[];
   prod: string;
   note?: string;

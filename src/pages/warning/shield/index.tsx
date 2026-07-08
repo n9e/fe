@@ -98,14 +98,17 @@ const Shield: React.FC = () => {
         dataIndex: 'note',
         render: (data, record: any) => {
           return (
-            <Link
-              to={{
-                pathname: `/alert-mutes/edit/${record.id}`,
-                search: `?bgid=${record.group_id}`,
-              }}
-            >
-              {data}
-            </Link>
+            <Space size={4}>
+              <Link
+                to={{
+                  pathname: `/alert-mutes/edit/${record.id}`,
+                  search: `?bgid=${record.group_id}`,
+                }}
+              >
+                {data}
+              </Link>
+              {record.mute_type === 1 && <Tag color='blue'>{t('mute_method.1')}</Tag>}
+            </Space>
           );
         },
       },
