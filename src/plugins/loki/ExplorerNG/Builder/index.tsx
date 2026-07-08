@@ -797,11 +797,11 @@ export default function Builder(props: Props) {
       ref={eleRef}
       className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
         absolute: !queryBuilderPinned,
-        'top-full': !queryBuilderPinned,
+        'top-[32px]': !queryBuilderPinned,
         'border-primary': !queryBuilderPinned,
         relative: queryBuilderPinned,
       })}
-      style={{ zIndex: 20, display: visible ? 'block' : 'none', maxHeight: 'calc(100vh - 180px)', overflowY: 'auto' }}
+      style={{ zIndex: 2, display: visible ? 'block' : 'none', maxHeight: 'calc(100vh - 180px)', overflowY: 'auto' }}
     >
       <Form form={form} layout='vertical'>
         <div className='w-full table border-separate border-spacing-y-3'>
