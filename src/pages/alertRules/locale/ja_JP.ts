@@ -431,6 +431,8 @@ const ja_JP = {
     collapse_core_only: '核心ステップのみ展開',
     collapse_expand_all: 'すべて展開',
     collapse_collapse_all: 'すべて折りたたむ',
+    collapse_sidebar: 'サイドバーを折りたたむ',
+    expand_sidebar: 'サイドバーを展開する',
   },
 };
 

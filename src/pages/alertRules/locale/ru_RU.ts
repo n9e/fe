@@ -432,6 +432,8 @@ const ru_RU = {
     collapse_core_only: 'Только основные шаги',
     collapse_expand_all: 'Развернуть все',
     collapse_collapse_all: 'Свернуть все',
+    collapse_sidebar: 'Свернуть боковую панель',
+    expand_sidebar: 'Развернуть боковую панель',
   },
 
   enrich_queries: {
