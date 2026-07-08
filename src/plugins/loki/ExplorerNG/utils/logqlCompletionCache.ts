@@ -48,15 +48,24 @@ export class LokiCompletionCache<T> {
       if (entry.promise) return entry.promise;
     }
 
-    const promise = fetcher().then((value) => {
-      this.entries.set(key, {
-        value,
-        expiresAt: Date.now() + this.ttlMs,
-        insertedAt: now,
+    let promise: Promise<T>;
+    promise = fetcher()
+      .then((value) => {
+        this.entries.set(key, {
+          value,
+          expiresAt: Date.now() + this.ttlMs,
+          insertedAt: now,
+        });
+        this.prune();
+        return value;
+      })
+      .catch((error) => {
+        const current = this.entries.get(key);
+        if (current?.promise === promise) {
+          this.entries.delete(key);
+        }
+        throw error;
       });
-      this.prune();
-      return value;
-    });
 
     this.entries.set(key, {
       promise,
@@ -73,8 +82,11 @@ export class LokiCompletionCache<T> {
 
   private prune() {
     if (this.entries.size <= this.maxSize) return;
-    const sorted = Array.from(this.entries.entries()).sort((a, b) => a[1].insertedAt - b[1].insertedAt);
-    for (const [key] of sorted.slice(0, this.entries.size - this.maxSize)) {
+    const evictable = Array.from(this.entries.entries())
+      .filter(([, entry]) => entry.value !== undefined)
+      .sort((a, b) => a[1].insertedAt - b[1].insertedAt);
+    const overflow = this.entries.size - this.maxSize;
+    for (const [key] of evictable.slice(0, overflow)) {
       this.entries.delete(key);
     }
   }

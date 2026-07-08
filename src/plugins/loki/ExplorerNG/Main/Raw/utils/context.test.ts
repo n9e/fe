@@ -33,4 +33,11 @@ describe('Loki raw context utils', () => {
     const newer = { timestamp: 3, __timestamp__: '3', line: 'newer', labels: { job: 'api' }, parsed_fields: {} };
     expect(mergeContextLogs(current, [older, current], [newer]).map((item) => item.line)).toEqual(['older', 'current', 'newer']);
   });
+
+  it('sorts numeric timestamp strings with different lengths', () => {
+    const current = { timestamp: 10000, __timestamp__: '10000', line: 'current', labels: { job: 'api' }, parsed_fields: {} };
+    const older = { timestamp: 9999, __timestamp__: '9999', line: 'older', labels: { job: 'api' }, parsed_fields: {} };
+    const newer = { timestamp: 10001, __timestamp__: '10001', line: 'newer', labels: { job: 'api' }, parsed_fields: {} };
+    expect(mergeContextLogs(current, [older], [newer]).map((item) => item.line)).toEqual(['older', 'current', 'newer']);
+  });
 });

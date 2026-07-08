@@ -377,7 +377,7 @@ export default function Metric(props: Props) {
 
   useEffect(() => {
     setExecuteLoading(queryValues?.vizType === 'table' ? tableLoading : timeseriesLoading);
-  }, [queryValues?.vizType, tableLoading, timeseriesLoading]);
+  }, [queryValues?.vizType, tableLoading, timeseriesLoading, setExecuteLoading]);
 
   const { frames, baseSeries } = useMemo(() => {
     return getDataFrameAndBaseSeries(series);

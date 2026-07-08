@@ -57,16 +57,16 @@ function readLineFilterValue(input: string, start: number) {
   if (input[index] === '"' || input[index] === "'" || input[index] === '`') {
     return readQuotedValue(input, index);
   }
-  const end = _.findIndex(input.slice(index).split(''), (char) => /\s|\|/.test(char));
-  if (end === -1) {
-    return {
-      value: input.slice(index),
-      end: input.length,
-    };
+  let end = index;
+  while (end < input.length && !/\s|\|/.test(input[end])) {
+    end += 1;
   }
+  if (end === index) return { value: '', end };
+  if (end === input.length) return { value: input.slice(index), end };
+
   return {
-    value: input.slice(index, index + end),
-    end: index + end,
+    value: input.slice(index, end),
+    end,
   };
 }
 

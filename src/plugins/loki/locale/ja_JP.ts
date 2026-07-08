@@ -20,6 +20,7 @@ const ja_JP = {
     highlight_keywords_add: 'ハイライトを追加',
     no_more_top: 'これ以上前のログはありません',
     no_more_bottom: 'これ以上新しいログはありません',
+    query_failed: 'コンテキストログの読み込みに失敗しました',
   },
   builder: {
     labels: 'ラベル',

@@ -42,7 +42,18 @@ export function getLogIdentity(log?: Partial<LokiLogRow>) {
   return `${labelText}|${log?.__timestamp__ || ''}|${log?.line || ''}`;
 }
 
+function compareTimestampNs(a?: string, b?: string) {
+  const ta = a && /^\d+$/.test(a) ? a : '0';
+  const tb = b && /^\d+$/.test(b) ? b : '0';
+  if (ta.length !== tb.length) return ta.length - tb.length;
+  if (ta < tb) return -1;
+  if (ta > tb) return 1;
+  return 0;
+}
+
 export function mergeContextLogs(currentLog: LokiLogRow, backwardLogs: LokiLogRow[], forwardLogs: LokiLogRow[]): LokiLogRow[] {
-  const logs = _.sortBy([...backwardLogs, currentLog, ...forwardLogs], (item) => item.__timestamp__ || '');
+  const logs = [...backwardLogs, currentLog, ...forwardLogs].sort((a, b) => {
+    return compareTimestampNs(a.__timestamp__, b.__timestamp__);
+  });
   return _.uniqBy(logs, (item) => getLogIdentity(item));
 }

@@ -20,6 +20,7 @@ const ru_RU = {
     highlight_keywords_add: 'Add highlight',
     no_more_top: 'No more earlier logs',
     no_more_bottom: 'No more newer logs',
+    query_failed: 'Failed to load context logs',
   },
   builder: {
     labels: 'Labels',

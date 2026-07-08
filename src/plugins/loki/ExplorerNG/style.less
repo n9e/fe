@@ -38,29 +38,24 @@
 
 
 .loki-logql-input.promql-input {
-  display: block;
+  display: flex;
   min-height: 32px;
   max-height: 200px;
   padding: 0;
   resize: vertical;
-  overflow: auto;
+  overflow: hidden;
 
   .input-content {
-    height: 100%;
-    min-height: 30px;
+    flex: 1;
+    min-width: 0;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .cm-editor {
-    height: 100%;
-    min-height: 30px;
-  }
-
-  .cm-scroller {
-    max-height: none;
-    overflow: auto;
-  }
-
-  .cm-content {
-    padding: 4px 8px;
+    width: 100%;
+    max-height: 100%;
   }
 }

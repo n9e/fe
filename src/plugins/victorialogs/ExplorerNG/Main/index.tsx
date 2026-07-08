@@ -54,7 +54,7 @@ export default function Main(props: Props) {
 
   return (
     <div className='flex flex-col h-full'>
-      <div className='flex-shrink-0 relative'>
+      <div className='flex-shrink-0 relative z-10'>
         <Row gutter={SIZE} wrap={false}>
           <Col flex='none'>
             <Segmented

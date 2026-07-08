@@ -225,7 +225,7 @@ export default function Raw(props: Props) {
 
   useEffect(() => {
     setExecuteLoading(loading || histogramLoading);
-  }, [loading, histogramLoading]);
+  }, [loading, histogramLoading, setExecuteLoading]);
 
   const pageLogs = useMemo(() => {
     const list = data?.list || [];

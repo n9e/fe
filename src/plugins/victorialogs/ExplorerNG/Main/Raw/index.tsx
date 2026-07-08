@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Empty, Pagination, Space } from 'antd';
+import { Empty, message, Pagination, Space } from 'antd';
 import { Form } from 'antd';
 import { useRequest } from 'ahooks';
 import { Trans, useTranslation } from 'react-i18next';
@@ -58,6 +58,18 @@ function getFields(logs: Record<string, any>[]) {
     });
   });
   return filterOutBuiltinFields(_.sortBy(fields));
+}
+
+function isNoDataError(error: any) {
+  const code = _.toLower(
+    _.toString(error?.code || error?.error_type || error?.errorType || error?.data?.code || error?.response?.data?.code || error?.response?.data?.error_type || ''),
+  );
+  if (code === 'no_data' || code === 'no-data') return true;
+
+  const legacyMessage = _.toLower(
+    _.trim(_.toString(error?.message || error?.msg || error?.data?.message || error?.response?.data?.message || error?.response?.data?.msg || '')),
+  );
+  return legacyMessage === 'no data';
 }
 
 export default function Raw(props: Props) {
@@ -168,7 +180,8 @@ export default function Raw(props: Props) {
           };
         })
         .catch((e: any) => {
-          if (_.includes(e?.message || '', 'no data')) {
+          appendRef.current = false;
+          if (isNoDataError(e)) {
             return {
               list: [],
               total: 0,
@@ -176,8 +189,8 @@ export default function Raw(props: Props) {
               fields: [],
             };
           }
+          message.error(e?.message || e?.msg || 'Query failed');
           loadTimeRef.current = null;
-          appendRef.current = false;
           return {
             list: [],
             total: 0,
@@ -265,7 +278,7 @@ export default function Raw(props: Props) {
 
   useEffect(() => {
     setExecuteLoading(loading || histogramLoading);
-  }, [loading, histogramLoading]);
+  }, [loading, histogramLoading, setExecuteLoading]);
 
   return refreshFlag ? (
     <>

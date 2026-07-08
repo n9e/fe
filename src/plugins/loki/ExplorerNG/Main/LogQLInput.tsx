@@ -21,6 +21,19 @@ import { createLokiLogQLCompletionSource, LokiCompletionSourceParams } from '../
 const dynamicConfigCompartment = new Compartment();
 const promqlExtension = new PromQLExtension().activateCompletion(false).activateLinter(false);
 
+const overrideTheme = EditorView.theme({
+  '.cm-content': {
+    padding: '4px 11px',
+  },
+  '.cm-line': {
+    padding: '0',
+    lineHeight: '1.5715',
+  },
+  '.cm-scroller': {
+    maxHeight: '100%',
+  },
+});
+
 export interface LokiLogQLInputProps {
   value?: string;
   datasourceValue?: number;
@@ -72,7 +85,7 @@ export default React.forwardRef<LokiLogQLInputHandle, LokiLogQLInputProps>(funct
   }));
 
   useEffect(() => {
-    const dynamicConfig = [darkMode ? darkTheme : lightTheme];
+    const dynamicConfig = [darkMode ? darkTheme : lightTheme, overrideTheme];
     const view = viewRef.current;
     if (view === null) {
       if (!containerRef.current) {

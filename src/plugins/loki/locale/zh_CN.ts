@@ -20,6 +20,7 @@ const zh_CN = {
     highlight_keywords_add: '添加高亮',
     no_more_top: '没有更早的日志',
     no_more_bottom: '没有更新的日志',
+    query_failed: '上下文日志加载失败',
   },
   builder: {
     labels: '标签',

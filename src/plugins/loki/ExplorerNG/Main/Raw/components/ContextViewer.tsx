@@ -319,6 +319,7 @@ export default function ContextViewer(props: Props) {
   const logIdentity = useMemo(() => getLogIdentity(log), [log]);
   const scrollTarget = useRef<'top' | 'bottom' | 'current'>('current');
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const dataRef = useRef<{ flag: string; list: LokiLogRow[] } | undefined>();
 
   const queryContextLogs = async (params: { anchorLog: LokiLogRow; mode: 'initial' | 'top' | 'bottom' }) => {
     if (!log || !datasourceValue || !selector) {
@@ -356,30 +357,47 @@ export default function ContextViewer(props: Props) {
     };
 
     if (params.mode === 'top') {
-      const backwardLogs = await runQuery(ranges.backward, 'backward');
+      let backwardLogs: LokiLogRow[] = [];
+      try {
+        backwardLogs = await runQuery(ranges.backward, 'backward');
+      } catch (e) {
+        message.error(t('context.query_failed'));
+        return { flag: _.uniqueId('loki_context_'), list: dataRef.current?.list || [] };
+      }
+
       if (_.isEmpty(backwardLogs)) {
         message.info(t('context.no_more_top'));
       }
       return {
         flag: _.uniqueId('loki_context_'),
-        list: mergeContextLogs(currentLog, backwardLogs, data?.list || []),
+        list: mergeContextLogs(currentLog, backwardLogs, dataRef.current?.list || []),
       };
     }
 
     if (params.mode === 'bottom') {
-      const forwardLogs = await runQuery(ranges.forward, 'forward');
+      let forwardLogs: LokiLogRow[] = [];
+      try {
+        forwardLogs = await runQuery(ranges.forward, 'forward');
+      } catch (e) {
+        message.error(t('context.query_failed'));
+        return { flag: _.uniqueId('loki_context_'), list: dataRef.current?.list || [] };
+      }
+
       if (_.isEmpty(forwardLogs)) {
         message.info(t('context.no_more_bottom'));
       }
       return {
         flag: _.uniqueId('loki_context_'),
-        list: mergeContextLogs(currentLog, data?.list || [], forwardLogs),
+        list: mergeContextLogs(currentLog, dataRef.current?.list || [], forwardLogs),
       };
     }
 
     const [backwardRes, forwardRes] = await Promise.allSettled([runQuery(ranges.backward, 'backward'), runQuery(ranges.forward, 'forward')]);
     const backwardLogs = backwardRes.status === 'fulfilled' ? backwardRes.value : [];
     const forwardLogs = forwardRes.status === 'fulfilled' ? forwardRes.value : [];
+    if (backwardRes.status === 'rejected' || forwardRes.status === 'rejected') {
+      message.error(t('context.query_failed'));
+    }
     return {
       flag: _.uniqueId('loki_context_'),
       list: mergeContextLogs(currentLog, backwardLogs, forwardLogs),
@@ -397,6 +415,10 @@ export default function ContextViewer(props: Props) {
   });
 
   useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+
+  useEffect(() => {
     if (open && log) {
       scrollTarget.current = 'current';
       run({
@@ -404,7 +426,7 @@ export default function ContextViewer(props: Props) {
         mode: 'initial',
       });
     }
-  }, [open, selector, log?.__timestamp__, logIdentity]);
+  }, [open, selector, logIdentity]);
 
   useEffect(() => {
     const container = tableContainerRef.current;

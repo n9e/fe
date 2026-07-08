@@ -17,6 +17,7 @@ import { DEFAULT_RAW_LOG_LIMIT, MAX_RAW_LOG_LIMIT } from '../constants';
 import { getLabelNames, getLabelValues, getParsedFields } from '../services';
 import { FieldNameSuggestion, LokiLabelMatcher, LokiLineFilter, LokiMetricBuilderState, LokiParsedFieldFilter, LokiRawBuilderState } from '../types';
 import { renderLogQLByMode, renderRawLogQL } from '../utils/logsQL';
+import { LokiCompletionCache } from '../utils/logqlCompletionCache';
 
 interface Props {
   visible: boolean;
@@ -68,7 +69,7 @@ const rangeFuncOptions = [
 const unwrapRangeFuncs = ['sum_over_time', 'avg_over_time', 'min_over_time', 'max_over_time', 'quantile_over_time'];
 
 const SUGGESTION_DEBOUNCE_WAIT = 500;
-const parsedFieldsCache = new Map<string, FieldNameSuggestion[]>();
+const parsedFieldsCache = new LokiCompletionCache<FieldNameSuggestion[]>({ ttlMs: 60 * 1000, maxSize: 100 });
 
 function getRangeMs(range: any) {
   if (!range) return undefined;
@@ -156,23 +157,21 @@ function useLabelNameSuggestions(params: { datasourceValue?: number; range?: any
 
 function useParsedFieldSuggestions(params: { datasourceValue?: number; range?: any; query: string; enabled?: boolean }) {
   const range = useMemo(() => getRangeMs(params.range), [JSON.stringify(params.range)]);
-  const cacheKey = `${params.datasourceValue || ''}:${params.query}`;
+  const cacheKey = `${params.datasourceValue || ''}:${range?.start || ''}:${range?.end || ''}:${params.query}`;
   return useRequest(
-    async () => {
-      if (parsedFieldsCache.has(cacheKey)) return parsedFieldsCache.get(cacheKey)!;
-      const fields = await getParsedFields({
-        cate: DatasourceCateEnum.loki,
-        datasource_id: params.datasourceValue!,
-        query: params.query || '{}',
-        start: range!.start,
-        end: range!.end,
-        limit: 200,
-      });
-      parsedFieldsCache.set(cacheKey, fields);
-      return fields;
-    },
+    () =>
+      parsedFieldsCache.getOrFetch(cacheKey, () =>
+        getParsedFields({
+          cate: DatasourceCateEnum.loki,
+          datasource_id: params.datasourceValue!,
+          query: params.query || '{}',
+          start: range!.start,
+          end: range!.end,
+          limit: 200,
+        }),
+      ),
     {
-      refreshDeps: [params.datasourceValue, params.query],
+      refreshDeps: [params.datasourceValue, params.query, range?.start, range?.end],
       ready: !!params.enabled && !!params.datasourceValue && !!range?.start && !!range?.end && /\|\s*(json|logfmt|regexp|pattern)\b/.test(params.query),
       debounceWait: SUGGESTION_DEBOUNCE_WAIT,
     },

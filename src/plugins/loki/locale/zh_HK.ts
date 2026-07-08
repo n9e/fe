@@ -20,6 +20,7 @@ const zh_HK = {
     highlight_keywords_add: '新增高亮',
     no_more_top: '沒有更早的日誌',
     no_more_bottom: '沒有更新的日誌',
+    query_failed: '上下文日誌載入失敗',
   },
   builder: {
     labels: '標籤',
