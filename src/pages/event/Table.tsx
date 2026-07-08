@@ -71,11 +71,16 @@ export default function TableCpt(props: IProps) {
     {
       title: t('rule_name'),
       dataIndex: 'rule_name',
-      render(title, { id, tags }) {
+      render(title, { id, tags, notify_muted }) {
         return (
           <>
             <div className='mb-2'>
               <Link to={`/alert-cur-events/${id}`}>{title}</Link>
+              {notify_muted === 1 && (
+                <Tag color='blue' className='ml-1'>
+                  {t('detail.notify_muted')}
+                </Tag>
+              )}
             </div>
             <div>
               {_.map(tags, (item) => {

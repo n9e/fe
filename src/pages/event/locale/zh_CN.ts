@@ -53,6 +53,7 @@ const zh_CN = {
     datasource_id: '数据源',
     severity: '告警级别',
     is_recovered: '事件状态',
+    notify_muted: '通知已屏蔽',
     tags: '事件标签',
     target_note: '对象备注',
     trigger_time: '触发时间',

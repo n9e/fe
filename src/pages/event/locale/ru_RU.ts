@@ -51,6 +51,7 @@ const ru_RU = {
     datasource_id: 'Источник данных',
     severity: 'Уровень события',
     is_recovered: 'Состояние события',
+    notify_muted: 'Уведомление заглушено',
     tags: 'Метки события',
     target_note: 'Примечание к объекту',
     trigger_time: 'Время срабатывания',

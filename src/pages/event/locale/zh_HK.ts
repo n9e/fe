@@ -51,6 +51,7 @@ const zh_HK = {
     datasource_id: '數據源',
     severity: '告警級別',
     is_recovered: '事件狀態',
+    notify_muted: '通知已屏蔽',
     tags: '事件標籤',
     target_note: '機器備註',
     trigger_time: '觸發時間',

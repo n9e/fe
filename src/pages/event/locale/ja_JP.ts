@@ -51,6 +51,7 @@ const ja_JP = {
     datasource_id: 'データソース',
     severity: 'アラートレベル',
     is_recovered: 'イベント状態',
+    notify_muted: '通知抑制中',
     tags: 'イベントタグ',
     target_note: 'オブジェクト備考',
     trigger_time: 'トリガ時間',

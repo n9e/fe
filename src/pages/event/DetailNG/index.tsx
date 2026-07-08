@@ -217,7 +217,12 @@ export default function DetailNG(props: Props) {
       label: t('detail.is_recovered'),
       key: 'is_recovered',
       render(isRecovered) {
-        return <Tag color={isRecovered ? 'green' : 'red'}>{isRecovered ? 'Recovered' : 'Triggered'}</Tag>;
+        return (
+          <Space size={4}>
+            <Tag color={isRecovered ? 'green' : 'red'}>{isRecovered ? 'Recovered' : 'Triggered'}</Tag>
+            {eventDetail?.notify_muted === 1 && <Tag color='blue'>{t('detail.notify_muted')}</Tag>}
+          </Space>
+        );
       },
     },
     {
