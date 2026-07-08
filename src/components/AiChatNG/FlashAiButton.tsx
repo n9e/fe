@@ -14,17 +14,18 @@ import { EPageType } from '../AiChat/config';
 
 function useFlashAiClickHandler() {
   const { i18n } = useTranslation();
-  const { openAiChat } = useAiChatContext();
+  const { openAiChat, cachedSessionId } = useAiChatContext();
 
   return React.useCallback(() => {
     const url = getCurrentPageUrl();
     const recommend = getRecommendByUrl(url, i18n.language);
     openAiChat({
+      chatId: cachedSessionId,
       queryPageFrom: buildPageFrom({ url }),
       queryAction: recommend?.queryAction,
       promptList: recommend?.promptList,
     });
-  }, [i18n, openAiChat]);
+  }, [i18n, openAiChat, cachedSessionId]);
 }
 
 function useAiEntClickHandler(options?: {
