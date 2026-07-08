@@ -430,6 +430,8 @@ const zh_HK = {
     collapse_core_only: '僅展開核心步驟',
     collapse_expand_all: '展開全部',
     collapse_collapse_all: '收起全部',
+    collapse_sidebar: '收起左側欄',
+    expand_sidebar: '展開左側欄',
   },
 };
 export default zh_HK;

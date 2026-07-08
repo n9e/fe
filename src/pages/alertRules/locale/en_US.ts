@@ -120,7 +120,8 @@ const en_US = {
       second: 's',
       millisecond: 'ms',
     },
-    prom_eval_interval_tip: 'PromQL execution frequency: the time-series database is queried every {{num}} seconds, and the results are renamed and written back to the time-series database',
+    prom_eval_interval_tip:
+      'PromQL execution frequency: the time-series database is queried every {{num}} seconds, and the results are renamed and written back to the time-series database',
     prom_for_duration_tip:
       'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
   },
@@ -432,6 +433,8 @@ const en_US = {
     collapse_core_only: 'Core steps only',
     collapse_expand_all: 'Expand all',
     collapse_collapse_all: 'Collapse all',
+    collapse_sidebar: 'Collapse sidebar',
+    expand_sidebar: 'Expand sidebar',
   },
 
   enrich_queries: {

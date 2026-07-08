@@ -213,6 +213,7 @@ function PipelineSummary() {
 function EffectiveSummary() {
   const { t } = useTranslation('alertRules');
   const { serviceCalMap } = useFormNGData();
+  const enableStatus = Form.useWatch('enable_status');
   const effectiveTime = Form.useWatch('effective_time');
   const enableInBg = Form.useWatch('enable_in_bg');
   const serviceCalConfigs = Form.useWatch(['extra_config', 'service_cal_configs']);
@@ -226,6 +227,7 @@ function EffectiveSummary() {
     <>
       <div>
         <SectionTitle>{t('effective_configs')}</SectionTitle>
+        <SwitchField label={t('enable_status')} value={enableStatus} />
         <ShortField label={t('time_zone')} value={timeZone === 'Local' ? `Local (${t('local_time')})` : timeZone} />
         <Field>
           <FieldLabel>{t('form_ng.effective_time_window')}</FieldLabel>
