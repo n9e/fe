@@ -1,19 +1,19 @@
 import React, { useContext } from 'react';
-import { Form, Card, Space, Switch, Button, Tag } from 'antd';
-import { PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Form, Switch, Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
+import CardContainer from '@/pages/alertRules/FormNG/components/CardContainer';
 
 import Trigger from './Trigger';
 import NodataTrigger from './NodataTrigger';
 import AnomalyTrigger from './AnomalyTrigger';
 
 interface IProps {
-  defaultActiveKey: string;
   prefixField?: any;
   fullPrefixName?: string[]; // 完整的前置字段名，用于 getFieldValue 获取指定字段的值
   prefixName?: string[]; // 列表字段名
@@ -25,8 +25,7 @@ interface IProps {
 export default function index(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { feats } = useContext(CommonStateContext);
-  const { defaultActiveKey, prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled, initialValue } = props;
-  const [activeKey, setActiveKey] = React.useState(defaultActiveKey);
+  const { prefixField = {}, prefixName = [], queries, disabled, initialValue } = props;
 
   const cate = Form.useWatch(['cate']);
   const exp_trigger_disable = Form.useWatch([...prefixName, 'exp_trigger_disable']);
@@ -37,54 +36,13 @@ export default function index(props: IProps) {
 
   return (
     <div>
-      <FormItemLabel description={showAnomalyTrigger ? t('form_ng.triggers_desc_anomaly') : t('form_ng.triggers_desc')}>{t('form_ng.triggers')}</FormItemLabel>
-      <Card
-        size='small'
-        tabProps={{
-          size: 'small',
-        }}
-        tabList={_.concat(
-          [
-            {
-              key: 'triggers',
-              tab: (
-                <Space>
-                  {t('trigger.title')}
-                  {exp_trigger_disable === false && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)', margin: 0 }} />}
-                </Space>
-              ),
-            },
-            {
-              key: 'nodata_trigger',
-              tab: (
-                <Space>
-                  {t('nodata_trigger.title')}
-                  {nodata_trigger_enable === true && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)' }} />}
-                </Space>
-              ),
-            },
-          ],
-          showAnomalyTrigger
-            ? [
-                {
-                  key: 'anomaly_trigger',
-                  tab: (
-                    <Space>
-                      {t('anomaly_trigger.title')}
-                      {anomaly_trigger_enable === true && <CheckCircleOutlined style={{ color: 'var(--fc-fill-success)' }} />}
-                    </Space>
-                  ),
-                },
-              ]
-            : [],
-        )}
-        activeTabKey={activeKey}
-        onTabChange={(key) => {
-          setActiveKey(key);
-        }}
-      >
-        <div className='flex-col gap-4' style={{ display: activeKey === 'triggers' ? 'flex' : 'none' }}>
-          <Space>
+      <FormItemLabel>{t('form_ng.triggers')}</FormItemLabel>
+
+      {/* 阈值判断 */}
+      <CardContainer className='mb-2'>
+        <div className='flex flex-col gap-0.5'>
+          <div className='flex items-center gap-2'>
+            <span className='font-bold'>{t('trigger.title')}</span>
             <Form.Item
               noStyle
               name={[...prefixName, 'exp_trigger_disable']}
@@ -94,10 +52,11 @@ export default function index(props: IProps) {
             >
               <Switch size='small' />
             </Form.Item>
-            {t('trigger.exp_trigger_disable')}
-            <Tag color='purple'>{t('trigger.threshold_tip')}</Tag>
-          </Space>
-          <div style={{ display: exp_trigger_disable !== false ? 'none' : 'block' }}>
+          </div>
+          <div className='text-soft'>{t('form_ng.triggers_threshold_desc')}</div>
+        </div>
+        {exp_trigger_disable === false && (
+          <div className='mt-4'>
             <div className='mb-4'>
               <Inhibit triggersKey='triggers' />
             </div>
@@ -142,22 +101,46 @@ export default function index(props: IProps) {
               )}
             </Form.List>
           </div>
+        )}
+      </CardContainer>
+
+      {/* 数据缺失 */}
+      <CardContainer className='mb-2'>
+        <div className='flex flex-col gap-0.5'>
+          <div className='flex items-center gap-2'>
+            <span className='font-bold'>{t('nodata_trigger.title')}</span>
+            <Form.Item noStyle name={[...prefixName, 'nodata_trigger', 'enable']} valuePropName='checked'>
+              <Switch size='small' />
+            </Form.Item>
+          </div>
+          <div className='text-soft'>{t('form_ng.triggers_nodata_desc')}</div>
         </div>
-        <div
-          style={{
-            display: activeKey === 'nodata_trigger' ? 'block' : 'none',
-          }}
-        >
-          <NodataTrigger prefixName={prefixName} />
-        </div>
-        <div
-          style={{
-            display: activeKey === 'anomaly_trigger' ? 'block' : 'none',
-          }}
-        >
-          <AnomalyTrigger prefixName={prefixName} active={activeKey === 'anomaly_trigger'} />
-        </div>
-      </Card>
+        {nodata_trigger_enable === true && (
+          <div className='mt-4'>
+            <NodataTrigger prefixName={prefixName} hideSwitch />
+          </div>
+        )}
+      </CardContainer>
+
+      {/* 智能告警 */}
+      {showAnomalyTrigger && (
+        <CardContainer className='mb-2'>
+          <div className='flex flex-col gap-0.5'>
+            <div className='flex items-center gap-2'>
+              <span className='font-bold'>{t('anomaly_trigger.title')}</span>
+              <Form.Item noStyle name={[...prefixName, 'anomaly_trigger', 'enable']} valuePropName='checked'>
+                <Switch size='small' />
+              </Form.Item>
+            </div>
+            <div className='text-soft'>{t('form_ng.triggers_anomaly_desc')}</div>
+          </div>
+          {anomaly_trigger_enable === true && (
+            <div className='mt-4'>
+              <AnomalyTrigger prefixName={prefixName} active hideSwitch />
+            </div>
+          )}
+        </CardContainer>
+      )}
     </div>
   );
 }
