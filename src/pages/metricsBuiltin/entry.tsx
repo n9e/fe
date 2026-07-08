@@ -16,9 +16,10 @@
  */
 import React from 'react';
 import { pathname } from './constants';
-import List from './List';
 import './locale';
 import './style.less';
+
+const List = React.lazy(() => import('./List'));
 
 export default {
   routes: [

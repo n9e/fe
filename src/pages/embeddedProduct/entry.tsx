@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { PATH, DETAIL_PATH } from './constants';
-import List from './pages/List';
-import Detail from './pages/Detail';
 import './locale';
+
+const List = React.lazy(() => import('./pages/List'));
+const Detail = React.lazy(() => import('./pages/Detail'));
 
 export default {
   routes: [
