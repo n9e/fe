@@ -47,6 +47,8 @@ const en_US = {
     auth: 'Auth',
     username: 'User',
     password: 'Password',
+    access_key_id_placeholder: 'Please enter AccessKey ID',
+    access_key_secret_placeholder: 'Please enter AccessKey Secret',
     skip_ssl_verify: 'Skip SSL verify',
     skip_tls_verify: 'Skip TLS verify',
     yes: 'Yes',
@@ -81,6 +83,8 @@ const en_US = {
       tsdb_type: 'Time series database type',
     },
     es: {
+      write_config: 'Write settings',
+      disable_write: 'Disable Write',
       enable_write: 'Enable Write',
       version: 'Version',
       version_placeholder: 'Leave blank to auto-detect version. If no special requirements, leave it blank; if you need to specify, please fill in x.y.z format (e.g., 7.10.2)',

@@ -56,7 +56,7 @@ export default function Edit() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/components'>
-      {initialValues ? <Form type={3} initialValues={initialValues} /> : <div>{t('alertRulesBuiltin:detail_no_result')}</div>}
+      {initialValues ? <Form type={3} initialValues={initialValues} /> : <div>{t('common:nodata')}</div>}
     </PageLayout>
   );
 }

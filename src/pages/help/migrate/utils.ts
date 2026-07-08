@@ -15,6 +15,7 @@
  *
  */
 import _ from 'lodash';
+import i18next from 'i18next';
 import { v4 as uuidv4 } from 'uuid';
 import semver from 'semver';
 import { updateDashboardConfigs } from '@/services/dashboardV2';
@@ -86,7 +87,7 @@ export function convertPanelV1ToV2(oldStructure) {
     },
     links: _.map(links, (item) => {
       return {
-        title: '链接',
+        title: i18next.t('common:link'),
         url: item,
       };
     }),

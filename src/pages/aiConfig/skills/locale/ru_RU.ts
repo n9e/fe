@@ -25,6 +25,7 @@ const ru_RU = {
   document_empty: 'Нет содержимого документа',
   search_placeholder: 'Поиск по ключевому слову',
   builtin: 'Встроенный',
+  description: 'Описание',
   frontmatter_title: 'Метаданные',
 
   form: {
@@ -46,6 +47,8 @@ const ru_RU = {
     metadata: 'Метаданные',
     metadata_key_value_required: 'Обязательно',
     add_metadata: 'Добавить метаданные',
+    formatted_tip: 'Форматированный',
+    code_tip: 'Исходный текст',
   },
 
   git: {

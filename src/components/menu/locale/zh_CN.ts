@@ -56,5 +56,9 @@ const zh_CN = {
   notification_rules: '通知规则',
   notification_channels: '通知媒介',
   notification_templates: '消息模板',
+  网络探测: '网络探测',
+  数据采集: '数据采集',
+  对象列表: '对象列表',
+  站内公告: '站内公告',
 };
 export default zh_CN;

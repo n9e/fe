@@ -48,6 +48,7 @@ const ja_JP = {
       check_all: 'すべて選択',
     },
     copy_json: 'JSONをコピー',
+    parse_failed: '解析できません',
   },
   datasource: {},
   alert: {

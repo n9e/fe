@@ -47,6 +47,8 @@ const zh_CN = {
     auth: '授权',
     username: '用户名',
     password: '密码',
+    access_key_id_placeholder: '请输入AccessKey ID',
+    access_key_secret_placeholder: '请输入AccessKey Secret',
     skip_ssl_verify: '跳过 SSL 验证',
     skip_tls_verify: '跳过 TLS 验证',
     yes: '是',

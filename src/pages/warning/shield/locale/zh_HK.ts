@@ -1,5 +1,6 @@
 const zh_HK = {
   title: '屏蔽規則',
+  edit_missing_params: '缺少必要參數，無法編輯，請聯繫管理員',
   search_placeholder: '搜索規標題、標籤、屏蔽原因',
   datasource_type: '數據源類型',
   datasource_id: '數據源',

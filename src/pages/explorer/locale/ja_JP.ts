@@ -21,6 +21,8 @@ const ja_JP = {
     copyToClipboard: 'クリップボードにコピー',
     show_conext: 'コンテキストを表示',
     context: 'ログコンテキスト',
+    context_result_count: '結果数',
+    context_lines: '前後{{num}}行のログ',
     limit: '結果数',
     sort: {
       NEWEST_FIRST: '最新のものから',
@@ -68,12 +70,13 @@ const ja_JP = {
       exists: 'フィールドが存在するドキュメントをフィルタリング',
     },
     field_values_topn: {
-      label: 'トップ {{n}} の値',
+      title: 'トップ {{n}} の値',
       settings: {
         title: 'トップ N の値設定',
       },
     },
   },
+  drilldown_settings: 'ドリルダウン設定',
   historicalRecords: {
     button: '歴史レコード',
     searchPlaceholder: '歴史レコードを検索',
@@ -115,6 +118,7 @@ const ja_JP = {
         allFields: '利用可能なフィールド',
         showFields: '表示フィールド',
         showFields_empty: 'ログのデフォルト表示フィールドを全て表示',
+        tip: '現在フィールド {{fields}} のみ表示しています。設定アイコンから全フィールドを表示できます',
       },
       jsonSettings: {
         title: 'JSON設定',

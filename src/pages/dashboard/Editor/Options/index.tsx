@@ -16,6 +16,7 @@
  */
 import React from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 import Timeseries from './Timeseries';
 import Stat from './Stat';
 import Table from './Table';
@@ -30,6 +31,7 @@ import Heatmap from './Heatmap';
 import BarChart from './BarChart';
 
 export default function index({ type, targets }) {
+  const { t } = useTranslation('dashboard');
   const OptionsCptMap = {
     timeseries: <Timeseries targets={targets} />,
     stat: <Stat targets={targets} />,
@@ -44,5 +46,5 @@ export default function index({ type, targets }) {
     heatmap: <Heatmap />,
     barchart: <BarChart />,
   };
-  return OptionsCptMap[type] || `无效的图表类型 ${type}`;
+  return OptionsCptMap[type] || `${t('detail.invalidPanelType')} ${type}`;
 }

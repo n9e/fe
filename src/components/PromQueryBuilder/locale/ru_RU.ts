@@ -3,6 +3,7 @@ const ru_RU = {
   metric: 'Показатель',
   labelFilter: 'Фильтрация по тегам',
   addOperations: 'Добавить операции',
+  noParams: 'Без параметров',
 };
 
 export default ru_RU;

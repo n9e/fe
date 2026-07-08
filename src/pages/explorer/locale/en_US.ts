@@ -21,6 +21,8 @@ const en_US = {
     copyToClipboard: 'Copy to clipboard',
     show_conext: 'Show context',
     context: 'Log context',
+    context_result_count: 'Results',
+    context_lines: '{{num}} lines of context',
     limit: 'Limit',
     sort: {
       NEWEST_FIRST: 'Newest first',
@@ -68,12 +70,13 @@ const en_US = {
       exists: 'Filter for field persent',
     },
     field_values_topn: {
-      label: 'Top {{n}} values',
+      title: 'Top {{n}} values',
       settings: {
         title: 'Top N values settings',
       },
     },
   },
+  drilldown_settings: 'Drilldown settings',
   historicalRecords: {
     button: 'Historical records',
     searchPlaceholder: 'Search historical records',
@@ -115,6 +118,7 @@ const en_US = {
         allFields: 'All fields',
         showFields: 'Show fields',
         showFields_empty: 'Show all fields by default',
+        tip: 'Only fields {{fields}} are displayed. Click the settings icon to show all fields',
       },
       jsonSettings: {
         title: 'JSON settings',

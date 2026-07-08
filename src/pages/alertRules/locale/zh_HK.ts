@@ -1,5 +1,7 @@
 const zh_HK = {
   step_title: '配置步驟',
+  validate_metric_msg: '請先校驗指標',
+  smart_rule_limit_msg: '可添加的智能告警規則數量已達上限，請聯繫客服',
   title: '告警規則',
   empty_guide: {
     title: '還沒有告警規則',
@@ -79,6 +81,7 @@ const zh_HK = {
   callbacks_tip: '支持配置變數，變數使用方式可參考 <a>變數引用</a> 文檔',
   override_global_webhook: '覆蓋全局回調',
   enrich_queries: {
+    title: '附加查詢',
     tip: '告警觸發時會執行附加查詢，將查詢結果寫入事件的 extra_info（格式化字符串）和 extra_info_map（原始鍵值對）字段，可在通知模板中通過 {{ .ExtraInfo }} 或 {{ .ExtraInfoMap }}',
   },
   override_global_webhook_tip: '此開關開啟之後，告警事件只會發給本規則的回調地址，不會再發給全局的回調地址',
@@ -298,6 +301,7 @@ const zh_HK = {
   },
   trigger: {
     title: '閾值判斷',
+    value_msg: '請輸入數值',
     builder: '簡單模式',
     code: '表達式模式',
     expr_invalid: '表達式語法錯誤',

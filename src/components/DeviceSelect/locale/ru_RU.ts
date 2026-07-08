@@ -1,5 +1,6 @@
 const ru_RU = {
   host: {
+    and: 'И',
     title: 'Фильтрация хостов',
     key: {
       all_hosts: 'Все хосты',

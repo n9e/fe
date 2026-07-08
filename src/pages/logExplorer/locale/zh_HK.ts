@@ -94,6 +94,7 @@ const zh_HK = {
         allFields: '可用字段',
         showFields: '顯示字段',
         showFields_empty: '日誌默認顯示全部字段',
+        tip: '當前只顯示字段 {{fields}}，可點擊設置圖標設置顯示所有字段',
       },
       jsonSettings: {
         title: 'JSON 設置',
@@ -156,6 +157,7 @@ const zh_HK = {
     loading_tip: '請勿關閉此頁。需要新的查詢，',
     loading_new_tab: '打開新的標籤頁',
     loading_tip_suffix: '進行日誌檢索',
+    sampled_tip: '日誌數量過多，當前聚類結果基於採樣日誌生成',
   },
   view_placeholder: '日誌視圖',
 };

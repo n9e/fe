@@ -21,6 +21,8 @@ const zh_CN = {
     copyToClipboard: '复制到剪贴板',
     show_conext: 'Show Context',
     context: '日志上下文',
+    context_result_count: '结果数',
+    context_lines: '上下{{num}}条日志',
     limit: '结果数',
     sort: {
       NEWEST_FIRST: '最新优先',
@@ -74,6 +76,7 @@ const zh_CN = {
       },
     },
   },
+  drilldown_settings: '下钻设置',
   historicalRecords: {
     button: '历史记录',
     searchPlaceholder: '搜索历史记录',
@@ -115,6 +118,7 @@ const zh_CN = {
         allFields: '可用字段',
         showFields: '显示字段',
         showFields_empty: '日志默认显示全部字段',
+        tip: '当前只显示字段 {{fields}}，可点击设置图标设置显示所有字段',
       },
       jsonSettings: {
         title: 'JSON 设置',

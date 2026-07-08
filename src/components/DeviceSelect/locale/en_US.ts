@@ -1,5 +1,6 @@
 const en_US = {
   host: {
+    and: 'AND',
     title: 'Host filter',
     key: {
       all_hosts: 'All hosts',

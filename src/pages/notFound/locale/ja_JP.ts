@@ -1,7 +1,7 @@
 const ja_JP = {
-  "The Flashcat webpage is": "Flashcatウェブページ",
-  "The Nightingale webpage is": "Nightingale監視ウェブページ",
-  "out of Service": "サービスが利用できません",
+  网络开小差了: ' ネットワークに問題が発生しました',
+  可以刷新一下试试: '再読み込みをお試しください',
+  刷新: '再読み込み',
 };
 
 export default ja_JP;

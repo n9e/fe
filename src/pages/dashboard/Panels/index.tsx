@@ -313,7 +313,7 @@ function index(props: IProps) {
                       }}
                       onDeleteClick={() => {
                         Modal.confirm({
-                          title: `是否删除图表：${item.name}`,
+                          title: t('detail.deletePanel_confirm', { name: item.name }),
                           onOk: async () => {
                             setPanels((panels) => {
                               const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
@@ -341,7 +341,7 @@ function index(props: IProps) {
                 ) : (
                   <div className='dashboards-panels-item-invalid'>
                     <div>
-                      <div>无效的图表配置</div>
+                      <div>{t('detail.invalidPanelConfig')}</div>
                       <a
                         onClick={() => {
                           const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
@@ -358,7 +358,7 @@ function index(props: IProps) {
                             });
                         }}
                       >
-                        删除
+                        {t('common:btn.delete')}
                       </a>
                     </div>
                   </div>

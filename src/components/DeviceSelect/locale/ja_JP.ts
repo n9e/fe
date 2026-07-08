@@ -1,5 +1,6 @@
 const ja_JP = {
   host: {
+    and: 'かつ',
     title: 'ホストフィルタ',
     key: {
       all_hosts: 'すべてのホスト',

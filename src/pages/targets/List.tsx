@@ -171,7 +171,7 @@ export default function List(props: IProps) {
           >
             <TargetMetaDrawer ident={text} />
             {import.meta.env['VITE_IS_PRO'] && (
-              <Tooltip title='查看关联采集配置'>
+              <Tooltip title={t('view_related_collects')}>
                 <ApartmentOutlined
                   onClick={() => {
                     setCollectsDrawerVisible(true);

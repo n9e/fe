@@ -1,5 +1,6 @@
 const ja_JP = {
   title: 'スクリーンルール',
+  edit_missing_params: '必要なパラメータが不足しているため編集できません。管理者にお問い合わせください',
   search_placeholder: '検索ルールのタイトル、ラベル、ブロック理由',
   datasource_type: 'データソースタイプ',
   datasource_id: 'データソース',

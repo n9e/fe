@@ -1,4 +1,5 @@
 const zh_CN = {
+  no_busi_group_id: '该告警未返回业务组ID',
   title: '活跃告警',
   search_placeholder: '模糊搜索规则和标签(多个关键词请用空格分隔)',
   hours: {

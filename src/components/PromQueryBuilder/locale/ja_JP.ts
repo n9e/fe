@@ -3,6 +3,7 @@ const ja_JP = {
   metric: "メトリック",
   labelFilter: "ラベルフィルタ",
   addOperations: "操作を追加",
+  noParams: 'パラメータなし',
 };
 
 export default ja_JP;

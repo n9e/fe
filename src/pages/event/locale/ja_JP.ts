@@ -1,4 +1,5 @@
 const ja_JP = {
+  no_busi_group_id: 'このアラートはビジネスグループ ID を返しませんでした',
   title: 'アクティブアラート',
   search_placeholder: 'ルールとタグを模糊検索（複数のキーワードはスペースで区切ってください）',
   hours: {

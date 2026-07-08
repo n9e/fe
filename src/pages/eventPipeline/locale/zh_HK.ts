@@ -194,6 +194,8 @@ const zh_HK = {
     match_attribute_keys: '屬性',
     match_attribute_keys_required: '屬性不能為空',
     keys_at_least_one_required: '至少需要一個標籤或屬性',
+    labels_conflict: '標籤 {{label}} 的值不同，無法進行抑制',
+    attributes_conflict: '屬性 {{attribute}} 的值不同，無法進行抑制',
     preview:
       '規則預覽：當「<b>新告警：{{newAlertLabelsAttrs}}</b>」且在過去「<b>{{duration}} 秒</b>」內存在「<b>活躍告警：{{activeAlertLabelsAttrs}}</b>」，並且兩者在「<b>{{matchLabelsAttrs}}</b>」相同時，抑制新告警的通知。',
     labels_filter: {

@@ -94,6 +94,7 @@ const zh_CN = {
         allFields: '可用字段',
         showFields: '显示字段',
         showFields_empty: '日志默认显示全部字段',
+        tip: '当前只显示字段 {{fields}}，可点击设置图标设置显示所有字段',
       },
       jsonSettings: {
         title: 'JSON 设置',

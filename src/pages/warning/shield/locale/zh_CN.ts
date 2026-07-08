@@ -1,5 +1,6 @@
 const zh_CN = {
   title: '屏蔽规则',
+  edit_missing_params: '缺少必要参数，无法编辑，请联系管理员',
   search_placeholder: '搜索规则标题、标签、屏蔽原因',
   datasource_type: '数据源类型',
   datasource_id: '数据源',

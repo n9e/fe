@@ -268,7 +268,7 @@ const index = (_props: any) => {
                   showSizeChanger: true,
                   pageSizeOptions: ['10', '15', '50', '100', '500', '1000'],
                   showTotal: (total) => {
-                    return i18n.language == 'en' ? `Total ${total} items` : `共 ${total} 条`;
+                    return t('common:table.total', { total });
                   },
                 } as any
               }

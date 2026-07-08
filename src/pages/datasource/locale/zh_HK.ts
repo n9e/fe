@@ -47,6 +47,8 @@ const zh_HK = {
     auth: '授權',
     username: '使用者名稱',
     password: '密碼',
+    access_key_id_placeholder: '請輸入AccessKey ID',
+    access_key_secret_placeholder: '請輸入AccessKey Secret',
     skip_ssl_verify: '跳過 SSL 驗證',
     skip_tls_verify: '跳過 TLS 驗證',
     yes: '是',
@@ -76,6 +78,8 @@ const zh_HK = {
       tsdb_type: '時序庫類型',
     },
     es: {
+      write_config: '寫配置',
+      disable_write: '不允許寫入',
       enable_write: '允許寫入',
       version: '版本',
       version_placeholder: '留空將自動獲取版本，沒特殊需求留空即可；如需指定，請按 x.y.z 填寫（例：7.10.2）',

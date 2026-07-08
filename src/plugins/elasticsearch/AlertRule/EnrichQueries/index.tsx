@@ -49,7 +49,7 @@ export default function index(props: IProps) {
           <div>
             <div className='mb-2'>
               <Space>
-                <span>{t('db_aliyunSLS:enrich_queries.title')}</span>
+                <span>{t('alertRules:enrich_queries.title')}</span>
                 <Tooltip title={t('alertRules:enrich_queries.tip')}>
                   <InfoCircleOutlined />
                 </Tooltip>

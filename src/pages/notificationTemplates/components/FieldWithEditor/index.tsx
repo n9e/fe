@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import i18next from 'i18next';
 import { Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +26,7 @@ export const generateRules = (limitSize) => {
     {
       validator: (_field, value) => {
         if (_.size(value) > limitSize) {
-          return Promise.reject(`配置不能超过 ${limitSize} 个字符`);
+          return Promise.reject(i18next.t('common:content_limit_size_msg', { num: limitSize }));
         }
         return Promise.resolve();
       },

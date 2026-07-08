@@ -1,4 +1,6 @@
 const zh_HK = {
+  请输入: '請輸入',
+  请选择: '請選擇',
   tip3: '（僅當變量後緊跟 & 或位於 URL 末尾時可用），也支持${key3}（可用於任意位置）',
   '跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）':
     '跳轉到儀表盤，並支持固定變量（用於下鑽鏈接傳入的變量和儀表盤篩選變量不能對齊的場景，比如儀表盤有3個篩選變量，但是下鑽鏈接只傳入1個變量）',
@@ -113,11 +115,12 @@ const zh_HK = {
           urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: '標籤模板',
           labelTemplatePlaceholder: '{{value}}',
-          'link-tip-time-format': '默認單位為毫秒, 如需格式化可帶入$__time_format__,格式包括 unix YYYY-MM-DD HH:mm:ss等',
         },
       },
     },
   },
+  '可为指定字段设置链接。': '可為指定字段設置連結。',
+  参数映射表: '參數映射表',
 };
 
 export default zh_HK;

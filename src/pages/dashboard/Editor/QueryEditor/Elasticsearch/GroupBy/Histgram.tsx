@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Select, Button, Input, InputNumber } from 'antd';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { groupByCates } from './configs';
 
 export default function Terms({ prefixField }) {
+  const { t } = useTranslation('alertRules');
   const [expanded, setExpanded] = useState(false);
   return (
     <Row gutter={16}>
@@ -29,7 +31,7 @@ export default function Terms({ prefixField }) {
             <>
               <Col span={6}>
                 <Input.Group>
-                  <span className='ant-input-group-addon'>步长</span>
+                  <span className='ant-input-group-addon'>{t('datasource:es.histogram.interval')}</span>
                   <Form.Item {...prefixField} name={[prefixField.name, 'size']} noStyle>
                     <InputNumber style={{ width: '100%' }} />
                   </Form.Item>
@@ -37,7 +39,7 @@ export default function Terms({ prefixField }) {
               </Col>
               <Col span={6}>
                 <Input.Group>
-                  <span className='ant-input-group-addon'>文档最小值</span>
+                  <span className='ant-input-group-addon'>{t('datasource:es.terms.min_doc_count')}</span>
                   <Form.Item {...prefixField} name={[prefixField.name, 'min_doc_count']} noStyle>
                     <InputNumber style={{ width: '100%' }} />
                   </Form.Item>
@@ -53,7 +55,7 @@ export default function Terms({ prefixField }) {
             setExpanded(!expanded);
           }}
         >
-          高级设置 {expanded ? <VerticalLeftOutlined /> : <VerticalRightOutlined />}
+          {t('datasource:es.terms.more')} {expanded ? <VerticalLeftOutlined /> : <VerticalRightOutlined />}
         </Button>
       </Col>
     </Row>

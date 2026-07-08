@@ -52,7 +52,7 @@ const BindTags = (props) => {
   return (
     <Modal title={t('tpl.tag.bind.title')} visible={visible} onOk={handleOk} onCancel={handleCancel}>
       <Form form={form}>
-        <FormItem label={t('tpl.tag.bind.field')} required name='tags' rules={[{ required: true, message: '请选择！' }]}>
+        <FormItem label={t('tpl.tag.bind.field')} required name='tags' rules={[{ required: true, message: t('please_select') }]}>
           <Select mode='tags' open={false} />
         </FormItem>
       </Form>

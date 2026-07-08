@@ -86,11 +86,11 @@ export interface TraceType {
 }
 
 export enum TraceSortItem {
-  'MOST_RECENT' = '最新优先',
-  'LONGEST_FIRST' = '时长优先',
-  'SHORTEST_FIRST' = '时短优先',
-  'MOST_SPANS' = 'span多优先',
-  'LEAST_SPANS' = 'span少优先',
+  'MOST_RECENT' = 'MOST_RECENT',
+  'LONGEST_FIRST' = 'LONGEST_FIRST',
+  'SHORTEST_FIRST' = 'SHORTEST_FIRST',
+  'MOST_SPANS' = 'MOST_SPANS',
+  'LEAST_SPANS' = 'LEAST_SPANS',
 }
 
 export type TNil = null | undefined;
@@ -111,14 +111,14 @@ export type Log = {
 };
 
 export enum RelationType {
-  Prom = '指标详情',
-  Log = '数据详情',
+  Prom = 'metric',
+  Log = 'log',
   Tracing = 'tracing',
-  Event = '事件墙',
-  Infra = '组件',
-  System = '系统',
-  Dashboard = '仪表盘',
-  SLS = '阿里云SLS',
+  Event = 'event',
+  Infra = 'infra',
+  System = 'system',
+  Dashboard = 'dashboard',
+  SLS = 'aliyun-sls',
 }
 
 export type TraceData = {

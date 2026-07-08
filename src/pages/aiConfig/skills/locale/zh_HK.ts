@@ -25,6 +25,7 @@ const zh_HK = {
   document_empty: '暫無文件內容',
   search_placeholder: '請輸入關鍵字搜尋',
   builtin: '內建',
+  description: '描述',
   frontmatter_title: '元數據',
 
   form: {
@@ -46,6 +47,8 @@ const zh_HK = {
     metadata: '中繼資料',
     metadata_key_value_required: '不能為空',
     add_metadata: '新增中繼資料',
+    formatted_tip: '格式化',
+    code_tip: '原文',
   },
 
   git: {
