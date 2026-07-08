@@ -13,7 +13,7 @@ const METRIC_PATTERNS = [
   /\b(topk|bottomk)\s*\(/i,
 ];
 
-function escapeString(value?: string | number) {
+export function escapeString(value?: string | number) {
   return _.replace(_.toString(value ?? ''), /\\/g, '\\\\').replace(/"/g, '\\"');
 }
 

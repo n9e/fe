@@ -52,7 +52,8 @@ export interface LokiLogRow {
   timestamp: number;
   __timestamp__?: string;
   line: string;
-  stream: Record<string, string>;
+  labels: Record<string, string>;
+  parsed_fields: Record<string, string>;
   ___id___?: string;
 }
 

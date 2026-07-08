@@ -11,10 +11,11 @@ export function logsQuery(data: {
   datasource_id: number;
   query: {
     query: string;
-    start: number;
-    end: number;
+    start: number | string;
+    end: number | string;
     limit?: number;
     direction?: 'forward' | 'backward';
+    skip_count?: boolean;
     ref: string;
   }[];
 }): Promise<{

@@ -18,9 +18,12 @@ import { DEFAULT_LOGS_PAGE_SIZE, DEFAULT_RAW_LOG_LIMIT, DEFAULT_TIME_FIELD, LOGS
 import { getHistogram, logsQuery } from '../../services';
 import { Field, LokiLogRow } from '../../types';
 import filteredFields from '../../utils/filteredFields';
+import { flattenFieldGroup } from '../../utils/logFields';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import renderBuiltinFields from '../../utils/renderBuiltinFields';
 import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
+import ContextViewer from './components/ContextViewer';
+import { buildLogHighlights, getLineHighlightFilters } from './utils/highlights';
 
 interface Props {
   indexData: Field[];
@@ -48,20 +51,26 @@ function normalizeLimit(limit?: number) {
   return Math.min(Math.floor(value), MAX_RAW_LOG_LIMIT);
 }
 
-function flattenStreamFields(stream?: Record<string, string>) {
-  return _.mapKeys(stream || {}, (_value, key) => `stream.${key}`);
-}
-
 function transformLogRow(item: LokiLogRow) {
+  const labels = item.labels || {};
+  const parsedFields = item.parsed_fields || {};
   const row = {
-    ...flattenStreamFields(item.stream),
+    ...flattenFieldGroup('labels', labels),
+    ...flattenFieldGroup('parsed_fields', parsedFields),
     timestamp: item.timestamp,
     __timestamp__: item.__timestamp__,
     line: item.line || '',
+    labels,
+    parsed_fields: parsedFields,
   };
   return {
     ...row,
-    ___raw___: _.omit(row, 'timestamp'),
+    ___raw___: {
+      __timestamp__: item.__timestamp__,
+      line: item.line || '',
+      labels,
+      parsed_fields: parsedFields,
+    },
     ___id___: _.uniqueId('loki_log_'),
   };
 }
@@ -222,6 +231,11 @@ export default function Raw(props: Props) {
     const list = data?.list || [];
     return _.slice(list, (serviceParams.current - 1) * serviceParams.pageSize, serviceParams.current * serviceParams.pageSize);
   }, [data?.hash, serviceParams.current, serviceParams.pageSize]);
+  const lineHighlightFilters = useMemo(
+    () => getLineHighlightFilters(queryValues),
+    [queryValues?.query, queryValues?.querySource, queryValues?.builderStatus, queryValues?.builder],
+  );
+  const highlights = useMemo(() => buildLogHighlights(pageLogs, lineHighlightFilters), [pageLogs, lineHighlightFilters]);
 
   return refreshFlag ? (
     <>
@@ -237,6 +251,7 @@ export default function Raw(props: Props) {
           histogramHash={histogramData?.hash}
           loading={loading}
           logs={pageLogs}
+          highlights={highlights}
           logsHash={`${data?.hash}_${serviceParams.current}_${serviceParams.pageSize}`}
           logTotal={data?.total}
           fields={data?.fields || []}
@@ -246,6 +261,7 @@ export default function Raw(props: Props) {
           filterFields={(fieldKeys) => filteredFields(fieldKeys)}
           logViewerFilterFields={(log) => filteredFields(_.keys(log))}
           logViewerRenderCustomTagsArea={renderBuiltinFields}
+          logViewerExtraRender={(log) => <ContextViewer log={log as LokiLogRow & Record<string, any>} datasourceValue={datasourceValue} lineFilters={lineHighlightFilters} />}
           customLogFieldRender={renderLogViewerFieldValueWithoutFilters}
           hideTypeIcon
           onRangeChange={(range) => {

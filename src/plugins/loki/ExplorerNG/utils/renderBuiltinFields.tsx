@@ -35,10 +35,17 @@ function formatValue(field: string, value: any) {
 
 export default function renderBuiltinFields(log: Record<string, any>) {
   const fields = _.filter(LOKI_BUILTIN_FIELDS, (field) => _.has(log, field));
-  if (_.isEmpty(fields)) return null;
+  const labels = log.labels || {};
+  if (_.isEmpty(fields) && _.isEmpty(labels)) return null;
 
   return (
     <div className='flex flex-wrap gap-2'>
+      {_.map(labels, (value, key) => (
+        <div key={`labels.${key}`} className='border border-primary rounded p-2 min-w-[120px] max-w-full'>
+          <div className='text-primary mb-1 break-all'>labels.{key}</div>
+          <div className='font-medium break-all whitespace-pre-wrap'>{stringifyValue(value)}</div>
+        </div>
+      ))}
       {_.map(fields, (field) => {
         return (
           <div key={field} className='border border-primary rounded p-2 min-w-[120px] max-w-full'>

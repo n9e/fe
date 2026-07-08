@@ -20,7 +20,6 @@ import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
-import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/utils/getFieldsFromTableData';
 
 import { NAME_SPACE as LOKI_NS } from '../../../constants';
@@ -258,12 +257,12 @@ export default function Metric(props: Props) {
           loadTimeRef.current = Date.now() - queryStart;
           const list = _.map(res || [], (item) => {
             const lastValue = _.last(item.values || []);
-            const row =
-              flatten({
-                ...(item.metric || {}),
-                value: lastValue ? lastValue[1] : undefined,
-                timestamp: lastValue ? lastValue[0] : undefined,
-              }) || {};
+            const metric = _.omit(item.metric || {}, '__name__');
+            const row = {
+              ...metric,
+              value: lastValue ? lastValue[1] : undefined,
+              timestamp: lastValue ? lastValue[0] : undefined,
+            };
             return {
               ...row,
               ___raw___: item,
