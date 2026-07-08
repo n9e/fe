@@ -194,7 +194,7 @@ export default function FormNG(props: IProps) {
     >
       <Form form={form} layout='vertical' disabled={disabled} className='h-full'>
         <FormNGDataProvider>
-          <div className='flex h-full min-h-0 overflow-hidden bg-fc-100'>
+          <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
             {sidebarVisible && (
               <Sidebar sections={sections} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
             )}

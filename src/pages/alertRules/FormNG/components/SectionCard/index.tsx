@@ -62,7 +62,7 @@ export default function SectionCard(props: {
   }, [props.collapsed]);
 
   return (
-    <div ref={sectionRef} className={classnames('scroll-mt-4 [&+&]:mt-4', props.className)} data-section-key={item.key}>
+    <div ref={sectionRef} className={classnames('bg-fc-100 scroll-mt-4 [&+&]:mt-4', props.className)} data-section-key={item.key}>
       <div className='fc-border rounded-lg shadow-[0_3px_12px_rgba(0,0,0,0.04)] overflow-hidden'>
         <div
           className={'flex items-center gap-3 p-4 cursor-pointer select-none ' + (collapsed ? '' : 'bg-violet-200')}

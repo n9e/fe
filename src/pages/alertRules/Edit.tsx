@@ -63,7 +63,7 @@ export default function Edit() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/alert-rules'>
-      <div className='n9e h-full overflow-hidden'>{!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />}</div>
+      <div className='n9e h-full overflow-hidden p-0'>{!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />}</div>
     </PageLayout>
   );
 }
