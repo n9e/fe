@@ -202,7 +202,7 @@ export default function FormNG(props: IProps) {
               onWheel={scroll.handleUserScroll}
               onTouchMove={scroll.handleUserScroll}
             >
-              <div className='w-full max-w-[1200px] mx-auto p-5 pb-0'>
+              <div className='w-full max-w-[1200px] mx-auto p-5'>
                 <div className='flex items-center justify-end gap-2 mb-4'>
                   <div className='flex items-center gap-2'>
                     <Button
