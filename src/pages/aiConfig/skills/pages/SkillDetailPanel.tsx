@@ -13,6 +13,7 @@ import { CommonStateContext } from '@/App';
 import { NS } from '../constants';
 import { getFile, getItem } from '../services';
 import { GitRefType, Item } from '../types';
+import { canModifySkill } from '../utils/permission';
 import DocumentPreviewPanel from './DocumentPreviewPanel';
 import UploadSkillModal from './UploadSkillModal';
 
@@ -21,6 +22,7 @@ interface Props {
   onToggleEnabled: () => void;
   onImport: (file: File) => void;
   onDelete: () => void;
+  onEdit: () => void;
   onGitUpdate?: () => void;
   onGitReplaceConfig?: () => void;
   onBuiltinGitUpdate?: () => void;
@@ -45,7 +47,7 @@ function getRefIcon(refType?: GitRefType) {
 export default function SkillDetailPanel(props: Props) {
   const { t } = useTranslation(NS);
   const { profile } = useContext(CommonStateContext);
-  const { item, onToggleEnabled, onImport, onDelete, onGitUpdate, onGitReplaceConfig, onBuiltinGitUpdate, builtinGitUpdating } = props;
+  const { item, onToggleEnabled, onImport, onDelete, onEdit, onGitUpdate, onGitReplaceConfig, onBuiltinGitUpdate, builtinGitUpdating } = props;
 
   const [previewMode, setPreviewMode] = React.useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
@@ -53,6 +55,8 @@ export default function SkillDetailPanel(props: Props) {
   const isGit = item.source_type === 'git';
   const isBuiltin = item.builtin === true;
   const gitInfo = item.git_info;
+  // 非内置 skill 的编辑/替换/删除按权限门控；内置 skill 仍按下方原有 admin 逻辑。
+  const canModify = !isBuiltin && canModifySkill(item, profile);
 
   const getSkillMdPath = (fileName?: string) => {
     const normalized = _.toLower(_.trim(fileName || ''));
@@ -114,7 +118,15 @@ export default function SkillDetailPanel(props: Props) {
 
   const overflowMenu = (
     <Menu>
-      {(!isBuiltin || (isBuiltin && !isGit && !!profile.admin)) && (
+      {canModify && (
+        <Menu.Item key='edit' onClick={onEdit}>
+          <Space>
+            <EditOutlined />
+            {t('edit_title')}
+          </Space>
+        </Menu.Item>
+      )}
+      {((!isBuiltin && canModify) || (isBuiltin && !isGit && !!profile.admin)) && (
         <Menu.Item key={replaceMenuKey} onClick={handleReplaceClick}>
           <Space>
             {isGit ? <EditOutlined /> : <UploadOutlined />}
@@ -123,30 +135,30 @@ export default function SkillDetailPanel(props: Props) {
         </Menu.Item>
       )}
       {!isBuiltin && (
-        <>
-          <Menu.Item key='download' onClick={handleDownload}>
-            <Space>
-              <DownloadOutlined />
-              {t('download_skill')}
-            </Space>
-          </Menu.Item>
-          <Menu.Item
-            key='delete'
-            disabled={item.enabled}
-            title={item.enabled ? t('common:delete_disable_first') : undefined}
-            onClick={() => {
-              Modal.confirm({
-                title: t('edite_menu_3_confirm'),
-                onOk: onDelete,
-              });
-            }}
-          >
-            <Space>
-              <DeleteOutlined />
-              {t('delete_skill')}
-            </Space>
-          </Menu.Item>
-        </>
+        <Menu.Item key='download' onClick={handleDownload}>
+          <Space>
+            <DownloadOutlined />
+            {t('download_skill')}
+          </Space>
+        </Menu.Item>
+      )}
+      {!isBuiltin && canModify && (
+        <Menu.Item
+          key='delete'
+          disabled={item.enabled}
+          title={item.enabled ? t('common:delete_disable_first') : undefined}
+          onClick={() => {
+            Modal.confirm({
+              title: t('edite_menu_3_confirm'),
+              onOk: onDelete,
+            });
+          }}
+        >
+          <Space>
+            <DeleteOutlined />
+            {t('delete_skill')}
+          </Space>
+        </Menu.Item>
       )}
     </Menu>
   );
@@ -251,7 +263,7 @@ export default function SkillDetailPanel(props: Props) {
           <span>{isBuiltin && !isGit ? t('form.usage') : item.name}</span>
         </div>
         <Space>
-          {!isBuiltin && (
+          {!isBuiltin && canModify && (
             <>
               {t('form.enabled')}
               <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />

@@ -23,15 +23,18 @@ export default function EditModal(props: Props) {
 
   const { loading } = useRequest(
     () => {
-      if (!id) {
+      if (!id || !visible) {
         return Promise.resolve(null);
       }
       return getItem(id);
     },
     {
-      refreshDeps: [id],
+      refreshDeps: [id, visible],
       onSuccess(data) {
-        form.setFieldsValue(data);
+        if (data) {
+          form.resetFields();
+          form.setFieldsValue(data);
+        }
       },
     },
   );
@@ -40,7 +43,11 @@ export default function EditModal(props: Props) {
     <Modal
       width={800}
       visible={visible}
-      onCancel={onCancel}
+      destroyOnClose
+      onCancel={() => {
+        form.resetFields();
+        onCancel();
+      }}
       onOk={() => {
         if (id) {
           form.validateFields().then((values) => {

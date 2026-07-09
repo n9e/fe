@@ -35,6 +35,9 @@ export interface Item {
   updated_at: number;
   updated_by: string;
 
+  user_group_ids?: number[];
+  private?: 0 | 1;
+
   builtin: boolean;
   instructions: string;
   license?: string;
@@ -51,6 +54,9 @@ export interface FormValues {
   name: string;
   description: string;
   enabled: boolean;
+
+  user_group_ids?: number[];
+  private?: 0 | 1;
 
   instructions: string;
   license?: string;

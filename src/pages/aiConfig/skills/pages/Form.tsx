@@ -1,9 +1,11 @@
-import React from 'react';
-import { Form, Input, Collapse, Row, Col, Button, Switch } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Collapse, Row, Col, Button, Switch, Select, Radio } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
+import { getTeamInfoList } from '@/services/manage';
 import { SIZE } from '@/utils/constant';
 
 import { NS } from '../constants';
@@ -17,6 +19,17 @@ interface Props {
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const { form } = props;
+  const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    getTeamInfoList()
+      .then((res) => {
+        setUserGroups(res.dat ?? []);
+      })
+      .catch(() => {
+        setUserGroups([]);
+      });
+  }, []);
 
   return (
     <Form form={form} layout='vertical'>
@@ -32,6 +45,21 @@ export default function FormCpt(props: Props) {
           </Form.Item>
         </Col>
       </Row>
+      <Form.Item label={t('form.user_group_ids')} name='user_group_ids' rules={[{ required: true }]}>
+        <Select
+          showSearch
+          optionFilterProp='label'
+          mode='multiple'
+          placeholder={t('form.user_group_ids_placeholder')}
+          options={_.map(userGroups, (item) => ({ label: item.name, value: item.id }))}
+        />
+      </Form.Item>
+      <Form.Item label={t('form.scope')} name='private' initialValue={1}>
+        <Radio.Group>
+          <Radio value={0}>{t('form.scope_public')}</Radio>
+          <Radio value={1}>{t('form.scope_private')}</Radio>
+        </Radio.Group>
+      </Form.Item>
       <Form.Item label={t('form.description')} name='description'>
         <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} placeholder={t('form.description_placeholder')} />
       </Form.Item>
