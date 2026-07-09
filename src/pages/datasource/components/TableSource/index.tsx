@@ -250,25 +250,25 @@ const TableSource = (props: IPropsType) => {
             record.plugin_type === 'cloudwatch'
               ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> }
               : undefined,
-            record.status === 'disabled'
-              ? {
-                  key: 'delete',
-                  icon: 'delete',
-                  text: t('common:btn.delete'),
-                  danger: true,
-                  onClick: () => {
-                    Modal.confirm({
-                      title: t('common:confirm.delete'),
-                      onOk() {
-                        return deleteDataSourceById(record.id).then(() => {
-                          message.success(t('common:success.delete'));
-                          setRefresh((oldVal) => !oldVal);
-                        });
-                      },
+            {
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              disabled: record.status === 'enabled',
+              tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
+              onClick: () => {
+                Modal.confirm({
+                  title: t('common:confirm.delete'),
+                  onOk() {
+                    return deleteDataSourceById(record.id).then(() => {
+                      message.success(t('common:success.delete'));
+                      setRefresh((oldVal) => !oldVal);
                     });
                   },
-                }
-              : undefined,
+                });
+              },
+            },
           ]) as any,
         })}
         actionColumn={{ title: t('common:table.operations'), width: 64 }}

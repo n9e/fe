@@ -28,13 +28,20 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     let finalColumns: ColumnsType<RecordType> | undefined = injectColumnFilters(columns, Array.isArray(dataSource) ? dataSource : undefined);
 
     const allColumns: ColumnType<RecordType>[] = ((finalColumns ?? []) as ColumnsType<RecordType>).filter(Boolean).map((col: ColumnType<RecordType>) => {
-      if (!autoSortColumns) {
-        return col;
-      }
       const dataIndex = col.dataIndex;
-      // 操作列不排序
-      const sorter = col.sorter !== undefined ? col.sorter : !!dataIndex && !['operate'].includes(dataIndex as string) ? defaultComparator(dataIndex as string) : false;
-      return { ...col, sorter };
+      // Tag and left-align hand-written action columns. Detect via a locale-independent marker
+      // (dataIndex or key === 'operate'), never the localized title (which breaks under i18n).
+      // .fc-table-op-column (in style.less) strips the left padding of the first inline link/text button,
+      // aligning the button text with the "operate" header (matching rowActions' .fc-table-action-cell).
+      const isOpColumn = dataIndex === 'operate' || col.key === 'operate';
+      let next: ColumnType<RecordType> = isOpColumn ? { ...col, align: col.align ?? 'left', className: classNames(col.className, 'fc-table-op-column') } : col;
+
+      if (autoSortColumns) {
+        // action column is not sortable
+        const sorter = next.sorter !== undefined ? next.sorter : !isOpColumn && !!dataIndex ? defaultComparator(dataIndex as string) : false;
+        next = { ...next, sorter };
+      }
+      return next;
     });
 
     if (hasRowActions) {
