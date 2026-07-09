@@ -29,14 +29,14 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
 
     const allColumns: ColumnType<RecordType>[] = ((finalColumns ?? []) as ColumnsType<RecordType>).filter(Boolean).map((col: ColumnType<RecordType>) => {
       const dataIndex = col.dataIndex;
-      // 手写操作列（dataIndex='operate' 或标题为「操作」）统一打标 + 左对齐；
-      // .fc-table-op-column 由 style.less 去掉首个内联 link/text 按钮的左内边距，
-      // 使按钮文字与表头「操作」左对齐（与中央 rowActions 的 .fc-table-action-cell 一致）。
+      // Tag and left-align hand-written action columns (dataIndex='operate' or title === '操作').
+      // .fc-table-op-column (in style.less) strips the left padding of the first inline link/text button,
+      // aligning the button text with the "operate" header (matching rowActions' .fc-table-action-cell).
       const isOpColumn = dataIndex === 'operate' || col.title === '操作';
       let next: ColumnType<RecordType> = isOpColumn ? { ...col, align: col.align ?? 'left', className: classNames(col.className, 'fc-table-op-column') } : col;
 
       if (autoSortColumns) {
-        // 操作列不排序
+        // action column is not sortable
         const sorter = next.sorter !== undefined ? next.sorter : !isOpColumn && !!dataIndex ? defaultComparator(dataIndex as string) : false;
         next = { ...next, sorter };
       }

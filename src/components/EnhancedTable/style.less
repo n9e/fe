@@ -24,9 +24,9 @@
   gap: 4px;
 }
 
-// 手写操作列（EnhancedTable 给操作列 td 注入 .fc-table-op-column）：
-// 首个内联 link/text 按钮去左内边距，让文字与「操作」表头左对齐（与 .fc-table-action-cell 一致）。
-// class 开头（不加 td 前缀）：只动 link/text 按钮，不影响 <a>/自定义 span 与多按钮间距。
+// Hand-written action column (EnhancedTable adds .fc-table-op-column to the action cell):
+// remove the first inline link/text button's left padding so text aligns with the "operate" header (matching .fc-table-action-cell).
+// Class-led (no td prefix): touches only link/text buttons, leaving <a>/custom spans and multi-button gaps intact.
 .fc-table-op-column {
   > .ant-btn-link:first-child,
   > .ant-btn-text:first-child,
