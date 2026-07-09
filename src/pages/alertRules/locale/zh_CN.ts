@@ -433,8 +433,8 @@ const zh_CN = {
     collapse_core_only: '仅展开核心步骤',
     collapse_expand_all: '展开全部',
     collapse_collapse_all: '收起全部',
-    collapse_sidebar: '收起左侧栏',
-    expand_sidebar: '展开左侧栏',
+    collapse_sidebar: '收起侧边栏',
+    expand_sidebar: '展开侧边栏',
   },
 };
 export default zh_CN;
