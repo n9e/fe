@@ -29,10 +29,11 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
 
     const allColumns: ColumnType<RecordType>[] = ((finalColumns ?? []) as ColumnsType<RecordType>).filter(Boolean).map((col: ColumnType<RecordType>) => {
       const dataIndex = col.dataIndex;
-      // Tag and left-align hand-written action columns (dataIndex='operate' or title === '操作').
+      // Tag and left-align hand-written action columns. Detect via a locale-independent marker
+      // (dataIndex or key === 'operate'), never the localized title (which breaks under i18n).
       // .fc-table-op-column (in style.less) strips the left padding of the first inline link/text button,
       // aligning the button text with the "operate" header (matching rowActions' .fc-table-action-cell).
-      const isOpColumn = dataIndex === 'operate' || col.title === '操作';
+      const isOpColumn = dataIndex === 'operate' || col.key === 'operate';
       let next: ColumnType<RecordType> = isOpColumn ? { ...col, align: col.align ?? 'left', className: classNames(col.className, 'fc-table-op-column') } : col;
 
       if (autoSortColumns) {
