@@ -100,11 +100,11 @@ export default function Explorer(props: Props) {
     }
   }, [active]);
 
-  const renderCommonSettings = ({ getDefaultQueryValues, executeQuery }: RenderCommonSettingsParams) => {
+  const renderCommonSettings = ({ getDefaultQueryValues, executeQuery, layout }: RenderCommonSettingsParams) => {
     executeQueryRef.current = executeQuery;
     getDefaultQueryValuesRef.current = getDefaultQueryValues;
     return (
-      <div className='flex-shrink-0'>
+      <div className={'flex-shrink-0' + (layout === 'horizontal' ? ' flex gap-2' : '')}>
         <Form.Item>
           <ViewSelect<{
             datasourceCate: string;

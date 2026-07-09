@@ -819,6 +819,7 @@ export default function Builder(props: Props) {
       className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
         absolute: !queryBuilderPinned,
         'top-[32px]': !queryBuilderPinned,
+        'border-primary': !queryBuilderPinned,
         relative: queryBuilderPinned,
       })}
       style={{
@@ -847,60 +848,56 @@ export default function Builder(props: Props) {
               </Form.Item>
             </div>
           </div>
-          {mode === 'metric' && (
-            <>
-              <div className='table-row'>
-                <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>
-                    <RequiredLabel>{t('builder.aggregation')}</RequiredLabel>
-                  </div>
-                </div>
-                <div className='table-cell'>
-                  <Form.Item name='aggregations' noStyle>
-                    <Aggregates fields={aggregationFields} fieldsLoading={aggregationFieldsLoading} ignoreNextOutsideClick={ignoreNextOutsideClick} />
+          <div className={mode === 'metric' ? 'table-row' : 'hidden'}>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center'>
+                <RequiredLabel>{t('builder.aggregation')}</RequiredLabel>
+              </div>
+            </div>
+            <div className='table-cell'>
+              <Form.Item name='aggregations' noStyle>
+                <Aggregates fields={aggregationFields} fieldsLoading={aggregationFieldsLoading} ignoreNextOutsideClick={ignoreNextOutsideClick} />
+              </Form.Item>
+            </div>
+          </div>
+          <div className={mode === 'metric' ? 'table-row' : 'hidden'}>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center'>{t('builder.display')}</div>
+            </div>
+            <div className='table-cell'>
+              <Space size={SIZE} wrap>
+                <Form.Item name='vizType' noStyle initialValue='table'>
+                  <Segmented
+                    size='small'
+                    options={[
+                      { label: t('builder.statistical_value'), value: 'table' },
+                      { label: t('builder.timeseries'), value: 'timeseries' },
+                    ]}
+                  />
+                </Form.Item>
+                <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
+                  <Form.Item name='groupBy' noStyle>
+                    <FieldTagsSelect fields={aggregationFields} loading={aggregationFieldsLoading} />
                   </Form.Item>
-                </div>
-              </div>
-              <div className='table-row'>
-                <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>{t('builder.display')}</div>
-                </div>
-                <div className='table-cell'>
-                  <Space size={SIZE} wrap>
-                    <Form.Item name='vizType' noStyle initialValue='table'>
-                      <Segmented
-                        size='small'
-                        options={[
-                          { label: t('builder.statistical_value'), value: 'table' },
-                          { label: t('builder.timeseries'), value: 'timeseries' },
-                        ]}
-                      />
-                    </Form.Item>
-                    <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
-                      <Form.Item name='groupBy' noStyle>
-                        <FieldTagsSelect fields={aggregationFields} loading={aggregationFieldsLoading} />
-                      </Form.Item>
-                    </InputGroupWithFormItem>
-                    <InputGroupWithFormItem size='small' label={t('builder.limit')}>
-                      <Form.Item name='limit' noStyle>
-                        <InputNumber size='small' className='w-[100px]' min={1} max={10000000} />
-                      </Form.Item>
-                    </InputGroupWithFormItem>
-                  </Space>
-                </div>
-              </div>
-              <div className='table-row'>
-                <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>{t('builder.order_by')}</div>
-                </div>
-                <div className='table-cell'>
-                  <Form.Item name='orderBy' noStyle>
-                    <OrderBy fieldOptions={orderByFieldOptions} ignoreNextOutsideClick={ignoreNextOutsideClick} />
+                </InputGroupWithFormItem>
+                <InputGroupWithFormItem size='small' label={t('builder.limit')}>
+                  <Form.Item name='limit' noStyle>
+                    <InputNumber size='small' className='w-[100px]' min={1} max={10000000} />
                   </Form.Item>
-                </div>
-              </div>
-            </>
-          )}
+                </InputGroupWithFormItem>
+              </Space>
+            </div>
+          </div>
+          <div className={mode === 'metric' ? 'table-row' : 'hidden'}>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center'>{t('builder.order_by')}</div>
+            </div>
+            <div className='table-cell'>
+              <Form.Item name='orderBy' noStyle>
+                <OrderBy fieldOptions={orderByFieldOptions} ignoreNextOutsideClick={ignoreNextOutsideClick} />
+              </Form.Item>
+            </div>
+          </div>
         </div>
         {validationMessage && <Alert className='mt-3' showIcon type='warning' message={validationMessage} />}
         <Space size={SIZE} className='mt-3'>

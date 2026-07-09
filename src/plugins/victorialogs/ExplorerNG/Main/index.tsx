@@ -53,7 +53,7 @@ export default function Main(props: Props) {
   };
 
   return (
-    <div className='flex flex-col h-full'>
+    <div className='flex flex-col flex-1 h-full min-h-0'>
       <div className='flex-shrink-0 relative z-10'>
         <Row gutter={SIZE} wrap={false}>
           <Col flex='none'>
@@ -182,7 +182,7 @@ export default function Main(props: Props) {
           }}
         />
       </div>
-      <div className='mt-2 min-h-0 flex-1'>
+      <div className='mt-2 min-h-0 flex-1 flex flex-col'>
         <Form.Item name={['query', 'mode']} initialValue='raw' hidden>
           <div />
         </Form.Item>

@@ -66,9 +66,7 @@ function isNoDataError(error: any) {
   );
   if (code === 'no_data' || code === 'no-data') return true;
 
-  const legacyMessage = _.toLower(
-    _.trim(_.toString(error?.message || error?.msg || error?.data?.message || error?.response?.data?.message || error?.response?.data?.msg || '')),
-  );
+  const legacyMessage = _.toLower(_.trim(_.toString(error?.message || error?.msg || error?.data?.message || error?.response?.data?.message || error?.response?.data?.msg || '')));
   return legacyMessage === 'no data';
 }
 
