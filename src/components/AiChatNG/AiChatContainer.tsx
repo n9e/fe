@@ -15,8 +15,22 @@ interface IAiChatContainerProps {
 
 export default function AiChatContainer(props: IAiChatContainerProps) {
   const { drawerWidth = 900, floatingStorageKey = 'ai-chat-floating-panel' } = props;
-  const { visible, mode, closeAiChat, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, shareChatId, setShareReadonly, setShareChatId, setVisible } =
-    useAiChatContext();
+  const {
+    visible,
+    mode,
+    closeAiChat,
+    queryPageFrom,
+    queryAction,
+    promptList,
+    initialMessage,
+    onExecuteQueryForQueryContent,
+    shareChatId,
+    setShareReadonly,
+    setShareChatId,
+    setVisible,
+    pendingChatId,
+    setCachedSessionId,
+  } = useAiChatContext();
 
   const DRAWER_MIN_WIDTH = 440;
   const DRAWER_WIDTH_STORAGE_KEY = 'ai-chat-drawer-width';
@@ -161,6 +175,15 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
   // 新模式：渲染单一 AiChat 实例，通过原生 DOM 在宿主间搬运
   const ensuredPageFrom = queryPageFrom ?? lastPageFromRef.current;
 
+  const effectiveChatId = shareChatId || pendingChatId;
+
+  const handleChatChange = useCallback(
+    (chat?: import('./types').IAiChatHistoryItem) => {
+      setCachedSessionId(chat?.chat_id);
+    },
+    [setCachedSessionId],
+  );
+
   const aichatContent = (
     <div className='ai-chat-container h-full min-h-0'>
       {ensuredPageFrom && (
@@ -168,12 +191,13 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
           key={`${ensuredPageFrom.url}-${JSON.stringify(ensuredPageFrom.param ?? {})}-${JSON.stringify(queryAction ?? {})}`}
           showClose
           onClose={closeAiChat}
-          chatId={shareChatId}
+          chatId={effectiveChatId}
           queryPageFrom={ensuredPageFrom}
           queryAction={queryAction}
           promptList={promptList}
           initialMessage={initialMessage}
           onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
+          onChatChange={handleChatChange}
         />
       )}
     </div>

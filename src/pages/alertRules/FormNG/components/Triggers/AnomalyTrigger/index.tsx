@@ -10,11 +10,12 @@ interface Props {
   active: boolean;
   disabled?: boolean;
   prefixName?: string[]; // 列表字段名
+  hideSwitch?: boolean; // 在卡片模式下隐藏开关，由父组件控制
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('alertRules');
-  const { active, disabled, prefixName = [] } = props;
+  const { active, disabled, prefixName = [], hideSwitch } = props;
   const names = [...prefixName, 'anomaly_trigger'];
   const [algorithms, setAlgorithms] = useState<{ [key: string]: string }[]>([]);
   const [algorithmsLoading, setAlgorithmsLoading] = useState(true);
@@ -36,14 +37,16 @@ export default function index(props: Props) {
   return (
     <Spin spinning={algorithmsLoading}>
       <div>
-        <div className='mb-4'>
-          <Space>
-            <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
-              <Switch size='small' />
-            </Form.Item>
-            {t('anomaly_trigger.enable')}
-          </Space>
-        </div>
+        {!hideSwitch && (
+          <div className='mb-4'>
+            <Space>
+              <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
+                <Switch size='small' />
+              </Form.Item>
+              {t('anomaly_trigger.enable')}
+            </Space>
+          </div>
+        )}
         <div style={{ display: enable !== true ? 'none' : 'block' }}>
           <div>
             <Space align='baseline'>
