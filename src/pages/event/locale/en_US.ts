@@ -53,7 +53,6 @@ const en_US = {
     datasource_id: 'Datasource',
     severity: 'Severity',
     is_recovered: 'Status',
-    notify_muted: 'Notification muted',
     tags: 'Tags',
     target_note: 'Target note',
     trigger_time: 'Triggered',
