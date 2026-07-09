@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Switch, Modal, message } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
@@ -11,13 +11,13 @@ import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../constants';
 import { getList, deleteItem, putItem } from '../services';
-import AddDrawer from './AddDrawer';
+import AddDrawer, { View } from './AddDrawer';
 import EditDrawer from './EditDrawer';
 
 export default function List() {
   const { t } = useTranslation(NS);
   const pagination = usePagination({ PAGESIZE_KEY: NS });
-  const [addDrawerState, setAddDrawerState] = useState({ visible: false });
+  const [addDrawerState, setAddDrawerState] = useState<{ visible: boolean; defaultView?: View }>({ visible: false });
   const [editDrawerState, setEditDrawerState] = useState<{ visible: boolean; id?: number }>({ visible: false });
 
   const { data, loading, run } = useRequest(getList, { refreshDeps: [] });
@@ -30,7 +30,10 @@ export default function List() {
             <div className='fc-toolbar flex flex-wrap items-center justify-between gap-2'>
               <div />
               <Space>
-                <Button type='primary' icon={<PlusOutlined />} onClick={() => setAddDrawerState({ visible: true })}>
+                <Button icon={<AppstoreOutlined />} onClick={() => setAddDrawerState({ visible: true, defaultView: 'template' })}>
+                  {t('use_template')}
+                </Button>
+                <Button type='primary' icon={<PlusOutlined />} onClick={() => setAddDrawerState({ visible: true, defaultView: 'form' })}>
                   {t('add_btn')}
                 </Button>
               </Space>
@@ -121,6 +124,7 @@ export default function List() {
       </PageLayout>
       <AddDrawer
         visible={addDrawerState.visible}
+        defaultView={addDrawerState.defaultView}
         onOk={() => {
           setAddDrawerState({ visible: false });
           run();

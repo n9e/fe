@@ -3,6 +3,8 @@ export interface LLMConfig {
   name: string;
 }
 
+export type AuthMode = 'none' | 'header' | 'oauth';
+
 export interface Item {
   id: number;
   name: string;
@@ -15,6 +17,7 @@ export interface Item {
 
   url: string;
   headers?: Record<string, string>;
+  auth_mode?: AuthMode;
 }
 
 export type FormValues = {
@@ -24,7 +27,23 @@ export type FormValues = {
 
   url: string;
   headers?: { key: string; value: string }[];
+  auth_mode?: AuthMode;
 };
+
+export interface OAuthStatus {
+  connected: boolean;
+  expiry?: number;
+  scope?: string;
+  client_id?: string;
+  connected_by?: string;
+  updated_at?: number;
+}
+
+export interface OAuthPrepareResult {
+  authorize_url: string;
+  state: string;
+  redirect_uri: string;
+}
 
 export interface Tool {
   name: string;
