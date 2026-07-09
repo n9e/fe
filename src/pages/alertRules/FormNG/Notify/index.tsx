@@ -10,7 +10,7 @@ import SectionCard, { SectionItem } from '../components/SectionCard';
 import shouldShowAdvancedSettings from '../utils/shouldShowAdvancedSettings';
 import { useFormNGData } from '../context';
 import TaskTpls from './TaskTpls';
-import NotificationRuleSelect from './NotificationRuleSelect';
+import NotificationRuleDropdownSelect from './NotificationRuleDropdownSelect';
 import VersionSwitch from './VersionSwitch';
 
 // @ts-ignore
@@ -140,7 +140,7 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
             display: notify_version === 1 ? 'block' : 'none',
           }}
         >
-          <NotificationRuleSelect />
+          <NotificationRuleDropdownSelect />
         </div>
         <div className='mb-4'>
           <Space>
@@ -267,7 +267,14 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
           </Space>
         </div>
       </SectionCard>
-      <NotifyExtraNG advancedItem={advancedItem} sectionRefs={sectionRefs} contactList={contactList} notifyGroups={notifyGroups} expandSignal={expandSignal} toggleAllSignal={toggleAllSignal} />
+      <NotifyExtraNG
+        advancedItem={advancedItem}
+        sectionRefs={sectionRefs}
+        contactList={contactList}
+        notifyGroups={notifyGroups}
+        expandSignal={expandSignal}
+        toggleAllSignal={toggleAllSignal}
+      />
     </>
   );
 }
