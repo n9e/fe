@@ -33,22 +33,6 @@ interface IMenuProps {
   isLight?: boolean;
 }
 
-function flattenMenuChildrenForHoverPanel(children: IMenuItem[]): IMenuItem[] {
-  return children
-    .flatMap((c) => {
-      if (!c) return [];
-      if (c.type === 'tabs') {
-        return (c.children || []).map((tab) => ({
-          ...tab,
-          type: undefined,
-          children: undefined,
-        }));
-      }
-      return [c];
-    })
-    .filter(Boolean) as IMenuItem[];
-}
-
 function getMenuGroupChildKeys(item: IMenuItem): string[] {
   return (
     (item.children
@@ -620,7 +604,7 @@ export default function MenuList(
               {chunk.items.map((menu) => {
                 if (menu.children?.length) {
                   const visibleChildren = menu.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
-                  const hoverChildren = flattenMenuChildrenForHoverPanel(visibleChildren);
+                  const hoverChildren = visibleChildren;
                   const hoverEnabled = props.collapsed && hoverChildren.length > 0;
                   const open = hoverEnabled && activeHoverGroupKey === menu.key;
                   const menuGroupActive = isMenuGroupActive(menu, props.selectedKeys);
@@ -687,7 +671,9 @@ export default function MenuList(
                           <div className='sidemenu-hover-panel-divider' aria-hidden />
                           <div className='sidemenu-hover-panel-list'>
                             {hoverChildren.map((c) => {
-                              const isItemActive = props.selectedKeys?.includes(c.key);
+                              const isItemActive = c.type === 'tabs' ? props.selectedKeys?.some((key) => c.children?.some((child) => child.key === key)) : props.selectedKeys?.includes(c.key);
+                              const itemPath = c.type === 'tabs' ? c.children?.[0]?.key || c.key : c.key;
+                              const savedItemPath = c.children ? getSavedPath(itemPath) : c.key;
                               const itemClass = cn(
                                 'group relative flex h-7 min-w-0 cursor-pointer items-center gap-2 rounded-md px-2 text-[13px] leading-[18px] transition-colors duration-150',
                                 isItemActive
@@ -736,7 +722,7 @@ export default function MenuList(
                                 );
                               }
                               return (
-                                <Link key={c.key} to={c.key} className={itemClass} onClick={handleClick}>
+                                <Link key={c.key} to={savedItemPath || itemPath} className={itemClass} onClick={handleClick}>
                                   {itemContent}
                                 </Link>
                               );
