@@ -57,12 +57,6 @@ export const deleteItem = function (id: number) {
   }).then((res) => res.dat);
 };
 
-export const getFiles = function (id: number): Promise<FileItem[]> {
-  return request(`/api/n9e/ai-skill/${id}/files`, {
-    method: RequestMethod.Get,
-  }).then((res) => res.dat ?? []);
-};
-
 export const getFile = function (fileId: number): Promise<FileContent> {
   return request(`/api/n9e/ai-skill-file/${fileId}`, {
     method: RequestMethod.Get,
@@ -72,15 +66,6 @@ export const getFile = function (fileId: number): Promise<FileContent> {
 export const deleteFile = function (fileId: number) {
   return request(`/api/n9e/ai-skill-file/${fileId}`, {
     method: RequestMethod.Delete,
-  }).then((res) => res.dat);
-};
-
-export const uploadFile = function (id: number, file: File) {
-  const formData = new FormData();
-  formData.append('file', file);
-  return request(`/api/n9e/ai-skill/${id}/files`, {
-    method: RequestMethod.Post,
-    data: formData,
   }).then((res) => res.dat);
 };
 
