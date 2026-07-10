@@ -21,7 +21,6 @@ const zh_HK = {
       deploy: '部署與基建',
       cloud: '公有雲',
       data: '數據與數據庫',
-      docs: '知識文件',
     },
   },
   form: {

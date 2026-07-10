@@ -22,7 +22,6 @@ const en_US = {
       deploy: 'Deploy & infra',
       cloud: 'Public cloud',
       data: 'Data & DB',
-      docs: 'Docs',
     },
   },
 

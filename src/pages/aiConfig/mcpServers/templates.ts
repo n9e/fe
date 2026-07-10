@@ -1,6 +1,6 @@
 import { FormValues } from './types';
 
-export type MCPTemplateCategory = 'observability' | 'devtools' | 'pm' | 'deploy' | 'cloud' | 'data' | 'docs';
+export type MCPTemplateCategory = 'observability' | 'devtools' | 'pm' | 'deploy' | 'cloud' | 'data';
 
 export interface MCPTemplate {
   /** 稳定的唯一标识，用于渲染 key 和选中态 */
@@ -21,7 +21,7 @@ export interface MCPTemplate {
   values: Pick<FormValues, 'name' | 'description' | 'url' | 'headers'>;
 }
 
-export const MCP_TEMPLATE_CATEGORIES: MCPTemplateCategory[] = ['observability', 'devtools', 'pm', 'deploy', 'cloud', 'data', 'docs'];
+export const MCP_TEMPLATE_CATEGORIES: MCPTemplateCategory[] = ['observability', 'devtools', 'pm', 'deploy', 'cloud', 'data'];
 
 const LOGO = (name: string) => `/image/logos/mcp/${name}.svg`;
 
@@ -105,7 +105,7 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     key: 'honeycomb',
     name: 'Honeycomb',
     description: 'Query Honeycomb events, queries, boards and alerts.',
-    icon: '🍯',
+    logo: '/image/logos/mcp/honeycomb.png',
     category: 'observability',
     values: {
       name: 'Honeycomb',
@@ -118,25 +118,12 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     key: 'polarsignals',
     name: 'Polar Signals',
     description: 'Analyze continuous-profiling data (CPU / memory) from Polar Signals.',
-    icon: '🔬',
+    logo: LOGO('polarsignals'),
     category: 'observability',
     values: {
       name: 'Polar Signals',
       description: 'Polar Signals Cloud hosted MCP server',
       url: 'https://api.polarsignals.com/api/mcp/',
-      headers: [{ key: 'Authorization', value: 'Bearer <YOUR_TOKEN>' }],
-    },
-  },
-  {
-    key: 'embrace',
-    name: 'Embrace',
-    description: 'Query Embrace mobile/web crash, performance and user telemetry.',
-    icon: '📱',
-    category: 'observability',
-    values: {
-      name: 'Embrace',
-      description: 'Embrace hosted MCP server (service-account bearer token)',
-      url: 'https://mcp.embrace.io/mcp',
       headers: [{ key: 'Authorization', value: 'Bearer <YOUR_TOKEN>' }],
     },
   },
@@ -220,19 +207,6 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
       headers: [{ key: 'Authorization', value: 'Basic <base64(user:api_token)>' }],
     },
   },
-  {
-    key: 'semgrep',
-    name: 'Semgrep',
-    description: 'Scan code for security issues with Semgrep static analysis.',
-    icon: '🔍',
-    category: 'devtools',
-    authMode: 'oauth',
-    values: {
-      name: 'Semgrep',
-      description: 'Semgrep hosted MCP server (OAuth login; officially flagged experimental)',
-      url: 'https://mcp.semgrep.ai/mcp',
-    },
-  },
 
   // ---------- Project management & collaboration ----------
   {
@@ -298,19 +272,6 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
       name: 'Miro',
       description: 'Miro hosted MCP server (OAuth-only; login in your MCP client)',
       url: 'https://mcp.miro.com/',
-    },
-  },
-  {
-    key: 'monday',
-    name: 'monday.com',
-    description: 'Read and update boards, items and data in monday.com.',
-    icon: '📋',
-    category: 'pm',
-    values: {
-      name: 'monday.com',
-      description: 'monday.com hosted MCP server',
-      url: 'https://mcp.monday.com/mcp',
-      headers: [{ key: 'Authorization', value: 'Bearer <YOUR_MONDAY_API_TOKEN>' }],
     },
   },
 
@@ -392,19 +353,6 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
       url: 'https://mcp.ai.pulumi.com/mcp',
     },
   },
-  {
-    key: 'port',
-    name: 'Port',
-    description: 'Query your Port developer portal catalog, scorecards and actions.',
-    icon: '🚢',
-    category: 'deploy',
-    values: {
-      name: 'Port',
-      description: 'Port hosted MCP server (EU region; US: mcp.us.port.io/v1)',
-      url: 'https://mcp.port.io/v1',
-      headers: [{ key: 'Authorization', value: 'Bearer <YOUR_PORT_ACCESS_TOKEN>' }],
-    },
-  },
 
   // ---------- Public cloud (resource / OpenAPI management) ----------
   {
@@ -423,7 +371,7 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     key: 'azure',
     name: 'Azure Resource Manager',
     description: 'Query Azure resources (VMs, VNets, Storage) and deploy ARM templates.',
-    icon: '🔷',
+    logo: LOGO('azure'),
     category: 'cloud',
     authMode: 'oauth',
     values: {
@@ -443,6 +391,19 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
       name: 'Google Cloud',
       description: 'Compute Engine MCP (OAuth/IAM only — rejects API keys). Others: monitoring/networkmanagement .googleapis.com/mcp; storage.googleapis.com/storage/mcp',
       url: 'https://compute.googleapis.com/mcp',
+    },
+  },
+  {
+    key: 'alibaba-maxcompute',
+    name: 'Alibaba Cloud MaxCompute',
+    description: 'Run SQL and query MaxCompute projects, tables and jobs on Alibaba Cloud.',
+    logo: LOGO('alibabacloud'),
+    category: 'cloud',
+    authMode: 'oauth',
+    values: {
+      name: 'Alibaba Cloud MaxCompute',
+      description: 'MaxCompute remote MCP server (OAuth-only; cn-hangzhou public network. VPC host / other regions differ)',
+      url: 'https://mcp.cn-hangzhou.maxcompute.aliyun.com/mcp',
     },
   },
 
@@ -496,32 +457,6 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
       name: 'MongoDB',
       description: 'Self-hosted MongoDB MCP server over HTTP — replace <YOUR_HOST>:<PORT> (default transport is stdio)',
       url: 'http://<YOUR_HOST>:<PORT>/mcp',
-    },
-  },
-
-  // ---------- Docs & knowledge ----------
-  {
-    key: 'context7',
-    name: 'Context7',
-    description: 'Fetch up-to-date, version-specific library documentation.',
-    icon: '📚',
-    category: 'docs',
-    values: {
-      name: 'Context7',
-      description: 'Context7 hosted MCP server (works without a key; API key raises rate limits)',
-      url: 'https://mcp.context7.com/mcp',
-    },
-  },
-  {
-    key: 'deepwiki',
-    name: 'DeepWiki',
-    description: 'Ask questions about the docs of any public GitHub repository.',
-    icon: '🧭',
-    category: 'docs',
-    values: {
-      name: 'DeepWiki',
-      description: 'DeepWiki hosted MCP server (public repos, no auth)',
-      url: 'https://mcp.deepwiki.com/mcp',
     },
   },
 ];

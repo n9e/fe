@@ -21,7 +21,6 @@ const ja_JP = {
       deploy: 'デプロイ・基盤',
       cloud: 'パブリッククラウド',
       data: 'データ・DB',
-      docs: 'ドキュメント',
     },
   },
   form: {

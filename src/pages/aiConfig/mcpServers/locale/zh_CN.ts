@@ -22,7 +22,6 @@ const zh_CN = {
       deploy: '部署与基建',
       cloud: '公有云',
       data: '数据与数据库',
-      docs: '知识文档',
     },
   },
 
