@@ -298,7 +298,9 @@ export default function Raw(props: Props) {
                     <Space>
                       <span>{t(`${logExplorerNS}:logs.count`)} :</span>
                       <span>{data?.total ?? total}</span>
-                      <span className='text-hint'>/ limit {data?.limit || normalizeLimit(queryValues?.limit)}</span>
+                      <span className='text-hint'>
+                        / {t('builder.limit')} : {data?.limit || normalizeLimit(queryValues?.limit)}
+                      </span>
                     </Space>
                   );
                 }}

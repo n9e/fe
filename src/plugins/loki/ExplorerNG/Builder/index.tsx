@@ -272,7 +272,7 @@ function LabelValueSelect(props: { value?: string; onChange?: (value?: string) =
 function Describe(props: { children: React.ReactNode; onClose: (e: React.MouseEvent) => void }) {
   const { children, onClose } = props;
   return (
-    <div className='border border-antd rounded-sm hover:bg-fc-150 min-h-[24px] wrap-break-word whitespace-normal cursor-pointer flex items-center justify-between'>
+    <div className='border border-antd rounded-lg hover:bg-fc-150 min-h-[24px] wrap-break-word whitespace-normal cursor-pointer flex items-center justify-between'>
       <div className='h-full px-[7px] flex items-center' style={{ borderRight: '1px solid var(--fc-antd-border-color)' }}>
         {children}
       </div>
@@ -400,47 +400,98 @@ function Labels(props: { value?: LokiLabelMatcher[]; onChange?: (values: LokiLab
   );
 }
 
-function LineFilters(props: { value?: LokiLineFilter[]; onChange?: (values: LokiLineFilter[]) => void }) {
+function LineFilterPopover(props: {
+  children: React.ReactNode;
+  data?: LokiLineFilter;
+  onChange?: (data: LokiLineFilter) => void;
+  onAdd?: (data: LokiLineFilter) => void;
+  ignoreNextOutsideClick: () => void;
+}) {
   const { t } = useTranslation(NAME_SPACE);
-  const { value, onChange } = props;
+  const { children, data, onChange, onAdd, ignoreNextOutsideClick } = props;
+  const [visible, setVisible] = useState<boolean>();
+  const [form] = Form.useForm();
+
+  return (
+    <Popover
+      overlayClassName='doris-query-builder-popup'
+      trigger='click'
+      placement='bottom'
+      visible={visible}
+      onVisibleChange={(v) => {
+        ignoreNextOutsideClick();
+        setVisible(v);
+        if (v === false) {
+          form
+            .validateFields()
+            .then((values) => {
+              const next = { id: data?.id || _.uniqueId('line_'), ...values } as LokiLineFilter;
+              data ? onChange?.(next) : onAdd?.(next);
+              if (!data) form.resetFields();
+            })
+            .catch(_.noop);
+        } else if (v === true) {
+          form.resetFields();
+          if (data) form.setFieldsValue(data);
+        }
+      }}
+      content={
+        <div className='w-[380px]'>
+          <Form form={form} layout='vertical' validateTrigger={[]}>
+            <Row gutter={SIZE}>
+              <Col span={8}>
+                <Form.Item label={t('builder.operator')} name='op' initialValue='|=' rules={[{ required: true, message: t('builder.operator_required') }]}>
+                  <Select dropdownClassName='doris-query-builder-popup' options={lineFilterOperators} />
+                </Form.Item>
+              </Col>
+              <Col span={16}>
+                <Form.Item label={t('builder.value')} name='value' rules={[{ required: true, message: t('builder.value_required') }]}>
+                  <Input placeholder={t('builder.log_line_placeholder')} />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+      }
+    >
+      <div>{children}</div>
+    </Popover>
+  );
+}
+
+function LineFilters(props: { value?: LokiLineFilter[]; onChange?: (values: LokiLineFilter[]) => void; ignoreNextOutsideClick: () => void }) {
+  const { t } = useTranslation(NAME_SPACE);
+  const { value, onChange, ignoreNextOutsideClick } = props;
   return (
     <Space size={[SIZE, SIZE / 2]} wrap>
-      {_.map(value, (item, index) => (
-        <Describe
-          key={`${item.id}-${index}`}
-          onClose={(e) => {
-            e.stopPropagation();
-            onChange?.(_.filter(value, (_, i) => i !== index));
-          }}
-        >
-          <Space>
-            <Select
-              size='small'
-              className='w-[72px]'
-              dropdownClassName='doris-query-builder-popup'
-              value={item.op}
-              options={lineFilterOperators}
-              onChange={(op) => onChange?.(_.map(value, (v, i) => (i === index ? { ...v, op } : v)))}
-            />
-            <Input
-              size='small'
-              className='w-[220px]'
-              value={item.value}
-              placeholder={t('builder.log_line_placeholder')}
-              onChange={(e) => onChange?.(_.map(value, (v, i) => (i === index ? { ...v, value: e.target.value } : v)))}
-            />
-          </Space>
-        </Describe>
-      ))}
-      <Button
-        size='small'
-        type='text'
-        icon={<PlusOutlined />}
-        className='hover:bg-fc-150'
-        onClick={() => onChange?.([...(value || []), { id: _.uniqueId('line_'), op: '|=', value: '' }])}
-      >
-        {t('builder.add')}
-      </Button>
+      {_.map(value, (item, index) => {
+        if (!item.op) return null;
+        return (
+          <LineFilterPopover
+            key={`${item.id}-${index}`}
+            data={item}
+            ignoreNextOutsideClick={ignoreNextOutsideClick}
+            onChange={(values) => onChange?.(_.map(value, (v, i) => (i === index ? values : v)))}
+          >
+            <Describe
+              onClose={(e) => {
+                e.stopPropagation();
+                onChange?.(_.filter(value, (_, i) => i !== index));
+              }}
+            >
+              <Space className='text-hint'>
+                <strong className='text-main bg-fc-200 px-1'>{item.op}</strong>
+                <span>{item.value}</span>
+              </Space>
+            </Describe>
+          </LineFilterPopover>
+        );
+      })}
+      <LineFilterPopover ignoreNextOutsideClick={ignoreNextOutsideClick} onAdd={(values) => onChange?.([...(value || []), values])}>
+        <Button size='small' type='text' icon={<PlusOutlined />} className='hover:bg-fc-150'>
+          {t('builder.add')}
+        </Button>
+      </LineFilterPopover>
     </Space>
   );
 }
@@ -794,7 +845,7 @@ export default function Builder(props: Props) {
   return (
     <div
       ref={eleRef}
-      className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
+      className={classNames('w-full border border-antd rounded-lg mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
         absolute: !queryBuilderPinned,
         'top-[32px]': !queryBuilderPinned,
         'border-primary': !queryBuilderPinned,
@@ -824,7 +875,7 @@ export default function Builder(props: Props) {
             </div>
             <div className='table-cell'>
               <Form.Item name='lineFilters' noStyle>
-                <LineFilters />
+                <LineFilters ignoreNextOutsideClick={ignoreNextOutsideClick} />
               </Form.Item>
             </div>
           </div>

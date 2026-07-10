@@ -182,7 +182,7 @@ export default function Main(props: Props) {
           }}
         />
       </div>
-      <div className='mt-2 min-h-0 flex-1 flex flex-col'>
+      <div className='min-h-0 flex-1 flex flex-col'>
         <Form.Item name={['query', 'mode']} initialValue='raw' hidden>
           <div />
         </Form.Item>

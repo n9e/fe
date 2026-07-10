@@ -41,16 +41,16 @@ export default function renderBuiltinFields(log: Record<string, any>) {
   return (
     <div className='flex flex-wrap gap-2'>
       {_.map(labels, (value, key) => (
-        <div key={`labels.${key}`} className='border border-primary rounded p-2 min-w-[120px] max-w-full'>
-          <div className='text-primary mb-1 break-all'>labels.{key}</div>
-          <div className='font-medium break-all whitespace-pre-wrap'>{stringifyValue(value)}</div>
+        <div key={`labels.${key}`} className='fc-border rounded p-2 min-w-[120px] max-w-full bg-fc-150'>
+          <div className='text-soft mb-1 break-all'>labels.{key}</div>
+          <div className='font-bold break-all whitespace-pre-wrap'>{stringifyValue(value)}</div>
         </div>
       ))}
       {_.map(fields, (field) => {
         return (
-          <div key={field} className='border border-primary rounded p-2 min-w-[120px] max-w-full'>
-            <div className='text-primary mb-1 break-all'>{field}</div>
-            <div className='font-medium break-all whitespace-pre-wrap'>{formatValue(field, log[field])}</div>
+          <div key={field} className='fc-border rounded p-2 min-w-[120px] max-w-full  bg-fc-150'>
+            <div className='text-soft mb-1 break-all'>{field}</div>
+            <div className='font-bold break-all whitespace-pre-wrap'>{formatValue(field, log[field])}</div>
           </div>
         );
       })}

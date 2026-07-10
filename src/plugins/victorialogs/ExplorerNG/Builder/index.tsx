@@ -286,7 +286,7 @@ function getOrderByFieldOptions(aggregations?: VictoriaLogsAggregation[], groupB
 function Describe(props: { children: React.ReactNode; onClose: (e: React.MouseEvent) => void; onCloseMouseDown?: (e: React.MouseEvent) => void }) {
   const { children, onClose, onCloseMouseDown } = props;
   return (
-    <div className='border border-antd rounded-sm hover:bg-fc-150 min-h-[24px] wrap-break-word whitespace-normal cursor-pointer flex items-center justify-between'>
+    <div className='border border-antd rounded-lg hover:bg-fc-150 min-h-[24px] wrap-break-word whitespace-normal cursor-pointer flex items-center justify-between'>
       <div
         className='h-full px-[7px] flex items-center'
         style={{
@@ -816,7 +816,7 @@ export default function Builder(props: Props) {
   return (
     <div
       ref={eleRef}
-      className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
+      className={classNames('w-full border border-antd rounded-lg mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
         absolute: !queryBuilderPinned,
         'top-[32px]': !queryBuilderPinned,
         'border-primary': !queryBuilderPinned,
