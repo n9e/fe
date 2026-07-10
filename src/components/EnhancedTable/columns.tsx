@@ -83,18 +83,41 @@ export function tagsColumn<T = any>(
   };
 }
 
+function getUserSorter<T>(dataIndex: ColumnType<T>['dataIndex'], nickname?: string): (a: T, b: T) => number {
+  return (a, b) => {
+    const getDisplay = (record: T): string => {
+      if (nickname) {
+        const n = (record as any)?.[nickname];
+        if (n) return String(n);
+      }
+      const v = getColumnValue(record, dataIndex);
+      return v ? String(v) : '';
+    };
+
+    const da = getDisplay(a);
+    const db = getDisplay(b);
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    return da.localeCompare(db);
+  };
+}
+
 // User column: username over nickname (two lines)
 export function userColumn<T = any>(
   opts: {
     title: React.ReactNode;
     dataIndex: ColumnType<T>['dataIndex'];
     nickname?: string;
+    sortable?: boolean;
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
-  const { nickname, ...rest } = opts;
+  const { nickname, sortable, dataIndex, ...rest } = opts;
   return {
+    dataIndex,
     width: 120,
     render: (value: any, record: any) => <div>{nickname && record?.[nickname] ? <div>{record[nickname]}</div> : <div>{value || '-'}</div>}</div>,
+    ...(sortable ? { sorter: getUserSorter(dataIndex, nickname) } : {}),
     ...rest,
   };
 }
@@ -114,6 +137,19 @@ export function updateByColumn<T = any>(opts: UpdateByColumnOptions<T>): UpdateB
   };
 }
 
+function getDateSorter<T>(dataIndex: ColumnType<T>['dataIndex'], unix?: boolean): (a: T, b: T) => number {
+  return (a, b) => {
+    const va = getColumnValue(a, dataIndex);
+    const vb = getColumnValue(b, dataIndex);
+    if (va == null && vb == null) return 0;
+    if (va == null) return 1;
+    if (vb == null) return -1;
+    const ma = unix ? moment.unix(va as number) : moment(va);
+    const mb = unix ? moment.unix(vb as number) : moment(vb);
+    return ma.valueOf() - mb.valueOf();
+  };
+}
+
 // Date column: one line by default (date + time, no wrap); pass `multiline` to
 // stack date over time on two lines. `format` accepts a single string or a
 // [date, time] tuple (the tuple is joined for one line / split for two lines).
@@ -124,11 +160,13 @@ export function dateColumn<T = any>(
     unix?: boolean;
     multiline?: boolean;
     format?: string | [string, string];
+    sortable?: boolean;
   } & Partial<ColumnType<T>>,
 ): ColumnType<T> {
-  const { unix, multiline, format = ['YYYY-MM-DD', 'HH:mm:ss'], ...rest } = opts;
+  const { unix, multiline, format = ['YYYY-MM-DD', 'HH:mm:ss'], sortable, dataIndex, ...rest } = opts;
   const parts = Array.isArray(format) ? format : [format];
   return {
+    dataIndex,
     width: multiline ? 180 : 160,
     render: (value: any) => {
       if (!value) return '-';
@@ -144,6 +182,7 @@ export function dateColumn<T = any>(
       }
       return <div style={{ whiteSpace: 'nowrap' }}>{m.format(parts.join(' '))}</div>;
     },
+    ...(sortable ? { sorter: getDateSorter(dataIndex, unix) } : {}),
     ...rest,
   };
 }
