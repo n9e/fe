@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Row, Col, Button, Switch, Alert, Radio, Tag, Space, Typography, Collapse } from 'antd';
+import { Form, Input, Row, Col, Button, Switch, Alert, Radio, Tag, Space, Typography, Collapse, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, LinkOutlined, DisconnectOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { SIZE } from '@/utils/constant';
 
 import { NS } from '../constants';
 import { OAuthStatus } from '../types';
+import useUserGroups from '../useUserGroups';
 
 interface OAuthProps {
   status: OAuthStatus | null;
@@ -26,6 +27,7 @@ export default function FormCpt(props: Props) {
   const { form, oauth } = props;
   const authMode = Form.useWatch('auth_mode', form) ?? 'none';
   const redirectURI = `${window.location.origin}/api/n9e/mcp-server-oauth/callback`;
+  const { options: userGroupOptions } = useUserGroups();
 
   return (
     <Form form={form} layout='vertical'>
@@ -46,6 +48,17 @@ export default function FormCpt(props: Props) {
       </Form.Item>
       <Form.Item label={t('url')} name='url' rules={[{ required: true }]}>
         <Input placeholder={t('form.url_placeholder')} />
+      </Form.Item>
+
+      <Form.Item label={t('scope.teams')} name='user_group_ids' tooltip={t('scope.teams_tip')} rules={[{ required: true }]}>
+        <Select showSearch mode='multiple' optionFilterProp='label' placeholder={t('scope.teams_placeholder')} options={userGroupOptions} />
+      </Form.Item>
+
+      <Form.Item label={t('scope.title')} name='private' initialValue={1} tooltip={t('scope.tip')}>
+        <Radio.Group optionType='button' buttonStyle='solid'>
+          <Radio.Button value={0}>{t('scope.public')}</Radio.Button>
+          <Radio.Button value={1}>{t('scope.private')}</Radio.Button>
+        </Radio.Group>
       </Form.Item>
 
       <Form.Item label={t('form.auth_mode')} name='auth_mode' initialValue='none'>

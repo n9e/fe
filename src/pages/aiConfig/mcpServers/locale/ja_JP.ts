@@ -7,6 +7,18 @@ const ja_JP = {
   enabled: '有効',
   disabled: '無効',
   cannot_delete_when_enabled: '有効状態の MCP Server は削除できません',
+  no_manage_perm: '管理権限がありません。認可されたチームのメンバーのみ操作できます',
+
+  scope: {
+    title: '公開範囲',
+    public: '公開',
+    private: '非公開',
+    tip: '公開：すべてのユーザーが閲覧・使用可能。非公開：認可されたチームのメンバーのみ閲覧・使用可能。管理は常に認可されたチームのメンバーに限定されます。',
+    teams: '認可チーム',
+    teams_tip: 'この MCP Server を所有するチーム。メンバーは管理（編集／削除／テスト）できます。非公開の場合、これらのチームのみが閲覧・使用できます。',
+    teams_placeholder: '認可チームを選択してください',
+  },
+
   use_template: 'テンプレートを使用',
   template: {
     title: 'テンプレートを選択',

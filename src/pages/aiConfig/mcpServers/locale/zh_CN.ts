@@ -7,6 +7,17 @@ const zh_CN = {
   enabled: '启用',
   disabled: '停用',
   cannot_delete_when_enabled: '启用状态的 MCP Server 无法删除',
+  no_manage_perm: '无管理权限，仅授权团队成员可操作',
+
+  scope: {
+    title: '授权范围',
+    public: '公开',
+    private: '私有',
+    tip: '公开：所有用户可见并可使用；私有：仅授权团队成员可见并可使用。无论公开与否，仅授权团队成员可管理。',
+    teams: '授权团队',
+    teams_tip: '拥有该 MCP Server 的团队，其成员可管理（编辑/删除/测试）；私有时也仅这些团队可见可用。',
+    teams_placeholder: '请选择授权团队',
+  },
 
   use_template: '使用模板',
   template: {

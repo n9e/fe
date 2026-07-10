@@ -8,6 +8,7 @@ import { postItem, putItem, testConnection, disconnectOAuth } from '../services'
 import { adjustSubmitValues, stripOAuthFields } from '../utils/adjustFormValues';
 import { MCPTemplate } from '../templates';
 import useMcpOAuth from '../useMcpOAuth';
+import useUserGroups from '../useUserGroups';
 import FormCpt from './Form';
 import TemplateGallery from './TemplateGallery';
 
@@ -33,12 +34,23 @@ export default function AddDrawer(props: Props) {
   const [serverId, setServerId] = React.useState<number | undefined>(undefined);
 
   const oauth = useMcpOAuth(serverId);
+  const { myGroupIds } = useUserGroups();
 
   React.useEffect(() => {
     if (visible) {
       setView(defaultView);
     }
   }, [visible, defaultView]);
+
+  // 新建（尚未落库）时，默认把「授权团队」预选为当前用户所在团队。myGroupIds 异步加载，
+  // 故随其到位后补默认；仅在当前为空时填充，避免覆盖用户已选或模板回填。
+  React.useEffect(() => {
+    if (visible && serverId === undefined && myGroupIds.length > 0) {
+      if (!form.getFieldValue('user_group_ids')?.length) {
+        form.setFieldsValue({ user_group_ids: myGroupIds });
+      }
+    }
+  }, [visible, serverId, myGroupIds]);
 
   const resetState = () => {
     setTestLoading(false);
@@ -71,7 +83,7 @@ export default function AddDrawer(props: Props) {
     oauth.setStatus(null);
     // 未显式声明鉴权方式的模板：带 header 则按 header 模式（否则请求头会被隐藏且无法编辑），否则无认证
     const authMode = template.authMode ?? ((template.values.headers?.length ?? 0) > 0 ? 'header' : 'none');
-    form.setFieldsValue({ ...template.values, auth_mode: authMode });
+    form.setFieldsValue({ ...template.values, auth_mode: authMode, user_group_ids: myGroupIds });
     setView('form');
   };
 

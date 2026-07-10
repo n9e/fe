@@ -7,6 +7,17 @@ const en_US = {
   enabled: 'Enabled',
   disabled: 'Disabled',
   cannot_delete_when_enabled: 'Enabled MCP Servers cannot be deleted',
+  no_manage_perm: 'No permission to manage; only members of the authorized teams can operate',
+
+  scope: {
+    title: 'Scope',
+    public: 'Public',
+    private: 'Private',
+    tip: 'Public: visible and usable by everyone. Private: visible and usable only by members of the authorized teams. Management is always restricted to authorized team members.',
+    teams: 'Authorized teams',
+    teams_tip: 'Teams that own this MCP Server; their members can manage it (edit/delete/test). When private, only these teams can see and use it.',
+    teams_placeholder: 'Select authorized teams',
+  },
 
   use_template: 'Use template',
   template: {
