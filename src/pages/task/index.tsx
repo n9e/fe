@@ -145,8 +145,8 @@ const index = (_props: any) => {
       },
     ] as any,
     [
-      userColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
-      dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true }),
+      userColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname', sortable: true }),
+      dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true, sortable: true }),
     ] as any,
   );
 

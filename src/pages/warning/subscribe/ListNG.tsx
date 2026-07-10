@@ -239,7 +239,7 @@ const Subscribe = (props: Props) => {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === strategyStatus.Enable ? 'success' : 'error'}>
@@ -259,7 +259,7 @@ const Subscribe = (props: Props) => {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (disabled, record: any) => (
               <Switch
                 checked={disabled === strategyStatus.Enable}

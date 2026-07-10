@@ -162,7 +162,7 @@ export default function AlertRules(props: Props) {
             <Tags
               type='fill'
               borderRadius={6}
-              data={_.map(_.sortBy(data, 'severity'), (severity) => `S${severity}`)}
+              data={_.map(_.sortBy(data), (severity) => `S${severity}`)}
               bgColor={(tagname: string) => {
                 const bgColorMap: Record<string, string> = {
                   S1: 'var(--fc-red-3)',
@@ -254,8 +254,8 @@ export default function AlertRules(props: Props) {
           );
         },
       },
-      dateColumn({ title: t('table.update_at'), dataIndex: 'update_at', unix: true }) as any,
-      userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }) as any,
+      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }) as any,
     ],
     readonly
       ? [
