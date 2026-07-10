@@ -25,7 +25,6 @@ export function logsQuery(data: {
   return request('/api/n9e/logs-query', {
     method: RequestMethod.Post,
     data,
-    silence: true,
   }).then((res) => res.dat || { list: [], total: 0 });
 }
 
@@ -33,7 +32,6 @@ export function dsQuery(data: { cate: DatasourceCateEnum; datasource_id: number;
   return request('/api/n9e/ds-query', {
     method: RequestMethod.Post,
     data,
-    silence: true,
   }).then((res) => res.dat || []);
 }
 
@@ -119,6 +117,5 @@ export function getHistogram(data: {
   return request('/api/n9e/loki-histogram', {
     method: RequestMethod.Post,
     data,
-    silence: true,
   }).then((res) => res.dat || []);
 }

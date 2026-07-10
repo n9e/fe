@@ -1,38 +1,12 @@
-import React, { useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import classNames from 'classnames';
-import { EditorView, highlightSpecialChars, keymap, ViewUpdate, placeholder as placeholderFunc } from '@codemirror/view';
-import { EditorState, Prec, Compartment } from '@codemirror/state';
-import { indentOnInput } from '@codemirror/language';
-import { history, historyKeymap } from '@codemirror/history';
-import { defaultKeymap, insertNewlineAndIndent } from '@codemirror/commands';
-import { bracketMatching } from '@codemirror/matchbrackets';
-import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
-import { highlightSelectionMatches } from '@codemirror/search';
-import { commentKeymap } from '@codemirror/comment';
-import { lintKeymap } from '@codemirror/lint';
-import { autocompletion, closeCompletion, completionKeymap, completionStatus, startCompletion } from '@codemirror/autocomplete';
-import { PromQLExtension } from '@fc-components/codemirror-promql';
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import moment from 'moment';
+import { LokiMonacoEditor } from '@fc-components/monaco-editor';
+import type { LabelMatcher } from '@fc-components/monaco-editor';
 
 import { CommonStateContext } from '@/App';
-import { baseTheme, darkTheme, lightTheme, promqlHighlighter } from '@/components/LogQLInput/CMTheme';
-
-import { createLokiLogQLCompletionSource, LokiCompletionSourceParams } from '../utils/logqlCompletion';
-
-const dynamicConfigCompartment = new Compartment();
-const promqlExtension = new PromQLExtension().activateCompletion(false).activateLinter(false);
-
-const overrideTheme = EditorView.theme({
-  '.cm-content': {
-    padding: '4px 11px',
-  },
-  '.cm-line': {
-    padding: '0',
-    lineHeight: '1.5715',
-  },
-  '.cm-scroller': {
-    maxHeight: '100%',
-  },
-});
+import { parseRange } from '@/components/TimeRangePicker';
+import { DatasourceCateEnum } from '@/utils/constant';
+import { getLabelNames, getLabelValues } from '../services';
 
 export interface LokiLogQLInputProps {
   value?: string;
@@ -42,35 +16,30 @@ export interface LokiLogQLInputProps {
   placeholder?: string;
   onChange?: (value?: string) => void;
   onExecute?: (value?: string) => void;
-  onContentChange?: () => void;
   onFocus?: () => void;
   onBlur?: () => void;
 }
 
-export interface LokiLogQLInputHandle {
-  commit: () => string;
+function matchersToQuery(matchers: LabelMatcher[]): string | undefined {
+  if (matchers.length === 0) return undefined;
+  return `{${matchers.map((m) => `${m.label}${m.operator}${m.value}`).join(',')}}`;
 }
 
-export default React.forwardRef<LokiLogQLInputHandle, LokiLogQLInputProps>(function LogQLInput(props, ref) {
+export default function LogQLInput(props: LokiLogQLInputProps) {
   const { value, datasourceValue, range, readonly = false, placeholder = 'Enter a Loki query', onChange, onExecute, onFocus, onBlur } = props;
   const { darkMode } = useContext(CommonStateContext);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef<EditorView | null>(null);
   const draftValueRef = useRef<string>(value || '');
   const committedValueRef = useRef<string>(value || '');
   const onChangeRef = useRef(onChange);
   const onExecuteRef = useRef(onExecute);
   const onFocusRef = useRef(onFocus);
   const onBlurRef = useRef(onBlur);
-  const paramsRef = useRef<LokiCompletionSourceParams>({ datasourceValue, range });
 
   onChangeRef.current = onChange;
   onExecuteRef.current = onExecute;
   onFocusRef.current = onFocus;
   onBlurRef.current = onBlur;
-  paramsRef.current = { datasourceValue, range };
 
-  const completionSource = useMemo(() => createLokiLogQLCompletionSource(() => paramsRef.current), []);
   const commitDraft = () => {
     const nextValue = draftValueRef.current || '';
     if (nextValue !== committedValueRef.current) {
@@ -80,103 +49,69 @@ export default React.forwardRef<LokiLogQLInputHandle, LokiLogQLInputProps>(funct
     return nextValue;
   };
 
-  useImperativeHandle(ref, () => ({
-    commit: commitDraft,
-  }));
+  const datasourceValueRef = useRef(datasourceValue);
+  datasourceValueRef.current = datasourceValue;
+  const rangeRef = useRef(range);
+  rangeRef.current = range;
 
-  useEffect(() => {
-    const dynamicConfig = [darkMode ? darkTheme : lightTheme, overrideTheme];
-    const view = viewRef.current;
-    if (view === null) {
-      if (!containerRef.current) {
-        throw new Error('expected CodeMirror container element to exist');
-      }
-
-      const startState = EditorState.create({
-        doc: value,
-        extensions: [
-          baseTheme,
-          highlightSpecialChars(),
-          history(),
-          EditorState.allowMultipleSelections.of(true),
-          indentOnInput(),
-          bracketMatching(),
-          closeBrackets(),
-          autocompletion({
-            override: [completionSource],
-            maxRenderedOptions: 20,
-          }),
-          highlightSelectionMatches(),
-          promqlHighlighter,
-          EditorView.lineWrapping,
-          keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...commentKeymap, ...completionKeymap, ...lintKeymap]),
-          placeholderFunc(placeholder),
-          promqlExtension.asExtension(),
-          EditorView.editable.of(!readonly),
-          EditorView.domEventHandlers({
-            focus: () => {
-              onFocusRef.current?.();
-            },
-            blur: () => {
-              if (viewRef.current) closeCompletion(viewRef.current);
-              commitDraft();
-              onBlurRef.current?.();
-            },
-          }),
-          dynamicConfigCompartment.of(dynamicConfig),
-          keymap.of([
-            {
-              key: 'Escape',
-              run: (v: EditorView): boolean => {
-                v.contentDOM.blur();
-                return false;
-              },
-            },
-          ]),
-          Prec.override(
-            keymap.of([
-              {
-                key: 'Enter',
-                run: (v: EditorView): boolean => {
-                  if (completionStatus(v.state)) return false;
-                  const nextValue = commitDraft();
-                  onExecuteRef.current?.(nextValue);
-                  return true;
-                },
-              },
-              {
-                key: 'Shift-Enter',
-                run: insertNewlineAndIndent,
-              },
-            ]),
-          ),
-          EditorView.updateListener.of((update: ViewUpdate): void => {
-            if (update.docChanged) {
-              const val = update.state.doc.toString();
-              draftValueRef.current = val;
-            }
-          }),
-        ],
+  const fetchLabelNames = useCallback(async (currentMatchers: LabelMatcher[]): Promise<string[]> => {
+    const dsValue = datasourceValueRef.current;
+    const rangeVal = rangeRef.current;
+    if (!dsValue || !rangeVal) return [];
+    try {
+      const parsed = parseRange(rangeVal);
+      const fields = await getLabelNames({
+        cate: DatasourceCateEnum.loki,
+        datasource_id: dsValue,
+        query: matchersToQuery(currentMatchers),
+        start: moment(parsed.start).valueOf(),
+        end: moment(parsed.end).valueOf(),
+        limit: 100,
       });
-
-      viewRef.current = new EditorView({
-        state: startState,
-        parent: containerRef.current,
-      });
-    } else {
-      view.dispatch(
-        view.state.update({
-          effects: dynamicConfigCompartment.reconfigure(dynamicConfig),
-        }),
-      );
+      return fields.map((f) => f.field);
+    } catch {
+      return [];
     }
-  }, [completionSource, darkMode]);
+  }, []);
 
-  useEffect(() => {
-    return () => {
-      viewRef.current?.destroy();
-      viewRef.current = null;
-    };
+  const fetchLabelValues = useCallback(async (labelName: string, currentMatchers: LabelMatcher[]): Promise<string[]> => {
+    const dsValue = datasourceValueRef.current;
+    const rangeVal = rangeRef.current;
+    if (!dsValue || !rangeVal) return [];
+    try {
+      const parsed = parseRange(rangeVal);
+      const values = await getLabelValues({
+        cate: DatasourceCateEnum.loki,
+        datasource_id: dsValue,
+        query: matchersToQuery(currentMatchers),
+        start: moment(parsed.start).valueOf(),
+        end: moment(parsed.end).valueOf(),
+        label: labelName,
+        limit: 100,
+      });
+      return values.map((v) => v.value);
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const handleChange = useCallback((nextValue: string) => {
+    draftValueRef.current = nextValue;
+  }, []);
+
+  const handleFocus = useCallback(() => {
+    onFocusRef.current?.();
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    commitDraft();
+    onBlurRef.current?.();
+  }, []);
+
+  const handleEnter = useCallback((nextValue: string) => {
+    draftValueRef.current = nextValue;
+    commitDraft();
+    onExecuteRef.current?.(nextValue);
   }, []);
 
   useEffect(() => {
@@ -184,24 +119,21 @@ export default React.forwardRef<LokiLogQLInputHandle, LokiLogQLInputProps>(funct
     if (draftValueRef.current !== nextValue) {
       draftValueRef.current = nextValue;
       committedValueRef.current = nextValue;
-      const view = viewRef.current;
-      if (view === null) return;
-      view.dispatch(
-        view.state.update({
-          changes: { from: 0, to: view.state.doc.length, insert: nextValue },
-        }),
-      );
     }
   }, [value]);
 
   return (
-    <div
-      className={classNames({ 'ant-input': true, readonly, 'promql-input': true, 'loki-logql-input': true })}
-      onClick={() => {
-        if (viewRef.current) startCompletion(viewRef.current);
-      }}
-    >
-      <div className='input-content' ref={containerRef} />
-    </div>
+    <LokiMonacoEditor
+      value={value || ''}
+      theme={darkMode ? 'dark' : 'light'}
+      placeholder={placeholder}
+      readOnly={readonly}
+      onChange={handleChange}
+      onEnter={handleEnter}
+      onBlur={handleBlur}
+      onFocus={handleFocus}
+      fetchLabelNames={fetchLabelNames}
+      fetchLabelValues={fetchLabelValues}
+    />
   );
-});
+}

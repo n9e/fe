@@ -4,14 +4,11 @@ import { Form } from 'antd';
 
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplorer/types';
-import SideBar from '@/pages/logExplorer/components/SideBar';
 
 import { NAME_SPACE } from '../constants';
-import { Field } from './types';
 import { DEFAULT_RAW_LOG_LIMIT, METRIC_DEFAULT_QUERY, QUERY_CACHE_KEY, RAW_DEFAULT_QUERY } from './constants';
 import { classifyExplorerMode } from './utils/logsQL';
 import Main from './Main';
-import SideBarNav from './SideBarNav';
 
 import './style.less';
 
@@ -25,8 +22,6 @@ interface Props {
 export default function index(props: Props) {
   const { tabKey, defaultFormValuesControl, renderCommonSettings } = props;
   const form = Form.useFormInstance();
-  const datasourceValue = Form.useWatch('datasourceValue', form);
-  const [indexData, setIndexData] = useState<Field[]>([]);
   const [executeLoading, setExecuteLoading] = useState(false);
 
   const executeQuery = () => {
@@ -78,25 +73,21 @@ export default function index(props: Props) {
       <Form.Item name={['query', 'querySource']} hidden>
         <div />
       </Form.Item>
-      <div className='h-full flex'>
-        <SideBar ns={NAME_SPACE}>
-          {renderCommonSettings({
-            getDefaultQueryValues: (queryValues: Record<string, any>) => {
-              const mode = queryValues.mode || 'raw';
-              return {
-                mode,
-                query: queryValues.query || (mode === 'metric' ? METRIC_DEFAULT_QUERY : RAW_DEFAULT_QUERY),
-                vizType: queryValues.vizType || 'timeseries',
-                limit: queryValues.limit || DEFAULT_RAW_LOG_LIMIT,
-              };
-            },
-            executeQuery,
-          })}
-          <SideBarNav datasourceValue={datasourceValue} onFieldsChange={setIndexData} />
-        </SideBar>
-        <div className='min-w-0 flex-1'>
-          <Main indexData={indexData} executeLoading={executeLoading} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
-        </div>
+      <div className='h-full flex flex-col'>
+        {renderCommonSettings({
+          getDefaultQueryValues: (queryValues: Record<string, any>) => {
+            const mode = queryValues.mode || 'raw';
+            return {
+              mode,
+              query: queryValues.query || (mode === 'metric' ? METRIC_DEFAULT_QUERY : RAW_DEFAULT_QUERY),
+              vizType: queryValues.vizType || 'timeseries',
+              limit: queryValues.limit || DEFAULT_RAW_LOG_LIMIT,
+            };
+          },
+          executeQuery,
+          layout: 'horizontal',
+        })}
+        <Main indexData={[]} executeLoading={executeLoading} setExecuteLoading={setExecuteLoading} executeQuery={executeQuery} />
       </div>
     </div>
   );

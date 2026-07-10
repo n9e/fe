@@ -797,6 +797,7 @@ export default function Builder(props: Props) {
       className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
         absolute: !queryBuilderPinned,
         'top-[32px]': !queryBuilderPinned,
+        'border-primary': !queryBuilderPinned,
         relative: queryBuilderPinned,
       })}
       style={{ zIndex: 2, display: visible ? 'block' : 'none', maxHeight: 'calc(100vh - 180px)', overflowY: 'auto' }}
@@ -854,106 +855,100 @@ export default function Builder(props: Props) {
               </Form.Item>
             </div>
           </div>
-          {mode === 'raw' && (
-            <div className='table-row'>
-              <div className='table-cell align-top'>
-                <div className='h-[24px] flex items-center'>{t('builder.limit')}</div>
-              </div>
-              <div className='table-cell'>
-                <Form.Item name='limit' noStyle initialValue={DEFAULT_RAW_LOG_LIMIT}>
-                  <InputNumber size='small' className='w-[120px]' min={1} max={MAX_RAW_LOG_LIMIT} />
-                </Form.Item>
+          <div className={mode === 'raw' ? 'table-row' : 'hidden'}>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center'>{t('builder.limit')}</div>
+            </div>
+            <div className='table-cell'>
+              <Form.Item name='limit' noStyle initialValue={DEFAULT_RAW_LOG_LIMIT}>
+                <InputNumber size='small' className='w-[120px]' min={1} max={MAX_RAW_LOG_LIMIT} />
+              </Form.Item>
+            </div>
+          </div>
+          <div className={mode === 'metric' ? 'table-row' : 'hidden'}>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center'>
+                <RequiredLabel>{t('builder.range_aggregation')}</RequiredLabel>
               </div>
             </div>
-          )}
-          {mode === 'metric' && (
-            <>
-              <div className='table-row'>
-                <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>
-                    <RequiredLabel>{t('builder.range_aggregation')}</RequiredLabel>
-                  </div>
-                </div>
-                <div className='table-cell'>
-                  <Space size={SIZE} wrap>
-                    <Form.Item name='rangeFunc' noStyle initialValue='count_over_time'>
-                      <Select
-                        className='w-[180px]'
-                        size='small'
-                        dropdownClassName='doris-query-builder-popup'
-                        options={rangeFuncOptions}
-                        onChange={(value) => {
-                          if (!isUnwrappedRangeFunc(value)) {
-                            form.setFieldsValue({ unwrapField: undefined });
-                          }
-                        }}
-                      />
+            <div className='table-cell'>
+              <Space size={SIZE} wrap>
+                <Form.Item name='rangeFunc' noStyle initialValue='count_over_time'>
+                  <Select
+                    className='w-[180px]'
+                    size='small'
+                    dropdownClassName='doris-query-builder-popup'
+                    options={rangeFuncOptions}
+                    onChange={(value) => {
+                      if (!isUnwrappedRangeFunc(value)) {
+                        form.setFieldsValue({ unwrapField: undefined });
+                      }
+                    }}
+                  />
+                </Form.Item>
+                <InputGroupWithFormItem size='small' label={t('builder.window')}>
+                  <Form.Item name='range' noStyle initialValue='5m'>
+                    <Input size='small' className='w-[90px]' />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+                {rangeFunc === 'quantile_over_time' && (
+                  <InputGroupWithFormItem size='small' label={t('builder.quantile')}>
+                    <Form.Item name='rangeParam' noStyle initialValue={0.99}>
+                      <InputNumber size='small' className='w-[80px]' min={0} max={1} step={0.01} />
                     </Form.Item>
-                    <InputGroupWithFormItem size='small' label={t('builder.window')}>
-                      <Form.Item name='range' noStyle initialValue='5m'>
-                        <Input size='small' className='w-[90px]' />
-                      </Form.Item>
-                    </InputGroupWithFormItem>
-                    {rangeFunc === 'quantile_over_time' && (
-                      <InputGroupWithFormItem size='small' label={t('builder.quantile')}>
-                        <Form.Item name='rangeParam' noStyle initialValue={0.99}>
-                          <InputNumber size='small' className='w-[80px]' min={0} max={1} step={0.01} />
+                  </InputGroupWithFormItem>
+                )}
+                {isUnwrappedRangeFunc(rangeFunc) && (
+                  <InputGroupWithFormItem size='small' label={<RequiredLabel>{t('builder.unwrap_field')}</RequiredLabel>}>
+                    <Form.Item name='unwrapField' noStyle>
+                      <FieldSelect size='small' className='w-[140px]' fields={parsedFields} loading={parsedFieldsLoading} onMouseDown={ignoreNextOutsideClick} />
+                    </Form.Item>
+                  </InputGroupWithFormItem>
+                )}
+              </Space>
+            </div>
+          </div>
+          <div className={mode === 'metric' ? 'table-row' : 'hidden'}>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center'>{t('builder.display')}</div>
+            </div>
+            <div className='table-cell'>
+              <Space size={SIZE} wrap>
+                <Form.Item name='vizType' noStyle initialValue='timeseries'>
+                  <Segmented
+                    size='small'
+                    options={[
+                      { label: t('builder.table'), value: 'table' },
+                      { label: t('builder.timeseries'), value: 'timeseries' },
+                    ]}
+                  />
+                </Form.Item>
+                <InputGroupWithFormItem size='small' label={t('builder.aggregation')}>
+                  <Form.Item name='vectorAgg' noStyle>
+                    <Select className='w-[100px]' size='small' dropdownClassName='doris-query-builder-popup' options={vectorAggOptions} />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+                <Form.Item shouldUpdate noStyle>
+                  {() => {
+                    const vectorAgg = form.getFieldValue('vectorAgg');
+                    if (vectorAgg !== 'topk' && vectorAgg !== 'bottomk') return null;
+                    return (
+                      <InputGroupWithFormItem size='small' label='N'>
+                        <Form.Item name='vectorParam' noStyle initialValue={10}>
+                          <InputNumber size='small' className='w-[80px]' min={1} />
                         </Form.Item>
                       </InputGroupWithFormItem>
-                    )}
-                    {isUnwrappedRangeFunc(rangeFunc) && (
-                      <InputGroupWithFormItem size='small' label={<RequiredLabel>{t('builder.unwrap_field')}</RequiredLabel>}>
-                        <Form.Item name='unwrapField' noStyle>
-                          <FieldSelect size='small' className='w-[140px]' fields={parsedFields} loading={parsedFieldsLoading} onMouseDown={ignoreNextOutsideClick} />
-                        </Form.Item>
-                      </InputGroupWithFormItem>
-                    )}
-                  </Space>
-                </div>
-              </div>
-              <div className='table-row'>
-                <div className='table-cell align-top'>
-                  <div className='h-[24px] flex items-center'>{t('builder.display')}</div>
-                </div>
-                <div className='table-cell'>
-                  <Space size={SIZE} wrap>
-                    <Form.Item name='vizType' noStyle initialValue='timeseries'>
-                      <Segmented
-                        size='small'
-                        options={[
-                          { label: t('builder.table'), value: 'table' },
-                          { label: t('builder.timeseries'), value: 'timeseries' },
-                        ]}
-                      />
-                    </Form.Item>
-                    <InputGroupWithFormItem size='small' label={t('builder.aggregation')}>
-                      <Form.Item name='vectorAgg' noStyle>
-                        <Select className='w-[100px]' size='small' dropdownClassName='doris-query-builder-popup' options={vectorAggOptions} />
-                      </Form.Item>
-                    </InputGroupWithFormItem>
-                    <Form.Item shouldUpdate noStyle>
-                      {() => {
-                        const vectorAgg = form.getFieldValue('vectorAgg');
-                        if (vectorAgg !== 'topk' && vectorAgg !== 'bottomk') return null;
-                        return (
-                          <InputGroupWithFormItem size='small' label='N'>
-                            <Form.Item name='vectorParam' noStyle initialValue={10}>
-                              <InputNumber size='small' className='w-[80px]' min={1} />
-                            </Form.Item>
-                          </InputGroupWithFormItem>
-                        );
-                      }}
-                    </Form.Item>
-                    <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
-                      <Form.Item name='groupBy' noStyle>
-                        <FieldTagsSelect fields={metricGroupFields} loading={labelFieldsLoading || parsedFieldsLoading} onMouseDown={ignoreNextOutsideClick} />
-                      </Form.Item>
-                    </InputGroupWithFormItem>
-                  </Space>
-                </div>
-              </div>
-            </>
-          )}
+                    );
+                  }}
+                </Form.Item>
+                <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
+                  <Form.Item name='groupBy' noStyle>
+                    <FieldTagsSelect fields={metricGroupFields} loading={labelFieldsLoading || parsedFieldsLoading} onMouseDown={ignoreNextOutsideClick} />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </Space>
+            </div>
+          </div>
         </div>
         {validationMessage && <Alert className='mt-3' showIcon type='warning' message={validationMessage} />}
         <Space size={SIZE} className='mt-3'>

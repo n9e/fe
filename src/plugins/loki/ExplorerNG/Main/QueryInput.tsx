@@ -10,7 +10,7 @@ import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../../constants';
 import QueryInputAddonAfter from '../components/QueryInputAddonAfter';
-import LogQLInput, { LokiLogQLInputHandle } from './LogQLInput';
+import LogQLInput from './LogQLInput';
 
 interface Props {
   executeQuery: () => void;
@@ -20,17 +20,12 @@ interface Props {
   onContentChange?: () => void;
 }
 
-export interface QueryInputHandle {
-  commit: () => string | undefined;
-}
-
-export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(props, ref) {
+export default function QueryInput(props: Props) {
   const { executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick, onContentChange } = props;
   const { t } = useTranslation(NAME_SPACE);
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const range = Form.useWatch(['query', 'range']);
-  const inputRef = React.useRef<LokiLogQLInputHandle>(null);
   const [focused, setFocused] = React.useState(false);
 
   const handleCommit = (value?: string) => {
@@ -52,10 +47,6 @@ export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(pro
     onContentChange?.();
     return nextValue;
   };
-
-  React.useImperativeHandle(ref, () => ({
-    commit: () => inputRef.current?.commit(),
-  }));
 
   if (!datasourceValue) return null;
 
@@ -97,7 +88,6 @@ export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(pro
         >
           <Form.Item name={['query', 'query']} rules={[{ required: true, whitespace: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
             <LogQLInput
-              ref={inputRef}
               datasourceValue={datasourceValue}
               range={range}
               onChange={handleCommit}
@@ -112,4 +102,4 @@ export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(pro
       </div>
     </InputGroupWithFormItem>
   );
-});
+}

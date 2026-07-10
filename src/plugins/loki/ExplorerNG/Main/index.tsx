@@ -15,7 +15,7 @@ import { Field } from '../types';
 import Builder from '../Builder';
 import MainMoreOperations from '../components/MainMoreOperations';
 import Metric from './Metric';
-import QueryInput, { QueryInputHandle } from './QueryInput';
+import QueryInput from './QueryInput';
 import Raw from './Raw';
 
 interface Props {
@@ -35,7 +35,6 @@ export default function Main(props: Props) {
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => localStorage.getItem(BUILDER_PINNED_CACHE_KEY) === 'true');
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
-  const queryInputRef = React.useRef<QueryInputHandle>(null);
 
   useEffect(() => {
     setExecuteLoading(false);
@@ -70,13 +69,12 @@ export default function Main(props: Props) {
   };
 
   const executeCommittedQuery = () => {
-    queryInputRef.current?.commit();
     setIsContentChangedDotVisible(false);
     executeQuery();
   };
 
   return (
-    <div className='flex flex-col h-full'>
+    <div className='flex flex-col flex-1 h-full min-h-0'>
       <div className='flex-shrink-0 relative z-10'>
         <Row gutter={SIZE} wrap={false}>
           <Col flex='none'>
@@ -102,7 +100,6 @@ export default function Main(props: Props) {
           </Col>
           <Col flex='auto' style={{ minWidth: 0 }}>
             <QueryInput
-              ref={queryInputRef}
               executeQuery={() => {
                 setIsContentChangedDotVisible(false);
                 executeQuery();
@@ -214,7 +211,7 @@ export default function Main(props: Props) {
           }}
         />
       </div>
-      <div className='mt-2 min-h-0 flex-1'>
+      <div className='min-h-0 flex-1 flex flex-col'>
         <Form.Item name={['query', 'mode']} initialValue='raw' hidden>
           <div />
         </Form.Item>
