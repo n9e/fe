@@ -37,6 +37,8 @@ export interface Item {
 
   user_group_ids?: number[];
   private?: 0 | 1;
+  // 后端按请求用户盖上的可编辑标记，供详情页 gate 增删改按钮（与后端 403 同判定）。
+  can_edit?: boolean;
 
   builtin: boolean;
   instructions: string;
