@@ -249,7 +249,7 @@ export default function Explorer(props: Props) {
           <Form.Item name='datasourceValue' hidden>
             <div />
           </Form.Item>
-          {cateGraphPro && datasourceCate !== DatasourceCateEnum.victorialogs ? (
+          {cateGraphPro ? (
             <PlusLogExplorer tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />
           ) : (
             <ExplorerContent tabKey={tabKey} datasourceCate={datasourceCate} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />
