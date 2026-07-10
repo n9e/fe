@@ -329,7 +329,7 @@ function FilterPopover(props: {
     <Popover
       overlayClassName='doris-query-builder-popup'
       trigger='click'
-      placement='bottom'
+      placement='bottomLeft'
       visible={visible}
       onVisibleChange={(v) => {
         ignoreNextOutsideClick();
@@ -480,7 +480,7 @@ function AggregationPopover(props: {
     <Popover
       overlayClassName='doris-query-builder-popup'
       trigger='click'
-      placement='bottom'
+      placement='bottomLeft'
       visible={visible}
       onVisibleChange={(v) => {
         ignoreNextOutsideClick();
@@ -624,7 +624,7 @@ function OrderByPopover(props: {
     <Popover
       overlayClassName='doris-query-builder-popup'
       trigger='click'
-      placement='bottom'
+      placement='bottomLeft'
       visible={visible}
       onVisibleChange={(v) => {
         ignoreNextOutsideClick();

@@ -1,11 +1,13 @@
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import { LokiMonacoEditor } from '@fc-components/monaco-editor';
 import type { LabelMatcher } from '@fc-components/monaco-editor';
 
 import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
+import { NAME_SPACE } from '../../constants';
 import { getLabelNames, getLabelValues } from '../services';
 
 export interface LokiLogQLInputProps {
@@ -26,7 +28,8 @@ function matchersToQuery(matchers: LabelMatcher[]): string | undefined {
 }
 
 export default function LogQLInput(props: LokiLogQLInputProps) {
-  const { value, datasourceValue, range, readonly = false, placeholder = 'Enter a Loki query', onChange, onExecute, onFocus, onBlur } = props;
+  const { t } = useTranslation(NAME_SPACE);
+  const { value, datasourceValue, range, readonly = false, placeholder = t('query_placeholder'), onChange, onExecute, onFocus, onBlur } = props;
   const { darkMode } = useContext(CommonStateContext);
   const draftValueRef = useRef<string>(value || '');
   const committedValueRef = useRef<string>(value || '');

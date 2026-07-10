@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Form } from 'antd';
 
@@ -58,7 +58,21 @@ export default function index(props: Props) {
         .catch(() => undefined);
     }, 0);
   };
-
+  useEffect(() => {
+    if (defaultFormValuesControl?.isInited) {
+      const query = form.getFieldValue('query');
+      if (query?.builder || query?.builderStatus || query?.querySource) {
+        form.setFieldsValue({
+          query: {
+            ...query,
+            builder: undefined,
+            builderStatus: undefined,
+            querySource: undefined,
+          },
+        });
+      }
+    }
+  }, [defaultFormValuesControl?.isInited]);
   return (
     <div className={`h-full ${NAME_SPACE}-explorer-container victorialogs-explorer-container-${tabKey}`}>
       <Form.Item name='refreshFlag' hidden>

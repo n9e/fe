@@ -303,7 +303,7 @@ function LabelPopover(props: {
     <Popover
       overlayClassName='doris-query-builder-popup'
       trigger='click'
-      placement='bottom'
+      placement='bottomLeft'
       visible={visible}
       onVisibleChange={(v) => {
         ignoreNextOutsideClick();
@@ -416,7 +416,7 @@ function LineFilterPopover(props: {
     <Popover
       overlayClassName='doris-query-builder-popup'
       trigger='click'
-      placement='bottom'
+      placement='bottomLeft'
       visible={visible}
       onVisibleChange={(v) => {
         ignoreNextOutsideClick();
@@ -636,7 +636,7 @@ function ParsedFieldFilterPopover(props: {
     <Popover
       overlayClassName='doris-query-builder-popup'
       trigger='click'
-      placement='bottom'
+      placement='bottomLeft'
       visible={visible}
       onVisibleChange={(v) => {
         ignoreNextOutsideClick();

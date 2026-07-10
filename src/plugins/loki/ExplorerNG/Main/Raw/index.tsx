@@ -122,7 +122,7 @@ export default function Raw(props: Props) {
         datasource_id: datasourceValue,
         query: [
           {
-            query: _.trim(latestQueryValues.query || '{}') || '{}',
+            query: _.trim(latestQueryValues.query),
             start: moment(parsedRange.start).valueOf(),
             end: moment(parsedRange.end).valueOf(),
             limit,
@@ -177,7 +177,7 @@ export default function Raw(props: Props) {
         datasource_id: datasourceValue,
         query: [
           {
-            query: _.trim(latestQueryValues.query || '{}') || '{}',
+            query: _.trim(latestQueryValues.query),
             start: moment(range.start).valueOf(),
             end: moment(range.end).valueOf(),
           },

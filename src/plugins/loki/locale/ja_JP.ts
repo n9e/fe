@@ -22,6 +22,7 @@ const ja_JP = {
     no_more_bottom: 'これ以上新しいログはありません',
     query_failed: 'コンテキストログの読み込みに失敗しました',
   },
+  query_placeholder: 'LogQL クエリを入力',
   builder: {
     labels: 'ラベル',
     labels_required: '有効なラベルマッチャーを少なくとも 1 つ設定してください',

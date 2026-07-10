@@ -22,6 +22,7 @@ const en_US = {
     no_more_bottom: 'No more newer logs',
     query_failed: 'Failed to load context logs',
   },
+  query_placeholder: 'Enter a LogQL query',
   builder: {
     labels: 'Labels',
     labels_required: 'Please configure at least one valid label matcher',

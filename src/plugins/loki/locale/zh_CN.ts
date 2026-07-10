@@ -22,6 +22,7 @@ const zh_CN = {
     no_more_bottom: '没有更新的日志',
     query_failed: '上下文日志加载失败',
   },
+  query_placeholder: '输入 LogQL 查询',
   builder: {
     labels: '标签',
     labels_required: '请至少配置一个有效标签匹配条件',

@@ -22,6 +22,7 @@ const zh_HK = {
     no_more_bottom: '沒有更新的日誌',
     query_failed: '上下文日誌載入失敗',
   },
+  query_placeholder: '輸入 LogQL 查詢',
   builder: {
     labels: '標籤',
     labels_required: '請至少配置一個有效標籤匹配條件',
