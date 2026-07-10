@@ -39,11 +39,11 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     description: 'Query Grafana dashboards, datasources, alerts and incidents.',
     logo: LOGO('grafana'),
     category: 'observability',
+    authMode: 'oauth',
     values: {
       name: 'Grafana',
-      description: 'Grafana Cloud hosted MCP server (OAuth login in your MCP client)',
+      description: 'Grafana Cloud hosted MCP server (OAuth-only; pick your stack during authorization)',
       url: 'https://mcp.grafana.com/mcp',
-      headers: [{ key: 'X-Grafana-URL', value: 'https://<YOUR_STACK>.grafana.net' }],
     },
   },
   {
@@ -54,9 +54,9 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     category: 'observability',
     values: {
       name: 'Sentry',
-      description: 'Sentry hosted MCP server',
+      description: 'Sentry hosted MCP server (static tokens use the Sentry-Bearer scheme; plain Bearer is reserved for OAuth)',
       url: 'https://mcp.sentry.dev/mcp',
-      headers: [{ key: 'Authorization', value: 'Bearer <YOUR_SENTRY_TOKEN>' }],
+      headers: [{ key: 'Authorization', value: 'Sentry-Bearer <YOUR_SENTRY_TOKEN>' }],
     },
   },
   {
@@ -67,11 +67,11 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     category: 'observability',
     values: {
       name: 'Datadog',
-      description: 'Datadog hosted MCP server — replace the host with your Datadog site',
-      url: 'https://mcp.datadoghq.com/api/unstable/mcp-server/mcp',
+      description: 'Datadog hosted MCP server (US1; EU: mcp.datadoghq.eu). Alt: Authorization: Bearer <personal access token>',
+      url: 'https://mcp.datadoghq.com/v1/mcp',
       headers: [
-        { key: 'DD-API-KEY', value: '<YOUR_DD_API_KEY>' },
-        { key: 'DD-APPLICATION-KEY', value: '<YOUR_DD_APP_KEY>' },
+        { key: 'DD_API_KEY', value: '<YOUR_DD_API_KEY>' },
+        { key: 'DD_APPLICATION_KEY', value: '<YOUR_DD_APP_KEY>' },
       ],
     },
   },
@@ -161,11 +161,11 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     description: 'Query and act on merge requests, issues and pipelines.',
     logo: LOGO('gitlab'),
     category: 'devtools',
+    authMode: 'oauth',
     values: {
       name: 'GitLab',
-      description: 'GitLab MCP server (SaaS; self-managed: replace the host)',
+      description: 'GitLab MCP server (OAuth-only; Beta, Premium/Ultimate. Self-managed: replace the host)',
       url: 'https://gitlab.com/api/v4/mcp',
-      headers: [{ key: 'Authorization', value: 'Bearer <YOUR_GITLAB_PAT>' }],
     },
   },
   {
@@ -177,7 +177,7 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     authMode: 'oauth',
     values: {
       name: 'Atlassian',
-      description: 'Atlassian Rovo hosted MCP server (OAuth login in your MCP client)',
+      description: 'Atlassian Rovo hosted MCP server (OAuth; API-token auth also available if org-enabled)',
       url: 'https://mcp.atlassian.com/v1/mcp',
     },
   },
@@ -226,9 +226,10 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     description: 'Scan code for security issues with Semgrep static analysis.',
     icon: '🔍',
     category: 'devtools',
+    authMode: 'oauth',
     values: {
       name: 'Semgrep',
-      description: 'Semgrep hosted MCP server (officially flagged experimental)',
+      description: 'Semgrep hosted MCP server (OAuth login; officially flagged experimental)',
       url: 'https://mcp.semgrep.ai/mcp',
     },
   },
@@ -307,9 +308,9 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     category: 'pm',
     values: {
       name: 'monday.com',
-      description: 'monday.com hosted MCP server (API token passed without a Bearer prefix)',
+      description: 'monday.com hosted MCP server',
       url: 'https://mcp.monday.com/mcp',
-      headers: [{ key: 'Authorization', value: '<YOUR_MONDAY_API_TOKEN>' }],
+      headers: [{ key: 'Authorization', value: 'Bearer <YOUR_MONDAY_API_TOKEN>' }],
     },
   },
 
@@ -440,7 +441,7 @@ export const MCP_TEMPLATES: MCPTemplate[] = [
     authMode: 'oauth',
     values: {
       name: 'Google Cloud',
-      description: 'Compute Engine MCP (OAuth/IAM only — rejects API keys). Others: monitoring/storage/networkmanagement .googleapis.com/mcp',
+      description: 'Compute Engine MCP (OAuth/IAM only — rejects API keys). Others: monitoring/networkmanagement .googleapis.com/mcp; storage.googleapis.com/storage/mcp',
       url: 'https://compute.googleapis.com/mcp',
     },
   },
