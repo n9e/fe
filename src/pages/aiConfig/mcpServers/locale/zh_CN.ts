@@ -69,6 +69,7 @@ const zh_CN = {
     oauth_scope: '授权范围 Scope',
     oauth_scope_tip: '空格分隔；留空则使用服务默认范围。',
     oauth_scope_placeholder: '留空使用默认',
+    save_and_authorize: '保存并授权',
     oauth_connection: '连接状态',
     oauth_connected: '已连接',
     oauth_not_connected: '未连接',

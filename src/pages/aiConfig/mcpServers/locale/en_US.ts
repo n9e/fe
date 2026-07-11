@@ -70,6 +70,7 @@ const en_US = {
     oauth_scope: 'Scope',
     oauth_scope_tip: 'Space-separated; leave empty to use the server default.',
     oauth_scope_placeholder: 'Empty = default',
+    save_and_authorize: 'Save & Authorize',
     oauth_connection: 'Connection',
     oauth_connected: 'Connected',
     oauth_not_connected: 'Not connected',

@@ -68,6 +68,7 @@ const zh_HK = {
     oauth_scope: '授權範圍 Scope',
     oauth_scope_tip: '空格分隔；留空則使用服務預設範圍。',
     oauth_scope_placeholder: '留空使用預設',
+    save_and_authorize: '保存並授權',
     oauth_connection: '連線狀態',
     oauth_connected: '已連線',
     oauth_not_connected: '未連線',

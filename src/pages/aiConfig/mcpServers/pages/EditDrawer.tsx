@@ -48,6 +48,7 @@ export default function EditDrawer(props: Props) {
   const handleClose = () => {
     form.resetFields();
     setTestLoading(false);
+    oauth.cancel();
     oauth.setStatus(null);
     onClose();
   };
@@ -55,15 +56,16 @@ export default function EditDrawer(props: Props) {
   const handleConnect = async () => {
     if (!id) return;
     try {
-      const { ok } = await oauth.connect({
+      const { result } = await oauth.connect({
         ensureServerId: async () => id,
         client_id: form.getFieldValue('oauth_client_id'),
         client_secret: form.getFieldValue('oauth_client_secret'),
         scope: form.getFieldValue('oauth_scope'),
       });
-      if (ok) {
+      // cancelled（用户关闭授权弹窗）不弹错误提示，仅成功/失败提示
+      if (result === 'success') {
         message.success(t('form.oauth_connect_success'));
-      } else {
+      } else if (result === 'failure') {
         message.error(t('form.oauth_connect_failure'));
       }
     } catch (err: any) {

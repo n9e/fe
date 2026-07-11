@@ -25,6 +25,8 @@ export interface Item {
   private: 0 | 1;
   /** 后端按当前用户计算，是否可管理（编辑/删除/测试等）；列表接口返回 */
   can_manage?: boolean;
+  /** 后端计算：是否已存有 OAuth 令牌（仅 auth_mode=oauth 时有意义）；列表接口返回 */
+  oauth_connected?: boolean;
 }
 
 export type FormValues = {

@@ -69,6 +69,7 @@ const ru_RU = {
     oauth_scope: 'Scope',
     oauth_scope_tip: 'Через пробел; пусто — значение по умолчанию.',
     oauth_scope_placeholder: 'Пусто = по умолчанию',
+    save_and_authorize: 'Сохранить и авторизовать',
     oauth_connection: 'Подключение',
     oauth_connected: 'Подключено',
     oauth_not_connected: 'Не подключено',

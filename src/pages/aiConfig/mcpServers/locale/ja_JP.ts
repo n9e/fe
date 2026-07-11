@@ -68,6 +68,7 @@ const ja_JP = {
     oauth_scope: 'スコープ',
     oauth_scope_tip: 'スペース区切り。空欄でサーバー既定値を使用。',
     oauth_scope_placeholder: '空欄で既定',
+    save_and_authorize: '保存して認可',
     oauth_connection: '接続状態',
     oauth_connected: '接続済み',
     oauth_not_connected: '未接続',

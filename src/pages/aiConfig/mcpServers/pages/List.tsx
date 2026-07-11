@@ -113,6 +113,14 @@ export default function List() {
                     render: (ids: number[]) => (_.isEmpty(ids) ? '-' : _.map(ids, (id) => <Tag key={id}>{groupNameMap.get(id) ?? `#${id}`}</Tag>)),
                   },
                   {
+                    dataIndex: 'oauth_connected',
+                    title: t('form.oauth_connection'),
+                    width: 90,
+                    // 仅 OAuth 鉴权的 Server 有连接状态：让「已保存但未授权」的记录在列表中一目了然
+                    render: (val, record) =>
+                      record.auth_mode === 'oauth' ? <Tag color={val ? 'success' : 'warning'}>{val ? t('form.oauth_connected') : t('form.oauth_not_connected')}</Tag> : '-',
+                  },
+                  {
                     ...getEnabledStatusColumn({
                       title: t('enabled'),
                       dataIndex: 'enabled',

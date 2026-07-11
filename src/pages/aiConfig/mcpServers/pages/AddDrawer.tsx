@@ -30,8 +30,11 @@ export default function AddDrawer(props: Props) {
   const [testLoading, setTestLoading] = React.useState(false);
   const [saveLoading, setSaveLoading] = React.useState(false);
   const [view, setView] = React.useState<View>(defaultView);
-  // 新增流程里点「连接授权」会先创建服务器拿到 id；创建后保存走更新。
+  // OAuth 模式下点「保存并授权」会先创建服务器拿到 id（授权回调落 token 需要）；创建后保存走更新。
   const [serverId, setServerId] = React.useState<number | undefined>(undefined);
+  // 「保存并授权」进行中：流程内 serverId 会由 undefined 变为已创建的 id，用它锁住底部按钮的形态与 loading
+  const [savingAndConnecting, setSavingAndConnecting] = React.useState(false);
+  const authMode = Form.useWatch('auth_mode', form) ?? 'none';
 
   const oauth = useMcpOAuth(serverId);
   const { myGroupIds } = useUserGroups();
@@ -55,13 +58,16 @@ export default function AddDrawer(props: Props) {
   const resetState = () => {
     setTestLoading(false);
     setSaveLoading(false);
+    setSavingAndConnecting(false);
     setServerId(undefined);
+    oauth.cancel();
     oauth.setStatus(null);
     form.resetFields();
   };
 
   const handleClose = () => {
-    // 「连接授权」已先创建服务器：即便用户取消，记录也已落库，需刷新列表让其可见可管理
+    // 「保存并授权」是用户显式的创建动作：即便随后取消/未完成授权，记录也已合法落库
+    // （连接状态为「未连接」，可在列表/编辑里重新授权），因此关闭时需刷新列表让其可见。
     const created = serverId !== undefined;
     resetState();
     if (created) {
@@ -80,6 +86,8 @@ export default function AddDrawer(props: Props) {
   const applyTemplate = (template: MCPTemplate) => {
     form.resetFields();
     setServerId(undefined);
+    // 中止可能残留的 OAuth 授权（关闭弹窗、清除转圈状态）
+    oauth.cancel();
     oauth.setStatus(null);
     // 未显式声明鉴权方式的模板：带 header 则按 header 模式（否则请求头会被隐藏且无法编辑），否则无认证
     const authMode = template.authMode ?? ((template.values.headers?.length ?? 0) > 0 ? 'header' : 'none');
@@ -87,27 +95,50 @@ export default function AddDrawer(props: Props) {
     setView('form');
   };
 
-  // 确保服务器已存在（返回 id）；不存在则先创建。
-  const ensureServerId = async (): Promise<number> => {
-    if (serverId) return serverId;
-    await form.validateFields(['name', 'url', 'auth_mode']);
-    const data = stripOAuthFields(adjustSubmitValues(form.getFieldsValue(true)));
-    const id = (await postItem(data)) as number;
-    setServerId(id);
-    return id;
+  // 「保存并授权」（OAuth 模式下新增的主按钮）：先整表校验，通过后创建服务器并立即发起授权。
+  // 授权成功即完成新增并关闭；用户取消/失败则保留已创建记录（未连接状态），可在表单内重试。
+  const handleSaveAndConnect = () => {
+    form.validateFields().then(async (values) => {
+      setSavingAndConnecting(true);
+      try {
+        const { result } = await oauth.connect({
+          ensureServerId: async () => {
+            const id = (await postItem(stripOAuthFields(adjustSubmitValues(values)))) as number;
+            setServerId(id);
+            return id;
+          },
+          client_id: form.getFieldValue('oauth_client_id'),
+          client_secret: form.getFieldValue('oauth_client_secret'),
+          scope: form.getFieldValue('oauth_scope'),
+        });
+        // cancelled（用户关闭授权弹窗）不弹错误提示，仅成功/失败提示
+        if (result === 'success') {
+          message.success(t('form.oauth_connect_success'));
+          handleOk();
+        } else if (result === 'failure') {
+          message.error(t('form.oauth_connect_failure'));
+        }
+      } catch (err: any) {
+        if (err?.message) message.error(err.message);
+      } finally {
+        setSavingAndConnecting(false);
+      }
+    });
   };
 
+  // 已保存后表单内「连接授权/重新授权」按钮的重试路径
   const handleConnect = async () => {
+    if (serverId === undefined) return;
     try {
-      const { ok } = await oauth.connect({
-        ensureServerId,
+      const { result } = await oauth.connect({
+        ensureServerId: async () => serverId,
         client_id: form.getFieldValue('oauth_client_id'),
         client_secret: form.getFieldValue('oauth_client_secret'),
         scope: form.getFieldValue('oauth_scope'),
       });
-      if (ok) {
+      if (result === 'success') {
         message.success(t('form.oauth_connect_success'));
-      } else {
+      } else if (result === 'failure') {
         message.error(t('form.oauth_connect_failure'));
       }
     } catch (err: any) {
@@ -193,15 +224,26 @@ export default function AddDrawer(props: Props) {
             <Button loading={testLoading} onClick={handleTest}>
               {t('form.test_connection')}
             </Button>
-            <Button type='primary' loading={saveLoading} onClick={handleSave}>
-              {t('common:btn.save')}
-            </Button>
+            {authMode === 'oauth' && (serverId === undefined || savingAndConnecting) ? (
+              // OAuth 模式下的新增：创建与授权合并为一个显式动作（Dify 等产品的「Add & Authorize」惯例）
+              <Button type='primary' loading={savingAndConnecting} onClick={handleSaveAndConnect}>
+                {t('form.save_and_authorize')}
+              </Button>
+            ) : (
+              <Button type='primary' loading={saveLoading} onClick={handleSave}>
+                {t('common:btn.save')}
+              </Button>
+            )}
           </Space>
         )
       }
     >
       <div style={{ display: view === 'form' ? 'block' : 'none' }}>
-        <FormCpt form={form} oauth={{ status: oauth.status, connecting: oauth.connecting, onConnect: handleConnect, onDisconnect: handleDisconnect }} />
+        {/* 未保存时不展示「连接状态」区块：连接授权由底部「保存并授权」显式完成，避免表单内按钮隐式建库 */}
+        <FormCpt
+          form={form}
+          oauth={serverId !== undefined ? { status: oauth.status, connecting: oauth.connecting, onConnect: handleConnect, onDisconnect: handleDisconnect } : undefined}
+        />
       </div>
       {view === 'template' && <TemplateGallery onSelect={applyTemplate} />}
     </Modal>

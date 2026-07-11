@@ -55,17 +55,17 @@ export default function FormCpt(props: Props) {
       </Form.Item>
 
       <Form.Item label={t('scope.title')} name='private' initialValue={1} tooltip={t('scope.tip')}>
-        <Radio.Group optionType='button' buttonStyle='solid'>
-          <Radio.Button value={0}>{t('scope.public')}</Radio.Button>
-          <Radio.Button value={1}>{t('scope.private')}</Radio.Button>
+        <Radio.Group>
+          <Radio value={0}>{t('scope.public')}</Radio>
+          <Radio value={1}>{t('scope.private')}</Radio>
         </Radio.Group>
       </Form.Item>
 
       <Form.Item label={t('form.auth_mode')} name='auth_mode' initialValue='none'>
-        <Radio.Group optionType='button' buttonStyle='solid'>
-          <Radio.Button value='none'>{t('form.auth_none')}</Radio.Button>
-          <Radio.Button value='header'>{t('form.auth_header')}</Radio.Button>
-          <Radio.Button value='oauth'>{t('form.auth_oauth')}</Radio.Button>
+        <Radio.Group>
+          <Radio value='none'>{t('form.auth_none')}</Radio>
+          <Radio value='header'>{t('form.auth_header')}</Radio>
+          <Radio value='oauth'>{t('form.auth_oauth')}</Radio>
         </Radio.Group>
       </Form.Item>
 
