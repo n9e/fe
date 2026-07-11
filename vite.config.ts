@@ -99,22 +99,6 @@ export default defineConfig(({ mode }) => {
           target: proxyURL,
           changeOrigin: true,
         },
-        // Outbound MCP OAuth (n9e-as-AS self-loop) — proxy the AS + resource-server
-        // paths to the backend. Note: '/oauth/' (trailing slash) matches
-        // /oauth/authorize|token|register|revoke but NOT the SPA route
-        // /oauth-consent, which vite must keep serving.
-        '/oauth/': {
-          target: proxyURL,
-          changeOrigin: true,
-        },
-        '/.well-known': {
-          target: proxyURL,
-          changeOrigin: true,
-        },
-        '/mcp': {
-          target: proxyURL,
-          changeOrigin: true,
-        },
       },
     },
     build: {
