@@ -49,6 +49,7 @@ const Users = React.lazy(() => import('@/pages/user/users'));
 const Business = React.lazy(() => import('@/pages/user/business'));
 const MetricExplore = React.lazy(() => import('@/pages/explorer/Metric'));
 const LogExplore = React.lazy(() => import('@/pages/explorer/Log'));
+const LogExploreNG = React.lazy(() => import('@/pages/logExplorer'));
 const IndexPatterns = React.lazy(() => import('@/pages/log/IndexPatterns'));
 const ObjectExplore = React.lazy(() => import('@/pages/monitor/object'));
 const Shield = React.lazy(() => import('@/pages/warning/shield'));
@@ -186,6 +187,7 @@ export default function Content() {
         <Route path='/oauth-consent' component={OAuthConsent} exact />
         <Route path='/metric/explorer' component={MetricExplore} exact />
         <Route path='/log/explorer' component={LogExplore} exact />
+        <Route path='/log/explorer-ng' component={LogExploreNG} exact />
         <Route path='/log/index-patterns' component={IndexPatterns} exact />
         <Route path='/object/explorer' component={ObjectExplore} exact />
         <Route path='/busi-groups' component={Business} />
