@@ -7,11 +7,8 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import './index.less';
 
-export interface ColumnOption {
-  label: string;
-  value: string;
-  order?: number;
-}
+import type { ColumnOption } from './utils';
+export type { ColumnOption } from './utils';
 
 interface IProps {
   showDropdown?: boolean;
@@ -99,13 +96,22 @@ export default function TableColumnSelect(props: IProps) {
     const selected: ColumnOption[] = [];
     const unselected: ColumnOption[] = [];
 
-    // 首先按照value的顺序添加已选中的项
-    value.forEach((val) => {
-      const option = options.find((opt) => opt.value === val);
-      if (option) {
-        selected.push({ ...option, order: selected.length });
-      }
-    });
+    if (sortable) {
+      // 可排序模式下按照value的顺序展示
+      value.forEach((val) => {
+        const option = options.find((opt) => opt.value === val);
+        if (option) {
+          selected.push({ ...option, order: selected.length });
+        }
+      });
+    } else {
+      // 非排序模式下按照options（即默认列配置）的顺序展示
+      options.forEach((option) => {
+        if (selectedSet.has(option.value)) {
+          selected.push({ ...option, order: selected.length });
+        }
+      });
+    }
 
     // 添加未选中的项
     options.forEach((option) => {
@@ -115,7 +121,7 @@ export default function TableColumnSelect(props: IProps) {
     });
 
     return { selectedOptions: selected, unselectedOptions: unselected };
-  }, [options, value]);
+  }, [options, value, sortable]);
 
   // 搜索过滤
   const filteredSelected = useMemo(() => {
@@ -153,7 +159,18 @@ export default function TableColumnSelect(props: IProps) {
 
   // 切换选中状态
   const handleToggle = (optionValue: string) => {
-    const newValue = value.includes(optionValue) ? value.filter((v) => v !== optionValue) : [...value, optionValue];
+    let newValue: string[];
+    if (value.includes(optionValue)) {
+      newValue = value.filter((v) => v !== optionValue);
+    } else if (sortable) {
+      // 可排序模式：追加到末尾
+      newValue = [...value, optionValue];
+    } else {
+      // 非排序模式：按options顺序插入到正确位置
+      const valueSet = new Set(value);
+      valueSet.add(optionValue);
+      newValue = options.filter((opt) => valueSet.has(opt.value)).map((opt) => opt.value);
+    }
 
     const newSelectedOptions = newValue.map((val, index) => {
       const option = options.find((opt) => opt.value === val);
@@ -289,3 +306,5 @@ export default function TableColumnSelect(props: IProps) {
     </Dropdown>
   );
 }
+
+export { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from './utils';
