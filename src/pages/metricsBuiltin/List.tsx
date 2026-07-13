@@ -531,7 +531,7 @@ export default function index() {
                   return undefined;
                 }
                 return {
-                  menu: _.compact([
+                  inline: _.compact([
                     actionAuth.add
                       ? {
                           key: 'clone',

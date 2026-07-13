@@ -219,8 +219,6 @@ const index = (_props: any) => {
                     text: t('task.create'),
                     onClick: () => history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}&gid=${record.group_id}` }),
                   },
-                ],
-                menu: [
                   {
                     key: 'edit',
                     icon: 'edit',
@@ -254,7 +252,7 @@ const index = (_props: any) => {
                   },
                 ],
               })}
-              actionColumn={{ title: t('table.operations'), width: 110 }}
+              actionColumn={{ title: t('table.operations'), width: 130 }}
               {...(tableProps as any)}
               rowSelection={{
                 selectedRowKeys: selectedIds,

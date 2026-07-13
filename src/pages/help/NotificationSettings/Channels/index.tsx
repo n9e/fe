@@ -111,7 +111,7 @@ export default function Channels() {
           },
         ]}
         rowActions={(reocrd) => ({
-          menu: _.compact([
+          inline: _.compact([
             {
               key: 'edit',
               icon: 'edit',

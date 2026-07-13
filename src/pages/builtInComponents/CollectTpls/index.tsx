@@ -156,7 +156,7 @@ export default function index(props: Props) {
         ]}
         pagination={pagination}
         rowActions={(record: any) => ({
-          menu: _.compact([
+          inline: _.compact([
             {
               key: 'collect_create',
               icon: 'open',

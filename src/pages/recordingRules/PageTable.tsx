@@ -411,7 +411,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
         }}
         columns={columns}
         rowActions={(record) => ({
-          menu: [
+          inline: [
             {
               key: 'clone',
               icon: 'copy',

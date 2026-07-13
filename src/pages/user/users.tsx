@@ -256,7 +256,7 @@ const Resource: React.FC = () => {
           rowActions={
             hasRowActions
               ? (record) => ({
-                  menu: _.compact([
+                  inline: _.compact([
                     _.includes(perms, '/users/put')
                       ? { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => handleClick(ActionType.EditUser, record.id) }
                       : undefined,

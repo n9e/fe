@@ -299,7 +299,7 @@ export default function index() {
               });
             })()}
             rowActions={(record) => ({
-              menu: _.compact([
+              inline: _.compact([
                 gids !== '-1'
                   ? {
                       key: 'edit',
@@ -367,7 +367,7 @@ export default function index() {
                   : undefined,
               ]) as any,
             })}
-            actionColumn={{ title: t('common:table.operations'), width: 64 }}
+            actionColumn={{ title: t('common:table.operations'), width: 130 }}
             rowKey='id'
             size='small'
             rowSelection={{

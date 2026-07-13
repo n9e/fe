@@ -308,7 +308,7 @@ export default function index() {
                   },
                 ]}
                 rowActions={(record) => ({
-                  menu: [
+                  inline: [
                     {
                       key: 'clone',
                       icon: 'copy',

@@ -420,7 +420,7 @@ const Event = (props: Props) => {
         {...(showClaimant
           ? {
               rowActions: (record) => ({
-                menu: _.compact([
+                inline: _.compact([
                   IS_PLUS && {
                     key: 'ack',
                     node: (
@@ -465,7 +465,7 @@ const Event = (props: Props) => {
                   },
                 ]),
               }),
-              actionColumn: { title: t('common:table.operations'), width: 64 },
+              actionColumn: { title: t('common:table.operations'), width: 100 },
             }
           : {})}
         {...tableProps}

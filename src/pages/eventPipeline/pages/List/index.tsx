@@ -266,8 +266,6 @@ export default function List() {
               text: t('executions.title'),
               onClick: () => history.push(`/event-pipelines-executions?pipeline_id=${item.id}`),
             },
-          ],
-          menu: [
             {
               key: 'clone',
               icon: 'copy',
@@ -312,7 +310,7 @@ export default function List() {
             },
           ],
         })}
-        actionColumn={{ title: t('common:table.operations'), width: 110 }}
+        actionColumn={{ title: t('common:table.operations'), width: 130 }}
       />
       <Drawer
         title={t(`${NS}:title_${eventPipelineDrawerState.action}`)}

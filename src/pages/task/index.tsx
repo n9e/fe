@@ -217,7 +217,7 @@ const index = (_props: any) => {
               rowKey='id'
               columns={columns as any}
               rowActions={(record) => ({
-                menu: [
+                inline: [
                   {
                     key: 'clone',
                     icon: 'copy',

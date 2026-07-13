@@ -254,13 +254,13 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
             {...(!data.done
               ? {
                   rowActions: (record) => ({
-                    menu: [
+                    inline: [
                       { key: 'ignore', icon: 'default', text: 'ignore', onClick: () => handleHostAction(record.host, 'ignore') },
                       { key: 'redo', icon: 'run', text: 'redo', onClick: () => handleHostAction(record.host, 'redo') },
                       { key: 'kill', icon: 'delete', text: 'kill', danger: true, onClick: () => handleHostAction(record.host, 'kill') },
                     ],
                   }),
-                  actionColumn: { title: t('table.operations'), width: 64 },
+                  actionColumn: { title: t('table.operations'), width: 110 },
                 }
               : {})}
             pagination={
