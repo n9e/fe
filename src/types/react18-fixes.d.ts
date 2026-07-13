@@ -44,9 +44,13 @@ declare module 'react-draggable' {
 declare module 'react-sortable-hoc' {
   interface SortableContainerProps {
     children?: React.ReactNode;
+    disabled?: boolean;
+    items?: any[];
   }
   interface SortableElementProps {
     children?: React.ReactNode;
+    value?: any;
+    item?: any;
   }
 }
 
