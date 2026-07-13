@@ -6,6 +6,11 @@ const ru_RU = {
   query: 'Условия запроса',
   query_is_required: 'Условия запроса не могут быть пустыми',
   execute: 'Запрос',
+  mode: {
+    label: 'Режим',
+    raw_logs: 'Исходные логи',
+    statistical_charts: 'Статистические графики',
+  },
   before_query: 'Нажмите <b>Запрос</b>, чтобы отобразить данные',
   loading: 'Загрузка данных ...',
   no_data: 'Данные не найдены',
@@ -77,6 +82,8 @@ const ru_RU = {
   },
   logs: {
     title: 'Данные логов',
+    stream_fields_count: '{{count}} полей',
+    text: 'Текст лога',
     duration: 'Время выполнения',
     count: 'Количество',
     filter_fields: 'Фильтр полей',
@@ -84,6 +91,7 @@ const ru_RU = {
       mode: {
         origin: 'Исходный',
         table: 'Таблица',
+        timeseries: 'Временной ряд',
         clustering: 'Кластеризация',
       },
       breakLine: 'Перенос строки',

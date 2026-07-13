@@ -34,6 +34,7 @@ import { CommonStateContext } from '@/App';
 import { Explorer as IotDB } from '@/plugins/iotdb';
 import { Explorer as TDengine } from '@/plugins/TDengine';
 import { Explorer as CK } from '@/plugins/clickHouse';
+import { Explorer as Victorialogs } from '@/plugins/victorialogs';
 import { allCates } from '@/components/AdvancedWrap/utils';
 import ViewSelect, { ModalState } from '@/components/ViewSelect';
 
@@ -387,6 +388,8 @@ const Panel = (props: IProps) => {
                   return <Loki datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} form={form} defaultFormValuesControl={defaultFormValuesControl} />;
                 } else if (datasourceCate === DatasourceCateEnum.ck) {
                   return <CK datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} />;
+                } else if (datasourceCate === DatasourceCateEnum.victorialogs) {
+                  return <Victorialogs datasourceValue={datasourceValue} headerExtra={headerExtraRef.current} defaultFormValuesControl={defaultFormValuesControl} />;
                 }
                 return (
                   <PlusExplorer
