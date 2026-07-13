@@ -209,8 +209,8 @@ export default function index() {
                   ellipsis: { showTitle: false },
                   render: (text: string) => <EllipsisText text={text} />,
                 },
-                dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
-                userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
+                dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+                userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
                 {
                   title: t('public.name'),
                   width: 150,
