@@ -7,6 +7,7 @@ import { SIZE } from '@/utils/constant';
 
 import { NS } from '../constants';
 import { GitAuthType, GitRefType } from '../types';
+import SkillAuthFields from './SkillAuthFields';
 
 export type GitFormMode = 'install' | 'replace' | 'update';
 export type GitFormDisabledField = 'git_url' | 'git_ref_type' | 'git_ref' | 'git_auth_type' | 'git_token' | 'git_subdir';
@@ -119,6 +120,7 @@ export default function GitForm(props: Props) {
           )}
         </>
       )}
+      <SkillAuthFields />
     </Form>
   );
 }

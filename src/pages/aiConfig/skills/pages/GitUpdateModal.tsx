@@ -6,13 +6,14 @@ import { useTranslation } from 'react-i18next';
 
 import { NS } from '../constants';
 import { getItem, gitUpdate } from '../services';
-import { GitInstallPayload, GitInfo } from '../types';
+import { GitInstallPayload, GitInfo, SkillAuthValues } from '../types';
 import GitForm from './GitForm';
 import { confirmAbortOngoingRequest, isAbortError, showGitOperationError } from './gitErrorModal';
 
 interface Props {
   id?: number;
   gitInfo?: GitInfo;
+  defaultAuth?: SkillAuthValues;
   visible: boolean;
   onCancel: () => void;
   onOk: () => void;
@@ -20,7 +21,7 @@ interface Props {
 
 export default function GitUpdateModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { id, gitInfo, visible, onCancel, onOk } = props;
+  const { id, gitInfo, defaultAuth, visible, onCancel, onOk } = props;
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = React.useState(false);
   const controllerRef = React.useRef<AbortController | null>(null);
@@ -37,7 +38,13 @@ export default function GitUpdateModal(props: Props) {
         git_ref: gitInfo.ref,
       });
     }
-  }, [visible, gitInfo, form]);
+    if (defaultAuth) {
+      form.setFieldsValue({
+        user_group_ids: defaultAuth.user_group_ids,
+        private: defaultAuth.private,
+      });
+    }
+  }, [visible, gitInfo, defaultAuth, form]);
 
   const closeModal = React.useCallback(() => {
     form.resetFields();
@@ -68,9 +75,12 @@ export default function GitUpdateModal(props: Props) {
 
   const handleSubmit = async () => {
     if (!id) return;
-    let values: Pick<GitInstallPayload, 'git_ref_type' | 'git_ref'>;
+    let values: Pick<GitInstallPayload, 'git_ref_type' | 'git_ref' | 'user_group_ids' | 'private'>;
     try {
-      values = (await form.validateFields(['git_ref_type', 'git_ref'])) as Pick<GitInstallPayload, 'git_ref_type' | 'git_ref'>;
+      values = (await form.validateFields(['git_ref_type', 'git_ref', 'user_group_ids', 'private'])) as Pick<
+        GitInstallPayload,
+        'git_ref_type' | 'git_ref' | 'user_group_ids' | 'private'
+      >;
     } catch {
       return;
     }
@@ -84,6 +94,8 @@ export default function GitUpdateModal(props: Props) {
         {
           git_ref_type: values.git_ref_type,
           git_ref: values.git_ref,
+          user_group_ids: values.user_group_ids,
+          private: values.private,
         },
         { silence: true, signal: controller.signal },
       );

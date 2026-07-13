@@ -3,9 +3,18 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-import { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload } from './types';
+import { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload, SkillAuthValues } from './types';
 
-export type { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload };
+export type { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload, SkillAuthValues };
+
+// appendSkillAuth 把授权范围+团队塞进 multipart 表单（后端按 JSON 数组 / int 解析）。
+function appendSkillAuth(formData: FormData, auth?: SkillAuthValues) {
+  if (!auth) {
+    return;
+  }
+  formData.append('user_group_ids', JSON.stringify(auth.user_group_ids ?? []));
+  formData.append('private', String(auth.private ?? 0));
+}
 
 export const getList = function (): Promise<Item[]> {
   return request('/api/n9e/ai-skills', {
@@ -26,18 +35,20 @@ export const postItem = function (data: FormValues) {
   }).then((res) => res.dat);
 };
 
-export const importItem = function (file: File) {
+export const importItem = function (file: File, auth?: SkillAuthValues) {
   const formData = new FormData();
   formData.append('file', file);
+  appendSkillAuth(formData, auth);
   return request('/api/n9e/ai-skills/import', {
     method: RequestMethod.Post,
     data: formData,
   }).then((res) => res.dat);
 };
 
-export const importItemToUpdate = function (id: number, file: File) {
+export const importItemToUpdate = function (id: number, file: File, auth?: SkillAuthValues) {
   const formData = new FormData();
   formData.append('file', file);
+  appendSkillAuth(formData, auth);
   return request(`/api/n9e/ai-skill/${id}/import`, {
     method: RequestMethod.Put,
     data: formData,

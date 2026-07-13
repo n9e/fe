@@ -10,7 +10,7 @@ import PageLayout from '@/components/pageLayout';
 
 import { NS } from '../constants';
 import { FileContent, Item, SkillDetail, deleteFile, deleteItem, getFile, getItem, getList, gitUpdate, importItem, importItemToUpdate, putItem } from '../services';
-import { SkillTreeNode } from '../types';
+import { SkillTreeNode, SkillAuthValues } from '../types';
 import { buildSkillTree, getSkillNodeKey, isMarkdownFile } from '../utils/tree';
 import AddModal from './AddModal';
 import EditModal from './EditModal';
@@ -54,6 +54,15 @@ export default function List() {
   const filteredSkills = useMemo(() => {
     return _.filter(data, (item) => _.includes(_.upperCase(item.name), _.upperCase(searchValue)));
   }, [data, searchValue]);
+  // git 替换/更新弹窗回填授权用：memo 化以稳定引用，避免弹窗 effect 每次渲染重置表单。
+  const gitReplaceDefaultAuth = useMemo<SkillAuthValues | undefined>(() => {
+    const s = _.find(data, { id: gitReplaceState.id });
+    return s ? { user_group_ids: s.user_group_ids, private: s.private } : undefined;
+  }, [data, gitReplaceState.id]);
+  const gitUpdateDefaultAuth = useMemo<SkillAuthValues | undefined>(() => {
+    const s = _.find(data, { id: gitUpdateState.id });
+    return s ? { user_group_ids: s.user_group_ids, private: s.private } : undefined;
+  }, [data, gitUpdateState.id]);
   const filteredTree = useMemo(() => buildSkillTree(filteredSkills, detailMap).treeData, [filteredSkills, detailMap]);
   const selectedNode = selectedNodeKey ? allTree.nodeMap[selectedNodeKey] : undefined;
   const selectedSkill = selectedNode ? _.find(data, { id: selectedNode.skillId }) : undefined;
@@ -161,9 +170,9 @@ export default function List() {
     await run();
   }
 
-  async function handleImport(file: File) {
+  async function handleImport(file: File, auth: SkillAuthValues) {
     try {
-      await importItem(file);
+      await importItem(file, auth);
       await run();
       message.success(t('upload_file_success'));
     } catch (_error) {
@@ -172,9 +181,9 @@ export default function List() {
     }
   }
 
-  async function handleUpdateImport(skillId: number, file: File) {
+  async function handleUpdateImport(skillId: number, file: File, auth: SkillAuthValues) {
     try {
-      await importItemToUpdate(skillId, file);
+      await importItemToUpdate(skillId, file, auth);
       await refreshSkill(skillId);
       message.success(t('upload_file_success'));
     } catch (_error) {
@@ -427,8 +436,8 @@ export default function List() {
                       onEdit={() => {
                         setEditModalState({ visible: true, id: selectedSkillData.id });
                       }}
-                      onImport={(file) => {
-                        handleUpdateImport(selectedSkillData.id, file);
+                      onImport={(file, auth) => {
+                        handleUpdateImport(selectedSkillData.id, file, auth);
                       }}
                       onDelete={() => {
                         handleDeleteSkill(selectedSkillData.id);
@@ -512,6 +521,7 @@ export default function List() {
         visible={gitReplaceState.visible}
         id={gitReplaceState.id}
         gitInfo={gitReplaceState.id ? _.find(data, { id: gitReplaceState.id })?.git_info : undefined}
+        defaultAuth={gitReplaceDefaultAuth}
         onCancel={() => {
           setGitReplaceState({ visible: false });
         }}
@@ -527,6 +537,7 @@ export default function List() {
         visible={gitUpdateState.visible}
         id={gitUpdateState.id}
         gitInfo={gitUpdateState.id ? _.find(data, { id: gitUpdateState.id })?.git_info : undefined}
+        defaultAuth={gitUpdateDefaultAuth}
         onCancel={() => {
           setGitUpdateState({ visible: false });
         }}

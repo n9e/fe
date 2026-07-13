@@ -5,13 +5,14 @@ import _ from 'lodash';
 
 import { NS } from '../constants';
 import { gitReplaceConfig } from '../services';
-import { GitInstallPayload, GitInfo } from '../types';
+import { GitInstallPayload, GitInfo, SkillAuthValues } from '../types';
 import GitForm from './GitForm';
 import { confirmAbortOngoingRequest, isAbortError, showGitOperationError } from './gitErrorModal';
 
 interface Props {
   id?: number;
   gitInfo?: GitInfo;
+  defaultAuth?: SkillAuthValues;
   visible: boolean;
   onCancel: () => void;
   onOk: () => void;
@@ -19,7 +20,7 @@ interface Props {
 
 export default function GitReplaceConfigModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { id, gitInfo, visible, onCancel, onOk } = props;
+  const { id, gitInfo, defaultAuth, visible, onCancel, onOk } = props;
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = React.useState(false);
   const controllerRef = React.useRef<AbortController | null>(null);
@@ -38,7 +39,13 @@ export default function GitReplaceConfigModal(props: Props) {
         git_subdir: gitInfo.subdir,
       });
     }
-  }, [visible, gitInfo, form]);
+    if (defaultAuth) {
+      form.setFieldsValue({
+        user_group_ids: defaultAuth.user_group_ids,
+        private: defaultAuth.private,
+      });
+    }
+  }, [visible, gitInfo, defaultAuth, form]);
 
   const closeModal = React.useCallback(() => {
     form.resetFields();
@@ -76,17 +83,21 @@ export default function GitReplaceConfigModal(props: Props) {
       return;
     }
 
-    const payload: Partial<GitInstallPayload> = _.pickBy(
-      {
-        git_url: values.git_url,
-        git_ref_type: values.git_ref_type,
-        git_ref: values.git_ref,
-        git_auth_type: values.git_auth_type,
-        git_subdir: values.git_subdir,
-        git_token: values.git_token,
-      },
-      (value) => value !== undefined && value !== '',
-    );
+    const payload: Partial<GitInstallPayload> = {
+      ..._.pickBy(
+        {
+          git_url: values.git_url,
+          git_ref_type: values.git_ref_type,
+          git_ref: values.git_ref,
+          git_auth_type: values.git_auth_type,
+          git_subdir: values.git_subdir,
+          git_token: values.git_token,
+        },
+        (value) => value !== undefined && value !== '',
+      ),
+      user_group_ids: values.user_group_ids,
+      private: values.private,
+    };
 
     const controller = new AbortController();
     controllerRef.current = controller;
