@@ -38,7 +38,7 @@ export const defaultColumnsConfigs = [
   },
   {
     name: 'update_by',
-    i18nKey: 'common:table.username',
+    i18nKey: 'common:table.update_by',
     visible: false,
   },
   {
