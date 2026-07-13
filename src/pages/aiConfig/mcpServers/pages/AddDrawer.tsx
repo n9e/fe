@@ -36,6 +36,10 @@ export default function AddDrawer(props: Props) {
   const [savingAndConnecting, setSavingAndConnecting] = React.useState(false);
   const authMode = Form.useWatch('auth_mode', form) ?? 'none';
 
+  // 「保存并授权」的创建请求可能在弹窗被关闭（resetState）后才返回：用会话代号
+  // 识别迟到的响应，避免把 serverId 写回污染下一次新增（那会让保存变成覆盖旧记录）
+  const sessionRef = React.useRef(0);
+
   const oauth = useMcpOAuth(serverId);
   const { myGroupIds } = useUserGroups();
 
@@ -56,6 +60,7 @@ export default function AddDrawer(props: Props) {
   }, [visible, serverId, myGroupIds]);
 
   const resetState = () => {
+    sessionRef.current += 1;
     setTestLoading(false);
     setSaveLoading(false);
     setSavingAndConnecting(false);
@@ -103,8 +108,15 @@ export default function AddDrawer(props: Props) {
       try {
         const { result } = await oauth.connect({
           ensureServerId: async () => {
+            const session = sessionRef.current;
             const id = (await postItem(stripOAuthFields(adjustSubmitValues(values)))) as number;
-            setServerId(id);
+            if (sessionRef.current === session) {
+              setServerId(id);
+            } else {
+              // 创建在途时弹窗已被关闭（handleClose 彼时读到 serverId 为空，走了不刷新
+              // 的 onClose）：不写回 serverId，补一次 onOk 刷新列表让已落库的记录可见
+              onOk();
+            }
             return id;
           },
           client_id: form.getFieldValue('oauth_client_id'),
