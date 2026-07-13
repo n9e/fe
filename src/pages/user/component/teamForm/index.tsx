@@ -21,7 +21,7 @@ import { TeamProps, Team, TeamInfo } from '@/store/manageInterface';
 import { useTranslation, Trans } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 
-const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
+const TeamForm = React.forwardRef<any, TeamProps>((props, ref) => {
   const { siteInfo } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const { teamId } = props;
