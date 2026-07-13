@@ -147,6 +147,7 @@ export default defineConfig(({ mode }) => {
             'checkbox-check-color': '#6C53B1',
             'checkbox-color': 'fade(@checkbox-check-color, 10)',
             'btn-padding-horizontal-base': '12px',
+
             // 2026-05 table design
             'table-bg': 'var(--fc-fill-2)',
             'table-header-bg': 'var(--fc-fill-2-5)',

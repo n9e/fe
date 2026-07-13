@@ -58,6 +58,16 @@ const ja_JP = {
   payload_by_system: 'システム内蔵',
   firemap: {
     drill_path: 'ドリルダウンパス',
+    generate_rule: 'ルールを生成',
+    custom_rule: 'カスタムルール',
+    update_match_degree: 'マッチ度を一括更新',
+    match_degree_updated: 'マッチ度を更新しました',
+    match_degree: {
+      title: 'ルールマッチ度',
+      high: '高マッチ',
+      medium: '中マッチ',
+      low: '低マッチ',
+    },
     urlConfig: 'リンクアドレス',
     dashboardConfig: 'ダッシュボード',
     logExplore: 'ログ検索',

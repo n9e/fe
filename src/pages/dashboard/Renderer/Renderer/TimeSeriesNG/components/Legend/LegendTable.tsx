@@ -57,6 +57,7 @@ export default function LegendTable(props: Props) {
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
+  const tableEleRef = React.useRef<HTMLDivElement>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const containerSize = useSize(containerRef);
@@ -160,6 +161,16 @@ export default function LegendTable(props: Props) {
     },
     [bottomPadding, columns.length, topPadding],
   );
+
+  useEffect(() => {
+    if (tableEleRef.current) {
+      /**
+       * 解决在 windows 系统里首次渲染会出现一个空白的滚动条
+       * 设置 minWidth 本身是没有意义的，只是为了让浏览器重新计算一下宽度
+       */
+      tableEleRef.current.style.minWidth = 'unset';
+    }
+  }, []);
 
   return (
     <div

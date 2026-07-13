@@ -24,6 +24,18 @@
   gap: 4px;
 }
 
+// Hand-written action column (EnhancedTable adds .fc-table-op-column to the action cell):
+// remove the first inline link/text button's left padding so text aligns with the "operate" header (matching .fc-table-action-cell).
+// Class-led (no td prefix): touches only link/text buttons, leaving <a>/custom spans and multi-button gaps intact.
+.fc-table-op-column {
+  > .ant-btn-link:first-child,
+  > .ant-btn-text:first-child,
+  > .ant-space > .ant-space-item:first-child > .ant-btn-link,
+  > .ant-space > .ant-space-item:first-child > .ant-btn-text {
+    padding-left: 0;
+  }
+}
+
 .fc-table-action-inline-btn-wrap {
   display: inline-flex;
 }

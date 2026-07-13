@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Variable settings',
+  title: 'Variable',
   search_placeholder: 'Search by name or note',
   ckey: 'Variable name',
   cval: 'Variable value',
