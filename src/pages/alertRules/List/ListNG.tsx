@@ -268,7 +268,7 @@ export default function AlertRules(props: Props) {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === AlertRuleStatus.Enable ? 'success' : 'error'}>
@@ -288,7 +288,7 @@ export default function AlertRules(props: Props) {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (disabled, record) => (
               <Switch
                 checked={disabled === AlertRuleStatus.Enable}
@@ -491,7 +491,7 @@ export default function AlertRules(props: Props) {
             : (record: any) => {
                 const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
                 return {
-                  menu: _.compact([
+                  inline: _.compact([
                     {
                       key: 'clone',
                       icon: 'copy',

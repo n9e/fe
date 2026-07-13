@@ -112,7 +112,7 @@ export default function Channels() {
         ]}
         actionColumn={{ title: t('common:table.operations'), width: 64 }}
         rowActions={(reocrd) => ({
-          menu: _.compact([
+          inline: _.compact([
             {
               key: 'edit',
               icon: 'edit',

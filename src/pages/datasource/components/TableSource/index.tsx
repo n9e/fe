@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { message, Modal, Button, Space, Tooltip } from 'antd';
+import { message, Modal, Button, Space, Switch, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
@@ -167,24 +167,22 @@ const TableSource = (props: IPropsType) => {
         enabledValue: 'enabled',
         disabledValue: 'disabled',
       }),
-      width: 300,
-      render: (text) => {
-        return text === 'enabled' ? (
-          <>
-            <CheckCircleFilled style={{ color: '#00A700', fontSize: '16px', marginRight: '4px', verticalAlign: 'middle' }} />
-            <span className='theme-color' style={{ verticalAlign: 'middle' }}>
-              {t('status.enabled')}
-            </span>
-          </>
-        ) : (
-          <>
-            <MinusCircleFilled style={{ color: '#FAC800', fontSize: '16px', marginRight: '4px', verticalAlign: 'middle' }} />
-            <span className='second-color' style={{ verticalAlign: 'middle' }}>
-              {t('status.disabled')}
-            </span>
-          </>
-        );
-      },
+      width: 120,
+      render: (text, record) => (
+        <Switch
+          checked={text === 'enabled'}
+          size='small'
+          onChange={(checked) => {
+            updateDataSourceStatus({
+              id: record.id,
+              status: checked ? 'enabled' : 'disabled',
+            }).then(() => {
+              message.success(checked ? t('success.enable') : t('success.disable'));
+              setRefresh((oldVal) => !oldVal);
+            });
+          }}
+        />
+      ),
     },
   ];
 
@@ -227,26 +225,27 @@ const TableSource = (props: IPropsType) => {
         loading={loading}
         pagination={pagination}
         rowActions={(record) => ({
-          menu: _.compact([
+          inline: _.compact([
             {
-              key: 'toggle',
-              icon: 'settings',
-              text: record.status === 'enabled' ? t('disable') : t('enable'),
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              disabled: record.status === 'enabled',
+              tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
               onClick: () => {
                 Modal.confirm({
-                  title: record.status === 'enabled' ? t('confirm.disable') : t('confirm.enable'),
-                  onOk: () => {
-                    return updateDataSourceStatus({
-                      id: record.id,
-                      status: record.status === 'enabled' ? 'disabled' : 'enabled',
-                    }).then(() => {
-                      message.success(record.status === 'enabled' ? t('success.disable') : t('success.enable'));
+                  title: t('common:confirm.delete'),
+                  onOk() {
+                    return deleteDataSourceById(record.id).then(() => {
+                      message.success(t('common:success.delete'));
                       setRefresh((oldVal) => !oldVal);
                     });
                   },
                 });
               },
             },
+<<<<<<< HEAD
             record.plugin_type === 'cloudwatch'
               ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> }
               : undefined,
@@ -269,6 +268,9 @@ const TableSource = (props: IPropsType) => {
                 });
               },
             },
+=======
+            record.plugin_type === 'cloudwatch' ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> } : undefined,
+>>>>>>> main
           ]) as any,
         })}
         actionColumn={{ title: t('common:table.operations'), width: 64 }}

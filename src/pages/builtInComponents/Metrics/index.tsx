@@ -22,6 +22,7 @@ import { Space, Button, Input, Dropdown, Select, message, Modal, Tooltip, Tag } 
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Copy, Pencil } from 'lucide-react';
 import { ColumnType } from 'antd/lib/table';
+
 import usePagination from '@/components/usePagination';
 import EnhancedTable from '@/components/EnhancedTable';
 import { updateByColumn } from '@/components/EnhancedTable/columns';
@@ -366,7 +367,7 @@ export default function index(props: Props) {
         rowActions={(record: any) => {
           if (!actionAuth.add && !actionAuth.edit && !actionAuth.delete) return undefined;
           return {
-            menu: _.compact([
+            inline: _.compact([
               actionAuth.add
                 ? {
                     key: 'clone',
@@ -381,13 +382,15 @@ export default function index(props: Props) {
                           setRefreshFlag(_.uniqueId('refreshFlag_'));
                         }}
                       >
-                        <Button type='link' className='fc-table-action-menu-btn' icon={<Copy className='fc-table-action-menu-icon' />}>
-                          {t('common:btn.clone')}
-                        </Button>
+                        <Tooltip title={t('common:btn.clone')}>
+                          <Button type='link' className='fc-table-action-inline-btn' icon={<Copy className='fc-table-action-menu-icon' />} />
+                        </Tooltip>
                       </FormModal>
                     ),
                   }
                 : undefined,
+            ]) as any,
+            menu: _.compact([
               actionAuth.edit && record.updated_by !== 'system'
                 ? {
                     key: 'edit',
@@ -428,10 +431,10 @@ export default function index(props: Props) {
                     },
                   }
                 : undefined,
-            ]) as any,
+            ]),
           };
         }}
-        actionColumn={{ title: t('common:table.operations'), width: 64 }}
+        actionColumn={{ title: t('common:table.operations'), width: 60 }}
       />
     </>
   );

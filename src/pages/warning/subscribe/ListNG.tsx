@@ -408,7 +408,7 @@ const Subscribe = (props: Props) => {
           readonly
             ? undefined
             : (record: subscribeItem) => ({
-                menu: [
+                inline: [
                   {
                     key: 'edit',
                     icon: 'edit',
@@ -449,7 +449,7 @@ const Subscribe = (props: Props) => {
                 ],
               })
         }
-        actionColumn={{ title: t('common:table.operations'), width: 64 }}
+        actionColumn={{ title: t('common:table.operations'), width: 100 }}
       />
     </>
   );

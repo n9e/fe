@@ -141,7 +141,7 @@ export default function Servers() {
                 loading={loading}
                 dataSource={filteredData}
                 pagination={false}
-                actionColumn={{ title: t('common:table.operations'), width: 110, fixed: false }}
+                actionColumn={{ title: t('common:table.operations'), width: 100, fixed: false }}
                 rowActions={(record) => ({
                   inline: [
                     {
@@ -171,8 +171,6 @@ export default function Servers() {
                         }
                       },
                     },
-                  ],
-                  menu: [
                     {
                       key: 'edit',
                       icon: 'edit',
