@@ -37,7 +37,7 @@ import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import EllipsisText from '@/components/EllipsisText';
 import usePagination from '@/components/usePagination';
-import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { getDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import { getBusiGroups } from '@/components/BusinessGroup';
 import EmptyGuide from '@/components/EmptyGuide';
 
@@ -72,7 +72,8 @@ export default function index() {
   const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number[] | undefined>(getDefaultPublicSelectGids(PUBLIC_SELECT_GIDS_LOCALKEY)); // 目前只有公开仪表盘会用到
   const [busiGroups, setBusiGroups] = useState<any[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
-  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
   const [importData, setImportData] = useState<{ visible: boolean; busiId?: number; type?: ModalType }>({ visible: false });
 
   useUpdateEffect(() => {
@@ -140,8 +141,9 @@ export default function index() {
               setsearchVal(val);
               sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, val);
             }}
-            columnsConfigs={columnsConfigs}
-            setColumnsConfigs={setColumnsConfigs}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+            columnOptions={columnOptions}
             selectedBusinessGroup={selectedBusinessGroup}
             setSelectedBusinessGroup={(val) => {
               setSelectedBusinessGroup(val);
@@ -151,8 +153,8 @@ export default function index() {
           <EnhancedTable
             className='mt-2'
             dataSource={data}
-            columns={ajustColumns(
-              _.concat([
+            columns={(() => {
+              const cols = _.concat([
                 {
                   title: t('name'),
                   dataIndex: 'name',
@@ -290,9 +292,12 @@ export default function index() {
                     );
                   },
                 },
-              ]),
-              columnsConfigs,
-            )}
+              ]);
+              return cols.filter((col) => {
+                if (col.dataIndex === 'operator') return true;
+                return visibleColumns.includes(col.dataIndex as string);
+              });
+            })()}
             rowActions={(record) => ({
               menu: _.compact([
                 gids !== '-1'

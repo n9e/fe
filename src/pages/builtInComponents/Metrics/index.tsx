@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Space, Button, Input, Dropdown, Select, message, Modal, Tooltip, Tag } from 'antd';
-import { DownOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import { Copy, Pencil } from 'lucide-react';
 import { ColumnType } from 'antd/lib/table';
 import usePagination from '@/components/usePagination';
@@ -27,7 +27,7 @@ import EnhancedTable from '@/components/EnhancedTable';
 import { updateByColumn } from '@/components/EnhancedTable/columns';
 import EllipsisText from '@/components/EllipsisText';
 import RefreshIcon from '@/components/RefreshIcon';
-import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import { getUnitLabel, buildUnitOptions } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { getMenuPerm } from '@/services/common';
 import { getMetrics, Record, Filter, getCollectors, deleteMetrics } from '@/pages/metricsBuiltin/services';
@@ -59,7 +59,8 @@ export default function index(props: Props) {
   const [filter, setFilter] = useState(defaultFilter as Filter);
   const [queryValue, setQueryValue] = useState(defaultFilter.query || '');
   const [collectorsList, setCollectorsList] = useState<string[]>([]);
-  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
   const [actionAuth, setActionAuth] = useState({
     add: false,
     edit: false,
@@ -330,18 +331,16 @@ export default function index(props: Props) {
               </Button>
             </Dropdown>
           )}
-          <Button
-            onClick={() => {
-              OrganizeColumns({
-                i18nNs: 'metricsBuiltin',
-                value: columnsConfigs,
-                onChange: (val) => {
-                  setColumnsConfigs(val);
-                  setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                },
-              });
+          <TableColumnSelect
+            options={columnOptions}
+            value={visibleColumns}
+            onChange={(vals) => {
+              setVisibleColumns(vals);
+              setDefaultColumnsConfigs(vals, LOCAL_STORAGE_KEY);
             }}
-            icon={<EyeOutlined />}
+            sortable={false}
+            showAll
+            buttonSize='middle'
           />
         </Space>
       </div>
@@ -350,7 +349,10 @@ export default function index(props: Props) {
         size='small'
         rowKey='id'
         {...tableProps}
-        columns={ajustColumns(columns, columnsConfigs)}
+        columns={columns.filter((col) => {
+          if (col.dataIndex === 'operator') return true;
+          return visibleColumns.includes(col.dataIndex as string);
+        })}
         pagination={{
           ...pagination,
           ...tableProps.pagination,
