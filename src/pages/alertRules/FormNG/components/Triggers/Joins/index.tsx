@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Form, Select, Space, Button, Tooltip } from 'antd';
+import { Row, Col, Form, Select, Space, Button } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -21,6 +21,10 @@ export default function index(props: Props) {
   const form = Form.useFormInstance();
   const joins = Form.useWatch([...fullPrefixName, 'joins']);
   const join_ref = Form.useWatch([...fullPrefixName, 'join_ref']);
+
+  if (_.isEmpty(queries) || queries.length === 1) {
+    return null;
+  }
 
   return (
     <div>
@@ -53,16 +57,13 @@ export default function index(props: Props) {
             {(fields, { add, remove }) => (
               <div>
                 {fields.length === 0 ? (
-                  <Tooltip title={t('trigger.joins.tooltip')}>
-                    <Button
-                      onClick={() => {
-                        add({});
-                      }}
-                      disabled={queries?.length === 1}
-                    >
-                      {t('common:btn.add')}
-                    </Button>
-                  </Tooltip>
+                  <Button
+                    onClick={() => {
+                      add({});
+                    }}
+                  >
+                    {t('common:btn.add')}
+                  </Button>
                 ) : (
                   fields.map((field) => {
                     const join_type = form.getFieldValue([...fullPrefixName, 'joins', field.name, 'join_type']);

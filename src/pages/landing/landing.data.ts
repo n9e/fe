@@ -112,6 +112,12 @@ export const landingIntegrationProducts: LandingChip[] = [
   { label: 'Doris', iconUrl: '/image/logos/doris.png', url: '/datasources' },
 ];
 
+/** 模板中心入口 — 指向内置集成模板中心（70+ 内置集成），作为新人"从这里开始"的发现入口 */
+export const landingIntegrationCatalog = {
+  url: '/components',
+  labelKey: 'matrix.integrationBrowseAll',
+};
+
 /** 基础设施分类 — 9 项 */
 export const landingInfrastructureCategories: { titleKey: string }[] = [
   { titleKey: 'matrix.infrastructure.components' },

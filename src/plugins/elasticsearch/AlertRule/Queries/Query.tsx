@@ -5,7 +5,6 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import GroupBy from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/GroupBy';
 import QueryName from '@/components/QueryName';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { CommonStateContext } from '@/App';
@@ -21,6 +20,7 @@ import Value from './Value';
 import DateField from './DateField';
 import AdvancedSettings from './AdvancedSettings';
 import IndexPatternSelect from './IndexPatternSelect';
+import GroupBy from './GroupBy';
 
 interface Props {
   hideIndexPattern?: boolean;
@@ -71,7 +71,7 @@ export default function Query(props: Props) {
           </Col>
           <Col flex='auto'>
             <Row gutter={8}>
-              <Col span={7}>
+              <Col flex='220px'>
                 <InputGroupWithFormItem
                   label={
                     <Space>
@@ -138,7 +138,7 @@ export default function Query(props: Props) {
                   {indexType === 'index_pattern' && <IndexPatternSelect field={field} indexPatterns={indexPatterns} />}
                 </InputGroupWithFormItem>
               </Col>
-              <Col span={indexType === 'index' ? 7 : 12}>
+              <Col flex='auto'>
                 <InputGroupWithFormItem
                   label={
                     <span>
@@ -166,11 +166,11 @@ export default function Query(props: Props) {
                 </InputGroupWithFormItem>
               </Col>
               {indexType === 'index' && (
-                <Col span={5}>
+                <Col flex='180px'>
                   <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
                 </Col>
               )}
-              <Col span={5}>
+              <Col flex='180px'>
                 <InputGroupWithFormItem
                   label={t('datasource:es.interval')}
                   addonAfter={

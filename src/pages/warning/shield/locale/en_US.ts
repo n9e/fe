@@ -23,6 +23,12 @@ const en_US = {
     end: 'End time',
     end_msg: 'End time is required',
   },
+  mute_method: {
+    label: 'Mute method',
+    0: 'Mute events and notifications',
+    1: 'Mute notifications only',
+    tip: 'With "Mute notifications only", matched alerts still generate and record events during the mute period; only notifications are suppressed, so you can still tell whether a change caused anomalies and release the mute after recovery.',
+  },
   tag: {
     key: {
       label: 'Event tags',

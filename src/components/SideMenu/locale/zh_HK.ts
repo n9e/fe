@@ -65,6 +65,7 @@ const zh_HK = {
     sso: '單點登錄',
     audit_log: '審計日誌',
     alert_servers: '告警引擎',
+    log_conversion_engines: '日誌轉換引擎',
     about: '關於產品',
     license_management: '證書管理',
     ai_config: 'AI 配置',

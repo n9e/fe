@@ -113,6 +113,7 @@ export default function index({ item, sectionRefs, initialValues, expandSignal, 
                     className='control-icon-normal'
                     onClick={() =>
                       add({
+                        enable_days_of_week: ['0', '1', '2', '3', '4', '5', '6'],
                         enable_stime: moment('00:00', 'HH:mm'),
                         enable_etime: moment('00:00', 'HH:mm'),
                       })

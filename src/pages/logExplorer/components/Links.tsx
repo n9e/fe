@@ -6,6 +6,21 @@ import moment from 'moment';
 import { basePrefix } from '@/App';
 import { ILogExtract, ILogURL, ILogMappingParams, LinkContext } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+const utcTimeFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+
+const formatTimeValue = (value: number, timeFormat: string | null): string | number => {
+  if (!timeFormat) {
+    return String(value);
+  }
+  if (timeFormat === 'unix') {
+    return moment(value).unix();
+  }
+  if (timeFormat === 'utc') {
+    return encodeURIComponent(moment(value).utc().format(utcTimeFormat));
+  }
+  return encodeURIComponent(moment(value).format(timeFormat));
+};
+
 export function replaceVarAndGenerateLink(link: string, rawValue: object, regExtractArr?: ILogExtract[], mappingParamsArr?: ILogMappingParams[]): string {
   const param = new URLSearchParams(link);
   let reallink = link;
@@ -96,27 +111,11 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
   const endMarginNumNew = endMarginNew && !isNaN(Number(endMarginNew)) ? Number(endMarginNew) : 0;
   let fromValue: string | number = '';
   if (typeof query.start === 'number') {
-    if (timeFormat) {
-      if (timeFormat === 'unix') {
-        fromValue = moment(1000 * query.start + startMarginNumNew).unix();
-      } else {
-        fromValue = moment(1000 * query.start + startMarginNumNew).format(timeFormat);
-      }
-    } else {
-      fromValue = String(1000 * query.start + startMarginNumNew);
-    }
+    fromValue = formatTimeValue(1000 * query.start + startMarginNumNew, timeFormat);
   }
   let toValue: string | number = '';
-  if (typeof query.start === 'number') {
-    if (timeFormat) {
-      if (timeFormat === 'unix') {
-        toValue = moment(1000 * query.end + endMarginNumNew).unix();
-      } else {
-        toValue = moment(1000 * query.end + endMarginNumNew).format(timeFormat);
-      }
-    } else {
-      toValue = String(1000 * query.end + endMarginNumNew);
-    }
+  if (typeof query.end === 'number') {
+    toValue = formatTimeValue(1000 * query.end + endMarginNumNew, timeFormat);
   }
   reallink = reallink
     .replace('$local_protocol', location.protocol)

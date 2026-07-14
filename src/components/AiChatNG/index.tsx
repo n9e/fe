@@ -22,7 +22,7 @@ import './locale';
 export default function AiChat(props: IAiChatProps & { showClose?: boolean; onClose?: () => void }) {
   const { t } = useTranslation(NAME_SPACE);
   const { className, onChatChange, onError, showClose, onClose } = props;
-  const { mode, setMode, setShareReadonly, setShareChatId } = useAiChatContext();
+  const { mode, setMode, setShareReadonly, setShareChatId, setCachedSessionId } = useAiChatContext();
   const [activeView, setActiveView] = useState<AiChatView>('chat');
   const [selectedChatId, setSelectedChatId] = useState<string | undefined>(props.chatId);
 
@@ -47,8 +47,9 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
         }
         return previous;
       });
+      setCachedSessionId((prev) => (prev === chat.chat_id ? undefined : prev));
     },
-    [onChatChange],
+    [onChatChange, setCachedSessionId],
   );
 
   const handleShare = useCallback(() => {
@@ -75,6 +76,7 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
             setActiveView('chat');
             setShareReadonly(false);
             setShareChatId(undefined);
+            setCachedSessionId(undefined);
             cleanShareParamsFromUrl();
           }}
           onViewHistory={() => {

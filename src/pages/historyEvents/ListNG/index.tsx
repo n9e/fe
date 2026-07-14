@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -7,7 +7,7 @@ import { useAntdTable } from 'ahooks';
 import { Input, Tag, Button, Space, Select, message, Tooltip } from 'antd';
 import { ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react';
 import queryString from 'query-string';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
@@ -81,6 +81,23 @@ const Event = (props: Props) => {
   }>({
     visible: false,
   });
+  const lastInitiatedViewIdRef = useRef<number | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const parsed = queryString.parse(location.search);
+    const viewId = parsed.viewId;
+    if (viewId && Number(viewId) !== lastInitiatedViewIdRef.current) {
+      lastInitiatedViewIdRef.current = Number(viewId);
+      getEventById(Number(viewId)).then((res) => {
+        setEventDetailDrawerData({
+          visible: true,
+          data: res.dat,
+        });
+      });
+    }
+  }, [location.search]);
+
   let columns = [
     {
       title: t('event_name'),
@@ -116,10 +133,16 @@ const Event = (props: Props) => {
                 ) : null}
                 <a
                   onClick={() => {
+                    lastInitiatedViewIdRef.current = record.id;
                     getEventById(record.id).then((res) => {
                       setEventDetailDrawerData({
                         visible: true,
                         data: res.dat,
+                      });
+                      const parsed = queryString.parse(location.search);
+                      parsed.viewId = String(record.id);
+                      history.replace({
+                        search: queryString.stringify(parsed, { arrayFormat: 'comma' }),
                       });
                     });
                   }}
@@ -397,7 +420,7 @@ const Event = (props: Props) => {
         {...(showClaimant
           ? {
               rowActions: (record) => ({
-                menu: _.compact([
+                inline: _.compact([
                   IS_PLUS && {
                     key: 'ack',
                     node: (
@@ -442,7 +465,7 @@ const Event = (props: Props) => {
                   },
                 ]),
               }),
-              actionColumn: { title: t('common:table.operations'), width: 64 },
+              actionColumn: { title: t('common:table.operations'), width: 100 },
             }
           : {})}
         {...tableProps}
@@ -461,7 +484,14 @@ const Event = (props: Props) => {
         showAckBtn
         visible={eventDetailDrawerData.visible}
         data={eventDetailDrawerData.data}
-        onClose={() => setEventDetailDrawerData({ visible: false })}
+        onClose={() => {
+          setEventDetailDrawerData({ visible: false });
+          const parsed = queryString.parse(location.search);
+          delete parsed.viewId;
+          history.replace({
+            search: queryString.stringify(parsed, { arrayFormat: 'comma' }),
+          });
+        }}
         onDeleteSuccess={() => {
           setRefreshFlag(_.uniqueId('refresh_'));
         }}

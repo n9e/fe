@@ -34,4 +34,12 @@ describe('SideMenu hover panel styles', () => {
     expect(lessContent).toMatch(/\.side-menu-profile-avatar\s*\{[\s\S]*?box-sizing:\s*border-box;/);
     expect(lessContent).toMatch(/\.side-menu-profile-avatar-on-light\s*\{[\s\S]*?background:\s*var\(--fc-fill-2\);[\s\S]*?border:\s*1px solid rgb\(var\(--fc-text-link-rgb\) \/ 0\.28\);/);
   });
+
+  it('keeps the collapsed hover panel at the same menu level as the expanded side menu', () => {
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    expect(menuListContent).not.toContain('flattenMenuChildrenForHoverPanel');
+    expect(menuListContent).toContain('const hoverChildren = visibleChildren;');
+  });
 });

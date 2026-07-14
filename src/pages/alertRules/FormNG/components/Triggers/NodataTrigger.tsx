@@ -5,22 +5,25 @@ import { useTranslation } from 'react-i18next';
 interface Props {
   disabled?: boolean;
   prefixName?: string[]; // 列表字段名
+  hideSwitch?: boolean; // 在卡片模式下隐藏开关，由父组件控制
 }
 
 export default function NodataTrigger(props: Props) {
   const { t } = useTranslation('alertRules');
-  const { disabled, prefixName = [] } = props;
+  const { disabled, prefixName = [], hideSwitch } = props;
   const names = [...prefixName, 'nodata_trigger'];
   const enable = Form.useWatch([...names, 'enable']);
 
   return (
     <div>
-      <Space className='mb-4'>
-        <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
-          <Switch size='small' />
-        </Form.Item>
-        {t('nodata_trigger.enable')}
-      </Space>
+      {!hideSwitch && (
+        <Space className='mb-4'>
+          <Form.Item noStyle name={[...names, 'enable']} valuePropName='checked'>
+            <Switch size='small' />
+          </Form.Item>
+          {t('nodata_trigger.enable')}
+        </Space>
+      )}
       <div style={{ display: enable !== true ? 'none' : 'block' }}>
         <div className='mb-4'>
           <Space align='baseline'>

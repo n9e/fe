@@ -7,6 +7,9 @@ export interface IndexPattern {
   time_field: string;
   hide_system_indices: boolean;
   fields_format: string;
+  weight?: number;
+  create_at?: number | string;
+  created_at?: number | string;
 }
 
 export interface FieldConfig {

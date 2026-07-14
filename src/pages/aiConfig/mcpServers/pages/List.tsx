@@ -54,7 +54,7 @@ export default function List() {
                   // 删除禁用原因：启用中优先，其次无管理权限；有原因即禁用并作为 tooltip 提示
                   const deleteDisabledReason = record.enabled === true ? t('cannot_delete_when_enabled') : noManagePerm ? t('no_manage_perm') : undefined;
                   return {
-                    menu: [
+                    inline: [
                       {
                         key: 'edit',
                         icon: 'edit',

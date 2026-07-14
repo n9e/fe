@@ -6,12 +6,15 @@ const zh_HK = {
     progress: '已完成 {{done}}/{{total}}',
     hostTrack: '主機監控線',
     dataTrack: '數據接入線',
+    aiTrack: '智能化',
     steps: {
       machine: { title: '部署採集器，接入主機', desc: '在主機部署 Categraf，機器會自動出現在裝置列表' },
       hostDashboard: { title: '套用主機監控大盤', desc: '從模板中心一鍵導入內置主機大盤' },
       datasource: { title: '配置數據源', desc: '接入 Prometheus / VictoriaMetrics 等數據源' },
       dashboard: { title: '建立儀表盤', desc: '把關心的指標視覺化成大盤' },
       alert: { title: '配置告警規則', desc: '為關鍵指標設定第一條告警規則' },
+      notification: { title: '配置通知', desc: '讓告警透過釘釘/郵件等媒介真正發出來' },
+      llm: { title: '接入大模型', desc: '配置 LLM，解鎖 AI 助手與智能分析' },
     },
   },
   hero: {
@@ -29,6 +32,7 @@ const zh_HK = {
     notificationTag: '觸達 · 通知媒介',
     collectionTag: '數據 · 統一採集',
     integrationTag: '數據 · 統一集成',
+    integrationBrowseAll: '瀏覽 70+ 內置集成',
     infrastructureTag: '企業服務基礎設施',
     dataIngestArrow: '數據 · 統一接入',
     alertEventArrow: '告警事件',

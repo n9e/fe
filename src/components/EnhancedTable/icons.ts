@@ -16,6 +16,7 @@ import {
   Trash2,
   UserCheck,
   UserX,
+  Import,
 } from 'lucide-react';
 
 import type { RowAction } from './types';
@@ -38,6 +39,7 @@ export const actionIconMap = {
   open: ExternalLink,
   link: LinkIcon,
   ai: Sparkles,
+  import: Import,
 };
 
 export type ActionIconName = keyof typeof actionIconMap;

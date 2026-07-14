@@ -65,6 +65,7 @@ const zh_CN = {
     sso: '单点登录',
     audit_log: '审计日志',
     alert_servers: '告警引擎',
+    log_conversion_engines: '日志转换引擎',
     about: '关于产品',
     license_management: '证书管理',
     ai_config: 'AI 配置',

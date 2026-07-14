@@ -63,6 +63,11 @@ const en_US = {
   notify_configs: 'Notification Configuration',
   notify_configs_desc: 'Notification rules, recovery notification & self-healing',
   notify_rule_ids: 'Notification rule',
+  notify_rule_total: 'Total {{total}} items',
+  notify_rule_footer_total: 'Total {{total}} rules',
+  notify_rule_manage: 'Notification rule management',
+  notify_rule_view: 'View',
+  notify_rule_select: 'Select notification rule',
   switch_to_old: 'Switch to old version',
   switch_to_new: 'Switch to new version',
   notify_channels: 'Channels',
@@ -120,7 +125,8 @@ const en_US = {
       second: 's',
       millisecond: 'ms',
     },
-    prom_eval_interval_tip: 'PromQL execution frequency: the time-series database is queried every {{num}} seconds, and the results are renamed and written back to the time-series database',
+    prom_eval_interval_tip:
+      'PromQL execution frequency: the time-series database is queried every {{num}} seconds, and the results are renamed and written back to the time-series database',
     prom_for_duration_tip:
       'Usually the duration is greater than the execution frequency. During the duration, PromQL query is executed multiple times according to the execution frequency, and an alert is generated only if it is triggered every time. If the duration is set to 0, an alert is generated as long as the threshold is triggered once during the PromQL query.',
   },
@@ -428,10 +434,15 @@ const en_US = {
     triggers: 'Trigger Conditions',
     triggers_desc: 'Decoupled QL & conditions: supports threshold judgment & no-data detection',
     triggers_desc_anomaly: 'Decoupled QL & conditions: supports threshold judgment, no-data detection & intelligent alerting',
+    triggers_threshold_desc: 'Set thresholds or expressions on query results, alerts trigger when met (ensure all variables have data and consistent labels)',
+    triggers_nodata_desc: 'Alerts when previously found data is no longer available; recovers when data is found again',
+    triggers_anomaly_desc: 'Anomaly detection based on historical baselines, no manual threshold required',
     threshold_judgment: 'Threshold Judgment',
     collapse_core_only: 'Core steps only',
     collapse_expand_all: 'Expand all',
     collapse_collapse_all: 'Collapse all',
+    collapse_sidebar: 'Collapse sidebar',
+    expand_sidebar: 'Expand sidebar',
   },
 
   enrich_queries: {

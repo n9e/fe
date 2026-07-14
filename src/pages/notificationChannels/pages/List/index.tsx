@@ -189,7 +189,7 @@ export default function List() {
             },
           ]}
           rowActions={(record) => ({
-            menu: [
+            inline: [
               {
                 key: 'clone',
                 icon: 'copy',
