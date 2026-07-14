@@ -1,6 +1,5 @@
 import { expect, type Page } from '@playwright/test';
 
-import { selectAntSelectMultipleOption } from '../../helpers';
 import type { NormalizedAlertRuleConfig } from '../types';
 
 export * from './fill-trigger';
