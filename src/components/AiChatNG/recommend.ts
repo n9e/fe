@@ -132,14 +132,14 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
               '列出当前空间的日志转换规则。',
               '请为日志主题「默认主题」设计日志解析规则，先预览再创建。',
               '当前日志提取是否正常？',
-              '请排查提取任务【下拉列表】是否正常',
+              '请排查提取任务是否正常',
             ]
           : [
               'What is log transformation (fc-stash)? How is it different from log search?',
               'List the log transformation rules in the current space.',
               'Design log parsing rules for the log topic "Default Topic", preview before creating.',
               'Is the current log extraction functioning normally?',
-              'Please check if the extraction task [dropdown list] is normal',
+              'Please check if the extraction task is normal',
             ],
       };
     default:
