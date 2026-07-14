@@ -84,7 +84,8 @@ export default function GitUpdateModal(props: Props) {
       // 非 admin 未渲染 private 字段，不能出现在校验列表里；提交时沿用 defaultAuth 里的当前值。
       const fieldNames = profile.admin ? ['git_ref_type', 'git_ref', 'user_group_ids', 'private'] : ['git_ref_type', 'git_ref', 'user_group_ids'];
       values = (await form.validateFields(fieldNames)) as Pick<GitInstallPayload, 'git_ref_type' | 'git_ref' | 'user_group_ids' | 'private'>;
-    } catch {
+    } catch (error) {
+      console.error(error);
       return;
     }
 
@@ -121,7 +122,8 @@ export default function GitUpdateModal(props: Props) {
             </div>
           ),
         });
-      } catch {
+      } catch (error) {
+        console.error(error);
         Modal.success({ title: t('git.update_success_title') });
       }
       form.resetFields();

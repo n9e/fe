@@ -91,7 +91,8 @@ export default function UploadSkillModal(props: Props) {
               // 非 admin 未渲染 private 字段：替换既有 skill 时沿用 defaultAuth 里的当前值，
               // 新建上传无 defaultAuth 则默认私有。
               auth = { user_group_ids: values.user_group_ids, private: resolveSubmitPrivate(values.private, defaultAuth?.private) };
-            } catch {
+            } catch (error) {
+              console.error(error);
               return Upload.LIST_IGNORE;
             }
           }

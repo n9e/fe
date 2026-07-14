@@ -54,7 +54,8 @@ export default function GitInstallModal(props: Props) {
     let values: GitInstallPayload;
     try {
       values = (await form.validateFields()) as GitInstallPayload;
-    } catch {
+    } catch (error) {
+      console.error(error);
       return;
     }
 
