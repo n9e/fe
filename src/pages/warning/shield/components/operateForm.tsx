@@ -128,6 +128,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         btime: detail?.btime ? moment(detail.btime * 1000) : moment(btimeDefault),
         etime: detail?.etime ? moment(detail.etime * 1000) : moment(etimeDefault),
         mute_time_type: detail?.mute_time_type || 0,
+        mute_type: detail?.mute_type || 0,
         periodic_mutes: detail?.periodic_mutes
           ? _.map(detail?.periodic_mutes, (item) => {
               return {
@@ -242,6 +243,12 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
         />
       </Card>
       <Card title={t('mute_configs')}>
+        <Form.Item label={t('mute_method.label')} name='mute_type' tooltip={t('mute_method.tip')}>
+          <Radio.Group>
+            <Radio value={0}>{t('mute_method.0')}</Radio>
+            <Radio value={1}>{t('mute_method.1')}</Radio>
+          </Radio.Group>
+        </Form.Item>
         <Form.Item label={t('mute_type.label')} name='mute_time_type'>
           <Radio.Group>
             <Radio value={0}>{t('mute_type.0')}</Radio>
