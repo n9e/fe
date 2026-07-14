@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Menu, Modal, Space, Switch, Tag, Tooltip, message } from 'antd';
 import { DeleteOutlined, EllipsisOutlined, DownloadOutlined, UploadOutlined, ReloadOutlined, InfoCircleOutlined, EditOutlined } from '@ant-design/icons';
@@ -12,14 +12,15 @@ import { CommonStateContext } from '@/App';
 
 import { NS } from '../constants';
 import { getFile, getItem } from '../services';
-import { GitRefType, Item } from '../types';
+import { GitRefType, Item, SkillAuthValues } from '../types';
+import { canModifySkill } from '../utils/permission';
 import DocumentPreviewPanel from './DocumentPreviewPanel';
 import UploadSkillModal from './UploadSkillModal';
 
 interface Props {
   item: Item;
   onToggleEnabled: () => void;
-  onImport: (file: File) => void;
+  onImport: (file: File, auth: SkillAuthValues) => void;
   onDelete: () => void;
   onGitUpdate?: () => void;
   onGitReplaceConfig?: () => void;
@@ -53,6 +54,10 @@ export default function SkillDetailPanel(props: Props) {
   const isGit = item.source_type === 'git';
   const isBuiltin = item.builtin === true;
   const gitInfo = item.git_info;
+  // 非内置 skill 的编辑/替换/删除按权限门控；内置 skill 仍按下方原有 admin 逻辑。
+  const canModify = !isBuiltin && canModifySkill(item, profile);
+  // 替换本地 skill 时回填当前授权范围与团队（内置 skill 不套用授权，见 showAuthFields）。
+  const replaceAuth = useMemo<SkillAuthValues>(() => ({ user_group_ids: item.user_group_ids, private: item.private }), [item.user_group_ids, item.private]);
 
   const getSkillMdPath = (fileName?: string) => {
     const normalized = _.toLower(_.trim(fileName || ''));
@@ -114,7 +119,7 @@ export default function SkillDetailPanel(props: Props) {
 
   const overflowMenu = (
     <Menu>
-      {(!isBuiltin || (isBuiltin && !isGit && !!profile.admin)) && (
+      {((!isBuiltin && canModify) || (isBuiltin && !isGit && !!profile.admin)) && (
         <Menu.Item key={replaceMenuKey} onClick={handleReplaceClick}>
           <Space>
             {isGit ? <EditOutlined /> : <UploadOutlined />}
@@ -123,30 +128,30 @@ export default function SkillDetailPanel(props: Props) {
         </Menu.Item>
       )}
       {!isBuiltin && (
-        <>
-          <Menu.Item key='download' onClick={handleDownload}>
-            <Space>
-              <DownloadOutlined />
-              {t('download_skill')}
-            </Space>
-          </Menu.Item>
-          <Menu.Item
-            key='delete'
-            disabled={item.enabled}
-            title={item.enabled ? t('common:delete_disable_first') : undefined}
-            onClick={() => {
-              Modal.confirm({
-                title: t('edite_menu_3_confirm'),
-                onOk: onDelete,
-              });
-            }}
-          >
-            <Space>
-              <DeleteOutlined />
-              {t('delete_skill')}
-            </Space>
-          </Menu.Item>
-        </>
+        <Menu.Item key='download' onClick={handleDownload}>
+          <Space>
+            <DownloadOutlined />
+            {t('download_skill')}
+          </Space>
+        </Menu.Item>
+      )}
+      {!isBuiltin && canModify && (
+        <Menu.Item
+          key='delete'
+          disabled={item.enabled}
+          title={item.enabled ? t('common:delete_disable_first') : undefined}
+          onClick={() => {
+            Modal.confirm({
+              title: t('edite_menu_3_confirm'),
+              onOk: onDelete,
+            });
+          }}
+        >
+          <Space>
+            <DeleteOutlined />
+            {t('delete_skill')}
+          </Space>
+        </Menu.Item>
       )}
     </Menu>
   );
@@ -251,7 +256,7 @@ export default function SkillDetailPanel(props: Props) {
           <span>{isBuiltin && !isGit ? t('form.usage') : item.name}</span>
         </div>
         <Space>
-          {!isBuiltin && (
+          {!isBuiltin && canModify && (
             <>
               {t('form.enabled')}
               <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />
@@ -317,6 +322,8 @@ export default function SkillDetailPanel(props: Props) {
       <UploadSkillModal
         title={t('upload_modal_title')}
         showSubtitle
+        showAuthFields={!isBuiltin}
+        defaultAuth={replaceAuth}
         visible={uploadModalVisible}
         onCancel={() => {
           setUploadModalVisible(false);

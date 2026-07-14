@@ -16,6 +16,12 @@ export interface GitInfo {
   current_commit?: string;
 }
 
+// SkillAuthValues 可见范围+管理团队：导入/远程安装/替换/更新各流程共用。
+export interface SkillAuthValues {
+  user_group_ids?: number[];
+  private?: 0 | 1;
+}
+
 export interface GitInstallPayload {
   git_url: string;
   git_ref_type: GitRefType;
@@ -23,6 +29,8 @@ export interface GitInstallPayload {
   git_auth_type?: GitAuthType;
   git_token?: string;
   git_subdir?: string;
+  user_group_ids?: number[];
+  private?: 0 | 1;
 }
 
 export interface Item {
@@ -34,6 +42,11 @@ export interface Item {
   created_by: string;
   updated_at: number;
   updated_by: string;
+
+  user_group_ids?: number[];
+  private?: 0 | 1;
+  // 后端按请求用户盖上的可编辑标记，供详情页 gate 增删改按钮（与后端 403 同判定）。
+  can_edit?: boolean;
 
   builtin: boolean;
   instructions: string;
@@ -51,6 +64,9 @@ export interface FormValues {
   name: string;
   description: string;
   enabled: boolean;
+
+  user_group_ids?: number[];
+  private?: 0 | 1;
 
   instructions: string;
   license?: string;
