@@ -111,7 +111,7 @@ test.describe('add alert rule', () => {
     if (!fs.existsSync(reportDir)) return;
     for (const file of fs.readdirSync(reportDir)) {
       try {
-        fs.rmSync(`${reportDir}/${file}`);
+        // fs.rmSync(`${reportDir}/${file}`);
       } catch {
         // 单个文件清理失败不影响后续
       }

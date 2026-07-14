@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
 import { BASE_URL, doLogin } from '../../fixture';
-import { selectAntSelectOption } from '../../helpers';
+import { selectAntInputGroupOption } from '../../helpers';
 import type { AlertRuleConditionHandler, NormalizedQuery } from '../types';
 import { fillAdvancedSettings, fillRelativeTimeRange, fillTriggers, type AlertRuleTrigger } from '../helpers';
 
@@ -109,7 +109,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   }
 
   // Select logset by display name
-  await selectAntSelectOption(page, page.locator('.ant-input-group').filter({ hasText: '日志集' }).getByRole('combobox').first(), logsetName);
+  await selectAntInputGroupOption(aiTap, '日志集', logsetName);
 
   // Wait for topic options to load (depends on logset selection)
   await page.waitForTimeout(1000);
@@ -120,7 +120,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   }
 
   // Select topic by display name
-  await selectAntSelectOption(page, page.locator('.ant-input-group').filter({ hasText: '日志主题' }).getByRole('combobox').first(), topicName);
+  await selectAntInputGroupOption(aiTap, '日志主题', topicName);
 
   // Fill time range
   await fillRelativeTimeRange(page, item.range, 'tencent-cls');

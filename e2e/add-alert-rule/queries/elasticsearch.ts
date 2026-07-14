@@ -1,9 +1,17 @@
 import type { Page } from '@playwright/test';
 
-import { fillComboboxAfterText, fillInputGroup, fillInputGroupNumber, fillTextboxAfterText, selectAntOption, selectAntSelectOption } from '../../helpers';
+import {
+  fillComboboxAfterText,
+  fillInputGroup,
+  fillInputGroupNumber,
+  fillTextboxAfterText,
+  selectAntInputGroupOption,
+  selectAntOption,
+  selectAntSelectOption,
+} from '../../helpers';
 import type { AiTap } from '../../types';
 import type { AlertRuleConditionHandler, NormalizedQuery } from '../types';
-import { fillTriggers, type AlertRuleTrigger } from '../helpers';
+import { fillTriggers, openFormNgSection, type AlertRuleTrigger } from '../helpers';
 
 interface ElasticsearchGroupBy {
   cate?: string;
@@ -90,12 +98,12 @@ async function addTermsGroupBy(page: Page, groupBy: ElasticsearchGroupBy, groupB
 
   if (groupBy.order) {
     const orderLabel = groupBy.order === 'desc' ? 'Descend' : groupBy.order === 'asc' ? 'Ascend' : groupBy.order;
-    await selectAntOption(aiTap, 'Order 下拉框', orderLabel);
+    await selectAntInputGroupOption(aiTap, 'Order', orderLabel);
   }
 
   if (groupBy.order_by) {
     const orderByLabel = groupBy.order_by === '_key' ? 'Term value' : groupBy.order_by === '_count' ? 'Count' : groupBy.order_by;
-    await selectAntOption(aiTap, 'OrderBy 下拉框', orderByLabel);
+    await selectAntInputGroupOption(aiTap, 'OrderBy', orderByLabel);
   }
 }
 
@@ -127,7 +135,7 @@ async function fillIndexSelector(page: Page, item: ElasticsearchQuery, queryInde
 async function fillValue(page: Page, item: ElasticsearchQuery, aiTap: AiTap) {
   const func = item.value?.func || 'count';
   if (func !== 'count') {
-    await selectAntOption(aiTap, '数值提取函数下拉框', func);
+    await selectAntInputGroupOption(aiTap, '数值提取', func);
   }
 
   if (func === 'count' || func === 'rawData') return;
@@ -155,7 +163,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
     throw new Error('Missing elasticsearch rule_config.queries[0].date_field');
   }
 
-  await aiTap('左侧配置步骤中的告警条件');
+  await openFormNgSection(page, 'rule', '告警条件');
   await aiWaitFor('告警条件区域已显示，并且可以看到查询统计、索引、过滤条件、日期字段和时间间隔');
   await aiAssert('存在查询统计');
 

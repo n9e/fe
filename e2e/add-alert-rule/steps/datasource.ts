@@ -1,6 +1,5 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, Locator } from '@playwright/test';
 
-import { selectAntSelectMultipleOption } from '../../helpers';
 import type { NormalizedAlertRuleConfig } from '../types';
 
 /**
@@ -12,6 +11,31 @@ async function selectDatasourceCate(page: Page, cateName: string) {
   const gridItem = page.locator('.n9e-db-cate-grid-item').filter({ hasText: cateName });
   await expect(gridItem.first(), `datasource cate grid item "${cateName}"`).toBeVisible({ timeout: 5000 });
   await gridItem.first().click();
+}
+
+/**
+ * 操作 antd Select multiple/mode 多选下拉选择器，选中指定选项。
+ * 选中后自动关闭下拉菜单，并验证选项已显示为标签（`.ant-select-selection-item`）。
+ */
+export async function selectAntSelectMultipleOption(page: Page, select: Locator, optionText: string) {
+  const selectRoot = select.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]');
+  await selectRoot.locator('.ant-select-selector').first().click();
+
+  const dropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await expect(dropdown, `dropdown for option ${optionText}`).toBeVisible();
+
+  const exactOptionText = new RegExp(`^${optionText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
+  const option = dropdown.getByRole('option', { name: exactOptionText }).first();
+  if (await option.isVisible().catch(() => false)) {
+    await option.click();
+  } else {
+    await dropdown.locator('.ant-select-item-option-content').filter({ hasText: exactOptionText }).first().click();
+  }
+
+  if (await dropdown.isVisible().catch(() => false)) {
+    await page.keyboard.press('Escape');
+  }
+  await expect(selectRoot.locator('.ant-select-selection-item').filter({ hasText: exactOptionText }).first(), `selected option ${optionText}`).toBeVisible();
 }
 
 export async function fillDatasourceStep(page: Page, uiConfig: NormalizedAlertRuleConfig) {
