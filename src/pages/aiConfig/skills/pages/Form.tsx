@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form, Input, Collapse, Row, Col, Button, Switch, Select, Radio } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import { CommonStateContext } from '@/App';
 import { getTeamInfoList } from '@/services/manage';
 import { SIZE } from '@/utils/constant';
 
@@ -19,6 +20,7 @@ interface Props {
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const { form } = props;
+  const { profile } = useContext(CommonStateContext);
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
@@ -54,12 +56,16 @@ export default function FormCpt(props: Props) {
           options={_.map(userGroups, (item) => ({ label: item.name, value: item.id }))}
         />
       </Form.Item>
-      <Form.Item label={t('form.scope')} name='private' initialValue={1}>
-        <Radio.Group>
-          <Radio value={0}>{t('form.scope_public')}</Radio>
-          <Radio value={1}>{t('form.scope_private')}</Radio>
-        </Radio.Group>
-      </Form.Item>
+      {/* 「可见范围」仅 admin 渲染；非 admin 提交时由 AddModal/EditModal 用 resolveSubmitPrivate
+          兜底：新建默认私有，编辑沿用既有值（不改变可见性）。 */}
+      {profile.admin && (
+        <Form.Item label={t('form.scope')} name='private' initialValue={1}>
+          <Radio.Group>
+            <Radio value={0}>{t('form.scope_public')}</Radio>
+            <Radio value={1}>{t('form.scope_private')}</Radio>
+          </Radio.Group>
+        </Form.Item>
+      )}
       <Form.Item label={t('form.description')} name='description'>
         <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} placeholder={t('form.description_placeholder')} />
       </Form.Item>

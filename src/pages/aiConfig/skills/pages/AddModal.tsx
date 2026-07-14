@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { NS } from '../constants';
 import { postItem } from '../services';
 import { adjustSubmitValues } from '../utils/adjustFormValues';
+import { resolveSubmitPrivate } from '../utils/permission';
 import FormCpt from './Form';
 
 interface Props {
@@ -25,7 +26,7 @@ export default function AddModal(props: Props) {
       onCancel={onCancel}
       onOk={() => {
         form.validateFields().then((values) => {
-          postItem(adjustSubmitValues(values)).then(() => {
+          postItem(adjustSubmitValues({ ...values, private: resolveSubmitPrivate(values.private) })).then(() => {
             onOk();
           });
         });

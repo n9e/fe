@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { NS } from '../constants';
 import { gitInstall } from '../services';
 import { GitInstallPayload } from '../types';
+import { resolveSubmitPrivate } from '../utils/permission';
 import GitForm from './GitForm';
 import { confirmAbortOngoingRequest, isAbortError, showGitOperationError } from './gitErrorModal';
 
@@ -59,6 +60,7 @@ export default function GitInstallModal(props: Props) {
 
     const payload: GitInstallPayload = {
       ..._.omitBy(values, (v) => v === undefined || v === ''),
+      private: resolveSubmitPrivate(values.private),
     } as GitInstallPayload;
 
     const controller = new AbortController();

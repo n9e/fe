@@ -6,6 +6,7 @@ import { useRequest } from 'ahooks';
 import { NS } from '../constants';
 import { getItem, putItem } from '../services';
 import { adjustSubmitValues } from '../utils/adjustFormValues';
+import { resolveSubmitPrivate } from '../utils/permission';
 import FormCpt from './Form';
 
 interface Props {
@@ -51,7 +52,9 @@ export default function EditModal(props: Props) {
       onOk={() => {
         if (id) {
           form.validateFields().then((values) => {
-            putItem(id, adjustSubmitValues(values)).then(() => {
+            // 非 admin 未挂载「可见范围」字段，validateFields 不含 private；其当前值已由
+            // setFieldsValue(data) 存进 form store，用 getFieldValue 取出沿用，避免编辑改变可见性。
+            putItem(id, adjustSubmitValues({ ...values, private: resolveSubmitPrivate(values.private, form.getFieldValue('private')) })).then(() => {
               onOk();
             });
           });

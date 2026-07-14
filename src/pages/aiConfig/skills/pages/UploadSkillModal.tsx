@@ -5,15 +5,16 @@ import { InboxOutlined } from '@ant-design/icons';
 
 import { NS } from '../constants';
 import { SkillAuthValues } from '../types';
+import { resolveSubmitPrivate } from '../utils/permission';
 import SkillAuthFields from './SkillAuthFields';
 
 interface Props {
   title: string;
   visible: boolean;
   showSubtitle?: boolean;
-  // 是否展示并校验授权字段。内置(system) skill 的替换不套用授权团队，置 false 隐藏。
+  // 是否展示并校验授权字段。内置(system) skill 的替换不套用管理团队，置 false 隐藏。
   showAuthFields?: boolean;
-  // 替换既有 skill 时用它回填当前授权范围与团队；新建上传时留空（团队必填、默认私有）。
+  // 替换既有 skill 时用它回填当前可见范围与管理团队；新建上传时留空（团队必填、默认仅管理团队可见）。
   defaultAuth?: SkillAuthValues;
   onCancel: () => void;
   onSubmit: (file: File, auth: SkillAuthValues) => Promise<void> | void;
@@ -87,7 +88,9 @@ export default function UploadSkillModal(props: Props) {
           if (showAuthFields) {
             try {
               const values = await form.validateFields();
-              auth = { user_group_ids: values.user_group_ids, private: values.private };
+              // 非 admin 未渲染 private 字段：替换既有 skill 时沿用 defaultAuth 里的当前值，
+              // 新建上传无 defaultAuth 则默认私有。
+              auth = { user_group_ids: values.user_group_ids, private: resolveSubmitPrivate(values.private, defaultAuth?.private) };
             } catch {
               return Upload.LIST_IGNORE;
             }

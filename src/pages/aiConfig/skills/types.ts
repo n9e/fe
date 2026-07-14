@@ -16,7 +16,7 @@ export interface GitInfo {
   current_commit?: string;
 }
 
-// SkillAuthValues 授权范围+团队：导入/远程安装/替换/更新各流程共用。
+// SkillAuthValues 可见范围+管理团队：导入/远程安装/替换/更新各流程共用。
 export interface SkillAuthValues {
   user_group_ids?: number[];
   private?: 0 | 1;

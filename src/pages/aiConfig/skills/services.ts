@@ -7,13 +7,14 @@ import { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload
 
 export type { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload, SkillAuthValues };
 
-// appendSkillAuth 把授权范围+团队塞进 multipart 表单（后端按 JSON 数组 / int 解析）。
+// appendSkillAuth 把可见范围+管理团队塞进 multipart 表单（后端按 JSON 数组 / int 解析）。
+// private 缺省兜底为 1（仅管理团队可见），绝不静默降级成公共。
 function appendSkillAuth(formData: FormData, auth?: SkillAuthValues) {
   if (!auth) {
     return;
   }
   formData.append('user_group_ids', JSON.stringify(auth.user_group_ids ?? []));
-  formData.append('private', String(auth.private ?? 0));
+  formData.append('private', String(auth.private ?? 1));
 }
 
 export const getList = function (): Promise<Item[]> {

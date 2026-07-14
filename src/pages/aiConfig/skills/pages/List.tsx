@@ -193,7 +193,7 @@ export default function List() {
   }
 
   async function handleToggleEnabled(item: Item) {
-    // 修改（含启停）必须有授权团队：无团队的存量 skill 需先「编辑」补齐团队再启停，
+    // 修改（含启停）必须有管理团队：无团队的存量 skill 需先「编辑」补齐团队再启停，
     // 与后端 aiSkillPut 的团队必填校验一致，避免直接切换触发 400。
     if (!item.user_group_ids || item.user_group_ids.length === 0) {
       message.warning(t('toggle_needs_team'));
@@ -201,7 +201,10 @@ export default function List() {
     }
     const newEnabled = !item.enabled;
     await putItem(item.id, {
-      ..._.pick(item, ['name', 'description', 'instructions', 'license', 'compatibility', 'allowed_tools', 'metadata', 'user_group_ids', 'private']),
+      ..._.pick(item, ['name', 'description', 'instructions', 'license', 'compatibility', 'allowed_tools', 'metadata', 'user_group_ids']),
+      // 启停不改变可见范围，显式回传当前值（缺省兜底 1，避免 undefined 被 JSON 丢弃后
+      // 被后端按零值 0 写成公共）。
+      private: item.private ?? 1,
       enabled: newEnabled,
     });
     message.success(t('common:success.modify'));

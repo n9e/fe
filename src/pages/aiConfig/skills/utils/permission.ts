@@ -24,3 +24,12 @@ export function canModifySkill(item: Pick<Item, 'can_edit' | 'user_group_ids' | 
   }
   return item.created_by === profile.username || item.updated_by === profile.username;
 }
+
+// resolveSubmitPrivate 决定提交时的可见范围 private 值。
+// 「可见范围」表单项仅 admin 渲染，因此 formValue 只有 admin 才有（admin 的选择优先）；
+// 非 admin 无表单值，编辑既有 skill 时沿用其当前值 currentValue，不改变可见性
+// （与后端「编辑未提交 private 则保持现状」口径一致）；
+// 创建/导入无既有值时默认 1 = 仅管理团队可见，绝不默认成公共。
+export function resolveSubmitPrivate(formValue?: 0 | 1, currentValue?: 0 | 1): 0 | 1 {
+  return formValue ?? currentValue ?? 1;
+}

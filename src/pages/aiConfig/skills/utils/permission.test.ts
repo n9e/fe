@@ -1,4 +1,4 @@
-import { canModifySkill } from './permission';
+import { canModifySkill, resolveSubmitPrivate } from './permission';
 
 describe('canModifySkill', () => {
   const admin = { admin: true, username: 'root' };
@@ -30,5 +30,22 @@ describe('canModifySkill', () => {
 
   it('fallback: legacy skill unrelated user cannot modify', () => {
     expect(canModifySkill({ user_group_ids: [], created_by: 'bob', updated_by: 'bob' }, alice)).toBe(false);
+  });
+});
+
+describe('resolveSubmitPrivate', () => {
+  it('form value wins (the scope field is admin-only, so only admins have one)', () => {
+    expect(resolveSubmitPrivate(0, 1)).toBe(0);
+    expect(resolveSubmitPrivate(1, 0)).toBe(1);
+  });
+
+  it('without form value keeps the current visibility (non-admin edit never flips it)', () => {
+    expect(resolveSubmitPrivate(undefined, 0)).toBe(0);
+    expect(resolveSubmitPrivate(undefined, 1)).toBe(1);
+  });
+
+  it('creating (no form value, no current value) defaults to private', () => {
+    expect(resolveSubmitPrivate(undefined, undefined)).toBe(1);
+    expect(resolveSubmitPrivate()).toBe(1);
   });
 });

@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { NS } from '../constants';
 import { gitReplaceConfig } from '../services';
 import { GitInstallPayload, GitInfo, SkillAuthValues } from '../types';
+import { resolveSubmitPrivate } from '../utils/permission';
 import GitForm from './GitForm';
 import { confirmAbortOngoingRequest, isAbortError, showGitOperationError } from './gitErrorModal';
 
@@ -96,7 +97,8 @@ export default function GitReplaceConfigModal(props: Props) {
         (value) => value !== undefined && value !== '',
       ),
       user_group_ids: values.user_group_ids,
-      private: values.private,
+      // 非 admin 未渲染 private 字段（validateFields 不含），沿用 defaultAuth 里的当前值。
+      private: resolveSubmitPrivate(values.private, defaultAuth?.private),
     };
 
     const controller = new AbortController();
