@@ -6,12 +6,15 @@ const ru_RU = {
     progress: 'Выполнено {{done}}/{{total}}',
     hostTrack: 'Мониторинг хостов',
     dataTrack: 'Интеграция данных',
+    aiTrack: 'AI-ассистент',
     steps: {
       machine: { title: 'Разверните сборщик', desc: 'Разверните Categraf на хосте — он появится в списке хостов' },
       hostDashboard: { title: 'Примените дашборд хоста', desc: 'Импортируйте встроенный дашборд хоста из центра шаблонов' },
       datasource: { title: 'Настройте источник данных', desc: 'Подключите Prometheus / VictoriaMetrics и другие' },
       dashboard: { title: 'Создайте дашборд', desc: 'Визуализируйте нужные метрики' },
       alert: { title: 'Настройте правило оповещения', desc: 'Создайте первое правило оповещения для ключевых метрик' },
+      notification: { title: 'Настройте уведомления', desc: 'Доставляйте оповещения через DingTalk / email и другие каналы' },
+      llm: { title: 'Подключите LLM', desc: 'Настройте LLM, чтобы включить AI-ассистента и анализ' },
     },
   },
   hero: {
@@ -29,6 +32,7 @@ const ru_RU = {
     notificationTag: 'Доставка · Каналы уведомлений',
     collectionTag: 'Данные · Единый сбор',
     integrationTag: 'Данные · Единая интеграция',
+    integrationBrowseAll: '70+ встроенных интеграций',
     infrastructureTag: 'Корпоративная инфраструктура',
     dataIngestArrow: 'Данные · Единая ингестия',
     alertEventArrow: 'События алертов',

@@ -5,6 +5,7 @@ import { buildPageFrom } from './recommend';
 import { cleanShareParamsFromUrl } from './share';
 
 const AI_CHAT_MODE_STORAGE_KEY = 'ai-chat-mode';
+const AI_CHAT_CACHED_SESSION_KEY = 'ai-chat-last-session-id';
 
 function getInitialMode(): AiChatMode {
   if (typeof window === 'undefined') {
@@ -38,8 +39,13 @@ interface IAiChatContextValue {
   setShareChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
   initialMessage?: string;
   setInitialMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
+  cachedSessionId?: string;
+  setCachedSessionId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  pendingChatId?: string;
+  setPendingChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
   openAiChat: (options?: {
     mode?: AiChatMode;
+    chatId?: string;
     promptList?: string[];
     initialMessage?: string;
     onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
@@ -74,6 +80,10 @@ export const AiChatContext = React.createContext<IAiChatContextValue>({
   setQueryAction: noop as React.Dispatch<React.SetStateAction<IAiChatAction | undefined>>,
   setShareReadonly: noop as React.Dispatch<React.SetStateAction<boolean>>,
   setShareChatId: noop as React.Dispatch<React.SetStateAction<string | undefined>>,
+  cachedSessionId: undefined,
+  setCachedSessionId: noop as React.Dispatch<React.SetStateAction<string | undefined>>,
+  pendingChatId: undefined,
+  setPendingChatId: noop as React.Dispatch<React.SetStateAction<string | undefined>>,
   openAiChat: noop,
   closeAiChat: noop,
 });
@@ -89,6 +99,11 @@ export function AiChatProvider(props: IAiChatProviderProps) {
   const [onExecuteQueryForQueryContent, setOnExecuteQueryForQueryContent] = React.useState<AiChatExecuteQueryForQueryContent | undefined>(undefined);
   const [queryPageFrom, setQueryPageFrom] = React.useState<IAiChatPageInfo | undefined>(undefined);
   const [queryAction, setQueryAction] = React.useState<IAiChatAction | undefined>(undefined);
+  const [cachedSessionId, setCachedSessionId] = React.useState<string | undefined>(() => {
+    if (typeof window === 'undefined') return undefined;
+    return window.localStorage.getItem(AI_CHAT_CACHED_SESSION_KEY) || undefined;
+  });
+  const [pendingChatId, setPendingChatId] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
     if (typeof window === 'undefined') {
@@ -98,9 +113,19 @@ export function AiChatProvider(props: IAiChatProviderProps) {
     window.localStorage.setItem(AI_CHAT_MODE_STORAGE_KEY, mode);
   }, [mode]);
 
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (cachedSessionId) {
+      window.localStorage.setItem(AI_CHAT_CACHED_SESSION_KEY, cachedSessionId);
+    } else {
+      window.localStorage.removeItem(AI_CHAT_CACHED_SESSION_KEY);
+    }
+  }, [cachedSessionId]);
+
   const openAiChat = React.useCallback(
     (options?: {
       mode?: AiChatMode;
+      chatId?: string;
       promptList?: string[];
       initialMessage?: string;
       onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
@@ -126,6 +151,11 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       setShareChatId(undefined);
       setPromptList(options?.promptList);
       setInitialMessage(options?.initialMessage);
+      if (options?.chatId !== undefined) {
+        setPendingChatId(options.chatId);
+      } else {
+        setPendingChatId(undefined);
+      }
       setVisible(true);
     },
     [setMode, setOnExecuteQueryForQueryContent, setQueryPageFrom, setQueryAction, setPromptList, setInitialMessage, setVisible],
@@ -158,10 +188,30 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       setQueryAction,
       setShareReadonly,
       setShareChatId,
+      cachedSessionId,
+      setCachedSessionId,
+      pendingChatId,
+      setPendingChatId,
       openAiChat,
       closeAiChat,
     }),
-    [visible, mode, promptList, initialMessage, onExecuteQueryForQueryContent, queryPageFrom, queryAction, shareReadonly, shareChatId, openAiChat, closeAiChat],
+    [
+      visible,
+      mode,
+      promptList,
+      initialMessage,
+      onExecuteQueryForQueryContent,
+      queryPageFrom,
+      queryAction,
+      shareReadonly,
+      shareChatId,
+      cachedSessionId,
+      setCachedSessionId,
+      pendingChatId,
+      setPendingChatId,
+      openAiChat,
+      closeAiChat,
+    ],
   );
 
   return <AiChatContext.Provider value={value}>{children}</AiChatContext.Provider>;

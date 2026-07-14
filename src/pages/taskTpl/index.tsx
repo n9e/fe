@@ -141,8 +141,8 @@ const index = (_props: any) => {
     ] as any,
     [
       tagsColumn({ title: t('tpl.tags'), dataIndex: 'tags', maxWidth: 180, onTagClick: handleTagClick }),
-      userColumn({ title: t('tpl.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
-      dateColumn({ title: t('tpl.last_updated'), dataIndex: 'update_at', unix: true }),
+      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
     ] as any,
   );
 
@@ -219,8 +219,6 @@ const index = (_props: any) => {
                     text: t('task.create'),
                     onClick: () => history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}&gid=${record.group_id}` }),
                   },
-                ],
-                menu: [
                   {
                     key: 'edit',
                     icon: 'edit',
@@ -254,7 +252,7 @@ const index = (_props: any) => {
                   },
                 ],
               })}
-              actionColumn={{ title: t('table.operations'), width: 110 }}
+              actionColumn={{ title: t('table.operations'), width: 130 }}
               {...(tableProps as any)}
               rowSelection={{
                 selectedRowKeys: selectedIds,

@@ -1,0 +1,53 @@
+.index-pattern-row-dragging {
+  z-index: 99999;
+  display: block;
+  background: var(--fc-fill-2);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 4px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+
+  .ant-table-cell-fix-left,
+  .ant-table-cell-fix-right {
+    position: static !important;
+    background: inherit;
+  }
+
+  .ant-table-cell-fix-left-last::after,
+  .ant-table-cell-fix-right-first::after,
+  .ant-table-cell-fix-right-last::after {
+    display: none;
+  }
+
+  .fc-table-action-cell {
+    display: none;
+  }
+}
+
+.index-pattern-row-dragging td {
+  display: inline-block;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  background: var(--fc-fill-2);
+  border: none;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.index-pattern-row-dragging td:nth-child(3) {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.index-pattern-row-dragging td:first-child {
+  padding-left: 12px;
+}
+
+.index-pattern-row-dragging td:last-child {
+  display: none;
+}
+
+.index-pattern-row-drag-handle {
+  cursor: grab;
+}

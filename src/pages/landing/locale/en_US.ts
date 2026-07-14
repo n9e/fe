@@ -6,12 +6,15 @@ const en_US = {
     progress: '{{done}}/{{total}} completed',
     hostTrack: 'Host monitoring',
     dataTrack: 'Data integration',
+    aiTrack: 'AI assistant',
     steps: {
       machine: { title: 'Deploy the collector', desc: 'Deploy Categraf on a host and it shows up in the host list' },
       hostDashboard: { title: 'Apply a host dashboard', desc: 'Import a built-in host dashboard from the template center' },
       datasource: { title: 'Configure a data source', desc: 'Connect Prometheus / VictoriaMetrics and more' },
       dashboard: { title: 'Create a dashboard', desc: 'Visualize the metrics you care about' },
       alert: { title: 'Configure an alert rule', desc: 'Set up your first alert rule for key metrics' },
+      notification: { title: 'Configure notifications', desc: 'Route alerts to DingTalk / email and more so they actually reach you' },
+      llm: { title: 'Connect an LLM', desc: 'Configure an LLM to unlock the AI assistant and analysis' },
     },
   },
   hero: {
@@ -29,6 +32,7 @@ const en_US = {
     notificationTag: 'Reach · Notification Channels',
     collectionTag: 'Data · Unified Collection',
     integrationTag: 'Data · Unified Integration',
+    integrationBrowseAll: 'Browse 70+ built-in integrations',
     infrastructureTag: 'Enterprise Infrastructure',
     dataIngestArrow: 'Data · Unified Ingestion',
     alertEventArrow: 'Alert Events',

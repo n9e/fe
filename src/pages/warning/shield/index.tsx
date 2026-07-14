@@ -25,7 +25,7 @@ import { useHistory, Link } from 'react-router-dom';
 
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
+import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/services/shield';
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
@@ -34,7 +34,7 @@ import RefreshIcon from '@/components/RefreshIcon';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
-import { allCates } from '@/components/AdvancedWrap/utils';
+import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import DeleteMutesModal from './components/DeleteMutesModal';
 
 import './locale';
@@ -55,7 +55,7 @@ interface Filter {
 const FILTER_SESSION_STORAGE_KEY = 'alert-mutes-filter';
 
 const Shield: React.FC = () => {
-  const { t } = useTranslation('alertMutes');
+  const { t, i18n } = useTranslation('alertMutes');
   const history = useHistory();
   const { datasourceList, groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
@@ -80,203 +80,191 @@ const Shield: React.FC = () => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
-  const columns: ColumnsType = _.concat(
-    businessGroup.isLeaf && gids !== '-2'
-      ? []
-      : ([
-          {
-            title: t('common:business_group'),
-            dataIndex: 'group_id',
-            render: (id) => {
-              return _.find(busiGroups, { id })?.name;
-            },
-          },
-        ] as any),
-    [
-      {
-        title: t('note'),
-        dataIndex: 'note',
-        render: (data, record: any) => {
-          return (
-            <Space size={4}>
-              <Link
-                to={{
-                  pathname: `/alert-mutes/edit/${record.id}`,
-                  search: `?bgid=${record.group_id}`,
-                }}
-              >
-                {data}
-              </Link>
-              {record.mute_type === 1 && <Tag color='blue'>{t('mute_method.1')}</Tag>}
-            </Space>
-          );
-        },
+  const columns: ColumnsType = [
+    {
+      title: t('note'),
+      dataIndex: 'note',
+      render: (data, record: any) => {
+        const groupName = !(businessGroup.isLeaf && gids !== '-2') ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
+        return (
+          <div className='flex flex-col gap-0.5'>
+            <Link
+              to={{
+                pathname: `/alert-mutes/edit/${record.id}`,
+                search: `?bgid=${record.group_id}`,
+              }}
+            >
+              {data}
+            </Link>
+            {groupName && <span className='text-soft text-xs'>{groupName}</span>}
+          </div>
+        );
       },
-      {
-        title: t('common:datasource.type'),
-        dataIndex: 'cate',
-        render: (val) => {
-          let logoSrc = _.find(allCates, { value: val })?.logo;
-          if (val === 'host') {
-            logoSrc = '/image/logos/host.png';
-          }
-          return <img alt={val} src={logoSrc} height={20} />;
-        },
-      },
-      {
-        title: t('common:datasource.id'),
-        dataIndex: 'datasource_ids',
-        render(value, record: any) {
-          if (!value) return '-';
-          return (
+    },
+    {
+      title: t('common:datasource.name'),
+      dataIndex: 'datasource_ids',
+      render(value, record: any) {
+        if (!value) return null;
+        const cate = _.find(allCates, { value: record.cate });
+        const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
+        let logoSrc = cate?.logo;
+        if (record.cate === 'host') {
+          logoSrc = '/image/logos/host.png';
+        }
+        return (
+          <Space>
+            {logoSrc && (
+              <Tooltip title={cateLabel}>
+                <img alt={record.cate} src={logoSrc} height={18} />
+              </Tooltip>
+            )}
             <Tags
-              maxWidth={120}
+              type='outline'
+              maxWidth={180}
               data={_.compact(
                 _.map(value, (item) => {
                   if (item === 0) return '$all';
-                  const name = _.find(groupedDatasourceList[record.cate], { id: item })?.name;
+                  const name = _.find(datasourceList, { id: item })?.name;
                   if (!name) return '';
                   return name;
                 }),
               )}
             />
-          );
-        },
+          </Space>
+        );
       },
-      {
-        title: t('common:table.tag'),
-        dataIndex: 'tags',
-        render: (text: any) => {
+    },
+    {
+      title: t('common:table.tag'),
+      dataIndex: 'tags',
+      render: (text: any) => {
+        return (
+          <Tags
+            type='outline'
+            maxWidth={180}
+            data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
+          />
+        );
+      },
+    },
+    {
+      title: t('cause'),
+      dataIndex: 'cause',
+      render: (text: string, record: shieldItem) => {
+        if (text) {
           return (
-            <Tags
-              type='outline'
-              maxWidth={180}
-              data={_.compact(_.map(text, (tag) => (tag ? `${tag.key} ${tag.func} ${tag.func === 'in' ? tag.value.split(' ').join(', ') : tag.value}` : '')))}
-            />
-          );
-        },
-      },
-      {
-        title: t('cause'),
-        dataIndex: 'cause',
-        render: (text: string, record: shieldItem) => {
-          if (text) {
-            return (
-              <>
-                <Tooltip placement='topLeft' title={text}>
-                  <div
-                    style={{
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      overflow: 'hidden',
-                      lineHeight: '16px',
-                    }}
-                  >
-                    {text}
-                  </div>
-                </Tooltip>
-                by {record.create_by}
-              </>
-            );
-          }
-          return null;
-        },
-      },
-      {
-        title: t('time'),
-        dataIndex: 'btime',
-        render: (_val, record: shieldItem) => {
-          if (record.mute_time_type === 0) {
-            const now = moment().unix();
-            const isExpired = now > record.etime;
-            if (isExpired) {
-              return (
-                <Tooltip
-                  title={
-                    <div className='shield-time'>
-                      <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
-                      <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
-                    </div>
-                  }
+            <>
+              <Tooltip placement='topLeft' title={text}>
+                <div
+                  style={{
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    lineHeight: '16px',
+                  }}
                 >
-                  <Tag color='red'>{t('expired')}</Tag>
-                </Tooltip>
-              );
-            }
-            return (
-              <div className='shield-time'>
-                <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
-                <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
-              </div>
-            );
-          } else if (record.mute_time_type === 1) {
+                  {text}
+                </div>
+              </Tooltip>
+              by {record.create_by}
+            </>
+          );
+        }
+        return null;
+      },
+    },
+    {
+      title: t('time'),
+      dataIndex: 'btime',
+      render: (_val, record: shieldItem) => {
+        if (record.mute_time_type === 0) {
+          const now = moment().unix();
+          const isExpired = now > record.etime;
+          if (isExpired) {
             return (
               <Tooltip
-                overlayInnerStyle={{
-                  width: 350,
-                }}
-                title={_.map(record.periodic_mutes, (item, idx) => {
-                  return (
-                    <div key={idx}>
-                      <Space>
-                        <div>
-                          {item.enable_stime} ~ {item.enable_etime}
-                        </div>
-                        <Space>
-                          {_.map(_.split(item.enable_days_of_week, ' '), (item) => {
-                            return t(`common:time.weekdays.${item}`);
-                          })}
-                        </Space>
-                      </Space>
-                    </div>
-                  );
-                })}
+                title={
+                  <div className='shield-time'>
+                    <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
+                    <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
+                  </div>
+                }
               >
-                <a>{t('mute_type.1')}</a>
+                <Tag color='red'>{t('expired')}</Tag>
               </Tooltip>
             );
           }
-        },
+          return (
+            <div className='shield-time'>
+              <div>{moment.unix(record?.btime).format('YYYY-MM-DD HH:mm:ss')}</div>
+              <div>{moment.unix(record?.etime).format('YYYY-MM-DD HH:mm:ss')}</div>
+            </div>
+          );
+        } else if (record.mute_time_type === 1) {
+          return (
+            <Tooltip
+              overlayInnerStyle={{
+                width: 350,
+              }}
+              title={_.map(record.periodic_mutes, (item, idx) => {
+                return (
+                  <div key={idx}>
+                    <Space>
+                      <div>
+                        {item.enable_stime} ~ {item.enable_etime}
+                      </div>
+                      <Space>
+                        {_.map(_.split(item.enable_days_of_week, ' '), (item) => {
+                          return t(`common:time.weekdays.${item}`);
+                        })}
+                      </Space>
+                    </Space>
+                  </div>
+                );
+              })}
+            >
+              <a>{t('mute_type.1')}</a>
+            </Tooltip>
+          );
+        }
       },
-      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
-      updateByColumn({
-        title: t('common:table.update_by'),
-        dataIndex: 'update_by',
+    },
+    dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+    userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }) as any,
+    {
+      ...getEnabledStatusColumn({
+        title: t('common:table.enabled'),
+        dataIndex: 'disabled',
+        enabledText: t('filter_disabled.0'),
+        disabledText: t('filter_disabled.1'),
+        enabledValue: 0,
+        disabledValue: 1,
       }),
-      {
-        ...getEnabledStatusColumn({
-          title: t('common:table.enabled'),
-          dataIndex: 'disabled',
-          enabledText: t('filter_disabled.0'),
-          disabledText: t('filter_disabled.1'),
-          enabledValue: 0,
-          disabledValue: 1,
-        }),
-
-        render: (disabled, record) => (
-          <Switch
-            checked={disabled === strategyStatus.Enable}
-            size='small'
-            onChange={() => {
-              // @ts-ignore
-              const { id, disabled, group_id } = record;
-              updateShields(
-                {
-                  ids: [id],
-                  fields: {
-                    disabled: !disabled ? 1 : 0,
-                  },
+      width: 80,
+      render: (disabled, record) => (
+        <Switch
+          checked={disabled === strategyStatus.Enable}
+          size='small'
+          onChange={() => {
+            // @ts-ignore
+            const { id, disabled, group_id } = record;
+            updateShields(
+              {
+                ids: [id],
+                fields: {
+                  disabled: !disabled ? 1 : 0,
                 },
-                group_id,
-              ).then(() => {
-                refreshList();
-              });
-            }}
-          />
-        ),
-      },
-    ],
-  );
+              },
+              group_id,
+            ).then(() => {
+              refreshList();
+            });
+          }}
+        />
+      ),
+    },
+  ];
   const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-mutes-table-pagesize' });
 
   useEffect(() => {

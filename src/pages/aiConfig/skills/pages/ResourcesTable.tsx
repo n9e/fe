@@ -74,7 +74,7 @@ export default function ResourcesTable(props: Props) {
         loading={loading}
         dataSource={filteredFiles}
         rowActions={(record) => ({
-          menu: [
+          inline: [
             {
               key: 'view',
               icon: 'view',

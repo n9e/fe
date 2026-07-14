@@ -57,6 +57,7 @@ const en_US = {
       timeWindow: 'Start and end time: the time range of the current page',
       timeRangeMs: 'Start and end time (base variables, milliseconds): $__from and $__to',
       timeRangeSeconds: 'Start and end time (seconds): append $__time_format__=unix to the base variables',
+      timeRangeUtc: 'Start and end time (UTC format): append $__time_format__=utc to the base variables',
       timeRangeFormat: 'Start and end time (formatted): append $__time_format__=YYYY-MM-DD HH:mm:ss to the base variables',
       timeRangeOffset:
         'Start and end time (time offset): append $__start_time_margin__=-100000 and $__end_time_margin__=100000 to the base variables. Unit: milliseconds; positive values offset forward, negative values offset backward',
@@ -69,6 +70,7 @@ const en_US = {
       title: 'Reference examples',
       timeRangeMs: 'Jump to a target page with query time range (unit: milliseconds)',
       timeRangeSeconds: 'Jump to a target page with query time range (unit: seconds)',
+      timeRangeUtc: 'Jump to a target page with query time range (UTC format)',
       timeRangeFormat: 'Jump to a target page with query time range (formatted time)',
       timeRangeOffset: 'Jump to a target page with query time range (with time offset)',
       mappingParams: 'Jump to a target page with all parameters from the parameter mapping table',
@@ -88,7 +90,7 @@ const en_US = {
   '可以对日志中字段通过正则提取生成新字段，跳转链接中可以使用新字段。': 'You can extract new fields from log fields through regular expressions, and use them in jump links.',
   '只会提取一次，如需多次提取可以配置多行': 'Only extracted once, if you need to extract multiple times, you can configure multiple lines',
   'log-reg-extract': "e.g. address field 17:356:256291904:1740920581 after extraction by ':(d+)$', generates a new field phone 1740920581",
-  'link-tip-time-format': 'The default unit is milliseconds. If formatting is needed, you can use $__time_format__, formats include unix, YYYY-MM-DD HH:mm:ss, etc.',
+  'link-tip-time-format': 'The default unit is milliseconds. If formatting is needed, you can use $__time_format__; formats include unix, utc, YYYY-MM-DD HH:mm:ss, etc.',
   field: {
     alias1: 'Link Alias',
     fieldPlaceholder: 'Please select a field',

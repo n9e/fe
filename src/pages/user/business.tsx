@@ -298,7 +298,7 @@ const Resource: React.FC = () => {
                 pagination={pagination}
                 actionColumn={{ title: t('common:table.operations'), width: 64 }}
                 rowActions={(record) => ({
-                  menu: [
+                  inline: [
                     {
                       key: 'delete',
                       icon: 'delete',

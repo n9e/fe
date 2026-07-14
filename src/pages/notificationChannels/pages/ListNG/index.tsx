@@ -11,7 +11,7 @@ import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { updateByColumn } from '@/components/EnhancedTable/columns';
+import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
 
 import { NS, getNotificationChannelTypes } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
@@ -270,19 +270,8 @@ export default function index() {
                       );
                     },
                   },
-                  updateByColumn({
-                    title: t('common:table.update_by'),
-                    dataIndex: 'update_by',
-                    width: 120,
-                  }),
-                  {
-                    title: t('common:table.update_at'),
-                    dataIndex: 'update_at',
-                    width: 170,
-                    render: (val) => {
-                      return moment.unix(val).format('YYYY-MM-DD HH:mm:ss');
-                    },
-                  },
+                  dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }) as any,
+                  userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }) as any,
                   {
                     ...getEnabledStatusColumn({
                       title: t('common:table.enabled'),
@@ -319,7 +308,7 @@ export default function index() {
                   },
                 ]}
                 rowActions={(record) => ({
-                  menu: [
+                  inline: [
                     {
                       key: 'clone',
                       icon: 'copy',

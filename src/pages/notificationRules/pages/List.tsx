@@ -8,8 +8,9 @@ import { Link, useHistory } from 'react-router-dom';
 import { IS_PLUS } from '@/utils/constant';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { userColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
+import EmptyGuide from '@/components/EmptyGuide';
 import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
 import usePagination from '@/components/usePagination';
@@ -129,6 +130,27 @@ export default function List() {
           loading={loading}
           rowKey='id'
           dataSource={filteredData}
+          // 仅在「确实一条规则都没有」时展示引导；搜索命中为空时回退到默认空态，避免误导
+          locale={
+            data.length === 0
+              ? {
+                  emptyText: (
+                    <EmptyGuide
+                      title={t('empty_guide.title')}
+                      description={t('empty_guide.desc')}
+                      actions={
+                        <>
+                          <Button type='primary' onClick={() => history.push(`/${NS}/add`)}>
+                            {t('common:btn.add')}
+                          </Button>
+                          <a onClick={() => history.push('/notification-channels')}>{t('empty_guide.config_channel')}</a>
+                        </>
+                      }
+                    />
+                  ),
+                }
+              : undefined
+          }
           pagination={{ ...pagination, current }}
           onChange={(pag) => {
             setCurrent(pag.current || 1);
@@ -189,8 +211,8 @@ export default function List() {
                 );
               },
             },
-            updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
-            dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
+            dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+            userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
             {
               ...getEnabledStatusColumn({
                 title: t('common:table.enabled'),

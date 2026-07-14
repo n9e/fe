@@ -1,5 +1,10 @@
 const en_US = {
   title: 'Notification rules',
+  empty_guide: {
+    title: 'No notification rules yet',
+    desc: "Notification rules decide who gets an alert and through which channel. Without one, alert events won't actually be pushed to DingTalk / email, etc.",
+    config_channel: 'Configure a channel first',
+  },
   basic_configuration: 'Basic configuration',
   user_group_ids: 'Authorized teams',
   user_group_ids_tip: 'Users in the teams filled in here will have permission to manage or view this notification rule',

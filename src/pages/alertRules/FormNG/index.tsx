@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Card, Col, Form, Input, message, Row, Select, Space } from 'antd';
-import { Sparkles, ChevronsUpDown, ChevronsDownUp, PanelLeft } from 'lucide-react';
+import { Sparkles, ChevronsUpDown, ChevronsDownUp, PanelRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import _ from 'lodash';
@@ -195,28 +195,15 @@ export default function FormNG(props: IProps) {
       <Form form={form} layout='vertical' disabled={disabled} className='h-full'>
         <FormNGDataProvider>
           <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
-            {sidebarVisible && (
-              <Sidebar sections={sections} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
-            )}
             <div
-              className='flex-1 min-w-0 h-full overflow-auto'
+              className='flex-1 min-w-0 h-full best-looking-scroll'
               ref={scroll.containerRef}
               onScroll={scroll.handleScroll}
               onWheel={scroll.handleUserScroll}
               onTouchMove={scroll.handleUserScroll}
             >
-              <div className='w-full max-w-[1200px] mx-auto p-5 pb-0'>
-                <div className='flex items-center justify-between gap-2 mb-4'>
-                  <Button
-                    onClick={() => {
-                      setSidebarVisible((prev) => !prev);
-                    }}
-                    className='flex items-center gap-1'
-                    size='small'
-                    icon={<PanelLeft size={12} />}
-                  >
-                    {sidebarVisible ? t('form_ng.collapse_sidebar') : t('form_ng.expand_sidebar')}
-                  </Button>
+              <div className='w-full max-w-[1200px] mx-auto p-5'>
+                <div className='flex items-center justify-end gap-2 mb-4'>
                   <div className='flex items-center gap-2'>
                     <Button
                       onClick={() => {
@@ -261,6 +248,16 @@ export default function FormNG(props: IProps) {
                         </Button>
                       );
                     })()}
+                    <Button
+                      onClick={() => {
+                        setSidebarVisible((prev) => !prev);
+                      }}
+                      className='flex items-center gap-1'
+                      size='small'
+                      icon={<PanelRight size={12} />}
+                    >
+                      {sidebarVisible ? t('form_ng.collapse_sidebar') : t('form_ng.expand_sidebar')}
+                    </Button>
                   </div>
                 </div>
                 {editable === false && <Alert type='warning' message={t('expired')} className='mb-4' />}
@@ -459,6 +456,9 @@ export default function FormNG(props: IProps) {
                 </Card>
               </AffixWrapper>
             </div>
+            {sidebarVisible && (
+              <Sidebar sections={sections} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
+            )}
           </div>
         </FormNGDataProvider>
       </Form>

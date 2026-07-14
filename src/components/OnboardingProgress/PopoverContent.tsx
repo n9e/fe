@@ -15,12 +15,16 @@ interface Props {
 /** 侧栏徽标点击后弹出的紧凑版引导清单（窄版竖排，复用同一进度数据） */
 export default function OnboardingPopoverContent({ doneMap, doneCount, total, onNavigate }: Props) {
   const { t } = useTranslation('n9e-landing');
+  const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
 
   return (
     <div className='n9e-onboarding-pop'>
       <div className='n9e-onboarding-pop-head'>
         <span className='n9e-onboarding-pop-title'>{t('onboarding.title')}</span>
         <span className='n9e-onboarding-pop-count'>{t('onboarding.progress', { done: doneCount, total })}</span>
+      </div>
+      <div className='n9e-onboarding-pop-progress'>
+        <div className='n9e-onboarding-pop-progress-bar' style={{ width: `${pct}%` }} />
       </div>
       <div className='n9e-onboarding-pop-tracks'>
         <OnboardingTracks

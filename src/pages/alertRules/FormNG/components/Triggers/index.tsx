@@ -1,6 +1,4 @@
 import React from 'react';
-import { Form } from 'antd';
-import _ from 'lodash';
 import Triggers from './Triggers';
 
 interface IProps {
@@ -13,14 +11,5 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
-  const nodata_trigger_enable = Form.useWatch(['rule_config', 'nodata_trigger', 'enable']);
-  const anomaly_trigger_enable = Form.useWatch(['rule_config', 'anomaly_trigger', 'enable']);
-  let defaultActiveKey = 'triggers';
-  if (nodata_trigger_enable === true) {
-    defaultActiveKey = 'nodata_trigger';
-  } else if (anomaly_trigger_enable === true) {
-    defaultActiveKey = 'anomaly_trigger';
-  }
-
-  return <Triggers {...props} defaultActiveKey={defaultActiveKey} />;
+  return <Triggers {...props} />;
 }

@@ -5,10 +5,12 @@ import { CommonStateContext } from '@/App';
 import { getMonObjectList } from '@/services/targets';
 import { getBusiGroupsDashboards } from '@/services/dashboardV2';
 import { getBusiGroupsAlertRules } from '@/services/warning';
+import { getItems as getNotifyRules } from '@/pages/notificationRules/services';
+import { getList as getLlmConfigs } from '@/pages/aiConfig/llmConfigs/services';
 
-export type OnboardingStepKey = 'machine' | 'hostDashboard' | 'datasource' | 'dashboard' | 'alert';
+export type OnboardingStepKey = 'machine' | 'hostDashboard' | 'datasource' | 'dashboard' | 'alert' | 'notification' | 'llm';
 
-export const ONBOARDING_STEP_KEYS: OnboardingStepKey[] = ['machine', 'hostDashboard', 'datasource', 'dashboard', 'alert'];
+export const ONBOARDING_STEP_KEYS: OnboardingStepKey[] = ['machine', 'hostDashboard', 'datasource', 'dashboard', 'alert', 'notification', 'llm'];
 
 interface DetectState {
   machine: boolean;
@@ -16,6 +18,10 @@ interface DetectState {
   // 是否存在「主机大盘」（按 name 近似判断，与「任意大盘」dashboard 区分开）
   hostDashboard: boolean;
   alert: boolean;
+  // 是否已配置通知规则（告警能否真正发出来，闭环最后一环）
+  notification: boolean;
+  // 是否已接入大模型（解锁 AI 助手与智能分析）
+  llm: boolean;
   loaded: boolean;
 }
 
@@ -28,11 +34,11 @@ export interface OnboardingProgress {
 
 // 全部完成后写入会话级标记，已上手的用户后续直接短路、不再探测，避免每次加载都拉全量大盘 / 告警
 const ONBOARDING_DONE_KEY = 'n9e_onboarding_done';
-const DONE_DETECT: DetectState = { machine: true, dashboard: true, hostDashboard: true, alert: true, loaded: true };
+const DONE_DETECT: DetectState = { machine: true, dashboard: true, hostDashboard: true, alert: true, notification: true, llm: true, loaded: true };
 
 // 跨实例（侧栏徽标 + 着陆页清单）与多次挂载共享的最近一次探测结果：
 // 既作初始值避免重复请求与闪烁，也用于跳过已完成步骤的探测（大盘 / 告警接口偏重，置真后不再重复拉取）。
-let lastDetect: DetectState = { machine: false, dashboard: false, hostDashboard: false, alert: false, loaded: false };
+let lastDetect: DetectState = { machine: false, dashboard: false, hostDashboard: false, alert: false, notification: false, llm: false, loaded: false };
 
 // 内置主机大盘的 name 约定：中文盘多为「机器…」，英文盘含 Host（如 Host Table NG / Windows Host by Categraf），
 // 与内置库 integrations/Linux 对齐。仅按 name 关键字近似判断「是否套用过主机大盘」，无需额外接口。
@@ -68,9 +74,23 @@ function probeOnboarding(): Promise<DetectState> {
         (res) => (res?.dat?.length ?? 0) > 0,
         () => false,
       );
+  // 通知规则（全局，不分业务组）：决定告警能否真正发出来
+  const notificationP = known.notification
+    ? Promise.resolve(true)
+    : getNotifyRules().then(
+        (res) => (res?.length ?? 0) > 0,
+        () => false,
+      );
+  // 大模型配置：决定 AI 助手是否可用
+  const llmP = known.llm
+    ? Promise.resolve(true)
+    : getLlmConfigs().then(
+        (res) => (res?.length ?? 0) > 0,
+        () => false,
+      );
 
-  return Promise.all([machineP, dashboardP, alertP]).then(([machine, dashboard, alert]) => {
-    lastDetect = { machine, dashboard: dashboard.any, hostDashboard: dashboard.host, alert, loaded: true };
+  return Promise.all([machineP, dashboardP, alertP, notificationP, llmP]).then(([machine, dashboard, alert, notification, llm]) => {
+    lastDetect = { machine, dashboard: dashboard.any, hostDashboard: dashboard.host, alert, notification, llm, loaded: true };
     return lastDetect;
   });
 }
@@ -106,6 +126,8 @@ export default function useOnboardingProgress(): OnboardingProgress {
       datasource: !!datasourceList?.length,
       dashboard: detect.dashboard,
       alert: detect.alert,
+      notification: detect.notification,
+      llm: detect.llm,
     }),
     [detect, datasourceList],
   );
