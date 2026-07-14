@@ -135,6 +135,9 @@ const ja_JP = {
     content_placeholder: '使用 go template 構文，如果最後表示為 true，將會將 event 在此環節丟棄',
   },
   ai_summary: {
+    llm_config: 'LLM 設定を再利用',
+    llm_config_placeholder: '設定済みの LLM を選択（空欄の場合は下記のパラメータを手動入力）',
+    llm_config_tip: '「AI 設定 - LLM 設定」にある既存のモデル設定（モデル/キー/URL など）を再利用します。空欄の場合は下記の手動入力パラメータを使用します。',
     url_placeholder: 'APIサービスアドレスを入力してください',
     url_required: 'URLを入力してください',
     api_key_placeholder: 'APIキー',

@@ -1,28 +1,73 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Row, Col, Form, Input, InputNumber, Switch, Space, Tooltip } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Switch, Space, Tooltip, Select } from 'antd';
 import { DownOutlined, RightOutlined, PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import classnames from 'classnames';
 
 import CodeMirror from '@/components/CodeMirror';
 import Markdown from '@/components/Markdown';
+import { getList as getLLMConfigList } from '@/pages/aiConfig/llmConfigs/services';
+import { LLMConfig } from '@/pages/aiConfig/llmConfigs/types';
 
 import { NS } from '../../../constants';
 
 interface Props {
   field: FormListFieldData;
   namePath: (string | number)[];
+  prefixNamePath?: (string | number)[];
 }
 
 export default function AISummary(props: Props) {
   const { t } = useTranslation(NS);
-  const { field, namePath = [] } = props;
+  const { field, namePath = [], prefixNamePath = [] } = props;
   const { name, key, ...resetField } = field;
+  const form = Form.useFormInstance();
   const [isAdvancedVisible, setIsAdvancedVisible] = useState(false);
+  const [llmConfigs, setLLMConfigs] = useState<LLMConfig[]>([]);
+
+  // 复用集中式 LLM 配置：选中一条后，内联的 url/api_key/model_name 不再必填。
+  // useWatch 必须用「从表单根开始的绝对路径」(prefixNamePath + namePath)，
+  // 否则在 Form.List 里监听不到值。参考同目录 Relabel.tsx 的写法。
+  const llmConfigId = Form.useWatch([...prefixNamePath, ...namePath, 'llm_config_id']);
+  const useLLMConfig = !!llmConfigId;
+
+  useEffect(() => {
+    getLLMConfigList()
+      .then((list) => setLLMConfigs(list))
+      .catch(() => setLLMConfigs([]));
+  }, []);
 
   return (
     <>
+      <Form.Item
+        {...resetField}
+        label={t('ai_summary.llm_config')}
+        tooltip={{
+          title: <Markdown style={{ marginTop: 16, marginRight: 12 }} content={t('ai_summary.llm_config_tip')} inTooltip />,
+          overlayClassName: 'ant-tooltip-max-width-600',
+        }}
+        name={[...namePath, 'llm_config_id']}
+      >
+        <Select
+          allowClear
+          showSearch
+          optionFilterProp='label'
+          placeholder={t('ai_summary.llm_config_placeholder')}
+          options={llmConfigs.map((item) => ({ label: item.name, value: item.id }))}
+          onChange={(value) => {
+            // 选中集中式 LLM 配置后，清空内联的 url/api_key/model_name，
+            // 避免把无关的旧值一起提交（后端会忽略，但保持数据干净）。
+            if (value) {
+              form.setFields([
+                { name: [...prefixNamePath, ...namePath, 'url'], value: undefined },
+                { name: [...prefixNamePath, ...namePath, 'api_key'], value: undefined },
+                { name: [...prefixNamePath, ...namePath, 'model_name'], value: undefined },
+              ]);
+            }
+          }}
+        />
+      </Form.Item>
       <Row gutter={10}>
         <Col span={10}>
           <Form.Item
@@ -33,7 +78,8 @@ export default function AISummary(props: Props) {
               overlayClassName: 'ant-tooltip-max-width-600',
             }}
             name={[...namePath, 'url']}
-            rules={[{ required: true, message: t('ai_summary.url_required') }]}
+            rules={[{ required: !useLLMConfig, message: t('ai_summary.url_required') }]}
+            hidden={useLLMConfig}
           >
             <Input placeholder={t('ai_summary.url_placeholder')} />
           </Form.Item>
@@ -47,7 +93,8 @@ export default function AISummary(props: Props) {
               overlayClassName: 'ant-tooltip-max-width-600',
             }}
             name={[...namePath, 'api_key']}
-            rules={[{ required: true, message: t('ai_summary.api_key_required') }]}
+            rules={[{ required: !useLLMConfig, message: t('ai_summary.api_key_required') }]}
+            hidden={useLLMConfig}
           >
             <Input.Password placeholder={t('ai_summary.api_key_placeholder')} />
           </Form.Item>
@@ -61,7 +108,8 @@ export default function AISummary(props: Props) {
               overlayClassName: 'ant-tooltip-max-width-600',
             }}
             name={[...namePath, 'model_name']}
-            rules={[{ required: true, message: t('ai_summary.model_name_required') }]}
+            rules={[{ required: !useLLMConfig, message: t('ai_summary.model_name_required') }]}
+            hidden={useLLMConfig}
           >
             <Input placeholder={t('ai_summary.model_name_placeholder')} />
           </Form.Item>

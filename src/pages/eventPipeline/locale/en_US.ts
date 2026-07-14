@@ -135,6 +135,9 @@ const en_US = {
     content_placeholder: 'Use go template syntax. If the final result is true, the event will be dropped at this stage.',
   },
   ai_summary: {
+    llm_config: 'Reuse LLM Config',
+    llm_config_placeholder: 'Select a configured LLM (leave empty to fill in the parameters below manually)',
+    llm_config_tip: 'Reuse a model configuration from "AI Config - LLM Configs" (its model/key/URL, etc.). Leave empty to use the manual parameters below.',
     url_placeholder: 'Please enter the API service address',
     url_required: 'Please enter the URL',
     api_key_placeholder: 'API Key',
