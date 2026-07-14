@@ -21,12 +21,13 @@ export type OAuthResult = 'success' | 'failure' | 'cancelled';
 function waitForOAuthResult(popup: Window | null, registerAbort: (abort: () => void) => void): Promise<OAuthResult> {
   return new Promise((resolve) => {
     let done = false;
+    let pollTimer: ReturnType<typeof setTimeout>;
     const finish = (result: OAuthResult) => {
       if (done) return;
       done = true;
       window.removeEventListener('message', handler);
       clearTimeout(timer);
-      clearInterval(poll);
+      clearTimeout(pollTimer);
       resolve(result);
     };
     const handler = (e: MessageEvent) => {
@@ -43,12 +44,16 @@ function waitForOAuthResult(popup: Window | null, registerAbort: (abort: () => v
     // `connecting` stuck true and the connect button spinning forever. Detect the
     // closed window and settle as cancelled, but delay slightly so a success
     // callback that posts its result and then self-closes can still win the race.
-    const poll = setInterval(() => {
-      if (popup && popup.closed) {
-        clearInterval(poll);
-        setTimeout(() => finish('cancelled'), 500);
-      }
-    }, 500);
+    const poll = () => {
+      pollTimer = setTimeout(() => {
+        if (popup && popup.closed) {
+          pollTimer = setTimeout(() => finish('cancelled'), 500);
+        } else {
+          poll();
+        }
+      }, 500);
+    };
+    poll();
     const timer = setTimeout(() => finish('cancelled'), 5 * 60 * 1000);
     window.addEventListener('message', handler);
     // Hand out an abort handle so cancel() can settle this wait immediately —
