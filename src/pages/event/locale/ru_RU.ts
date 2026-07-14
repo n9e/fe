@@ -83,6 +83,7 @@ const ru_RU = {
       alert_rule_notify_records: 'Уведомления по правилам',
       subscription_rule_notify_records: 'Уведомления по подписке',
       channel: 'Канал уведомления',
+      channel_mute: 'Правило блокировки',
       username: 'Объект уведомления',
       target: 'Цель уведомления',
       status: 'Статус уведомления',

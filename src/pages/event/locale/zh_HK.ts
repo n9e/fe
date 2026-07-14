@@ -83,6 +83,7 @@ const zh_HK = {
       alert_rule_notify_records: '訂閱規則通知',
       subscription_rule_notify_records: '訂閱規則通知',
       channel: '通知渠道',
+      channel_mute: '屏蔽規則',
       username: '通知人',
       target: '通知對象',
       status: '通知狀態',

@@ -83,6 +83,7 @@ const ja_JP = {
       alert_rule_notify_records: 'アラートルール通知',
       subscription_rule_notify_records: 'サブスクリプションルール通知',
       channel: '通知チャネル',
+      channel_mute: '抑制ルール',
       username: '通知対象',
       target: '通知ターゲット',
       status: '通知状態',

@@ -85,6 +85,7 @@ const en_US = {
       alert_rule_notify_records: 'Alert rule notification',
       subscription_rule_notify_records: 'Subscription rule notification',
       channel: 'Channel',
+      channel_mute: 'Mute rule',
       username: 'Username',
       target: 'Target',
       status: 'Status',

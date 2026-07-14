@@ -85,6 +85,7 @@ const zh_CN = {
       alert_rule_notify_records: '告警规则通知',
       subscription_rule_notify_records: '订阅规则通知',
       channel: '通知渠道',
+      channel_mute: '屏蔽规则',
       username: '通知对象',
       target: '通知目标',
       status: '通知状态',

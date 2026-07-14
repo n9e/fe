@@ -53,6 +53,8 @@ export default function index(props: Props) {
       title: t('detail.event_notify_records.channel'),
       dataIndex: 'channel',
       key: 'channel',
+      // 后端「只屏蔽通知」的通知记录用稳定标识 mute 作为伪渠道，按当前语言翻译展示
+      render: (val) => (val === 'mute' ? t('detail.event_notify_records.channel_mute') : val),
     },
     {
       title: t('detail.event_notify_records.username'),
