@@ -148,7 +148,7 @@ const ja_JP = {
   force_cover: '強制上書き',
   force_delete: '強制削除',
   batch_failed: '一括操作が失敗しました',
-  upgrade_not_support_tip: 'このバージョンではタスクチャンネルはサポートされていません。Agent を ent-v0.5.27 以降にアップグレードしてください',
+  upgrade_not_support_tip: 'このバージョンではタスクチャンネルはサポートされていません。Agent を {{version}} 以降にアップグレードしてください',
   go_upgrade: 'アップグレード',
 };
 
