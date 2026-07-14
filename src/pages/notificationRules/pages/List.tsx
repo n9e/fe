@@ -10,6 +10,7 @@ import PageLayout from '@/components/pageLayout';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { userColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
+import EmptyGuide from '@/components/EmptyGuide';
 import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
 import usePagination from '@/components/usePagination';
@@ -129,6 +130,27 @@ export default function List() {
           loading={loading}
           rowKey='id'
           dataSource={filteredData}
+          // 仅在「确实一条规则都没有」时展示引导；搜索命中为空时回退到默认空态，避免误导
+          locale={
+            data.length === 0
+              ? {
+                  emptyText: (
+                    <EmptyGuide
+                      title={t('empty_guide.title')}
+                      description={t('empty_guide.desc')}
+                      actions={
+                        <>
+                          <Button type='primary' onClick={() => history.push(`/${NS}/add`)}>
+                            {t('common:btn.add')}
+                          </Button>
+                          <a onClick={() => history.push('/notification-channels')}>{t('empty_guide.config_channel')}</a>
+                        </>
+                      }
+                    />
+                  ),
+                }
+              : undefined
+          }
           pagination={{ ...pagination, current }}
           onChange={(pag) => {
             setCurrent(pag.current || 1);

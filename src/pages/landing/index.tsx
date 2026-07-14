@@ -47,6 +47,7 @@ import {
   landingFootnotes,
   landingHero,
   landingInfrastructureCategories,
+  landingIntegrationCatalog,
   landingIntegrationProducts,
   landingNotificationCards,
   landingObservabilityProducts,
@@ -338,7 +339,13 @@ export default function Landing() {
                       );
                     })}
                   </div>
-                  <div className='n9e-landing-caption'>{t(landingFootnotes.integration)}</div>
+                  <div className='n9e-landing-integration-footer'>
+                    <span className='n9e-landing-caption'>{t(landingFootnotes.integration)}</span>
+                    <a {...makeLinkProps(landingIntegrationCatalog.url, history)} className='n9e-landing-integration-browse'>
+                      <span>{t(landingIntegrationCatalog.labelKey)}</span>
+                      <ArrowRightOutlined className='n9e-landing-integration-browse-arrow' />
+                    </a>
+                  </div>
                 </section>
               </div>
 
