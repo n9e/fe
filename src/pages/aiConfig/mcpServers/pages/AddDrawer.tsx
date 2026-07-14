@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button, Form, Modal, Space, message } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+
+import { CommonStateContext } from '@/App';
 
 import { NS } from '../constants';
 import { postItem, putItem, testConnection, disconnectOAuth } from '../services';
@@ -42,6 +44,8 @@ export default function AddDrawer(props: Props) {
 
   const oauth = useMcpOAuth(serverId);
   const { myGroupIds } = useUserGroups();
+  const { profile } = useContext(CommonStateContext);
+  const isAdmin = !!profile.roles?.includes('Admin');
 
   React.useEffect(() => {
     if (visible) {
@@ -109,7 +113,7 @@ export default function AddDrawer(props: Props) {
         const { result } = await oauth.connect({
           ensureServerId: async () => {
             const session = sessionRef.current;
-            const id = (await postItem(stripOAuthFields(adjustSubmitValues(values)))) as number;
+            const id = (await postItem(stripOAuthFields(adjustSubmitValues(values, isAdmin)))) as number;
             if (sessionRef.current === session) {
               setServerId(id);
             } else {
@@ -173,7 +177,7 @@ export default function AddDrawer(props: Props) {
         message.info(t('form.oauth_test_need_connect'));
         return;
       }
-      const data = isOauth ? { id: serverId } : stripOAuthFields(adjustSubmitValues(values));
+      const data = isOauth ? { id: serverId } : stripOAuthFields(adjustSubmitValues(values, isAdmin));
       setTestLoading(true);
       testConnection(data)
         .then((res) => {
@@ -200,7 +204,7 @@ export default function AddDrawer(props: Props) {
 
   const handleSave = () => {
     form.validateFields().then((values) => {
-      const data = stripOAuthFields(adjustSubmitValues(values));
+      const data = stripOAuthFields(adjustSubmitValues(values, isAdmin));
       setSaveLoading(true);
       const req = serverId ? putItem(serverId, { ...data, id: serverId } as any) : postItem(data);
       req.then(() => handleOk()).finally(() => setSaveLoading(false));

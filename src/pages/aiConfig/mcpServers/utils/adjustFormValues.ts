@@ -15,7 +15,7 @@ export function adjustFormValues(values: Item): FormValues {
   return adjustedValues;
 }
 
-export function adjustSubmitValues(values: FormValues): Item {
+export function adjustSubmitValues(values: FormValues, isAdmin = true): Item {
   const adjustedValues = { ...values } as unknown as Item;
 
   if (values.headers) {
@@ -28,6 +28,11 @@ export function adjustSubmitValues(values: FormValues): Item {
   // 仅 header 模式提交请求头；切到 none/oauth 后残留的头不应一起落库
   if (values.auth_mode !== 'header') {
     delete adjustedValues.headers;
+  }
+
+  // 非管理员只能创建/管理私有 MCP Server，强制 private=1（后端亦会强制）
+  if (!isAdmin) {
+    adjustedValues.private = 1;
   }
 
   return adjustedValues;

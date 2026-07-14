@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Form, Input, Row, Col, Button, Switch, Alert, Radio, Tag, Space, Typography, Collapse, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, LinkOutlined, DisconnectOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
 
+import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 
 import { NS } from '../constants';
@@ -25,6 +26,9 @@ interface Props {
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const { form, oauth } = props;
+  const { profile } = useContext(CommonStateContext);
+  // 仅管理员可选择「可见范围」（公开/私有）；非管理员只能创建/管理私有 MCP Server
+  const isAdmin = !!profile.roles?.includes('Admin');
   const authMode = Form.useWatch('auth_mode', form) ?? 'none';
   const redirectURI = `${window.location.origin}/api/n9e/mcp-server-oauth/callback`;
   const { options: userGroupOptions } = useUserGroups();
@@ -46,19 +50,27 @@ export default function FormCpt(props: Props) {
       <Form.Item label={t('description')} name='description'>
         <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} placeholder={t('form.description_placeholder')} />
       </Form.Item>
-      <Form.Item label={t('url')} name='url' rules={[{ required: true }]}>
-        <Input placeholder={t('form.url_placeholder')} />
-      </Form.Item>
 
       <Form.Item label={t('scope.teams')} name='user_group_ids' tooltip={t('scope.teams_tip')} rules={[{ required: true }]}>
         <Select showSearch mode='multiple' optionFilterProp='label' placeholder={t('scope.teams_placeholder')} options={userGroupOptions} />
       </Form.Item>
 
-      <Form.Item label={t('scope.title')} name='private' initialValue={1} tooltip={t('scope.tip')}>
-        <Radio.Group>
-          <Radio value={0}>{t('scope.public')}</Radio>
-          <Radio value={1}>{t('scope.private')}</Radio>
-        </Radio.Group>
+      {isAdmin ? (
+        <Form.Item label={t('scope.title')} name='private' initialValue={1} tooltip={t('scope.tip')}>
+          <Radio.Group>
+            <Radio value={0}>{t('scope.public')}</Radio>
+            <Radio value={1}>{t('scope.private')}</Radio>
+          </Radio.Group>
+        </Form.Item>
+      ) : (
+        // 非管理员不展示「可见范围」，但仍需在表单中携带 private=1 一并提交（后端亦会强制）
+        <Form.Item name='private' initialValue={1} hidden>
+          <Input />
+        </Form.Item>
+      )}
+
+      <Form.Item label={t('url')} name='url' rules={[{ required: true }]}>
+        <Input placeholder={t('form.url_placeholder')} />
       </Form.Item>
 
       <Form.Item label={t('form.auth_mode')} name='auth_mode' initialValue='none'>

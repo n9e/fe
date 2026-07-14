@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button, Form, Space, Spin, Modal, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
+
+import { CommonStateContext } from '@/App';
 
 import { NS } from '../constants';
 import { getItem, putItem, testConnection, disconnectOAuth } from '../services';
@@ -22,6 +24,8 @@ export default function EditDrawer(props: Props) {
   const { t } = useTranslation(NS);
   const { visible, onOk, onClose, id } = props;
   const [form] = Form.useForm();
+  const { profile } = useContext(CommonStateContext);
+  const isAdmin = !!profile.roles?.includes('Admin');
 
   const oauth = useMcpOAuth(id);
 
@@ -88,7 +92,7 @@ export default function EditDrawer(props: Props) {
         message.info(t('form.oauth_test_need_connect'));
         return;
       }
-      const data = isOauth ? { id } : stripOAuthFields(adjustSubmitValues(values));
+      const data = isOauth ? { id } : stripOAuthFields(adjustSubmitValues(values, isAdmin));
       setTestLoading(true);
       testConnection(data)
         .then((res) => {
@@ -124,7 +128,7 @@ export default function EditDrawer(props: Props) {
   const handleSave = () => {
     if (!id) return;
     form.validateFields().then((values) => {
-      putItem(id, stripOAuthFields(adjustSubmitValues(values)) as any).then(() => {
+      putItem(id, stripOAuthFields(adjustSubmitValues(values, isAdmin)) as any).then(() => {
         form.resetFields();
         oauth.setStatus(null);
         onOk();
