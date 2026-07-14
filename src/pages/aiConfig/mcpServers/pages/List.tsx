@@ -105,7 +105,7 @@ export default function List() {
                     dataIndex: 'private',
                     title: t('scope.title'),
                     width: 90,
-                    render: (val) => <Tag color={val === 0 ? 'green' : 'default'}>{val === 0 ? t('scope.public') : t('scope.private')}</Tag>,
+                    render: (val) => <Tag color={val === 0 ? 'green' : 'default'}>{val === 0 ? t('scope.public_short') : t('scope.private_short')}</Tag>,
                   },
                   {
                     dataIndex: 'user_group_ids',

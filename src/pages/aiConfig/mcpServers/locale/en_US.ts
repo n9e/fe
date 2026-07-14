@@ -13,6 +13,8 @@ const en_US = {
     title: 'Visibility',
     public: 'Visible to everyone',
     private: 'Visible to management teams only',
+    public_short: 'Everyone',
+    private_short: 'Management teams',
     tip: 'Visible to everyone: visible and usable by all users. Visible to management teams only: visible and usable only by management team members. Regardless of visibility, only management team members can manage it.',
     teams: 'Management teams',
     teams_tip: 'Teams that own this MCP Server; their members can manage it (edit/delete/test). When set to "Visible to management teams only", only these teams can see and use it.',
