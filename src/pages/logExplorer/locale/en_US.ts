@@ -127,6 +127,8 @@ const en_US = {
     filterAllAnd: 'Add all to current query',
     filterAllNot: 'Exclude all from current query',
     filterExists: 'Filter documents with this field',
+    add_drilldown_link: 'Add drilldown link',
+    drilldown_link_default_name: 'Drilldown link',
     total: 'Log Count',
     stack_group_by_tip: 'Display stacked trend chart by this field value',
     collapse: 'Collapse',
