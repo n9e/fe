@@ -22,7 +22,7 @@ const ru_RU = {
   upload_modal_requirement_1: 'В корне архива .zip или .tar.gz должен быть SKILL.md (с YAML frontmatter)',
   upload_modal_invalid_type: 'Поддерживаются только файлы .zip и .tar.gz',
   edit_title: 'Редактировать Skill',
-  toggle_needs_team: 'Задайте управляющую команду через «Редактировать» перед включением/выключением',
+  toggle_needs_team: 'Задайте управляющую команду через «Заменить» перед включением/выключением',
   document_empty: 'Нет содержимого документа',
   search_placeholder: 'Поиск по ключевому слову',
   builtin: 'Встроенный',

@@ -56,8 +56,7 @@ export default function FormCpt(props: Props) {
           options={_.map(userGroups, (item) => ({ label: item.name, value: item.id }))}
         />
       </Form.Item>
-      {/* 「可见范围」仅 admin 渲染；非 admin 提交时由 AddModal/EditModal 用 resolveSubmitPrivate
-          兜底：新建默认私有，编辑沿用既有值（不改变可见性）。 */}
+      {/* 「可见范围」仅 admin 渲染；非 admin 提交时由 AddModal 用 resolveSubmitPrivate 兜底：新建默认私有。 */}
       {profile.admin && (
         <Form.Item label={t('form.scope')} name='private' initialValue={1}>
           <Radio.Group>

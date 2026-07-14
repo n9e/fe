@@ -13,7 +13,6 @@ import { FileContent, Item, SkillDetail, deleteFile, deleteItem, getFile, getIte
 import { SkillTreeNode, SkillAuthValues } from '../types';
 import { buildSkillTree, getSkillNodeKey, isMarkdownFile } from '../utils/tree';
 import AddModal from './AddModal';
-import EditModal from './EditModal';
 import DocumentPreviewPanel from './DocumentPreviewPanel';
 import GitInstallModal from './GitInstallModal';
 import GitReplaceConfigModal from './GitReplaceConfigModal';
@@ -33,7 +32,6 @@ export default function List() {
   const [detailMap, setDetailMap] = useState<Record<number, SkillDetail | undefined>>({});
   const [detailLoadingMap, setDetailLoadingMap] = useState<Record<number, boolean>>({});
   const [addModalState, setAddModalState] = useState({ visible: false });
-  const [editModalState, setEditModalState] = useState<{ visible: boolean; id?: number }>({ visible: false });
   const [mdFormat, setMdFormat] = useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [gitInstallVisible, setGitInstallVisible] = useState(false);
@@ -436,9 +434,6 @@ export default function List() {
                       onToggleEnabled={() => {
                         handleToggleEnabled(selectedSkillData);
                       }}
-                      onEdit={() => {
-                        setEditModalState({ visible: true, id: selectedSkillData.id });
-                      }}
                       onImport={(file, auth) => {
                         handleUpdateImport(selectedSkillData.id, file, auth);
                       }}
@@ -504,20 +499,6 @@ export default function List() {
         onOk={() => {
           setGitInstallVisible(false);
           run();
-        }}
-      />
-      <EditModal
-        visible={editModalState.visible}
-        id={editModalState.id}
-        onOk={() => {
-          const currentId = editModalState.id;
-          setEditModalState({ visible: false });
-          if (currentId) {
-            refreshSkill(currentId);
-          }
-        }}
-        onCancel={() => {
-          setEditModalState({ visible: false });
         }}
       />
       <GitReplaceConfigModal

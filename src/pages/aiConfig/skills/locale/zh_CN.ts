@@ -22,7 +22,7 @@ const zh_CN = {
   upload_modal_requirement_1: '.zip 或 .tar.gz 压缩包根目录必须包含 SKILL.md（含 YAML frontmatter）',
   upload_modal_invalid_type: '仅支持 .zip 和 .tar.gz 格式的文件',
   edit_title: '编辑 Skill',
-  toggle_needs_team: '请先「编辑」该 Skill 设置管理团队，再启用/停用',
+  toggle_needs_team: '请先通过「替换」为该 Skill 设置管理团队，再启用/停用',
   document_empty: '暂无文档内容',
   search_placeholder: '请输入关键字搜索',
   builtin: '内置',

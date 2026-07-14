@@ -22,7 +22,6 @@ interface Props {
   onToggleEnabled: () => void;
   onImport: (file: File, auth: SkillAuthValues) => void;
   onDelete: () => void;
-  onEdit: () => void;
   onGitUpdate?: () => void;
   onGitReplaceConfig?: () => void;
   onBuiltinGitUpdate?: () => void;
@@ -47,7 +46,7 @@ function getRefIcon(refType?: GitRefType) {
 export default function SkillDetailPanel(props: Props) {
   const { t } = useTranslation(NS);
   const { profile } = useContext(CommonStateContext);
-  const { item, onToggleEnabled, onImport, onDelete, onEdit, onGitUpdate, onGitReplaceConfig, onBuiltinGitUpdate, builtinGitUpdating } = props;
+  const { item, onToggleEnabled, onImport, onDelete, onGitUpdate, onGitReplaceConfig, onBuiltinGitUpdate, builtinGitUpdating } = props;
 
   const [previewMode, setPreviewMode] = React.useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
@@ -120,14 +119,6 @@ export default function SkillDetailPanel(props: Props) {
 
   const overflowMenu = (
     <Menu>
-      {canModify && (
-        <Menu.Item key='edit' onClick={onEdit}>
-          <Space>
-            <EditOutlined />
-            {t('edit_title')}
-          </Space>
-        </Menu.Item>
-      )}
       {((!isBuiltin && canModify) || (isBuiltin && !isGit && !!profile.admin)) && (
         <Menu.Item key={replaceMenuKey} onClick={handleReplaceClick}>
           <Space>

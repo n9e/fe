@@ -6,7 +6,6 @@ import { useRequest } from 'ahooks';
 import { NS } from '../constants';
 import { getItem, putItem } from '../services';
 import { adjustSubmitValues } from '../utils/adjustFormValues';
-import { resolveSubmitPrivate } from '../utils/permission';
 import FormCpt from './Form';
 
 interface Props {
@@ -24,18 +23,15 @@ export default function EditModal(props: Props) {
 
   const { loading } = useRequest(
     () => {
-      if (!id || !visible) {
+      if (!id) {
         return Promise.resolve(null);
       }
       return getItem(id);
     },
     {
-      refreshDeps: [id, visible],
+      refreshDeps: [id],
       onSuccess(data) {
-        if (data) {
-          form.resetFields();
-          form.setFieldsValue(data);
-        }
+        form.setFieldsValue(data);
       },
     },
   );
@@ -44,17 +40,11 @@ export default function EditModal(props: Props) {
     <Modal
       width={800}
       visible={visible}
-      destroyOnClose
-      onCancel={() => {
-        form.resetFields();
-        onCancel();
-      }}
+      onCancel={onCancel}
       onOk={() => {
         if (id) {
           form.validateFields().then((values) => {
-            // 非 admin 未挂载「可见范围」字段，validateFields 不含 private；其当前值已由
-            // setFieldsValue(data) 存进 form store，用 getFieldValue 取出沿用，避免编辑改变可见性。
-            putItem(id, adjustSubmitValues({ ...values, private: resolveSubmitPrivate(values.private, form.getFieldValue('private')) })).then(() => {
+            putItem(id, adjustSubmitValues(values)).then(() => {
               onOk();
             });
           });
