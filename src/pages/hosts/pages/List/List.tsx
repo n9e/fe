@@ -39,6 +39,8 @@ import { formatBeatTimeDisplay } from './formatBeatTimeDisplay';
 import AuthLevelDropdown from './AuthLevelDropdown';
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
+const AI_TASK_AGENT_MIN_VERSION = '0.5.27';
+const AI_TASK_WINDOWS_AGENT_MIN_VERSION = '0.5.30';
 
 /** Fixed IP cell width sample: "IP " + longest dotted IPv4 */
 const IDENT_IP_V4_MAX_SAMPLE = 'IP 255.255.255.255';
@@ -49,6 +51,10 @@ const IDENT_META_MAX_SAMPLE_SUFFIX = 'windows aarch64';
 
 function isHostIpLikelyIpv6(hostIp: string): boolean {
   return hostIp.trim().includes(':');
+}
+
+function getAiTaskAgentMinVersion(os?: string): string {
+  return os?.toLowerCase() === 'windows' ? AI_TASK_WINDOWS_AGENT_MIN_VERSION : AI_TASK_AGENT_MIN_VERSION;
 }
 
 function Unknown({ record }: { record: Item }) {
@@ -595,6 +601,7 @@ export default function List(props: Props) {
                     const hasUpgrade = record.new_version && record.agent_version !== record.new_version;
                     const displayText = hasUpgrade ? `${display} / ${record.new_version}` : display;
                     const minWidth = Math.max(getTextWidth(t('agent_version_title')), getTextWidth(displayText) + 36) + 8;
+                    const aiTaskAgentMinVersion = getAiTaskAgentMinVersion(record.os);
 
                     // aiTaskMode 下检测 Agent 版本是否需要 ent 升级提示
                     const needsEntUpgrade =
@@ -604,7 +611,7 @@ export default function List(props: Props) {
                       (!record.agent_version.startsWith('ent') ||
                         (() => {
                           const ver = record.agent_version.replace('ent-', '');
-                          return !semver.valid(ver) || semver.lt(ver, '0.5.27');
+                          return !semver.valid(ver) || semver.lt(ver, aiTaskAgentMinVersion);
                         })());
 
                     const badge = (
@@ -640,7 +647,7 @@ export default function List(props: Props) {
                                 )}
                                 {needsEntUpgrade && (
                                   <div>
-                                    {t('upgrade_not_support_tip')}{' '}
+                                    {t('upgrade_not_support_tip', { version: `ent-v${aiTaskAgentMinVersion}` })}{' '}
                                     <a
                                       onClick={(e) => {
                                         e.stopPropagation();

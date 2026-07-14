@@ -2,7 +2,7 @@ import { expect, type Page } from '@playwright/test';
 
 import type { AiAssert, AiScroll, AiTap, AiWaitFor } from '../../types';
 import type { AlertRuleConditionHandler } from '../types';
-import { fillRelativeTimeRange, fillTriggers, type AlertRuleTrigger } from '../helpers';
+import { fillRelativeTimeRange, fillTriggers, openFormNgSection, type AlertRuleTrigger } from '../helpers';
 
 /**
  * 填充 gcm（Google Cloud Monitoring）告警规则的条件。
@@ -27,12 +27,23 @@ import { fillRelativeTimeRange, fillTriggers, type AlertRuleTrigger } from '../h
  * 在 GCM Select 中选择选项（force click + fill + Enter）。
  */
 async function selectGCMOption(page: Page, label: string, optionValue: string) {
-  const combobox = page.locator('.ant-input-group').filter({ hasText: label }).getByRole('combobox').first();
-  await combobox.click({ force: true });
-  await combobox.fill(optionValue);
-  await page.waitForTimeout(500);
-  await page.keyboard.press('Enter');
-  await page.waitForTimeout(300);
+  const ruleSection = page.locator('[data-section-key="rule"]');
+  const combobox = ruleSection.locator(`xpath=(.//*[normalize-space(.)="${label}"]/following::*[@role="combobox"])[1]`);
+  await expect(combobox, `GCM ${label} select`).toBeVisible();
+  await combobox.click();
+  const dropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  await expect(dropdown, `GCM ${label} dropdown`).toBeVisible();
+
+  const exactOption = dropdown.locator('.ant-select-item-option-content').filter({ hasText: optionValue }).first();
+  if (await exactOption.isVisible().catch(() => false)) {
+    await exactOption.click();
+  } else {
+    const firstOption = dropdown.locator('.ant-select-item-option-content').first();
+    await expect(firstOption, `fallback GCM ${label} option`).toBeVisible({ timeout: 15000 });
+    await firstOption.click();
+  }
+  const selectRoot = combobox.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]');
+  await expect(selectRoot.locator('.ant-select-selection-item').first(), `selected GCM ${label}`).toBeVisible();
 }
 
 const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiScroll, aiTap, aiWaitFor }) => {
@@ -52,8 +63,8 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
     throw new Error(`TODO: gcm rule_config.queries[0].query_type=${item.query_type} is not supported yet`);
   }
 
-  await aiTap('左侧配置步骤中的告警条件');
-  await aiWaitFor('页面中已有表单卡片和 QueryName 编辑框');
+  await openFormNgSection(page, 'rule', '告警条件');
+  await expect(page.locator('[data-section-key="rule"]').getByText('查询统计').first()).toBeVisible();
 
   // 1. Select project (showSearch)
   const projectId = item.project_id as string | undefined;
