@@ -429,6 +429,12 @@ export default function index(props: Props) {
               fieldConfig={currentFieldConfig}
               indexData={indexData}
               range={queryValues?.range}
+              drilldownContext={{
+                cate: DatasourceCateEnum.elasticsearch,
+                datasource_id: datasourceValue,
+                resource: { es_resource: { index: queryValues?.index, date_field: queryValues?.date_field } },
+                query: queryValues?.query,
+              }}
               // props
               id_key='__n9e_id_n9e__'
               raw_key='__n9e_raw_n9e__'

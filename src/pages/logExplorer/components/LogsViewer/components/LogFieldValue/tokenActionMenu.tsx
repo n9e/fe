@@ -1,6 +1,6 @@
 import React from 'react';
 import { Space } from 'antd';
-import { MinusCircleOutlined, PlusCircleOutlined, CopyOutlined } from '@ant-design/icons';
+import { ApartmentOutlined, MinusCircleOutlined, PlusCircleOutlined, CopyOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { copy2ClipBoard } from '@/utils';
@@ -34,11 +34,27 @@ interface TokenActionMenuContentProps {
   end: number;
   rawValue?: Record<string, unknown>;
   fieldConfig?: TokenMenuFieldConfig;
+  onAddDrilldownLink?: () => void;
 }
 
 export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { close, name, fieldValue, fragmentValue, showFragmentFilters, onTokenClick, indexInfo, showExistsAction, relatedLinks, start, end, rawValue, fieldConfig } = props;
+  const {
+    close,
+    name,
+    fieldValue,
+    fragmentValue,
+    showFragmentFilters,
+    onTokenClick,
+    indexInfo,
+    showExistsAction,
+    relatedLinks,
+    start,
+    end,
+    rawValue,
+    fieldConfig,
+    onAddDrilldownLink,
+  } = props;
 
   return (
     <ul className='ant-dropdown-menu ant-dropdown-menu-root ant-dropdown-menu-vertical ant-dropdown-menu-light'>
@@ -191,6 +207,23 @@ export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
               </li>
             );
           })}
+        </>
+      )}
+      {onAddDrilldownLink && (
+        <>
+          <li className='ant-dropdown-menu-item-divider'></li>
+          <li
+            className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+            onClick={() => {
+              close();
+              onAddDrilldownLink();
+            }}
+          >
+            <Space>
+              <ApartmentOutlined />
+              {t('logs.add_drilldown_link')}
+            </Space>
+          </li>
         </>
       )}
     </ul>

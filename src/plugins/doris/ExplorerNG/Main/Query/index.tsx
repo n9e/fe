@@ -335,6 +335,18 @@ export default function index(props: Props) {
               }}
               enableLogTextSelectMenu
               timeField={queryValues?.time_field}
+              drilldownContext={{
+                cate: DatasourceCateEnum.doris,
+                datasource_id: datasourceValue,
+                resource: {
+                  doris_resource: {
+                    database: queryValues?.database,
+                    table: queryValues?.table,
+                    time_field: queryValues?.time_field,
+                  },
+                },
+                query: queryValues?.query,
+              }}
               histogramLoading={histogramLoading}
               histogram={histogramData?.data || []}
               histogramHash={histogramData?.hash}

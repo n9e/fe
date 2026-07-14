@@ -24,3 +24,31 @@ declare module '*.md' {
   const content: any;
   export default content;
 }
+
+declare module 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn' {
+  import type { FC } from 'react';
+
+  export type DrilldownMode = 'list' | 'add' | 'edit' | 'clone';
+
+  export interface DrilldownInitialValues {
+    cate?: string;
+    datasource_id?: number;
+    resource?: Record<string, any>;
+    query?: any;
+    logMode?: string;
+    linkField?: string;
+    linkName?: string;
+    [key: string]: any;
+  }
+
+  const DrilldownBtn: FC<{
+    dataSourceId?: number;
+    type?: 'button' | 'text' | 'none';
+    visible?: boolean;
+    onVisibleChange?: (visible: boolean) => void;
+    initialMode?: DrilldownMode;
+    initialValues?: DrilldownInitialValues;
+  }>;
+
+  export default DrilldownBtn;
+}

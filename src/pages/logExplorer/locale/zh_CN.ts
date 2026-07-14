@@ -126,6 +126,8 @@ const zh_CN = {
     filterAllAnd: '添加全部到本次检索',
     filterAllNot: '从本次检索中排除全部',
     filterExists: '过滤存在该字段的文档',
+    add_drilldown_link: '添加下钻链接',
+    drilldown_link_default_name: '下钻链接',
     total: '日志条数',
     stack_group_by_tip: '以此字段值展示堆叠趋势图',
     collapse: '收起',

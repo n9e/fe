@@ -6,12 +6,15 @@ const zh_CN = {
     progress: '已完成 {{done}}/{{total}}',
     hostTrack: '主机监控线',
     dataTrack: '数据接入线',
+    aiTrack: '智能化',
     steps: {
       machine: { title: '部署采集器，接入主机', desc: '在主机部署 Categraf，机器会自动出现在设备列表' },
       hostDashboard: { title: '套用主机监控大盘', desc: '从模板中心一键导入内置主机大盘' },
       datasource: { title: '配置数据源', desc: '接入 Prometheus / VictoriaMetrics 等数据源' },
       dashboard: { title: '创建仪表盘', desc: '把关心的指标可视化成大盘' },
       alert: { title: '配置告警规则', desc: '为关键指标设置第一条告警规则' },
+      notification: { title: '配置通知', desc: '让告警通过钉钉/邮件等媒介真正发出来' },
+      llm: { title: '接入大模型', desc: '配置 LLM，解锁 AI 助手与智能分析' },
     },
   },
   hero: {
@@ -29,6 +32,7 @@ const zh_CN = {
     notificationTag: '触达 · 通知媒介',
     collectionTag: '数据 · 统一采集',
     integrationTag: '数据 · 统一集成',
+    integrationBrowseAll: '浏览 70+ 内置集成',
     infrastructureTag: '企业服务基础设施',
     dataIngestArrow: '数据 · 统一接入',
     alertEventArrow: '告警事件',

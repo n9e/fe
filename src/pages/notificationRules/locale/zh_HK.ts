@@ -1,5 +1,10 @@
 const zh_HK = {
   title: '通知規則',
+  empty_guide: {
+    title: '還沒有通知規則',
+    desc: '通知規則決定「告警發給誰、用哪個媒介」。配置後，告警事件才會真正推送到釘釘 / 郵件等渠道。',
+    config_channel: '先去配置通知媒介',
+  },
   basic_configuration: '基礎配置',
   user_group_ids: '授權團隊',
   user_group_ids_tip: '這裡填寫的團隊中的用戶，將有權限管理或查看此通知規則',
