@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useContext, useCallback } from 'react';
 import { Button } from 'antd';
 import type { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useTranslation } from 'react-i18next';
 
+import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
-import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
@@ -72,9 +72,40 @@ function FlashAiButtonContent() {
   );
 }
 
+function FlashAiButtonEnt() {
+  const { i18n } = useTranslation();
+  const { aiStatus } = useContext(CommonStateContext as React.Context<any>);
+  const [, setAiChatVisible] = useAiChatVisible();
+  const [, setAiExternalConfig] = useAiExternalConfig();
+
+  const handleClick = useCallback(() => {
+    const url = getCurrentPageUrl();
+    const recommend = getRecommendByUrl(url, i18n.language);
+    setAiExternalConfig({ promptList: recommend?.promptList });
+    setAiChatVisible(true);
+  }, [i18n, setAiChatVisible, setAiExternalConfig]);
+
+  if (!aiStatus) return null;
+  return (
+    <Button
+      className='layout-header-ai-chat-btn'
+      target='_blank'
+      icon={
+        <span className='ai-chat-btn'>
+          <img src='/image/ai-chat/ai.gif' className='ai-chat-gif fc-theme-dark-circle-gif' />
+        </span>
+      }
+      size='small'
+      onClick={handleClick}
+    >
+      FlashAI
+    </Button>
+  );
+}
+
 export default function FlashAiButton() {
   if (IS_ENT) {
-    return <LayoutHeaderAiBtn />;
+    return <FlashAiButtonEnt />;
   }
   return <FlashAiButtonContent />;
 }

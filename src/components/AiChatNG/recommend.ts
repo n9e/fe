@@ -28,7 +28,8 @@ type PageType =
   | 'targets'
   | 'notification_rules'
   | 'notification_channels'
-  | 'self_healing';
+  | 'self_healing'
+  | 'log_extraction';
 
 function matchPageTypeByUrl(url: string): PageType | undefined {
   const pathname = (url.split('?')[0] || '').toLowerCase();
@@ -40,6 +41,7 @@ function matchPageTypeByUrl(url: string): PageType | undefined {
   if (pathname.startsWith('/notification-rules')) return 'notification_rules';
   if (pathname.startsWith('/notification-channels')) return 'notification_channels';
   if (pathname.startsWith('/job-tpls') || pathname.startsWith('/job-tasks')) return 'self_healing';
+  if (pathname.startsWith('/log-extraction')) return 'log_extraction';
   return undefined;
 }
 
@@ -120,6 +122,24 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
               'Write a self-healing script for disk cleanup / service restart / OOM dump',
               'How does a self-healing script read alert fields from stdin?',
               'Which alerts fired most frequently recently? Any scenarios suitable for self-healing?',
+            ],
+      };
+    case 'log_extraction':
+      return {
+        promptList: isZhCN(lang)
+          ? [
+              '什么是日志转换 (fc-stash) ？和日志检索有什么区别？',
+              '列出当前空间的日志转换规则。',
+              '请为日志主题「默认主题」设计日志解析规则，先预览再创建。',
+              '当前日志提取是否正常？',
+              '请排查提取任务是否正常',
+            ]
+          : [
+              'What is log transformation (fc-stash)? How is it different from log search?',
+              'List the log transformation rules in the current space.',
+              'Design log parsing rules for the log topic "Default Topic", preview before creating.',
+              'Is the current log extraction functioning normally?',
+              'Please check if the extraction task is normal',
             ],
       };
     default:
