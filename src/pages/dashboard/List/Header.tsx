@@ -16,11 +16,11 @@
  */
 import React, { useContext } from 'react';
 import { Input, Button, Dropdown, Modal, Space, message } from 'antd';
-import { SearchOutlined, DownOutlined, EyeOutlined } from '@ant-design/icons';
+import { SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { removeDashboards } from '@/services/dashboardV2';
 import RefreshIcon from '@/components/RefreshIcon';
-import OrganizeColumns, { setDefaultColumnsConfigs } from '@/components/OrganizeColumns';
+import TableColumnSelect, { setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import { CommonStateContext } from '@/App';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { LOCAL_STORAGE_KEY } from './constants';
@@ -34,8 +34,9 @@ interface IProps {
   refreshList: () => void;
   searchVal: string;
   onSearchChange: (val) => void;
-  columnsConfigs: { name: string; visible: boolean }[];
-  setColumnsConfigs: (val: { name: string; visible: boolean }[]) => void;
+  visibleColumns: string[];
+  setVisibleColumns: (val: string[]) => void;
+  columnOptions: { label: string; value: string; order?: number }[];
   selectedBusinessGroup?: number[];
   setSelectedBusinessGroup: (val?: number[]) => void;
 }
@@ -43,7 +44,7 @@ interface IProps {
 export default function Header(props: IProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange, columnsConfigs, setColumnsConfigs, selectedBusinessGroup, setSelectedBusinessGroup } = props;
+  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange, visibleColumns, setVisibleColumns, columnOptions, selectedBusinessGroup, setSelectedBusinessGroup } = props;
   const [importData, setImportData] = React.useState<{
     visible: boolean;
     busiId?: number;
@@ -162,18 +163,16 @@ export default function Header(props: IProps) {
               </Dropdown>
             </div>
           )}
-          <Button
-            onClick={() => {
-              OrganizeColumns({
-                i18nNs: 'dashboard',
-                value: columnsConfigs,
-                onChange: (val) => {
-                  setColumnsConfigs(val);
-                  setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                },
-              });
+          <TableColumnSelect
+            options={columnOptions}
+            value={visibleColumns}
+            onChange={(vals) => {
+              setVisibleColumns(vals);
+              setDefaultColumnsConfigs(vals, LOCAL_STORAGE_KEY);
             }}
-            icon={<EyeOutlined />}
+            sortable={false}
+            showAll
+            buttonSize='middle'
           />
         </Space>
       </div>

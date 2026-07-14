@@ -176,7 +176,7 @@ export default function TableCpt(props: IProps) {
           rowKey={(record) => record.id}
           columns={columns}
           rowActions={(record) => ({
-            menu: _.compact([
+            inline: _.compact([
               {
                 key: 'ack',
                 node: (
@@ -224,7 +224,7 @@ export default function TableCpt(props: IProps) {
               },
             ]),
           })}
-          actionColumn={{ title: t('common:table.operations'), width: 64 }}
+          actionColumn={{ title: t('common:table.operations'), width: 100 }}
           {...tableProps}
           rowClassName={(record: { severity: number; is_recovered: number }) => {
             return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';

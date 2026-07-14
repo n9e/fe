@@ -18,7 +18,7 @@ import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import { Button, Input, message, Row, Modal, Space } from 'antd';
-import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
@@ -31,7 +31,7 @@ import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
-import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import './index.less';
 import './locale';
@@ -48,7 +48,8 @@ const Resource: React.FC = () => {
   const [range, setRange] = useState<IRawTimeRange>();
   const { perms } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
-  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
 
   const userColumns: ColumnsType<User> = [
     {
@@ -65,6 +66,12 @@ const Resource: React.FC = () => {
       ellipsis: true,
       sorter: true,
       render: (text: string) => <span>{text || '-'}</span>,
+    },
+    {
+      title: t('account:profile.email'),
+      dataIndex: 'email',
+      width: 180,
+      ellipsis: true,
     },
     {
       title: t('account:profile.role'),
@@ -223,18 +230,16 @@ const Resource: React.FC = () => {
                   </Button>
                 </div>
               )}
-              <Button
-                onClick={() => {
-                  OrganizeColumns({
-                    i18nNs: 'user',
-                    value: columnsConfigs,
-                    onChange: (val) => {
-                      setColumnsConfigs(val);
-                      setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                    },
-                  });
+              <TableColumnSelect
+                options={columnOptions}
+                value={visibleColumns}
+                onChange={(vals) => {
+                  setVisibleColumns(vals);
+                  setDefaultColumnsConfigs(vals, LOCAL_STORAGE_KEY);
                 }}
-                icon={<EyeOutlined />}
+                sortable={false}
+                showAll
+                buttonSize='middle'
               />
             </Space>
           </div>
@@ -243,11 +248,15 @@ const Resource: React.FC = () => {
           className='mt-2'
           size='small'
           rowKey='id'
-          columns={ajustColumns(userColumns, columnsConfigs)}
+          columns={userColumns.filter((col) => {
+            if (!('dataIndex' in col)) return true;
+            if (col.dataIndex === 'operator') return true;
+            return visibleColumns.includes(col.dataIndex as string);
+          })}
           rowActions={
             hasRowActions
               ? (record) => ({
-                  menu: _.compact([
+                  inline: _.compact([
                     _.includes(perms, '/users/put')
                       ? { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => handleClick(ActionType.EditUser, record.id) }
                       : undefined,

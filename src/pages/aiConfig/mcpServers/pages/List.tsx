@@ -43,7 +43,7 @@ export default function List() {
                 loading={loading}
                 dataSource={data}
                 rowActions={(record) => ({
-                  menu: [
+                  inline: [
                     {
                       key: 'edit',
                       icon: 'edit',

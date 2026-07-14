@@ -6,6 +6,11 @@ const en_US = {
   query: 'Query Conditions',
   query_is_required: 'Query conditions cannot be empty',
   execute: 'Query',
+  mode: {
+    label: 'Mode',
+    raw_logs: 'Raw Logs',
+    statistical_charts: 'Statistical Charts',
+  },
   before_query: 'Please click <b>Query</b> to display data',
   loading: 'Loading data ...',
   no_data: 'No data found',
@@ -77,6 +82,8 @@ const en_US = {
   },
   logs: {
     title: 'Log Data',
+    stream_fields_count: '{{count}} fields',
+    text: 'Log Text',
     duration: 'Duration',
     count: 'Count',
     filter_fields: 'Filter Fields',
@@ -84,6 +91,7 @@ const en_US = {
       mode: {
         origin: 'Original',
         table: 'Table',
+        timeseries: 'Time Series',
         clustering: 'Clustering',
       },
       breakLine: 'Line Break',

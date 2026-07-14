@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Space, Select, Input, Button, Tooltip, Tag, Modal, Switch, message } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { EyeOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { TriangleAlert, CircleCheckBig } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
@@ -13,7 +13,7 @@ import { updateAlertRules, deleteStrategy } from '@/services/warning';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
-import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
@@ -78,7 +78,7 @@ export default function AlertRules(props: Props) {
   const [queryValue, setQueryValue] = useState<string | undefined>(defaultFilter.search);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
-  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   const [eventsDrawerProps, setEventsDrawerProps] = useState<EventsDrawerProps>({
     visible: false,
@@ -162,7 +162,7 @@ export default function AlertRules(props: Props) {
             <Tags
               type='fill'
               borderRadius={6}
-              data={_.map(_.sortBy(data, 'severity'), (severity) => `S${severity}`)}
+              data={_.map(_.sortBy(data), (severity) => `S${severity}`)}
               bgColor={(tagname: string) => {
                 const bgColorMap: Record<string, string> = {
                   S1: 'var(--fc-red-3)',
@@ -254,8 +254,8 @@ export default function AlertRules(props: Props) {
           );
         },
       },
-      dateColumn({ title: t('table.update_at'), dataIndex: 'update_at', unix: true }) as any,
-      userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }) as any,
+      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }) as any,
     ],
     readonly
       ? [
@@ -268,7 +268,7 @@ export default function AlertRules(props: Props) {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === AlertRuleStatus.Enable ? 'success' : 'error'}>
@@ -288,7 +288,7 @@ export default function AlertRules(props: Props) {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (disabled, record) => (
               <Switch
                 checked={disabled === AlertRuleStatus.Enable}
@@ -441,18 +441,16 @@ export default function AlertRules(props: Props) {
               selectedRows,
               getList: fetchData,
             })}
-          <Button
-            onClick={() => {
-              OrganizeColumns({
-                i18nNs: 'alertRules',
-                value: columnsConfigs,
-                onChange: (val) => {
-                  setColumnsConfigs(val);
-                  setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                },
-              });
+          <TableColumnSelect
+            options={buildColumnOptions(defaultColumnsConfigs, t)}
+            value={visibleColumns}
+            onChange={(vals) => {
+              setVisibleColumns(vals);
+              setDefaultColumnsConfigs(vals, LOCAL_STORAGE_KEY);
             }}
-            icon={<EyeOutlined />}
+            sortable={false}
+            showAll
+            buttonSize='middle'
           />
         </Space>
       </div>
@@ -483,14 +481,17 @@ export default function AlertRules(props: Props) {
               }
             : undefined
         }
-        columns={ajustColumns(columns, columnsConfigs)}
+        columns={columns.filter((col) => {
+          if (col.dataIndex === 'operator') return true;
+          return visibleColumns.includes(col.dataIndex as string);
+        })}
         rowActions={
           readonly
             ? undefined
             : (record: any) => {
                 const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
                 return {
-                  menu: _.compact([
+                  inline: _.compact([
                     {
                       key: 'clone',
                       icon: 'copy',

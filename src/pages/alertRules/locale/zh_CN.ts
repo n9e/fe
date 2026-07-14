@@ -62,6 +62,11 @@ const zh_CN = {
   notify_configs: '通知配置',
   notify_configs_desc: '通知规则、恢复通知与告警自愈',
   notify_rule_ids: '通知规则',
+  notify_rule_total: '共 {{total}} 条',
+  notify_rule_footer_total: '共 {{total}} 条规则',
+  notify_rule_manage: '通知规则管理',
+  notify_rule_view: '查看',
+  notify_rule_select: '选择通知规则',
   switch_to_old: '切换旧版',
   switch_to_new: '切换新版',
   notify_channels: '通知媒介',
@@ -433,8 +438,8 @@ const zh_CN = {
     collapse_core_only: '仅展开核心步骤',
     collapse_expand_all: '展开全部',
     collapse_collapse_all: '收起全部',
-    collapse_sidebar: '收起左侧栏',
-    expand_sidebar: '展开左侧栏',
+    collapse_sidebar: '收起侧边栏',
+    expand_sidebar: '展开侧边栏',
   },
 };
 export default zh_CN;

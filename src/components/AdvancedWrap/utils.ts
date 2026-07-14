@@ -156,7 +156,7 @@ export const baseCates: Cate[] = [
     alertRule: true,
     dashboard: false,
     dashboardVariable: false,
-    graphPro: true,
+    graphPro: false,
     alertPro: false,
     logo: '/image/logos/victorialogs.png',
   },

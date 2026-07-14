@@ -6,6 +6,11 @@ const ja_JP = {
   query: 'クエリ条件',
   query_is_required: 'クエリ条件は空にできません',
   execute: '検索',
+  mode: {
+    label: 'モード',
+    raw_logs: 'ログ本文',
+    statistical_charts: '統計グラフ',
+  },
   before_query: '<b>検索</b>をクリックして、データを表示してください',
   loading: 'データ読み込み中 ...',
   no_data: 'データが見つかりません',
@@ -76,6 +81,8 @@ const ja_JP = {
   },
   logs: {
     title: 'ログデータ',
+    stream_fields_count: '{{count}} 件',
+    text: 'ログ本文',
     duration: '所要時間',
     count: '件数',
     filter_fields: 'フィールドをフィルタ',
@@ -83,6 +90,7 @@ const ja_JP = {
       mode: {
         origin: '元のデータ',
         table: 'テーブル',
+        timeseries: '時系列',
         clustering: 'クラスタリング',
       },
       breakLine: '改行',

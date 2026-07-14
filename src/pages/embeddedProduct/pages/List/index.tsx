@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
-import moment from 'moment';
 import { Button, Modal, message, Switch } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { MenuOutlined } from '@ant-design/icons';
@@ -12,7 +11,7 @@ import { arrayMoveImmutable } from 'array-move';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
-import { updateByColumn } from '@/components/EnhancedTable/columns';
+import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
@@ -76,17 +75,6 @@ export default function Index() {
           return !val ? t('common:public') : t('common:private');
         },
       },
-      updateByColumn({
-        title: <span style={{ whiteSpace: 'nowrap' }}>{t('common:table.update_by')}</span>,
-        dataIndex: 'update_by',
-      }),
-      {
-        title: t('common:table.update_at'),
-        dataIndex: 'update_at',
-        render: (text: string) => {
-          return <div className='table-text'>{moment.unix(Number(text)).format('YYYY-MM-DD HH:mm:ss')}</div>;
-        },
-      },
       {
         title: t('show_in_menu'),
         dataIndex: 'hide',
@@ -122,6 +110,8 @@ export default function Index() {
           );
         },
       },
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }) as any,
+      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }) as any,
     ];
   }, [t, userGroups, saving, hideSavingId]);
 
