@@ -1,15 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Form, Input, Collapse, Row, Col, Button, Switch, Select, Radio } from 'antd';
+import React from 'react';
+import { Form, Input, Collapse, Row, Col, Button, Switch } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
-import _ from 'lodash';
 
-import { CommonStateContext } from '@/App';
-import { getTeamInfoList } from '@/services/manage';
 import { SIZE } from '@/utils/constant';
 
 import { NS } from '../constants';
+import SkillAuthFields from './SkillAuthFields';
 
 import './style.less';
 
@@ -20,18 +18,6 @@ interface Props {
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
   const { form } = props;
-  const { profile } = useContext(CommonStateContext);
-  const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
-
-  useEffect(() => {
-    getTeamInfoList()
-      .then((res) => {
-        setUserGroups(res.dat ?? []);
-      })
-      .catch(() => {
-        setUserGroups([]);
-      });
-  }, []);
 
   return (
     <Form form={form} layout='vertical'>
@@ -47,24 +33,7 @@ export default function FormCpt(props: Props) {
           </Form.Item>
         </Col>
       </Row>
-      <Form.Item label={t('form.user_group_ids')} name='user_group_ids' rules={[{ required: true }]}>
-        <Select
-          showSearch
-          optionFilterProp='label'
-          mode='multiple'
-          placeholder={t('form.user_group_ids_placeholder')}
-          options={_.map(userGroups, (item) => ({ label: item.name, value: item.id }))}
-        />
-      </Form.Item>
-      {/* 「可见范围」仅 admin 渲染；非 admin 提交时由 AddModal 用 resolveSubmitPrivate 兜底：新建默认私有。 */}
-      {profile.admin && (
-        <Form.Item label={t('form.scope')} name='private' initialValue={1}>
-          <Radio.Group>
-            <Radio value={0}>{t('form.scope_public')}</Radio>
-            <Radio value={1}>{t('form.scope_private')}</Radio>
-          </Radio.Group>
-        </Form.Item>
-      )}
+      <SkillAuthFields />
       <Form.Item label={t('form.description')} name='description'>
         <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} placeholder={t('form.description_placeholder')} />
       </Form.Item>
