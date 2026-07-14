@@ -4,15 +4,19 @@ import { ReloadOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
+import { CommonStateContext } from '@/App';
+
 import { NS } from '../constants';
 import { getItem, gitUpdate } from '../services';
-import { GitInstallPayload, GitInfo } from '../types';
+import { GitInstallPayload, GitInfo, SkillAuthValues } from '../types';
+import { resolveSubmitPrivate } from '../utils/permission';
 import GitForm from './GitForm';
 import { confirmAbortOngoingRequest, isAbortError, showGitOperationError } from './gitErrorModal';
 
 interface Props {
   id?: number;
   gitInfo?: GitInfo;
+  defaultAuth?: SkillAuthValues;
   visible: boolean;
   onCancel: () => void;
   onOk: () => void;
@@ -20,7 +24,8 @@ interface Props {
 
 export default function GitUpdateModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { id, gitInfo, visible, onCancel, onOk } = props;
+  const { id, gitInfo, defaultAuth, visible, onCancel, onOk } = props;
+  const { profile } = React.useContext(CommonStateContext);
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = React.useState(false);
   const controllerRef = React.useRef<AbortController | null>(null);
@@ -37,7 +42,13 @@ export default function GitUpdateModal(props: Props) {
         git_ref: gitInfo.ref,
       });
     }
-  }, [visible, gitInfo, form]);
+    if (defaultAuth) {
+      form.setFieldsValue({
+        user_group_ids: defaultAuth.user_group_ids,
+        private: defaultAuth.private,
+      });
+    }
+  }, [visible, gitInfo, defaultAuth, form]);
 
   const closeModal = React.useCallback(() => {
     form.resetFields();
@@ -68,10 +79,13 @@ export default function GitUpdateModal(props: Props) {
 
   const handleSubmit = async () => {
     if (!id) return;
-    let values: Pick<GitInstallPayload, 'git_ref_type' | 'git_ref'>;
+    let values: Pick<GitInstallPayload, 'git_ref_type' | 'git_ref' | 'user_group_ids' | 'private'>;
     try {
-      values = (await form.validateFields(['git_ref_type', 'git_ref'])) as Pick<GitInstallPayload, 'git_ref_type' | 'git_ref'>;
-    } catch {
+      // 非 admin 未渲染 private 字段，不能出现在校验列表里；提交时沿用 defaultAuth 里的当前值。
+      const fieldNames = profile.admin ? ['git_ref_type', 'git_ref', 'user_group_ids', 'private'] : ['git_ref_type', 'git_ref', 'user_group_ids'];
+      values = (await form.validateFields(fieldNames)) as Pick<GitInstallPayload, 'git_ref_type' | 'git_ref' | 'user_group_ids' | 'private'>;
+    } catch (error) {
+      console.error(error);
       return;
     }
 
@@ -84,6 +98,8 @@ export default function GitUpdateModal(props: Props) {
         {
           git_ref_type: values.git_ref_type,
           git_ref: values.git_ref,
+          user_group_ids: values.user_group_ids,
+          private: resolveSubmitPrivate(values.private, defaultAuth?.private),
         },
         { silence: true, signal: controller.signal },
       );
@@ -106,7 +122,8 @@ export default function GitUpdateModal(props: Props) {
             </div>
           ),
         });
-      } catch {
+      } catch (error) {
+        console.error(error);
         Modal.success({ title: t('git.update_success_title') });
       }
       form.resetFields();

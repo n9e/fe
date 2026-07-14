@@ -17,8 +17,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import _ from 'lodash';
-import { withTolgee, Tolgee, I18nextPlugin, DevTools } from '@tolgee/i18next';
-import { InContextTools } from '@tolgee/web/tools';
 
 import { syncMomentLocale } from './utils/momentLocale';
 
@@ -56,21 +54,6 @@ if (import.meta.env.DEV) {
   language = devLocale && _.includes(languages, devLocale) ? devLocale : 'zh_CN';
 }
 
-function getTranslations() {
-  const translations: any = import.meta.glob('../src/**/{locale,locales}/index.(ts|js)', { eager: true });
-  const result = {};
-
-  for (const path in translations) {
-    const module = translations[path]?.default;
-    for (const namespace in module) {
-      for (const lang in module[namespace]) {
-        result[`${lang}:${namespace}`] = module[namespace][lang];
-      }
-    }
-  }
-  return result;
-}
-
 function getI18nextTranslations() {
   const translations: any = import.meta.glob('../src/**/{locale,locales}/index.(ts|js)', { eager: true });
   const result = {};
@@ -98,67 +81,21 @@ function getI18nextTranslations() {
   return result;
 }
 
-const API_URL = import.meta.env.VITE_TOLGEE_API_URL;
-const API_KEY = import.meta.env.VITE_TOLGEE_API_KEY;
-const staticData = getTranslations();
+const i18nInit = i18n.use(initReactI18next);
+i18nInit.init({
+  lng: language,
+  fallbackLng,
+  resources: getI18nextTranslations(),
+  interpolation: {
+    escapeValue: false,
+  },
 
-let tolgee, i18nInit;
-if (!!API_URL && !!API_KEY) {
-  if (!!import.meta.env.DEV) {
-    tolgee = Tolgee()
-      .use(DevTools())
-      .use(I18nextPlugin())
-      .init({
-        apiUrl: API_URL,
-        apiKey: API_KEY,
-        language,
-        staticData,
-        defaultNs: 'translation',
-        ns: ['translation', 'common', 'datasource'],
-      });
-  } else {
-    tolgee = Tolgee()
-      .use(InContextTools())
-      .use(I18nextPlugin())
-      .init({
-        apiUrl: API_URL,
-        apiKey: API_KEY,
-        language,
-        staticData,
-        defaultNs: 'translation',
-        ns: ['translation', 'common', 'datasource'],
-      });
-  }
-
-  i18nInit = withTolgee(i18n, tolgee).use(initReactI18next);
-  i18nInit.init({
-    lng: language,
-    fallbackLng,
-    interpolation: {
-      escapeValue: false,
-    },
-
-    react: {
-      useSuspense: false,
-    },
-  });
-} else {
-  i18nInit = i18n.use(initReactI18next);
-  i18nInit.init({
-    lng: language,
-    fallbackLng,
-    resources: getI18nextTranslations(),
-    interpolation: {
-      escapeValue: false,
-    },
-
-    react: {
-      useSuspense: false,
-    },
-  });
-}
+  react: {
+    useSuspense: false,
+  },
+});
 
 syncMomentLocale(language);
 i18n.on('languageChanged', syncMomentLocale);
 
-export { i18nInit, tolgee };
+export { i18nInit };

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { SIZE } from '@/utils/constant';
 
 import { NS } from '../constants';
+import SkillAuthFields from './SkillAuthFields';
 
 import './style.less';
 
@@ -32,6 +33,7 @@ export default function FormCpt(props: Props) {
           </Form.Item>
         </Col>
       </Row>
+      <SkillAuthFields />
       <Form.Item label={t('form.description')} name='description'>
         <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} placeholder={t('form.description_placeholder')} />
       </Form.Item>

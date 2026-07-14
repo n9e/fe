@@ -44,7 +44,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
 
   // 填写查询间隔（InputNumber）
   if (item.interval !== undefined) {
-    const spinbutton = page.locator('.tdengine-discover-query').getByRole('spinbutton');
+    const spinbutton = page.locator('[data-section-key="rule"]').locator('xpath=(.//*[normalize-space(.)="时间间隔"]/following::*[@role="spinbutton"])[1]');
     await expect(spinbutton, 'TDengine interval InputNumber').toBeVisible();
     await spinbutton.fill(String(item.interval));
   }

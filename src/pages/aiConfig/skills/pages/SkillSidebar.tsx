@@ -5,7 +5,7 @@ import { FileTextOutlined, FolderOpenOutlined, FolderOutlined, PlusOutlined, Dow
 import _ from 'lodash';
 
 import { NS } from '../constants';
-import { SkillTreeNode } from '../types';
+import { SkillTreeNode, SkillAuthValues } from '../types';
 import UploadSkillModal from './UploadSkillModal';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
   onSelectNode: (node: SkillTreeNode) => void;
   onExpand: (expandedKeys: string[], node: SkillTreeNode, expanded: boolean) => void;
   onCreate: () => void;
-  onImport: (file: File) => void;
+  onImport: (file: File, auth: SkillAuthValues) => void;
   onGitInstall: () => void;
 }
 

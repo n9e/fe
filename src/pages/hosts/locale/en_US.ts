@@ -148,7 +148,7 @@ const en_US = {
   force_cover: 'Force Override',
   force_delete: 'Force Delete',
   batch_failed: 'Batch Operation Failed',
-  upgrade_not_support_tip: 'This version does not support task channels. Please upgrade the Agent to ent-v0.5.27 or later',
+  upgrade_not_support_tip: 'This version does not support task channels. Please upgrade the Agent to {{version}} or later',
   go_upgrade: 'Upgrade',
 };
 

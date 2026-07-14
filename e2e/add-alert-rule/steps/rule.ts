@@ -13,5 +13,5 @@ export async function fillRuleStep(page: Page, uiConfig: NormalizedAlertRuleConf
   await handleAlertRuleCondition({ page, uiConfig, aiAssert, aiTap, aiScroll, aiWaitFor });
 
   // 执行频率和持续时长
-  await fillIntervalAndDuration(page, uiConfig, aiTap!);
+  await fillIntervalAndDuration(page, uiConfig);
 }

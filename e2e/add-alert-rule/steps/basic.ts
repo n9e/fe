@@ -1,6 +1,6 @@
 import { type Page } from '@playwright/test';
 
-import { fillAntFormItemInput, fillAntFormItemTags, selectAntOption } from '../../helpers';
+import { fillAntFormItemInput, fillAntFormItemTags, selectAntFormItemOption } from '../../helpers';
 import type { AiTap } from '../../types';
 import type { NormalizedAlertRuleConfig } from '../types';
 
@@ -18,7 +18,7 @@ export async function fillBasicStep(page: Page, uiConfig: NormalizedAlertRuleCon
       .isVisible()
       .catch(() => false))
   ) {
-    await selectAntOption(aiTap, '业务组下拉选择框', uiConfig.groupName);
+    await selectAntFormItemOption(aiTap, '业务组', uiConfig.groupName);
   }
 
   // 备注
