@@ -18,7 +18,11 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, pagination, ...rest } = props;
+
+  // Every paginated table gets the quick jumper, regardless of whether the caller spreads
+  // usePagination. `pagination={false}` stays off, and an explicit caller value still wins.
+  const mergedPagination = useMemo(() => (pagination === false ? (false as const) : { showQuickJumper: true, ...pagination }), [pagination]);
 
   const rowActionsRef = useRef(rowActions);
   rowActionsRef.current = rowActions;
@@ -65,6 +69,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
   return (
     <Table<RecordType>
       {...rest}
+      pagination={mergedPagination}
       dataSource={dataSource}
       columns={enhancedColumns}
       className={classNames('fc-enhanced-table', { 'fc-enhanced-table--compact-header': compactHeader }, className)}
