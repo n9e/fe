@@ -129,7 +129,9 @@ const DemoPie = (props: Props) => {
       enterable: true,
       fields: ['name', 'value', 'metric'],
       formatter: (datum) => {
-        const detailDom = detailUrl && datum.name !== 'Other' ? `&nbsp;|&nbsp;<span><a href=${detailFormatter(datum)} target="_blank">${detailName}</a></span>` : '';
+        const href = detailUrl && datum.name !== 'Other' ? detailFormatter(datum) : '';
+        const safeHref = href && /^https?:\/\//i.test(href) ? href : '';
+        const detailDom = safeHref ? `&nbsp;|&nbsp;<span><a href="${_.escape(safeHref)}" target="_blank">${_.escape(detailName)}</a></span>` : '';
         return { name: datum.name, value: dataFormatter(datum.value) + detailDom };
       },
     },

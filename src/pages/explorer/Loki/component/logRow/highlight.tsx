@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { AnsiUp } from 'ansi_up';
+import purify from 'dompurify';
 interface IProps {
   text: string;
   keyword: string[];
@@ -42,7 +43,7 @@ const HighlightText = (props: IProps) => {
     return group ? `<span style="background-color: #FAD34A;color:#262626">${group}</span>` : match;
   });
 
-  return <div style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: highlightedText }} />;
+  return <div style={{ whiteSpace: 'pre-wrap' }} dangerouslySetInnerHTML={{ __html: purify.sanitize(highlightedText) }} />;
 };
 
 export default React.memo(HighlightText, (prevProps, nextProps) => _.isEqual(prevProps, nextProps));
