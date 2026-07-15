@@ -41,7 +41,7 @@ function getRuleIcon(ident?: string) {
   return null;
 }
 
-type NotifyConfig = { channel_id: number; ident?: string; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] };
+type NotifyConfig = { channel_id: number; channel_ident?: string; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] };
 
 type RuleItemData = {
   id: number;
@@ -63,7 +63,7 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
   const { t } = useTranslation('alertRules');
   const subtitle = getRuleSubtitle(rule);
   const configCount = rule.notify_configs?.length ?? 0;
-  const firstIdent = rule.notify_configs?.[0]?.ident;
+  const firstIdent = rule.notify_configs?.[0]?.channel_ident;
   const icon = getRuleIcon(firstIdent);
 
   return (
