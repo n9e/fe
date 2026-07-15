@@ -5,7 +5,7 @@ export type HandleValueFilterParams = (params: OnValueFilterParams) => void;
 
 export interface FilterConfig {
   logic?: 'and' | 'or';
-  field?: string | string[];
+  field?: string;
   operator?: string;
   value?: string | number | boolean | null | Array<string | number | boolean | null>;
   not?: boolean;

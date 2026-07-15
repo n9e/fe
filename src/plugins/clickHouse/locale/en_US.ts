@@ -94,8 +94,6 @@ const en_US = {
       value: 'Value',
       value_placeholder: 'Please select a value',
       tip_1: 'This field does not have an NGram BloomFilter index and may trigger a full table scan. Consider adding an index or choosing a different operator',
-      json_path: 'JSON path',
-      json_path_placeholder: 'Enter a child-field path',
     },
     aggregates: {
       label: 'Aggregates',

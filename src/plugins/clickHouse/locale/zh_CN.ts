@@ -93,8 +93,6 @@ const zh_CN = {
       value: '值',
       value_placeholder: '请选择值',
       tip_1: '该字段无 NGram BloomFilter 索引，可能触发全表扫描。建议添加索引或者选择其他操作符',
-      json_path: 'JSON 路径',
-      json_path_placeholder: '输入子字段路径',
     },
     aggregates: {
       label: '聚合',
