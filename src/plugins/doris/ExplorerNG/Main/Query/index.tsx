@@ -123,8 +123,8 @@ export default function index(props: Props) {
       let timeParams =
         fixedRangeRef.current === false
           ? {
-              from: moment(range.start).unix(),
-              to: moment(range.end).unix(),
+              from: moment(range.start).valueOf(),
+              to: moment(range.end).valueOf(),
             }
           : rangeRef.current!;
       if (snapRangeRef.current && snapRangeRef.current.from && snapRangeRef.current.to) {
@@ -240,8 +240,8 @@ export default function index(props: Props) {
             database: queryValues.database,
             table: queryValues.table,
             time_field: queryValues.time_field,
-            from: moment(range.start).unix(),
-            to: moment(range.end).unix(),
+            from: moment(range.start).valueOf(),
+            to: moment(range.end).valueOf(),
             query: queryValues.query,
             query_builder_filter: queryValues.query_builder_filter,
             group_by: stackByField,
