@@ -76,7 +76,7 @@ const index = (_props: any) => {
   const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, gids, query), {
     refreshDeps: [gids, query],
     debounceWait: 300,
-    defaultCurrent: defaultPage,
+    defaultParams: [{ current: defaultPage, pageSize: 10 }],
   });
 
   function handleTagClick(tag: string) {
