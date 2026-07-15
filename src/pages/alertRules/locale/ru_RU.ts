@@ -411,6 +411,13 @@ const ru_RU = {
 
   form_ng: {
     cate: 'Тип источника',
+    prompt: {
+      title: 'Есть несохраненные изменения',
+      message: 'Хотите сохранить изменения?',
+      cancelText: 'Отмена',
+      discardText: 'Отменить',
+      okText: 'Сохранить',
+    },
     add_datasource_filter: 'Фильтр источников',
     rule_summary: 'Сводка правил',
     pipeline_configs: 'Обработка событий',

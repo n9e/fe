@@ -409,6 +409,13 @@ const zh_CN = {
 
   form_ng: {
     cate: '数据源类型',
+    prompt: {
+      title: '有更改未保存',
+      message: '您想保存更改吗？',
+      cancelText: '取消',
+      discardText: '放弃',
+      okText: '保存',
+    },
     add_datasource_filter: '数据源筛选',
     rule_summary: '规则摘要',
     pipeline_configs: '事件处理',

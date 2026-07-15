@@ -1,12 +1,16 @@
 import React, { useMemo, useState } from 'react';
-import { Form, Dropdown, Button, Input, Space } from 'antd';
-import { PlusOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
+import { Form, Dropdown, Button, Input, Space, Drawer, Spin, message } from 'antd';
+import { PlusOutlined, PlusCircleOutlined, SyncOutlined } from '@ant-design/icons';
 import { Bell, Check, ExternalLink, Eye, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 import { getNotificationChannelTypes } from '@/pages/notificationChannels/constants';
+import { getItem as getNotificationRule, putItem as putNotificationRule, postItems as createNotificationRules, RuleItem } from '@/pages/notificationRules/services';
+import { NS as notificationRulesNS, CN as notificationRulesCN } from '@/pages/notificationRules/constants';
+import NotificationRuleForm from '@/pages/notificationRules/pages/Form';
+import { normalizeInitialValues } from '@/pages/notificationRules/utils/normalizeValues';
 import { useFormNGData } from '../context';
 
 const channelTypes = getNotificationChannelTypes();
@@ -55,11 +59,12 @@ interface NotificationRuleItemProps {
   isSelected?: boolean;
   onClick?: () => void;
   showViewButton?: 'hover' | 'always';
+  onView?: (ruleId: number) => void;
   onRemove?: () => void;
   className?: string;
 }
 
-function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showViewButton = 'hover', onRemove, className = '' }: NotificationRuleItemProps) {
+function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showViewButton = 'hover', onView, onRemove, className = '' }: NotificationRuleItemProps) {
   const { t } = useTranslation('alertRules');
   const subtitle = getRuleSubtitle(rule);
   const configCount = rule.notify_configs?.length ?? 0;
@@ -89,9 +94,10 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
           type='text'
           size='small'
           className='flex items-center gap-1 shrink-0 ml-2'
-          target='_blank'
-          href={`/notification-rules/edit/${rule.id}`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onView?.(rule.id);
+          }}
         >
           <Eye size={12} />
           {t('notify_rule_view')}
@@ -102,9 +108,10 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
           type='text'
           size='small'
           className='opacity-0 group-hover:opacity-100 flex items-center gap-1'
-          target='_blank'
-          href={`/notification-rules/edit/${rule.id}`}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onView?.(rule.id);
+          }}
         >
           <Eye size={12} />
           {t('notify_rule_view')}
@@ -141,6 +148,10 @@ export default function NotificationRuleDropdownSelect(props: Props) {
 
   const [searchText, setSearchText] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [viewDrawerVisible, setViewDrawerVisible] = useState(false);
+  const [viewDrawerData, setViewDrawerData] = useState<RuleItem>();
+  const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
+  const [createSaving, setCreateSaving] = useState(false);
 
   const filteredRules = useMemo(() => {
     if (!searchText) return notificationRules;
@@ -164,6 +175,21 @@ export default function NotificationRuleDropdownSelect(props: Props) {
     form.setFieldsValue({ notify_rule_ids: current });
   };
 
+  const handleViewRule = (ruleId: number) => {
+    setViewDrawerVisible(true);
+    getNotificationRule(ruleId)
+      .then((res) => {
+        setViewDrawerData(normalizeInitialValues(res));
+      })
+      .catch(() => {
+        setViewDrawerVisible(false);
+      });
+  };
+
+  const handleCreateRule = () => {
+    setCreateDrawerVisible(true);
+  };
+
   const overlay = (
     <div className='min-w-[500px] max-h-[480px] flex flex-col rounded bg-fc-100 fc-border n9e-base-shadow'>
       <div
@@ -185,6 +211,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
               isSelected={isSelected}
               onClick={() => toggleRule(rule.id)}
               showViewButton='hover'
+              onView={handleViewRule}
               className={`group transition-colors duration-200 hover:bg-[var(--fc-violet-1)] ${isSelected ? ' bg-[var(--fc-violet-2)]' : ''}`}
             />
           );
@@ -212,11 +239,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
       <div className='mb-2'>
         <Space>
           {t('notify_rule_ids')}
-          {isAuthorized && (
-            <Link to='/notification-rules' target='_blank'>
-              <SettingOutlined />
-            </Link>
-          )}
+          {isAuthorized && <PlusCircleOutlined className='cursor-pointer' onClick={handleCreateRule} />}
           {isAuthorized && (
             <SyncOutlined
               spin={notificationRulesLoading}
@@ -231,7 +254,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
       {selectedRules.length > 0 && (
         <div className='mb-2 space-y-1'>
           {selectedRules.map((rule) => (
-            <NotificationRuleItem key={rule.id} rule={rule} showViewButton='always' onRemove={() => toggleRule(rule.id)} className='fc-border rounded' />
+            <NotificationRuleItem key={rule.id} rule={rule} showViewButton='always' onView={handleViewRule} onRemove={() => toggleRule(rule.id)} className='fc-border rounded' />
           ))}
         </div>
       )}
@@ -240,6 +263,68 @@ export default function NotificationRuleDropdownSelect(props: Props) {
           {t('notify_rule_select')}
         </Button>
       </Dropdown>
+      <Drawer
+        title={t(`${notificationRulesNS}:title`)}
+        placement='right'
+        width='80%'
+        destroyOnClose
+        onClose={() => {
+          setViewDrawerVisible(false);
+          setViewDrawerData(undefined);
+        }}
+        visible={viewDrawerVisible}
+      >
+        <div className={`n9e ${notificationRulesCN}`}>
+          {viewDrawerData ? (
+            <NotificationRuleForm
+              initialValues={viewDrawerData}
+              onOk={(values) => {
+                putNotificationRule(values).then(() => {
+                  message.success(t('common:success.edit'));
+                  setViewDrawerVisible(false);
+                  setViewDrawerData(undefined);
+                  refreshNotificationRules();
+                });
+              }}
+              onCancel={() => {
+                setViewDrawerVisible(false);
+                setViewDrawerData(undefined);
+              }}
+            />
+          ) : (
+            <Spin spinning />
+          )}
+        </div>
+      </Drawer>
+      <Drawer
+        title={t(`${notificationRulesNS}:title`)}
+        placement='right'
+        width='80%'
+        destroyOnClose
+        onClose={() => {
+          setCreateDrawerVisible(false);
+        }}
+        visible={createDrawerVisible}
+      >
+        <div className={`n9e ${notificationRulesCN}`}>
+          <NotificationRuleForm
+            disabled={createSaving}
+            onOk={(values) => {
+              setCreateSaving(true);
+              createNotificationRules([values]).then(() => {
+                message.success(t('common:success.add'));
+                setCreateDrawerVisible(false);
+                refreshNotificationRules();
+              }).finally(() => {
+                setCreateSaving(false);
+              });
+            }}
+            onCancel={() => {
+              setCreateDrawerVisible(false);
+            }}
+          />
+        </div>
+      </Drawer>
     </>
   );
 }
