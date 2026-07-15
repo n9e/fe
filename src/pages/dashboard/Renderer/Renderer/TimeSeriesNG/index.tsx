@@ -148,6 +148,8 @@ export default function index(props: Props) {
               panel={mainProps.panel}
               data={legendData}
               legendColumns={legendColumns}
+              legendSortBy={legendSortBy}
+              legendSortDir={legendSortDir}
               placement={legendPlacement}
               onRowClick={(record) => {
                 if (legendSelectMode === 'multiple') {
