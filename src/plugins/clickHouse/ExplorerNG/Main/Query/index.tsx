@@ -27,7 +27,6 @@ import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
-import { hasHighlightableFilter } from '../../utils/queryMode';
 import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
 import { HandleValueFilterParams } from '../../types';
 import QueryBuilderFilters from './QueryBuilderFilters';
@@ -149,7 +148,7 @@ export default function index(props: Props) {
             lines: serviceParams.pageSize,
             offset: (serviceParams.current - 1) * serviceParams.pageSize,
             reverse: serviceParams.reverse,
-            highlight: hasHighlightableFilter(queryValues.query_builder_filter),
+            highlight: true,
           },
         ],
       };
