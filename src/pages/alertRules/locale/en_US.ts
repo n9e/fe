@@ -412,6 +412,13 @@ const en_US = {
 
   form_ng: {
     cate: 'Datasource type',
+    prompt: {
+      title: 'Unsaved changes',
+      message: 'Do you want to save your changes?',
+      cancelText: 'Cancel',
+      discardText: 'Discard',
+      okText: 'Save',
+    },
     add_datasource_filter: 'Datasource filter',
     rule_summary: 'Rule Summary',
     pipeline_configs: 'Event Processing',

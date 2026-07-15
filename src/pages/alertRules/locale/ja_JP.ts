@@ -410,6 +410,13 @@ const ja_JP = {
 
   form_ng: {
     cate: 'データソースタイプ',
+    prompt: {
+      title: '保存されていない変更があります',
+      message: '変更を保存しますか？',
+      cancelText: 'キャンセル',
+      discardText: '放棄',
+      okText: '保存',
+    },
     add_datasource_filter: 'データソースフィルター',
     rule_summary: 'ルール概要',
     pipeline_configs: 'イベント処理',

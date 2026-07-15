@@ -409,6 +409,13 @@ const zh_HK = {
 
   form_ng: {
     cate: '數據源類型',
+    prompt: {
+      title: '有更改未儲存',
+      message: '您想儲存變更嗎？',
+      cancelText: '取消',
+      discardText: '放棄',
+      okText: '儲存',
+    },
     add_datasource_filter: '數據源篩選',
     rule_summary: '規則摘要',
     pipeline_configs: '事件處理',

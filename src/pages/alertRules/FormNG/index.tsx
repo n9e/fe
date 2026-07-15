@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { Alert, Button, Card, Col, Form, Input, message, Row, Select, Space } from 'antd';
 import { Sparkles, ChevronsUpDown, ChevronsDownUp, PanelRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { DatasourceCateSelectV2 } from '@/components/DatasourceSelect';
 import { addStrategy, EditStrategy } from '@/services/warning';
 import { scrollToFirstError } from '@/utils';
 import { IS_PLUS } from '@/utils/constant';
+import RouterPrompt from '@/components/RouterPrompt';
 
 import { defaultValues } from '../Form/constants';
 import { processFormValues, processInitialValues, getDefaultValuesByCate } from '../Form/utils';
@@ -120,6 +121,36 @@ export default function FormNG(props: IProps) {
     return IS_PLUS && showAdvanced ? allSections : allSections.filter((s) => s.key !== 'advanced');
   }, [i18n.language, showAdvanced, prod, cate]);
 
+  // 数据源类型切换草稿（按 cate 维度保存 rule_config + 数据源配置）
+  const cateDraftRef = useRef<Record<string, any>>({});
+  const cateRef = useRef<string>();
+
+  // 未保存变更检测
+  const [allowedLeave, setAllowedLeave] = useState(true);
+  const routerPromptRef = useRef<any>(null);
+  const initialFormValuesRef = useRef<any>(null);
+  const isProgrammaticUpdate = useRef(false);
+
+  const updateAllowedLeave = useCallback(
+    (values?: any) => {
+      if (!initialFormValuesRef.current) return;
+
+      const currentValues = values || form.getFieldsValue(true);
+      setAllowedLeave(_.isEqual(currentValues, initialFormValuesRef.current));
+    },
+    [form],
+  );
+
+  const saveCateDraft = useCallback(
+    (draftCate?: string) => {
+      if (!draftCate) return;
+
+      const currentValues = form.getFieldsValue(true);
+      cateDraftRef.current[draftCate] = _.cloneDeep(_.pick(currentValues, ['rule_config', 'datasource_value', 'datasource_values', 'datasource_queries']));
+    },
+    [form],
+  );
+
   const pipelineConfigsRef = React.useRef<PipelineConfigsNGRef>(null);
   const scroll = useScrollSync(sections);
 
@@ -144,6 +175,7 @@ export default function FormNG(props: IProps) {
         message.error(res.error);
       } else {
         message.success(t('common:success.modify'));
+        setAllowedLeave(true);
         history.push('/alert-rules');
       }
     } else {
@@ -156,6 +188,7 @@ export default function FormNG(props: IProps) {
 
       if (!errorNum) {
         message.success(`${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
+        setAllowedLeave(true);
         history.push('/alert-rules');
       } else {
         message.error(t(msg));
@@ -164,8 +197,19 @@ export default function FormNG(props: IProps) {
   };
 
   useEffect(() => {
+    isProgrammaticUpdate.current = true;
+
     if (type === 1 || type === 2 || type === 3 || !_.isEmpty(initialValues)) {
-      form.setFieldsValue(processInitialValues(initialValues));
+      const processed = processInitialValues(initialValues);
+      form.setFieldsValue(processed);
+
+      // 初始化 cate 草稿
+      if (processed?.cate) {
+        cateRef.current = processed.cate;
+        cateDraftRef.current[processed.cate] = _.cloneDeep(_.pick(processed, ['rule_config', 'datasource_value', 'datasource_values', 'datasource_queries']));
+      }
+
+      initialFormValuesRef.current = _.cloneDeep(processed);
     } else {
       const newValues = {
         ...defaultValues,
@@ -182,8 +226,22 @@ export default function FormNG(props: IProps) {
         newValues.cate = 'host';
       }
       form.setFieldsValue(newValues);
+      cateRef.current = newValues.cate;
+      initialFormValuesRef.current = _.cloneDeep(newValues);
     }
+
+    isProgrammaticUpdate.current = false;
   }, [initialValues]);
+
+  // 表单变更追踪
+  const onValuesChange = useCallback(
+    (_changedValues: any, allValues: any) => {
+      if (isProgrammaticUpdate.current) return;
+
+      updateAllowedLeave(allValues);
+    },
+    [updateAllowedLeave],
+  );
 
   return (
     <FormStateContext.Provider
@@ -192,7 +250,7 @@ export default function FormNG(props: IProps) {
         type,
       }}
     >
-      <Form form={form} layout='vertical' disabled={disabled} className='h-full'>
+      <Form form={form} layout='vertical' disabled={disabled} className='h-full' onValuesChange={onValuesChange}>
         <FormNGDataProvider>
           <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
             <div
@@ -366,7 +424,29 @@ export default function FormNG(props: IProps) {
                       onChange={(val, record) => {
                         const { type } = record;
                         const curProd = type[0];
-                        form.setFieldsValue(getDefaultValuesByCate(curProd, val));
+                        const prevCate = cateRef.current || cate;
+
+                        // 保存当前 cate 的草稿（rule_config + 数据源配置）
+                        saveCateDraft(prevCate);
+
+                        // 构建新值
+                        const newValues: Record<string, any> = getDefaultValuesByCate(curProd, val) || {};
+                        newValues.datasource_values = undefined;
+
+                        // 如果有该 cate 的草稿，恢复
+                        if (cateDraftRef.current[val]) {
+                          const draft = _.cloneDeep(cateDraftRef.current[val]);
+                          newValues.rule_config = draft.rule_config;
+                          newValues.datasource_value = draft.datasource_value;
+                          newValues.datasource_values = draft.datasource_values;
+                          newValues.datasource_queries = draft.datasource_queries;
+                        }
+
+                        isProgrammaticUpdate.current = true;
+                        form.setFieldsValue(newValues);
+                        isProgrammaticUpdate.current = false;
+                        cateRef.current = val;
+                        updateAllowedLeave();
                       }}
                     />
                   </Form.Item>
@@ -460,6 +540,64 @@ export default function FormNG(props: IProps) {
               <Sidebar sections={sections} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
             )}
           </div>
+          <RouterPrompt
+            ref={routerPromptRef}
+            when={!allowedLeave && !disabled}
+            defaultPath='/alert-rules'
+            title={t('form_ng.prompt.title')}
+            message={<div style={{ fontSize: 16 }}>{t('form_ng.prompt.message')}</div>}
+            footer={[
+              <Button key='cancel' onClick={() => routerPromptRef.current?.hidePrompt()}>
+                {t('form_ng.prompt.cancelText')}
+              </Button>,
+              <Button key='discard' type='primary' danger onClick={() => routerPromptRef.current?.redirect()}>
+                {t('form_ng.prompt.discardText')}
+              </Button>,
+              <Button
+                key='ok'
+                type='primary'
+                onClick={async () => {
+                  try {
+                    await form.validateFields();
+                    const values = form.getFieldsValue(true);
+                    if (!handleCheck(values)) return;
+                    const data = processFormValues(values) as any;
+                    let res;
+                    if (type === 1) {
+                      res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                    } else {
+                      const curBusiId = initialValues?.group_id || Number(bgid);
+                      res = await addStrategy([data], curBusiId);
+                    }
+                    if (type === 1 && res.err) {
+                      message.error(res.error);
+                      return;
+                    }
+                    if (type !== 1) {
+                      const { dat } = res;
+                      let errorNum = 0;
+                      const msgs = Object.keys(dat).map((key) => {
+                        dat[key] && errorNum++;
+                        return dat[key];
+                      });
+                      if (errorNum) {
+                        message.error(t(msgs));
+                        return;
+                      }
+                    }
+                    setAllowedLeave(true);
+                    message.success(type === 1 ? t('common:success.modify') : `${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
+                    routerPromptRef.current?.redirect();
+                  } catch (err) {
+                    console.error(err);
+                    scrollToFirstError();
+                  }
+                }}
+              >
+                {t('form_ng.prompt.okText')}
+              </Button>,
+            ]}
+          />
         </FormNGDataProvider>
       </Form>
     </FormStateContext.Provider>

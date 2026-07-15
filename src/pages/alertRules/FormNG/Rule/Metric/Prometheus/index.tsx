@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Form, Space, Tooltip, Radio, Row, Col, Button } from 'antd';
 import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
@@ -30,6 +30,12 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
   const form = Form.useFormInstance();
   const ruleConfigVersion = Form.useWatch(['rule_config', 'version']);
 
+  // Prometheus v1/v2 版本切换草稿
+  const versionDraftRef = useRef<{
+    v1?: any[]; // queries (v1 格式：prom_ql, severity, var_config 等)
+    v2?: { queries: any[]; triggers: any[] }; // queries + triggers (v2 格式)
+  }>({});
+
   return (
     <>
       {IS_PLUS && (
@@ -59,35 +65,66 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
             disabled={disabled}
             className='!grid grid-cols-1 md:grid-cols-2 gap-3 w-full'
             onChange={(e) => {
-              const val = e.target.value;
-              if (val === 'v2') {
-                const rule_config = form.getFieldValue('rule_config');
-                form.setFieldsValue({
-                  rule_config: {
-                    ...rule_config,
-                    queries: [
-                      {
-                        ref: 'A',
-                        query: '',
-                      },
-                    ],
-                    triggers: [
-                      {
-                        mode: 0,
-                        expressions: [
-                          {
-                            ref: 'A',
-                            comparisonOperator: '>',
-                            value: 0,
-                            logicalOperator: '&&',
-                          },
-                        ],
-                        severity: 2,
-                      },
-                    ],
-                  },
-                });
+              const targetVersion = e.target.value;
+              if (ruleConfigVersion === targetVersion) return;
+
+              const rule_config = form.getFieldValue('rule_config');
+
+              // 保存当前版本草稿
+              if (ruleConfigVersion === 'v1') {
+                versionDraftRef.current.v1 = _.cloneDeep(rule_config.queries);
+              } else if (ruleConfigVersion === 'v2') {
+                versionDraftRef.current.v2 = {
+                  queries: _.cloneDeep(rule_config.queries),
+                  triggers: _.cloneDeep(rule_config.triggers),
+                };
               }
+
+              // 构建目标版本的值
+              const newRuleConfig = { ...rule_config };
+
+              if (targetVersion === 'v2') {
+                if (versionDraftRef.current.v2) {
+                  newRuleConfig.queries = versionDraftRef.current.v2.queries;
+                  newRuleConfig.triggers = versionDraftRef.current.v2.triggers;
+                } else {
+                  newRuleConfig.queries = [
+                    {
+                      ref: 'A',
+                      query: '',
+                    },
+                  ];
+                  newRuleConfig.triggers = [
+                    {
+                      mode: 0,
+                      expressions: [
+                        {
+                          ref: 'A',
+                          comparisonOperator: '>',
+                          value: 0,
+                          logicalOperator: '&&',
+                        },
+                      ],
+                      severity: 2,
+                    },
+                  ];
+                }
+              } else {
+                // targetVersion === 'v1'
+                if (versionDraftRef.current.v1) {
+                  newRuleConfig.queries = versionDraftRef.current.v1;
+                } else {
+                  newRuleConfig.queries = [
+                    {
+                      prom_ql: '',
+                      severity: 2,
+                    },
+                  ];
+                }
+                newRuleConfig.triggers = undefined;
+              }
+
+              form.setFieldsValue({ rule_config: newRuleConfig });
             }}
           >
             <RadioCard value='v1' disabled={disabled} label={t('ruleConfigPromVersion_v1')} description={t('ruleConfigPromVersion_v1_description')} />
