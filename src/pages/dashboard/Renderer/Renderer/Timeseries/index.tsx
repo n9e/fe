@@ -435,8 +435,9 @@ export default function index(props: IProps) {
         width: 60,
         render: (_text, record: any) => {
           const url = detailFormatter(record);
+          const safeUrl = url && /^https?:\/\//i.test(url) ? url : undefined;
           return (
-            <a href={url} target='_blank'>
+            <a href={safeUrl} target='_blank'>
               {detailName}
             </a>
           );
@@ -581,13 +582,18 @@ export default function index(props: IProps) {
                         })}
                       </span>
                     )}
-                    {detailUrl && (
-                      <span className='renderer-timeseries-legend-list-item-link'>
-                        <a href={detailFormatter(item)} target='_blank'>
-                          {detailName}
-                        </a>
-                      </span>
-                    )}
+                    {detailUrl &&
+                      (() => {
+                        const url = detailFormatter(item);
+                        const safeUrl = url && /^https?:\/\//i.test(url) ? url : undefined;
+                        return (
+                          <span className='renderer-timeseries-legend-list-item-link'>
+                            <a href={safeUrl} target='_blank'>
+                              {detailName}
+                            </a>
+                          </span>
+                        );
+                      })()}
                   </div>
                 );
               })}
