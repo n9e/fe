@@ -5,12 +5,12 @@ import { MoreOutlined, ApartmentOutlined, DownloadOutlined } from '@ant-design/i
 import { ShareLinkText } from '@/pages/logExplorer/components/Share';
 
 // @ts-ignore
-import ExportModal from 'plus:/components/LogDownload/ExportModal';
+// import ExportModal from 'plus:/components/LogDownload/ExportModal';
 // @ts-ignore
-import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
+// import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
 export default function MainMoreOperations() {
-  const datasourceValue = Form.useWatch('datasourceValue');
+  // const datasourceValue = Form.useWatch('datasourceValue');
 
   return (
     <Dropdown
@@ -18,27 +18,27 @@ export default function MainMoreOperations() {
         <Menu
           items={[
             {
-              label: (
-                <Space>
-                  <DownloadOutlined />
-                  <ExportModal datasourceValue={datasourceValue} type='text' />
-                </Space>
-              ),
-              key: 'export',
-            },
-            {
-              label: (
-                <Space>
-                  <ApartmentOutlined />
-                  <DrilldownBtn dataSourceId={datasourceValue} type='text' />
-                </Space>
-              ),
-              key: 'drilldown',
-            },
-            {
               label: <ShareLinkText hideText={false} />,
               key: 'share',
             },
+            // {
+            //   label: (
+            //     <Space>
+            //       <DownloadOutlined />
+            //       <ExportModal datasourceValue={datasourceValue} type='text' />
+            //     </Space>
+            //   ),
+            //   key: 'export',
+            // },
+            // {
+            //   label: (
+            //     <Space>
+            //       <ApartmentOutlined />
+            //       <DrilldownBtn dataSourceId={datasourceValue} type='text' />
+            //     </Space>
+            //   ),
+            //   key: 'drilldown',
+            // },
           ]}
         />
       }
