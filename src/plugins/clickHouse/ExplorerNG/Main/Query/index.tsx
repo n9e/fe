@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Form, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
@@ -14,7 +14,14 @@ import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStructures';
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
-import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
+import {
+  NAME_SPACE,
+  NG_QUERY_LOGS_OPTIONS_CACHE_KEY,
+  DEFAULT_LOGS_PAGE_SIZE,
+  QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY,
+  HIGHLIGHT_FIELD,
+  getCKFieldIconType,
+} from '../../../constants';
 import { getCKLogsQuery, getCKHistogram } from '../../../services';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -62,6 +69,17 @@ export default function index(props: Props) {
   const queryValues = Form.useWatch('query');
   const { tableSelector, indexData, rangeRef, snapRangeRef, organizeFields, setOrganizeFields, handleValueFilter, setExecuteLoading, executeQuery, stackByField, setStackByField } =
     props;
+
+  // 将 CK 原始字段类型映射为 LogsViewer/LogViewer 中 TYPE_MAP 可识别的值，用于侧拉板字段类型图标展示
+  const normalizedIndexData = useMemo(() => {
+    return _.map(indexData, (field) => {
+      const iconType = getCKFieldIconType(field.type, field.normalized_type);
+      return {
+        ...field,
+        type: iconType || field.type,
+      };
+    });
+  }, [indexData]);
 
   const [options, setOptions] = useState(getOptionsFromLocalstorage(NG_QUERY_LOGS_OPTIONS_CACHE_KEY));
   const pageLoadMode = options.pageLoadMode || 'pagination';
@@ -304,7 +322,6 @@ export default function index(props: Props) {
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
-              enableLogTextSelectMenu
               timeField={queryValues?.time_field}
               histogramLoading={histogramLoading}
               histogram={histogramData?.data || []}
@@ -479,7 +496,7 @@ export default function index(props: Props) {
               }}
               // state context
               fieldConfig={currentFieldConfig}
-              indexData={indexData}
+              indexData={normalizedIndexData}
               range={queryValues?.range}
             />
           ) : loading || histogramLoading ? (

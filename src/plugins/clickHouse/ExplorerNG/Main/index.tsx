@@ -95,7 +95,7 @@ export default function index(props: Props) {
 
   return (
     <div className='flex flex-col h-full'>
-      <div className='flex-shrink-0 relative'>
+      <div className='flex-shrink-0 relative mb-4'>
         <Row gutter={SIZE} wrap={false}>
           <Col flex='none'>
             <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>
