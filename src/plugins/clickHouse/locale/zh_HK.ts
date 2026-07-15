@@ -93,8 +93,6 @@ const zh_HK = {
       value: '值',
       value_placeholder: '請選擇值',
       tip_1: '該欄位無 NGram BloomFilter 索引，可能觸發全表掃描。建議添加索引或者選擇其他運算子',
-      json_path: 'JSON 路徑',
-      json_path_placeholder: '輸入子字段路徑',
     },
     aggregates: {
       label: '聚合',

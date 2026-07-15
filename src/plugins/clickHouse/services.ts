@@ -158,7 +158,7 @@ export function getCKSQLFormat(
   }).then((res) => res.dat);
 }
 
-export function getFiledSample(data: FieldSampleParams & { field: string | string[] }): Promise<string[]> {
+export function getFiledSample(data: FieldSampleParams & { field: string }): Promise<string[]> {
   const { filters, ...rest } = data;
   return request('/api/n9e-plus/ck-field-sample', {
     method: RequestMethod.Post,

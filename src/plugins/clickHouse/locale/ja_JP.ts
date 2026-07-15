@@ -96,8 +96,6 @@ const ja_JP = {
       value: '値',
       value_placeholder: '値を選択してください',
       tip_1: 'このフィールドには NGram BloomFilter インデックスがなく、フルテーブルスキャンが発生する可能性があります。インデックスを追加するか、別の演算子を選択してください',
-      json_path: 'JSON パス',
-      json_path_placeholder: '子フィールドのパスを入力',
     },
     aggregates: {
       label: '集計',

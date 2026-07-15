@@ -5,13 +5,12 @@ import { Field, FilterConfig } from '../types';
 
 const HIGHLIGHTABLE_OPERATORS = new Set(['=', 'in', 'like', 'ilike', 'has_token', 'match']);
 
-export function buildCKFilterFromLogValue(params: OnValueFilterParams, indexData: Field[]): FilterConfig {
-  const path = params.key.split('.');
-  const field = indexData.some((item) => item.field === params.key) || path.length === 1 ? params.key : path;
+export function buildCKFilterFromLogValue(params: OnValueFilterParams, indexData: Field[]): FilterConfig | undefined {
+  if (!indexData.some((item) => item.field === params.key)) return undefined;
 
   return {
     logic: 'and',
-    field,
+    field: params.key,
     operator: params.value === null ? 'is-null' : '=',
     value: params.value,
     not: params.operator.toUpperCase() === 'NOT',
