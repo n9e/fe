@@ -34,6 +34,7 @@ export const TYPE_OPERATOR_MAP: Record<string, string[]> = {
 
 export const AGGREGATE_FUNCTION_TYPE_MAP: Record<string, string[]> = {
   COUNT: FILTERABLE_TYPES,
+  CPS: FILTERABLE_TYPES,
   AVG: NUMBER_TYPES,
   MAX: NUMBER_TYPES,
   MIN: NUMBER_TYPES,
