@@ -107,6 +107,7 @@ export default function index(props: Props) {
     const values = form.getFieldsValue();
     const query = values.query;
     const filter = buildCKFilterFromLogValue(params, indexData);
+    if (!filter) return;
     form.setFieldsValue({
       refreshFlag: undefined,
       query: {

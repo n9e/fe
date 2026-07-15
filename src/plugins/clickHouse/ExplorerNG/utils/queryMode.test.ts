@@ -2,14 +2,8 @@ import { buildCKFilterFromLogValue, hasHighlightableFilter, pickCKTimeField } fr
 import { AGGREGATE_FUNCTION_TYPE_MAP, TYPE_OPERATOR_MAP } from '../components/QueryBuilder/constants';
 
 describe('ClickHouse Explorer query mode', () => {
-  test('converts a flattened JSON value click into a structured field path', () => {
-    expect(buildCKFilterFromLogValue({ key: 'payload.foo.bar', value: 'error', operator: 'AND' }, [{ field: 'payload', type: 'JSON', normalized_type: 'json' }])).toEqual({
-      logic: 'and',
-      field: ['payload', 'foo', 'bar'],
-      operator: '=',
-      value: 'error',
-      not: false,
-    });
+  test('does not create filters for flattened JSON child paths', () => {
+    expect(buildCKFilterFromLogValue({ key: 'payload.foo.bar', value: 'error', operator: 'AND' }, [{ field: 'payload', type: 'JSON', normalized_type: 'json' }])).toBeUndefined();
   });
 
   test('keeps a real dotted column name intact', () => {
@@ -35,7 +29,8 @@ describe('ClickHouse Explorer query mode', () => {
 
   test('exposes CK-native text operators and advanced aggregates', () => {
     expect(TYPE_OPERATOR_MAP.text).toEqual(expect.arrayContaining(['ilike', 'not_ilike', 'match', 'not_match', 'has_token']));
-    expect(TYPE_OPERATOR_MAP.json).toEqual(expect.arrayContaining(['ilike', 'match']));
+    expect(TYPE_OPERATOR_MAP.json).toEqual(['is-null', 'is-not-null']);
+    expect(TYPE_OPERATOR_MAP.map).toEqual(['is-null', 'is-not-null']);
     expect(Object.keys(AGGREGATE_FUNCTION_TYPE_MAP)).toEqual(expect.arrayContaining(['TOPN', 'RATIO', 'EXIST_RATIO', 'PERCENTILE', 'VARIANCE', 'STDDEV']));
   });
 });

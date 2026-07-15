@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Popover, Row, Col, Form, Input, Select } from 'antd';
+import { Popover, Row, Col, Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { useRequest } from 'ahooks';
@@ -45,9 +45,6 @@ export default function ConfigPopover(props: Props) {
     return getOperatorsByTypeIndex(filed) ?? [];
   }, [indexData, field]);
 
-  const fieldData = useMemo(() => _.find(indexData, (item) => item.field === field), [indexData, field]);
-  const supportsJSONPath = ['json', 'map', 'text'].includes(fieldData?.normalized_type || '');
-
   const { data: fieldSample } = useRequest(
     () => {
       const sourceFilters = fieldSampleParams?.filters || [];
@@ -81,10 +78,6 @@ export default function ConfigPopover(props: Props) {
         // popover 关闭时，获取表单数据并传递给父组件
         if (v === false) {
           form.validateFields().then((values) => {
-            if (values.field_path) {
-              values.field = [values.field, values.field_path];
-            }
-            delete values.field_path;
             // 如果是 LIKE 操作符，处理 value 值，添加 % 通配符
             if (_.includes(LIKE_OPERATORS, values.operator) && values.value && !_.startsWith(values.value, '%') && !_.endsWith(values.value, '%')) {
               values.value = `%${values.value}%`;
@@ -100,8 +93,7 @@ export default function ConfigPopover(props: Props) {
           // popover 打开时，初始化表单数据
           if (data) {
             form.setFieldsValue({
-              field: Array.isArray(data?.field) ? data?.field[0] : data?.field,
-              field_path: Array.isArray(data?.field) ? data?.field.slice(1).join('.') : undefined,
+              field: data?.field,
               operator: data?.operator,
               value: data?.value,
             });
@@ -176,13 +168,6 @@ export default function ConfigPopover(props: Props) {
                   />
                 </Form.Item>
               </Col>
-              {supportsJSONPath && (
-                <Col span={24}>
-                  <Form.Item label={t('builder.filters.json_path')} name='field_path'>
-                    <Input placeholder={t('builder.filters.json_path_placeholder')} />
-                  </Form.Item>
-                </Col>
-              )}
               <FilterConfigValue operator={operator} fieldSample={fieldSample} />
             </Row>
           </Form>
