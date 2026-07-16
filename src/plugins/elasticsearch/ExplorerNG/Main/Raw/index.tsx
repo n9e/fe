@@ -410,71 +410,73 @@ export default function index(props: Props) {
                           {moment(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
                         </>
                       )}
-                      <Popover
-                        trigger='click'
-                        content={
-                          <Space>
-                            <InputNumber
-                              value={interval?.value}
-                              min={1}
-                              onBlur={(e) => {
-                                const val = _.toNumber(e.target.value);
-                                if (val > 0) {
+                      {IS_PLUS && (
+                        <Popover
+                          trigger='click'
+                          content={
+                            <Space>
+                              <InputNumber
+                                value={interval?.value}
+                                min={1}
+                                onBlur={(e) => {
+                                  const val = _.toNumber(e.target.value);
+                                  if (val > 0) {
+                                    intervalFixedRef.current = true;
+                                    const newInterval = {
+                                      ...(interval || {}),
+                                      value: val,
+                                    } as Interval;
+                                    setInterval(newInterval);
+                                  }
+                                }}
+                                onPressEnter={(e: any) => {
+                                  const val = _.toNumber(e.target.value);
+                                  if (val > 0) {
+                                    intervalFixedRef.current = true;
+                                    const newInterval = {
+                                      ...(interval || {}),
+                                      value: val,
+                                    } as Interval;
+                                    setInterval(newInterval);
+                                  }
+                                }}
+                              />
+                              <Select
+                                style={{ width: 80 }}
+                                value={interval?.unit}
+                                onChange={(val) => {
                                   intervalFixedRef.current = true;
                                   const newInterval = {
                                     ...(interval || {}),
-                                    value: val,
+                                    unit: val,
                                   } as Interval;
                                   setInterval(newInterval);
-                                }
-                              }}
-                              onPressEnter={(e: any) => {
-                                const val = _.toNumber(e.target.value);
-                                if (val > 0) {
-                                  intervalFixedRef.current = true;
-                                  const newInterval = {
-                                    ...(interval || {}),
-                                    value: val,
-                                  } as Interval;
-                                  setInterval(newInterval);
-                                }
-                              }}
-                            />
-                            <Select
-                              style={{ width: 80 }}
-                              value={interval?.unit}
-                              onChange={(val) => {
-                                intervalFixedRef.current = true;
-                                const newInterval = {
-                                  ...(interval || {}),
-                                  unit: val,
-                                } as Interval;
-                                setInterval(newInterval);
-                              }}
-                              options={[
-                                {
-                                  label: t('common:time.second'),
-                                  value: 'second',
-                                },
-                                {
-                                  label: t('common:time.minute'),
-                                  value: 'min',
-                                },
-                                {
-                                  label: t('common:time.hour'),
-                                  value: 'hour',
-                                },
-                                {
-                                  label: t('common:time.day'),
-                                  value: 'day',
-                                },
-                              ]}
-                            />
-                          </Space>
-                        }
-                      >
-                        <a>{t('query.interval_label')}</a>
-                      </Popover>
+                                }}
+                                options={[
+                                  {
+                                    label: t('common:time.second'),
+                                    value: 'second',
+                                  },
+                                  {
+                                    label: t('common:time.minute'),
+                                    value: 'min',
+                                  },
+                                  {
+                                    label: t('common:time.hour'),
+                                    value: 'hour',
+                                  },
+                                  {
+                                    label: t('common:time.day'),
+                                    value: 'day',
+                                  },
+                                ]}
+                              />
+                            </Space>
+                          }
+                        >
+                          <a>{t('query.interval_label')}</a>
+                        </Popover>
+                      )}
                       {toggleNode}
                       {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
                     </Space>
@@ -594,7 +596,7 @@ export default function index(props: Props) {
                 }
                 const parsedTime = moment(val);
                 if (parsedTime.isValid()) {
-                  return parsedTime.format('YYYY-MM-DD HH:mm:ss');
+                  return parsedTime.format('YYYY-MM-DD HH:mm:ss.SSS');
                 }
                 return val as string;
               }}
@@ -609,7 +611,7 @@ export default function index(props: Props) {
                 return formatedValue;
               }}
               logClusting={{
-                enabled: true,
+                enabled: IS_PLUS,
                 queryStrRef,
                 logTotal: data?.total || 0,
                 cate: DatasourceCateEnum.elasticsearch,
