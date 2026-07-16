@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
@@ -126,6 +126,7 @@ export default function Table(props: IProps) {
     result: [],
   });
   const [unit, setUnit] = useState(defaultUnit || 'sishort');
+  const rawResultRef = useRef<any[]>([]);
   const controls = (
     <Space>
       <InputGroupWithFormItem label={t('promGraphCpt:time')}>
@@ -153,9 +154,9 @@ export default function Table(props: IProps) {
       )}
       {showExportButton && (
         <Button
-          disabled={_.isEmpty(data.result)}
+          disabled={_.isEmpty(rawResultRef.current)}
           onClick={() => {
-            json2csv(data.result, (err, csv) => {
+            json2csv(rawResultRef.current, (err, csv) => {
               if (err) {
                 message.error(t('common:error.export'));
                 console.warn('导出 prometheus 即时查询 Table 数据失败', err);
@@ -185,6 +186,8 @@ export default function Table(props: IProps) {
         .then((res) => {
           const { resultType } = res;
           let { result } = res;
+          // 保存全量原始数据用于 CSV 导出
+          rawResultRef.current = result;
           let tooLong = false;
           let maxLength = 0;
           if (result) {
