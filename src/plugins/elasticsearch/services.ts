@@ -263,7 +263,7 @@ export function getFieldTopTerms(
       'Content-Type': 'application/json',
     },
   }).then((res) => {
-    const resp = _.get(res, 'responses[0]');
+    const resp = _.get(res, 'responses[0]') || _.get(res, '[0]');
     const total = _.get(resp, 'hits.total.value') ?? _.get(resp, 'hits.total') ?? 0;
     const buckets = _.get(resp, ['aggregations', aggName, 'buckets'], []);
     return _.map(buckets, (b) => {
