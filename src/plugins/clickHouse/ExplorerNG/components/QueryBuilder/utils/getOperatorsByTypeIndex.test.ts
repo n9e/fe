@@ -10,7 +10,7 @@ describe('getOperatorsByTypeIndex', () => {
   it.each([
     ['long', ['=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
     ['date', ['=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
-    ['text', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'LIKE', 'NOT LIKE', 'ILIKE', 'NOT ILIKE', 'match', 'notMatch', 'hasToken']],
+    ['text', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'LIKE', 'NOT LIKE', 'ILIKE', 'NOT ILIKE', 'match', 'NOT match', 'hasToken']],
     ['bool', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL']],
     ['ipv4', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
     ['ipv6', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
