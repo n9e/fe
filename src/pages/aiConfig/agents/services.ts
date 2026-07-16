@@ -38,3 +38,9 @@ export const deleteItem = function (id: number) {
     method: RequestMethod.Delete,
   }).then((res) => res.dat);
 };
+
+export const getMCPServers = function (): Promise<Item[]> {
+  return request('/api/n9e/mcp-servers', {
+    method: RequestMethod.Get,
+  }).then((res) => res.dat ?? []);
+};
