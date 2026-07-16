@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Switch, Modal, Tag, Alert, message } from 'antd';
+import { Button, Space, Switch, Modal, Tag, Alert, message, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 
@@ -13,6 +13,40 @@ import { NS } from '../constants';
 import { getList, deleteItem, putItem } from '../services';
 import AddDrawer from './AddDrawer';
 import EditDrawer from './EditDrawer';
+
+function trimTrailingZero(value: string) {
+  return value.replace(/\.0+$/, '').replace(/(\.\d*[1-9])0+$/, '$1');
+}
+
+function formatContextLength(value?: number) {
+  if (value === undefined || value === null || !Number.isFinite(value) || value < 0) {
+    return {
+      compact: '-',
+      exact: undefined,
+    };
+  }
+
+  const exact = `${value.toLocaleString()} tokens`;
+
+  if (value >= 1_000_000) {
+    return {
+      compact: `${trimTrailingZero((value / 1_000_000).toFixed(2))}M`,
+      exact,
+    };
+  }
+
+  if (value >= 1_000) {
+    return {
+      compact: `${trimTrailingZero((value / 1_000).toFixed(2))}K`,
+      exact,
+    };
+  }
+
+  return {
+    compact: value.toString(),
+    exact,
+  };
+}
 
 export default function List() {
   const { t } = useTranslation(NS);
@@ -103,6 +137,20 @@ export default function List() {
                     title: t('model'),
                   },
                   {
+                    dataIndex: ['extra_config', 'context_length'],
+                    title: t('form.context_length'),
+                    width: 120,
+                    render: (val) => {
+                      const contextLength = formatContextLength(val);
+
+                      if (!contextLength.exact) {
+                        return contextLength.compact;
+                      }
+
+                      return <Tooltip title={contextLength.exact}>{contextLength.compact}</Tooltip>;
+                    },
+                  },
+                  {
                     ...getEnabledStatusColumn({
                       title: t('enabled'),
                       dataIndex: 'enabled',
@@ -111,7 +159,7 @@ export default function List() {
                       enabledValue: true,
                       disabledValue: false,
                     }),
-
+                    width: 100,
                     render: (val, record) => (
                       <Switch
                         size='small'
