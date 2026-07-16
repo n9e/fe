@@ -2,6 +2,7 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
 import { AggregateConfig, Field, FieldSampleParams, FilterConfig } from './ExplorerNG/types';
+import { getEnabledFilters } from './ExplorerNG/utils/filters';
 import { BaseParams } from './types';
 
 export type { Field };
@@ -110,7 +111,13 @@ export function getCKHistogram(
 ): Promise<any[]> {
   return request('/api/n9e-plus/ck-histogram', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat || []);
 }
 
@@ -135,7 +142,13 @@ export function getCKLogsQuery(
 ): Promise<{ list: Record<string, any>[]; total: number }> {
   return request('/api/n9e-plus/ck-logs-query', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat || { list: [], total: 0 });
 }
 
@@ -154,7 +167,13 @@ export function getCKSQLFormat(
 ): Promise<string> {
   return request('/api/n9e-plus/ck-sql-format', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat);
 }
 
@@ -192,7 +211,13 @@ export function getCKSQLsPreview(
 }> {
   return request('/api/n9e-plus/ck-sqls-preview', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat);
 }
 
@@ -202,7 +227,7 @@ export function getFiledSample(data: FieldSampleParams & { field: string }): Pro
     method: RequestMethod.Post,
     data: {
       ...rest,
-      query_builder_filter: filters,
+      query_builder_filter: getEnabledFilters(filters),
     },
   }).then((res) => (res.dat || []).map((value) => (value === null ? '' : String(value))));
 }
@@ -233,7 +258,13 @@ export function buildSql(
 }> {
   return request('/api/n9e-plus/ck-query-builder', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        filters: getEnabledFilters(query.filters),
+      })),
+    },
   }).then((res) => res.dat);
 }
 

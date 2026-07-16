@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Popover, Row, Col, Form, Select } from 'antd';
+import { Popover, Row, Col, Form, Select, Checkbox } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { useRequest } from 'ahooks';
@@ -14,6 +14,7 @@ import { LIKE_OPERATORS } from '../constants';
 import getDefaultOperatorByType from '../utils/getDefaultOperatorByType';
 import getOperatorsByTypeIndex from '../utils/getOperatorsByTypeIndex';
 import CommonStateContext from '../commonStateContext';
+import { getEnabledFilters } from '../../../utils/filters';
 
 import FilterConfigValue from './FilterConfigValue';
 
@@ -56,7 +57,7 @@ export default function ConfigPopover(props: Props) {
 
       return getFiledSample({
         ...fieldSampleParams,
-        filters: filtersToUse,
+        filters: getEnabledFilters(filtersToUse),
         field,
       });
     },
@@ -96,6 +97,11 @@ export default function ConfigPopover(props: Props) {
               field: data?.field,
               operator: data?.operator,
               value: data?.value,
+              disabled: data?.disabled || false,
+            });
+          } else {
+            form.setFieldsValue({
+              disabled: false,
             });
           }
         }
@@ -169,6 +175,11 @@ export default function ConfigPopover(props: Props) {
                 </Form.Item>
               </Col>
               <FilterConfigValue operator={operator} fieldSample={fieldSample} />
+              <Col span={24}>
+                <Form.Item name='disabled' valuePropName='checked' initialValue={false} className='mb-0'>
+                  <Checkbox>{t('builder.filters.disabled')}</Checkbox>
+                </Form.Item>
+              </Col>
             </Row>
           </Form>
         </div>

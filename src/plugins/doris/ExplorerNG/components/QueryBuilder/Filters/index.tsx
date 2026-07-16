@@ -50,6 +50,7 @@ export default function Filters(props: Props) {
             }}
           >
             <Describe
+              disabled={item.disabled}
               onClick={(e) => {
                 e.stopPropagation();
                 onChange?.(_.filter(value, (_, i) => i !== index));

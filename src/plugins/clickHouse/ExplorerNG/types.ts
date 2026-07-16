@@ -9,6 +9,7 @@ export interface FilterConfig {
   operator?: string;
   value?: string | number | boolean | null | Array<string | number | boolean | null>;
   not?: boolean;
+  disabled?: boolean;
 }
 
 export interface AggregateConfig {

@@ -53,6 +53,7 @@ const zh_HK = {
       operator_placeholder: '請選擇操作符',
       value: '值',
       value_placeholder: '請選擇值',
+      disabled: '禁用',
     },
     aggregates: {
       label: '聚合',

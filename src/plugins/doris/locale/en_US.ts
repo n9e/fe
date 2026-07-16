@@ -133,6 +133,7 @@ const en_US = {
       operator_placeholder: 'Please select an operator',
       value: 'Value',
       value_placeholder: 'Please select a value',
+      disabled: 'Disabled',
       tip_1: 'This field does not have an NGram BloomFilter index and may trigger a full table scan. Consider adding an index or choosing a different operator',
     },
     aggregates: {

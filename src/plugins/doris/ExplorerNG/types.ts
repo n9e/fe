@@ -7,6 +7,7 @@ export interface FilterConfig {
   field?: string;
   operator?: string; // 可能没有对应字段类型的操作符
   value?: string | number | Array<string | number>;
+  disabled?: boolean;
 }
 
 export interface AggregateConfig {

@@ -53,6 +53,7 @@ const ja_JP = {
       operator_placeholder: '演算子を選択してください',
       value: '値',
       value_placeholder: '値を選択してください',
+      disabled: '無効',
     },
     aggregates: {
       label: '集計',

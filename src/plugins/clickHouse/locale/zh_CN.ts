@@ -98,6 +98,7 @@ const zh_CN = {
       operator_placeholder: '请选择操作符',
       value: '值',
       value_placeholder: '请选择值',
+      disabled: '禁用',
       tip_1: '该字段无 NGram BloomFilter 索引，可能触发全表扫描。建议添加索引或者选择其他操作符',
     },
     aggregates: {
