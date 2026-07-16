@@ -151,7 +151,6 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
         { key: '/ai-config/agents', label: 'menu.ai_config_agents' },
         { key: '/ai-config/llm-configs', label: 'menu.ai_config_llm_configs' },
         { key: '/ai-config/skills', label: 'menu.ai_config_skills' },
-        { key: '/ai-config/mcp-servers', label: 'menu.ai_config_mcp_servers' },
       ],
     },
     {

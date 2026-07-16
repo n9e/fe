@@ -22,6 +22,19 @@ export function resolveTabKey(nodeKey: Key | null | undefined, tabKeys: string[]
   return _.find(candidates, (candidate) => _.includes(tabKeys, candidate));
 }
 
+export function getNextLogExplorerTabName(items: LogExplorerTabItem[]) {
+  const existingNames = new Set(_.map(items, 'name'));
+  let nextIndex = items.length + 1;
+  let nextName = `Query ${nextIndex}`;
+
+  while (existingNames.has(nextName)) {
+    nextIndex += 1;
+    nextName = `Query ${nextIndex}`;
+  }
+
+  return nextName;
+}
+
 export function moveLogExplorerTabItems(items: LogExplorerTabItem[], activeId: string, overId: string) {
   if (activeId === overId) {
     return items;

@@ -15,7 +15,7 @@ import getUUID from './utils/getUUID';
 import { setLocalItems } from './utils/getLocalItems';
 import { setLocalActiveKey } from './utils/getLocalActiveKey';
 import { createLogExplorerTabItem } from './utils/createLogExplorerTabItem';
-import { moveLogExplorerTabItems, resolveTabKey } from './utils/tabDnd';
+import { getNextLogExplorerTabName, moveLogExplorerTabItems, resolveTabKey } from './utils/tabDnd';
 
 interface Props {
   items: LogExplorerTabItem[];
@@ -210,7 +210,7 @@ export default function Header(props: Props) {
               const newItem = createLogExplorerTabItem({
                 activeItem,
                 key: newActiveKey,
-                name: `Query ${prev.length + 1}`,
+                name: getNextLogExplorerTabName(prev),
                 defaultDatasourceCate,
                 defaultDatasourceValue,
                 logsDefaultRange,
