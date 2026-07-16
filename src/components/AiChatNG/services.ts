@@ -57,6 +57,7 @@ export const getMessageDetail = (data: IAiChatMessageLocator): Promise<IAiChatMe
 export const getMessageHistory = (data: IAiChatMessageHistoryRequest): Promise<IAiChatMessage[]> => {
   return request(`${apiPrefix}/message/history`, {
     method: RequestMethod.Post,
+    silence: true,
     data,
   }).then((res) => res?.[dataPathName] || []);
 };
