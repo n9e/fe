@@ -215,7 +215,6 @@ export default function index(props: IProps) {
                 time_field: queryValues.time_field,
                 from: moment(range.start).valueOf(),
                 to: moment(range.end).valueOf(),
-                query: queryValues.query,
                 query_builder_filter: queryValues.query_builder_filter,
                 field: options.field,
                 func: options.func,
