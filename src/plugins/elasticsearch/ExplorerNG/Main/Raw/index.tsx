@@ -590,7 +590,7 @@ export default function index(props: Props) {
                 }
                 const parsedTime = moment(val);
                 if (parsedTime.isValid()) {
-                  return parsedTime.format('YYYY-MM-DD HH:mm:ss');
+                  return parsedTime.format('YYYY-MM-DD HH:mm:ss.SSS');
                 }
                 return val as string;
               }}
