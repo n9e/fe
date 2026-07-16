@@ -8,7 +8,9 @@ import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import i18next from 'i18next';
 import { basePrefix } from '@/App';
 import ErrorWithDetail from '@/components/ErrorWithDetail';
-
+export interface RequestWorkspaceOptions {
+  workspaceId?: number | string;
+}
 const getErrorStatus = (error: any) => {
   return error?.response?.status ?? error?.status;
 };
@@ -260,5 +262,12 @@ request.interceptors.response.use(
     global: false,
   },
 );
+
+export function buildWorkspaceHeaders(workspaceId?: number | string) {
+  if (workspaceId === undefined || workspaceId === null || workspaceId === '') return undefined;
+  return {
+    'FC-WORKSPACE-ID': `${workspaceId}`,
+  };
+}
 
 export default request;

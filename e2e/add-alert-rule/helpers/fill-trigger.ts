@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { fillLastSpinButton, fillSpinButtonByIndex, fillTextboxByIndex, selectAntOption } from '../../helpers';
+import { selectAntSelectOption } from '../../helpers';
 import type { AiAssert, AiScroll, AiTap, AiWaitFor } from '../../types';
 import type { NormalizedAlertRuleConfig } from '../types';
 
@@ -28,19 +28,52 @@ export interface BuilderTriggerDescriptions {
   valueFieldDescription: string;
 }
 
+function triggerCard(page: Page, triggerIndex: number) {
+  const ruleSection = page.locator('[data-section-key="rule"]');
+  return ruleSection
+    .locator(
+      'xpath=.//*[contains(concat(" ", normalize-space(@class), " "), " ant-radio-group ") and .//*[normalize-space(.)="简单模式"] and .//*[normalize-space(.)="表达式模式"]]/ancestor::*[contains(concat(" ", normalize-space(@class), " "), " fc-border ") and contains(concat(" ", normalize-space(@class), " "), " rounded-lg ")][1]',
+    )
+    .nth(triggerIndex);
+}
+
+async function ensureTriggerCount(page: Page, count: number, aiTap: AiTap) {
+  const ruleSection = page.locator('[data-section-key="rule"]');
+  for (let index = 1; index < count; index += 1) {
+    if ((await triggerCard(page, index).isVisible().catch(() => false))) continue;
+    const addButton = ruleSection.getByRole('button', { name: /阈值判断|Threshold/ }).last();
+    if (await addButton.isVisible().catch(() => false)) {
+      await addButton.click();
+    } else {
+      await aiTap('添加阈值判断');
+    }
+    await expect(triggerCard(page, index), `trigger card ${index}`).toBeVisible();
+  }
+}
+
+async function selectTriggerMode(page: Page, triggerIndex: number, modeName: string) {
+  const card = triggerCard(page, triggerIndex);
+  await expect(card, `trigger card ${triggerIndex}`).toBeVisible();
+  const radio = card.getByRole('radio', { name: modeName });
+  if (!(await radio.isChecked().catch(() => false))) {
+    await card.getByText(modeName, { exact: true }).click();
+    await expect(radio, `${modeName} radio checked for trigger ${triggerIndex}`).toBeChecked();
+  }
+}
+
 /**
  * 填充 builder 模式下的一条 trigger（mode === 0）。
- * 使用 Midscene AI 完成：滚动到区域、AI 断言、选择比较符、填入阈值。
+ * 使用 FormNG 新结构中的 trigger 卡片定位控件，避免依赖 AI 滚动找区域。
  */
 export async function fillBuilderTrigger(
   trigger: AlertRuleTrigger,
   triggerIndex: number,
   page: Page,
-  descriptions: BuilderTriggerDescriptions,
-  aiAssert: AiAssert,
-  aiScroll: AiScroll,
-  aiTap: AiTap,
-  aiWaitFor: AiWaitFor,
+  _descriptions?: BuilderTriggerDescriptions,
+  _aiAssert?: AiAssert,
+  _aiScroll?: AiScroll,
+  _aiTap?: AiTap,
+  _aiWaitFor?: AiWaitFor,
 ) {
   if (trigger.mode !== 0) {
     throw new Error(`TODO: rule_config.triggers[${triggerIndex}].mode=${trigger.mode} is not supported yet`);
@@ -56,21 +89,28 @@ export async function fillBuilderTrigger(
     throw new Error(`TODO: rule_config.triggers[${triggerIndex}].expressions[0].ref=${expression.ref} is not supported yet`);
   }
 
-  await aiScroll({ direction: 'down' }, descriptions.scrollDescription);
-  await aiWaitFor(descriptions.waitForDescription);
-  await expect(page.getByRole('radio', { name: '简单模式' })).toBeChecked();
+  await selectTriggerMode(page, triggerIndex, '简单模式');
+  const card = triggerCard(page, triggerIndex);
 
   if (expression.comparisonOperator) {
-    await selectAntOption(aiTap, descriptions.comparisonFieldDescription, expression.comparisonOperator);
+    const comparisonSelect = card.getByRole('combobox').nth(1);
+    const comparisonRoot = comparisonSelect.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]');
+    if (!(await comparisonRoot.locator('.ant-select-selection-item').filter({ hasText: expression.comparisonOperator }).isVisible().catch(() => false))) {
+      await selectAntSelectOption(page, comparisonSelect, expression.comparisonOperator);
+    }
   }
 
   if (expression.value === undefined || expression.value === null) {
     throw new Error(`Missing rule_config.triggers[${triggerIndex}].expressions[0].value`);
   }
-  await fillLastSpinButton(page, expression.value, descriptions.valueFieldDescription);
+  await card.getByRole('spinbutton').first().fill(String(expression.value));
 
   if (trigger.severityName) {
-    await aiAssert(`存在${trigger.severityName}`);
+    const severity = card.getByRole('radio', { name: trigger.severityName });
+    if (!(await severity.isChecked().catch(() => false))) {
+      await card.getByText(trigger.severityName, { exact: true }).click();
+      await expect(severity, `trigger ${triggerIndex} severity ${trigger.severityName}`).toBeChecked();
+    }
   }
 }
 
@@ -78,8 +118,12 @@ export async function fillBuilderTrigger(
  * 填充 expression 模式下的一条 trigger（mode === 1）。
  * 使用 Playwright 原生定位器填写文本输入框。
  */
-export async function fillExpressionTrigger(page: Page, triggerIndex: number, exp: string, queryCount: number) {
-  await fillTextboxByIndex(page, queryCount + triggerIndex, exp, `trigger expression textbox for trigger index ${triggerIndex}`);
+export async function fillExpressionTrigger(page: Page, triggerIndex: number, exp: string) {
+  await selectTriggerMode(page, triggerIndex, '表达式模式');
+  const card = triggerCard(page, triggerIndex);
+  const editor = card.getByRole('textbox', { name: 'Editor content' }).first();
+  await expect(editor, `trigger expression textbox for trigger index ${triggerIndex}`).toBeVisible();
+  await editor.fill(exp);
 }
 
 /**
@@ -107,30 +151,18 @@ export async function fillTriggers(
     throw new Error(`Missing rule_config.triggers for ${uiConfig.cate} alert rule`);
   }
 
-  const hasAI = Boolean(options?.aiAssert && options?.aiScroll && options?.aiWaitFor);
-  const desc = options?.descriptions;
-  const queryCount = options?.queryCount ?? uiConfig.queries.length;
+  await ensureTriggerCount(page, triggers.length, aiTap);
 
   for (let index = 0; index < triggers.length; index++) {
     const trigger = triggers[index];
-    if (index > 0) {
-      await aiTap('添加阈值判断');
-      await page.waitForTimeout(300);
-    }
 
     if (trigger.mode === 1) {
-      // expression 模式
-      await aiTap('表达式模式');
       const exp = trigger.exp;
       if (!exp) {
         throw new Error(`Missing rule_config.triggers[${index}].exp for code trigger`);
       }
-      await fillExpressionTrigger(page, index, exp, queryCount);
-    } else if (hasAI && desc) {
-      // builder 模式 + AI
-      await fillBuilderTrigger(trigger, index, page, desc, options.aiAssert, options.aiScroll, aiTap, options.aiWaitFor);
+      await fillExpressionTrigger(page, index, exp);
     } else {
-      // builder 模式 + 简单 Playwright 定位器
       const expression = trigger.expressions?.[0];
       if (!expression) {
         throw new Error(`Missing rule_config.triggers[${index}].expressions[0] for builder trigger`);
@@ -138,12 +170,7 @@ export async function fillTriggers(
       if (expression.value === undefined || expression.value === null) {
         throw new Error(`Missing rule_config.triggers[${index}].expressions[0].value for builder trigger`);
       }
-      await fillSpinButtonByIndex(page, index, expression.value, `trigger value spinbutton for trigger index ${index}`);
-    }
-
-    if (trigger.severityName && !hasAI) {
-      // AI 模式下 fillBuilderTrigger 内部已处理 severityName，这里避免重复
-      await aiTap(trigger.severityName);
+      await fillBuilderTrigger(trigger, index, page, options?.descriptions, options?.aiAssert, options?.aiScroll, aiTap, options?.aiWaitFor);
     }
 
     options?.postTriggerCheck?.(trigger, index);

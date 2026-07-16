@@ -99,8 +99,8 @@ export default function Table(props: IProps) {
         datasource_id: datasourceValue,
         query: [
           {
-            from: moment(range.start).unix(),
-            to: moment(range.end).unix(),
+            from: moment(range.start).valueOf(),
+            to: moment(range.end).valueOf(),
             sql: replaceTemplateVariables(_.trim(queryValues.sql), queryValues.range),
           },
         ],

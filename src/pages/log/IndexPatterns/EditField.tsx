@@ -42,6 +42,7 @@ const linkTipBuiltinVariableKeys = [
   'linkTip.builtin.timeWindow',
   'linkTip.builtin.timeRangeMs',
   'linkTip.builtin.timeRangeSeconds',
+  'linkTip.builtin.timeRangeUtc',
   'linkTip.builtin.timeRangeFormat',
   'linkTip.builtin.timeRangeOffset',
   'linkTip.builtin.localUrl',
@@ -58,6 +59,10 @@ const linkTipExamples = [
   {
     labelKey: 'linkTip.examples.timeRangeSeconds',
     address: '$local_url/page?stime=$__from&etime=$__to&$__time_format__=unix',
+  },
+  {
+    labelKey: 'linkTip.examples.timeRangeUtc',
+    address: '$local_url/page?stime=$__from&etime=$__to&$__time_format__=utc',
   },
   {
     labelKey: 'linkTip.examples.timeRangeFormat',

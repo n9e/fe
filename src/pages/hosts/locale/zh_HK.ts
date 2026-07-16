@@ -149,7 +149,7 @@ const zh_HK = {
   force_cover: '強制覆蓋',
   force_delete: '強制刪除',
   batch_failed: '批量操作失敗',
-  upgrade_not_support_tip: '該版本不支持任務通道，請升級 Agent 版本到 ent-v0.5.27 及以上',
+  upgrade_not_support_tip: '該版本不支持任務通道，請升級 Agent 版本到 {{version}} 及以上',
   go_upgrade: '去升級',
 };
 

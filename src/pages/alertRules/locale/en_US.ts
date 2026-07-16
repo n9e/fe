@@ -63,6 +63,11 @@ const en_US = {
   notify_configs: 'Notification Configuration',
   notify_configs_desc: 'Notification rules, recovery notification & self-healing',
   notify_rule_ids: 'Notification rule',
+  notify_rule_total: 'Total {{total}} items',
+  notify_rule_footer_total: 'Total {{total}} rules',
+  notify_rule_manage: 'Notification rule management',
+  notify_rule_view: 'View',
+  notify_rule_select: 'Select notification rule',
   switch_to_old: 'Switch to old version',
   switch_to_new: 'Switch to new version',
   notify_channels: 'Channels',
@@ -407,6 +412,13 @@ const en_US = {
 
   form_ng: {
     cate: 'Datasource type',
+    prompt: {
+      title: 'Unsaved changes',
+      message: 'Do you want to save your changes?',
+      cancelText: 'Cancel',
+      discardText: 'Discard',
+      okText: 'Save',
+    },
     add_datasource_filter: 'Datasource filter',
     rule_summary: 'Rule Summary',
     pipeline_configs: 'Event Processing',

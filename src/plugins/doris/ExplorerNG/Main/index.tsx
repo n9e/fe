@@ -163,6 +163,7 @@ export default function index(props: Props) {
           <Col flex='none'>
             <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
               <TimeRangePicker
+                showMillisecond
                 onChange={() => {
                   snapRangeRef.current = {
                     from: undefined,

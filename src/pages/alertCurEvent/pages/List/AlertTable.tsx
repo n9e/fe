@@ -272,7 +272,7 @@ export default function AlertTable(props: IProps) {
           pageSizeOptions: ['30', '100', '200', '500'],
         }}
         rowActions={(record) => ({
-          menu: _.compact([
+          inline: _.compact([
             IS_PLUS
               ? {
                   key: 'ack',
@@ -321,7 +321,7 @@ export default function AlertTable(props: IProps) {
             },
           ]) as any,
         })}
-        actionColumn={{ title: t('common:table.operations'), width: 64 }}
+        actionColumn={{ title: t('common:table.operations'), width: 100 }}
       />
       <EventDetailDrawer
         showAckBtn

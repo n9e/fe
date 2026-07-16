@@ -32,6 +32,8 @@
   --landing-icon-violet-color: #6b51af;
   --landing-icon-blue-bg: rgba(0, 81, 255, 0.06);
   --landing-icon-blue-color: #5f45a1;
+  --landing-icon-emerald-bg: rgba(16, 185, 129, 0.1);
+  --landing-icon-emerald-color: #0f9d77;
   --landing-focus-ring: rgba(104, 38, 217, 0.45);
 }
 
@@ -64,6 +66,8 @@
   --landing-icon-violet-color: #b8a4ff;
   --landing-icon-blue-bg: rgba(76, 136, 255, 0.1);
   --landing-icon-blue-color: #878792;
+  --landing-icon-emerald-bg: rgba(52, 211, 153, 0.14);
+  --landing-icon-emerald-color: #6ee7b7;
 }
 
 @text-1: var(--fc-text-1);
@@ -919,6 +923,45 @@
   }
 }
 
+/* Integration footer: data-source caption (left) + template-center CTA (right) */
+.n9e-landing-integration-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  .n9e-landing-caption {
+    margin-top: 0;
+    padding-top: 0;
+  }
+}
+
+.n9e-landing-integration-browse {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
+  color: rgb(var(--landing-primary-rgb));
+  text-decoration: none;
+  transition: gap 0.18s ease, opacity 0.18s ease;
+
+  &:hover {
+    gap: 7px;
+    color: rgb(var(--landing-primary-rgb));
+    text-decoration: underline;
+  }
+}
+
+.n9e-landing-integration-browse-arrow {
+  font-size: 11px;
+}
+
 /* ============================================================ Infrastructure (uniform cool tone) */
 .n9e-landing-infrastructure-grid {
   display: grid;
@@ -1550,6 +1593,16 @@
 .n9e-landing-onboarding-tag-icon-data {
   background: var(--landing-icon-blue-bg);
   color: var(--landing-icon-blue-color);
+}
+
+.n9e-landing-onboarding-tag-icon-ai {
+  background: var(--landing-icon-emerald-bg);
+  color: var(--landing-icon-emerald-color);
+}
+
+/* 第三条引导线（智能化线，单步）落在两列网格的奇数末位时铺满整行，避免右侧出现空缺格 */
+.n9e-landing-onboarding-panel:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .n9e-landing-onboarding-tag-name {

@@ -50,8 +50,8 @@ export default function SQLFormatButton(props: SQLFormatParams) {
           if (!timeParams) {
             const range = parseRange(queryValues.range);
             timeParams = {
-              from: moment(range.start).unix(),
-              to: moment(range.end).unix(),
+              from: moment(range.start).valueOf(),
+              to: moment(range.end).valueOf(),
             };
           }
           if (datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field && timeParams) {

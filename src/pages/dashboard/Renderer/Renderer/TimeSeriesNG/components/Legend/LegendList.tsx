@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
@@ -12,16 +12,24 @@ interface Props {
   panel: IPanel;
   data: DataItem[];
   legendColumns?: string[];
+  legendSortBy?: string;
+  legendSortDir?: string;
   placement?: 'bottom' | 'right';
   onRowClick: (record: DataItem) => void;
 }
 
 export default function LegendList(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { panel, data, legendColumns, placement, onRowClick } = props;
+  const { panel, data, legendColumns, legendSortBy, legendSortDir, placement, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
+
+  const sortedData = useMemo(() => {
+    if (!legendSortBy) return data;
+    const dir = legendSortDir === 'desc' ? 'desc' : 'asc';
+    return _.orderBy(data, [(item) => item[legendSortBy]?.stat], [dir]);
+  }, [data, legendSortBy, legendSortDir]);
 
   return (
     <div
@@ -32,7 +40,7 @@ export default function LegendList(props: Props) {
       }}
     >
       <ul className='renderer-timeseries-ng-legend-list'>
-        {_.map(data, (item) => {
+        {_.map(sortedData, (item) => {
           return (
             <li
               key={item.id}

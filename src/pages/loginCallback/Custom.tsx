@@ -69,6 +69,7 @@ export default function Custom() {
                   });
                 // send status to liantongyun
                 try {
+                  // 这里是一个定制的逻辑，只有 liantongyun 这一个 sso 供应商会用到，并且可能存在多个环境所以无法通过 origin 来判断，暂时只能通过 linkSource 来判断
                   if (event.data.linkSource === 'WOCLOUD' && event.source) {
                     event.source.postMessage(
                       {

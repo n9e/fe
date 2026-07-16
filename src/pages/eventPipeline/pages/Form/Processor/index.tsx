@@ -124,7 +124,7 @@ export default function NotifyConfig(props: Props) {
       {processorType === 'callback' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'event_update' && <Callback field={field} namePath={[field.name, 'config']} />}
       {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
-      {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} />}
+      {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
       <PlusProcessor processorType={processorType} field={field} />
 
       <TestModal type='processor' config={processorConfig} />

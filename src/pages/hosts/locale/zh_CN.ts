@@ -149,7 +149,7 @@ const zh_CN = {
   force_cover: '强制覆盖',
   force_delete: '强制删除',
   batch_failed: '批量操作失败',
-  upgrade_not_support_tip: '该版本不支持任务通道，请升级 Agent 版本到 ent-v0.5.27 及以上',
+  upgrade_not_support_tip: '该版本不支持任务通道，请升级 Agent 版本到 {{version}} 及以上',
   go_upgrade: '去升级',
 };
 

@@ -58,7 +58,7 @@ export default function ContactDrawer(props: Props) {
             pagination={false}
             dataSource={data}
             rowActions={(reocrd) => ({
-              menu: _.compact([
+              inline: _.compact([
                 {
                   key: 'edit',
                   icon: 'edit',

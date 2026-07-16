@@ -3,9 +3,19 @@ import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-import { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload } from './types';
+import { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload, SkillAuthValues } from './types';
 
-export type { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload };
+export type { Item, FormValues, FileItem, SkillDetail, FileContent, GitInstallPayload, SkillAuthValues };
+
+// appendSkillAuth 把可见范围+管理团队塞进 multipart 表单（后端按 JSON 数组 / int 解析）。
+// private 缺省兜底为 1（仅管理团队可见），绝不静默降级成公共。
+function appendSkillAuth(formData: FormData, auth?: SkillAuthValues) {
+  if (!auth) {
+    return;
+  }
+  formData.append('user_group_ids', JSON.stringify(auth.user_group_ids ?? []));
+  formData.append('private', String(auth.private ?? 1));
+}
 
 export const getList = function (): Promise<Item[]> {
   return request('/api/n9e/ai-skills', {
@@ -26,18 +36,20 @@ export const postItem = function (data: FormValues) {
   }).then((res) => res.dat);
 };
 
-export const importItem = function (file: File) {
+export const importItem = function (file: File, auth?: SkillAuthValues) {
   const formData = new FormData();
   formData.append('file', file);
+  appendSkillAuth(formData, auth);
   return request('/api/n9e/ai-skills/import', {
     method: RequestMethod.Post,
     data: formData,
   }).then((res) => res.dat);
 };
 
-export const importItemToUpdate = function (id: number, file: File) {
+export const importItemToUpdate = function (id: number, file: File, auth?: SkillAuthValues) {
   const formData = new FormData();
   formData.append('file', file);
+  appendSkillAuth(formData, auth);
   return request(`/api/n9e/ai-skill/${id}/import`, {
     method: RequestMethod.Put,
     data: formData,
@@ -57,12 +69,6 @@ export const deleteItem = function (id: number) {
   }).then((res) => res.dat);
 };
 
-export const getFiles = function (id: number): Promise<FileItem[]> {
-  return request(`/api/n9e/ai-skill/${id}/files`, {
-    method: RequestMethod.Get,
-  }).then((res) => res.dat ?? []);
-};
-
 export const getFile = function (fileId: number): Promise<FileContent> {
   return request(`/api/n9e/ai-skill-file/${fileId}`, {
     method: RequestMethod.Get,
@@ -72,15 +78,6 @@ export const getFile = function (fileId: number): Promise<FileContent> {
 export const deleteFile = function (fileId: number) {
   return request(`/api/n9e/ai-skill-file/${fileId}`, {
     method: RequestMethod.Delete,
-  }).then((res) => res.dat);
-};
-
-export const uploadFile = function (id: number, file: File) {
-  const formData = new FormData();
-  formData.append('file', file);
-  return request(`/api/n9e/ai-skill/${id}/files`, {
-    method: RequestMethod.Post,
-    data: formData,
   }).then((res) => res.dat);
 };
 

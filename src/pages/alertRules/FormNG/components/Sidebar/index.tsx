@@ -34,7 +34,7 @@ export default function Sidebar(props: IProps) {
   const { t } = useTranslation('alertRules');
 
   return (
-    <aside className='w-[260px] bg-fc-100 flex-none h-full p-4 pr-3 border-r border-[var(--fc-border-color)] flex flex-col overflow-hidden'>
+    <aside className='w-[260px] bg-fc-100 flex-none h-full p-4 pl-3 border-l border-[var(--fc-border-color)] flex flex-col overflow-hidden'>
       <div>
         <div className='font-bold text-soft/80 mb-2'>{t('step_title')}</div>
         <div className='flex flex-col gap-1.5'>

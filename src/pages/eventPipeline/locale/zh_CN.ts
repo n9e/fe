@@ -134,6 +134,9 @@ const zh_CN = {
     content_placeholder: '使用 go template 语法，如果最后显示为 true，将会将 event 在此环节丢弃',
   },
   ai_summary: {
+    llm_config: '复用 LLM 配置',
+    llm_config_placeholder: '选择已配置的 LLM（留空则手动填写下方参数）',
+    llm_config_tip: '选择「AI 配置 - LLM 配置」中已有的模型配置，复用其模型/密钥/地址等；留空则使用下方手动填写的参数。',
     url_placeholder: '请输入 API 服务地址',
     url_required: '请输入 URL',
     api_key_placeholder: 'API 密钥',

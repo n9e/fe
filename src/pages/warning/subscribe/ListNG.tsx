@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, Input, message, Modal, Space, Switch, Tag, Tooltip, Select } from 'antd';
-import { ExclamationCircleOutlined, SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -16,8 +16,8 @@ import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { userColumn } from '@/components/EnhancedTable/columns';
-import OrganizeColumns, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
@@ -54,7 +54,8 @@ const Subscribe = (props: Props) => {
   const history = useHistory();
   const { datasourceList, busiGroups } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
-  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
   let defaultFilter = {} as Filter;
   let defaultPage = 1;
   try {
@@ -226,7 +227,8 @@ const Subscribe = (props: Props) => {
           return '-';
         },
       },
-      userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
     ],
     readonly
       ? [
@@ -239,7 +241,7 @@ const Subscribe = (props: Props) => {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (status) => {
               return (
                 <Tag className='mr-0' color={status === strategyStatus.Enable ? 'success' : 'error'}>
@@ -259,7 +261,7 @@ const Subscribe = (props: Props) => {
               enabledValue: 0,
               disabledValue: 1,
             }),
-
+            width: 80,
             render: (disabled, record: any) => (
               <Switch
                 checked={disabled === strategyStatus.Enable}
@@ -371,18 +373,16 @@ const Subscribe = (props: Props) => {
         </Space>
         <Space>
           {headerExtra}
-          <Button
-            onClick={() => {
-              OrganizeColumns({
-                i18nNs: 'alertSubscribes',
-                value: columnsConfigs,
-                onChange: (val) => {
-                  setColumnsConfigs(val);
-                  setDefaultColumnsConfigs(val, LOCAL_STORAGE_KEY);
-                },
-              });
+          <TableColumnSelect
+            options={columnOptions}
+            value={visibleColumns}
+            onChange={(vals) => {
+              setVisibleColumns(vals);
+              setDefaultColumnsConfigs(vals, LOCAL_STORAGE_KEY);
             }}
-            icon={<EyeOutlined />}
+            sortable={false}
+            showAll
+            buttonSize='middle'
           />
         </Space>
       </div>
@@ -399,12 +399,16 @@ const Subscribe = (props: Props) => {
         }}
         loading={loading}
         dataSource={filterData()}
-        columns={ajustColumns(columns, columnsConfigs)}
+        columns={columns.filter((col) => {
+          if (!('dataIndex' in col)) return true;
+          if (col.dataIndex === 'operator') return true;
+          return visibleColumns.includes(col.dataIndex as string);
+        })}
         rowActions={
           readonly
             ? undefined
             : (record: subscribeItem) => ({
-                menu: [
+                inline: [
                   {
                     key: 'edit',
                     icon: 'edit',
@@ -445,7 +449,7 @@ const Subscribe = (props: Props) => {
                 ],
               })
         }
-        actionColumn={{ title: t('common:table.operations'), width: 64 }}
+        actionColumn={{ title: t('common:table.operations'), width: 100 }}
       />
     </>
   );

@@ -62,6 +62,11 @@ const zh_HK = {
   notify_configs: '通知配置',
   notify_configs_desc: '通知規則、恢復通知與告警自愈',
   notify_rule_ids: '通知規則',
+  notify_rule_total: '共 {{total}} 條',
+  notify_rule_footer_total: '共 {{total}} 條規則',
+  notify_rule_manage: '通知規則管理',
+  notify_rule_view: '查看',
+  notify_rule_select: '選擇通知規則',
   switch_to_old: '切換舊版',
   switch_to_new: '切換新版',
   notify_channels: '通知媒介',
@@ -404,6 +409,13 @@ const zh_HK = {
 
   form_ng: {
     cate: '數據源類型',
+    prompt: {
+      title: '有更改未儲存',
+      message: '您想儲存變更嗎？',
+      cancelText: '取消',
+      discardText: '放棄',
+      okText: '儲存',
+    },
     add_datasource_filter: '數據源篩選',
     rule_summary: '規則摘要',
     pipeline_configs: '事件處理',
@@ -433,8 +445,8 @@ const zh_HK = {
     collapse_core_only: '僅展開核心步驟',
     collapse_expand_all: '展開全部',
     collapse_collapse_all: '收起全部',
-    collapse_sidebar: '收起左側欄',
-    expand_sidebar: '展開左側欄',
+    collapse_sidebar: '收起側邊欄',
+    expand_sidebar: '展開側邊欄',
   },
 };
 export default zh_HK;

@@ -294,9 +294,39 @@ export function buildExpectedAlertRule(config: AlertRuleConfig, uiConfig: Normal
   // rule_config.task_tpls 不是表单字段，后端可能不返回
   if (expected.rule_config && 'task_tpls' in expected.rule_config) {
     delete (expected.rule_config as Record<string, unknown>).task_tpls;
-
   }
 
+  // FormNG add page only renders PipelineConfigsNG Relabel when initialValues
+  // already contains rule_config.event_relabel_config; default add values do not.
+  if (expected.rule_config && 'event_relabel_config' in expected.rule_config) {
+    delete (expected.rule_config as Record<string, unknown>).event_relabel_config;
+  }
+
+  // FormNG only renders anomaly_trigger for prometheus with fcBrain, and only
+  // submits its fields when the trigger is explicitly enabled.
+  if (
+    expected.rule_config &&
+    'anomaly_trigger' in expected.rule_config &&
+    (expected.cate !== 'prometheus' || (expected.rule_config.anomaly_trigger as Record<string, unknown>)?.enable !== true)
+  ) {
+    delete (expected.rule_config as Record<string, unknown>).anomaly_trigger;
+  }
+
+  // NodataTrigger hides resolve_after controls while the trigger is disabled;
+  // processFormValues does not persist resolve_after in that state.
+  if (expected.rule_config?.nodata_trigger && expected.rule_config.nodata_trigger.enable !== true) {
+    delete (expected.rule_config.nodata_trigger as Record<string, unknown>).resolve_after;
+  }
+
+  // Joins are not rendered for single-query trigger configs, so join_ref is not persisted.
+  const queryCount = Array.isArray(expected.rule_config?.queries) ? expected.rule_config.queries.length : 0;
+  if (queryCount <= 1 && Array.isArray(expected.rule_config?.triggers)) {
+    expected.rule_config.triggers = expected.rule_config.triggers.map((trigger) => {
+      if (!isPlainObject(trigger)) return trigger;
+      const { join_ref, ...persistedTrigger } = trigger;
+      return persistedTrigger;
+    });
+  }
 
   // GCM fields that are dynamically filtered by metricDescriptor — skip UI interaction
   if (expected.cate === 'gcm' && expected.rule_config?.queries) {

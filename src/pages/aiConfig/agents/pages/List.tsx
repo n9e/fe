@@ -107,7 +107,7 @@ export default function List() {
                   },
                 ]}
                 rowActions={(record) => ({
-                  menu: [
+                  inline: [
                     {
                       key: 'edit',
                       icon: 'edit',

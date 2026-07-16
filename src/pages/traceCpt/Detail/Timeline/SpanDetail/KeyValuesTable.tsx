@@ -16,6 +16,7 @@ import * as React from 'react';
 import { Dropdown, Menu } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { copy2ClipBoard } from '@/utils';
+import purify from 'dompurify';
 import { TNil } from '../../../type';
 import { KeyValuePair, Link } from '../../../type';
 
@@ -42,7 +43,7 @@ const stringMarkup = (value: string) => (
 function _jsonMarkup(value: any) {
   return (
     // eslint-disable-next-line react/no-danger
-    <div dangerouslySetInnerHTML={{ __html: JSON.stringify(value) }} />
+    <div dangerouslySetInnerHTML={{ __html: purify.sanitize(JSON.stringify(value)) }} />
   );
 }
 

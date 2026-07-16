@@ -63,6 +63,11 @@ const ja_JP = {
   notify_configs: '通知設定',
   notify_configs_desc: '通知ルール、復旧通知と自己修復',
   notify_rule_ids: '通知ルール',
+  notify_rule_total: '合計 {{total}} 件',
+  notify_rule_footer_total: '合計 {{total}} ルール',
+  notify_rule_manage: '通知ルール管理',
+  notify_rule_view: '表示',
+  notify_rule_select: '通知ルールを選択',
   switch_to_old: '切り替え旧版',
   switch_to_new: '切り替え新版',
   notify_channels: '通知メディア',
@@ -405,6 +410,13 @@ const ja_JP = {
 
   form_ng: {
     cate: 'データソースタイプ',
+    prompt: {
+      title: '保存されていない変更があります',
+      message: '変更を保存しますか？',
+      cancelText: 'キャンセル',
+      discardText: '放棄',
+      okText: '保存',
+    },
     add_datasource_filter: 'データソースフィルター',
     rule_summary: 'ルール概要',
     pipeline_configs: 'イベント処理',

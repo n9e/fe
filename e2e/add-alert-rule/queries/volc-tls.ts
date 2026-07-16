@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { BASE_URL, doLogin } from '../../fixture';
-import { selectAntSelectOption } from '../../helpers';
+import { selectAntInputGroupOption } from '../../helpers';
 import type { AlertRuleConditionHandler, NormalizedQuery } from '../types';
 import { fillAdvancedSettings, fillRelativeTimeRange, fillTriggers, type AlertRuleTrigger } from '../helpers';
 
@@ -111,7 +111,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   if (!projectName) {
     throw new Error(`Cannot resolve project name for project_id=${item.project_id}`);
   }
-  await selectAntSelectOption(page, page.locator('.ant-input-group').filter({ hasText: '日志项目' }).getByRole('combobox').first(), projectName);
+  await selectAntInputGroupOption(aiTap, '日志项目', projectName);
 
   // Wait for topic options to load (depends on project selection)
   await page.waitForTimeout(1000);
@@ -121,7 +121,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   if (!topicName) {
     throw new Error(`Cannot resolve topic name for topic_id=${item.topic_id}`);
   }
-  await selectAntSelectOption(page, page.locator('.ant-input-group').filter({ hasText: '日志主题' }).getByRole('combobox').first(), topicName);
+  await selectAntInputGroupOption(aiTap, '日志主题', topicName);
 
   // Fill time range
   await fillRelativeTimeRange(page, item.range, 'volc-tls');

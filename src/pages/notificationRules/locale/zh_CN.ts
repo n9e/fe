@@ -1,5 +1,10 @@
 const zh_CN = {
   title: '通知规则',
+  empty_guide: {
+    title: '还没有通知规则',
+    desc: '通知规则决定"告警发给谁、用哪个媒介"。配置后，告警事件才会真正推送到钉钉 / 邮件等渠道。',
+    config_channel: '先去配置通知媒介',
+  },
   basic_configuration: '基础配置',
   user_group_ids: '授权团队',
   user_group_ids_tip: '这里填写的团队中的用户，将有权限管理或查看此通知规则',

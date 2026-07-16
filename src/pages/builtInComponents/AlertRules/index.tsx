@@ -238,75 +238,79 @@ export default function index(props: Props) {
           }),
         ]}
         pagination={pagination}
-        rowActions={(record) => ({
-          menu: _.compact([
-            {
-              key: 'import',
-              icon: 'open',
-              text: t('import_to_buisGroup'),
-              onClick: () => {
-                Import({
-                  data: formatBeautifyJson(record.content),
-                  busiGroups,
-                  groupedDatasourceList,
-                  reloadGroupedDatasourceList,
-                  datasourceCateOptions,
-                });
+        rowActions={(record: any) => {
+          return {
+            inline: [
+              {
+                key: 'import',
+                icon: 'import',
+                text: t('import_to_buisGroup'),
+                onClick: () => {
+                  Import({
+                    data: formatBeautifyJson(record.content),
+                    busiGroups,
+                    groupedDatasourceList,
+                    reloadGroupedDatasourceList,
+                    datasourceCateOptions,
+                  });
+                },
               },
-            },
-            {
-              key: 'export',
-              icon: 'open',
-              text: t('common:btn.export'),
-              onClick: () => {
-                Export({
-                  data: formatBeautifyJson(record.content, 'array'),
-                });
+              {
+                key: 'export',
+                icon: 'open',
+                text: t('common:btn.export'),
+                onClick: () => {
+                  Export({
+                    data: formatBeautifyJson(record.content, 'array'),
+                  });
+                },
               },
-            },
-            record.updated_by !== 'system' && canPut
-              ? {
-                  key: 'edit',
-                  icon: 'edit',
-                  text: t('common:btn.edit'),
-                  onClick: () => {
-                    PayloadFormModal({
-                      darkMode,
-                      action: 'edit',
-                      cateList,
-                      contentMode: 'json',
-                      showCate: true,
-                      initialValues: record,
-                      onOk: () => {
-                        fetchData();
-                        fetchCates();
-                      },
-                    });
-                  },
-                }
-              : undefined,
-            record.updated_by !== 'system' && canDel
-              ? {
-                  key: 'delete',
-                  icon: 'delete',
-                  text: t('common:btn.delete'),
-                  danger: true,
-                  onClick: () => {
-                    Modal.confirm({
-                      title: t('common:confirm.delete'),
-                      onOk() {
-                        deletePayloads([record.id]).then(() => {
+            ],
+            menu: _.compact([
+              record.updated_by !== 'system' && canPut
+                ? {
+                    key: 'edit',
+                    icon: 'edit',
+                    text: t('common:btn.edit'),
+                    onClick: () => {
+                      PayloadFormModal({
+                        darkMode,
+                        action: 'edit',
+                        cateList,
+                        contentMode: 'json',
+                        showCate: true,
+                        initialValues: record,
+                        onOk: () => {
                           fetchData();
                           fetchCates();
-                        });
-                      },
-                    });
-                  },
-                }
-              : undefined,
-          ]) as any,
-        })}
-        actionColumn={{ title: t('common:table.operations'), width: 64 }}
+                        },
+                      });
+                    },
+                  }
+                : undefined,
+              record.updated_by !== 'system' && canDel
+                ? {
+                    key: 'delete',
+                    icon: 'delete',
+                    text: t('common:btn.delete'),
+                    danger: true,
+                    onClick: () => {
+                      Modal.confirm({
+                        title: t('common:confirm.delete'),
+                        onOk() {
+                          deletePayloads([record.id]).then(() => {
+                            fetchData();
+                            fetchCates();
+                          });
+                        },
+                      });
+                    },
+                  }
+                : undefined,
+            ]),
+          };
+        }}
+        actionColumn={{ title: t('common:table.operations'), width: 90 }}
       />
     </>
   );

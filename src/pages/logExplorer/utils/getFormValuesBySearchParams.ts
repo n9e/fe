@@ -114,6 +114,39 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         },
       };
     }
+    if (data_source_name === DatasourceCateEnum.ck) {
+      const syntax = _.get(params, 'syntax');
+      const sqlVizType = _.get(params, 'sqlVizType');
+      const database = _.get(params, 'database');
+      const table = _.get(params, 'table');
+      const time_field = _.get(params, 'time_field');
+      const stackByField = _.get(params, 'stackByField');
+      const defaultSearchField = _.get(params, 'defaultSearchField');
+      const sql = _.get(params, 'sql');
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
+
+      return {
+        ...formValues,
+        query: {
+          range,
+          syntax,
+          sqlVizType,
+          database,
+          table,
+          time_field,
+          stackByField,
+          defaultSearchField,
+          query,
+          sql,
+          organizeFields,
+          keys: {
+            labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+            valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
+          },
+        },
+      };
+    }
     if (data_source_name === DatasourceCateEnum.aliyunSLS) {
       const mode = _.get(params, 'mode');
       const submode = _.get(params, 'submode');
@@ -214,6 +247,19 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           },
         };
       }
+    }
+    if (data_source_name === DatasourceCateEnum.victorialogs || data_source_name === DatasourceCateEnum.loki) {
+      const mode = _.get(params, 'mode');
+      const limit = _.get(params, 'limit');
+      return {
+        ...formValues,
+        query: {
+          range,
+          mode,
+          query,
+          limit: limit ? _.toNumber(limit) : undefined,
+        },
+      };
     }
     if (data_source_name === DatasourceCateEnum.huaweiLTS) {
       const mode = _.get(params, 'mode');
@@ -375,6 +421,23 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     }
     return queryString.stringify(query);
   }
+  if (data_source_name === DatasourceCateEnum.ck) {
+    query.syntax = formValues.query?.syntax;
+    query.sqlVizType = formValues.query?.sqlVizType;
+    query.database = formValues.query?.database;
+    query.table = formValues.query?.table;
+    query.time_field = formValues.query?.time_field;
+    query.stackByField = formValues.query?.stackByField;
+    query.defaultSearchField = formValues.query?.defaultSearchField;
+    query.query = formValues.query?.query;
+    query.sql = formValues.query?.sql;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
+    return queryString.stringify(query);
+  }
   if (data_source_name === DatasourceCateEnum.aliyunSLS) {
     query.mode = formValues.query?.mode;
     query.submode = formValues.query?.submode;
@@ -417,6 +480,12 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.victorialogs || data_source_name === DatasourceCateEnum.loki) {
+    query.mode = formValues.query?.mode;
+    query.query = formValues.query?.query;
+    query.limit = formValues.query?.limit;
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.huaweiLTS) {

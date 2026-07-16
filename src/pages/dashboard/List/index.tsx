@@ -37,7 +37,7 @@ import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import EllipsisText from '@/components/EllipsisText';
 import usePagination from '@/components/usePagination';
-import { getDefaultColumnsConfigs, ajustColumns } from '@/components/OrganizeColumns';
+import { getDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import { getBusiGroups } from '@/components/BusinessGroup';
 import EmptyGuide from '@/components/EmptyGuide';
 
@@ -53,6 +53,7 @@ import './style.less';
 
 const N9E_GIDS_LOCALKEY = 'N9E_BOARD_NODE_ID';
 const SEARCH_SESSION_STORAGE_KEY = 'n9e_dashboard_search';
+const DASHBOARD_PAGE_SESSION_KEY = 'n9e_dashboard_page';
 const PUBLIC_SELECT_GIDS_LOCALKEY = 'N9E_PUBLIC_SELECT_GIDS';
 const getDefaultPublicSelectGids = (localKey: string) => {
   const valueStr = localStorage.getItem(localKey);
@@ -69,16 +70,23 @@ export default function index() {
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>(sessionStorage.getItem(SEARCH_SESSION_STORAGE_KEY) || '');
+  const [current, setCurrent] = useState<number>(() => {
+    const saved = sessionStorage.getItem(DASHBOARD_PAGE_SESSION_KEY);
+    return saved ? Number(saved) : 1;
+  });
   const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number[] | undefined>(getDefaultPublicSelectGids(PUBLIC_SELECT_GIDS_LOCALKEY)); // 目前只有公开仪表盘会用到
   const [busiGroups, setBusiGroups] = useState<any[]>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
-  const [columnsConfigs, setColumnsConfigs] = useState<{ name: string; visible: boolean }[]>(getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
+  const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
   const [importData, setImportData] = useState<{ visible: boolean; busiId?: number; type?: ModalType }>({ visible: false });
 
   useUpdateEffect(() => {
     setGids(businessGroup.ids);
     setsearchVal('');
+    setCurrent(1);
     sessionStorage.removeItem(SEARCH_SESSION_STORAGE_KEY);
+    sessionStorage.removeItem(DASHBOARD_PAGE_SESSION_KEY);
   }, [businessGroup.ids]);
 
   useEffect(() => {
@@ -138,10 +146,13 @@ export default function index() {
             searchVal={searchVal}
             onSearchChange={(val) => {
               setsearchVal(val);
+              setCurrent(1);
               sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, val);
+              sessionStorage.setItem(DASHBOARD_PAGE_SESSION_KEY, '1');
             }}
-            columnsConfigs={columnsConfigs}
-            setColumnsConfigs={setColumnsConfigs}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+            columnOptions={columnOptions}
             selectedBusinessGroup={selectedBusinessGroup}
             setSelectedBusinessGroup={(val) => {
               setSelectedBusinessGroup(val);
@@ -151,8 +162,8 @@ export default function index() {
           <EnhancedTable
             className='mt-2'
             dataSource={data}
-            columns={ajustColumns(
-              _.concat([
+            columns={(() => {
+              const cols = _.concat([
                 {
                   title: t('name'),
                   dataIndex: 'name',
@@ -207,8 +218,8 @@ export default function index() {
                   ellipsis: { showTitle: false },
                   render: (text: string) => <EllipsisText text={text} />,
                 },
-                dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
-                userColumn({ title: t('common:table.username'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
+                dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+                userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
                 {
                   title: t('public.name'),
                   width: 150,
@@ -290,11 +301,14 @@ export default function index() {
                     );
                   },
                 },
-              ]),
-              columnsConfigs,
-            )}
+              ]);
+              return cols.filter((col) => {
+                if (col.dataIndex === 'operator') return true;
+                return visibleColumns.includes(col.dataIndex as string);
+              });
+            })()}
             rowActions={(record) => ({
-              menu: _.compact([
+              inline: _.compact([
                 gids !== '-1'
                   ? {
                       key: 'edit',
@@ -362,7 +376,7 @@ export default function index() {
                   : undefined,
               ]) as any,
             })}
-            actionColumn={{ title: t('common:table.operations'), width: 64 }}
+            actionColumn={{ title: t('common:table.operations'), width: 130 }}
             rowKey='id'
             size='small'
             rowSelection={{
@@ -371,7 +385,14 @@ export default function index() {
                 setSelectRowKeys(selectedRowKeys);
               },
             }}
-            pagination={pagination}
+            pagination={{
+              ...pagination,
+              current,
+              onChange: (page: number) => {
+                setCurrent(page);
+                sessionStorage.setItem(DASHBOARD_PAGE_SESSION_KEY, String(page));
+              },
+            }}
             locale={{
               emptyText: (
                 <EmptyGuide

@@ -63,6 +63,11 @@ const ru_RU = {
   notify_configs: 'Настройки уведомлений',
   notify_configs_desc: 'Правила уведомлений, уведомление о восстановлении и самовосстановление',
   notify_rule_ids: 'Правила уведомлений',
+  notify_rule_total: 'Всего {{total}} шт.',
+  notify_rule_footer_total: 'Всего {{total}} правил',
+  notify_rule_manage: 'Управление правилами уведомлений',
+  notify_rule_view: 'Просмотр',
+  notify_rule_select: 'Выбрать правило уведомления',
   switch_to_old: 'Переключиться на старую версию',
   switch_to_new: 'Переключиться на новую версию',
   notify_channels: 'Каналы уведомлений',
@@ -406,6 +411,13 @@ const ru_RU = {
 
   form_ng: {
     cate: 'Тип источника',
+    prompt: {
+      title: 'Есть несохраненные изменения',
+      message: 'Хотите сохранить изменения?',
+      cancelText: 'Отмена',
+      discardText: 'Отменить',
+      okText: 'Сохранить',
+    },
     add_datasource_filter: 'Фильтр источников',
     rule_summary: 'Сводка правил',
     pipeline_configs: 'Обработка событий',

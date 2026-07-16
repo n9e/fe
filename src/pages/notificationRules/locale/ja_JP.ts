@@ -1,5 +1,10 @@
 const ja_JP = {
   title: '通知ルール',
+  empty_guide: {
+    title: '通知ルールがまだありません',
+    desc: '通知ルールは「誰に・どの媒体で」アラートを送るかを決めます。設定すると、アラートイベントが DingTalk / メールなどに実際に通知されます。',
+    config_channel: '先に通知媒体を設定',
+  },
   basic_configuration: '基本設定',
   user_group_ids: '権限のあるチーム',
   user_group_ids_tip: 'ここに記入されたチームのユーザーは、この通知ルールを管理または表示する権限があります',
