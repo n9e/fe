@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Form, Space, Pagination, Empty, Popover, InputNumber, Select, Tag } from 'antd';
+import { Form, Space, Pagination, Empty, Popover, InputNumber, Select } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -37,10 +37,6 @@ export function getFields(logs, DateField) {
     });
   });
   return _.sortBy(fields);
-}
-
-export function getFieldLabel(fieldKey: string, fieldConfig?: any) {
-  return fieldConfig?.attrs?.[fieldKey]?.alias || fieldKey;
 }
 
 interface Props {
@@ -369,58 +365,6 @@ export default function index(props: Props) {
 
   return (
     <>
-      {!_.isEmpty(queryValues?.filters) && (
-        <div className='flex flex-wrap gap-2 mb-2 children:mr-0'>
-          {_.map(queryValues.filters, (filter) => {
-            if (filter.operator === 'EXISTS') {
-              return (
-                <Tag
-                  key={JSON.stringify(filter)}
-                  closable
-                  onClose={(e) => {
-                    e.preventDefault();
-                    form.setFieldsValue({
-                      query: {
-                        filters: _.filter(queryValues.filters, (item) => {
-                          if (item.key === filter.key && item.operator === filter.operator && item.value === filter.value) return false;
-                          return true;
-                        }),
-                      },
-                    });
-                    executeQuery();
-                  }}
-                  className='whitespace-normal break-all'
-                >
-                  {getFieldLabel(filter.key, currentFieldConfig)}: exists
-                </Tag>
-              );
-            }
-            return (
-              <Tag
-                key={JSON.stringify(filter)}
-                closable
-                color={filter.operator === 'NOT' ? 'red' : undefined}
-                onClose={(e) => {
-                  e.preventDefault();
-                  form.setFieldsValue({
-                    query: {
-                      filters: _.filter(queryValues.filters, (item) => {
-                        if (item.key === filter.key && item.operator === filter.operator && item.value === filter.value) return false;
-                        return true;
-                      }),
-                    },
-                  });
-                  executeQuery();
-                }}
-                className='whitespace-normal break-all'
-              >
-                {filter.operator === 'NOT' ? 'NOT ' : ''}
-                {getFieldLabel(filter.key, currentFieldConfig)}: {filter.value}
-              </Tag>
-            );
-          })}
-        </div>
-      )}
       {refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (

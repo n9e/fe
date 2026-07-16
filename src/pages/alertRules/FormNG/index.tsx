@@ -130,13 +130,18 @@ export default function FormNG(props: IProps) {
   const routerPromptRef = useRef<any>(null);
   const initialFormValuesRef = useRef<any>(null);
   const isProgrammaticUpdate = useRef(false);
+  const allowNextRouteRef = useRef(false);
 
   const updateAllowedLeave = useCallback(
     (values?: any) => {
       if (!initialFormValuesRef.current) return;
 
       const currentValues = values || form.getFieldsValue(true);
-      setAllowedLeave(_.isEqual(currentValues, initialFormValuesRef.current));
+      const isSameAsInitial = _.isEqual(currentValues, initialFormValuesRef.current);
+      if (!isSameAsInitial) {
+        allowNextRouteRef.current = false;
+      }
+      setAllowedLeave(isSameAsInitial);
     },
     [form],
   );
@@ -153,6 +158,12 @@ export default function FormNG(props: IProps) {
 
   const pipelineConfigsRef = React.useRef<PipelineConfigsNGRef>(null);
   const scroll = useScrollSync(sections);
+
+  const leaveAfterSave = useCallback(() => {
+    allowNextRouteRef.current = true;
+    setAllowedLeave(true);
+    history.push('/alert-rules');
+  }, [history]);
 
   const handleCheck = (values) => {
     if (values.cate === 'prometheus') {
@@ -175,8 +186,7 @@ export default function FormNG(props: IProps) {
         message.error(res.error);
       } else {
         message.success(t('common:success.modify'));
-        setAllowedLeave(true);
-        history.push('/alert-rules');
+        leaveAfterSave();
       }
     } else {
       const { dat } = res;
@@ -188,8 +198,7 @@ export default function FormNG(props: IProps) {
 
       if (!errorNum) {
         message.success(`${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
-        setAllowedLeave(true);
-        history.push('/alert-rules');
+        leaveAfterSave();
       } else {
         message.error(t(msg));
       }
@@ -543,6 +552,7 @@ export default function FormNG(props: IProps) {
           <RouterPrompt
             ref={routerPromptRef}
             when={!allowedLeave && !disabled}
+            validator={() => allowNextRouteRef.current}
             defaultPath='/alert-rules'
             title={t('form_ng.prompt.title')}
             message={<div style={{ fontSize: 16 }}>{t('form_ng.prompt.message')}</div>}
@@ -590,6 +600,7 @@ export default function FormNG(props: IProps) {
                     routerPromptRef.current?.redirect();
                   } catch (err) {
                     console.error(err);
+                    routerPromptRef.current?.hidePrompt();
                     scrollToFirstError();
                   }
                 }}

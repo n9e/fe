@@ -127,6 +127,7 @@ export default function dslBuilder(params: {
   }
   if (_.isArray(params.filters)) {
     _.forEach(params.filters, (item) => {
+      if (item.disabled) return;
       if (item.operator === 'AND') {
         body.query.bool.filter.push({
           match_phrase: {

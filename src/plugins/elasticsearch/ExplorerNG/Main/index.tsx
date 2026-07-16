@@ -11,6 +11,7 @@ import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import { NAME_SPACE, QUERY_BUILDER_PINNED_CACHE_KEY } from '../../constants';
 import { Field, Interval } from '../types';
 import MainMoreOperations from '../components/MainMoreOperations';
+import FiltersBuilder from '../components/FiltersBuilder';
 import { HandleValueFilterParams } from '../types';
 import RawMain from './Raw';
 import QueryQueryInput from './QueryInput';
@@ -280,6 +281,25 @@ export default function index(props: Props) {
                 label: values?.label_key || [],
               });
             }}
+          />
+        )}
+        {!isSQLMode && (
+          <FiltersBuilder
+            datasourceValue={datasourceValue}
+            indexData={indexData}
+            filters={queryValues?.filters || []}
+            onChange={(filters) => {
+              form.setFieldsValue({
+                query: {
+                  filters,
+                },
+              });
+              snapRangeRef.current = {
+                from: undefined,
+                to: undefined,
+              };
+            }}
+            executeQuery={executeQuery}
           />
         )}
       </div>
