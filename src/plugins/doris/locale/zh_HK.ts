@@ -128,6 +128,7 @@ const zh_HK = {
       operator_placeholder: '請選擇運算子',
       value: '值',
       value_placeholder: '請選擇值',
+      disabled: '禁用',
       tip_1: '該欄位無 NGram BloomFilter 索引，可能觸發全表掃描。建議添加索引或者選擇其他運算子',
     },
     aggregates: {

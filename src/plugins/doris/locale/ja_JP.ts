@@ -135,6 +135,7 @@ const ja_JP = {
       operator_placeholder: '演算子を選択してください',
       value: '値',
       value_placeholder: '値を選択してください',
+      disabled: '無効',
       tip_1: 'このフィールドには NGram BloomFilter インデックスがなく、フルテーブルスキャンが発生する可能性があります。インデックスを追加するか、別の演算子を選択してください',
     },
     aggregates: {

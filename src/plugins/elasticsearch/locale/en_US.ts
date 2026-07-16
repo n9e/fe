@@ -53,6 +53,7 @@ const en_US = {
       operator_placeholder: 'Please select an operator',
       value: 'Value',
       value_placeholder: 'Please select a value',
+      disabled: 'Disabled',
     },
     aggregates: {
       label: 'Aggregates',

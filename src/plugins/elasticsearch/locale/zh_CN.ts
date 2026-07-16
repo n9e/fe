@@ -53,6 +53,7 @@ const zh_CN = {
       operator_placeholder: '请选择操作符',
       value: '值',
       value_placeholder: '请选择值',
+      disabled: '禁用',
     },
     aggregates: {
       label: '聚合',

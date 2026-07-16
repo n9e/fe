@@ -41,12 +41,13 @@ function FilterDescribe(props: { filter: Filter; onRemove: (e: React.MouseEvent<
       }`}
     >
       <div
-        className={`h-full px-[7px] flex items-center ${filter.disabled ? 'line-through text-hint' : filter.operator === 'NOT' ? '' : 'text-hint'}`}
+        className={`h-full px-[7px] flex items-center relative ${filter.disabled ? 'text-hint' : filter.operator === 'NOT' ? '' : 'text-hint'}`}
         style={{
           borderRight: '1px solid var(--fc-antd-border-color)',
           color: !filter.disabled && filter.operator === 'NOT' ? 'var(--fc-fill-error)' : undefined,
         }}
       >
+        {filter.disabled && <span className='absolute left-[7px] right-[7px] top-1/2 border-t border-current pointer-events-none' />}
         {describeFilter(filter)}
       </div>
       <Button className='p-0 min-h-[22px] bg-fc-150 hover:bg-fc-200' size='small' icon={<CloseOutlined />} type='text' onClick={onRemove} />
@@ -257,7 +258,7 @@ function ConfigPopover(props: ConfigPopoverProps) {
               )}
               <Col span={24}>
                 <Form.Item name='disabled' valuePropName='checked' initialValue={false} className='mb-0'>
-                  <Checkbox>禁用</Checkbox>
+                  <Checkbox>{t('builder.filters.disabled')}</Checkbox>
                 </Form.Item>
               </Col>
             </Row>

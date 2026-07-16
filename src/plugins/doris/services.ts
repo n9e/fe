@@ -2,6 +2,7 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { DorisDBParams, DorisDBTableParams } from './types';
 import { Field, FieldSampleParams, FilterConfig, AggregateConfig } from './ExplorerNG/types';
+import { getEnabledFilters } from './ExplorerNG/utils/filters';
 
 export type { Field };
 
@@ -123,7 +124,13 @@ export function getDorisHistogram(data: {
 }): Promise<any[]> {
   return request('/api/n9e-plus/doris-histogram', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat || []);
 }
 
@@ -150,7 +157,13 @@ export function getDorisLogsQuery(data: {
 }> {
   return request('/api/n9e-plus/doris-logs-query', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat || { list: [], total: 0 });
 }
 
@@ -207,7 +220,13 @@ export function getDorisSQLFormat(data: {
 }): Promise<string> {
   return request('/api/n9e-plus/doris-sql-format', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat);
 }
 
@@ -247,7 +266,13 @@ export function getDorisSQLsPreview(data: {
 }> {
   return request('/api/n9e-plus/doris-sqls-preview', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        query_builder_filter: getEnabledFilters(query.query_builder_filter),
+      })),
+    },
   }).then((res) => res.dat);
 }
 
@@ -258,7 +283,10 @@ export function getFiledSample(
 ): Promise<string[]> {
   return request('/api/n9e-plus/doris-field-sample', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      filters: getEnabledFilters(data.filters),
+    },
   }).then((res) => res.dat);
 }
 
@@ -291,7 +319,13 @@ export function buildSql(data: {
 }> {
   return request('/api/n9e-plus/doris-query-builder', {
     method: RequestMethod.Post,
-    data,
+    data: {
+      ...data,
+      query: data.query.map((query) => ({
+        ...query,
+        filters: getEnabledFilters(query.filters),
+      })),
+    },
   }).then((res) => res.dat);
 }
 

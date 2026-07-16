@@ -22,6 +22,7 @@ export function buildCKFilterFromLogValue(params: OnValueFilterParams, indexData
 
 export function hasHighlightableFilter(filters: FilterConfig[] = []): boolean {
   return filters.some((filter) => {
+    if (filter.disabled) return false;
     const operator = filter.operator || '';
     if (filter.not) return false;
     if (!HIGHLIGHTABLE_OPERATORS.has(operator)) return false;

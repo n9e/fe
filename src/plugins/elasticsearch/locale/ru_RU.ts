@@ -53,6 +53,7 @@ const ru_RU = {
       operator_placeholder: 'Пожалуйста, выберите оператор',
       value: 'Значение',
       value_placeholder: 'Пожалуйста, выберите значение',
+      disabled: 'Отключено',
     },
     aggregates: {
       label: 'Агрегации',
