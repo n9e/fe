@@ -8,13 +8,14 @@ function field(normalized_type: string): Field {
 
 describe('getOperatorsByTypeIndex', () => {
   it.each([
-    ['long', ['=', '!=', '>', '<', '>=', '<=', 'in', 'not-in', 'is-null', 'is-not-null', 'between', 'not-between']],
-    ['date', ['=', '!=', '>', '<', '>=', '<=', 'in', 'not-in', 'is-null', 'is-not-null', 'between', 'not-between']],
-    ['text', ['=', '!=', 'in', 'not-in', 'is-null', 'is-not-null', 'like', 'not-like', 'ilike', 'not_ilike', 'match', 'not_match', 'has_token']],
-    ['bool', ['=', '!=', 'in', 'not-in', 'is-null', 'is-not-null']],
-    ['ipv4', ['=', '!=', 'in', 'not-in', 'is-null', 'is-not-null']],
-    ['json', ['is-null', 'is-not-null']],
-    ['map', ['is-null', 'is-not-null']],
+    ['long', ['=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
+    ['date', ['=', '!=', '>', '<', '>=', '<=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
+    ['text', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'LIKE', 'NOT LIKE', 'ILIKE', 'NOT ILIKE', 'match', 'notMatch', 'hasToken']],
+    ['bool', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL']],
+    ['ipv4', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
+    ['ipv6', ['=', '!=', 'IN', 'NOT IN', 'IS NULL', 'IS NOT NULL', 'BETWEEN AND', 'NOT BETWEEN AND']],
+    ['json', ['IS NULL', 'IS NOT NULL']],
+    ['map', ['IS NULL', 'IS NOT NULL']],
   ])('returns only operators supported by %s', (normalizedType, expected) => {
     expect(getOperatorsByTypeIndex(field(normalizedType))).toEqual(expected);
   });
