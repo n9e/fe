@@ -191,7 +191,7 @@ export default function TableCpt(props: IProps) {
               !_.includes(['firemap', 'northstar'], record?.rule_prod)
                 ? {
                     key: 'shield',
-                    icon: 'permission',
+                    icon: 'shield',
                     text: t('shield'),
                     onClick: () => {
                       history.push({

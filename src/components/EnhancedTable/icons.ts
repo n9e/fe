@@ -17,6 +17,7 @@ import {
   UserCheck,
   UserX,
   Import,
+  BellOff,
 } from 'lucide-react';
 
 import type { RowAction } from './types';
@@ -40,6 +41,7 @@ export const actionIconMap = {
   link: LinkIcon,
   ai: Sparkles,
   import: Import,
+  shield: BellOff,
 };
 
 export type ActionIconName = keyof typeof actionIconMap;
