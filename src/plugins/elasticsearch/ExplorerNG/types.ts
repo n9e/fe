@@ -12,8 +12,9 @@ export interface Field extends BaseField {
 
 export interface Filter {
   key: string;
-  value: string;
+  value: string | number | boolean | null;
   operator: string;
+  disabled?: boolean;
 }
 
 export interface Interval {
