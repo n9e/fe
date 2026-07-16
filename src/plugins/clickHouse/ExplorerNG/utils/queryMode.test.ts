@@ -33,7 +33,7 @@ describe('ClickHouse Explorer query mode', () => {
     expect(hasHighlightableFilter([{ field: 'message', operator: 'ILIKE', value: '%error%' }])).toBe(true);
     expect(hasHighlightableFilter([{ field: 'message', operator: 'NOT ILIKE', value: '%error%' }])).toBe(false);
     expect(hasHighlightableFilter([{ field: 'message', operator: 'hasToken', value: 'timeout' }])).toBe(true);
-    expect(hasHighlightableFilter([{ field: 'message', operator: 'notMatch', value: 'x' }])).toBe(false);
+    expect(hasHighlightableFilter([{ field: 'message', operator: 'NOT match', value: 'x' }])).toBe(false);
     expect(hasHighlightableFilter([{ field: 'status', operator: '=', value: 500 }])).toBe(false);
   });
 
@@ -47,7 +47,7 @@ describe('ClickHouse Explorer query mode', () => {
   });
 
   test('exposes CK-native text operators and advanced aggregates', () => {
-    expect(TYPE_OPERATOR_MAP.text).toEqual(expect.arrayContaining(['ILIKE', 'NOT ILIKE', 'match', 'notMatch', 'hasToken']));
+    expect(TYPE_OPERATOR_MAP.text).toEqual(expect.arrayContaining(['ILIKE', 'NOT ILIKE', 'match', 'NOT match', 'hasToken']));
     expect(TYPE_OPERATOR_MAP.json).toEqual(['IS NULL', 'IS NOT NULL']);
     expect(TYPE_OPERATOR_MAP.map).toEqual(['IS NULL', 'IS NOT NULL']);
     expect(Object.keys(AGGREGATE_FUNCTION_TYPE_MAP)).toEqual(expect.arrayContaining(['TOPN', 'RATIO', 'EXIST_RATIO', 'PERCENTILE', 'VARIANCE', 'STDDEV']));

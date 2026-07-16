@@ -8,8 +8,10 @@ export const FILTERABLE_TYPES = [...NUMBER_TYPES, ...DATE_TYPES, ...STRING_TYPES
 // Operator constants align with ClickHouse native SQL surface:
 //   - Keywords use upper-case with single spaces (IN / NOT IN / IS NULL /
 //     BETWEEN AND / LIKE / ILIKE), matching CK SQL Reference verbatim.
-//   - Functions use camelCase (match / notMatch / hasToken), matching CK
-//     function names verbatim.
+//   - Functions use camelCase (match / hasToken), matching CK function
+//     names verbatim. Negated function reads as keyword + function:
+//     `NOT match` mirrors the SQL the BE emits — `NOT match(f, 'p')` —
+//     because no CK OSS version has a `notMatch()` function.
 // See docs/ck-querybuilder-n9e-plus-fe-todo.md §2 for the full matrix.
 export const EQUAL_OPERATORS = ['=', '!='];
 export const COMPARISON_OPERATORS = ['>', '<', '>=', '<='];
@@ -17,7 +19,7 @@ export const IN_OPERATORS = ['IN', 'NOT IN'];
 export const NULL_OPERATORS = ['IS NULL', 'IS NOT NULL'];
 export const BETWEEN_OPERATORS = ['BETWEEN AND', 'NOT BETWEEN AND'];
 export const LIKE_OPERATORS = ['LIKE', 'NOT LIKE', 'ILIKE', 'NOT ILIKE'];
-export const MATCH_OPERATORS = ['match', 'notMatch', 'hasToken'];
+export const MATCH_OPERATORS = ['match', 'NOT match', 'hasToken'];
 
 const SCALAR_OPERATORS = [...EQUAL_OPERATORS, ...IN_OPERATORS, ...NULL_OPERATORS];
 const NUMBER_TYPE_OPERATORS = [...EQUAL_OPERATORS, ...COMPARISON_OPERATORS, ...IN_OPERATORS, ...NULL_OPERATORS, ...BETWEEN_OPERATORS];
