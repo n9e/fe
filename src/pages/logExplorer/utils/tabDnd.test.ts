@@ -1,4 +1,4 @@
-import { moveLogExplorerTabItems, resolveTabKey } from './tabDnd';
+import { getNextLogExplorerTabName, moveLogExplorerTabItems, resolveTabKey } from './tabDnd';
 
 describe('resolveTabKey', () => {
   const keys = ['tab-a', 'tab:b', 'tab=c'];
@@ -54,5 +54,19 @@ describe('moveLogExplorerTabItems', () => {
       { key: 'a', name: 'Query 1' },
       { key: 'b', name: 'Custom' },
     ]);
+  });
+});
+
+describe('getNextLogExplorerTabName', () => {
+  it('uses the next count-based name when it is available', () => {
+    expect(getNextLogExplorerTabName([{ key: 'a', name: 'Query 1' }, { key: 'b', name: 'Query 2' }])).toBe('Query 3');
+  });
+
+  it('increments until the generated name is unique', () => {
+    expect(getNextLogExplorerTabName([{ key: 'a', name: 'Query 1' }, { key: 'b', name: 'Query 2' }, { key: 'c', name: 'Query 4' }])).toBe('Query 5');
+  });
+
+  it('ignores custom names unless they collide with the generated name', () => {
+    expect(getNextLogExplorerTabName([{ key: 'a', name: 'Custom' }, { key: 'b', name: 'Query 2' }])).toBe('Query 3');
   });
 });
