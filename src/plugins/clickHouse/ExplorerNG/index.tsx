@@ -37,7 +37,6 @@ export default function index(props: Props) {
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const stackByField = Form.useWatch(['query', 'stackByField']);
-  const defaultSearchField = Form.useWatch(['query', 'defaultSearchField']);
 
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
@@ -95,14 +94,6 @@ export default function index(props: Props) {
     executeQuery();
   };
 
-  const handleSetDefaultSearchField = (index) => {
-    form.setFieldsValue({
-      query: {
-        defaultSearchField: index,
-      },
-    });
-  };
-
   const handleValueFilter = (params: OnValueFilterParams) => {
     const values = form.getFieldsValue();
     const query = values.query;
@@ -156,9 +147,6 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'stackByField']} hidden>
           <div />
         </Form.Item>
-        <Form.Item name={['query', 'defaultSearchField']} hidden>
-          <div />
-        </Form.Item>
         <div className='h-full flex'>
           <SideBar ns={NAME_SPACE}>
             {renderCommonSettings({
@@ -196,8 +184,6 @@ export default function index(props: Props) {
               handleValueFilter={handleValueFilter}
               stackByField={stackByField}
               setStackByField={handleSetStackByField}
-              defaultSearchField={defaultSearchField}
-              setDefaultSearchField={handleSetDefaultSearchField}
             />
           </SideBar>
           <div className='min-w-0 flex-1'>
@@ -222,8 +208,6 @@ export default function index(props: Props) {
               handleValueFilter={handleValueFilter}
               stackByField={stackByField}
               setStackByField={handleSetStackByField}
-              defaultSearchField={defaultSearchField}
-              setDefaultSearchField={handleSetDefaultSearchField}
             />
           </div>
         </div>

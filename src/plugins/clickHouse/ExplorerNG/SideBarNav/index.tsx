@@ -28,8 +28,6 @@ interface Props {
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
-  defaultSearchField?: string;
-  setDefaultSearchField: (field?: string) => void;
 }
 
 export default function index(props: Props) {
@@ -45,8 +43,6 @@ export default function index(props: Props) {
 
     stackByField,
     setStackByField,
-    defaultSearchField,
-    setDefaultSearchField,
   } = props;
 
   const form = Form.useFormInstance();
@@ -152,7 +148,6 @@ export default function index(props: Props) {
                   refreshFlag: undefined,
                   query: {
                     stackByField: undefined,
-                    defaultSearchField: undefined,
                     table: undefined,
                     time_field: undefined,
                     query_builder_filter: undefined,
@@ -170,7 +165,6 @@ export default function index(props: Props) {
                   refreshFlag: undefined,
                   query: {
                     stackByField: undefined,
-                    defaultSearchField: undefined,
                     time_field: undefined,
                     query_builder_filter: undefined,
                   },
@@ -199,8 +193,6 @@ export default function index(props: Props) {
             executeQuery={executeQuery}
             stackByField={stackByField}
             setStackByField={setStackByField}
-            defaultSearchField={defaultSearchField}
-            setDefaultSearchField={setDefaultSearchField}
           />
         </div>
       </div>

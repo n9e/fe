@@ -30,8 +30,6 @@ interface Props {
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
-  defaultSearchField?: string;
-  setDefaultSearchField: (field?: string) => void;
 }
 
 const queryBuilderPinnedCache = window.localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY);
@@ -40,19 +38,7 @@ export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);
 
-  const {
-    tabKey,
-    datasourceValue,
-    indexData,
-    organizeFields,
-    setOrganizeFields,
-    executeQuery,
-    handleValueFilter,
-    stackByField,
-    setStackByField,
-    defaultSearchField,
-    setDefaultSearchField,
-  } = props;
+  const { tabKey, datasourceValue, indexData, organizeFields, setOrganizeFields, executeQuery, handleValueFilter, stackByField, setStackByField } = props;
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
 
@@ -141,7 +127,6 @@ export default function index(props: Props) {
             <Col flex='none'>
               <SQLFormatButton
                 rangeRef={rangeRef}
-                defaultSearchField={defaultSearchField}
                 onClick={(values) => {
                   snapRangeRef.current = {
                     from: undefined,
@@ -237,7 +222,6 @@ export default function index(props: Props) {
           setExecuteLoading={setExecuteLoading}
           stackByField={stackByField}
           setStackByField={setStackByField}
-          defaultSearchField={defaultSearchField}
         />
       )}
       {syntax === 'sql' && (

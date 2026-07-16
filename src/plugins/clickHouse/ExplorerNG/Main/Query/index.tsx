@@ -56,7 +56,6 @@ interface Props {
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
-  defaultSearchField?: string;
 }
 
 export default function index(props: Props) {
