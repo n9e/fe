@@ -16,14 +16,13 @@ import { getCKSQLsPreview } from '../../services';
 
 interface SQLFormatParams {
   rangeRef: React.MutableRefObject<{ from: number; to: number } | undefined>;
-  defaultSearchField?: string;
   onClick: (values: any) => void;
 }
 
 export default function SQLFormatButton(props: SQLFormatParams) {
   const { t } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
-  const { rangeRef, defaultSearchField, onClick } = props;
+  const { rangeRef, onClick } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const form = Form.useFormInstance();
   const { run: fetchFormattedSQL, data } = useRequest(getCKSQLsPreview, {
@@ -60,7 +59,6 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                 query_builder_filter: queryValues.query_builder_filter,
                 from: timeParams.from,
                 to: timeParams.to,
-                default_field: defaultSearchField,
                 func: 'count', // Query-mode preview only; mirrors Doris SQLFormatButton
               },
             ],

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Button, Form, Space, Tooltip } from 'antd';
+import { Button, Form, Space, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -10,10 +10,9 @@ import FieldsList from '@/pages/logExplorer/components/FieldsList';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
 import { Field, HandleValueFilterParams } from '../../types';
-import { getCKLogsQuery } from '../../../services';
+import { getCKLogsQuery, getCKSQLsPreview } from '../../../services';
 import { getCKFieldIconType, isCKNumberType, NAME_SPACE } from '../../../constants';
 import { PinIcon, UnPinIcon } from './PinIcon';
-import { DefaultSearchIcon, UnDefaultSearchIcon } from './DefaultSearchIcon';
 
 interface IProps {
   organizeFields: string[];
@@ -25,13 +24,11 @@ interface IProps {
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
-  defaultSearchField?: string;
-  setDefaultSearchField: (field?: string) => void;
 }
 
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, stackByField, setStackByField } = props;
   const fieldTypeMap = React.useMemo<Record<string, string>>(
     () =>
       _.omitBy(
@@ -160,31 +157,6 @@ export default function index(props: IProps) {
           const disabled = _.isNaN(unique_count) || unique_count <= 1 || unique_count > 10;
           return (
             <Space>
-              {defaultSearchField && defaultSearchField === index.field ? (
-                <Tooltip title={t('query.default_search_tip_2')}>
-                  <Button
-                    icon={<UnDefaultSearchIcon className='text-[14px]' />}
-                    type='text'
-                    size='small'
-                    onClick={() => {
-                      setDefaultSearchField(undefined);
-                      setTopNVisible(false);
-                    }}
-                  />
-                </Tooltip>
-              ) : (
-                <Tooltip title={t('query.default_search_tip_1')}>
-                  <Button
-                    icon={<DefaultSearchIcon className='text-[14px]' />}
-                    type='text'
-                    size='small'
-                    onClick={() => {
-                      setDefaultSearchField(index.field);
-                      setTopNVisible(false);
-                    }}
-                  />
-                </Tooltip>
-              )}
               {stackByField && stackByField === index.field ? (
                 <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
                   <Button
@@ -217,16 +189,6 @@ export default function index(props: IProps) {
         renderFieldNameExtra={(field) => {
           return (
             <Space size={2}>
-              {defaultSearchField && defaultSearchField === field.field && (
-                <Tooltip title={t('query.default_search_by_tip')}>
-                  <DefaultSearchIcon
-                    className='text-[12px]'
-                    style={{
-                      color: 'var(--fc-primary-color)',
-                    }}
-                  />
-                </Tooltip>
-              )}
               {stackByField && stackByField === field.field && (
                 <Tooltip title={t('query.stack_group_by_tip')}>
                   <PinIcon
@@ -239,6 +201,67 @@ export default function index(props: IProps) {
               )}
             </Space>
           );
+        }}
+        onStatisticClick={(type, options) => {
+          const range = parseRange(queryValues.range);
+
+          getCKSQLsPreview({
+            cate: DatasourceCateEnum.ck,
+            datasource_id: datasourceValue,
+            query: [
+              {
+                database: queryValues.database,
+                table: queryValues.table,
+                time_field: queryValues.time_field,
+                from: moment(range.start).valueOf(),
+                to: moment(range.end).valueOf(),
+                query: queryValues.query,
+                query_builder_filter: queryValues.query_builder_filter,
+                field: options.field,
+                func: options.func,
+                field_filter: options.field_filter,
+                ref: options.ref,
+                group_by: options.group_by,
+              },
+            ],
+          }).then((res) => {
+            if (type === 'table') {
+              const sqlPreviewData = res.table;
+              const sqlTimeSeriesData = res.timeseries?.[options.func];
+              form.setFieldsValue({
+                refreshFlag: undefined,
+                query: {
+                  syntax: 'sql',
+                  sqlVizType: 'table',
+                  sql: sqlPreviewData.sql,
+                  keys: {
+                    valueKey: sqlTimeSeriesData?.value_key ?? [],
+                    labelKey: sqlTimeSeriesData?.label_key ?? [],
+                  },
+                },
+              });
+              executeQuery();
+            } else if (type === 'timeseries') {
+              const sqlPreviewData = res.timeseries?.[options.func];
+              if (sqlPreviewData) {
+                form.setFieldsValue({
+                  refreshFlag: undefined,
+                  query: {
+                    syntax: 'sql',
+                    sqlVizType: 'timeseries',
+                    sql: sqlPreviewData.sql,
+                    keys: {
+                      valueKey: sqlPreviewData.value_key ?? [],
+                      labelKey: sqlPreviewData.label_key ?? [],
+                    },
+                  },
+                });
+                executeQuery();
+              } else {
+                message.error(t('query.generate_sql_failed'));
+              }
+            }
+          });
         }}
       />
     </div>
