@@ -173,6 +173,9 @@ export default function LogsViewer(props: Props) {
   } = props;
   const [options, setOptions] = useState(props.options);
   const [histogramVisible, setHistogramVisible] = useState(true);
+  const isClusteringEnabled = !!logClusting?.enabled;
+  const logMode = options.logMode === 'clustering' && !isClusteringEnabled ? 'origin' : options.logMode;
+  const viewerOptions = logMode === options.logMode ? options : { ...options, logMode };
 
   const updateOptions = (newOptions: any, reload?: boolean) => {
     onOptionsChange?.(newOptions, reload);
@@ -210,7 +213,7 @@ export default function LogsViewer(props: Props) {
       }}
     >
       <>
-        {patternHistogramState.visible ? (
+        {patternHistogramState.visible && isClusteringEnabled ? (
           <ClusteringHistogram {...patternHistogramState} setPatternHistogramState={setPatternHistogramState} />
         ) : (
           <>
@@ -291,7 +294,7 @@ export default function LogsViewer(props: Props) {
                         value: 'table',
                       },
                     ],
-                    logClusting?.enabled
+                    isClusteringEnabled
                       ? [
                           {
                             label: t('logs.settings.mode.clustering'),
@@ -300,7 +303,7 @@ export default function LogsViewer(props: Props) {
                         ]
                       : [],
                   )}
-                  value={options.logMode}
+                  value={logMode}
                   onChange={(e) => {
                     updateOptions({
                       logMode: e.target.value,
@@ -309,14 +312,14 @@ export default function LogsViewer(props: Props) {
                   }}
                 />
               )}
-              {options.logMode === 'clustering' && <div ref={clusteringOptionsEleRef} />}
+              {logMode === 'clustering' && isClusteringEnabled && <div ref={clusteringOptionsEleRef} />}
               <OriginSettings
                 ref={originSettingsRef}
-                options={options}
+                options={viewerOptions}
                 updateOptions={updateOptions}
                 fields={fields}
-                showDateField={showDateField && options.logMode !== 'clustering'}
-                showMoreSettings={options.logMode !== 'clustering'}
+                showDateField={showDateField && logMode !== 'clustering'}
+                showMoreSettings={logMode !== 'clustering'}
                 showPageLoadMode={showPageLoadMode}
                 showJSONSettings={showJSONSettings}
                 showTopNSettings={showTopNSettings}
@@ -326,18 +329,18 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {options.logMode === 'clustering' ? <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} /> : optionsExtraRender}
+            {logMode === 'clustering' && isClusteringEnabled ? <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} /> : optionsExtraRender}
           </div>
           <div className='h-full min-h-0' onScrollCapture={onScrollCapture}>
             <div className='n9e-antd-table-height-full'>
-              {options.logMode === 'origin' && (
+              {logMode === 'origin' && (
                 <Raw
                   id_key={id_key}
                   raw_key={raw_key}
                   timeField={timeField}
                   data={logs}
                   highlights={highlights}
-                  options={options}
+                  options={viewerOptions}
                   onReverseChange={(val) => {
                     onLogRequestParamsChange?.({
                       reverse: val,
@@ -359,7 +362,7 @@ export default function LogsViewer(props: Props) {
                   hideTypeIcon={hideTypeIcon}
                 />
               )}
-              {options.logMode === 'table' && (
+              {logMode === 'table' && (
                 <Table
                   id_key={id_key}
                   raw_key={raw_key}
@@ -368,7 +371,7 @@ export default function LogsViewer(props: Props) {
                   data={logs}
                   highlights={highlights}
                   logsHash={logsHash}
-                  options={options}
+                  options={viewerOptions}
                   onReverseChange={(val) => {
                     onLogRequestParamsChange?.({
                       reverse: val,
@@ -394,7 +397,7 @@ export default function LogsViewer(props: Props) {
                   hideTypeIcon={hideTypeIcon}
                 />
               )}
-              {options.logMode === 'clustering' && logClusting && (
+              {logMode === 'clustering' && isClusteringEnabled && logClusting && (
                 <ClusteringTable
                   logClusting={logClusting}
                   onValueFilter={onAddToQuery || (() => {})}
@@ -403,7 +406,7 @@ export default function LogsViewer(props: Props) {
                   logs={logs}
                   logsHash={logsHash}
                   setPatternHistogramState={setPatternHistogramState}
-                  options={options}
+                  options={viewerOptions}
                   indexData={props.indexData || []}
                 />
               )}
