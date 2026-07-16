@@ -18,12 +18,14 @@ export interface RowAction {
   tooltip?: ReactNode;
   /** render a custom node instead of the default button (for bespoke menu items) */
   node?: ReactNode;
+  /** keep this action inside the kebab menu even when the row fits the icon limit */
+  collapsed?: boolean;
 }
 
 export interface RowActions {
-  /** surfaced as text links, left of the kebab */
+  /** surfaced as icon buttons, left of the kebab */
   inline?: RowAction[];
-  /** collapsed into the kebab menu */
+  /** expanded into icon buttons when the row fits `actionMaxIcons`; kept in the kebab menu otherwise */
   menu?: RowAction[];
 }
 
@@ -34,6 +36,8 @@ export interface EnhancedTableProps<RecordType> extends TableProps<RecordType> {
   actionColumn?: Partial<ColumnType<RecordType>>;
   /** compact header: tighter thead padding + smaller sort hit-area, for tables embedded inside tabs/cards */
   compactHeader?: boolean;
+  /** max icon buttons per row; rows exceeding it keep kebab actions collapsed (default 4) */
+  actionMaxIcons?: number;
   /** auto-inject default sorter for columns without `sorter` (default false); column `sorter` always wins */
   autoSortColumns?: boolean;
 }

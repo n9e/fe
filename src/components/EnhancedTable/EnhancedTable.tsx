@@ -4,7 +4,7 @@ import type { ColumnType, ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
 
 import { injectColumnFilters } from './columns';
-import { RowActionCell } from './RowActionCell';
+import { RowActionCell, splitRowActions } from './RowActionCell';
 import type { EnhancedTableProps } from './types';
 import './style.less';
 import { defaultComparator } from './sorter';
@@ -18,7 +18,7 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, pagination, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, actionMaxIcons, pagination, ...rest } = props;
 
   // Every paginated table gets the quick jumper, regardless of whether the caller spreads
   // usePagination. `pagination={false}` stays off, and an explicit caller value still wins.
@@ -49,6 +49,23 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     });
 
     if (hasRowActions) {
+      // Auto-widen the action column so expanded icon rows never overflow legacy
+      // kebab-era widths: scan the rows for the widest icon layout (cheap builder
+      // calls; capped to bound client-side-paginated datasets). An explicit
+      // `actionColumn.width` still wins when it is larger.
+      let contentWidth = 0;
+      if (Array.isArray(dataSource)) {
+        dataSource.slice(0, 200).forEach((record, index) => {
+          const cfg = rowActionsRef.current?.(record, index);
+          if (!cfg) return;
+          const { icons, kebab } = splitRowActions(cfg, actionMaxIcons);
+          const items = icons.length + (kebab.length ? 1 : 0);
+          if (!items) return;
+          // cell padding 16 + 24px per icon + 28px kebab trigger + 4px gaps
+          contentWidth = Math.max(contentWidth, 16 + icons.length * 24 + (kebab.length ? 28 : 0) + (items - 1) * 4);
+        });
+      }
+
       const opColumn: ColumnType<RecordType> = {
         title: '操作',
         key: '__fc_action__',
@@ -57,14 +74,17 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
         ...actionColumn,
         render: (_value: unknown, record: RecordType, index: number) => {
           const cfg = rowActionsRef.current?.(record, index);
-          return cfg ? <RowActionCell actions={cfg} /> : null;
+          return cfg ? <RowActionCell actions={cfg} maxIcons={actionMaxIcons} /> : null;
         },
       };
+      if (typeof opColumn.width === 'number' && contentWidth > opColumn.width) {
+        opColumn.width = contentWidth;
+      }
       allColumns.push(opColumn);
     }
 
     return allColumns;
-  }, [columns, actionColumn, hasRowActions, autoSortColumns, dataSource]);
+  }, [columns, actionColumn, hasRowActions, autoSortColumns, actionMaxIcons, dataSource]);
 
   return (
     <Table<RecordType>
