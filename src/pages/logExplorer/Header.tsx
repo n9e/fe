@@ -1,8 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Modal, Tabs, Tooltip } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
-import { DndContext, DragEndEvent, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
+import { EditOutlined, HolderOutlined } from '@ant-design/icons';
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import _ from 'lodash';
@@ -14,6 +14,8 @@ import { LogExplorerTabItem } from './types';
 import getUUID from './utils/getUUID';
 import { setLocalItems } from './utils/getLocalItems';
 import { setLocalActiveKey } from './utils/getLocalActiveKey';
+import { createLogExplorerTabItem } from './utils/createLogExplorerTabItem';
+import { moveLogExplorerTabItems, resolveTabKey } from './utils/tabDnd';
 
 interface Props {
   items: LogExplorerTabItem[];
@@ -24,9 +26,53 @@ interface Props {
   defaultDatasourceValue: number;
 }
 
-function SortableTabNode(props: { id: string; children: React.ReactElement }) {
-  const { id, children } = props;
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+const DragHandleContext = React.createContext<ReturnType<typeof useSortable> | null>(null);
+
+function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
+  return (node: T) => {
+    _.forEach(refs, (ref) => {
+      if (!ref) {
+        return;
+      }
+      if (_.isFunction(ref)) {
+        ref(node);
+      } else {
+        (ref as React.MutableRefObject<T | null>).current = node;
+      }
+    });
+  };
+}
+
+function TabDragHandle() {
+  const sortable = useContext(DragHandleContext);
+  if (!sortable) {
+    return null;
+  }
+
+  return (
+    <span
+      className='log-explorer-ng-tab-drag-handle'
+      ref={sortable.setActivatorNodeRef}
+      {...sortable.attributes}
+      {...sortable.listeners}
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+    >
+      <HolderOutlined />
+    </span>
+  );
+}
+
+function SortableTabNode(props: { children: React.ReactElement; itemKeys: string[] }) {
+  const { children, itemKeys } = props;
+  const tabKey = resolveTabKey(children.key, itemKeys);
+  const sortable = useSortable({ id: tabKey || `disabled-${String(children.key)}`, disabled: !tabKey });
+  const { setNodeRef, transform, transition, isDragging } = sortable;
+  if (!tabKey) {
+    return children;
+  }
+
   const horizontalTransform = transform
     ? {
         ...transform,
@@ -38,21 +84,22 @@ function SortableTabNode(props: { id: string; children: React.ReactElement }) {
     ...children.props.style,
     transform: CSS.Translate.toString(horizontalTransform),
     transition,
-    cursor: 'move',
     opacity: isDragging ? 0.6 : children.props.style?.opacity,
   };
 
-  return React.cloneElement(children, {
-    ref: setNodeRef,
-    style,
-    ...attributes,
-    ...listeners,
-  });
+  return (
+    <DragHandleContext.Provider value={sortable}>
+      {React.cloneElement(children, {
+        ref: composeRefs((children as any).ref, setNodeRef),
+        style,
+      })}
+    </DragHandleContext.Provider>
+  );
 }
 
 export default function Header(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { logsDefaultRange } = useContext(CommonStateContext);
+  const { logsDefaultRange, datasourceList } = useContext(CommonStateContext);
   const { items, setItems, activeKey, setActiveKey, defaultDatasourceCate, defaultDatasourceValue } = props;
   const [renameModalState, setRenameModalState] = useState<{
     visible: boolean;
@@ -62,17 +109,27 @@ export default function Header(props: Props) {
     visible: false,
     name: '',
   });
+  const [draggingKey, setDraggingKey] = useState<string>();
+  const itemKeys = useMemo(() => _.map(items, 'key'), [items]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 6,
       },
     }),
   );
 
   const getTabName = (item: LogExplorerTabItem, idx: number) => item.name || `Query ${idx + 1}`;
+  const draggingItem = draggingKey ? _.find(items, { key: draggingKey }) : undefined;
+  const draggingItemIndex = draggingItem ? _.findIndex(items, { key: draggingKey }) : -1;
+  const draggingTabName = draggingItem ? getTabName(draggingItem, draggingItemIndex) : '';
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setDraggingKey(String(event.active.id));
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    setDraggingKey(undefined);
     const { active, over } = event;
     if (!over || active.id === over.id) {
       return;
@@ -81,15 +138,10 @@ export default function Header(props: Props) {
     setItems((prev) => {
       const activeId = String(active.id);
       const overId = String(over.id);
-      const oldIndex = _.findIndex(prev, { key: activeId });
-      const newIndex = _.findIndex(prev, { key: overId });
-      if (oldIndex === -1 || newIndex === -1) {
+      const newItems = moveLogExplorerTabItems(prev, activeId, overId);
+      if (newItems === prev) {
         return prev;
       }
-
-      const newItems = [...prev];
-      const [movedItem] = newItems.splice(oldIndex, 1);
-      newItems.splice(newIndex, 0, movedItem);
       setLocalItems(newItems);
       return newItems;
     });
@@ -130,16 +182,24 @@ export default function Header(props: Props) {
         type='editable-card'
         activeKey={activeKey}
         renderTabBar={(tabBarProps, DefaultTabBar) => (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={_.map(items, 'key')} strategy={horizontalListSortingStrategy}>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={() => setDraggingKey(undefined)}>
+            <SortableContext items={itemKeys} strategy={horizontalListSortingStrategy}>
               <DefaultTabBar {...tabBarProps}>
                 {(node) => (
-                  <SortableTabNode key={node.key as string} id={node.key as string}>
+                  <SortableTabNode key={node.key as string} itemKeys={itemKeys}>
                     {node}
                   </SortableTabNode>
                 )}
               </DefaultTabBar>
             </SortableContext>
+            <DragOverlay>
+              {draggingItem ? (
+                <div className='log-explorer-ng-tab-drag-overlay'>
+                  <HolderOutlined />
+                  <span className='log-explorer-ng-tab-name'>{draggingTabName}</span>
+                </div>
+              ) : null}
+            </DragOverlay>
           </DndContext>
         )}
         onEdit={(targetKey: string, action: 'add' | 'remove') => {
@@ -147,23 +207,15 @@ export default function Header(props: Props) {
             const newActiveKey = getUUID();
             setItems((prev) => {
               const activeItem = _.find(prev, { key: activeKey });
-              const newItem = activeItem
-                ? {
-                    ..._.omit(activeItem, ['name']),
-                    key: newActiveKey,
-                    isInited: false,
-                  }
-                : {
-                    key: newActiveKey,
-                    isInited: false,
-                    formValues: {
-                      datasourceCate: defaultDatasourceCate,
-                      datasourceValue: defaultDatasourceValue,
-                      query: {
-                        range: logsDefaultRange,
-                      },
-                    },
-                  };
+              const newItem = createLogExplorerTabItem({
+                activeItem,
+                key: newActiveKey,
+                name: `Query ${prev.length + 1}`,
+                defaultDatasourceCate,
+                defaultDatasourceValue,
+                logsDefaultRange,
+                datasourceList,
+              });
               const newItems = [...prev, newItem];
               setLocalItems(newItems);
               return newItems;
@@ -198,6 +250,7 @@ export default function Header(props: Props) {
               closable={items.length !== 1}
               tab={
                 <span className='log-explorer-ng-tab-label'>
+                  <TabDragHandle />
                   <span className='log-explorer-ng-tab-name' title={tabName}>
                     {tabName}
                   </span>
