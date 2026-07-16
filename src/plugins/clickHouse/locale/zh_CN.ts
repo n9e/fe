@@ -49,7 +49,13 @@ const zh_CN = {
     },
     sql_format: {
       title: 'SQL预览',
+      tip: '字段最大值、最小值、分位值等复杂 SQL ，可在左侧字段列表上点击查看。',
       origin: '查看日志原文',
+      origin_tip: '可复制到 表结构视图 -> 表格 模式下查看数据',
+      timeseries: '查看时序图',
+      timeseries_tip: '可复制到 表结构视图 -> 时序图 模式下查看数据，或者用于仪表盘中基于 ClickHouse 数据绘制时序图。',
+      table: '查看统计值',
+      table_tip: '可用于创建 ClickHouse 的告警规则、记录规则、创建北极星指标。',
     },
     warn_message_btn_1: '继续提交查询',
     warn_message_btn_2: '返回修改',

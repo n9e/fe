@@ -49,7 +49,14 @@ const en_US = {
     },
     sql_format: {
       title: 'SQL Preview',
+      tip: 'Maximum, minimum, percentile, and other complex SQL fields can be viewed by clicking on the field list on the left.',
       origin: 'View Raw Logs',
+      origin_tip: 'Can be copied to the Table Structure View -> Table mode to view the data',
+      timeseries: 'View Time Series',
+      timeseries_tip:
+        'Can be copied to the Table Structure View -> Time Series mode to view the data, or used to plot time series charts in dashboards based on ClickHouse data.',
+      table: 'View Statistics',
+      table_tip: 'Can be used to create ClickHouse alert rules, record rules, and create Polaris metrics.',
     },
     warn_message_btn_1: 'Continue to submit query',
     warn_message_btn_2: 'Return to modify',
