@@ -39,7 +39,7 @@ export const deleteItem = function (id: number) {
   }).then((res) => res.dat);
 };
 
-export const getMCPServers = function (): Promise<Item[]> {
+export const getMCPServers = function (): Promise<{ id: number; name: string }[]> {
   return request('/api/n9e/mcp-servers', {
     method: RequestMethod.Get,
   }).then((res) => res.dat ?? []);
