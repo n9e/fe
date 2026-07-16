@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { Button, Form, Modal } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
+import { Button, Modal, Form, Alert, Space, Tooltip } from 'antd';
+import { CopyOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 import { copy2ClipBoard } from '@/utils';
 
 import { NAME_SPACE } from '../../constants';
-import { getCKSQLFormat } from '../../services';
+import { getCKSQLsPreview } from '../../services';
 
 interface SQLFormatParams {
   rangeRef: React.MutableRefObject<{ from: number; to: number } | undefined>;
@@ -23,10 +23,10 @@ interface SQLFormatParams {
 export default function SQLFormatButton(props: SQLFormatParams) {
   const { t } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
-  const { rangeRef, onClick } = props;
+  const { rangeRef, defaultSearchField, onClick } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const form = Form.useFormInstance();
-  const { run: fetchFormattedSQL, data } = useRequest(getCKSQLFormat, {
+  const { run: fetchFormattedSQL, data } = useRequest(getCKSQLsPreview, {
     manual: true,
     onSuccess: () => setModalVisible(true),
   });
@@ -37,15 +37,16 @@ export default function SQLFormatButton(props: SQLFormatParams) {
         onClick={() => {
           const datasourceValue = form.getFieldValue('datasourceValue');
           const queryValues = form.getFieldValue('query');
-          const range = queryValues?.range ? parseRange(queryValues.range) : undefined;
-          const timeParams =
-            rangeRef.current ||
-            (range
-              ? {
-                  from: moment(range.start).unix(),
-                  to: moment(range.end).unix(),
-                }
-              : undefined);
+          let timeParams = rangeRef.current;
+          if (!timeParams) {
+            const range = queryValues?.range ? parseRange(queryValues.range) : undefined;
+            if (range) {
+              timeParams = {
+                from: moment(range.start).unix(),
+                to: moment(range.end).unix(),
+              };
+            }
+          }
           if (!datasourceValue || !queryValues?.database || !queryValues?.table || !queryValues?.time_field || !timeParams) return;
 
           fetchFormattedSQL({
@@ -59,9 +60,8 @@ export default function SQLFormatButton(props: SQLFormatParams) {
                 query_builder_filter: queryValues.query_builder_filter,
                 from: timeParams.from,
                 to: timeParams.to,
-                lines: 10,
-                offset: 0,
-                reverse: true,
+                default_field: defaultSearchField,
+                func: 'count', // Query-mode preview only; mirrors Doris SQLFormatButton
               },
             ],
           });
@@ -69,26 +69,134 @@ export default function SQLFormatButton(props: SQLFormatParams) {
       >
         {t('query.sql_format.title')}
       </Button>
-      <Modal title={t('query.sql_format.title')} visible={modalVisible} width={800} onCancel={() => setModalVisible(false)} footer={null}>
-        <div className='flex items-center justify-between mb-2'>
-          <a
-            onClick={() => {
-              setModalVisible(false);
-              onClick({ syntax: 'sql', sqlVizType: 'table', sql: data });
+      <Modal
+        title={t('query.sql_format.title')}
+        visible={modalVisible}
+        width={800}
+        onCancel={() => {
+          setModalVisible(false);
+        }}
+        footer={null}
+      >
+        <Alert showIcon className='mb-4' type='info' message={t('query.sql_format.tip')} />
+        <div className='mb-4'>
+          <div className='flex items-center justify-between'>
+            <Space>
+              <a
+                onClick={() => {
+                  setModalVisible(false);
+                  onClick({
+                    syntax: 'sql',
+                    sqlVizType: 'table',
+                    sql: data?.origin,
+                  });
+                }}
+              >
+                {t('query.sql_format.origin')}
+              </a>
+              <Tooltip title={t('query.sql_format.origin_tip')}>
+                <InfoCircleOutlined />
+              </Tooltip>
+            </Space>
+            <CopyOutlined
+              onClick={() => {
+                copy2ClipBoard(data?.origin || '');
+              }}
+            />
+          </div>
+          <SyntaxHighlighter
+            wrapLongLines
+            customStyle={{
+              maxHeight: 100,
+              overflow: 'auto',
+              background: 'var(--fc-fill-3)',
             }}
-          >
-            {t('query.sql_format.origin')}
-          </a>
-          <CopyOutlined onClick={() => copy2ClipBoard(data || '')} />
+            children={data?.origin}
+            language='sql'
+            PreTag='div'
+            style={darkMode ? dark : undefined}
+          />
         </div>
-        <SyntaxHighlighter
-          wrapLongLines
-          customStyle={{ maxHeight: 320, overflow: 'auto', background: 'var(--fc-fill-3)' }}
-          children={data || ''}
-          language='sql'
-          PreTag='div'
-          style={darkMode ? dark : undefined}
-        />
+        <div className='mb-4'>
+          <div className='flex items-center justify-between'>
+            <Space>
+              <a
+                onClick={() => {
+                  setModalVisible(false);
+                  onClick({
+                    syntax: 'sql',
+                    sqlVizType: 'timeseries',
+                    sql: data?.timeseries?.count?.sql,
+                    keys: {
+                      valueKey: data?.timeseries?.count?.value_key ?? [],
+                      labelKey: data?.timeseries?.count?.label_key ?? [],
+                    },
+                  });
+                }}
+              >
+                {t('query.sql_format.timeseries')}
+              </a>
+              <Tooltip title={t('query.sql_format.timeseries_tip')}>
+                <InfoCircleOutlined />
+              </Tooltip>
+            </Space>
+            <CopyOutlined
+              onClick={() => {
+                copy2ClipBoard(data?.timeseries?.count?.sql || '');
+              }}
+            />
+          </div>
+          <SyntaxHighlighter
+            wrapLongLines
+            customStyle={{
+              maxHeight: 100,
+              overflow: 'auto',
+              background: 'var(--fc-fill-3)',
+            }}
+            children={data?.timeseries?.count?.sql}
+            language='sql'
+            PreTag='div'
+            style={darkMode ? dark : undefined}
+          />
+        </div>
+        <div className='mb-2'>
+          <div className='flex items-center justify-between'>
+            <Space>
+              <a
+                onClick={() => {
+                  setModalVisible(false);
+                  onClick({
+                    syntax: 'sql',
+                    sqlVizType: 'table',
+                    sql: data?.table?.sql,
+                  });
+                }}
+              >
+                {t('query.sql_format.table')}
+              </a>
+              <Tooltip title={t('query.sql_format.table_tip')}>
+                <InfoCircleOutlined />
+              </Tooltip>
+            </Space>
+            <CopyOutlined
+              onClick={() => {
+                copy2ClipBoard(data?.table?.sql || '');
+              }}
+            />
+          </div>
+          <SyntaxHighlighter
+            wrapLongLines
+            customStyle={{
+              maxHeight: 100,
+              overflow: 'auto',
+              background: 'var(--fc-fill-3)',
+            }}
+            children={data?.table?.sql}
+            language='sql'
+            PreTag='div'
+            style={darkMode ? dark : undefined}
+          />
+        </div>
       </Modal>
     </>
   );

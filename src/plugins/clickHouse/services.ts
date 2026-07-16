@@ -158,6 +158,44 @@ export function getCKSQLFormat(
   }).then((res) => res.dat);
 }
 
+/** Query-mode「SQL预览」— mirrors Doris getDorisSQLsPreview / /doris-sqls-preview. */
+export function getCKSQLsPreview(
+  data: CKQueryEnvelope<{
+    database: string;
+    table: string;
+    time_field: string;
+    query_builder_filter?: FilterConfig[];
+    from: number;
+    to: number;
+    default_field?: string;
+    func: string;
+    field?: string;
+    group_by?: string;
+    field_filter?: unknown;
+    ref?: string;
+  }>,
+): Promise<{
+  origin: string;
+  table: {
+    sql: string;
+    value_key?: string;
+  };
+  timeseries: {
+    [func: string]: {
+      sql: string;
+      value_key: string[];
+      label_key?: string[];
+      type?: string;
+      time_key?: string;
+    };
+  };
+}> {
+  return request('/api/n9e-plus/ck-sqls-preview', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
+}
+
 export function getFiledSample(data: FieldSampleParams & { field: string }): Promise<string[]> {
   const { filters, ...rest } = data;
   return request('/api/n9e-plus/ck-field-sample', {
