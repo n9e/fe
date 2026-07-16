@@ -93,7 +93,7 @@ export function ThinkingBlock({ title, content, isFinish }: { title: string; con
     >
       <Collapse.Panel header={<span className='text-sm font-medium text-main'>{displayTitle}</span>} key='thinking'>
         <div className='max-h-60 overflow-y-auto'>
-          <Markdown content={content || ''} />
+          <Markdown content={content || ''} showCodeCopy />
         </div>
       </Collapse.Panel>
     </Collapse>
@@ -114,7 +114,7 @@ export function HintBlock({ response }: { response: IAiChatMessageResponse }) {
 export function MarkdownBlock({ response }: { response: IAiChatMessageResponse }) {
   return (
     <div className='rounded-lg border border-transparent bg-transparent text-main'>
-      <Markdown content={response.content || ''} />
+      <Markdown content={response.content || ''} showCodeCopy />
     </div>
   );
 }
