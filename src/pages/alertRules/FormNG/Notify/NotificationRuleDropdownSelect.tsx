@@ -14,6 +14,7 @@ import { normalizeInitialValues } from '@/pages/notificationRules/utils/normaliz
 import { useFormNGData } from '../context';
 
 const channelTypes = getNotificationChannelTypes();
+const DRAWER_Z_INDEX = 1100;
 
 /** 取通知规则第一条通知媒介配置的副标题 */
 function getRuleSubtitle(rule: { notify_configs?: { channel_id: number; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] }[] }) {
@@ -190,6 +191,11 @@ export default function NotificationRuleDropdownSelect(props: Props) {
     setCreateDrawerVisible(true);
   };
 
+  const handleDropdownVisibleChange = (visible: boolean) => {
+    if (!visible && (viewDrawerVisible || createDrawerVisible)) return;
+    setDropdownOpen(visible);
+  };
+
   const overlay = (
     <div className='min-w-[500px] max-h-[480px] flex flex-col rounded bg-fc-100 fc-border n9e-base-shadow'>
       <div
@@ -258,7 +264,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
           ))}
         </div>
       )}
-      <Dropdown overlay={overlay} trigger={['click']} placement='bottomLeft' visible={dropdownOpen} onVisibleChange={setDropdownOpen}>
+      <Dropdown overlay={overlay} trigger={['click']} placement='bottomLeft' visible={dropdownOpen} onVisibleChange={handleDropdownVisibleChange}>
         <Button type='dashed' icon={<PlusOutlined />} className='w-full justify-start text-left mb-4'>
           {t('notify_rule_select')}
         </Button>
@@ -267,6 +273,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         title={t(`${notificationRulesNS}:title`)}
         placement='right'
         width='80%'
+        zIndex={DRAWER_Z_INDEX}
         destroyOnClose
         onClose={() => {
           setViewDrawerVisible(false);
@@ -300,6 +307,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         title={t(`${notificationRulesNS}:title`)}
         placement='right'
         width='80%'
+        zIndex={DRAWER_Z_INDEX}
         destroyOnClose
         onClose={() => {
           setCreateDrawerVisible(false);
@@ -311,13 +319,15 @@ export default function NotificationRuleDropdownSelect(props: Props) {
             disabled={createSaving}
             onOk={(values) => {
               setCreateSaving(true);
-              createNotificationRules([values]).then(() => {
-                message.success(t('common:success.add'));
-                setCreateDrawerVisible(false);
-                refreshNotificationRules();
-              }).finally(() => {
-                setCreateSaving(false);
-              });
+              createNotificationRules([values])
+                .then(() => {
+                  message.success(t('common:success.add'));
+                  setCreateDrawerVisible(false);
+                  refreshNotificationRules();
+                })
+                .finally(() => {
+                  setCreateSaving(false);
+                });
             }}
             onCancel={() => {
               setCreateDrawerVisible(false);
