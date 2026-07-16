@@ -49,7 +49,8 @@ export default function EllipsisText({ text, title, className, style, tooltipPro
       onVisibleChange={onVisibleChange}
       // light surface tooltip via design tokens; auto-flips to a dark surface in dark mode
       color='var(--fc-fill-2)'
-      overlayInnerStyle={{ color: 'var(--fc-text-1)', border: '1px solid var(--fc-border-color)' }}
+      // cap the height so very long content scrolls inside the tooltip instead of overflowing the viewport
+      overlayInnerStyle={{ color: 'var(--fc-text-1)', border: '1px solid var(--fc-border-color)', maxHeight: 400, overflow: 'auto' }}
       {...tooltipProps}
     >
       <div ref={ref} className={classNames('fc-ellipsis-text', className)} style={{ ...ellipsisStyle, ...style }}>
