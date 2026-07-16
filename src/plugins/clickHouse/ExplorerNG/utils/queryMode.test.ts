@@ -9,7 +9,24 @@ describe('ClickHouse Explorer query mode', () => {
   test('keeps a real dotted column name intact', () => {
     expect(
       buildCKFilterFromLogValue({ key: 'service.name', value: null, operator: 'NOT' }, [{ field: 'service.name', type: 'Nullable(String)', normalized_type: 'text' }]),
-    ).toMatchObject({ field: 'service.name', operator: 'IS NULL', not: true });
+    ).toMatchObject({ field: 'service.name', operator: 'IS NOT NULL' });
+  });
+
+  test('maps LogsViewer intent onto operator (no `not` flag)', () => {
+    const indexData = [{ field: 'level', type: 'String', normalized_type: 'text' }];
+    // AND + value → equality
+    expect(buildCKFilterFromLogValue({ key: 'level', value: 'warn', operator: 'AND' }, indexData)).toMatchObject({ operator: '=', value: 'warn' });
+    // AND + null → IS NULL
+    expect(buildCKFilterFromLogValue({ key: 'level', value: null, operator: 'AND' }, indexData)).toMatchObject({ operator: 'IS NULL' });
+    // NOT + value → !=
+    expect(buildCKFilterFromLogValue({ key: 'level', value: 'warn', operator: 'NOT' }, indexData)).toMatchObject({ operator: '!=', value: 'warn' });
+    // NOT + null → IS NOT NULL
+    expect(buildCKFilterFromLogValue({ key: 'level', value: null, operator: 'NOT' }, indexData)).toMatchObject({ operator: 'IS NOT NULL' });
+    // EXISTS → IS NOT NULL regardless of value
+    expect(buildCKFilterFromLogValue({ key: 'level', value: 'anything', operator: 'EXISTS' }, indexData)).toMatchObject({ operator: 'IS NOT NULL' });
+    // No filter should carry a `not` property anymore.
+    const filter = buildCKFilterFromLogValue({ key: 'level', value: 'warn', operator: 'NOT' }, indexData);
+    expect(filter).not.toHaveProperty('not');
   });
 
   test('enables highlighting only for positive text filters', () => {
