@@ -23,9 +23,14 @@ export interface RowAction {
 }
 
 export interface RowActions {
-  /** surfaced as icon buttons, left of the kebab */
+  /** signature actions, always surfaced as icon buttons (left of secondary actions) */
   inline?: RowAction[];
-  /** expanded into icon buttons when the row fits `actionMaxIcons`; kept in the kebab menu otherwise */
+  /**
+   * Secondary actions. Presentation belongs to the component, not the caller:
+   * expanded into icon buttons while the row fits `actionMaxIcons`, collapsed
+   * into the kebab menu otherwise. Listing an action here no longer means it
+   * renders collapsed — set `collapsed: true` on an item to force that.
+   */
   menu?: RowAction[];
 }
 
