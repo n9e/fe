@@ -227,6 +227,7 @@ export default function index(props: IProps) {
           }).then((res) => {
             if (type === 'table') {
               const sqlPreviewData = res.table;
+              if (!sqlPreviewData) return;
               const sqlTimeSeriesData = res.timeseries?.[options.func];
               form.setFieldsValue({
                 refreshFlag: undefined,
