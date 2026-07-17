@@ -10,7 +10,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import { buildVariableInterpolations } from '../utils/ajustData';
 import { useVariableManager } from '../VariableManagerContext';
 import { formatString, formatDatasource } from '../utils/formatString';
-import filterOptionsByReg from '../utils/filterOptionsByReg';
+import normalizeQueryOptions from '../utils/normalizeQueryOptions';
 import getValueByOptions from '../utils/getValueByOptions';
 import datasource from '../datasource';
 import { Props } from './types';
@@ -93,7 +93,7 @@ export default function Query(props: Props) {
       if (requestId !== requestIdRef.current) {
         return;
       }
-      const filteredOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+      const filteredOptions = _.sortBy(normalizeQueryOptions(options, formatedReg, datasourceCate), 'value');
       updateVariable(name, {
         options: filteredOptions,
         value: getValueByOptions({
