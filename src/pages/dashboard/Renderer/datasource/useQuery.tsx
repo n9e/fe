@@ -40,6 +40,7 @@ interface IProps {
   datasourceValue?: number;
   time: IRawTimeRange;
   targets: ITarget[];
+  queryEnabled?: boolean;
   inViewPort?: boolean;
   spanNulls?: boolean;
   scopedVars?: any;
@@ -51,7 +52,7 @@ interface IProps {
 }
 
 export default function useQuery(props: IProps) {
-  const { datasourceCate, time, targets, inViewPort, spanNulls, datasourceValue, maxDataPoints, queryOptionsTime } = props;
+  const { datasourceCate, time, targets, queryEnabled = true, inViewPort, spanNulls, datasourceValue, maxDataPoints, queryOptionsTime } = props;
   const form = Form.useFormInstance();
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   // beta.5 新增 range 状态，用于 uplot 图表更新时 time 和 data 同时更新
@@ -79,6 +80,7 @@ export default function useQuery(props: IProps) {
   };
   const { run: fetchData } = useDebounceFn(
     async () => {
+      if (!queryEnabled) return;
       if (!datasourceCate) return;
       // 如果在编辑状态，需要校验表单
       if (form && typeof form.validateFields === 'function') {
@@ -122,21 +124,21 @@ export default function useQuery(props: IProps) {
 
   useEffect(() => {
     // 配置变化时且图表在可视区域内重新请求数据，同时重置 flag
-    if (inViewPort) {
+    if (queryEnabled && inViewPort) {
       fetchData();
     } else {
       flag.current = false;
     }
     // TODO 这里 JSON.stringify(variablesWithOptions) 可能会有性能问题
-  }, [JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variablesWithOptions), spanNulls, datasourceValue, maxDataPoints, JSON.stringify(queryOptionsTime)]);
+  }, [queryEnabled, JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variablesWithOptions), spanNulls, datasourceValue, maxDataPoints, JSON.stringify(queryOptionsTime)]);
 
   useEffect(() => {
     // 如果图表在可视区域内并且没有请求过数据，则请求数据
-    if (inViewPort && !flag.current) {
+    if (queryEnabled && inViewPort && !flag.current) {
       flag.current = true;
       fetchData();
     }
-  }, [inViewPort]);
+  }, [queryEnabled, inViewPort]);
 
   return { query, series, error, loading, loaded, range };
 }

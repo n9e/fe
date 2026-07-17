@@ -39,6 +39,7 @@ export interface IProps {
   id: string;
   time: IRawTimeRange;
   setRange?: (range: IRawTimeRange) => void;
+  queryEnabled?: boolean;
   timezone?: string; // 时区
   setTimezone?: (timezone: string) => void; // 设置时区
   values: IPanel;
@@ -55,7 +56,7 @@ export interface IProps {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { panelWidth, datasourceValue, id, time, setRange, timezone, setTimezone, isPreview } = props;
+  const { panelWidth, datasourceValue, id, time, setRange, queryEnabled, timezone, setTimezone, isPreview } = props;
   const { datasourceList } = useContext(CommonStateContext);
   const values = _.cloneDeep(props.values);
   const containerEleRef = useRef<HTMLDivElement>(null);
@@ -76,6 +77,7 @@ function index(props: IProps) {
     id,
     time,
     targets: values.targets,
+    queryEnabled,
     inViewPort: isPreview || inViewPort,
     datasourceCate: values.datasourceCate || 'prometheus',
     datasourceValue: currentDatasourceValue,

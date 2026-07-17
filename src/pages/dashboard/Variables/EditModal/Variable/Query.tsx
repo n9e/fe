@@ -15,11 +15,12 @@ import { IVariable } from '../../types';
 import adjustData from '../../utils/ajustData';
 import isPlaceholderQuoted from '../../utils/isPlaceholderQuoted';
 import { formatString, formatDatasource } from '../../utils/formatString';
-import filterOptionsByReg from '../../utils/filterOptionsByReg';
+import normalizeQueryOptions from '../../utils/normalizeQueryOptions';
 import { getBuiltInVariables } from '../../utils/replaceTemplateVariables';
 import Querybuilder from '../Querybuilder';
 import datasource from '../../datasource';
 import Preview from '../Preview';
+import { isQueryVariableMultiSelectEnabled } from './queryUtils';
 
 interface Props {
   formatedReg: string;
@@ -43,6 +44,9 @@ export default function Query(props: Props) {
   const form = Form.useFormInstance();
   const item = Form.useWatch<IVariable>([]);
   const datasourceCate = Form.useWatch(['datasource', 'cate']);
+  const legacyQueryType = Form.useWatch(['query', 'type']);
+  const gcmQueryType = Form.useWatch(['query', 'query_type']);
+  const queryType = legacyQueryType || gcmQueryType;
 
   const service = () => {
     if (item) {
@@ -81,7 +85,7 @@ export default function Query(props: Props) {
         },
       })
         .then((options) => {
-          const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+          const itemOptions = _.sortBy(normalizeQueryOptions(options, formatedReg, datasourceCate), 'value');
           setOptions(itemOptions);
           setErrorMsg('');
         })
@@ -194,7 +198,7 @@ export default function Query(props: Props) {
       >
         <Input placeholder='/*.hna/' />
       </Form.Item>
-      {_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql], datasourceCate) && (
+      {isQueryVariableMultiSelectEnabled(datasourceCate, queryType) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
