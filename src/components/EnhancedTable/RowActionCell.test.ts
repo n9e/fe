@@ -73,13 +73,17 @@ describe('splitRowActions', () => {
     expect(keys(kebab)).toEqual(['bespoke', 'delete']);
   });
 
-  it('demotes promoted icons so the kebab never holds a single item', () => {
+  it('forceKebab collapses a row that would otherwise fit, keeping table layouts uniform', () => {
     const actions: RowActions = {
-      menu: [act('edit'), act('copy'), act('bespoke', { node: 'x' })],
+      menu: [act('edit'), act('copy'), act('delete', { danger: true })],
     };
-    const { icons, kebab } = splitRowActions(actions);
-    expect(keys(icons)).toEqual(['edit']);
-    expect(keys(kebab)).toEqual(['copy', 'bespoke']);
+    const fits = splitRowActions(actions);
+    expect(keys(fits.icons)).toEqual(['edit', 'copy', 'delete']);
+    expect(fits.kebab).toEqual([]);
+
+    const forced = splitRowActions(actions, undefined, true);
+    expect(keys(forced.icons)).toEqual(['edit', 'copy']);
+    expect(keys(forced.kebab)).toEqual(['delete']);
   });
 
   it('honors a custom limit', () => {
