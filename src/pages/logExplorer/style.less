@@ -40,7 +40,28 @@
       gap: 4px;
       max-width: 180px;
       min-width: 0;
-      line-height: 1;
+    }
+
+    .log-explorer-ng-tab-drag-handle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      color: var(--fc-text-4);
+      cursor: grab;
+      opacity: 0.55;
+      transition: color 0.2s, opacity 0.2s;
+
+      &:hover {
+        color: var(--fc-text-2);
+        opacity: 1;
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
     }
 
     .log-explorer-ng-tab-name {
@@ -64,5 +85,32 @@
         color: var(--fc-text-1);
       }
     }
+  }
+}
+
+.log-explorer-ng-tab-drag-overlay {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 180px;
+  height: 32px;
+  padding: 0 12px;
+  color: var(--fc-text-1);
+  background-color: var(--fc-fill-1);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 4px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+  cursor: grabbing;
+  line-height: 1;
+
+  .anticon {
+    flex-shrink: 0;
+    color: var(--fc-text-3);
+  }
+
+  .log-explorer-ng-tab-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

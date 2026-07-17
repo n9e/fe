@@ -8,7 +8,7 @@ import _ from 'lodash';
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { tagsColumn, userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { tagsColumn, updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../../constants';
@@ -248,7 +248,7 @@ export default function List() {
           },
           tagsColumn({ title: t('teams'), dataIndex: 'team_names', maxWidth: 180 }),
           dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
-          userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
+          updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
         ]}
         dataSource={filteredData}
         loading={data.loading}

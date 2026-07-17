@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Form, Select, Space, Row, Col, Button, Tooltip, Modal, Table } from 'antd';
 import { WarningOutlined, PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined, ReloadOutlined, SettingOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
@@ -47,6 +47,15 @@ const getInvalidDatasourceIds = (ids: number[], fullDatasourceList: any[]) => {
   }) as number[];
 
   return invalid;
+};
+
+const isEmptyExactMatchQuery = (queries: any[]) => {
+  if (queries.length > 1) {
+    return false;
+  }
+
+  const firstQuery = queries[0] || {};
+  return firstQuery.match_type === 0 && _.isEmpty(firstQuery.values);
 };
 
 function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList, disabled, fields }) {
@@ -185,6 +194,7 @@ export default function index(props: IProps) {
   const datasource_cate = datasourceCate || Form.useWatch(['cate']);
   const datasource_queries = Form.useWatch(names);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const autoDefaultCheckedCateRef = useRef<string>();
   const fetchDatasourceList = () => {
     getDatasourceBriefList().then((res) => {
       setFullDatasourceList(res);
@@ -207,7 +217,36 @@ export default function index(props: IProps) {
         });
       });
     }
-  }, [JSON.stringify(datasource_queries), JSON.stringify(fullDatasourceList)]);
+  }, [datasource_cate, JSON.stringify(datasource_queries), JSON.stringify(fullDatasourceList)]);
+
+  useEffect(() => {
+    if (!datasource_cate || _.isEmpty(datasourceList) || autoDefaultCheckedCateRef.current === datasource_cate) {
+      return;
+    }
+
+    autoDefaultCheckedCateRef.current = datasource_cate;
+
+    if (datasourceList.length !== 1) {
+      return;
+    }
+
+    const queries = form.getFieldValue(names) || [];
+    if (!isEmptyExactMatchQuery(queries)) {
+      return;
+    }
+
+    const firstQuery = queries[0] || {};
+    form.setFieldsValue(
+      _.set({}, names, [
+        {
+          ...firstQuery,
+          match_type: 0,
+          op: firstQuery.op || 'in',
+          values: [datasourceList[0].id],
+        },
+      ]),
+    );
+  }, [datasource_cate, JSON.stringify(datasourceList)]);
 
   useEffect(() => {
     fetchDatasourceList();

@@ -5,8 +5,8 @@ const ja_JP = {
   query: {
     title: 'クエリ統計',
     execute: 'クエリ',
-    query: 'クエリ条件',
-    query_required: 'クエリ条件は空にできません',
+    query: 'SQL',
+    query_required: 'SQLは空にできません',
     query_placeholder: 'SQLを入力してクエリを実行します。Shift+Enterで改行します',
     query_placeholder2: 'Shift+Enterで改行します',
     advancedSettings: {

@@ -434,7 +434,7 @@ const Event = (props: Props) => {
                   },
                   !_.includes(['firemap', 'northstar'], record?.rule_prod) && {
                     key: 'shield',
-                    icon: 'permission',
+                    icon: 'shield',
                     text: t('shield'),
                     onClick: () => {
                       history.push({

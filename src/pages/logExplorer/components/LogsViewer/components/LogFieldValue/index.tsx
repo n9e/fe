@@ -10,6 +10,8 @@ import { Field } from '../../../../types';
 import { tokenizer } from './util';
 import Token from './Token';
 
+import './style.less';
+
 interface Props {
   parentKey?: string; // 嵌套json渲染时可以传入，目前仅用在下钻的字段名判断中。目前仅在 sls 中使用
   name: string;

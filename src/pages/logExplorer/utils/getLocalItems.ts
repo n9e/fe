@@ -15,7 +15,7 @@ export function getLocalItems(params, defaultFormValues = {}) {
   const range_end = _.get(params, 'end');
   if (localItems) {
     try {
-      items = _.map(JSON.parse(localItems), (item) => {
+      items = _.map(JSON.parse(localItems), (item, idx) => {
         let formValues = item.formValues || {};
         // 如果是绝对时间则设置默认值 last 1 hour
         if (!isMathString(formValues.query?.range?.start) || !isMathString(formValues.query?.range?.end)) {
@@ -44,6 +44,7 @@ export function getLocalItems(params, defaultFormValues = {}) {
         }
         return {
           ...item,
+          name: item.name || `Query ${idx + 1}`,
           isInited: false,
         };
       });
@@ -59,6 +60,7 @@ export function getLocalItems(params, defaultFormValues = {}) {
     items = [
       {
         key: DEFAULT_ACTIVE_KEY,
+        name: 'Query 1',
         isInited: false,
         formValues: searchRange ? { ...defaultFormValues, query: { range: searchRange } } : defaultFormValues,
       },
@@ -88,6 +90,7 @@ export function getLocalItems(params, defaultFormValues = {}) {
         ...items,
         {
           key: getUUID(),
+          name: `Query ${items.length + 1}`,
           isInited: false,
           formValues,
         },

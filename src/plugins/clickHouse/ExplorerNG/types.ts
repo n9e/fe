@@ -3,12 +3,15 @@ import { Field as BaseField } from '@/pages/logExplorer/types';
 
 export type HandleValueFilterParams = (params: OnValueFilterParams) => void;
 
+// Negation is expressed via the operator (`!=`, `NOT IN`, `IS NOT NULL`,
+// `NOT LIKE`, `NOT ILIKE`, `NOT BETWEEN AND`, `NOT match`) — there is no
+// separate `not` flag. Mirrors the CK BE contract in
+// plus/datasource/ck/ck.go:QueryBuilderFilterItem.
 export interface FilterConfig {
   logic?: 'and' | 'or';
   field?: string;
   operator?: string;
   value?: string | number | boolean | null | Array<string | number | boolean | null>;
-  not?: boolean;
   disabled?: boolean;
 }
 

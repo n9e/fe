@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Form, Space, Row, Col, Button } from 'antd';
+import { Form, Space, Row, Col, Button, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
@@ -7,10 +7,11 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
-import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import { SqlMonacoEditor } from '@fc-components/monaco-editor';
+import { WandSparkles } from 'lucide-react';
+import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
-import LogQL from '@/components/LogQL';
 
 import AdvancedSettings from '../../components/AdvancedSettings';
 import { NAME_SPACE } from '../../constants';
@@ -58,13 +59,27 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       <Col flex='auto'>
                         <div className='tdengine-discover-query'>
                           <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
-                            <Form.Item {...field} name={[field.name, 'sql']}>
-                              <LogQL
-                                datasourceCate={DatasourceCateEnum.ck}
-                                datasourceValue={datasourceID}
-                                query={{}}
-                                historicalRecords={[]}
-                                placeholder={t('query.query_placeholder2')}
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'sql']}
+                              validateTrigger={['onBlur']}
+                              trigger='onChange'
+                              rules={[{ required: true, message: t('datasource:query.query_required') }]}
+                            >
+                              <SqlMonacoEditor
+                                disabled={disabled}
+                                maxHeight={200}
+                                placeholder='SELECT count(*) as count FROM db_name.table_name'
+                                theme={darkMode ? 'dark' : 'light'}
+                                enableAutocomplete={true}
+                                enableFormat
+                                renderFormatButton={() => {
+                                  return (
+                                    <Tooltip title={t('common:format_sql')}>
+                                      <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
+                                    </Tooltip>
+                                  );
+                                }}
                               />
                             </Form.Item>
                           </InputGroupWithFormItem>

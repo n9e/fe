@@ -13,7 +13,7 @@ import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { tagsColumn, dateColumn, userColumn } from '@/components/EnhancedTable/columns';
+import { tagsColumn, dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import usePagination from '@/components/usePagination';
 import EditModal from './components/editModal';
@@ -172,7 +172,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
     },
     tagsColumn({ title: t('append_tags'), dataIndex: 'append_tags', maxWidth: 180 }),
     dateColumn<strategyItem>({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
-    userColumn<strategyItem>({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
+    updateByColumn<strategyItem>({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     {
       ...getEnabledStatusColumn({
         title: t('disabled'),

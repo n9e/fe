@@ -3,8 +3,10 @@ import { Form, Button } from 'antd';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { useRequest } from 'ahooks';
 
 import ConditionHistoricalRecords from '@/components/HistoricalRecords/ConditionHistoricalRecords';
+import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 
 import { NAME_SPACE, QUERY_CACHE_KEY, QUERY_CACHE_PICK_KEYS } from '../../constants';
 
@@ -20,6 +22,17 @@ export default function QueryInputAddonAfter(props: Props) {
 
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
+  const { data: indexPatterns = [] } = useRequest(() => getESIndexPatterns(datasourceValue), {
+    ready: !!datasourceValue,
+    refreshDeps: [datasourceValue],
+  });
+
+  const getIndexPatternDisplayValue = (value: any) => {
+    const indexPattern = _.find(indexPatterns, (item) => {
+      return item.id === _.toNumber(value) || item.name === value;
+    });
+    return indexPattern?.name || value;
+  };
 
   if (!datasourceValue) return null;
 
@@ -65,7 +78,7 @@ export default function QueryInputAddonAfter(props: Props) {
                 );
               }
               if (!value) return <span key={key} />;
-              const displayValue = key === 'syntax' ? SYNTAX_LABEL_MAP[value as string] ?? value : value;
+              const displayValue = key === 'syntax' ? SYNTAX_LABEL_MAP[value as string] ?? value : key === 'index_pattern' ? getIndexPatternDisplayValue(value) : value;
               return (
                 <span key={key} className='whitespace-nowrap'>
                   <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`query.${key}`)}:</span>

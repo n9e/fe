@@ -9,8 +9,8 @@ import { SIZE } from '@/utils/constant';
 
 import { getList as getLLMConfigs } from '../../llmConfigs/services';
 import { getList as getSkills } from '../../skills/services';
-import { getList as getMCPServers } from '../../mcpServers/services';
 import { NS } from '../constants';
+import { getMCPServers } from '../services';
 
 interface Props {
   form: FormInstance;

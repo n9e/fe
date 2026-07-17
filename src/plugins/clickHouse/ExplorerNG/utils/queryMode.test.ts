@@ -9,14 +9,31 @@ describe('ClickHouse Explorer query mode', () => {
   test('keeps a real dotted column name intact', () => {
     expect(
       buildCKFilterFromLogValue({ key: 'service.name', value: null, operator: 'NOT' }, [{ field: 'service.name', type: 'Nullable(String)', normalized_type: 'text' }]),
-    ).toMatchObject({ field: 'service.name', operator: 'IS NULL', not: true });
+    ).toMatchObject({ field: 'service.name', operator: 'IS NOT NULL' });
+  });
+
+  test('maps LogsViewer intent onto operator (no `not` flag)', () => {
+    const indexData = [{ field: 'level', type: 'String', normalized_type: 'text' }];
+    // AND + value → equality
+    expect(buildCKFilterFromLogValue({ key: 'level', value: 'warn', operator: 'AND' }, indexData)).toMatchObject({ operator: '=', value: 'warn' });
+    // AND + null → IS NULL
+    expect(buildCKFilterFromLogValue({ key: 'level', value: null, operator: 'AND' }, indexData)).toMatchObject({ operator: 'IS NULL' });
+    // NOT + value → !=
+    expect(buildCKFilterFromLogValue({ key: 'level', value: 'warn', operator: 'NOT' }, indexData)).toMatchObject({ operator: '!=', value: 'warn' });
+    // NOT + null → IS NOT NULL
+    expect(buildCKFilterFromLogValue({ key: 'level', value: null, operator: 'NOT' }, indexData)).toMatchObject({ operator: 'IS NOT NULL' });
+    // EXISTS → IS NOT NULL regardless of value
+    expect(buildCKFilterFromLogValue({ key: 'level', value: 'anything', operator: 'EXISTS' }, indexData)).toMatchObject({ operator: 'IS NOT NULL' });
+    // No filter should carry a `not` property anymore.
+    const filter = buildCKFilterFromLogValue({ key: 'level', value: 'warn', operator: 'NOT' }, indexData);
+    expect(filter).not.toHaveProperty('not');
   });
 
   test('enables highlighting only for positive text filters', () => {
     expect(hasHighlightableFilter([{ field: 'message', operator: 'ILIKE', value: '%error%' }])).toBe(true);
     expect(hasHighlightableFilter([{ field: 'message', operator: 'NOT ILIKE', value: '%error%' }])).toBe(false);
     expect(hasHighlightableFilter([{ field: 'message', operator: 'hasToken', value: 'timeout' }])).toBe(true);
-    expect(hasHighlightableFilter([{ field: 'message', operator: 'notMatch', value: 'x' }])).toBe(false);
+    expect(hasHighlightableFilter([{ field: 'message', operator: 'NOT match', value: 'x' }])).toBe(false);
     expect(hasHighlightableFilter([{ field: 'status', operator: '=', value: 500 }])).toBe(false);
   });
 
@@ -30,7 +47,7 @@ describe('ClickHouse Explorer query mode', () => {
   });
 
   test('exposes CK-native text operators and advanced aggregates', () => {
-    expect(TYPE_OPERATOR_MAP.text).toEqual(expect.arrayContaining(['ILIKE', 'NOT ILIKE', 'match', 'notMatch', 'hasToken']));
+    expect(TYPE_OPERATOR_MAP.text).toEqual(expect.arrayContaining(['ILIKE', 'NOT ILIKE', 'match', 'NOT match', 'hasToken']));
     expect(TYPE_OPERATOR_MAP.json).toEqual(['IS NULL', 'IS NOT NULL']);
     expect(TYPE_OPERATOR_MAP.map).toEqual(['IS NULL', 'IS NOT NULL']);
     expect(Object.keys(AGGREGATE_FUNCTION_TYPE_MAP)).toEqual(expect.arrayContaining(['TOPN', 'RATIO', 'EXIST_RATIO', 'PERCENTILE', 'VARIANCE', 'STDDEV']));

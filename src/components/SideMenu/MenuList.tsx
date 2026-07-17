@@ -574,7 +574,8 @@ export default function MenuList(
               props.quickMenuRef.current.open();
             }}
             className={cn(
-              'group relative flex h-8 cursor-pointer items-center rounded-md px-3 transition-colors transition-spacing duration-75',
+              'group relative flex h-8 cursor-pointer items-center rounded-md transition-colors duration-75',
+              props.collapsed ? 'justify-center' : 'px-3',
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-gray-200/20' : 'hover:bg-fc-200',
             )}
           >

@@ -126,6 +126,8 @@ const ja_JP = {
     filterAllAnd: 'すべてを現在の検索に追加',
     filterAllNot: 'すべてを現在の検索から除外',
     filterExists: 'このフィールドを持つドキュメントをフィルタ',
+    add_drilldown_link: 'ドリルダウンリンクを追加',
+    drilldown_link_default_name: 'ドリルダウンリンク',
     total: 'ログ件数',
     stack_group_by_tip: 'このフィールド値で積み上げトレンドチャートを表示',
     collapse: '折りたたむ',

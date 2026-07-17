@@ -222,3 +222,56 @@
     // }
   }
 }
+
+.typora-theme-lark {
+  .markdown-code-block {
+    position: relative !important;
+
+    > div,
+    pre,
+    .base-code {
+      padding-right: 44px !important;
+    }
+
+    &:hover,
+    &:focus-within {
+      .markdown-code-copy-btn {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+  }
+
+  .markdown-code-copy-btn {
+    position: absolute !important;
+    top: 8px;
+    right: 8px;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    color: var(--fc-text-2);
+    background: var(--fc-fill-2);
+    transition: opacity 0.15s ease;
+
+    &:hover,
+    &:focus {
+      color: var(--fc-text-1);
+      background: var(--fc-fill-3);
+    }
+  }
+}
+
+.theme-dark {
+  .typora-theme-lark {
+    .markdown-code-copy-btn {
+      color: rgba(255, 255, 255, 0.75);
+      background: rgba(255, 255, 255, 0.12);
+
+      &:hover,
+      &:focus {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.18);
+      }
+    }
+  }
+}

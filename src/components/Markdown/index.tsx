@@ -19,8 +19,13 @@ import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import classNames from 'classnames';
+import { Button, Tooltip } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+import { copy2ClipBoard } from '@/utils';
 
 import './index.less';
 import './typora-theme-lark.less';
@@ -29,6 +34,7 @@ interface IMarkDownPros {
   content: string;
   style?: any;
   inTooltip?: boolean;
+  showCodeCopy?: boolean;
 }
 
 dark['pre[class*="language-"]'] = {
@@ -39,7 +45,8 @@ dark['pre[class*="language-"]'] = {
 };
 
 // https://github.com/vitejs/vite/issues/3592 bug solve 记录
-const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, inTooltip }) => {
+const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, inTooltip, showCodeCopy = false }) => {
+  const { t } = useTranslation('common');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(typeof document !== 'undefined' ? document.body.classList.contains('theme-dark') : false);
 
   useEffect(() => {
@@ -52,6 +59,27 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, inTooltip }) =
     };
   }, []);
 
+  const renderCodeBlock = (code: string, children: React.ReactNode) => {
+    if (!showCodeCopy) return <>{children}</>;
+
+    return (
+      <div className='markdown-code-block'>
+        <Tooltip title={t('btn.copy2')}>
+          <Button
+            className='markdown-code-copy-btn'
+            size='small'
+            type='text'
+            icon={<CopyOutlined />}
+            onClick={() => {
+              copy2ClipBoard(code);
+            }}
+          />
+        </Tooltip>
+        {children}
+      </div>
+    );
+  };
+
   return (
     <div className={inTooltip ? 'theme-dark bg-transparent' : ''}>
       <div className='typora-theme-lark' style={style}>
@@ -62,19 +90,34 @@ const Markdown: React.FC<IMarkDownPros> = ({ content, style = {}, inTooltip }) =
           components={{
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '');
-              return !inline && match ? (
-                <SyntaxHighlighter {...props} children={String(children).replace(/\n$/, '')} language={match[1]} PreTag='div' style={inTooltip || isDarkMode ? dark : undefined} />
-              ) : (
-                <div
-                  className={classNames({
-                    [className || '']: !!className,
-                    'base-code': true,
-                    'base-code-inline': inline,
-                  })}
-                >
-                  <code {...props}>{children}</code>
-                </div>
-              );
+              if (inline) {
+                return (
+                  <div
+                    className={classNames({
+                      [className || '']: !!className,
+                      'base-code': true,
+                      'base-code-inline': true,
+                    })}
+                  >
+                    <code {...props}>{children}</code>
+                  </div>
+                );
+              }
+
+              const code = String(children).replace(/\n$/, '');
+              return match
+                ? renderCodeBlock(code, <SyntaxHighlighter {...props} children={code} language={match[1]} PreTag='div' style={inTooltip || isDarkMode ? dark : undefined} />)
+                : renderCodeBlock(
+                    code,
+                    <div
+                      className={classNames({
+                        [className || '']: !!className,
+                        'base-code': true,
+                      })}
+                    >
+                      <code {...props}>{children}</code>
+                    </div>,
+                  );
             },
           }}
         />

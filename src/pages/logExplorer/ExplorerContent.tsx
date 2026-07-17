@@ -12,7 +12,7 @@ import Loki from '@/plugins/loki/ExplorerNG';
 
 interface Props {
   tabKey: string;
-  datasourceCate: DatasourceCateEnum;
+  datasourceCate?: DatasourceCateEnum;
   defaultFormValuesControl?: DefaultFormValuesControl;
   renderCommonSettings: RenderCommonSettings;
 }
@@ -20,6 +20,10 @@ interface Props {
 export default function index(props: Props) {
   const { tabKey, datasourceCate, defaultFormValuesControl, renderCommonSettings } = props;
   const { t } = useTranslation(NAME_SPACE);
+
+  if (!datasourceCate) {
+    return null;
+  }
 
   if (datasourceCate === DatasourceCateEnum.elasticsearch) {
     return <Elasticsearch tabKey={tabKey} defaultFormValuesControl={defaultFormValuesControl} renderCommonSettings={renderCommonSettings} />;

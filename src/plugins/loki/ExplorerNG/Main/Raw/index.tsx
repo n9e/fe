@@ -246,6 +246,11 @@ export default function Raw(props: Props) {
           raw_key='___raw___'
           timeField={DEFAULT_TIME_FIELD}
           range={queryValues?.range}
+          drilldownContext={{
+            cate: DatasourceCateEnum.loki,
+            datasource_id: datasourceValue,
+            query: queryValues?.query,
+          }}
           histogramLoading={histogramLoading}
           histogram={histogramData?.data || []}
           histogramHash={histogramData?.hash}
