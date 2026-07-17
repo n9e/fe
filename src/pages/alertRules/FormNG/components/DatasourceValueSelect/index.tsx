@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Form, Select, Space, Row, Col, Button, Tooltip, Modal, Table } from 'antd';
 import { WarningOutlined, MinusCircleOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ExternalLink, RefreshCw } from 'lucide-react';
@@ -186,6 +186,8 @@ export default function index(props: IProps) {
   const datasource_cate = datasourceCate || Form.useWatch(['cate']);
   const datasource_queries = Form.useWatch(names);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  // 用于追踪每个 cate 是否已执行过自动选中，避免重复触发
+  const autoSelectedCateRef = useRef<string | null>(null);
   const fetchDatasourceList = () => {
     getDatasourceBriefList().then((res) => {
       setFullDatasourceList(res);
@@ -206,6 +208,25 @@ export default function index(props: IProps) {
           datasource_value: _.head(datasourceIds), // 取第一个数据用于数据预览等地方
           datasource_values: datasourceIds, // 保存所有查询的数据源 id
         });
+        // 精准匹配：当该 cate 下只有一个数据源且尚未自动选中过时，自动填入
+        if (res.length === 1 && autoSelectedCateRef.current !== datasource_cate) {
+          const queries = form.getFieldValue(names);
+          const firstQuery = _.isArray(queries) ? queries[0] : null;
+          const isDefaultState = firstQuery && (firstQuery.match_type === 2 || (firstQuery.match_type === 0 && _.isEmpty(firstQuery.values)));
+          if (isDefaultState) {
+            autoSelectedCateRef.current = datasource_cate;
+            form.setFieldsValue(
+              _.set({}, names, [
+                {
+                  ...firstQuery,
+                  match_type: 0,
+                  op: 'in',
+                  values: [res[0].id],
+                },
+              ]),
+            );
+          }
+        }
       });
     }
   }, [JSON.stringify(datasource_queries), JSON.stringify(fullDatasourceList)]);

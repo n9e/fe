@@ -3,8 +3,8 @@ const ja_JP = {
   query: {
     title: 'クエリ統計',
     execute: 'クエリ',
-    query: 'クエリ条件',
-    query_required: 'クエリ条件は空にできません',
+    query: 'SQL',
+    query_required: 'SQLは空にできません',
     query_placeholder: 'SQLを入力してクエリを実行します。Shift+Enterで改行します',
     query_placeholder2: 'Shift+Enterで改行します',
     advancedSettings: {
@@ -55,8 +55,7 @@ const ja_JP = {
       origin: 'ログ原文を表示',
       origin_tip: '表構造ビュー -> テーブル モードにコピーしてデータを確認できます',
       timeseries: '時系列を表示',
-      timeseries_tip:
-        '表構造ビュー -> 時系列 モードにコピーしてデータを確認するか、ダッシュボードで ClickHouse データに基づいて時系列チャートを描画するために使用できます。',
+      timeseries_tip: '表構造ビュー -> 時系列 モードにコピーしてデータを確認するか、ダッシュボードで ClickHouse データに基づいて時系列チャートを描画するために使用できます。',
       table: '統計値を表示',
       table_tip: 'ClickHouse のアラートルール、レコードルール、ポラリス指標の作成などに使用されます',
     },

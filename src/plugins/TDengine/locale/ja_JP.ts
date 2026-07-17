@@ -29,9 +29,11 @@ const ja_JP = {
     },
     advancedSettings: {
       title: '高度な設定',
+      metricKey_label: 'メトリック名フィールド',
       metricKey_tip:
         'このフィールドで、どのフィールドを metricName として使用するかを指定できます。デフォルトでは数値型のフィールドが metricName として使用されます。例えば、クエリ結果が used_percent:96 host:host01 の場合、used_percent が metricName、96 が値になります',
       tags_placeholder: '複数入力可能',
+      labelKey_label: 'ラベルフィールド',
       labelKey_tip:
         'このフィールドで、どのフィールドを labelName として使用するかを指定できます。デフォルトでは非数値型のフィールドが labelName として使用されます。例えば、クエリ結果が used_percent:96 host:host01 の場合、host が label の name、host01 が label の値になります',
       timeKey_tip: 'どのフィールドが時間フィールドであるかを指定し、曲線グラフのX軸座標として使用します',

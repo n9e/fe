@@ -37,6 +37,7 @@ function AdvancedSettings(props: IProps) {
             onClick={() => {
               setOpen(!open);
             }}
+            size={4}
           >
             {open ? <DownOutlined /> : <RightOutlined />}
             {t('query.advancedSettings.title')}

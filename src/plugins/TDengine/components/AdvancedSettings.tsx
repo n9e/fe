@@ -44,7 +44,7 @@ function AdvancedSettings(props: IProps) {
                 <InputGroupWithFormItem
                   label={
                     <span>
-                      MetricKey{' '}
+                      {t('query.advancedSettings.metricKey_label')}{' '}
                       <Tooltip title={t('query.advancedSettings.metricKey_tip')}>
                         <QuestionCircleOutlined />
                       </Tooltip>
@@ -60,7 +60,7 @@ function AdvancedSettings(props: IProps) {
                 <InputGroupWithFormItem
                   label={
                     <span>
-                      LabelKey{' '}
+                      {t('query.advancedSettings.labelKey_label')}{' '}
                       <Tooltip title={t('query.advancedSettings.labelKey_tip')}>
                         <QuestionCircleOutlined />
                       </Tooltip>

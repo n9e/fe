@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Row, Col, Form, Tooltip, AutoComplete, Input, InputNumber, Select, Space } from 'antd';
+import { Row, Col, Form, Tooltip, AutoComplete, InputNumber, Select, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
@@ -71,7 +71,7 @@ export default function Query(props: Props) {
           </Col>
           <Col flex='auto'>
             <Row gutter={8}>
-              <Col flex='220px'>
+              <Col flex='320px'>
                 <InputGroupWithFormItem
                   label={
                     <Space>
@@ -132,6 +132,7 @@ export default function Query(props: Props) {
                           setIndexSearch(val);
                         }}
                         disabled={disabled}
+                        placeholder={t('datasource:es.index_placeholder')}
                       />
                     </Form.Item>
                   )}
@@ -161,30 +162,7 @@ export default function Query(props: Props) {
                   addonAfter='Lucene'
                 >
                   <Form.Item {...field} name={[field.name, 'filter']}>
-                    <LuceneInput disabled={disabled} />
-                  </Form.Item>
-                </InputGroupWithFormItem>
-              </Col>
-              {indexType === 'index' && (
-                <Col flex='180px'>
-                  <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
-                </Col>
-              )}
-              <Col flex='180px'>
-                <InputGroupWithFormItem
-                  label={t('datasource:es.interval')}
-                  addonAfter={
-                    <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
-                      <Select disabled={disabled}>
-                        <Select.Option value='second'>{t('common:time.second')}</Select.Option>
-                        <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
-                        <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
-                      </Select>
-                    </Form.Item>
-                  }
-                >
-                  <Form.Item {...field} name={[field.name, 'interval']} noStyle initialValue={1}>
-                    <InputNumber disabled={disabled} style={{ width: '100%' }} min={0} />
+                    <LuceneInput disabled={disabled} placeholder={t('datasource:es.filter_placeholder')} />
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>
@@ -192,15 +170,43 @@ export default function Query(props: Props) {
           </Col>
         </Row>
       </CardContainerHeader>
-      <Value
-        datasourceValue={datasourceValue}
-        index={curIndexValue}
-        field={field}
-        preName={names}
-        disabled={disabled}
-        functions={['count', 'avg', 'sum', 'max', 'min', 'p90', 'p95', 'p99']}
-      />
-      <div style={{ marginTop: 8 }}>
+      <Row gutter={8}>
+        {indexType === 'index' && (
+          <Col span={6}>
+            <DateField disabled={disabled} datasourceValue={datasourceValue} index={indexValue} field={field} preName={names} />
+          </Col>
+        )}
+        <Col span={6}>
+          <InputGroupWithFormItem
+            label={t('datasource:es.interval')}
+            addonAfter={
+              <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
+                <Select disabled={disabled}>
+                  <Select.Option value='second'>{t('common:time.second')}</Select.Option>
+                  <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
+                  <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
+                </Select>
+              </Form.Item>
+            }
+            className='mb-4'
+          >
+            <Form.Item {...field} name={[field.name, 'interval']} noStyle initialValue={1}>
+              <InputNumber disabled={disabled} style={{ width: '100%' }} min={1} />
+            </Form.Item>
+          </InputGroupWithFormItem>
+        </Col>
+        <Col span={indexType === 'index' ? 12 : 18}>
+          <Value
+            datasourceValue={datasourceValue}
+            index={curIndexValue}
+            field={field}
+            preName={names}
+            disabled={disabled}
+            functions={['count', 'avg', 'sum', 'max', 'min', 'p90', 'p95', 'p99']}
+          />
+        </Col>
+      </Row>
+      <div>
         <GroupBy datasourceValue={datasourceValue} index={curIndexValue} parentNames={names} prefixField={field} prefixFieldNames={[field.name]} disabled={disabled} />
       </div>
       <AdvancedSettings field={field} />

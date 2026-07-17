@@ -35,6 +35,7 @@ export default function IndexPatternSelect(props: Props) {
         dropdownMatchSelectWidth={false}
         showSearch
         optionFilterProp='label'
+        placeholder={t('datasource:es.index_pattern_placeholder')}
       />
     </Form.Item>
   );

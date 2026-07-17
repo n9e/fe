@@ -5,6 +5,7 @@ interface Props {
   disabled?: boolean;
   value?: string;
   onChange?: (value?: string) => void;
+  placeholder?: string;
 }
 
 export default function QueryInput(props: Props) {
@@ -36,6 +37,7 @@ export default function QueryInput(props: Props) {
         }
       }}
       onKeyDown={handleKeyDown}
+      placeholder={props.placeholder}
     />
   );
 }
