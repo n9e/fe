@@ -8,25 +8,44 @@ import type { RowAction, RowActions } from './types';
 
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
 
-export const DEFAULT_ACTION_MAX_ICONS = 4;
+export const DEFAULT_ACTION_MAX_ICONS = 3;
+// Once a kebab exists, cap surfaced icons at 2 and keep at least 2 items inside —
+// a one-item overflow menu costs a click without saving any space.
+const MAX_SURFACED_ICONS = 2;
+const MIN_KEBAB_ITEMS = 2;
 
 /**
  * Split a row's actions into surfaced icon buttons and kebab leftovers.
- * Kebab actions expand into icon buttons when the whole row fits within `maxIcons`
- * (danger items last); `node` and `collapsed: true` items always stay in the kebab.
- * Rows exceeding the limit keep today's layout: inline icons + full kebab.
+ * A row with no `node`/`collapsed: true` items and at most `maxIcons` actions
+ * expands entirely into icon buttons (danger items last), with no kebab.
+ * Any other row gets a kebab: `inline` items stay surfaced, non-danger menu
+ * items are promoted until 2 icons show, and everything else — including all
+ * danger items — goes into the kebab (menu order preserved). Icons are demoted
+ * back if needed so the kebab never holds fewer than 2 items.
  */
 export function splitRowActions(actions: RowActions, maxIcons = DEFAULT_ACTION_MAX_ICONS) {
   const inline = visibleOnly(actions.inline);
   const menu = visibleOnly(actions.menu);
   const pinned = menu.filter((a) => a.node || a.collapsed);
   const expandable = menu.filter((a) => !a.node && !a.collapsed);
-  if (inline.length + expandable.length > maxIcons) {
-    return { icons: inline, kebab: menu };
+  if (!pinned.length && inline.length + expandable.length <= maxIcons) {
+    return {
+      icons: [...inline, ...expandable.filter((a) => !a.danger), ...expandable.filter((a) => a.danger)],
+      kebab: [] as RowAction[],
+    };
+  }
+  const promoted: RowAction[] = [];
+  for (const action of expandable) {
+    if (inline.length + promoted.length >= MAX_SURFACED_ICONS) break;
+    if (action.danger) continue;
+    promoted.push(action);
+  }
+  while (promoted.length && menu.length - promoted.length < MIN_KEBAB_ITEMS) {
+    promoted.pop();
   }
   return {
-    icons: [...inline, ...expandable.filter((a) => !a.danger), ...expandable.filter((a) => a.danger)],
-    kebab: pinned,
+    icons: [...inline, ...promoted],
+    kebab: menu.filter((a) => !promoted.includes(a)),
   };
 }
 
