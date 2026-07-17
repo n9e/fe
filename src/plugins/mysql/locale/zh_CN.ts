@@ -5,8 +5,8 @@ const zh_CN = {
   query: {
     title: '查询统计',
     execute: '查询',
-    query: '查询条件',
-    query_required: '查询条件不能为空',
+    query: 'SQL',
+    query_required: 'SQL不能为空',
     query_placeholder: '输入 SQL 进行查询，按 Shift+Enter 换行',
     query_placeholder2: '按 Shift+Enter 换行',
     advancedSettings: {

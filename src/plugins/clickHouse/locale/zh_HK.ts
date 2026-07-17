@@ -3,8 +3,8 @@ const zh_HK = {
   query: {
     title: '查詢統計',
     execute: '查詢',
-    query: '查詢條件',
-    query_required: '查詢條件不能為空',
+    query: 'SQL',
+    query_required: 'SQL不能為空',
     query_placeholder: '輸入 SQL 進行查詢，按 Shift+Enter 換行',
     query_placeholder2: '按 Shift+Enter 換行',
     advancedSettings: {

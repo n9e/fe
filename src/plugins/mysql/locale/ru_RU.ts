@@ -5,8 +5,8 @@ const ru_RU = {
   query: {
     title: 'Статистика запросов',
     execute: 'Выполнить',
-    query: 'Условия запроса',
-    query_required: 'Условия запроса не могут быть пустыми',
+    query: 'SQL',
+    query_required: 'SQL не может быть пустым',
     query_placeholder: 'Введите SQL для запроса, нажмите Shift+Enter для переноса строки',
     query_placeholder2: 'Нажмите Shift+Enter для переноса строки',
     advancedSettings: {

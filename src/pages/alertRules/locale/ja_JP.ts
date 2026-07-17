@@ -387,7 +387,7 @@ const ja_JP = {
   },
   pipeline_configuration_ng: {
     title: 'イベント処理',
-    desc: 'ワークフロー、Relabelと追加情報',
+    desc: 'アラートイベントを加工処理する',
     select_workflow: '既存ワークフローを選択',
     select_workflow_tooltip:
       '現在の業務グループの既存イベント処理ワークフローを再利用し、複数のアラートルールで同じプロセッサセットを共有できます。また、この入口で「新規ワークフロー」を選択して、本ルールのプロセッサを独立して管理することもできます。',
@@ -434,6 +434,7 @@ const ja_JP = {
     enabled_on: '有効',
     enabled_off: '無効',
     items_count: '{{count}}件',
+    all_day: '終日',
     queries_and_threshold: 'クエリと閾値',
     query_statements: 'クエリ文',
     triggers: '判定条件',

@@ -236,7 +236,12 @@ function EffectiveSummary() {
               const days = _.isArray(item?.enable_days_of_week) ? item.enable_days_of_week : [];
               const stime = item?.enable_stime;
               const etime = item?.enable_etime;
-              const timeLabel = stime && etime ? `${stime.format ? stime.format('HH:mm') : stime} ~ ${etime.format ? etime.format('HH:mm') : etime}` : '';
+              const timeLabel =
+                stime && etime
+                  ? (stime.format ? stime.format('HH:mm') : stime) === '00:00' && (etime.format ? etime.format('HH:mm') : etime) === '00:00'
+                    ? t('form_ng.all_day')
+                    : `${stime.format ? stime.format('HH:mm') : stime} ~ ${etime.format ? etime.format('HH:mm') : etime}`
+                  : '';
               const localText =
                 timeZone && timeZone !== 'Local' && stime && etime
                   ? `${moment

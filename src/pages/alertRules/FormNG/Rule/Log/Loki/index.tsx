@@ -15,13 +15,17 @@
  *
  */
 
-import React from 'react';
-import { Form, Row, Col, Space, Input, Button } from 'antd';
+import React, { useContext } from 'react';
+import { Form, Row, Col, Space, Button } from 'antd';
+import { LokiMonacoEditor } from '@fc-components/monaco-editor';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import { CommonStateContext } from '@/App';
 import { IS_PLUS } from '@/utils/constant';
+import { FormStateContext } from '@/pages/alertRules/Form';
+import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import AdvancedSettings from '@/pages/alertRules/Form/Rule/Rule/Metric/Prometheus/components/AdvancedSettings';
@@ -30,6 +34,8 @@ import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[] }) {
   const { t } = useTranslation('alertRules');
+  const { darkMode } = useContext(CommonStateContext);
+  const { disabled } = useContext(FormStateContext);
 
   return (
     <Form.List name={['rule_config', 'queries']}>
@@ -44,22 +50,22 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
           {fields.map((field) => (
             <CardContainer key={field.key} onClose={fields.length > 1 ? () => remove(field.name) : undefined}>
               <CardContainerHeader>
-                <Row>
-                  <Col flex='80px'>
-                    <div style={{ marginTop: 6 }}>LogQL</div>
-                  </Col>
-                  <Col flex='auto'>
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'prom_ql']} //页面上展示LogQL，实际还是存prom_ql
-                      validateTrigger={['onBlur']}
-                      trigger='onChange'
-                      rules={[{ required: true, message: t('loki.required') }]}
-                    >
-                      <Input placeholder='Input logql to query. Press Shift+Enter for newlines'></Input>
-                    </Form.Item>
-                  </Col>
-                </Row>
+                <InputGroupWithFormItem label='LogQL'>
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'prom_ql']} //页面上展示LogQL，实际还是存prom_ql
+                    validateTrigger={['onBlur']}
+                    trigger='onChange'
+                    rules={[{ required: true, message: t('loki.required') }]}
+                  >
+                    <LokiMonacoEditor
+                      theme={darkMode ? 'dark' : 'light'}
+                      placeholder='Input LogQL to query, press Shift+Enter for newlines'
+                      readOnly={disabled}
+                      enableAutocomplete
+                    />
+                  </Form.Item>
+                </InputGroupWithFormItem>
               </CardContainerHeader>
               <div className='mb-4'>
                 <Severity field={field} />

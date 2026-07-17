@@ -389,7 +389,7 @@ const en_US = {
   },
   pipeline_configuration_ng: {
     title: 'Event processing',
-    desc: 'Workflows, Relabel & annotations',
+    desc: 'Process alert events',
     select_workflow: 'Select existing processor',
     select_workflow_tooltip:
       'Reuse existing event processors in the current business group, allowing multiple alert rules to share the same configuration. You can also select "Create processor" to maintain processing logic independently for this rule.',
@@ -436,6 +436,7 @@ const en_US = {
     enabled_on: 'Enabled',
     enabled_off: 'Disabled',
     items_count: '{{count}} item(s)',
+    all_day: 'All day',
     queries_and_threshold: 'Queries & Threshold',
     query_statements: 'Query Statements',
     triggers: 'Trigger Conditions',
