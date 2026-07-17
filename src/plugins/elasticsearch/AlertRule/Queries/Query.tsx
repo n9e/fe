@@ -109,32 +109,34 @@ export default function Query(props: Props) {
                   }
                 >
                   {indexType === 'index' && (
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'index']}
-                      rules={[
-                        {
-                          required: true,
-                          message: t('datasource:es.index_msg'),
-                        },
-                      ]}
-                    >
-                      <AutoComplete
-                        style={{ width: '100%' }}
-                        dropdownMatchSelectWidth={false}
-                        options={_.filter(indexOptions, (item) => {
-                          if (indexSearch) {
-                            return item.value.includes(indexSearch);
-                          }
-                          return true;
-                        })}
-                        onSearch={(val) => {
-                          setIndexSearch(val);
-                        }}
-                        disabled={disabled}
-                        placeholder={t('datasource:es.index_placeholder')}
-                      />
-                    </Form.Item>
+                    <Tooltip title={indexValue} placement='right'>
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'index']}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('datasource:es.index_msg'),
+                          },
+                        ]}
+                      >
+                        <AutoComplete
+                          style={{ width: '100%' }}
+                          dropdownMatchSelectWidth={false}
+                          options={_.filter(indexOptions, (item) => {
+                            if (indexSearch) {
+                              return item.value.includes(indexSearch);
+                            }
+                            return true;
+                          })}
+                          onSearch={(val) => {
+                            setIndexSearch(val);
+                          }}
+                          disabled={disabled}
+                          placeholder={t('datasource:es.index_placeholder')}
+                        />
+                      </Form.Item>
+                    </Tooltip>
                   )}
                   {indexType === 'index_pattern' && <IndexPatternSelect field={field} indexPatterns={indexPatterns} />}
                 </InputGroupWithFormItem>
