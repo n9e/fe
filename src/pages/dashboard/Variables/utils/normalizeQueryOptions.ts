@@ -14,11 +14,21 @@ function normalizeOptionObject(option: any) {
   };
 }
 
-export default function normalizeQueryOptions(options: any[], reg?: string, datasourceCate?: string) {
+export default function normalizeQueryOptions(options: any[], reg?: string, datasourceCate?: string): { label: string; value: string }[] {
   if (datasourceCate === 'gcm' && _.some(options, isOptionObject)) {
-    const normalizedOptions = _.filter(_.map(options, normalizeOptionObject), (item) => item.value);
+    const normalizedOptions = options.reduce<{ label: string; value: string }[]>((acc, opt) => {
+      const item = normalizeOptionObject(opt);
+      if (item.value) acc.push(item);
+      return acc;
+    }, []);
     if (!reg) {
-      return _.unionBy(normalizedOptions, 'value');
+      const seen = new Set<string>();
+      return normalizedOptions.filter((item) => {
+        const key = item.value;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
     }
     return filterOptionsByReg(_.map(normalizedOptions, 'value'), reg);
   }
