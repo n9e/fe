@@ -26,6 +26,7 @@ export type UpdateByColumnOptions<T = any> = {
 export type UpdateByColumnType<T = any> = ColumnType<T> & {
   [UPDATE_BY_COLUMN_META]?: {
     filterMode: UpdateByFilterMode;
+    nickname?: string;
     getValue?: (record: T) => UpdateByValue;
     onFilter?: ColumnType<T>['onFilter'] | false;
   };
@@ -56,7 +57,14 @@ export function getUpdateByColumnFilterProps<T>(column: ColumnType<T>, dataSourc
   const meta = (column as UpdateByColumnType<T>)[UPDATE_BY_COLUMN_META];
   if (!meta || meta.filterMode === 'none') return {};
 
-  const readValue = (record: T) => meta.getValue?.(record) ?? (getColumnValue(record, column.dataIndex) as UpdateByValue);
+  const readValue = (record: T) => {
+    if (meta.getValue) return meta.getValue(record);
+    if (meta.nickname) {
+      const n = (record as any)?.[meta.nickname];
+      if (n != null && n !== '') return n;
+    }
+    return getColumnValue(record, column.dataIndex) as UpdateByValue;
+  };
   const filters = column.filters ?? (meta.filterMode === 'client' ? getUpdateByFilters(dataSource as T[] | undefined, readValue) : undefined);
   if (!filters) return {};
 
@@ -131,6 +139,7 @@ export function updateByColumn<T = any>(opts: UpdateByColumnOptions<T>): UpdateB
     ...rest,
     [UPDATE_BY_COLUMN_META]: {
       filterMode,
+      nickname,
       getValue,
       onFilter,
     },

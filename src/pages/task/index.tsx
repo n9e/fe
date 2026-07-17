@@ -23,7 +23,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
 import EnhancedTable from '@/components/EnhancedTable';
-import { userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 
 import request from '@/utils/request';
 import api from '@/utils/api';
@@ -145,8 +145,8 @@ const index = (_props: any) => {
       },
     ] as any,
     [
-      userColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname', sortable: true }),
       dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true, sortable: true }),
+      updateByColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
     ] as any,
   );
 

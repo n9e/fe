@@ -16,7 +16,7 @@ import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -228,7 +228,7 @@ const Subscribe = (props: Props) => {
         },
       },
       dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
-      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
+      updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     ],
     readonly
       ? [
