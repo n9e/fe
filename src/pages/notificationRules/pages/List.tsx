@@ -8,7 +8,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { IS_PLUS } from '@/utils/constant';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import EmptyGuide from '@/components/EmptyGuide';
 import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
@@ -212,7 +212,7 @@ export default function List() {
               },
             },
             dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
-            userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
+            updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
             {
               ...getEnabledStatusColumn({
                 title: t('common:table.enabled'),

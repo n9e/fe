@@ -33,7 +33,7 @@ import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import EnhancedTable from '@/components/EnhancedTable';
-import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
+import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import EllipsisText from '@/components/EllipsisText';
 import usePagination from '@/components/usePagination';
@@ -219,7 +219,7 @@ export default function index() {
                   render: (text: string) => <EllipsisText text={text} />,
                 },
                 dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
-                userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
+                updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
                 {
                   title: t('public.name'),
                   width: 150,

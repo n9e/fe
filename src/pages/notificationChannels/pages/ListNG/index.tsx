@@ -11,7 +11,7 @@ import usePagination from '@/components/usePagination';
 import PageLayout from '@/components/pageLayout';
 import { Import, Export } from '@/components/ExportImport';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
+import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 
 import { NS, getNotificationChannelTypes } from '../../constants';
 import { getItems, putItem, deleteItems, postItems } from '../../services';
@@ -271,7 +271,7 @@ export default function index() {
                     },
                   },
                   dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }) as any,
-                  userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }) as any,
+                  updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
                   {
                     ...getEnabledStatusColumn({
                       title: t('common:table.enabled'),

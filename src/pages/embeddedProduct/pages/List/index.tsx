@@ -11,7 +11,7 @@ import { arrayMoveImmutable } from 'array-move';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
-import { dateColumn, userColumn } from '@/components/EnhancedTable/columns';
+import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
 
@@ -111,7 +111,7 @@ export default function Index() {
         },
       },
       dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }) as any,
-      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }) as any,
+      updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
     ];
   }, [t, userGroups, saving, hideSavingId]);
 

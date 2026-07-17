@@ -24,7 +24,7 @@ import { useAntdTable } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 
 import EnhancedTable from '@/components/EnhancedTable';
-import { tagsColumn, userColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { tagsColumn, updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import api from '@/utils/api';
@@ -33,6 +33,7 @@ import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import SearchInput from '@/components/BaseSearchInput';
+import usePagination from '@/components/usePagination';
 
 import { Tpl } from './interface';
 import BindTags from './bindTags';
@@ -78,6 +79,7 @@ const index = (_props: any) => {
     debounceWait: 300,
     defaultParams: [{ current: defaultPage, pageSize: 10 }],
   });
+  const pagination = usePagination({ PAGESIZE_KEY: 'job-tpls' });
 
   function handleTagClick(tag: string) {
     if (!_.includes(query, tag)) {
@@ -141,7 +143,7 @@ const index = (_props: any) => {
     ] as any,
     [
       tagsColumn({ title: t('tpl.tags'), dataIndex: 'tags', maxWidth: 180, onTagClick: handleTagClick }),
-      userColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', sortable: true }),
+      updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
       dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
     ] as any,
   );
@@ -260,16 +262,10 @@ const index = (_props: any) => {
                   setSelectedIds(selectedRowKeys);
                 },
               }}
-              pagination={
-                {
-                  ...tableProps.pagination,
-                  showSizeChanger: true,
-                  pageSizeOptions: ['10', '15', '50', '100', '500', '1000'],
-                  showTotal: (total) => {
-                    return t('common:table.total', { total });
-                  },
-                } as any
-              }
+              pagination={{
+                ...pagination,
+                ...tableProps.pagination,
+              }}
             />
           </div>
         ) : (

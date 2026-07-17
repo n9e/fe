@@ -1,7 +1,7 @@
 jest.mock('@/utils', () => ({ copy2ClipBoard: jest.fn() }));
 jest.mock('@/components/TableTags/Tags', () => ({ default: () => null }));
 
-import { dateColumn, userColumn } from './columns';
+import { dateColumn, updateByColumn } from './columns';
 
 describe('dateColumn sortable', () => {
   it('returns a sorter function when sortable is true', () => {
@@ -93,87 +93,31 @@ describe('dateColumn sortable', () => {
   });
 });
 
-describe('userColumn sortable', () => {
-  it('returns a sorter function when sortable is true', () => {
-    const col = userColumn({ title: '用户', dataIndex: 'username', sortable: true });
-    expect(col.sorter).toBeDefined();
-    expect(typeof col.sorter).toBe('function');
-  });
-
-  it('does not set sorter when sortable is omitted', () => {
-    const col = userColumn({ title: '用户', dataIndex: 'username' });
+describe('updateByColumn', () => {
+  it('does not set sorter by default', () => {
+    const col = updateByColumn({ title: '用户', dataIndex: 'username' });
     expect(col.sorter).toBeUndefined();
   });
 
-  it('sorts by nickname when available', () => {
-    const col = userColumn({
+  it('renders nickname when available', () => {
+    const col = updateByColumn({
       title: '用户',
       dataIndex: 'username',
       nickname: 'nick',
-      sortable: true,
-    }) as any;
-    const data = [
-      { username: 'user_c', nick: 'Charlie' },
-      { username: 'user_a', nick: 'Alice' },
-      { username: 'user_b', nick: 'Bob' },
-    ];
-    const sorted = [...data].sort(col.sorter);
-    expect(sorted[0].nick).toBe('Alice');
-    expect(sorted[1].nick).toBe('Bob');
-    expect(sorted[2].nick).toBe('Charlie');
-  });
-
-  it('falls back to dataIndex value when nickname is missing on record', () => {
-    const col = userColumn({
-      title: '用户',
-      dataIndex: 'username',
-      nickname: 'nick',
-      sortable: true,
-    }) as any;
-    const data = [{ username: 'zhangsan' }, { username: 'lisi' }, { username: 'aname' }];
-    const sorted = [...data].sort(col.sorter);
-    expect(sorted[0].username).toBe('aname');
-    expect(sorted[1].username).toBe('lisi');
-    expect(sorted[2].username).toBe('zhangsan');
-  });
-
-  it('sorts by dataIndex value when nickname is not configured', () => {
-    const col = userColumn({ title: '用户', dataIndex: 'username', sortable: true }) as any;
-    const data = [{ username: 'zhangsan' }, { username: 'lisi' }, { username: 'aname' }];
-    const sorted = [...data].sort(col.sorter);
-    expect(sorted[0].username).toBe('aname');
-    expect(sorted[1].username).toBe('lisi');
-    expect(sorted[2].username).toBe('zhangsan');
-  });
-
-  it('puts empty string values at the end', () => {
-    const col = userColumn({ title: '用户', dataIndex: 'username', sortable: true }) as any;
-    const data = [{ username: 'zhangsan' }, { username: '' }, { username: 'aname' }];
-    const sorted = [...data].sort(col.sorter);
-    expect(sorted[0].username).toBe('aname');
-    expect(sorted[1].username).toBe('zhangsan');
-    expect(sorted[2].username).toBe('');
-  });
-
-  it('handles both-empty as equal (stable order)', () => {
-    const col = userColumn({ title: '用户', dataIndex: 'username', sortable: true }) as any;
-    const data = [
-      { username: '', id: 1 },
-      { username: '', id: 2 },
-    ];
-    const sorted = [...data].sort(col.sorter);
-    expect(sorted[0].id).toBe(1);
-    expect(sorted[1].id).toBe(2);
-  });
-
-  it('explicit sorter overrides built-in sortable sorter', () => {
-    const customSorter = jest.fn(() => 0);
-    const col = userColumn({
-      title: '用户',
-      dataIndex: 'username',
-      sortable: true,
-      sorter: customSorter,
     });
-    expect(col.sorter).toBe(customSorter);
+    const record = { username: 'user_a', nick: 'Alice' };
+    const el = (col as any).render('user_a', record);
+    expect(el.props.children.props.children).toBe('Alice');
+  });
+
+  it('falls back to dataIndex value when nickname is missing', () => {
+    const col = updateByColumn({
+      title: '用户',
+      dataIndex: 'username',
+      nickname: 'nick',
+    });
+    const record = { username: 'zhangsan' };
+    const el = (col as any).render('zhangsan', record);
+    expect(el.props.children.props.children).toBe('zhangsan');
   });
 });
