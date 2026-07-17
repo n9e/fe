@@ -84,8 +84,9 @@ export default function Query(props: Props) {
           config: item.config, // config 是 es 特有的写法
         },
       })
-        .then((options) => {
-          const itemOptions = _.sortBy(normalizeQueryOptions(options, formatedReg, datasourceCate), 'value');
+        .then((res: { label: string; value: string }[] | string[]) => {
+          const normalized = normalizeQueryOptions(res, formatedReg, datasourceCate);
+          const itemOptions: { label: string; value: string }[] = _.sortBy(normalized, 'value');
           setOptions(itemOptions);
           setErrorMsg('');
         })

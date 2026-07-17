@@ -93,7 +93,8 @@ export default function Query(props: Props) {
       if (requestId !== requestIdRef.current) {
         return;
       }
-      const filteredOptions = _.sortBy(normalizeQueryOptions(options, formatedReg, datasourceCate), 'value');
+      const normalized = normalizeQueryOptions(options, formatedReg, datasourceCate);
+      const filteredOptions: { label: string; value: string }[] = _.sortBy(normalized, 'value');
       updateVariable(name, {
         options: filteredOptions,
         value: getValueByOptions({
