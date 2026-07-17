@@ -27,7 +27,7 @@ export interface RowActions {
   inline?: RowAction[];
   /**
    * Secondary actions. Presentation belongs to the component, not the caller:
-   * when every row of the table fits `actionMaxIcons` actions, all rows expand
+   * when every row of the table has at most 3 actions, all rows expand
    * entirely into icon buttons; otherwise the whole table switches to kebab
    * layout — each row surfaces at most 2 icons and collapses the rest (danger
    * items included) into the kebab, so all rows stay aligned. Listing an action
@@ -43,8 +43,6 @@ export interface EnhancedTableProps<RecordType> extends TableProps<RecordType> {
   actionColumn?: Partial<ColumnType<RecordType>>;
   /** compact header: tighter thead padding + smaller sort hit-area, for tables embedded inside tabs/cards */
   compactHeader?: boolean;
-  /** tables whose rows all have at most this many actions expand fully into icons, no kebab (default 3) */
-  actionMaxIcons?: number;
   /** auto-inject default sorter for columns without `sorter` (default false); column `sorter` always wins */
   autoSortColumns?: boolean;
 }

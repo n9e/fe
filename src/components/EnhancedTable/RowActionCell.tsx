@@ -24,7 +24,7 @@ const MAX_SURFACED_ICONS = 2;
  * of one table share the same layout (light rows may then hold a single
  * kebab item — the accepted price of column-aligned consistency).
  */
-export function splitRowActions(actions: RowActions, maxIcons = DEFAULT_ACTION_MAX_ICONS, forceKebab = false) {
+export function splitRowActions(actions: RowActions, forceKebab = false, maxIcons = DEFAULT_ACTION_MAX_ICONS) {
   const inline = visibleOnly(actions.inline);
   const menu = visibleOnly(actions.menu);
   const pinned = menu.filter((a) => a.node || a.collapsed);
@@ -137,9 +137,9 @@ function renderMenuItem(action: RowAction, key: string, onAction: () => void) {
   );
 }
 
-export function RowActionCell({ actions, maxIcons, forceKebab }: { actions: RowActions; maxIcons?: number; forceKebab?: boolean }) {
+export function RowActionCell({ actions, forceKebab }: { actions: RowActions; forceKebab?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { icons, kebab } = splitRowActions(actions, maxIcons, forceKebab);
+  const { icons, kebab } = splitRowActions(actions, forceKebab);
   if (!icons.length && !kebab.length) return null;
 
   const normal = kebab.filter((a) => !a.danger);

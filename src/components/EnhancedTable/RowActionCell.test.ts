@@ -81,16 +81,16 @@ describe('splitRowActions', () => {
     expect(keys(fits.icons)).toEqual(['edit', 'copy', 'delete']);
     expect(fits.kebab).toEqual([]);
 
-    const forced = splitRowActions(actions, undefined, true);
+    const forced = splitRowActions(actions, true);
     expect(keys(forced.icons)).toEqual(['edit', 'copy']);
     expect(keys(forced.kebab)).toEqual(['delete']);
   });
 
   it('honors a custom limit', () => {
     const actions: RowActions = { menu: [act('edit'), act('copy'), act('export'), act('offline')] };
-    expect(keys(splitRowActions(actions, 4).icons)).toEqual(['edit', 'copy', 'export', 'offline']);
-    expect(keys(splitRowActions(actions, 2).icons)).toEqual(['edit', 'copy']);
-    expect(keys(splitRowActions(actions, 2).kebab)).toEqual(['export', 'offline']);
+    expect(keys(splitRowActions(actions, false, 4).icons)).toEqual(['edit', 'copy', 'export', 'offline']);
+    expect(keys(splitRowActions(actions, false, 2).icons)).toEqual(['edit', 'copy']);
+    expect(keys(splitRowActions(actions, false, 2).kebab)).toEqual(['export', 'offline']);
   });
 
   it('ignores hidden actions when counting against the limit', () => {

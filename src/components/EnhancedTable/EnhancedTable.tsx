@@ -18,7 +18,7 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, actionMaxIcons, pagination, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, pagination, ...rest } = props;
 
   // Every paginated table gets the quick jumper, regardless of whether the caller spreads
   // usePagination. `pagination={false}` stays off, and an explicit caller value still wins.
@@ -60,10 +60,10 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
       let kebabMode = false;
       if (Array.isArray(dataSource)) {
         const rowCfgs = dataSource.slice(0, 200).map((record, index) => rowActionsRef.current?.(record, index));
-        kebabMode = rowCfgs.some((cfg) => cfg && splitRowActions(cfg, actionMaxIcons).kebab.length > 0);
+        kebabMode = rowCfgs.some((cfg) => cfg && splitRowActions(cfg).kebab.length > 0);
         rowCfgs.forEach((cfg) => {
           if (!cfg) return;
-          const { icons, kebab } = splitRowActions(cfg, actionMaxIcons, kebabMode);
+          const { icons, kebab } = splitRowActions(cfg, kebabMode);
           const items = icons.length + (kebab.length ? 1 : 0);
           if (!items) return;
           // cell padding 16 + 24px per icon + 28px kebab trigger + 4px gaps
@@ -79,7 +79,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
         ...actionColumn,
         render: (_value: unknown, record: RecordType, index: number) => {
           const cfg = rowActionsRef.current?.(record, index);
-          return cfg ? <RowActionCell actions={cfg} maxIcons={actionMaxIcons} forceKebab={kebabMode} /> : null;
+          return cfg ? <RowActionCell actions={cfg} forceKebab={kebabMode} /> : null;
         },
       };
       if (typeof opColumn.width === 'number' && contentWidth > opColumn.width) {
@@ -89,7 +89,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     }
 
     return allColumns;
-  }, [columns, actionColumn, hasRowActions, autoSortColumns, actionMaxIcons, dataSource]);
+  }, [columns, actionColumn, hasRowActions, autoSortColumns, dataSource]);
 
   return (
     <Table<RecordType>
