@@ -50,6 +50,15 @@ const getInvalidDatasourceIds = (ids: number[], fullDatasourceList: any[]) => {
   return invalid;
 };
 
+const isEmptyExactMatchQuery = (queries: any[]) => {
+  if (queries.length > 1) {
+    return false;
+  }
+
+  const firstQuery = queries[0] || {};
+  return firstQuery.match_type === 0 && _.isEmpty(firstQuery.values);
+};
+
 function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList, disabled, fields }) {
   const { t } = useTranslation('alertRules');
   const form = Form.useFormInstance();
@@ -186,8 +195,7 @@ export default function index(props: IProps) {
   const datasource_cate = datasourceCate || Form.useWatch(['cate']);
   const datasource_queries = Form.useWatch(names);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
-  // 用于追踪每个 cate 是否已执行过自动选中，避免重复触发
-  const autoSelectedCateRef = useRef<string | null>(null);
+  const autoDefaultCheckedCateRef = useRef<string>();
   const fetchDatasourceList = () => {
     getDatasourceBriefList().then((res) => {
       setFullDatasourceList(res);
@@ -208,28 +216,38 @@ export default function index(props: IProps) {
           datasource_value: _.head(datasourceIds), // 取第一个数据用于数据预览等地方
           datasource_values: datasourceIds, // 保存所有查询的数据源 id
         });
-        // 精准匹配：当该 cate 下只有一个数据源且尚未自动选中过时，自动填入
-        if (res.length === 1 && autoSelectedCateRef.current !== datasource_cate) {
-          const queries = form.getFieldValue(names);
-          const firstQuery = _.isArray(queries) ? queries[0] : null;
-          const isDefaultState = firstQuery && (firstQuery.match_type === 2 || (firstQuery.match_type === 0 && _.isEmpty(firstQuery.values)));
-          if (isDefaultState) {
-            autoSelectedCateRef.current = datasource_cate;
-            form.setFieldsValue(
-              _.set({}, names, [
-                {
-                  ...firstQuery,
-                  match_type: 0,
-                  op: 'in',
-                  values: [res[0].id],
-                },
-              ]),
-            );
-          }
-        }
       });
     }
-  }, [JSON.stringify(datasource_queries), JSON.stringify(fullDatasourceList)]);
+  }, [datasource_cate, JSON.stringify(datasource_queries), JSON.stringify(fullDatasourceList)]);
+
+  useEffect(() => {
+    if (!datasource_cate || _.isEmpty(datasourceList) || autoDefaultCheckedCateRef.current === datasource_cate) {
+      return;
+    }
+
+    autoDefaultCheckedCateRef.current = datasource_cate;
+
+    if (datasourceList.length !== 1) {
+      return;
+    }
+
+    const queries = form.getFieldValue(names) || [];
+    if (!isEmptyExactMatchQuery(queries)) {
+      return;
+    }
+
+    const firstQuery = queries[0] || {};
+    form.setFieldsValue(
+      _.set({}, names, [
+        {
+          ...firstQuery,
+          match_type: 0,
+          op: firstQuery.op || 'in',
+          values: [datasourceList[0].id],
+        },
+      ]),
+    );
+  }, [datasource_cate, JSON.stringify(datasourceList)]);
 
   useEffect(() => {
     fetchDatasourceList();
