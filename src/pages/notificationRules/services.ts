@@ -72,7 +72,7 @@ export function getPagedutyIntegrationKey(id: number, svc_id: string, integ_id: 
   });
 }
 
-export function notifyRuleTest(data: { event_ids: number[]; notify_config: any }) {
+export function notifyRuleTest(data: { event_ids?: number[]; use_mock_event?: boolean; notify_config: any }) {
   return request('/api/n9e/notify-rule/test', {
     method: RequestMethod.Post,
     data,

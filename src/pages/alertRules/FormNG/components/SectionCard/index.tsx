@@ -12,6 +12,7 @@ export interface SectionItem {
   title: string;
   description: string;
   tag: 'default' | 'core' | 'optional';
+  icon?: React.ReactNode;
   helpDoc?: {
     documentPath: string;
   };
@@ -43,7 +44,7 @@ export default function SectionCard(props: {
   className?: string;
   item: SectionItem;
   index: number;
-  sectionRef: (node: HTMLDivElement | null) => void;
+  sectionRef?: (node: HTMLDivElement | null) => void;
   children?: React.ReactNode;
   empty?: boolean;
   collapsed?: boolean;
@@ -82,7 +83,7 @@ export default function SectionCard(props: {
           </div>
           <div className='min-w-0 flex-1'>
             <div className='flex items-center gap-2'>
-              <span className={classnames('pt-1', !collapsed ? 'text-[var(--fc-violet-11)]' : 'text-soft')}>{sectionIcons[item.key]}</span>
+              <span className={classnames('pt-1', !collapsed ? 'text-[var(--fc-violet-11)]' : 'text-soft')}>{item.icon ?? sectionIcons[item.key]}</span>
               <div className='text-l1 font-bold text-title'>{item.title}</div>
               <span className={'text-[10px] px-1.5 py-0.5 rounded leading-none ' + tagClassesMap[item.tag]}>{t(tagI18nKeys[item.tag])}</span>
             </div>
