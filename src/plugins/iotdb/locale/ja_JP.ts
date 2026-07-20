@@ -20,9 +20,12 @@ const ja_JP = {
     },
     advancedSettings: {
       title: '高度な設定',
+      metricKey_label: 'メトリック名フィールド',
       metricKey_tip: 'このフィールドで、どのフィールドを metricName として使用するかを指定できます。',
       tags_placeholder: '複数入力可能',
+      labelKey_label: 'ラベルフィールド',
       labelKey_tip: 'このフィールドで、どのフィールドを labelName として使用するかを指定できます。',
+      timeKey_label: '時間フィールド',
       timeKey_tip: 'どのフィールドが時間フィールドであるかを指定し、曲線グラフのX軸座標として使用します',
       timeFormat_tip: '時間のフォーマット。このフォーマットに基づいて時間をタイムスタンプに変換します',
     },

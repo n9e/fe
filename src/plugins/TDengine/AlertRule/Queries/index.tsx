@@ -87,7 +87,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                           label={t('datasource:es.interval')}
                           addonAfter={
                             <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
-                              <Select disabled={disabled}>
+                              <Select disabled={disabled} dropdownMatchSelectWidth={false}>
                                 <Select.Option value='second'>{t('common:time.second')}</Select.Option>
                                 <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
                                 <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>

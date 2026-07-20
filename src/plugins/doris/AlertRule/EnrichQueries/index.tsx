@@ -148,7 +148,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                           }
                           addonAfter={
                             <Form.Item {...field} name={[field.name, 'interval_unit']} initialValue='min'>
-                              <Select disabled={disabled} style={{ width: 80 }}>
+                              <Select disabled={disabled} style={{ width: 80 }} dropdownMatchSelectWidth={false}>
                                 <Select.Option value='second'>{t('common:time.second')}</Select.Option>
                                 <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
                                 <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
