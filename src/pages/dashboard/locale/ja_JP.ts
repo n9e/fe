@@ -248,6 +248,8 @@ const ja_JP = {
         last: '現在値',
         variance: '分散',
         stdDev: '標準偏差',
+        series: '系列',
+        seriesFilter: '系列をフィルタ',
         columns: '表示列',
         behaviour: {
           label: 'クリックで行動',

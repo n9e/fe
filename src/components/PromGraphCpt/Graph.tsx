@@ -383,6 +383,7 @@ export default function Graph(props: IProps) {
         series={data}
         time={effectiveRange}
         themeMode={darkMode ? 'dark' : undefined}
+        legendTableMaxHeight={contentMaxHeight - 200} // line chart height
         onZoomWithoutDefult={refetchOnZoom ? (handleZoomWithoutDefault as any) : undefined}
       />
     </div>

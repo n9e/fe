@@ -245,6 +245,8 @@ const zh_CN = {
         last: '当前值',
         variance: '方差',
         stdDev: '标准差',
+        series: '序列',
+        seriesFilter: '筛选序列',
         columns: '显示列',
         behaviour: {
           label: '单击触发行为',

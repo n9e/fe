@@ -245,6 +245,8 @@ const zh_HK = {
         last: '當前值',
         variance: '方差',
         stdDev: '標準差',
+        series: '序列',
+        seriesFilter: '篩選序列',
         columns: '顯示列',
         behaviour: {
           label: '點擊觸發的行為',
