@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NAME_SPACE } from '../../../constants';
+import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../../constants';
 import QueryBuilder from '../../components/QueryBuilder';
 import CommonStateContext from '../../components/QueryBuilder/commonStateContext';
 
@@ -135,7 +135,7 @@ export default function QueryBuilderCpt(props: Props) {
                   language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                   title: t('common:document_title'),
                   type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
+                  documentPath: DORIS_SQL_MODE_DOC_URL,
                 });
               }}
             >

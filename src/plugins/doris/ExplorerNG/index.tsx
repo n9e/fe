@@ -13,7 +13,7 @@ import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplo
 import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 import SideBar from '@/pages/logExplorer/components/SideBar';
 
-import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY } from '../constants';
+import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_KEY, DORIS_SQL_MODE_DOC_URL } from '../constants';
 import { Field } from './types';
 import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } from './utils/organizeFieldsLocalstorage';
 
@@ -340,7 +340,7 @@ export default function index(props: Props) {
                       darkMode,
                       title: t('common:document_link'),
                       type: 'iframe',
-                      documentPath: `https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                      documentPath: DORIS_SQL_MODE_DOC_URL,
                       anchor: '#2-时间宏',
                     });
                   }}

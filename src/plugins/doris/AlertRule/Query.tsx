@@ -14,7 +14,7 @@ import { normalizeTime } from '@/pages/alertRules/Form/utils';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
-import { NAME_SPACE } from '../constants';
+import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../constants';
 import AdvancedSettings from '../components/AdvancedSettings';
 import GraphPreview from './GraphPreview';
 
@@ -95,7 +95,7 @@ export default function Query(props: Props) {
                         i18nKey='query.query_tip'
                         components={{
                           br: <br />,
-                          a: <a href='/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/' target='_blank' />,
+                          a: <a href={DORIS_SQL_MODE_DOC_URL} target='_blank' />,
                         }}
                       />
                     }
@@ -152,7 +152,7 @@ export default function Query(props: Props) {
               }
               addonAfter={
                 <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
-                  <Select disabled={disabled}>
+                  <Select disabled={disabled} dropdownMatchSelectWidth={false}>
                     <Select.Option value='second'>{t('common:time.second')}</Select.Option>
                     <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
                     <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>

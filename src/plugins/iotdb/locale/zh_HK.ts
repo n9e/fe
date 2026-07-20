@@ -20,9 +20,12 @@ const zh_HK = {
     },
     advancedSettings: {
       title: '輔助配置',
+      metricKey_label: '指標名字段',
       metricKey_tip: '透過此字段可以指定哪些字段作為 metricName。',
       tags_placeholder: '回車輸入多個',
+      labelKey_label: '標籤字段',
       labelKey_tip: '透過此字段可以指定哪些字段為 labelName。',
+      timeKey_label: '時間字段',
       timeKey_tip: '指定哪個字段是時間字段，作為繪製曲線圖的 x 軸座標',
       timeFormat_tip: '時間的格式，會根據此格式將時間轉為時間戳',
     },

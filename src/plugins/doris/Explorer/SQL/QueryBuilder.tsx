@@ -11,7 +11,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import HistoricalRecords from '@/components/HistoricalRecords';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { SQL_CACHE_KEY, NAME_SPACE } from '../../constants';
+import { SQL_CACHE_KEY, NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../constants';
 
 interface Props {
   extra?: React.ReactNode;
@@ -97,7 +97,7 @@ export default function QueryBuilder(props: Props) {
                         darkMode,
                         title: t('common:document_link'),
                         type: 'iframe',
-                        documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                        documentPath: DORIS_SQL_MODE_DOC_URL,
                         anchor: '#2-时间宏',
                       });
                     }}

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { Form, Space, Row, Col, Input, Alert, Button } from 'antd';
-import { PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Form, Space, Row, Col, Input, Alert, Button, Tooltip } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import _ from 'lodash';
@@ -67,18 +67,20 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                             label={
                               <Space>
                                 {t('explorer.query')}
-                                <InfoCircleOutlined
-                                  onClick={() => {
-                                    DocumentDrawer({
-                                      language: i18n.language,
-                                      darkMode,
-                                      title: t('common:page_help'),
-                                      type: 'iframe',
-                                      documentPath:
-                                        'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
-                                    });
-                                  }}
-                                />
+                                <Tooltip title={t('common:click_to_view_doc')}>
+                                  <QuestionCircleOutlined
+                                    onClick={() => {
+                                      DocumentDrawer({
+                                        language: i18n.language,
+                                        darkMode,
+                                        title: t('common:page_help'),
+                                        type: 'iframe',
+                                        documentPath:
+                                          'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
+                                      });
+                                    }}
+                                  />
+                                </Tooltip>
                               </Space>
                             }
                           >

@@ -11,7 +11,7 @@ import { copy2ClipBoard } from '@/utils';
 import Meta from '@/components/Meta';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NAME_SPACE, SQL_SIDEBAR_CACHE_KEY, DATE_TYPE_LIST } from '../../constants';
+import { NAME_SPACE, SQL_SIDEBAR_CACHE_KEY, DATE_TYPE_LIST, DORIS_SQL_MODE_DOC_URL } from '../../constants';
 import { getDorisIndex } from '../../services';
 import QueryBuilder from './QueryBuilder';
 import Content from './Content';
@@ -113,7 +113,7 @@ export default function index(props: Props) {
                   darkMode,
                   title: t('common:document_link'),
                   type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
+                  documentPath: DORIS_SQL_MODE_DOC_URL,
                 });
               }}
             />
@@ -213,7 +213,7 @@ export default function index(props: Props) {
                       darkMode,
                       title: t('common:document_link'),
                       type: 'iframe',
-                      documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                      documentPath: DORIS_SQL_MODE_DOC_URL,
                       anchor: '#2-时间宏',
                     });
                   }}
