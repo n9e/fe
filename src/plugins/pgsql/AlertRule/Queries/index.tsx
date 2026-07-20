@@ -72,7 +72,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                                         darkMode,
                                         title: t('common:page_help'),
                                         type: 'iframe',
-                                        documentPath: '/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/pgsql/',
+                                        documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/pgsql/',
                                       });
                                     }}
                                   />
