@@ -108,7 +108,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
   return (
     <SectionCard
       item={props.item}
-      index={3}
+      index={5}
       sectionRef={(node) => {
         props.sectionRefs.current['pipeline'] = node;
       }}

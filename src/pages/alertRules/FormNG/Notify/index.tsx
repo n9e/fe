@@ -74,7 +74,7 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
       <SectionCard
         className={!showadvancedSettings ? 'mb-8' : ''}
         item={item}
-        index={5}
+        index={3}
         collapsed={effectiveCollapsed}
         setCollapsed={setEffectiveCollapsed}
         sectionRef={(node) => {

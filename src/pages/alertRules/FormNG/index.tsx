@@ -482,15 +482,6 @@ export default function FormNG(props: IProps) {
                   {prod !== 'host' && <Rule />}
                 </SectionCard>
 
-                <PipelineConfigsNG
-                  item={sections[3]}
-                  sectionRefs={scroll.sectionRefs}
-                  ref={pipelineConfigsRef}
-                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
-                  expandSignal={scroll.expandSignal}
-                  toggleAllSignal={scroll.toggleAllSignal}
-                />
-
                 <Effective
                   item={sections[4]}
                   sectionRefs={scroll.sectionRefs}
@@ -500,10 +491,19 @@ export default function FormNG(props: IProps) {
                 />
 
                 <Notify
-                  item={sections[5]}
+                  item={sections[3]}
                   advancedItem={sections[6]}
                   sectionRefs={scroll.sectionRefs}
                   disabled={disabled}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
+
+                <PipelineConfigsNG
+                  item={sections[5]}
+                  sectionRefs={scroll.sectionRefs}
+                  ref={pipelineConfigsRef}
+                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
                 />
