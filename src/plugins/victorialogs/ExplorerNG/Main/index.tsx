@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Badge, Button, Col, Form, Row, Segmented } from 'antd';
+import { Badge, Button, Col, Form, Modal, Row, Segmented } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +36,7 @@ export default function Main(props: Props) {
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => localStorage.getItem(BUILDER_PINNED_CACHE_KEY) === 'true');
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+  const [snapRangeResetKey, setSnapRangeResetKey] = useState<string>();
   const queryInputRef = React.useRef<QueryInputHandle>(null);
   const tableSelector = {
     antd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`,
@@ -46,8 +47,13 @@ export default function Main(props: Props) {
     setExecuteLoading(false);
   }, [mode]);
 
+  const resetSnapRange = () => {
+    setSnapRangeResetKey(_.uniqueId('snap_range_reset_'));
+  };
+
   const executeCommittedQuery = () => {
     queryInputRef.current?.commit();
+    resetSnapRange();
     setIsContentChangedDotVisible(false);
     executeQuery();
   };
@@ -67,6 +73,25 @@ export default function Main(props: Props) {
                 const nextMode = val as 'raw' | 'metric';
                 const currentQuery = _.trim(queryValues?.query);
                 const isDefaultQuery = currentQuery === RAW_DEFAULT_QUERY || currentQuery === METRIC_DEFAULT_QUERY;
+                // 从统计图表切换到日志原文时，如果查询条件包含管道符，弹窗提示
+                if (mode === 'metric' && nextMode === 'raw' && !isDefaultQuery && currentQuery.includes('|')) {
+                  Modal.confirm({
+                    title: t(`${logExplorerNS}:mode_switch.confirm_title`),
+                    content: t(`${logExplorerNS}:mode_switch.confirm_content`),
+                    okText: t(`${logExplorerNS}:mode_switch.confirm_ok`),
+                    cancelText: t(`${logExplorerNS}:mode_switch.confirm_cancel`),
+                    onOk: () => {
+                      form.setFieldsValue({
+                        query: {
+                          ...queryValues,
+                          mode: nextMode,
+                          query: RAW_DEFAULT_QUERY,
+                        },
+                      });
+                    },
+                  });
+                  return;
+                }
                 form.setFieldsValue({
                   query: {
                     ...queryValues,
@@ -80,10 +105,7 @@ export default function Main(props: Props) {
           <Col flex='auto' style={{ minWidth: 0 }}>
             <QueryInput
               ref={queryInputRef}
-              executeQuery={() => {
-                setIsContentChangedDotVisible(false);
-                executeQuery();
-              }}
+              executeQuery={executeCommittedQuery}
               queryBuilderPinned={queryBuilderPinned}
               queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
               onLableClick={() => {
@@ -176,6 +198,7 @@ export default function Main(props: Props) {
                 keys,
               },
             });
+            resetSnapRange();
             executeQuery();
             setIsContentChangedDotVisible(false);
             setQueryBuilderVisible(false);
@@ -195,7 +218,13 @@ export default function Main(props: Props) {
         {mode === 'metric' ? (
           <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
         ) : (
-          <Raw tableSelector={tableSelector} indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
+          <Raw
+            tableSelector={tableSelector}
+            indexData={indexData}
+            setExecuteLoading={setExecuteLoading}
+            executeQuery={executeCommittedQuery}
+            snapRangeResetKey={snapRangeResetKey}
+          />
         )}
       </div>
     </div>

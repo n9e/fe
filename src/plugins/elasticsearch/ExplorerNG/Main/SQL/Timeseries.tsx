@@ -187,8 +187,8 @@ export default function TimeseriesCpt(props: Props) {
             datasource_id: values.datasourceValue,
             query: [
               {
-                from: moment(parseRange(query.range).start).unix(),
-                to: moment(parseRange(query.range).end).unix(),
+                from: moment(parseRange(query.range).start).valueOf(),
+                to: moment(parseRange(query.range).end).valueOf(),
                 sql: replaceTemplateVariables(_.trim(query.sql), query.range, width),
                 keys: query.keys,
               },

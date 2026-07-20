@@ -481,8 +481,8 @@ export default function index(props: Props) {
                 // 点击直方图某个柱子时设置时间范围
                 if (params.from && params.to) {
                   snapRangeRef.current = {
-                    from: params.from,
-                    to: params.to,
+                    from: params.from * 1000,
+                    to: params.to * 1000,
                   };
                   setServiceParams((prev) => ({
                     ...prev,

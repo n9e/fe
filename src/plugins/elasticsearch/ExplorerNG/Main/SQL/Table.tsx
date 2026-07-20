@@ -99,8 +99,8 @@ export default function Table(props: IProps) {
         query: [
           {
             index: queryValues.index || '',
-            start: moment(range.start).unix(),
-            end: moment(range.end).unix(),
+            start: moment(range.start).valueOf(),
+            end: moment(range.end).valueOf(),
             sql: replaceTemplateVariables(_.trim(queryValues.sql), queryValues.range),
           },
         ],

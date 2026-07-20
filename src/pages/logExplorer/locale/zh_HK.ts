@@ -11,6 +11,12 @@ const zh_HK = {
     raw_logs: '日誌原文',
     statistical_charts: '統計圖表',
   },
+  mode_switch: {
+    confirm_title: '切換模式確認',
+    confirm_content: '當前統計圖表模式的查詢條件包含管道符（|），該語法在日誌原文模式下不可用。切換後將清空當前查詢條件，是否繼續？',
+    confirm_ok: '繼續切換',
+    confirm_cancel: '取消',
+  },
   before_query: '請點擊 <b>查詢</b>，展示數據',
   loading: '數據加載中 ...',
   no_data: '查詢無數據',
