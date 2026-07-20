@@ -52,7 +52,6 @@ function AdvancedSettings(props: IProps) {
                       </Tooltip>
                     </span>
                   }
-                  labelWidth={100}
                 >
                   <Form.Item {...prefixField} name={[...prefixName, 'keys', 'metricKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
@@ -69,7 +68,6 @@ function AdvancedSettings(props: IProps) {
                       </Tooltip>
                     </span>
                   }
-                  labelWidth={100}
                 >
                   <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
@@ -88,7 +86,6 @@ function AdvancedSettings(props: IProps) {
                           </Tooltip>
                         </span>
                       }
-                      labelWidth={100}
                     >
                       <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeKey']} style={{ width: '100%' }} initialValue='time'>
                         <Input disabled={disabled} />

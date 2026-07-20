@@ -20,7 +20,7 @@ const en_US = {
     },
     advancedSettings: {
       title: 'Advanced settings',
-      metricKey_label: 'Metric field',
+      metricKey_label: 'Value field',
       metricKey_tip: 'Specify which fields will be used as metricName.',
       tags_placeholder: 'Press Enter to input multiple',
       labelKey_label: 'Label field',
