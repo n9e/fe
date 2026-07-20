@@ -21,6 +21,7 @@ const ru_RU = {
   tag_default: 'По умолчанию',
   tag_core: 'Основной',
   tag_optional: 'Опциональный',
+  tag_recommended: 'Рекомендуемый',
   datasource_configs: 'Источник данных',
   datasource_configs_desc: 'Выберите тип источника данных и конкретный экземпляр',
   basic_configs: 'Основная конфигурация',

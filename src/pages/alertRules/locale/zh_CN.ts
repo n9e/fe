@@ -21,6 +21,7 @@ const zh_CN = {
   tag_default: '默认',
   tag_core: '核心',
   tag_optional: '可选',
+  tag_recommended: '推荐',
   datasource_configs: '数据源',
   datasource_configs_desc: '选择数据源类型与具体实例',
   basic_configs: '基础配置',

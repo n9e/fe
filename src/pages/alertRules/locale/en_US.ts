@@ -21,6 +21,7 @@ const en_US = {
   tag_default: 'Default',
   tag_core: 'Core',
   tag_optional: 'Optional',
+  tag_recommended: 'Recommended',
   datasource_configs: 'Datasource',
   datasource_configs_desc: 'Select datasource type and specific instance',
   basic_configs: 'Basic settings',

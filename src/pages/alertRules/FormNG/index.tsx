@@ -28,6 +28,8 @@ import useScrollSync from './utils/useScrollSync';
 import shouldShowAdvancedSettings from './utils/shouldShowAdvancedSettings';
 import { FormNGDataProvider } from './context';
 
+import './style.less';
+
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
   initialValues?: any;
@@ -91,10 +93,10 @@ export default function FormNG(props: IProps) {
           : {}),
       },
       {
-        key: 'pipeline',
-        title: t('pipeline_configuration_ng.title'),
-        description: t('pipeline_configuration_ng.desc'),
-        tag: 'optional',
+        key: 'notify',
+        title: t('notify_configs'),
+        description: t('notify_configs_desc'),
+        tag: 'recommended',
       },
       {
         key: 'effective',
@@ -106,9 +108,9 @@ export default function FormNG(props: IProps) {
         },
       },
       {
-        key: 'notify',
-        title: t('notify_configs'),
-        description: t('notify_configs_desc'),
+        key: 'pipeline',
+        title: t('pipeline_configuration_ng.title'),
+        description: t('pipeline_configuration_ng.desc'),
         tag: 'optional',
       },
       {
@@ -259,7 +261,7 @@ export default function FormNG(props: IProps) {
         type,
       }}
     >
-      <Form form={form} layout='vertical' disabled={disabled} className='h-full' onValuesChange={onValuesChange}>
+      <Form form={form} layout='vertical' disabled={disabled} className='h-full n9e-alert-rule-form-ng-container' onValuesChange={onValuesChange}>
         <FormNGDataProvider>
           <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
             <div

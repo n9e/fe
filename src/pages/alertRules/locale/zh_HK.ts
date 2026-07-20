@@ -21,6 +21,7 @@ const zh_HK = {
   tag_default: '默認',
   tag_core: '核心',
   tag_optional: '可選',
+  tag_recommended: '推薦',
   datasource_configs: '數據源',
   datasource_configs_desc: '選擇數據源類型與具體實例',
   basic_configs: '基礎配置',

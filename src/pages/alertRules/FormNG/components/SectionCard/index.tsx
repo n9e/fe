@@ -11,7 +11,7 @@ export interface SectionItem {
   key: string;
   title: string;
   description: string;
-  tag: 'default' | 'core' | 'optional';
+  tag: 'default' | 'core' | 'optional' | 'recommended';
   helpDoc?: {
     documentPath: string;
   };
@@ -21,12 +21,14 @@ export const tagClassesMap: Record<SectionItem['tag'], string> = {
   default: 'bg-primary/10 text-primary border border-primary/20',
   core: 'bg-red-900/10 text-red-900 border border-red-900/20',
   optional: 'bg-fc-200 text-soft fc-border',
+  recommended: 'bg-amber-100 text-amber-800 border border-amber-200',
 };
 
 export const tagI18nKeys: Record<SectionItem['tag'], string> = {
   default: 'tag_default',
   core: 'tag_core',
   optional: 'tag_optional',
+  recommended: 'tag_recommended',
 };
 
 const sectionIcons: Record<string, React.ReactNode> = {

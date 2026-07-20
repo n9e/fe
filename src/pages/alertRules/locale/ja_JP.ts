@@ -21,6 +21,7 @@ const ja_JP = {
   tag_default: 'デフォルト',
   tag_core: 'コア',
   tag_optional: 'オプション',
+  tag_recommended: 'おすすめ',
   datasource_configs: 'データソース',
   datasource_configs_desc: 'データソースタイプとインスタンスを選択',
   basic_configs: '基本設定',
