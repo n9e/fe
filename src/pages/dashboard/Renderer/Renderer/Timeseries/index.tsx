@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-import React, { useRef, useEffect, useState, useContext } from 'react';
+import React, { useRef, useEffect, useState, useMemo, useContext } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import classNames from 'classnames';
 import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
-import { Space, Table, Tooltip } from 'antd';
+import { Button, Input, Popover, Space, Table, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import { useHistory, useLocation } from 'react-router-dom';
-import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
+import { VerticalRightOutlined, VerticalLeftOutlined, SearchOutlined } from '@ant-design/icons';
 import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
 import '@fc-plot/ts-graph/dist/index.css';
@@ -71,6 +71,7 @@ interface IProps {
   onZoomWithoutDefult?: (times: Date[]) => void;
   isPreview?: boolean;
   colors?: string[];
+  legendTableMaxHeight?: number | string;
 }
 
 function getStartAndEndByTargets(targets: any[]) {
@@ -89,6 +90,38 @@ function getStartAndEndByTargets(targets: any[]) {
   });
   return { start, end };
 }
+
+const SeriesFilterDropdown: React.FC<{
+  onConfirm: (value: string) => void;
+  initialValue: string;
+}> = ({ onConfirm, initialValue }) => {
+  const { t } = useTranslation('dashboard');
+  const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  const handleConfirm = () => {
+    onConfirm(value);
+  };
+  return (
+    <div className='flex items-center gap-2'>
+      <Input
+        allowClear
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onPressEnter={handleConfirm}
+        style={{ width: 160 }}
+        size='small'
+        placeholder={t('panel.options.legend.seriesFilter')}
+      />
+      <Button type='primary' size='small' onClick={handleConfirm}>
+        {t('common:btn.ok')}
+      </Button>
+    </div>
+  );
+};
 
 function NameWithTooltip({ record, children }) {
   const name = _.get(record, 'name');
@@ -123,7 +156,7 @@ export default function index(props: IProps) {
   // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底
   const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const { t } = useTranslation('dashboard');
-  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview, colors } = props;
+  const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview, colors, legendTableMaxHeight } = props;
   const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
   const history = useHistory();
   const location = useLocation();
@@ -147,6 +180,8 @@ export default function index(props: IProps) {
   const hasLegend = displayMode !== 'hidden';
   const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [seriesFilterText, setSeriesFilterText] = useState<string>('');
+  const [popoverVisible, setPopoverVisible] = useState(false);
   let _chartHeight = hasLegend ? `calc(100% - ${legendEleSize?.height! + 16}px)` : '100%';
   let minChartHeight = hasLegend ? `${100 - heightInPercentage}%` : '100%';
   let _tableHeight = hasLegend ? `${heightInPercentage}%` : '0px';
@@ -379,15 +414,51 @@ export default function index(props: IProps) {
   }, [JSON.stringify(seriesData), JSON.stringify(custom), JSON.stringify(options), themeMode, JSON.stringify(overrides)]);
 
   useEffect(() => {
+    // promql 改变时清除筛选状态
+    setSeriesFilterText('');
+  }, [JSON.stringify(series)]);
+
+  useEffect(() => {
     // TODO: 这里布局变化了，但是 fc-plot 没有自动 resize，所以这里需要手动 resize
     if (chartRef.current) {
       chartRef.current.handleResize();
     }
   }, [placement, JSON.stringify(legendEleSize), heightInPercentage]);
 
+  const filteredLegendData = useMemo(() => {
+    if (!seriesFilterText) return legendData;
+    const lowerSearch = seriesFilterText.toLowerCase();
+    return legendData.filter((item) => item.name.toLowerCase().includes(lowerSearch));
+  }, [legendData, seriesFilterText]);
+
   let tableColumn: ColumnProps<DataItem>[] = [
     {
-      title: `Series (${series.length})`,
+      title: (
+        <Popover
+          placement='topLeft'
+          trigger='click'
+          visible={popoverVisible}
+          onVisibleChange={setPopoverVisible}
+          content={
+            <SeriesFilterDropdown
+              initialValue={seriesFilterText}
+              onConfirm={(value) => {
+                setSeriesFilterText(value);
+                setPopoverVisible(false);
+              }}
+            />
+          }
+          getPopupContainer={() => document.body}
+          destroyTooltipOnHide
+        >
+          <Space>
+            <span>
+              {t('panel.options.legend.series')} ({filteredLegendData.length})
+            </span>
+            <SearchOutlined className='cursor-pointer' style={{ color: seriesFilterText ? 'var(--fc-primary-color)' : undefined }} title={t('panel.options.legend.seriesFilter')} />
+          </Space>
+        </Popover>
+      ),
       dataIndex: 'name',
       ellipsis: {
         showTitle: false,
@@ -483,8 +554,9 @@ export default function index(props: IProps) {
               rowKey='id'
               size='small'
               columns={tableColumn}
-              dataSource={legendData}
+              dataSource={filteredLegendData}
               pagination={false}
+              {...(legendTableMaxHeight ? { scroll: { y: legendTableMaxHeight } } : {})}
               rowClassName={(record) => {
                 return record.disabled ? 'renderer-timeseries-legend-table-row disabled' : 'renderer-timeseries-legend-table-row';
               }}

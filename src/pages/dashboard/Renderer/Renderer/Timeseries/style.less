@@ -3,7 +3,6 @@
 }
 
 .renderer-timeseries-legend-table {
-
   .ant-table,
   .ant-table-wrapper {
     margin-top: 0 !important;
@@ -17,12 +16,17 @@
 
   .ant-table-row.disabled {
     .ant-table-cell {
-      color: #24292e80
+      color: #24292e80;
     }
   }
 
-  .ant-table.ant-table-small .ant-table-thead>tr>th {
+  .ant-table.ant-table-small .ant-table-thead > tr > th {
     padding: 4px 8px;
+  }
+
+  // Series 筛选弹层内边距
+  .ant-popover-inner-content {
+    padding: 8px;
   }
 }
 
@@ -71,7 +75,7 @@
   }
 
   .renderer-timeseries-legend-list-item.disabled {
-    color: #24292e80
+    color: #24292e80;
   }
 }
 
@@ -80,7 +84,7 @@
   flex-wrap: unset !important;
   height: 100% !important;
 
-  &>div {
+  & > div {
     flex-shrink: 0 !important;
   }
 }
@@ -111,7 +115,7 @@
 }
 
 .dashboards-panels {
-  .renderer-timeseries-legend-table .ant-table.ant-table-small .ant-table-thead>tr>th {
+  .renderer-timeseries-legend-table .ant-table.ant-table-small .ant-table-thead > tr > th {
     padding: 2px 8px !important;
   }
 }
@@ -120,7 +124,7 @@
   .renderer-timeseries-legend-table {
     .ant-table-row.disabled {
       .ant-table-cell {
-        color: #ffffff80
+        color: #ffffff80;
       }
     }
   }

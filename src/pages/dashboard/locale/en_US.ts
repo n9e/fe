@@ -245,6 +245,8 @@ const en_US = {
         last: 'Last',
         variance: 'Variance',
         stdDev: 'StdDev',
+        series: 'Series',
+        seriesFilter: 'Filter series',
         columns: 'Columns',
         behaviour: {
           label: 'Behavior triggered by click',

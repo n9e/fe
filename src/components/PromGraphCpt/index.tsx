@@ -75,7 +75,7 @@ export default function index(props: IProps) {
     url = `/api/${N9E_PATHNAME}/proxy`,
     datasourceValue,
     promQL,
-    contentMaxHeight = 300,
+    contentMaxHeight = 400,
     defaultType,
     type,
     onTypeChange,
