@@ -33,6 +33,7 @@ interface Props {
   indexData: Field[];
   setExecuteLoading: (loading: boolean) => void;
   executeQuery: () => void;
+  snapRangeResetKey?: string;
 }
 
 interface LogsData {
@@ -72,7 +73,7 @@ function isNoDataError(error: any) {
 
 export default function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { tableSelector, indexData, setExecuteLoading, executeQuery } = props;
+  const { tableSelector, indexData, setExecuteLoading, executeQuery, snapRangeResetKey } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -96,6 +97,13 @@ export default function Raw(props: Props) {
     from?: number;
     to?: number;
   }>({});
+  const snapRangeResetKeyRef = useRef<string>();
+  const serviceParamsEffectReadyRef = useRef(false);
+
+  if (snapRangeResetKey && snapRangeResetKeyRef.current !== snapRangeResetKey) {
+    snapRangeRef.current = {};
+    snapRangeResetKeyRef.current = snapRangeResetKey;
+  }
 
   const updateOptions = (newOptions, reload?: boolean) => {
     const mergedOptions = {
@@ -137,8 +145,8 @@ export default function Raw(props: Props) {
         query: [
           {
             query: _.trim(latestQueryValues.query || '*') || '*',
-            start: moment(timeParams.from).unix(),
-            end: moment(timeParams.to).unix(),
+            start: moment(timeParams.from).valueOf(),
+            end: moment(timeParams.to).valueOf(),
             limit: serviceParams.pageSize,
             offset: (serviceParams.current - 1) * serviceParams.pageSize,
             ref: 'A',
@@ -216,7 +224,7 @@ export default function Raw(props: Props) {
     loading,
     run: fetchLogs,
   } = useRequest<LogsData, any>(service, {
-    refreshDeps: [JSON.stringify(serviceParams)],
+    manual: true,
   });
 
   const histogramService = () => {
@@ -229,8 +237,8 @@ export default function Raw(props: Props) {
         query: [
           {
             query: _.trim(latestQueryValues.query || '*') || '*',
-            start: moment(range.start).unix(),
-            end: moment(range.end).unix(),
+            start: moment(range.start).valueOf(),
+            end: moment(range.end).valueOf(),
           },
         ],
       })
@@ -276,6 +284,16 @@ export default function Raw(props: Props) {
       }
     }
   }, [refreshFlag]);
+
+  useEffect(() => {
+    if (!serviceParamsEffectReadyRef.current) {
+      serviceParamsEffectReadyRef.current = true;
+      return;
+    }
+    if (refreshFlag) {
+      fetchLogs();
+    }
+  }, [JSON.stringify(serviceParams)]);
 
   useEffect(() => {
     setExecuteLoading(loading || histogramLoading);

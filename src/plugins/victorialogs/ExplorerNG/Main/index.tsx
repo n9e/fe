@@ -36,6 +36,7 @@ export default function Main(props: Props) {
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => localStorage.getItem(BUILDER_PINNED_CACHE_KEY) === 'true');
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+  const [snapRangeResetKey, setSnapRangeResetKey] = useState<string>();
   const queryInputRef = React.useRef<QueryInputHandle>(null);
   const tableSelector = {
     antd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`,
@@ -46,8 +47,13 @@ export default function Main(props: Props) {
     setExecuteLoading(false);
   }, [mode]);
 
+  const resetSnapRange = () => {
+    setSnapRangeResetKey(_.uniqueId('snap_range_reset_'));
+  };
+
   const executeCommittedQuery = () => {
     queryInputRef.current?.commit();
+    resetSnapRange();
     setIsContentChangedDotVisible(false);
     executeQuery();
   };
@@ -99,10 +105,7 @@ export default function Main(props: Props) {
           <Col flex='auto' style={{ minWidth: 0 }}>
             <QueryInput
               ref={queryInputRef}
-              executeQuery={() => {
-                setIsContentChangedDotVisible(false);
-                executeQuery();
-              }}
+              executeQuery={executeCommittedQuery}
               queryBuilderPinned={queryBuilderPinned}
               queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
               onLableClick={() => {
@@ -195,6 +198,7 @@ export default function Main(props: Props) {
                 keys,
               },
             });
+            resetSnapRange();
             executeQuery();
             setIsContentChangedDotVisible(false);
             setQueryBuilderVisible(false);
@@ -214,7 +218,13 @@ export default function Main(props: Props) {
         {mode === 'metric' ? (
           <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
         ) : (
-          <Raw tableSelector={tableSelector} indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
+          <Raw
+            tableSelector={tableSelector}
+            indexData={indexData}
+            setExecuteLoading={setExecuteLoading}
+            executeQuery={executeCommittedQuery}
+            snapRangeResetKey={snapRangeResetKey}
+          />
         )}
       </div>
     </div>

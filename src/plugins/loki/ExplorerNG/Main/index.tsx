@@ -35,6 +35,7 @@ export default function Main(props: Props) {
   const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => localStorage.getItem(BUILDER_PINNED_CACHE_KEY) === 'true');
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
+  const [snapRangeResetKey, setSnapRangeResetKey] = useState<string>();
 
   useEffect(() => {
     setExecuteLoading(false);
@@ -68,7 +69,12 @@ export default function Main(props: Props) {
     setIsContentChangedDotVisible(true);
   };
 
+  const resetSnapRange = () => {
+    setSnapRangeResetKey(_.uniqueId('snap_range_reset_'));
+  };
+
   const executeCommittedQuery = () => {
+    resetSnapRange();
     setIsContentChangedDotVisible(false);
     executeQuery();
   };
@@ -100,10 +106,7 @@ export default function Main(props: Props) {
           </Col>
           <Col flex='auto' style={{ minWidth: 0 }}>
             <QueryInput
-              executeQuery={() => {
-                setIsContentChangedDotVisible(false);
-                executeQuery();
-              }}
+              executeQuery={executeCommittedQuery}
               queryBuilderPinned={queryBuilderPinned}
               queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
               onLableClick={() => {
@@ -205,6 +208,7 @@ export default function Main(props: Props) {
                 limit: nextLimit,
               },
             });
+            resetSnapRange();
             executeQuery();
             setIsContentChangedDotVisible(false);
             setQueryBuilderVisible(false);
@@ -224,7 +228,7 @@ export default function Main(props: Props) {
         {mode === 'metric' ? (
           <Metric indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
         ) : (
-          <Raw indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} />
+          <Raw indexData={indexData} setExecuteLoading={setExecuteLoading} executeQuery={executeCommittedQuery} snapRangeResetKey={snapRangeResetKey} />
         )}
       </div>
     </div>

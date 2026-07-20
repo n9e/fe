@@ -15,6 +15,7 @@ export function logsQuery(data: {
     end: number | string;
     limit?: number;
     direction?: 'forward' | 'backward';
+    reverse?: boolean;
     skip_count?: boolean;
     ref: string;
   }[];
