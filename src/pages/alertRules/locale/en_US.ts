@@ -45,7 +45,7 @@ const en_US = {
   prom_eval_interval: 'Execution interval (s)',
   prom_for_duration: 'Execution duration (s)',
   effective_configs: 'Effective configuration',
-  effective_configs_desc: 'Timezone, effective schedule & service calendar',
+  effective_configs_desc: 'Set the rule effective time period and scope',
   enable_status: 'Enable now',
   effective_time: 'Effective time',
   effective_time_start: 'Start time',
@@ -62,7 +62,7 @@ const en_US = {
   local_time: 'Local time',
 
   notify_configs: 'Notification Configuration',
-  notify_configs_desc: 'Notification rules, recovery notification & self-healing',
+  notify_configs_desc: 'Configure notification strategies and self-healing actions after alert triggers',
   notify_rule_ids: 'Notification rule',
   notify_rule_total: 'Total {{total}} items',
   notify_rule_footer_total: 'Total {{total}} rules',

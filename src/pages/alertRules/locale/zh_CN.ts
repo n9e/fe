@@ -45,7 +45,7 @@ const zh_CN = {
   prom_eval_interval: '执行频率 (s)',
   prom_for_duration: '持续时长 (s)',
   effective_configs: '生效配置',
-  effective_configs_desc: '时区、生效周期与服务日历',
+  effective_configs_desc: '设置规则的生效时间段与生效范围',
   enable_status: '立即启用',
   effective_time: '生效时间',
   effective_time_start: '开始时间',
@@ -61,7 +61,7 @@ const zh_CN = {
   local_time: '本地时间',
 
   notify_configs: '通知配置',
-  notify_configs_desc: '通知规则、恢复通知与告警自愈',
+  notify_configs_desc: '配置告警触发后的通知策略与自愈动作',
   notify_rule_ids: '通知规则',
   notify_rule_total: '共 {{total}} 条',
   notify_rule_footer_total: '共 {{total}} 条规则',

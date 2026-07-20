@@ -45,7 +45,7 @@ const ru_RU = {
   prom_eval_interval: 'Частота выполнения (с)',
   prom_for_duration: 'Продолжительность (с)',
   effective_configs: 'Настройки активации',
-  effective_configs_desc: 'Часовой пояс, период активации и календарь услуг',
+  effective_configs_desc: 'Установите временной период и область действия правила',
   enable_status: 'Активировать сразу',
   effective_time: 'Время активации',
   effective_time_start: 'Время начала',
@@ -62,7 +62,7 @@ const ru_RU = {
   local_time: 'Местное время',
 
   notify_configs: 'Настройки уведомлений',
-  notify_configs_desc: 'Правила уведомлений, уведомление о восстановлении и самовосстановление',
+  notify_configs_desc: 'Настройте стратегии уведомлений и действия самовосстановления после срабатывания оповещения',
   notify_rule_ids: 'Правила уведомлений',
   notify_rule_total: 'Всего {{total}} шт.',
   notify_rule_footer_total: 'Всего {{total}} правил',

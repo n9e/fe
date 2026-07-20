@@ -45,7 +45,7 @@ const zh_HK = {
   prom_eval_interval: '執行頻率 (s)',
   prom_for_duration: '持續時長 (s)',
   effective_configs: '生效配置',
-  effective_configs_desc: '時區、生效週期與服務日曆',
+  effective_configs_desc: '設置規則的生效時間段與生效範圍',
   enable_status: '立即啟用',
   effective_time: '生效時間',
   effective_time_start: '開始時間',
@@ -61,7 +61,7 @@ const zh_HK = {
   local_time: '本地時間',
 
   notify_configs: '通知配置',
-  notify_configs_desc: '通知規則、恢復通知與告警自愈',
+  notify_configs_desc: '配置告警觸發後的通知策略與自愈動作',
   notify_rule_ids: '通知規則',
   notify_rule_total: '共 {{total}} 條',
   notify_rule_footer_total: '共 {{total}} 條規則',
