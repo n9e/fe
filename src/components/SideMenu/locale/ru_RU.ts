@@ -77,6 +77,7 @@ const ru_RU = {
     ai_task: 'Задачи канала',
   },
   section: {
+    intelligent: 'Интеллект',
     infrastructure: 'INFRASTRUCTURE',
     insight: 'Аналитика',
     observability: 'OBSERVABILITY',

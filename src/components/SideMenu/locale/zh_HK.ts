@@ -77,6 +77,7 @@ const zh_HK = {
     ai_task: '任務通道',
   },
   section: {
+    intelligent: '智能',
     infrastructure: 'INFRASTRUCTURE',
     insight: '洞察',
     observability: 'OBSERVABILITY',

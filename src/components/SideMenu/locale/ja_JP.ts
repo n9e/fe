@@ -77,6 +77,7 @@ const ja_JP = {
     ai_task: 'タスクチャンネル',
   },
   section: {
+    intelligent: 'インテリジェンス',
     infrastructure: 'INFRASTRUCTURE',
     insight: 'インサイト',
     observability: 'OBSERVABILITY',

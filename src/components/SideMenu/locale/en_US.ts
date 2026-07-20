@@ -77,6 +77,7 @@ const en_US = {
     ai_task: 'AI Task',
   },
   section: {
+    intelligent: 'Intelligence',
     infrastructure: 'INFRASTRUCTURE',
     insight: 'Insight',
     observability: 'OBSERVABILITY',
