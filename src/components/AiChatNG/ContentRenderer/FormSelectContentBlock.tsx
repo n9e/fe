@@ -69,6 +69,7 @@ export interface IFormSelectConfirmResult {
     busi_group_id?: number;
     datasource_id?: number;
     team_ids?: number[];
+    skill_team_ids?: number[];
     skill_scope?: number;
     approval?: number;
   };
@@ -148,7 +149,9 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
   const selectedBusiGroupName = React.useMemo(() => busiGroupOptions.find((o) => o.value === busiGroupId)?.label, [busiGroupId, busiGroupOptions]);
   const selectedDatasourceName = React.useMemo(() => datasourceOptions.find((o) => o.value === datasourceId)?.label, [datasourceId, datasourceOptions]);
 
-  const teamField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'team_ids'), [payload?.fields]);
+  // 团队多选有两个键：通知规则用 team_ids，创建技能的管理团队用 skill_team_ids（后端靠
+  // 键区分是哪张表单的提交值）。渲染一致，回传时原样用该字段自己的 key。
+  const teamField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'team_ids' || f.key === 'skill_team_ids'), [payload?.fields]);
   const teamOptions = React.useMemo(() => (teamField?.candidates || []).map((c) => ({ value: c.id, label: c.name })), [teamField?.candidates]);
   const [teamIds, setTeamIds] = React.useState<number[]>(() => getDefaultCandidateIds(teamField?.candidates));
 
@@ -246,7 +249,7 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
             const param: IFormSelectConfirmResult['param'] = {};
             if (busiGroupField && busiGroupId) param.busi_group_id = busiGroupId;
             if (datasourceField && datasourceId) param.datasource_id = datasourceId;
-            if (teamField && teamIds.length) param.team_ids = teamIds;
+            if (teamField && teamIds.length) param[teamField.key === 'skill_team_ids' ? 'skill_team_ids' : 'team_ids'] = teamIds;
             if (scopeField && scopeId) param.skill_scope = scopeId;
 
             props.onConfirm({
