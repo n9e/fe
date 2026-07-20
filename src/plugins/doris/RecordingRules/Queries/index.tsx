@@ -14,7 +14,7 @@ import { normalizeTime } from '@/pages/alertRules/Form/utils';
 
 import AdvancedSettings from '../../components/AdvancedSettings';
 import GraphPreview from '../../AlertRule/GraphPreview';
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../constants';
 
 interface IProps {
   datasourceValue: number;
@@ -88,7 +88,7 @@ export default function index(props: IProps) {
                       darkMode,
                       title: t('common:document_link'),
                       type: 'iframe',
-                      documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
+                      documentPath: DORIS_SQL_MODE_DOC_URL,
                     });
                   }}
                 />

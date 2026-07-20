@@ -15,7 +15,7 @@ import { normalizeTime } from '@/pages/alertRules/Form/utils';
 import { NS as EVENT_PIPELINE_NS } from '@/pages/eventPipeline/constants';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../constants';
 import GraphPreview from '../GraphPreview';
 
 interface IProps {
@@ -75,7 +75,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                                       language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                                       title: t('common:document_title'),
                                       type: 'iframe',
-                                      documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
+                                      documentPath: DORIS_SQL_MODE_DOC_URL,
                                     });
                                   }}
                                 />

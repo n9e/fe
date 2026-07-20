@@ -1,3 +1,5 @@
+import { IS_ENT } from '@/utils/constant';
+
 export const NAME_SPACE = 'db_doris';
 export const QUERY_CACHE_KEY = 'doris-query-history-records';
 export const QUERY_CACHE_PICK_KEYS = ['database', 'table', 'time_field', 'query'];
@@ -42,3 +44,7 @@ export const DEFAULT_SEARCH_INDEX_CACHE_KEY = 'doris_query_logs_default_search_i
 export const QUERY_BUILDER_PINNED_CACHE_KEY = 'doris-query-builder-pinned';
 
 export const HIGHLIGHT_FIELD = '__highlight__';
+
+export const DORIS_SQL_MODE_DOC_URL = IS_ENT
+  ? '/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/'
+  : 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/doris/';
