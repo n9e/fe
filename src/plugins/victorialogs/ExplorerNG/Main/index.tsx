@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Badge, Button, Col, Form, Row, Segmented } from 'antd';
+import { Badge, Button, Col, Form, Modal, Row, Segmented } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -67,6 +67,25 @@ export default function Main(props: Props) {
                 const nextMode = val as 'raw' | 'metric';
                 const currentQuery = _.trim(queryValues?.query);
                 const isDefaultQuery = currentQuery === RAW_DEFAULT_QUERY || currentQuery === METRIC_DEFAULT_QUERY;
+                // 从统计图表切换到日志原文时，如果查询条件包含管道符，弹窗提示
+                if (mode === 'metric' && nextMode === 'raw' && !isDefaultQuery && currentQuery.includes('|')) {
+                  Modal.confirm({
+                    title: t(`${logExplorerNS}:mode_switch.confirm_title`),
+                    content: t(`${logExplorerNS}:mode_switch.confirm_content`),
+                    okText: t(`${logExplorerNS}:mode_switch.confirm_ok`),
+                    cancelText: t(`${logExplorerNS}:mode_switch.confirm_cancel`),
+                    onOk: () => {
+                      form.setFieldsValue({
+                        query: {
+                          ...queryValues,
+                          mode: nextMode,
+                          query: RAW_DEFAULT_QUERY,
+                        },
+                      });
+                    },
+                  });
+                  return;
+                }
                 form.setFieldsValue({
                   query: {
                     ...queryValues,

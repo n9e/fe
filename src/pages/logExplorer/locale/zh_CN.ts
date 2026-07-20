@@ -11,6 +11,12 @@ const zh_CN = {
     raw_logs: '日志原文',
     statistical_charts: '统计图表',
   },
+  mode_switch: {
+    confirm_title: '切换模式确认',
+    confirm_content: '当前统计图表模式的查询条件包含管道符（|），该语法在日志原文模式下不可用。切换后将清空当前查询条件，是否继续？',
+    confirm_ok: '继续切换',
+    confirm_cancel: '取消',
+  },
   before_query: '请点击 <b>查询</b>，展示数据',
   loading: '数据加载中 ...',
   no_data: '查询无数据',

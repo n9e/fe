@@ -85,6 +85,7 @@ export default function Raw(props: Props) {
   const [serviceParams, setServiceParams] = useState({
     current: 1,
     pageSize: DEFAULT_LOGS_PAGE_SIZE,
+    reverse: true,
     refreshFlag: undefined as string | undefined,
   });
   const rangeRef = useRef<{
@@ -108,6 +109,7 @@ export default function Raw(props: Props) {
       setServiceParams({
         current: 1,
         pageSize: DEFAULT_LOGS_PAGE_SIZE,
+        reverse: true,
         refreshFlag: _.uniqueId('refreshFlag_'),
       });
     }
@@ -140,6 +142,7 @@ export default function Raw(props: Props) {
             limit: serviceParams.pageSize,
             offset: (serviceParams.current - 1) * serviceParams.pageSize,
             ref: 'A',
+            reverse: serviceParams.reverse,
           },
         ],
       })
@@ -278,6 +281,11 @@ export default function Raw(props: Props) {
     setExecuteLoading(loading || histogramLoading);
   }, [loading, histogramLoading, setExecuteLoading]);
 
+  const organizeFields = options.organizeFields;
+  const setOrganizeFields = (newOrganizeFields?: string[]) => {
+    updateOptions({ organizeFields: newOrganizeFields || [] });
+  };
+
   return refreshFlag ? (
     <>
       {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
@@ -294,11 +302,12 @@ export default function Raw(props: Props) {
           logs={data?.list || []}
           logsHash={data?.hash}
           fields={data?.fields || []}
-          showTopNSettings
           hideTypeIcon
           options={options}
-          filterFields={(fieldKeys) => filteredFields(fieldKeys)}
-          logViewerFilterFields={(log) => filteredFields(_.keys(log))}
+          organizeFields={organizeFields}
+          setOrganizeFields={setOrganizeFields}
+          filterFields={(fieldKeys) => filteredFields(fieldKeys, organizeFields)}
+          logViewerFilterFields={(log) => filteredFields(_.keys(log), organizeFields)}
           logViewerRenderCustomTagsArea={renderBuiltinFields}
           customLogFieldRender={renderLogViewerFieldValueWithoutFilters}
           renderHistogramAddonAfterRender={(toggleNode) => {
@@ -387,8 +396,8 @@ export default function Raw(props: Props) {
           onLogRequestParamsChange={(params) => {
             if (params.from && params.to) {
               snapRangeRef.current = {
-                from: params.from,
-                to: params.to,
+                from: params.from * 1000,
+                to: params.to * 1000,
               };
               setServiceParams((prev) => ({
                 ...prev,
@@ -400,6 +409,7 @@ export default function Raw(props: Props) {
               setServiceParams((prev) => ({
                 ...prev,
                 current: 1,
+                reverse: params.reverse,
               }));
             }
           }}

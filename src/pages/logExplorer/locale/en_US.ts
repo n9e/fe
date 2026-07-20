@@ -11,6 +11,12 @@ const en_US = {
     raw_logs: 'Raw Logs',
     statistical_charts: 'Statistical Charts',
   },
+  mode_switch: {
+    confirm_title: 'Switch Mode Confirmation',
+    confirm_content: 'The current query contains pipe operators (|) which are not supported in Raw Logs mode. Switching will clear the current query. Do you want to proceed?',
+    confirm_ok: 'Switch',
+    confirm_cancel: 'Cancel',
+  },
   before_query: 'Please click <b>Query</b> to display data',
   loading: 'Loading data ...',
   no_data: 'No data found',

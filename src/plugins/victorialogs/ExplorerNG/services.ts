@@ -17,6 +17,7 @@ export function logsQuery(data: {
     limit?: number;
     offset?: number;
     ref: string;
+    reverse?: boolean;
   }[];
 }): Promise<{
   list: Record<string, any>[];
