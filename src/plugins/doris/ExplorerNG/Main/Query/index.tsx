@@ -389,7 +389,7 @@ export default function index(props: Props) {
                     <Space>
                       {rangeRef.current && (
                         <>
-                          {moment.unix(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment.unix(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
+                          {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
                         </>
                       )}
                       {toggleNode}
