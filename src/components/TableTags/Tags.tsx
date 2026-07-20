@@ -1,5 +1,5 @@
 import React, { useRef, useState, useLayoutEffect } from 'react';
-import { Button, Popover } from 'antd';
+import { Button, Popover, Tooltip } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import { Trans } from 'react-i18next';
 
@@ -192,19 +192,19 @@ export default function Tags<T>(props: Props<T>) {
       {/* 可见布局层 */}
       <div className='flex flex-wrap gap-0.5 content-start'>
         {(data as (string | T)[]).slice(0, visibleCount).map((item, i) => (
-          <span
-            key={getItemKey(item, i)}
-            className={visibleTagClass}
-            style={getTagStyle(item, i)}
-            title={getTooltipTitle ? getTooltipTitle(item, i) : getItemLabel(item, i)}
-            onClick={(e) => {
-              e.stopPropagation();
-              onTagClick?.(item, i);
-            }}
-          >
-            {icon && <span className={`${hideLabel ? '' : 'mr-[3px]'} flex items-center shrink-0`}>{resolveIcon(icon, item, i)}</span>}
-            {!hideLabel && <span className='overflow-hidden text-ellipsis'>{getItemLabel(item, i)}</span>}
-          </span>
+          <Tooltip key={getItemKey(item, i)} title={getTooltipTitle ? getTooltipTitle(item, i) : getItemLabel(item, i)}>
+            <span
+              className={visibleTagClass}
+              style={getTagStyle(item, i)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTagClick?.(item, i);
+              }}
+            >
+              {icon && <span className={`${hideLabel ? '' : 'mr-[3px]'} flex items-center shrink-0`}>{resolveIcon(icon, item, i)}</span>}
+              {!hideLabel && <span className='overflow-hidden text-ellipsis'>{getItemLabel(item, i)}</span>}
+            </span>
+          </Tooltip>
         ))}
         {overflowCount > 0 && (
           <Popover
