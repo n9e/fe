@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Space, Input, Row, Col, InputNumber, Select, Tooltip, Button } from 'antd';
-import { PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -67,7 +67,7 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                                 </span>
                               }
                             >
-                              <InfoCircleOutlined />
+                              <QuestionCircleOutlined />
                             </Tooltip>
                           </Space>
                         }
