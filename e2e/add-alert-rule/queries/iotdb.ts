@@ -59,7 +59,7 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
       timeKey: item.keys?.timeKey,
     },
     {
-      valueKey: '指标名字段',
+      valueKey: '值字段',
       labelKey: '标签字段',
       timeKey: '时间字段',
     },

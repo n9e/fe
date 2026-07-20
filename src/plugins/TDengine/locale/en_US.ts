@@ -29,7 +29,7 @@ const en_US = {
     },
     advancedSettings: {
       title: 'Advanced settings',
-      metricKey_label: 'MetricKey',
+      metricKey_label: 'Value field',
       metricKey_tip:
         'This field can be used to specify which fields will be used as metricName. By default, numerical fields will be used as metricName. For example, the query result is used_percent:96 host:host01, used_percent will be used as metricName, and the value is 96',
       tags_placeholder: 'Press Enter to input multiple',

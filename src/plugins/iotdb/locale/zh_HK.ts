@@ -20,7 +20,7 @@ const zh_HK = {
     },
     advancedSettings: {
       title: '輔助配置',
-      metricKey_label: '指標名字段',
+      metricKey_label: '值字段',
       metricKey_tip: '透過此字段可以指定哪些字段作為 metricName。',
       tags_placeholder: '回車輸入多個',
       labelKey_label: '標籤字段',

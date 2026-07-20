@@ -20,7 +20,7 @@ const zh_CN = {
     },
     advancedSettings: {
       title: '辅助配置',
-      metricKey_label: '指标名字段',
+      metricKey_label: '值字段',
       metricKey_tip: '通过此字段可以指定将哪些字段作为 metricName。',
       tags_placeholder: '回车输入多个',
       labelKey_label: '标签字段',

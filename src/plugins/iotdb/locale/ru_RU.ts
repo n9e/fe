@@ -20,7 +20,7 @@ const ru_RU = {
     },
     advancedSettings: {
       title: 'Дополнительные настройки',
-      metricKey_label: 'Поле имени метрики',
+      metricKey_label: 'Поле значения',
       metricKey_tip: 'С помощью этого поля можно указать, какие поля будут использоваться как metricName.',
       tags_placeholder: 'Введите несколько тегов, нажав Enter',
       labelKey_label: 'Поле метки',
