@@ -1,12 +1,20 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 
 import { PATH as agentPath } from './agents/constants';
 import { PATH as llmConfigPath } from './llmConfigs/constants';
 import { PATH as skillPath } from './skills/constants';
 
 const AgentList = React.lazy(() => import('./agents/pages/List'));
-const LLMConfigList = React.lazy(() => import('./llmConfigs/pages/List'));
-const SkillList = React.lazy(() => import('./skills/pages/List'));
+
+/** Soft-redirect legacy AI config list pages into FlashAI config host. */
+function RedirectToFlashAiLlmConfigs() {
+  return <Redirect to='/flashai?item=llm-configs' />;
+}
+
+function RedirectToFlashAiSkills() {
+  return <Redirect to='/flashai?item=skills' />;
+}
 
 export default {
   routes: [
@@ -17,12 +25,12 @@ export default {
     },
     {
       path: `${llmConfigPath}`,
-      component: LLMConfigList,
+      component: RedirectToFlashAiLlmConfigs,
       exact: true,
     },
     {
       path: `${skillPath}`,
-      component: SkillList,
+      component: RedirectToFlashAiSkills,
       exact: true,
     },
   ],

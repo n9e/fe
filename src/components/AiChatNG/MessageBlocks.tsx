@@ -168,7 +168,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
                 ns={NAME_SPACE}
                 i18nKey='message.no_llm_content'
                 components={{
-                  a: <a href='/ai-config/llm-configs' target='_blank' />,
+                  a: <a href='/flashai?item=llm-configs' target='_blank' />,
                 }}
               />
             }
