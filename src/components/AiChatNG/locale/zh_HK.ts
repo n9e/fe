@@ -51,6 +51,7 @@ const zh_HK = {
     busi_group: '業務組',
     datasource: '數據源',
     team: '團隊',
+    skill_scope: '可見範圍',
     placeholder_select: '請選擇',
     confirm: '確定',
   },
