@@ -51,6 +51,7 @@ const ja_JP = {
     busi_group: 'ビジネスグループ',
     datasource: 'データソース',
     team: 'チーム',
+    skill_scope: '公開範囲',
     placeholder_select: '選択してください',
     confirm: '確定',
   },

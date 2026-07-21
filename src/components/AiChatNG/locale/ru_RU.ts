@@ -51,6 +51,7 @@ const ru_RU = {
     busi_group: 'Группа бизнеса',
     datasource: 'Источник данных',
     team: 'Команды',
+    skill_scope: 'Видимость',
     placeholder_select: 'Выберите',
     confirm: 'Подтвердить',
   },
