@@ -2,13 +2,14 @@ import _ from 'lodash';
 
 export function processFormValues(values, selectedRules) {
   values = _.cloneDeep(values);
-  const tags = values?.tags?.map((item) => {
+  // 筛选条件可以为空，这里统一兜底成数组，避免提交 undefined
+  const tags = _.map(values?.tags, (item) => {
     return {
       ...item,
       value: Array.isArray(item.value) ? item.value.join(' ') : item.value,
     };
   });
-  const busi_groups = values?.busi_groups?.map((item) => {
+  const busi_groups = _.map(values?.busi_groups, (item) => {
     return {
       ...item,
       value: Array.isArray(item.value) ? item.value.join(' ') : item.value,

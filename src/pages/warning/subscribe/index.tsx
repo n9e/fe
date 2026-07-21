@@ -57,6 +57,7 @@ export default function List() {
         >
           <ListNG
             hideBusinessGroupColumn={businessGroup.isLeaf && gids !== '-2'}
+            canCreate={businessGroup.isLeaf && gids !== '-2'}
             headerExtra={
               businessGroup.isLeaf && gids !== '-2' ? (
                 <div>
