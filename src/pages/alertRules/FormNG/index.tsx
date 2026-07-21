@@ -26,9 +26,12 @@ import Effective from './Effective';
 import Notify from './Notify';
 import useScrollSync from './utils/useScrollSync';
 import shouldShowAdvancedSettings from './utils/shouldShowAdvancedSettings';
-import { FormNGDataProvider } from './context';
+import { FormNGDataProvider, useFormNGData } from './context';
 
 import './style.less';
+
+// @ts-ignore
+import NotifyExtraNG from 'plus:/parcels/AlertRule/NotifyExtraNG';
 
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
@@ -40,6 +43,28 @@ export const FormStateContext = createContext({
   disabled: false,
   type: undefined as number | undefined,
 });
+
+function AdvancedSettingsSection(props: {
+  advancedItem?: SectionItem;
+  sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
+  expandSignal?: { key: string; ts: number } | null;
+  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
+}) {
+  const { notifyChannels: contactList, teams: notifyGroups } = useFormNGData();
+
+  if (!props.advancedItem) return null;
+
+  return (
+    <NotifyExtraNG
+      advancedItem={props.advancedItem}
+      sectionRefs={props.sectionRefs}
+      contactList={contactList}
+      notifyGroups={notifyGroups}
+      expandSignal={props.expandSignal}
+      toggleAllSignal={props.toggleAllSignal}
+    />
+  );
+}
 
 export default function FormNG(props: IProps) {
   const { type, initialValues, editable = true } = props;
@@ -485,7 +510,6 @@ export default function FormNG(props: IProps) {
 
                 <Notify
                   item={sectionMap.notify!}
-                  advancedItem={sectionMap.advanced}
                   sectionRefs={scroll.sectionRefs}
                   disabled={disabled}
                   expandSignal={scroll.expandSignal}
@@ -505,6 +529,12 @@ export default function FormNG(props: IProps) {
                   sectionRefs={scroll.sectionRefs}
                   ref={pipelineConfigsRef}
                   initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
+                <AdvancedSettingsSection
+                  advancedItem={sectionMap.advanced}
+                  sectionRefs={scroll.sectionRefs}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
                 />
