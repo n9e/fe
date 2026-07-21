@@ -483,19 +483,19 @@ export default function FormNG(props: IProps) {
                   {prod !== 'host' && <Rule />}
                 </SectionCard>
 
-                <Effective
-                  item={sectionMap.effective!}
-                  sectionRefs={scroll.sectionRefs}
-                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
-                  expandSignal={scroll.expandSignal}
-                  toggleAllSignal={scroll.toggleAllSignal}
-                />
-
                 <Notify
                   item={sectionMap.notify!}
                   advancedItem={sectionMap.advanced}
                   sectionRefs={scroll.sectionRefs}
                   disabled={disabled}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
+
+                <Effective
+                  item={sectionMap.effective!}
+                  sectionRefs={scroll.sectionRefs}
+                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
                 />
