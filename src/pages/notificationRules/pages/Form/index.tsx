@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import _ from 'lodash';
-import { Form, Card, Space, Input, Select, Switch, Button, Row, Col, Affix } from 'antd';
+import { Form, Card, Space, Input, Select, Switch, Button, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import AffixWrapper from '@/components/AffixWrapper';
 import { ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -161,7 +162,13 @@ export default function FormCpt(props: Props) {
       }
     });
     if (sectionKeys.length) {
-      setSectionCollapsed((prev) => ({ ...prev, ..._.zipObject(sectionKeys, _.map(sectionKeys, () => false)) }));
+      setSectionCollapsed((prev) => ({
+        ...prev,
+        ..._.zipObject(
+          sectionKeys,
+          _.map(sectionKeys, () => false),
+        ),
+      }));
     }
     if (filterIndices.length) {
       setExpandFiltersSignal({ indices: _.uniq(filterIndices), ts: Date.now() });
@@ -200,12 +207,7 @@ export default function FormCpt(props: Props) {
           </Button>
         </div>
 
-        <SectionCard
-          item={sections[0]}
-          index={0}
-          collapsed={sectionCollapsed.notify}
-          setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, notify: collapsed }))}
-        >
+        <SectionCard item={sections[0]} index={0} collapsed={sectionCollapsed.notify} setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, notify: collapsed }))}>
           <Form.List name='notify_configs'>
             {(fields, { add, remove, move }) => (
               <>
@@ -302,8 +304,8 @@ export default function FormCpt(props: Props) {
         <ExtraConfig eventKeys={eventKeys} baseIndex={3} toggleAllSignal={toggleAllSignal} />
       </div>
       {!disabled && (
-        <Affix offsetBottom={0}>
-          <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto mt-4'>
+        <AffixWrapper>
+          <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
             <Space>
               <Button
                 type='primary'
@@ -331,7 +333,7 @@ export default function FormCpt(props: Props) {
               )}
             </Space>
           </Card>
-        </Affix>
+        </AffixWrapper>
       )}
     </Form>
   );
