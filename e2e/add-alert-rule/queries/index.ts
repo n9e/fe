@@ -4,6 +4,7 @@ import ckQuery from './ck';
 import dorisQuery from './doris';
 import elasticsearchQuery from './elasticsearch';
 import influxdbQuery from './influxdb';
+import iotdbQuery from './iotdb';
 import lokiQuery from './loki';
 import mysqlQuery from './mysql';
 import oracleQuery from './oracle';
@@ -23,6 +24,7 @@ const HANDLERS: Record<string, AlertRuleConditionHandler> = {
   doris: dorisQuery,
   elasticsearch: elasticsearchQuery,
   influxdb: influxdbQuery,
+  iotdb: iotdbQuery,
   loki: lokiQuery,
   mysql: mysqlQuery,
   oracle: oracleQuery,

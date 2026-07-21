@@ -1,3 +1,5 @@
+jest.mock('@/utils/constant', () => ({ IS_ENT: false }));
+
 import { DEFAULT_LOGS_PAGE_SIZE } from '../../../constants';
 
 /**

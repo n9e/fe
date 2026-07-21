@@ -29,7 +29,7 @@ const zh_HK = {
     },
     advancedSettings: {
       title: '輔助配置',
-      metricKey_label: '指標名字段',
+      metricKey_label: '值字段',
       metricKey_tip:
         '透過此字段可以指定哪些字段作為 metricName，預設會將數值類型的字段作為 metricName，例如查詢的結果為used_percent:96 host:host01，used_percent將作為 metricName, value 為 96',
       tags_placeholder: '回車輸入多個',

@@ -121,6 +121,24 @@ describe('textbox variable empty value', () => {
     expect(value).toBe('');
   });
 
+  test('should preserve textbox value from URL during initialization execution', () => {
+    const value = getValueByOptions({
+      variableValueFixed: undefined as any,
+      variable: {
+        name: 'input',
+        definition: '',
+        type: 'textbox',
+        defaultValue: '',
+        datasource: {
+          cate: 'prometheus',
+        },
+        value: 'content',
+      },
+    });
+
+    expect(value).toBe('content');
+  });
+
   test('should interpolate textbox empty value as empty string', () => {
     const data = adjustData(
       [

@@ -29,6 +29,7 @@ const CATE_LABEL_MAP: Record<string, string> = {
   loki: 'Loki',
   elasticsearch: 'Elasticsearch',
   opensearch: 'OpenSearch',
+  iotdb: 'IoTDB',
   tdengine: 'TDengine',
   ck: 'ClickHouse',
   mysql: 'MySQL',

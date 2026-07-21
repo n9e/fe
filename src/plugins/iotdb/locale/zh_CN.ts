@@ -20,9 +20,12 @@ const zh_CN = {
     },
     advancedSettings: {
       title: '辅助配置',
+      metricKey_label: '值字段',
       metricKey_tip: '通过此字段可以指定将哪些字段作为 metricName。',
       tags_placeholder: '回车输入多个',
+      labelKey_label: '标签字段',
       labelKey_tip: '通过此字段可以指定将哪些字段作为 labelName。',
+      timeKey_label: '时间字段',
       timeKey_tip: '指定哪个字段是时间字段，作为绘制曲线图的x轴坐标',
       timeFormat_tip: '时间的格式，会根据此格式将时间转为时间戳',
     },

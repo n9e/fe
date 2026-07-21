@@ -14,7 +14,6 @@ import { normalizeInitialValues } from '@/pages/notificationRules/utils/normaliz
 import { useFormNGData } from '../context';
 
 const channelTypes = getNotificationChannelTypes();
-const DRAWER_Z_INDEX = 1100;
 
 /** 取通知规则第一条通知媒介配置的副标题 */
 function getRuleSubtitle(rule: { notify_configs?: { channel_id: number; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] }[] }) {
@@ -153,6 +152,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
   const [viewDrawerData, setViewDrawerData] = useState<RuleItem>();
   const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
   const [createSaving, setCreateSaving] = useState(false);
+  const [shouldRestoreDropdownAfterDrawerClose, setShouldRestoreDropdownAfterDrawerClose] = useState(false);
 
   const filteredRules = useMemo(() => {
     if (!searchText) return notificationRules;
@@ -176,23 +176,45 @@ export default function NotificationRuleDropdownSelect(props: Props) {
     form.setFieldsValue({ notify_rule_ids: current });
   };
 
+  const handleOpenDrawer = () => {
+    setShouldRestoreDropdownAfterDrawerClose(dropdownOpen);
+    setDropdownOpen(false);
+  };
+
+  const handleCloseViewDrawer = () => {
+    setViewDrawerVisible(false);
+    setViewDrawerData(undefined);
+  };
+
+  const handleCloseCreateDrawer = () => {
+    setCreateDrawerVisible(false);
+  };
+
+  const handleDrawerAfterVisibleChange = (visible: boolean) => {
+    if (visible || !shouldRestoreDropdownAfterDrawerClose) return;
+    setShouldRestoreDropdownAfterDrawerClose(false);
+    setDropdownOpen(true);
+  };
+
   const handleViewRule = (ruleId: number) => {
+    handleOpenDrawer();
     setViewDrawerVisible(true);
     getNotificationRule(ruleId)
       .then((res) => {
         setViewDrawerData(normalizeInitialValues(res));
       })
       .catch(() => {
-        setViewDrawerVisible(false);
+        handleCloseViewDrawer();
       });
   };
 
   const handleCreateRule = () => {
+    handleOpenDrawer();
     setCreateDrawerVisible(true);
   };
 
   const handleDropdownVisibleChange = (visible: boolean) => {
-    if (!visible && (viewDrawerVisible || createDrawerVisible)) return;
+    if (visible && (viewDrawerVisible || createDrawerVisible)) return;
     setDropdownOpen(visible);
   };
 
@@ -273,12 +295,9 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         title={t(`${notificationRulesNS}:title`)}
         placement='right'
         width='80%'
-        zIndex={DRAWER_Z_INDEX}
         destroyOnClose
-        onClose={() => {
-          setViewDrawerVisible(false);
-          setViewDrawerData(undefined);
-        }}
+        afterVisibleChange={handleDrawerAfterVisibleChange}
+        onClose={handleCloseViewDrawer}
         visible={viewDrawerVisible}
       >
         <div className={`n9e ${notificationRulesCN}`}>
@@ -288,15 +307,11 @@ export default function NotificationRuleDropdownSelect(props: Props) {
               onOk={(values) => {
                 putNotificationRule(values).then(() => {
                   message.success(t('common:success.edit'));
-                  setViewDrawerVisible(false);
-                  setViewDrawerData(undefined);
+                  handleCloseViewDrawer();
                   refreshNotificationRules();
                 });
               }}
-              onCancel={() => {
-                setViewDrawerVisible(false);
-                setViewDrawerData(undefined);
-              }}
+              onCancel={handleCloseViewDrawer}
             />
           ) : (
             <Spin spinning />
@@ -307,11 +322,9 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         title={t(`${notificationRulesNS}:title`)}
         placement='right'
         width='80%'
-        zIndex={DRAWER_Z_INDEX}
         destroyOnClose
-        onClose={() => {
-          setCreateDrawerVisible(false);
-        }}
+        afterVisibleChange={handleDrawerAfterVisibleChange}
+        onClose={handleCloseCreateDrawer}
         visible={createDrawerVisible}
       >
         <div className={`n9e ${notificationRulesCN}`}>
@@ -322,16 +335,14 @@ export default function NotificationRuleDropdownSelect(props: Props) {
               createNotificationRules([values])
                 .then(() => {
                   message.success(t('common:success.add'));
-                  setCreateDrawerVisible(false);
+                  handleCloseCreateDrawer();
                   refreshNotificationRules();
                 })
                 .finally(() => {
                   setCreateSaving(false);
                 });
             }}
-            onCancel={() => {
-              setCreateDrawerVisible(false);
-            }}
+            onCancel={handleCloseCreateDrawer}
           />
         </div>
       </Drawer>

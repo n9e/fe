@@ -16,13 +16,14 @@
  */
 
 import React, { useContext } from 'react';
-import { Form, Row, Col, Space, Button } from 'antd';
+import { Form, Space, Button, Tooltip } from 'antd';
 import { LokiMonacoEditor } from '@fc-components/monaco-editor';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { IS_PLUS } from '@/utils/constant';
 import { FormStateContext } from '@/pages/alertRules/Form';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -33,7 +34,7 @@ import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/co
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[] }) {
-  const { t } = useTranslation('alertRules');
+  const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
   const { disabled } = useContext(FormStateContext);
 
@@ -50,7 +51,26 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
           {fields.map((field) => (
             <CardContainer key={field.key} onClose={fields.length > 1 ? () => remove(field.name) : undefined}>
               <CardContainerHeader>
-                <InputGroupWithFormItem label='LogQL'>
+                <InputGroupWithFormItem
+                  label={
+                    <Space>
+                      {'LogQL'}
+                      <Tooltip title={t('common:click_to_view_doc')}>
+                        <QuestionCircleOutlined
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('common:page_help'),
+                              type: 'iframe',
+                              documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/loki/',
+                            });
+                          }}
+                        />
+                      </Tooltip>
+                    </Space>
+                  }
+                >
                   <Form.Item
                     {...field}
                     name={[field.name, 'prom_ql']} //页面上展示LogQL，实际还是存prom_ql

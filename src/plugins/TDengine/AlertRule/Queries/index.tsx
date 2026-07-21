@@ -1,12 +1,14 @@
-import React from 'react';
-import { Form, Space, Input, Row, Col, InputNumber, Select, Tooltip, Button } from 'antd';
-import { PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import React, { useContext } from 'react';
+import { Form, Space, Input, Row, Col, InputNumber, Select, Button, Tooltip } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import { IS_PLUS } from '@/utils/constant';
+import { CommonStateContext } from '@/App';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
@@ -27,7 +29,8 @@ interface IProps {
 }
 
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
-  const { t } = useTranslation('db_tdengine');
+  const { t, i18n } = useTranslation('db_tdengine');
+  const { darkMode } = useContext(CommonStateContext);
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
   const queries = Form.useWatch(['rule_config', 'queries']);
 
@@ -61,17 +64,19 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                             label={
                               <Space>
                                 {t('query.query')}
-                                <Tooltip
-                                  title={
-                                    <span>
-                                      {t('query.query_tip1')}
-                                      <a className='pl-2' target='_blank' href='https://docs.taosdata.com/basic/query/'>
-                                        {t('query.query_tip2')}
-                                      </a>
-                                    </span>
-                                  }
-                                >
-                                  <InfoCircleOutlined />
+                                <Tooltip title={t('common:click_to_view_doc')}>
+                                  <QuestionCircleOutlined
+                                    onClick={() => {
+                                      DocumentDrawer({
+                                        language: i18n.language,
+                                        darkMode,
+                                        title: t('common:page_help'),
+                                        type: 'iframe',
+                                        documentPath:
+                                          'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/tdengine/',
+                                      });
+                                    }}
+                                  />
                                 </Tooltip>
                               </Space>
                             }
@@ -87,7 +92,7 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                           label={t('datasource:es.interval')}
                           addonAfter={
                             <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
-                              <Select disabled={disabled}>
+                              <Select disabled={disabled} dropdownMatchSelectWidth={false}>
                                 <Select.Option value='second'>{t('common:time.second')}</Select.Option>
                                 <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
                                 <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>

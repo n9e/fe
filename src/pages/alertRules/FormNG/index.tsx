@@ -28,6 +28,8 @@ import useScrollSync from './utils/useScrollSync';
 import shouldShowAdvancedSettings from './utils/shouldShowAdvancedSettings';
 import { FormNGDataProvider } from './context';
 
+import './style.less';
+
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
   initialValues?: any;
@@ -91,10 +93,10 @@ export default function FormNG(props: IProps) {
           : {}),
       },
       {
-        key: 'pipeline',
-        title: t('pipeline_configuration_ng.title'),
-        description: t('pipeline_configuration_ng.desc'),
-        tag: 'optional',
+        key: 'notify',
+        title: t('notify_configs'),
+        description: t('notify_configs_desc'),
+        tag: 'recommended',
       },
       {
         key: 'effective',
@@ -106,9 +108,9 @@ export default function FormNG(props: IProps) {
         },
       },
       {
-        key: 'notify',
-        title: t('notify_configs'),
-        description: t('notify_configs_desc'),
+        key: 'pipeline',
+        title: t('pipeline_configuration_ng.title'),
+        description: t('pipeline_configuration_ng.desc'),
         tag: 'optional',
       },
       {
@@ -120,6 +122,7 @@ export default function FormNG(props: IProps) {
     ];
     return IS_PLUS && showAdvanced ? allSections : allSections.filter((s) => s.key !== 'advanced');
   }, [i18n.language, showAdvanced, prod, cate]);
+  const sectionMap = useMemo(() => _.keyBy(sections, 'key') as Record<string, SectionItem | undefined>, [sections]);
 
   // 数据源类型切换草稿（按 cate 维度保存 rule_config + 数据源配置）
   const cateDraftRef = useRef<Record<string, any>>({});
@@ -259,7 +262,7 @@ export default function FormNG(props: IProps) {
         type,
       }}
     >
-      <Form form={form} layout='vertical' disabled={disabled} className='h-full' onValuesChange={onValuesChange}>
+      <Form form={form} layout='vertical' disabled={disabled} className='h-full n9e-alert-rule-form-ng-container' onValuesChange={onValuesChange}>
         <FormNGDataProvider>
           <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
             <div
@@ -339,7 +342,7 @@ export default function FormNG(props: IProps) {
                 </Form.Item>
 
                 <SectionCard
-                  item={sections[0]}
+                  item={sectionMap.basic!}
                   index={0}
                   collapsed={scroll.sectionCollapsed.basic}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
@@ -380,7 +383,7 @@ export default function FormNG(props: IProps) {
                 </SectionCard>
 
                 <SectionCard
-                  item={sections[1]}
+                  item={sectionMap.datasource!}
                   index={1}
                   collapsed={scroll.sectionCollapsed.datasource}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, datasource: collapsed }))}
@@ -465,7 +468,7 @@ export default function FormNG(props: IProps) {
                 </SectionCard>
 
                 <SectionCard
-                  item={sections[2]}
+                  item={sectionMap.rule!}
                   index={2}
                   collapsed={scroll.sectionCollapsed.rule}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, rule: collapsed }))}
@@ -480,28 +483,28 @@ export default function FormNG(props: IProps) {
                   {prod !== 'host' && <Rule />}
                 </SectionCard>
 
-                <PipelineConfigsNG
-                  item={sections[3]}
+                <Notify
+                  item={sectionMap.notify!}
+                  advancedItem={sectionMap.advanced}
                   sectionRefs={scroll.sectionRefs}
-                  ref={pipelineConfigsRef}
-                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
+                  disabled={disabled}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
                 />
 
                 <Effective
-                  item={sections[4]}
+                  item={sectionMap.effective!}
                   sectionRefs={scroll.sectionRefs}
                   initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
                 />
 
-                <Notify
-                  item={sections[5]}
-                  advancedItem={sections[6]}
+                <PipelineConfigsNG
+                  item={sectionMap.pipeline!}
                   sectionRefs={scroll.sectionRefs}
-                  disabled={disabled}
+                  ref={pipelineConfigsRef}
+                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
                 />

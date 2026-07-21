@@ -1,13 +1,13 @@
 import React from 'react';
 import { Form } from 'antd';
 import Queries from './Queries';
-import Triggers from '@/pages/alertRules/Form/components/Triggers';
+import Triggers from '@/pages/alertRules/FormNG/components/Triggers';
 
 export default function IotDBAlertRule({ datasourceValue }) {
   const form = Form.useFormInstance();
   return (
     <>
-      <div style={{ marginBottom: 10 }}>
+      <div className='mb-4'>
         <Queries form={form} prefixName={['rule_config']} datasourceValue={datasourceValue} />
       </div>
       <Form.Item shouldUpdate noStyle>

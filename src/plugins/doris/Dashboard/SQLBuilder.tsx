@@ -8,7 +8,7 @@ import { CommonStateContext } from '@/App';
 import { copy2ClipBoard } from '@/utils';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NAME_SPACE } from '../constants';
+import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../constants';
 import AdvancedSettings from '../components/AdvancedSettings';
 import LegendInput from '../components/LegendInput';
 import SQLInputWrap from './SQLInputWrap';
@@ -52,7 +52,7 @@ export default function SQLBuilder(props: Props) {
                                 darkMode,
                                 title: t('common:document_link'),
                                 type: 'iframe',
-                                documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                                documentPath: DORIS_SQL_MODE_DOC_URL,
                                 anchor: '#2-时间宏',
                               });
                             }}
@@ -71,7 +71,7 @@ export default function SQLBuilder(props: Props) {
                     darkMode,
                     title: t('common:document_link'),
                     type: 'iframe',
-                    documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                    documentPath: DORIS_SQL_MODE_DOC_URL,
                     anchor: '#2-时间宏',
                   });
                 }}
@@ -223,7 +223,7 @@ export default function SQLBuilder(props: Props) {
                       darkMode,
                       title: t('common:document_link'),
                       type: 'iframe',
-                      documentPath: `/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/`,
+                      documentPath: DORIS_SQL_MODE_DOC_URL,
                       anchor: '#2-时间宏',
                     });
                   }}
