@@ -24,6 +24,7 @@ import Rule from './Rule';
 import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
 import Effective from './Effective';
 import Notify from './Notify';
+import NotifyAdvanced from './Notify/Advanced';
 import useScrollSync from './utils/useScrollSync';
 import shouldShowAdvancedSettings from './utils/shouldShowAdvancedSettings';
 import { FormNGDataProvider } from './context';
@@ -95,16 +96,6 @@ export default function FormNG(props: IProps) {
         description: t('notify_configs_desc'),
         tag: 'recommended',
       },
-      // 高级配置由 Notify 内的 plus 组件紧跟通知配置渲染，故顺序排在 notify 之后
-      ...(IS_PLUS && showAdvanced
-        ? {
-            advanced: {
-              title: t('alertRules_extra:advanced_title'),
-              description: t('alertRules_extra:advanced_title_desc'),
-              tag: 'optional' as const,
-            },
-          }
-        : {}),
       effective: {
         title: t('effective_configs'),
         description: t('effective_configs_desc'),
@@ -118,6 +109,16 @@ export default function FormNG(props: IProps) {
         description: t('pipeline_configuration_ng.desc'),
         tag: 'optional',
       },
+      // 高级配置（plus）排在最后
+      ...(IS_PLUS && showAdvanced
+        ? {
+            advanced: {
+              title: t('alertRules_extra:advanced_title'),
+              description: t('alertRules_extra:advanced_title_desc'),
+              tag: 'optional' as const,
+            },
+          }
+        : {}),
     };
   }, [i18n.language, showAdvanced, prod, cate]);
   const sectionList = useMemo(() => toSectionList(sections), [sections]);
@@ -495,6 +496,8 @@ export default function FormNG(props: IProps) {
                     expandSignal={scroll.expandSignal}
                     toggleAllSignal={scroll.toggleAllSignal}
                   />
+
+                  <NotifyAdvanced sectionRefs={scroll.sectionRefs} expandSignal={scroll.expandSignal} toggleAllSignal={scroll.toggleAllSignal} />
                 </div>
                 <AffixWrapper>
                   <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
