@@ -1,5 +1,6 @@
 import { mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker/RelativeTimeRangePicker/utils';
 import { describeTimeRange } from '@/components/TimeRangePicker/utils';
+import type { LogQLVendor } from '@fc-components/monaco-editor';
 
 export interface ConditionSummaryItem {
   key: string;
@@ -8,7 +9,7 @@ export interface ConditionSummaryItem {
   queryText?: string;
   queryFullText?: string;
   queryPreviewType?: QueryPreviewType;
-  queryPreviewVendor?: string;
+  queryPreviewVendor?: LogQLVendor;
   valueTags?: string[];
   details?: string;
 }
@@ -187,7 +188,7 @@ function createQueryItem(
   meta: unknown[],
   queryText?: unknown,
   previewType?: QueryPreviewType,
-  previewVendor?: string,
+  previewVendor?: LogQLVendor,
 ): ConditionSummaryItem {
   const details = stringifyDetails(query);
   const queryFullText = queryText === undefined || queryText === null ? '' : String(queryText).trim();
@@ -250,7 +251,7 @@ function buildElasticsearchQuery(index: number, query: any, labels: ConditionSum
 }
 
 function buildLogServiceQuery(index: number, query: any, labels: ConditionSummaryLabels, cate?: string): ConditionSummaryItem {
-  const vendorMap: Record<string, string> = {
+  const vendorMap: Record<string, LogQLVendor> = {
     'aliyun-sls': 'sls',
     'tencent-cls': 'cls',
     'volc-tls': 'tls',

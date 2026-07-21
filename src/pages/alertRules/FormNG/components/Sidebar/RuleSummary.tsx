@@ -5,6 +5,7 @@ import { Form, Row, Col, Divider, Tooltip, Popover } from 'antd';
 import { useRequest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { LokiMonacoEditor, LogQLMonacoEditor, SqlMonacoEditor } from '@fc-components/monaco-editor';
+import type { LogQLVendor } from '@fc-components/monaco-editor';
 
 import moment from 'moment-timezone';
 
@@ -102,7 +103,7 @@ function ShortField({ label, value, noMargin }: SwitchFieldProps) {
 const MAX_VISIBLE_DATASOURCES = 3;
 const MAX_VISIBLE_CONDITION_ITEMS = 3;
 
-function QueryPreviewContent(props: { value: string; type?: QueryPreviewType; vendor?: string; datasourceValue?: number }) {
+function QueryPreviewContent(props: { value: string; type?: QueryPreviewType; vendor?: LogQLVendor; datasourceValue?: number }) {
   const { darkMode } = React.useContext(CommonStateContext);
   const theme = darkMode ? 'dark' : 'light';
   const editorClassName =
@@ -150,18 +151,18 @@ function QueryPreviewContent(props: { value: string; type?: QueryPreviewType; ve
   );
 }
 
-function QueryTextTag(props: { text?: string; fullText?: string; previewType?: QueryPreviewType; previewVendor?: string; datasourceValue?: number }) {
+function QueryTextTag(props: { text?: string; fullText?: string; previewType?: QueryPreviewType; previewVendor?: LogQLVendor; datasourceValue?: number }) {
   const text = props.text || '';
   if (!text) return null;
   const fullText = props.fullText || text;
 
-  const content = (
-    <QueryPreviewContent value={fullText} type={props.previewType} vendor={props.previewVendor} datasourceValue={props.datasourceValue} />
-  );
+  const content = <QueryPreviewContent value={fullText} type={props.previewType} vendor={props.previewVendor} datasourceValue={props.datasourceValue} />;
 
   return (
     <Popover content={content} trigger='click' placement='leftTop'>
-      <ThemeTag title={fullText} className='max-w-full truncate cursor-pointer hover:border-primary hover:bg-primary/10'>{text}</ThemeTag>
+      <ThemeTag title={fullText} className='max-w-full truncate cursor-pointer hover:border-primary hover:bg-primary/10'>
+        {text}
+      </ThemeTag>
     </Popover>
   );
 }
@@ -356,7 +357,10 @@ function RuleConditionSummary() {
   const datasourceValue = useMemo(() => {
     const idFromDatasourceIds = _.find(datasourceIds, _.isNumber);
     if (idFromDatasourceIds !== undefined) return idFromDatasourceIds;
-    return _.find(_.flatMap(datasourceQueries, (item: any) => item?.values || []), _.isNumber);
+    return _.find(
+      _.flatMap(datasourceQueries, (item: any) => item?.values || []),
+      _.isNumber,
+    );
   }, [datasourceIds, datasourceQueries]);
 
   if (!isHost && !hasQueries && !hasTriggers) return null;
