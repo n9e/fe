@@ -7,39 +7,32 @@ import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined, RightO
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 
 import SectionCard, { SectionItem } from '../components/SectionCard';
-import shouldShowAdvancedSettings from '../utils/shouldShowAdvancedSettings';
 import { useFormNGData } from '../context';
 import TaskTpls from './TaskTpls';
 import NotificationRuleDropdownSelect from './NotificationRuleDropdownSelect';
 import VersionSwitch from './VersionSwitch';
 
 // @ts-ignore
-import NotifyExtraNG from 'plus:/parcels/AlertRule/NotifyExtraNG';
-// @ts-ignore
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 interface Props {
   item: SectionItem;
-  advancedItem?: SectionItem;
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   disabled?: boolean;
   expandSignal?: { key: string; ts: number } | null;
   toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }
 
-export default function index({ item, advancedItem, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
+export default function index({ item, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { notifyChannels: contactList, teams: notifyGroups, webhooks, callbacks } = useFormNGData();
 
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
   const [effectiveCollapsed, setEffectiveCollapsed] = useState(true);
 
-  const datasourceCate = Form.useWatch('cate');
   const notify_version = Form.useWatch('notify_version');
   const notify_channels = Form.useWatch('notify_channels');
   const callbacksValue = Form.useWatch('callbacks');
-
-  const showadvancedSettings = shouldShowAdvancedSettings(notify_version, datasourceCate);
 
   const globalFlashdutyPushConfigured = useMemo(() => {
     return _.some(webhooks, (item) => {
@@ -72,7 +65,7 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
   return (
     <>
       <SectionCard
-        className={!showadvancedSettings ? 'mb-8' : ''}
+        className='mb-8'
         item={item}
         index={3}
         collapsed={effectiveCollapsed}
@@ -267,16 +260,6 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
           </Space>
         </div>
       </SectionCard>
-      {showadvancedSettings && advancedItem && (
-        <NotifyExtraNG
-          advancedItem={advancedItem}
-          sectionRefs={sectionRefs}
-          contactList={contactList}
-          notifyGroups={notifyGroups}
-          expandSignal={expandSignal}
-          toggleAllSignal={toggleAllSignal}
-        />
-      )}
     </>
   );
 }

@@ -1,16 +1,22 @@
 import React, { useMemo } from 'react';
 import _ from 'lodash';
 import i18next from 'i18next';
-import { Form, Row, Col, Divider, Tooltip } from 'antd';
+import { Form, Row, Col, Divider, Tooltip, Popover } from 'antd';
 import { useRequest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
+import { LokiMonacoEditor, LogQLMonacoEditor, SqlMonacoEditor } from '@fc-components/monaco-editor';
 
 import moment from 'moment-timezone';
 
+import { CommonStateContext } from '@/App';
 import { cn } from '@/utils';
+import { getTargetList } from '@/services/targets';
+import PromQLInputNG from '@/components/PromQLInputNG';
 
 import { useFormNGData } from '../../context';
 import { getDatasourcesByQueries } from '../DatasourceValueSelect/services';
+import { buildHostMachinePreviewSummary, buildRuleConditionSummary } from './ruleConditionSummary';
+import type { ConditionSummaryItem, QueryPreviewType } from './ruleConditionSummary';
 
 interface IProps {
   datasourceList: { id: number; name: string }[];
@@ -48,9 +54,20 @@ function Field(props: { children: React.ReactNode; noMargin?: boolean }) {
   return <div className={props.noMargin ? '' : 'mb-2'}>{props.children}</div>;
 }
 
-function ThemeTag(props: { children: React.ReactNode; className?: string }) {
+function ThemeTag(props: { children: React.ReactNode; className?: string } & React.HTMLAttributes<HTMLSpanElement>) {
+  const { children, className, ...rest } = props;
+  const title = rest.title ?? (typeof children === 'string' || typeof children === 'number' ? String(children) : undefined);
   return (
-    <span className={cn('inline-flex items-center rounded border border-primary/30 text-primary bg-primary/5 px-0.5 py-0 text-[11px]', props.className)}>{props.children}</span>
+    <span
+      {...rest}
+      title={title}
+      className={cn(
+        'inline-flex min-w-0 max-w-full items-center overflow-hidden text-ellipsis whitespace-nowrap rounded border border-primary/30 text-primary bg-primary/5 px-0.5 py-0 text-[11px]',
+        className,
+      )}
+    >
+      {children}
+    </span>
   );
 }
 
@@ -83,6 +100,155 @@ function ShortField({ label, value, noMargin }: SwitchFieldProps) {
 }
 
 const MAX_VISIBLE_DATASOURCES = 3;
+const MAX_VISIBLE_CONDITION_ITEMS = 3;
+
+function QueryPreviewContent(props: { value: string; type?: QueryPreviewType; vendor?: string; datasourceValue?: number }) {
+  const { darkMode } = React.useContext(CommonStateContext);
+  const theme = darkMode ? 'dark' : 'light';
+  const editorClassName =
+    'ant-input ant-input-disabled best-looking-scroll w-[560px] max-w-[72vw] max-h-[360px] overflow-auto !border-0 !bg-transparent !p-0 !shadow-none [&_.ant-input]:!border-0 [&_.ant-input]:!bg-transparent [&_.ant-input]:!shadow-none [&_.ant-input-disabled]:!border-0 [&_.ant-input-disabled]:!bg-transparent [&_.ant-input-disabled]:!shadow-none [&_.ant-input-affix-wrapper]:!border-0 [&_.ant-input-affix-wrapper]:!bg-transparent [&_.ant-input-affix-wrapper]:!shadow-none [&_.monaco-editor]:!outline-none';
+
+  if (props.type === 'promql') {
+    return (
+      <div className={editorClassName}>
+        <PromQLInputNG readOnly datasourceValue={props.datasourceValue as number} value={props.value} maxHeight={320} durationVariablesCompletion={false} />
+      </div>
+    );
+  }
+  if (props.type === 'sql') {
+    return (
+      <div className={editorClassName}>
+        <SqlMonacoEditor
+          readOnly
+          className='ant-input-disabled best-looking-scroll !border-0 !bg-transparent !shadow-none'
+          value={props.value}
+          maxHeight={320}
+          theme={theme}
+          enableAutocomplete={false}
+        />
+      </div>
+    );
+  }
+  if (props.type === 'loki') {
+    return (
+      <div className={editorClassName}>
+        <LokiMonacoEditor readOnly value={props.value} theme={theme} enableAutocomplete={false} />
+      </div>
+    );
+  }
+  if (props.type === 'logql' && props.vendor) {
+    return (
+      <div className={editorClassName}>
+        <LogQLMonacoEditor readOnly value={props.value} vendor={props.vendor} theme={theme} size='middle' />
+      </div>
+    );
+  }
+  return (
+    <pre className='ant-input ant-input-disabled best-looking-scroll m-0 w-[520px] max-w-[70vw] max-h-[320px] overflow-auto whitespace-pre-wrap break-words rounded !border-0 !bg-transparent p-2 !shadow-none text-[12px] text-foreground'>
+      {props.value}
+    </pre>
+  );
+}
+
+function QueryTextTag(props: { text?: string; fullText?: string; previewType?: QueryPreviewType; previewVendor?: string; datasourceValue?: number }) {
+  const text = props.text || '';
+  if (!text) return null;
+  const fullText = props.fullText || text;
+
+  const content = (
+    <QueryPreviewContent value={fullText} type={props.previewType} vendor={props.previewVendor} datasourceValue={props.datasourceValue} />
+  );
+
+  return (
+    <Popover content={content} trigger='click' placement='leftTop'>
+      <ThemeTag title={fullText} className='max-w-full truncate cursor-pointer hover:border-primary hover:bg-primary/10'>{text}</ThemeTag>
+    </Popover>
+  );
+}
+
+function SummaryMeta(props: { items: string[] }) {
+  const items = props.items.filter(Boolean);
+  if (items.length === 0) return null;
+  return (
+    <div className='flex flex-wrap gap-1 mt-1'>
+      {items.map((item) => (
+        <ThemeTag key={item} className='max-w-full truncate'>
+          {item}
+        </ThemeTag>
+      ))}
+    </div>
+  );
+}
+
+function SummaryList(props: { items: ConditionSummaryItem[]; datasourceValue?: number }) {
+  const visibleItems = props.items.slice(0, MAX_VISIBLE_CONDITION_ITEMS);
+  const extraCount = props.items.length - MAX_VISIBLE_CONDITION_ITEMS;
+
+  return (
+    <div className='space-y-2'>
+      {visibleItems.map((item) => (
+        <div key={item.key} className='min-w-0'>
+          <div className='text-[11px] text-foreground/90 truncate'>{item.title}</div>
+          <SummaryMeta items={item.meta} />
+          {item.queryText && (
+            <div className='mt-1 flex flex-wrap gap-1'>
+              <QueryTextTag
+                text={item.queryText}
+                fullText={item.queryFullText}
+                previewType={item.queryPreviewType}
+                previewVendor={item.queryPreviewVendor}
+                datasourceValue={props.datasourceValue}
+              />
+            </div>
+          )}
+          {item.valueTags && item.valueTags.length > 0 && (
+            <div className='mt-1 flex flex-wrap gap-1'>
+              {item.valueTags.map((value) => (
+                <ThemeTag key={value} className='max-w-full truncate'>
+                  {value}
+                </ThemeTag>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+      {extraCount > 0 && <span className='text-[11px] text-soft'>+{extraCount}</span>}
+    </div>
+  );
+}
+
+function HostMachinePreviewSummary(props: { queries: any[] }) {
+  const { t } = useTranslation('alertRules');
+  const { queries } = props;
+  const { data } = useRequest(
+    () =>
+      getTargetList({
+        p: 1,
+        limit: MAX_VISIBLE_DATASOURCES,
+        queries,
+      }).catch(() => ({ dat: { list: [], total: 0 } })),
+    {
+      ready: _.isArray(queries),
+      refreshDeps: [JSON.stringify(queries)],
+    },
+  );
+
+  const preview = buildHostMachinePreviewSummary(data?.dat?.list || [], data?.dat?.total || 0, MAX_VISIBLE_DATASOURCES);
+
+  if (preview.names.length === 0) return null;
+
+  return (
+    <Field>
+      <FieldLabel>{t('host.query.title')}</FieldLabel>
+      <div className='flex flex-wrap items-center gap-1'>
+        {preview.names.map((name) => (
+          <ThemeTag key={name}>{name}</ThemeTag>
+        ))}
+        {preview.extraCount > 0 && <span className='text-[11px] text-soft'>+{preview.extraCount}</span>}
+      </div>
+    </Field>
+  );
+}
 
 // ---- 数据源卡片 ----
 function DatasourceSummary({ datasourceList }: { datasourceList: { id: number; name: string }[] }) {
@@ -129,6 +295,87 @@ function DatasourceSummary({ datasourceList }: { datasourceList: { id: number; n
               ))}
               {extraCount > 0 && <span className='text-[11px] text-soft'>+{extraCount}</span>}
             </div>
+          </Field>
+        )}
+      </div>
+      <Divider />
+    </>
+  );
+}
+
+// ---- 告警条件卡片 ----
+function RuleConditionSummary() {
+  const { t } = useTranslation('alertRules');
+  const cate = Form.useWatch('cate');
+  const prod = Form.useWatch('prod');
+  const datasourceIds = Form.useWatch('datasource_ids');
+  const datasourceQueries = Form.useWatch('datasource_queries');
+  const queries = Form.useWatch(['rule_config', 'queries']);
+  const triggers = Form.useWatch(['rule_config', 'triggers']);
+  const version = Form.useWatch(['rule_config', 'version']);
+  const nodataTrigger = Form.useWatch(['rule_config', 'nodata_trigger']);
+
+  const summary = useMemo(() => {
+    return buildRuleConditionSummary({
+      cate,
+      queries,
+      triggers,
+      version,
+      nodataTrigger,
+      labels: {
+        normalMode: t('ruleConfigPromVersion_v1'),
+        advancedMode: t('ruleConfigPromVersion_v2'),
+        builderMode: t('datasource:es.alert.trigger.builder'),
+        expressionMode: t('datasource:es.alert.trigger.code'),
+        range: t('form_ng.range'),
+        interval: t('form_ng.interval'),
+        subqueries: t('form_ng.subqueries'),
+        logGroups: t('form_ng.log_groups'),
+        groupBy: t('form_ng.group_by'),
+        step: t('form_ng.step'),
+        fields: t('form_ng.fields'),
+        nodata: t('nodata_trigger.title'),
+        autoRecoverAfter: t('nodata_trigger.resolve_after'),
+        seconds: t('nodata_trigger.resolve_after_unit'),
+        hostThan: t('host.trigger.than'),
+        hostPctTargetMissText: t('host.trigger.pct_target_miss_text'),
+        hostSecond: t('host.trigger.second'),
+        hostMillisecond: t('host.trigger.millisecond'),
+        hostTriggerNames: {
+          target_miss: t('host.trigger.key.target_miss'),
+          pct_target_miss: t('host.trigger.key.pct_target_miss'),
+          offset: t('host.trigger.key.offset'),
+        },
+      },
+    });
+  }, [cate, queries, triggers, version, nodataTrigger, t]);
+
+  const hasQueries = summary.queries.length > 0;
+  const hasTriggers = summary.triggers.length > 0;
+  const isHost = prod === 'host' || cate === 'host';
+  const datasourceValue = useMemo(() => {
+    const idFromDatasourceIds = _.find(datasourceIds, _.isNumber);
+    if (idFromDatasourceIds !== undefined) return idFromDatasourceIds;
+    return _.find(_.flatMap(datasourceQueries, (item: any) => item?.values || []), _.isNumber);
+  }, [datasourceIds, datasourceQueries]);
+
+  if (!isHost && !hasQueries && !hasTriggers) return null;
+
+  return (
+    <>
+      <div>
+        <SectionTitle>{t('form_ng.condition_summary')}</SectionTitle>
+        {isHost && <HostMachinePreviewSummary queries={queries} />}
+        {hasQueries && (
+          <Field>
+            <FieldLabel>{t('form_ng.query_statements')}</FieldLabel>
+            <SummaryList items={summary.queries} datasourceValue={datasourceValue} />
+          </Field>
+        )}
+        {hasTriggers && (
+          <Field noMargin>
+            <FieldLabel>{t('form_ng.triggers')}</FieldLabel>
+            <SummaryList items={summary.triggers} />
           </Field>
         )}
       </div>
@@ -409,6 +656,7 @@ export default function RuleSummary(props: IProps) {
   return (
     <>
       <DatasourceSummary datasourceList={datasourceList} />
+      <RuleConditionSummary />
       <PipelineSummary />
       <EffectiveSummary />
       <NotifySummary />
