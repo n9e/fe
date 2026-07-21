@@ -8,16 +8,18 @@ interface Props {
   label?: string;
   initialValue?: string;
   options?: { label: string; value: string }[];
+  /** 留空即采用后端默认周期的场景传 false，默认必填 */
+  required?: boolean;
 }
 
 export default function CronPattern(props: Props) {
-  const { name, label, initialValue } = props;
+  const { name, label, initialValue, required = true } = props;
   const { t } = useTranslation('CronPattern');
   return (
     <Form.Item
       name={name}
       label={label || t('cron_pattern')}
-      rules={[{ required: true, message: t('cron_pattern_msg') }]}
+      rules={[{ required, message: t('cron_pattern_msg') }]}
       initialValue={initialValue ?? '@every 15s'}
       tooltip={t('cron_pattern_tip')}
     >
