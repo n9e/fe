@@ -46,6 +46,7 @@ export const FormStateContext = createContext({
 
 function AdvancedSettingsSection(props: {
   advancedItem?: SectionItem;
+  sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   expandSignal?: { key: string; ts: number } | null;
   toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
@@ -57,6 +58,7 @@ function AdvancedSettingsSection(props: {
   return (
     <NotifyExtraNG
       advancedItem={props.advancedItem}
+      sectionKeys={props.sectionKeys}
       sectionRefs={props.sectionRefs}
       contactList={contactList}
       notifyGroups={notifyGroups}
@@ -147,6 +149,7 @@ export default function FormNG(props: IProps) {
     ];
     return IS_PLUS && showAdvanced ? allSections : allSections.filter((s) => s.key !== 'advanced');
   }, [i18n.language, showAdvanced, prod, cate]);
+  const sectionKeys = useMemo(() => sections.map((s) => s.key), [sections]);
   const sectionMap = useMemo(() => _.keyBy(sections, 'key') as Record<string, SectionItem | undefined>, [sections]);
 
   // 数据源类型切换草稿（按 cate 维度保存 rule_config + 数据源配置）
@@ -368,7 +371,7 @@ export default function FormNG(props: IProps) {
 
                 <SectionCard
                   item={sectionMap.basic!}
-                  index={0}
+                  index={sectionKeys.indexOf('basic')}
                   collapsed={scroll.sectionCollapsed.basic}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
                   sectionRef={(node) => {
@@ -409,7 +412,7 @@ export default function FormNG(props: IProps) {
 
                 <SectionCard
                   item={sectionMap.datasource!}
-                  index={1}
+                  index={sectionKeys.indexOf('datasource')}
                   collapsed={scroll.sectionCollapsed.datasource}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, datasource: collapsed }))}
                   sectionRef={(node) => {
@@ -494,7 +497,7 @@ export default function FormNG(props: IProps) {
 
                 <SectionCard
                   item={sectionMap.rule!}
-                  index={2}
+                  index={sectionKeys.indexOf('rule')}
                   collapsed={scroll.sectionCollapsed.rule}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, rule: collapsed }))}
                   sectionRef={(node) => {
@@ -510,6 +513,7 @@ export default function FormNG(props: IProps) {
 
                 <Notify
                   item={sectionMap.notify!}
+                  sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
                   disabled={disabled}
                   expandSignal={scroll.expandSignal}
@@ -518,6 +522,7 @@ export default function FormNG(props: IProps) {
 
                 <Effective
                   item={sectionMap.effective!}
+                  sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
                   initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
                   expandSignal={scroll.expandSignal}
@@ -526,6 +531,7 @@ export default function FormNG(props: IProps) {
 
                 <PipelineConfigsNG
                   item={sectionMap.pipeline!}
+                  sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
                   ref={pipelineConfigsRef}
                   initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
@@ -534,6 +540,7 @@ export default function FormNG(props: IProps) {
                 />
                 <AdvancedSettingsSection
                   advancedItem={sectionMap.advanced}
+                  sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
