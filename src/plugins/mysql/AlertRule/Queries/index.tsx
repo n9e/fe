@@ -73,8 +73,8 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                                       documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/mysql/',
                                     });
                                   }}
-                                />{' '}
-                              </Tooltip>{' '}
+                                />
+                              </Tooltip>
                             </Space>
                           }
                         >

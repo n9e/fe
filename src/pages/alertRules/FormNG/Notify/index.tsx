@@ -63,6 +63,7 @@ export default function index({ sectionRefs, disabled, expandSignal, toggleAllSi
 
   return (
     <SectionCard
+      className='mb-8'
       sectionKey='notify'
       collapsed={effectiveCollapsed}
       setCollapsed={setEffectiveCollapsed}

@@ -24,12 +24,14 @@ import Rule from './Rule';
 import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
 import Effective from './Effective';
 import Notify from './Notify';
-import NotifyAdvanced from './Notify/Advanced';
 import useScrollSync from './utils/useScrollSync';
 import shouldShowAdvancedSettings from './utils/shouldShowAdvancedSettings';
-import { FormNGDataProvider } from './context';
+import { FormNGDataProvider, useFormNGData } from './context';
 
 import './style.less';
+
+// @ts-ignore
+import NotifyExtraNG from 'plus:/parcels/AlertRule/NotifyExtraNG';
 
 interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
@@ -41,6 +43,28 @@ export const FormStateContext = createContext({
   disabled: false,
   type: undefined as number | undefined,
 });
+
+/**
+ * 高级配置分区（plus）。数据取自 FormNGDataProvider，故包一层，
+ * 以便在表单最后位置渲染，与分区配置表中的顺序保持一致
+ */
+function AdvancedSettingsSection(props: {
+  sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
+  expandSignal?: { key: string; ts: number } | null;
+  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
+}) {
+  const { notifyChannels: contactList, teams: notifyGroups } = useFormNGData();
+
+  return (
+    <NotifyExtraNG
+      sectionRefs={props.sectionRefs}
+      contactList={contactList}
+      notifyGroups={notifyGroups}
+      expandSignal={props.expandSignal}
+      toggleAllSignal={props.toggleAllSignal}
+    />
+  );
+}
 
 export default function FormNG(props: IProps) {
   const { type, initialValues, editable = true } = props;
@@ -497,7 +521,7 @@ export default function FormNG(props: IProps) {
                     toggleAllSignal={scroll.toggleAllSignal}
                   />
 
-                  <NotifyAdvanced sectionRefs={scroll.sectionRefs} expandSignal={scroll.expandSignal} toggleAllSignal={scroll.toggleAllSignal} />
+                  {sections.advanced && <AdvancedSettingsSection sectionRefs={scroll.sectionRefs} expandSignal={scroll.expandSignal} toggleAllSignal={scroll.toggleAllSignal} />}
                 </div>
                 <AffixWrapper>
                   <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>

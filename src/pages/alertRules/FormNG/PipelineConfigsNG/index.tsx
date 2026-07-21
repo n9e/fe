@@ -122,7 +122,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
         name='pipeline_configs'
         initialValue={[
           {
-            enable: true,
+            enable: false,
             processors: [],
           },
         ]}
