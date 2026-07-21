@@ -121,6 +121,8 @@ export default function DetailV2(props: IProps) {
   const [allowedLeave, setAllowedLeave] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [variablesInitialized, setVariablesInitialized] = useState(false);
+  const hasQueryVariables = _.some(variablesWithOptions, (item) => item.type === 'query');
+  const queryEnabled = !hasQueryVariables || variablesInitialized;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const editModalVariablecontainerRef = useRef<HTMLDivElement>(null);
@@ -433,6 +435,7 @@ export default function DetailV2(props: IProps) {
                 setHasUnsavedChanges={setHasUnsavedChanges}
                 range={range}
                 setRange={setRange}
+                queryEnabled={queryEnabled}
                 timezone={timezone}
                 setTimezone={(newTimezone) => {
                   setTimezone(newTimezone);

@@ -28,12 +28,17 @@ export default function index(props: Props) {
 
   // 追踪 Query 变量的初始化状态
   React.useEffect(() => {
-    if (hasCalledInitializedRef.current || !onInitialized || _.isEmpty(variablesWithOptions)) return;
+    if (!onInitialized) return;
+    if (_.isEmpty(variablesWithOptions)) {
+      hasCalledInitializedRef.current = false;
+      return;
+    }
 
     const queryVariables = _.filter(variablesWithOptions, (item) => item.type === 'query');
 
     // 如果没有 query 类型的变量，立即触发回调
     if (queryVariables.length === 0) {
+      if (hasCalledInitializedRef.current) return;
       hasCalledInitializedRef.current = true;
       onInitialized();
       return;
@@ -44,7 +49,13 @@ export default function index(props: Props) {
       return variable.options !== undefined; // 只要 options 属性存在就算初始化完成，可以是空数组
     });
 
+    if (!allInitialized) {
+      hasCalledInitializedRef.current = false;
+      return;
+    }
+
     if (allInitialized) {
+      if (hasCalledInitializedRef.current) return;
       hasCalledInitializedRef.current = true;
       onInitialized();
     }
