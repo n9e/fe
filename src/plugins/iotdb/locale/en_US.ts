@@ -21,10 +21,10 @@ const en_US = {
     advancedSettings: {
       title: 'Advanced settings',
       metricKey_label: 'Value field',
-      metricKey_tip: 'Specify which fields will be used as metricName.',
+      metricKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as curves to display on the chart',
       tags_placeholder: 'Press Enter to input multiple',
       labelKey_label: 'Label field',
-      labelKey_tip: 'Specify which fields will be used as labelName.',
+      labelKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as label metadata for curves',
       timeKey_label: 'Time field',
       timeKey_tip: 'Specify which field is the time field and use it as the x-axis coordinate for drawing the curve',
       timeFormat_tip: 'The format of the time, which will convert the time to a timestamp according to this format',
