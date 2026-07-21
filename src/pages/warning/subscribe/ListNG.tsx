@@ -25,7 +25,8 @@ import { NS as notificationRulesNS, PERM as notificationRulesPerm } from '@/page
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
-import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY, DOC_URL } from './constants';
+import ScenarioList from './components/ScenarioList';
 import './locale';
 import './index.less';
 
@@ -419,7 +420,13 @@ const Subscribe = (props: Props) => {
                 emptyText: (
                   <EmptyGuide
                     title={t('empty_guide.title')}
-                    description={t('empty_guide.desc')}
+                    descriptionClassName='max-w-[620px]'
+                    description={
+                      <>
+                        <div className='mb-1'>{t('scenario_tips.title')}</div>
+                        <ScenarioList />
+                      </>
+                    }
                     actions={
                       <>
                         {canCreate && (
@@ -434,7 +441,7 @@ const Subscribe = (props: Props) => {
                               darkMode,
                               title: t('common:page_help'),
                               type: 'iframe',
-                              documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/',
+                              documentPath: DOC_URL,
                             });
                           }}
                         >

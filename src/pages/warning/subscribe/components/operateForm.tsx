@@ -42,7 +42,9 @@ import AffixWrapper from '@/components/AffixWrapper';
 import { KVTags } from '@/components/KVTagSelect';
 
 import RuleModal from './ruleModal';
+import ScenarioTips from './ScenarioTips';
 import BusiGroupsTagItem from './BusiGroupsTagItem';
+import { DOC_URL } from '../constants';
 import { processFormValues } from './utils';
 import { buildAutoName } from './buildAutoName';
 import '../index.less';
@@ -112,7 +114,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         tag: 'core',
         icon: <ListFilter size={14} />,
         helpDoc: {
-          documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/',
+          documentPath: DOC_URL,
         },
       },
       {
@@ -133,7 +135,12 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   // 分区序号由配置表顺序推导，调用处按 key 取，避免下标和序号两处硬编码不同步
   const sectionKeys = useMemo(() => _.map(sections, 'key'), [sections]);
   const sectionMap = useMemo(() => _.keyBy(sections, 'key') as Record<string, SectionItem>, [sections]);
-  const [sectionCollapsed, setSectionCollapsed] = useState<Record<string, boolean>>(() => _.zipObject(sectionKeys, _.map(sectionKeys, () => false)));
+  const [sectionCollapsed, setSectionCollapsed] = useState<Record<string, boolean>>(() =>
+    _.zipObject(
+      sectionKeys,
+      _.map(sectionKeys, () => false),
+    ),
+  );
 
   // GET /notify-rules 后端带 perm("/notification-rules")，无权限时不发这个注定 403 的请求
   useEffect(() => {
@@ -302,7 +309,13 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const expandErrorSections = (errorFields?: { name: (string | number)[] }[]) => {
     const keys = _.compact(_.map(errorFields, ({ name }) => FIELD_SECTION_MAP[_.toString(name?.[0])]));
     if (keys.length) {
-      setSectionCollapsed((prev) => ({ ...prev, ..._.zipObject(keys, _.map(keys, () => false)) }));
+      setSectionCollapsed((prev) => ({
+        ...prev,
+        ..._.zipObject(
+          keys,
+          _.map(keys, () => false),
+        ),
+      }));
     }
   };
 
@@ -346,6 +359,9 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
         }}
       >
         <div className='w-full max-w-[1200px] mx-auto'>
+          {/* 只在新建时讲场景，编辑/克隆的用户已经知道这是什么 */}
+          {!type && <ScenarioTips />}
+
           <SectionCard
             item={sectionMap.filter}
             index={sectionKeys.indexOf('filter')}

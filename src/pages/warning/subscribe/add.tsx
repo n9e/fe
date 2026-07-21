@@ -17,13 +17,14 @@
 import React from 'react';
 import PageLayout from '@/components/pageLayout';
 import OperateForm from './components/operateForm';
+import { DOC_URL } from './constants';
 import { useTranslation } from 'react-i18next';
 import './index.less';
 
 const AddSubscribe: React.FC = () => {
   const { t } = useTranslation('alertSubscribes');
   return (
-    <PageLayout title={t('title')} showBack doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/'>
+    <PageLayout title={t('title')} showBack doc={DOC_URL}>
       <OperateForm />
     </PageLayout>
   );

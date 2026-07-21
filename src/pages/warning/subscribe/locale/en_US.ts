@@ -90,8 +90,14 @@ const en_US = {
   },
   empty_guide: {
     title: 'No subscription yet',
-    desc: 'Subscriptions decouple the people who write alert rules from the people who care about the alerts: ops maintains the alert rules, while each dev team subscribes to the slice it cares about (by business group or tag) and receives it through its own channels. You can also subscribe by "unresolved for more than N seconds" as an escalation safety net.',
     doc: 'Read the docs',
+  },
+  scenario_tips: {
+    title: 'Three cases where subscriptions fit',
+    cross_team: "Subscribe to someone else's alerts: a downstream service is owned by another team, but its failures hit me, so I want its SLI alerts",
+    escalation: 'Escalation safety net: alerts unresolved for over an hour also go to the team lead',
+    global_callback: 'Global callback: send every alert event to one webhook for automation',
+    more: 'Learn more',
   },
   filter_disabled: {
     placeholder: 'Enabled status',
