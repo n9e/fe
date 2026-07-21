@@ -19,6 +19,7 @@ export interface PipelineConfigsNGRef {
 
 interface PipelineConfigsNGProps {
   item: SectionItem;
+  sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   initialValues?: any;
   expandSignal?: { key: string; ts: number } | null;
@@ -108,7 +109,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
   return (
     <SectionCard
       item={props.item}
-      index={5}
+      index={props.sectionKeys.indexOf(props.item.key)}
       sectionRef={(node) => {
         props.sectionRefs.current['pipeline'] = node;
       }}

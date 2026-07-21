@@ -17,13 +17,14 @@ import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 interface Props {
   item: SectionItem;
+  sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   disabled?: boolean;
   expandSignal?: { key: string; ts: number } | null;
   toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }
 
-export default function index({ item, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
+export default function index({ item, sectionKeys, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { notifyChannels: contactList, teams: notifyGroups, webhooks, callbacks } = useFormNGData();
 
@@ -67,7 +68,7 @@ export default function index({ item, sectionRefs, disabled, expandSignal, toggl
       <SectionCard
         className='mb-8'
         item={item}
-        index={3}
+        index={sectionKeys.indexOf(item.key)}
         collapsed={effectiveCollapsed}
         setCollapsed={setEffectiveCollapsed}
         sectionRef={(node) => {
