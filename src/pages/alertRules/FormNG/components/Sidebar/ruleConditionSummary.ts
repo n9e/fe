@@ -242,12 +242,7 @@ function buildGcmQuery(index: number, query: any, labels: ConditionSummaryLabels
 function buildElasticsearchQuery(index: number, query: any, labels: ConditionSummaryLabels): ConditionSummaryItem {
   const isIndexPattern = query?.index_type === 'index_pattern';
   const indexLabel = isIndexPattern ? query?.index_pattern_name || query?.index_pattern : query?.index;
-  return createQueryItem(
-    index,
-    query,
-    getTitleParts(query, labels),
-    [indexLabel, query?.filter],
-  );
+  return createQueryItem(index, query, getTitleParts(query, labels), [indexLabel, query?.filter]);
 }
 
 function buildLogServiceQuery(index: number, query: any, labels: ConditionSummaryLabels, cate?: string): ConditionSummaryItem {
@@ -272,7 +267,7 @@ function buildLogServiceQuery(index: number, query: any, labels: ConditionSummar
 function buildGenericQuery(index: number, query: any, labels: ConditionSummaryLabels, cate?: string): ConditionSummaryItem {
   const text = findRawText(query);
   const visibleKeys = Object.keys(query || {}).filter((key) => !['ref', 'unit', 'keys'].includes(key));
-  const sqlCates = ['ck', 'mysql', 'pgsql', 'oracle', 'redshift', 'doris', 'influxdb'];
+  const sqlCates = ['ck', 'mysql', 'pgsql', 'oracle', 'redshift', 'doris', 'influxdb', 'tdengine', 'iotdb'];
   const previewType: QueryPreviewType | undefined = cate === 'loki' ? 'loki' : sqlCates.includes(cate || '') ? 'sql' : undefined;
   return createQueryItem(index, query, getTitleParts(query, labels), [!text && visibleKeys.length ? `${visibleKeys.length} ${labels.fields}` : undefined], text, previewType);
 }
@@ -314,7 +309,9 @@ function buildNodataTrigger(nodataTrigger: any, labels: ConditionSummaryLabels):
     key: 'nodata-trigger',
     title: `${labels.nodata} · P${nodataTrigger?.severity ?? '-'}`,
     meta: [
-      nodataTrigger?.resolve_after_enable === true && nodataTrigger?.resolve_after !== undefined ? `${labels.autoRecoverAfter} ${nodataTrigger.resolve_after}${labels.seconds}` : undefined,
+      nodataTrigger?.resolve_after_enable === true && nodataTrigger?.resolve_after !== undefined
+        ? `${labels.autoRecoverAfter} ${nodataTrigger.resolve_after}${labels.seconds}`
+        : undefined,
     ].filter(Boolean) as string[],
     valueTags: [],
     details: stringifyDetails(nodataTrigger),
@@ -341,16 +338,24 @@ export function buildRuleConditionSummary({ cate, queries, triggers, version, no
   const labels = getLabels(labelOverrides);
   const normalizedQueries = Array.isArray(queries) ? queries : [];
   const normalizedTriggers = Array.isArray(triggers) ? triggers : [];
-  const queryItems = cate === 'host' ? [] : normalizedQueries.map((query, index) => {
-    if (cate === 'prometheus') return buildPrometheusQuery(index, query, version, labels);
-    if (cate === 'cloudwatch') return buildCloudWatchQuery(index, query, labels);
-    if (cate === 'cloudwatchlogs') return buildCloudWatchLogsQuery(index, query, labels);
-    if (cate === 'gcm') return buildGcmQuery(index, query, labels);
-    if (cate === 'elasticsearch' || cate === 'opensearch') return buildElasticsearchQuery(index, query, labels);
-    if (['aliyun-sls', 'tencent-cls', 'volc-tls', 'bce-bls', 'huawei-lts'].includes(cate || '')) return buildLogServiceQuery(index, query, labels, cate);
-    return buildGenericQuery(index, query, labels, cate);
-  });
-  const triggerItems = cate === 'host' ? normalizedTriggers.map((trigger, index) => buildHostTrigger(index, trigger, labels)) : cate === 'prometheus' && version !== 'v2' ? [] : normalizedTriggers.map((trigger, index) => buildTrigger(index, trigger, labels));
+  const queryItems =
+    cate === 'host'
+      ? []
+      : normalizedQueries.map((query, index) => {
+          if (cate === 'prometheus') return buildPrometheusQuery(index, query, version, labels);
+          if (cate === 'cloudwatch') return buildCloudWatchQuery(index, query, labels);
+          if (cate === 'cloudwatchlogs') return buildCloudWatchLogsQuery(index, query, labels);
+          if (cate === 'gcm') return buildGcmQuery(index, query, labels);
+          if (cate === 'elasticsearch' || cate === 'opensearch') return buildElasticsearchQuery(index, query, labels);
+          if (['aliyun-sls', 'tencent-cls', 'volc-tls', 'bce-bls', 'huawei-lts'].includes(cate || '')) return buildLogServiceQuery(index, query, labels, cate);
+          return buildGenericQuery(index, query, labels, cate);
+        });
+  const triggerItems =
+    cate === 'host'
+      ? normalizedTriggers.map((trigger, index) => buildHostTrigger(index, trigger, labels))
+      : cate === 'prometheus' && version !== 'v2'
+      ? []
+      : normalizedTriggers.map((trigger, index) => buildTrigger(index, trigger, labels));
   const nodataItem = buildNodataTrigger(nodataTrigger, labels);
 
   return {

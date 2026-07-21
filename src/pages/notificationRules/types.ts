@@ -31,6 +31,10 @@ export interface RuleItem {
   enable: boolean;
   user_group_ids: number[];
   notify_configs: RuleConfig[];
+  pipeline_configs?: {
+    pipeline_id?: number;
+    enable?: boolean;
+  }[];
   extra_config?: {
     escalations: EscalationItem[];
   };

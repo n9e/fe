@@ -20,12 +20,13 @@ interface Props {
   rowSelectionType?: 'checkbox' | 'radio';
   selectedEventIds?: number[];
   onChange?: (ids: number[], rows: any[]) => void;
+  onTotalChange?: (total: number) => void;
 }
 
 export default function EventsTable(props: Props) {
   const { t } = useTranslation('AlertHisEvents');
   const { datasourceList } = useContext(CommonStateContext);
-  const { cate, datasourceSelectDisable, rowSelectionType = 'checkbox', selectedEventIds, onChange } = props;
+  const { cate, datasourceSelectDisable, rowSelectionType = 'checkbox', selectedEventIds, onChange, onTotalChange } = props;
   const [filter, setFilter] = useState<{
     range: IRawTimeRange;
     datasourceIds: number[];
@@ -63,6 +64,7 @@ export default function EventsTable(props: Props) {
       etime: moment(parsedRange.end).unix(),
       cate: cate,
     }).then((res) => {
+      onTotalChange && onTotalChange(res.dat.total);
       return {
         total: res.dat.total,
         list: res.dat.list,

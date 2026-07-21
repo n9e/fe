@@ -6,13 +6,43 @@ const en_US = {
     config_channel: 'Configure a channel first',
   },
   basic_configuration: 'Basic configuration',
+  basic_configuration_desc: 'Name, authorized teams and notes of the notification rule',
+  name_auto_tip: 'The name is auto-generated from the selected media type and recipient teams; you can edit it anytime',
+  name_auto_separator: ', ',
+  add_note_btn: 'Add note',
   user_group_ids: 'Authorized teams',
   user_group_ids_tip: 'Users in the teams filled in here will have permission to manage or view this notification rule',
   enabled_tip: 'Whether to enable this notification rule',
   note_tip: 'You can supplement the detailed information or explanation of this notification rule here for future maintenance',
   notification_configuration: {
     title: 'Notification configuration',
+    section_desc: 'Decide who receives alerts and via which channel: pick the media type, message template and recipients; multiple configurations can be added',
+    item_title: 'Notification config',
     add_btn: 'Add Notification configuration',
+    filters: {
+      title: 'Filter conditions',
+      tip: 'Limit this configuration to alert events matching the conditions: severities, time periods, tags and attributes. Leave empty for no restriction',
+      severities_all: 'All severities',
+      severities_none: 'No severity checked, no event will match',
+      time_ranges_count: '{{count}} time period(s)',
+      label_keys_count: '{{count}} tag condition(s)',
+      attributes_count: '{{count}} attribute condition(s)',
+      no_extra: 'No time/tag/attribute restriction',
+    },
+    test_mode: {
+      history: 'Pick history events',
+      mock: 'Use mock event',
+    },
+    mock_test: {
+      empty_alert: 'No alert events in this environment yet; you can test the notification channel directly with a mock event',
+      switch_btn: 'Use mock event',
+      desc: 'A built-in mock alert event will be sent to the channel and recipients of this configuration to verify the notification channel works; filter conditions are not checked for mock tests',
+      preview_title: 'Mock event preview',
+      preview_rule_name: 'Rule name',
+      preview_severity: 'Severity',
+      preview_tags: 'Tags',
+      rule_name: 'Notification test mock event',
+    },
     channel: 'Media type',
     channel_tip:
       'Select which medium to use to send alarm event notifications. If the existing medium does not meet the requirements, you can contact the administrator to create a new medium',
@@ -66,6 +96,8 @@ const en_US = {
   disabled: 'Disable',
   pipeline_configuration: {
     title: 'Event workflow',
+    section_desc: 'Process alert events with event workflows (e.g. labeling, enrichment, noise reduction) before sending notifications',
+    manage_btn: 'Manage event workflows',
     name_placeholder: 'Please select event workflow',
     name_required: 'Event workflow is required',
     add_btn: 'Add a new event workflow',
@@ -74,6 +106,7 @@ const en_US = {
   },
   escalations: {
     title: 'Escalation Configuration',
+    section_desc: 'Escalate notifications to specified channels when alerts stay unrecovered or unclaimed for too long',
     title_tip:
       'When alerts exceed the set duration and have not recovered, the system will escalate notifications to specified channels according to the conditions below to avoid long-term lack of follow-up. For detailed configuration, refer to <a>documentation</a>',
     item_title: 'Notification Escalation',
@@ -108,6 +141,7 @@ const en_US = {
   },
   notify_aggr_configs: {
     title: 'Aggregation Configuration',
+    section_desc: 'Aggregate similar alerts into one notification by tag/attribute dimensions to reduce noise',
     enable: 'Enable Aggregation',
     group_enable: 'Fine-grained Aggregation',
     group_title: 'Fine-grained Aggregation',
