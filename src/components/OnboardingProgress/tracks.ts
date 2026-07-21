@@ -37,6 +37,6 @@ export const ONBOARDING_TRACKS: OnboardingTrack[] = [
   {
     key: 'ai',
     icon: Sparkles,
-    steps: [{ key: 'llm', to: '/flashai?item=llm-configs' }],
+    steps: [{ key: 'llm', to: '/flashai/llm-configs' }],
   },
 ];

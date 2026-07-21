@@ -9,11 +9,11 @@ const AgentList = React.lazy(() => import('./agents/pages/List'));
 
 /** Soft-redirect legacy AI config list pages into FlashAI config host. */
 function RedirectToFlashAiLlmConfigs() {
-  return <Redirect to='/flashai?item=llm-configs' />;
+  return <Redirect to='/flashai/llm-configs' />;
 }
 
 function RedirectToFlashAiSkills() {
-  return <Redirect to='/flashai?item=skills' />;
+  return <Redirect to='/flashai/skills' />;
 }
 
 export default {
