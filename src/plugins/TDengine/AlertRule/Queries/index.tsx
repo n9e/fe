@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import { Form, Space, Input, Row, Col, InputNumber, Select, Button, Tooltip } from 'antd';
+import { Form, Space, Row, Col, InputNumber, Select, Button, Tooltip } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { WandSparkles } from 'lucide-react';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import _ from 'lodash';
@@ -8,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { IS_PLUS } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
+import { SqlMonacoEditor } from '@fc-components/monaco-editor';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import AdvancedSettings from '@/plugins/TDengine/components/AdvancedSettings';
@@ -81,8 +83,28 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                               </Space>
                             }
                           >
-                            <Form.Item {...field} name={[field.name, 'query']}>
-                              <Input />
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'query']}
+                              validateTrigger={['onBlur']}
+                              trigger='onChange'
+                              rules={[{ required: true, message: t('query.query_msg') }]}
+                            >
+                              <SqlMonacoEditor
+                                disabled={disabled}
+                                maxHeight={200}
+                                placeholder='SELECT * FROM db_name.table_name'
+                                theme={darkMode ? 'dark' : 'light'}
+                                enableAutocomplete={true}
+                                enableFormat
+                                renderFormatButton={() => {
+                                  return (
+                                    <Tooltip title={t('common:format_sql')}>
+                                      <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
+                                    </Tooltip>
+                                  );
+                                }}
+                              />
                             </Form.Item>
                           </InputGroupWithFormItem>
                         </div>
