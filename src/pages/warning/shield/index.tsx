@@ -35,6 +35,8 @@ import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
+import DocumentDrawer from '@/components/DocumentDrawer';
+import EmptyGuide from '@/components/EmptyGuide';
 import DeleteMutesModal from './components/DeleteMutesModal';
 
 import './locale';
@@ -53,11 +55,12 @@ interface Filter {
 }
 
 const FILTER_SESSION_STORAGE_KEY = 'alert-mutes-filter';
+const DOC_PATH = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-mute/';
 
 const Shield: React.FC = () => {
   const { t, i18n } = useTranslation('alertMutes');
   const history = useHistory();
-  const { datasourceList, groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, businessGroup, busiGroups, darkMode } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   let defaultFilter = {} as Filter;
   let defaultPage = 1;
@@ -71,7 +74,8 @@ const Shield: React.FC = () => {
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  // 有业务组时首屏就会拉列表，初始即置为 loading，避免接口返回前闪现空态引导
+  const [loading, setLoading] = useState<boolean>(!!gids);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
   const [deleteMutesModalVisible, setDeleteMutesModalVisible] = useState(false);
@@ -301,14 +305,19 @@ const Shield: React.FC = () => {
   };
 
   const getList = async () => {
-    if (gids) {
-      setLoading(true);
-      const ids = gids === '-2' ? undefined : gids;
+    if (!gids) return;
+    setLoading(true);
+    const ids = gids === '-2' ? undefined : gids;
+    try {
       const { success, dat } = await getBusiGroupsAlertMutes(ids);
       if (success) {
         setCurrentShieldDataAll(dat || []);
-        setLoading(false);
       }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      // 请求失败也要结束 loading，否则表格会一直转圈且空态引导永远不出现
+      setLoading(false);
     }
   };
 
@@ -323,8 +332,20 @@ const Shield: React.FC = () => {
     saveState({ query: val, current: 1 });
   };
 
+  // 只有选中了叶子业务组才能新建屏蔽规则
+  const canAdd = businessGroup.isLeaf && gids !== '-2';
+  const openDoc = () => {
+    DocumentDrawer({
+      language: i18n.language,
+      darkMode,
+      title: t('common:page_help'),
+      type: 'iframe',
+      documentPath: DOC_PATH,
+    });
+  };
+
   return (
-    <PageLayout title={t('title')} icon={<CloseCircleOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-mute/'>
+    <PageLayout title={t('title')} icon={<CloseCircleOutlined />} doc={DOC_PATH}>
       <div className='shield-content'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div className='shield-index fc-border rounded-lg' style={{ height: '100%', overflowY: 'auto' }}>
@@ -370,7 +391,7 @@ const Shield: React.FC = () => {
               />
             </Space>
             <Space>
-              {businessGroup.isLeaf && gids !== '-2' && (
+              {canAdd && (
                 <Button
                   type='primary'
                   className='add'
@@ -404,6 +425,37 @@ const Shield: React.FC = () => {
             loading={loading}
             dataSource={currentShieldData}
             columns={columns}
+            // 仅在「确实一条规则都没有」时展示引导；筛选命中为空时回退到默认空态，避免误导
+            // 加载中不展示，否则首屏接口返回前会闪现「还没有屏蔽规则」
+            locale={
+              !loading && currentShieldDataAll.length === 0
+                ? {
+                    emptyText: (
+                      <EmptyGuide
+                        title={t('empty_guide.title')}
+                        description={t('empty_guide.desc')}
+                        actions={
+                          <>
+                            {canAdd ? (
+                              <Button
+                                type='primary'
+                                onClick={() => {
+                                  history.push('/alert-mutes/add');
+                                }}
+                              >
+                                {t('common:btn.add')}
+                              </Button>
+                            ) : (
+                              <span className='opacity-70'>{t('empty_guide.select_busi_group')}</span>
+                            )}
+                            <a onClick={openDoc}>{t('common:page_help')}</a>
+                          </>
+                        }
+                      />
+                    ),
+                  }
+                : undefined
+            }
             rowActions={(record: shieldItem) => ({
               inline: [
                 {

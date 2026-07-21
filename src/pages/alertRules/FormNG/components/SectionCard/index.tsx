@@ -51,8 +51,10 @@ export default function SectionCard(props: {
   empty?: boolean;
   collapsed?: boolean;
   setCollapsed?: (collapsed: boolean) => void;
+  /** 收起状态下在标题右侧展示的配置摘要 */
+  summary?: React.ReactNode;
 }) {
-  const { item, index, sectionRef, children, empty, setCollapsed: onSetCollapsed } = props;
+  const { item, index, sectionRef, children, empty, summary, setCollapsed: onSetCollapsed } = props;
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
   const [collapsed, setCollapsed] = useState(props.collapsed ?? item.tag === 'optional');
@@ -113,6 +115,7 @@ export default function SectionCard(props: {
               )}
             </div>
           </div>
+          {collapsed && summary && <div className='shrink min-w-0 max-w-[50%] truncate text-[12px] text-soft'>{summary}</div>}
           <div className='flex items-center self-start mt-1'>
             <DownOutlined className='text-soft text-[10px] transition-transform duration-200' style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
           </div>
