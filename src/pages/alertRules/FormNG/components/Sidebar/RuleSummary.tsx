@@ -374,7 +374,7 @@ function RuleConditionSummary() {
         )}
         {hasTriggers && (
           <Field noMargin>
-            <FieldLabel>{t('form_ng.triggers')}</FieldLabel>
+            <FieldLabel>{t('form_ng.threshold_judgment')}</FieldLabel>
             <SummaryList items={summary.triggers} />
           </Field>
         )}
