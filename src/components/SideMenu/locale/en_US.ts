@@ -72,6 +72,7 @@ const en_US = {
     ai_config_agents: 'Agent Management',
     ai_config_llm_configs: 'LLM',
     ai_config_skills: 'Skill',
+    ai_config_knowledge_base: 'Knowledge base',
     ai_config_mcp_servers: 'MCP Management',
     ai_config_scheduled_task: 'Scheduled task',
     ai_task: 'AI Task',

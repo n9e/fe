@@ -72,6 +72,7 @@ const ru_RU = {
     ai_config_agents: 'Agent управление',
     ai_config_llm_configs: 'LLM управление',
     ai_config_skills: 'Skill управление',
+    ai_config_knowledge_base: 'База знаний',
     ai_config_mcp_servers: 'MCP управление',
     ai_config_scheduled_task: 'Задачи настройки',
     ai_task: 'Задачи канала',
