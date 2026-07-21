@@ -5,6 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
 import Markdown from '@/components/Markdown';
+import { IS_ENT } from '@/utils/constant';
 import { AiChatExecuteQueryForQueryContent, EAiChatContentType, IAiChatAction, IAiChatMessage, IAiChatMessageResponse } from './types';
 import { cn } from './utils';
 import QueryContentBlock from './ContentRenderer/QueryContentBlock';
@@ -168,7 +169,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
                 ns={NAME_SPACE}
                 i18nKey='message.no_llm_content'
                 components={{
-                  a: <a href='/flashai/llm-configs' target='_blank' />,
+                  a: <a href={IS_ENT ? '/flashai/llm-configs' : '/ai-config/llm-configs'} target='_blank' />,
                 }}
               />
             }

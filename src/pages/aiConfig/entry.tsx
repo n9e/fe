@@ -1,13 +1,17 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { IS_ENT } from '@/utils/constant';
+
 import { PATH as agentPath } from './agents/constants';
 import { PATH as llmConfigPath } from './llmConfigs/constants';
 import { PATH as skillPath } from './skills/constants';
 
 const AgentList = React.lazy(() => import('./agents/pages/List'));
+const LLMConfigList = React.lazy(() => import('./llmConfigs/pages/List'));
+const SkillList = React.lazy(() => import('./skills/pages/List'));
 
-/** Soft-redirect legacy AI config list pages into FlashAI config host. */
+/** Soft-redirect legacy AI config list pages into FlashAI (ENT only). */
 function RedirectToFlashAiLlmConfigs() {
   return <Redirect to='/flashai/llm-configs' />;
 }
@@ -25,12 +29,13 @@ export default {
     },
     {
       path: `${llmConfigPath}`,
-      component: RedirectToFlashAiLlmConfigs,
+      // Open-source keeps standalone lists; ENT hosts them under /flashai/<item>.
+      component: IS_ENT ? RedirectToFlashAiLlmConfigs : LLMConfigList,
       exact: true,
     },
     {
       path: `${skillPath}`,
-      component: RedirectToFlashAiSkills,
+      component: IS_ENT ? RedirectToFlashAiSkills : SkillList,
       exact: true,
     },
   ],

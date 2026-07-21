@@ -37,6 +37,7 @@ export const ONBOARDING_TRACKS: OnboardingTrack[] = [
   {
     key: 'ai',
     icon: Sparkles,
-    steps: [{ key: 'llm', to: '/flashai/llm-configs' }],
+    // Open-source onboarding only; ENT FlashAI host is not on this track.
+    steps: [{ key: 'llm', to: '/ai-config/llm-configs' }],
   },
 ];

@@ -193,8 +193,8 @@ const SideMenu = (props: SideMenuProps) => {
   useEffect(() => {
     const filteredMenus = menuList
       .map((menu) => {
-        // 顶层叶子项（无 children / children 为空）：按自身 key 权限保留，交给渲染器
-        // 渲染为可点击的 MenuItem（如 FlashAI），不当作空分组被过滤掉。
+        // Top-level leaf (no children): keep by its own key so MenuItem is clickable
+        // (e.g. FlashAI). Do not treat it as an empty group to drop.
         if (!menu.children || menu.children.length === 0) {
           return perms?.includes(calcUrlPath(menu.key)) ? menu : null;
         }
@@ -229,7 +229,8 @@ const SideMenu = (props: SideMenuProps) => {
     setMenus(filteredMenus);
     // getMenuList must stay in deps: ENT builds recreate it when async inputs
     // (e.g. aiStatus) arrive; without it the FlashAI entry can be missed forever.
-  }, [i18n.language, embeddedProductMenu, getMenuList]);
+    // perms is also async after login — leaf visibility depends on it.
+  }, [i18n.language, embeddedProductMenu, getMenuList, perms]);
 
   const menuPaths = useMemo(
     () =>
