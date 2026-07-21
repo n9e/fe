@@ -20,7 +20,7 @@ import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 interface Props {
   item: SectionItem;
-  advancedItem: SectionItem;
+  advancedItem?: SectionItem;
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   disabled?: boolean;
   expandSignal?: { key: string; ts: number } | null;
@@ -267,14 +267,16 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
           </Space>
         </div>
       </SectionCard>
-      <NotifyExtraNG
-        advancedItem={advancedItem}
-        sectionRefs={sectionRefs}
-        contactList={contactList}
-        notifyGroups={notifyGroups}
-        expandSignal={expandSignal}
-        toggleAllSignal={toggleAllSignal}
-      />
+      {showadvancedSettings && advancedItem && (
+        <NotifyExtraNG
+          advancedItem={advancedItem}
+          sectionRefs={sectionRefs}
+          contactList={contactList}
+          notifyGroups={notifyGroups}
+          expandSignal={expandSignal}
+          toggleAllSignal={toggleAllSignal}
+        />
+      )}
     </>
   );
 }
