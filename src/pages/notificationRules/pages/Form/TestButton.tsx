@@ -57,7 +57,7 @@ export default function TestButton(props: Props) {
         title: t('notification_configuration.run_test_request_result'),
         content: <div>{msg}</div>,
       });
-      setVisible(false);
+      handleClose();
     });
   };
 

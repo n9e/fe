@@ -119,7 +119,8 @@ export default function FormCpt(props: Props) {
       .then((res) => {
         setChannels(res);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error(error);
         setChannels([]);
       });
   }, []);
