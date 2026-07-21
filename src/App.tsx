@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import '@/utils/chunkGuard';
 import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
