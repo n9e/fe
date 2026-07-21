@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import SectionCard, { SectionItem } from '../components/SectionCard';
+import SectionCard from '../components/SectionCard';
 import Relabel from './Relabel';
 import WorkflowItem, { WorkflowItemRef, WorkflowTabTitle } from './WorkflowItem';
 import Annotations from './Annotations';
@@ -18,7 +18,6 @@ export interface PipelineConfigsNGRef {
 }
 
 interface PipelineConfigsNGProps {
-  item: SectionItem;
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   initialValues?: any;
   expandSignal?: { key: string; ts: number } | null;
@@ -107,8 +106,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
 
   return (
     <SectionCard
-      item={props.item}
-      index={5}
+      sectionKey='pipeline'
       sectionRef={(node) => {
         props.sectionRefs.current['pipeline'] = node;
       }}

@@ -6,7 +6,7 @@ import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined, RightO
 
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 
-import SectionCard, { SectionItem } from '../components/SectionCard';
+import SectionCard from '../components/SectionCard';
 import shouldShowAdvancedSettings from '../utils/shouldShowAdvancedSettings';
 import { useFormNGData } from '../context';
 import TaskTpls from './TaskTpls';
@@ -19,15 +19,13 @@ import NotifyExtraNG from 'plus:/parcels/AlertRule/NotifyExtraNG';
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
 
 interface Props {
-  item: SectionItem;
-  advancedItem?: SectionItem;
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   disabled?: boolean;
   expandSignal?: { key: string; ts: number } | null;
   toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }
 
-export default function index({ item, advancedItem, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
+export default function index({ sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { notifyChannels: contactList, teams: notifyGroups, webhooks, callbacks } = useFormNGData();
 
@@ -73,8 +71,7 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
     <>
       <SectionCard
         className={!showadvancedSettings ? 'mb-8' : ''}
-        item={item}
-        index={3}
+        sectionKey='notify'
         collapsed={effectiveCollapsed}
         setCollapsed={setEffectiveCollapsed}
         sectionRef={(node) => {
@@ -267,15 +264,8 @@ export default function index({ item, advancedItem, sectionRefs, disabled, expan
           </Space>
         </div>
       </SectionCard>
-      {showadvancedSettings && advancedItem && (
-        <NotifyExtraNG
-          advancedItem={advancedItem}
-          sectionRefs={sectionRefs}
-          contactList={contactList}
-          notifyGroups={notifyGroups}
-          expandSignal={expandSignal}
-          toggleAllSignal={toggleAllSignal}
-        />
+      {showadvancedSettings && (
+        <NotifyExtraNG sectionRefs={sectionRefs} contactList={contactList} notifyGroups={notifyGroups} expandSignal={expandSignal} toggleAllSignal={toggleAllSignal} />
       )}
     </>
   );

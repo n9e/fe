@@ -7,16 +7,10 @@ import { FileText, Database, TriangleAlert, Workflow, Bell, CalendarClock, Setti
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-export interface SectionItem {
-  key: string;
-  title: string;
-  description: string;
-  tag: 'default' | 'core' | 'optional' | 'recommended';
-  icon?: React.ReactNode;
-  helpDoc?: {
-    documentPath: string;
-  };
-}
+import { SectionItem, useSections } from './context';
+
+export { SectionsProvider, useSections, toSectionList } from './context';
+export type { SectionItem, SectionsConfig } from './context';
 
 export const tagClassesMap: Record<SectionItem['tag'], string> = {
   default: 'bg-primary/10 text-primary border border-primary/20',
@@ -44,18 +38,21 @@ const sectionIcons: Record<string, React.ReactNode> = {
 
 export default function SectionCard(props: {
   className?: string;
-  item: SectionItem;
-  index: number;
+  /** 分区 key，标题、描述、序号均从 SectionsProvider 的分区配置表中按 key 取值 */
+  sectionKey: string;
   sectionRef?: (node: HTMLDivElement | null) => void;
   children?: React.ReactNode;
   empty?: boolean;
   collapsed?: boolean;
   setCollapsed?: (collapsed: boolean) => void;
 }) {
-  const { item, index, sectionRef, children, empty, setCollapsed: onSetCollapsed } = props;
+  const { sectionKey, sectionRef, children, empty, setCollapsed: onSetCollapsed } = props;
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
-  const [collapsed, setCollapsed] = useState(props.collapsed ?? item.tag === 'optional');
+  const { getSection, getSectionNumber } = useSections();
+  const item: SectionItem | undefined = getSection(sectionKey);
+  const number = getSectionNumber(sectionKey);
+  const [collapsed, setCollapsed] = useState(props.collapsed ?? item?.tag === 'optional');
 
   // Sync with externally controlled collapsed prop
   useEffect(() => {
@@ -64,8 +61,13 @@ export default function SectionCard(props: {
     }
   }, [props.collapsed]);
 
+  if (!item) {
+    console.error(`SectionCard: 分区 ${sectionKey} 未在 SectionsProvider 的分区配置表中登记`);
+    return null;
+  }
+
   return (
-    <div ref={sectionRef} className={classnames('bg-fc-100 scroll-mt-4 [&+&]:mt-4', props.className)} data-section-key={item.key}>
+    <div ref={sectionRef} className={classnames('bg-fc-100 scroll-mt-4 [&+&]:mt-4', props.className)} data-section-key={sectionKey}>
       <div className='fc-border rounded-lg shadow-[0_3px_12px_rgba(0,0,0,0.04)] overflow-hidden'>
         <div
           className={'flex items-center gap-3 p-4 cursor-pointer select-none ' + (collapsed ? '' : 'bg-violet-200')}
@@ -81,11 +83,11 @@ export default function SectionCard(props: {
               collapsed ? 'bg-[var(--fc-violet-3)] text-main' : 'bg-[var(--fc-violet-9)] text-white',
             )}
           >
-            {index + 1}
+            {number}
           </div>
           <div className='min-w-0 flex-1'>
             <div className='flex items-center gap-2'>
-              <span className={classnames('pt-1', !collapsed ? 'text-[var(--fc-violet-11)]' : 'text-soft')}>{item.icon ?? sectionIcons[item.key]}</span>
+              <span className={classnames('pt-1', !collapsed ? 'text-[var(--fc-violet-11)]' : 'text-soft')}>{item.icon ?? sectionIcons[sectionKey]}</span>
               <div className='text-l1 font-bold text-title'>{item.title}</div>
               <span className={'text-[10px] px-1.5 py-0.5 rounded leading-none ' + tagClassesMap[item.tag]}>{t(tagI18nKeys[item.tag])}</span>
             </div>

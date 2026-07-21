@@ -10,7 +10,7 @@ import { getTeamInfoList } from '@/services/manage';
 import { getBusiGroupsAlertRules } from '@/services/warning';
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
-import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
+import SectionCard, { SectionsConfig, SectionsProvider } from '@/pages/alertRules/FormNG/components/SectionCard';
 import { ChannelItem, getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 
 // @ts-ignore
@@ -31,8 +31,6 @@ interface Props {
   onCancel?: () => void;
 }
 
-const MAIN_SECTION_KEYS = ['notify', 'basic', 'pipeline'];
-
 // 根据第 1 条通知配置生成规则名称：媒介名-接收团队（最多 2 个），无团队时仅媒介名
 function buildAutoName(channelName: string | undefined, notifyConfig: any, teams: { id: number; name: string }[], separator: string) {
   if (!channelName) return undefined;
@@ -52,10 +50,10 @@ export default function FormCpt(props: Props) {
   const [eventKeys, setEventKeys] = useState<string[]>([]);
   const [, setAlertRules] = useGlobalState('alertRules');
 
-  const sections = useMemo(() => {
-    const items: SectionItem[] = [
-      {
-        key: 'notify',
+  // 分区配置表：书写顺序即页面展示顺序与序号，需与下方各 SectionCard 的渲染顺序保持一致
+  const sections = useMemo<SectionsConfig>(
+    () => ({
+      notify: {
         title: t('notification_configuration.title'),
         description: t('notification_configuration.section_desc'),
         tag: 'core',
@@ -63,21 +61,20 @@ export default function FormCpt(props: Props) {
           documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/notify-rules/',
         },
       },
-      {
-        key: 'basic',
+      basic: {
         title: t('basic_configuration'),
         description: t('basic_configuration_desc'),
         tag: 'default',
       },
-      {
-        key: 'pipeline',
+      pipeline: {
         title: t('pipeline_configuration.title'),
         description: t('pipeline_configuration.section_desc'),
         tag: 'optional',
       },
-    ];
-    return items;
-  }, [i18n.language]);
+    }),
+    [i18n.language],
+  );
+  const mainSectionKeys = useMemo(() => _.keys(sections), [sections]);
 
   const [sectionCollapsed, setSectionCollapsed] = useState<Record<string, boolean>>(() => {
     const hasPipeline = _.some(initialValues?.pipeline_configs, (item: any) => !!item?.pipeline_id);
@@ -90,7 +87,7 @@ export default function FormCpt(props: Props) {
   const [toggleAllSignal, setToggleAllSignal] = useState<{ action: 'expand' | 'collapse'; ts: number } | null>(null);
   // 校验失败时通知对应通知配置展开筛选条件面板，否则 display:none 的错误项无法被滚动定位
   const [expandFiltersSignal, setExpandFiltersSignal] = useState<{ indices: number[]; ts: number } | null>(null);
-  const allExpanded = MAIN_SECTION_KEYS.every((key) => sectionCollapsed[key] === false);
+  const allExpanded = mainSectionKeys.every((key) => sectionCollapsed[key] === false);
 
   // 备注默认收起，编辑已有备注时展开
   const [noteVisible, setNoteVisible] = useState(() => !!initialValues?.description);
@@ -161,7 +158,13 @@ export default function FormCpt(props: Props) {
       }
     });
     if (sectionKeys.length) {
-      setSectionCollapsed((prev) => ({ ...prev, ..._.zipObject(sectionKeys, _.map(sectionKeys, () => false)) }));
+      setSectionCollapsed((prev) => ({
+        ...prev,
+        ..._.zipObject(
+          sectionKeys,
+          _.map(sectionKeys, () => false),
+        ),
+      }));
     }
     if (filterIndices.length) {
       setExpandFiltersSignal({ indices: _.uniq(filterIndices), ts: Date.now() });
@@ -177,130 +180,121 @@ export default function FormCpt(props: Props) {
       <Form.Item name='id' hidden>
         <Input />
       </Form.Item>
-      <div className='w-full max-w-[1200px] mx-auto'>
-        <div className='flex items-center justify-end mb-4'>
-          <Button
-            onClick={() => {
-              const anyCollapsed = MAIN_SECTION_KEYS.some((key) => sectionCollapsed[key] === true);
-              const action = anyCollapsed ? 'expand' : 'collapse';
-              setSectionCollapsed((prev) => {
-                const next = { ...prev };
-                for (const key of MAIN_SECTION_KEYS) {
-                  next[key] = action === 'collapse';
-                }
-                return next;
-              });
-              setToggleAllSignal({ action, ts: Date.now() });
-            }}
-            className='flex items-center gap-1'
-            size='small'
-            icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
-          >
-            {allExpanded ? t('alertRules:form_ng.collapse_collapse_all') : t('alertRules:form_ng.collapse_expand_all')}
-          </Button>
-        </div>
-
-        <SectionCard
-          item={sections[0]}
-          index={0}
-          collapsed={sectionCollapsed.notify}
-          setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, notify: collapsed }))}
-        >
-          <Form.List name='notify_configs'>
-            {(fields, { add, remove, move }) => (
-              <>
-                {fields.map((field) => (
-                  <RuleConfig
-                    key={field.key}
-                    disabled={disabled}
-                    fields={fields}
-                    field={field}
-                    activeIndex={activeIndex}
-                    setActiveIndex={setActiveIndex}
-                    add={add}
-                    remove={remove}
-                    move={move}
-                    eventKeys={eventKeys}
-                    expandFiltersSignal={expandFiltersSignal}
-                  />
-                ))}
-                {!disabled && (
-                  <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
-                    {t('notification_configuration.add_btn')}
-                  </Button>
-                )}
-              </>
-            )}
-          </Form.List>
-        </SectionCard>
-
-        <SectionCard
-          className='mt-4'
-          item={sections[1]}
-          index={1}
-          collapsed={sectionCollapsed.basic}
-          setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
-        >
-          <Row gutter={SIZE}>
-            <Col flex='auto'>
-              <Row gutter={SIZE}>
-                <Col span={12}>
-                  <Form.Item label={t('common:table.name')} tooltip={t('name_auto_tip')} name='name' rules={[{ required: true }]}>
-                    <Input />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label={t('user_group_ids')} tooltip={t('user_group_ids_tip')} name='user_group_ids' rules={[{ required: true }]}>
-                    <Select
-                      showSearch
-                      optionFilterProp='label'
-                      mode='multiple'
-                      options={_.map(userGroups, (item) => {
-                        return {
-                          label: item.name,
-                          value: item.id,
-                        };
-                      })}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
-            <Col flex='none'>
-              <Form.Item label={t('common:table.enabled')} tooltip={t('enabled_tip')} name='enable' valuePropName='checked'>
-                <Switch />
-              </Form.Item>
-            </Col>
-          </Row>
-          <div style={{ display: noteVisible ? undefined : 'none' }}>
-            <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='description' className='mb-0'>
-              <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} />
-            </Form.Item>
-          </div>
-          {!noteVisible && (
+      <SectionsProvider sections={sections}>
+        <div className='w-full max-w-[1200px] mx-auto'>
+          <div className='flex items-center justify-end mb-4'>
             <Button
-              type='link'
-              size='small'
-              className='p-0'
-              icon={<PlusOutlined />}
               onClick={() => {
-                setNoteVisible(true);
+                const anyCollapsed = mainSectionKeys.some((key) => sectionCollapsed[key] === true);
+                const action = anyCollapsed ? 'expand' : 'collapse';
+                setSectionCollapsed((prev) => {
+                  const next = { ...prev };
+                  for (const key of mainSectionKeys) {
+                    next[key] = action === 'collapse';
+                  }
+                  return next;
+                });
+                setToggleAllSignal({ action, ts: Date.now() });
               }}
+              className='flex items-center gap-1'
+              size='small'
+              icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
             >
-              {t('add_note_btn')}
+              {allExpanded ? t('alertRules:form_ng.collapse_collapse_all') : t('alertRules:form_ng.collapse_expand_all')}
             </Button>
-          )}
-        </SectionCard>
+          </div>
 
-        <EventPipelineConfigs
-          item={sections[2]}
-          index={2}
-          collapsed={sectionCollapsed.pipeline}
-          setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, pipeline: collapsed }))}
-        />
+          <SectionCard sectionKey='notify' collapsed={sectionCollapsed.notify} setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, notify: collapsed }))}>
+            <Form.List name='notify_configs'>
+              {(fields, { add, remove, move }) => (
+                <>
+                  {fields.map((field) => (
+                    <RuleConfig
+                      key={field.key}
+                      disabled={disabled}
+                      fields={fields}
+                      field={field}
+                      activeIndex={activeIndex}
+                      setActiveIndex={setActiveIndex}
+                      add={add}
+                      remove={remove}
+                      move={move}
+                      eventKeys={eventKeys}
+                      expandFiltersSignal={expandFiltersSignal}
+                    />
+                  ))}
+                  {!disabled && (
+                    <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.notify_configs[0])} icon={<PlusOutlined />}>
+                      {t('notification_configuration.add_btn')}
+                    </Button>
+                  )}
+                </>
+              )}
+            </Form.List>
+          </SectionCard>
 
-        <ExtraConfig eventKeys={eventKeys} baseIndex={3} toggleAllSignal={toggleAllSignal} />
-      </div>
+          <SectionCard
+            className='mt-4'
+            sectionKey='basic'
+            collapsed={sectionCollapsed.basic}
+            setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
+          >
+            <Row gutter={SIZE}>
+              <Col flex='auto'>
+                <Row gutter={SIZE}>
+                  <Col span={12}>
+                    <Form.Item label={t('common:table.name')} tooltip={t('name_auto_tip')} name='name' rules={[{ required: true }]}>
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item label={t('user_group_ids')} tooltip={t('user_group_ids_tip')} name='user_group_ids' rules={[{ required: true }]}>
+                      <Select
+                        showSearch
+                        optionFilterProp='label'
+                        mode='multiple'
+                        options={_.map(userGroups, (item) => {
+                          return {
+                            label: item.name,
+                            value: item.id,
+                          };
+                        })}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
+              <Col flex='none'>
+                <Form.Item label={t('common:table.enabled')} tooltip={t('enabled_tip')} name='enable' valuePropName='checked'>
+                  <Switch />
+                </Form.Item>
+              </Col>
+            </Row>
+            <div style={{ display: noteVisible ? undefined : 'none' }}>
+              <Form.Item label={t('common:table.note')} tooltip={t('note_tip')} name='description' className='mb-0'>
+                <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} />
+              </Form.Item>
+            </div>
+            {!noteVisible && (
+              <Button
+                type='link'
+                size='small'
+                className='p-0'
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setNoteVisible(true);
+                }}
+              >
+                {t('add_note_btn')}
+              </Button>
+            )}
+          </SectionCard>
+
+          <EventPipelineConfigs collapsed={sectionCollapsed.pipeline} setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, pipeline: collapsed }))} />
+
+          <ExtraConfig eventKeys={eventKeys} toggleAllSignal={toggleAllSignal} />
+        </div>
+      </SectionsProvider>
       {!disabled && (
         <Affix offsetBottom={0}>
           <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto mt-4'>

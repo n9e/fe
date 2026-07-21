@@ -12,7 +12,7 @@ import { NS as eventPipelineNS, PERM as eventPipelinePERM } from '@/pages/eventP
 import { getList as getEventPipelineList, Item as EventPipeline } from '@/pages/eventPipeline/services';
 import EventPipelineList from '@/pages/eventPipeline/pages/List';
 import EventPipelineEdit from '@/pages/eventPipeline/pages/Edit';
-import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
+import SectionCard from '@/pages/alertRules/FormNG/components/SectionCard';
 
 import { NS } from '../../../constants';
 import DragIcon from './DragIcon';
@@ -34,14 +34,12 @@ const SortableItem = SortableElement(({ children }) => <div>{children}</div>);
 const DragHandle = SortableHandle(() => <Button type='text' icon={<DragIcon />} />);
 
 interface Props {
-  item: SectionItem;
-  index: number;
   collapsed?: boolean;
   setCollapsed?: (collapsed: boolean) => void;
 }
 
 export default function index(props: Props) {
-  const { item, index, collapsed, setCollapsed } = props;
+  const { collapsed, setCollapsed } = props;
   const { t } = useTranslation(NS);
   const isAuthorized = useIsAuthorized([eventPipelinePERM]);
   const form = Form.useFormInstance();
@@ -77,7 +75,7 @@ export default function index(props: Props) {
 
   return (
     <>
-      <SectionCard className='mt-4' item={item} index={index} collapsed={collapsed} setCollapsed={setCollapsed}>
+      <SectionCard className='mt-4' sectionKey='pipeline' collapsed={collapsed} setCollapsed={setCollapsed}>
         <Form.List name='pipeline_configs'>
           {(fields, { add, remove }) => (
             <>
