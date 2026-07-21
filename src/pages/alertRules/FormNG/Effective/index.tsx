@@ -8,7 +8,7 @@ import moment from 'moment-timezone';
 
 import { CommonStateContext } from '@/App';
 
-import SectionCard from '../components/SectionCard';
+import SectionCard, { SectionItem } from '../components/SectionCard';
 import { daysOfWeek } from '../../constants';
 import { getTimezones } from '../../services';
 import { useFormNGData } from '../context';
@@ -17,6 +17,8 @@ import { useFormNGData } from '../context';
 import ServiceCalendarWithTimeSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarWithTimeSelect';
 
 interface Props {
+  item: SectionItem;
+  sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   initialValues?: any;
   expandSignal?: { key: string; ts: number } | null;
@@ -48,7 +50,7 @@ const isDefaultEffectiveConfig = (initialValues: any) => {
   return initialValues.enable_status === true && initialValues.time_zone === 'Local' && isDefaultEffectiveTime(initialValues.effective_time);
 };
 
-export default function index({ sectionRefs, initialValues, expandSignal, toggleAllSignal }: Props) {
+export default function index({ item, sectionKeys, sectionRefs, initialValues, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
   const { permissions, serviceCals, refreshServiceCals } = useFormNGData();
@@ -76,7 +78,8 @@ export default function index({ sectionRefs, initialValues, expandSignal, toggle
 
   return (
     <SectionCard
-      sectionKey='effective'
+      item={item}
+      index={sectionKeys.indexOf(item.key)}
       sectionRef={(node) => {
         sectionRefs.current['effective'] = node;
       }}

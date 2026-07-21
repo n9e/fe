@@ -16,7 +16,7 @@ import RouterPrompt from '@/components/RouterPrompt';
 
 import { defaultValues } from '../Form/constants';
 import { processFormValues, processInitialValues, getDefaultValuesByCate } from '../Form/utils';
-import SectionCard, { SectionsConfig, SectionsProvider, toSectionList } from './components/SectionCard';
+import SectionCard, { SectionItem } from './components/SectionCard';
 import Sidebar from './components/Sidebar';
 import DatasourceValueSelect from './components/DatasourceValueSelect';
 import Host from './Rule/Host';
@@ -44,19 +44,21 @@ export const FormStateContext = createContext({
   type: undefined as number | undefined,
 });
 
-/**
- * 高级配置分区（plus）。数据取自 FormNGDataProvider，故包一层，
- * 以便在表单最后位置渲染，与分区配置表中的顺序保持一致
- */
 function AdvancedSettingsSection(props: {
+  advancedItem?: SectionItem;
+  sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   expandSignal?: { key: string; ts: number } | null;
   toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }) {
   const { notifyChannels: contactList, teams: notifyGroups } = useFormNGData();
 
+  if (!props.advancedItem) return null;
+
   return (
     <NotifyExtraNG
+      advancedItem={props.advancedItem}
+      sectionKeys={props.sectionKeys}
       sectionRefs={props.sectionRefs}
       contactList={contactList}
       notifyGroups={notifyGroups}
@@ -86,11 +88,11 @@ export default function FormNG(props: IProps) {
     localStorage.setItem('alert_rule_form_ng_sidebar_visible', String(sidebarVisible));
   }, [sidebarVisible]);
 
-  // 分区配置表：书写顺序即页面展示顺序与序号，需与下方各 SectionCard 的渲染顺序保持一致
-  const sections = useMemo<SectionsConfig>(() => {
+  const sections = useMemo(() => {
     const showRuleHelp = prod === 'metric' && cate === 'prometheus';
-    return {
-      basic: {
+    const allSections: SectionItem[] = [
+      {
+        key: 'basic',
         title: t('basic_configs'),
         description: t('name_severities_appendtags'),
         tag: 'default',
@@ -98,12 +100,14 @@ export default function FormNG(props: IProps) {
           documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/alert-basic-conf/',
         },
       },
-      datasource: {
+      {
+        key: 'datasource',
         title: t('datasource_configs'),
         description: t('datasource_configs_desc'),
         tag: 'core',
       },
-      rule: {
+      {
+        key: 'rule',
         title: t('rule_configs'),
         description: t('rule_configs_desc'),
         tag: 'core',
@@ -115,12 +119,14 @@ export default function FormNG(props: IProps) {
             }
           : {}),
       },
-      notify: {
+      {
+        key: 'notify',
         title: t('notify_configs'),
         description: t('notify_configs_desc'),
         tag: 'recommended',
       },
-      effective: {
+      {
+        key: 'effective',
         title: t('effective_configs'),
         description: t('effective_configs_desc'),
         tag: 'optional',
@@ -128,24 +134,23 @@ export default function FormNG(props: IProps) {
           documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/effective-configuration/',
         },
       },
-      pipeline: {
+      {
+        key: 'pipeline',
         title: t('pipeline_configuration_ng.title'),
         description: t('pipeline_configuration_ng.desc'),
         tag: 'optional',
       },
-      // 高级配置（plus）排在最后
-      ...(IS_PLUS && showAdvanced
-        ? {
-            advanced: {
-              title: t('alertRules_extra:advanced_title'),
-              description: t('alertRules_extra:advanced_title_desc'),
-              tag: 'optional' as const,
-            },
-          }
-        : {}),
-    };
+      {
+        key: 'advanced',
+        title: t('alertRules_extra:advanced_title'),
+        description: t('alertRules_extra:advanced_title_desc'),
+        tag: 'optional',
+      },
+    ];
+    return IS_PLUS && showAdvanced ? allSections : allSections.filter((s) => s.key !== 'advanced');
   }, [i18n.language, showAdvanced, prod, cate]);
-  const sectionList = useMemo(() => toSectionList(sections), [sections]);
+  const sectionKeys = useMemo(() => sections.map((s) => s.key), [sections]);
+  const sectionMap = useMemo(() => _.keyBy(sections, 'key') as Record<string, SectionItem | undefined>, [sections]);
 
   // 数据源类型切换草稿（按 cate 维度保存 rule_config + 数据源配置）
   const cateDraftRef = useRef<Record<string, any>>({});
@@ -183,7 +188,7 @@ export default function FormNG(props: IProps) {
   );
 
   const pipelineConfigsRef = React.useRef<PipelineConfigsNGRef>(null);
-  const scroll = useScrollSync(sectionList);
+  const scroll = useScrollSync(sections);
 
   const leaveAfterSave = useCallback(() => {
     allowNextRouteRef.current = true;
@@ -287,346 +292,363 @@ export default function FormNG(props: IProps) {
     >
       <Form form={form} layout='vertical' disabled={disabled} className='h-full n9e-alert-rule-form-ng-container' onValuesChange={onValuesChange}>
         <FormNGDataProvider>
-          <SectionsProvider sections={sections}>
-            <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
-              <div
-                className='flex-1 min-w-0 h-full best-looking-scroll'
-                ref={scroll.containerRef}
-                onScroll={scroll.handleScroll}
-                onWheel={scroll.handleUserScroll}
-                onTouchMove={scroll.handleUserScroll}
-              >
-                <div className='w-full max-w-[1200px] mx-auto p-5'>
-                  <div className='flex items-center justify-end gap-2 mb-4'>
-                    <div className='flex items-center gap-2'>
-                      <Button
-                        onClick={() => {
-                          scroll.setSectionCollapsed((prev) => ({
-                            ...prev,
-                            basic: false,
-                            datasource: false,
-                            rule: false,
-                            pipeline: true,
-                            notify: true,
-                            effective: true,
-                            advanced: true,
-                          }));
-                        }}
-                        className='flex items-center gap-1'
-                        size='small'
-                        icon={<Sparkles size={12} className='text-error' />}
-                      >
-                        {t('form_ng.collapse_core_only')}
-                      </Button>
-                      {(() => {
-                        const visibleKeys = _.keys(sections);
-                        const allExpanded = visibleKeys.every((k) => scroll.sectionCollapsed[k] === false);
-                        return (
-                          <Button
-                            onClick={() => {
-                              scroll.setSectionCollapsed((prev) => {
-                                const anyCollapsed = visibleKeys.some((k) => prev[k] === true);
-                                const next = {};
-                                for (const k of visibleKeys) {
-                                  next[k] = anyCollapsed ? false : true;
-                                }
-                                return { ...prev, ...next };
-                              });
-                              scroll.setToggleAllSignal({ action: allExpanded ? 'collapse' : 'expand', ts: Date.now() });
-                            }}
-                            className='flex items-center gap-1'
-                            size='small'
-                            icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
-                          >
-                            {allExpanded ? t('form_ng.collapse_collapse_all') : t('form_ng.collapse_expand_all')}
-                          </Button>
-                        );
-                      })()}
-                      <Button
-                        onClick={() => {
-                          setSidebarVisible((prev) => !prev);
-                        }}
-                        className='flex items-center gap-1'
-                        size='small'
-                        icon={<PanelRight size={12} />}
-                      >
-                        {sidebarVisible ? t('form_ng.collapse_sidebar') : t('form_ng.expand_sidebar')}
-                      </Button>
-                    </div>
-                  </div>
-                  {editable === false && <Alert type='warning' message={t('expired')} className='mb-4' />}
-                  <Form.Item name='disabled' hidden>
-                    <div />
-                  </Form.Item>
-                  <Form.Item name='prod' hidden>
-                    <div />
-                  </Form.Item>
-                  <Form.Item name='cate' hidden>
-                    <div />
-                  </Form.Item>
-
-                  <SectionCard
-                    sectionKey='basic'
-                    collapsed={scroll.sectionCollapsed.basic}
-                    setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
-                    sectionRef={(node) => {
-                      scroll.sectionRefs.current.basic = node;
-                    }}
-                  >
-                    <Row gutter={16}>
-                      <Col xs={24} lg={8}>
-                        <Form.Item label={t('name')} name='name' rules={[{ required: true }]}>
-                          <Input placeholder={t('name_placeholder')} />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} lg={8}>
-                        <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true }]}>
-                          <Select
-                            placeholder={t('group_id_placeholder')}
-                            options={_.map(busiGroups, (item) => ({
-                              label: item.name,
-                              value: item.id,
-                            }))}
-                            showSearch
-                            optionFilterProp='label'
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24} lg={8}>
-                        <Form.Item label={t('append_tags')} name='append_tags' rules={[validatorOfKVTagSelect]} tooltip={t('append_tags_note_tip')}>
-                          <KVTagSelect />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24}>
-                        <Form.Item label={t('note')} name='note' className='mb-0'>
-                          <Input.TextArea placeholder={t('note_placeholder')} autoSize={{ minRows: 3, maxRows: 6 }} />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </SectionCard>
-
-                  <SectionCard
-                    sectionKey='datasource'
-                    collapsed={scroll.sectionCollapsed.datasource}
-                    setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, datasource: collapsed }))}
-                    sectionRef={(node) => {
-                      scroll.sectionRefs.current['datasource'] = node;
-                    }}
-                  >
-                    <Form.Item label={t('form_ng.cate')} name='cate' rules={[{ required: true }]}>
-                      <DatasourceCateSelectV2
-                        filterCates={(cates) => {
-                          const filtedCates = _.filter(cates, (item) => {
-                            return !!item.alertRule && (item.alertPro ? IS_PLUS : true);
-                          });
-                          const sortedCateValues = [
-                            'prometheus',
-                            'ck',
-                            'influxdb',
-                            'loki',
-                            'doris',
-                            'mysql',
-                            'oracle',
-                            'redshift',
-                            'pgsql',
-                            'victorialogs',
-                            'elasticsearch',
-                            'opensearch',
-                            'aliyun-sls',
-                            'tencent-cls',
-                            'volc-tls',
-                            'huawei-lts',
-                            'bce-bls',
-                            'tdengine',
-                            'cloudwatch',
-                            'cloudwatchlogs',
-                            'gcm',
-                          ];
-                          const sorted = _.sortBy(filtedCates, (cate) => {
-                            const idx = _.indexOf(sortedCateValues, cate.value);
-                            return idx === -1 ? 999 : idx;
-                          });
-                          return _.concat(sorted, {
-                            value: 'host',
-                            label: 'Host',
-                            type: ['host'],
-                            alertRule: true,
-                            alertPro: false,
-                            logo: '/image/logos/host.png',
-                          } as any);
-                        }}
-                        onChange={(val, record) => {
-                          const { type } = record;
-                          const curProd = type[0];
-                          const prevCate = cateRef.current || cate;
-
-                          // 保存当前 cate 的草稿（rule_config + 数据源配置）
-                          saveCateDraft(prevCate);
-
-                          // 构建新值
-                          const newValues: Record<string, any> = getDefaultValuesByCate(curProd, val) || {};
-                          newValues.datasource_values = undefined;
-
-                          // 如果有该 cate 的草稿，恢复
-                          if (cateDraftRef.current[val]) {
-                            const draft = _.cloneDeep(cateDraftRef.current[val]);
-                            newValues.rule_config = draft.rule_config;
-                            newValues.datasource_value = draft.datasource_value;
-                            newValues.datasource_values = draft.datasource_values;
-                            newValues.datasource_queries = draft.datasource_queries;
-                          }
-
-                          isProgrammaticUpdate.current = true;
-                          form.setFieldsValue(newValues);
-                          isProgrammaticUpdate.current = false;
-                          cateRef.current = val;
-                          updateAllowedLeave();
-                        }}
-                      />
-                    </Form.Item>
-                    {prod !== 'host' && (
-                      <DatasourceValueSelect datasourceList={groupedDatasourceList[cate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} showExtra />
-                    )}
-                  </SectionCard>
-
-                  <SectionCard
-                    sectionKey='rule'
-                    collapsed={scroll.sectionCollapsed.rule}
-                    setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, rule: collapsed }))}
-                    sectionRef={(node) => {
-                      scroll.sectionRefs.current['rule'] = node;
-                    }}
-                  >
-                    <Form.Item isListField={false} name={['rule_config', 'inhibit']} valuePropName='checked' noStyle hidden>
-                      <div />
-                    </Form.Item>
-                    {prod === 'host' && <Host />}
-                    {prod !== 'host' && <Rule />}
-                  </SectionCard>
-
-                  <Notify sectionRefs={scroll.sectionRefs} disabled={disabled} expandSignal={scroll.expandSignal} toggleAllSignal={scroll.toggleAllSignal} />
-
-                  <Effective
-                    sectionRefs={scroll.sectionRefs}
-                    initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
-                    expandSignal={scroll.expandSignal}
-                    toggleAllSignal={scroll.toggleAllSignal}
-                  />
-
-                  <PipelineConfigsNG
-                    sectionRefs={scroll.sectionRefs}
-                    ref={pipelineConfigsRef}
-                    initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
-                    expandSignal={scroll.expandSignal}
-                    toggleAllSignal={scroll.toggleAllSignal}
-                  />
-
-                  {sections.advanced && <AdvancedSettingsSection sectionRefs={scroll.sectionRefs} expandSignal={scroll.expandSignal} toggleAllSignal={scroll.toggleAllSignal} />}
-                </div>
-                <AffixWrapper>
-                  <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
-                    {!disabled && (
-                      <Space>
+          <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
+            <div
+              className='flex-1 min-w-0 h-full best-looking-scroll'
+              ref={scroll.containerRef}
+              onScroll={scroll.handleScroll}
+              onWheel={scroll.handleUserScroll}
+              onTouchMove={scroll.handleUserScroll}
+            >
+              <div className='w-full max-w-[1200px] mx-auto p-5'>
+                <div className='flex items-center justify-end gap-2 mb-4'>
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      onClick={() => {
+                        scroll.setSectionCollapsed((prev) => ({
+                          ...prev,
+                          basic: false,
+                          datasource: false,
+                          rule: false,
+                          pipeline: true,
+                          notify: true,
+                          effective: true,
+                          advanced: true,
+                        }));
+                      }}
+                      className='flex items-center gap-1'
+                      size='small'
+                      icon={<Sparkles size={12} className='text-error' />}
+                    >
+                      {t('form_ng.collapse_core_only')}
+                    </Button>
+                    {(() => {
+                      const visibleKeys = sections.map((s) => s.key);
+                      const allExpanded = visibleKeys.every((k) => scroll.sectionCollapsed[k] === false);
+                      return (
                         <Button
-                          type='primary'
                           onClick={() => {
-                            form
-                              .validateFields()
-                              .then(async () => {
-                                const values = form.getFieldsValue(true);
-                                if (!handleCheck(values)) return;
-                                const data = processFormValues(values) as any;
-                                if (type === 1) {
-                                  const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                                  handleMessage(res);
-                                } else {
-                                  const curBusiId = initialValues?.group_id || Number(bgid);
-                                  const res = await addStrategy([data], curBusiId);
-                                  handleMessage(res);
-                                }
-                              })
-                              .catch((err) => {
-                                console.error(err);
-                                scrollToFirstError();
-                              });
+                            scroll.setSectionCollapsed((prev) => {
+                              const anyCollapsed = visibleKeys.some((k) => prev[k] === true);
+                              const next = {};
+                              for (const k of visibleKeys) {
+                                next[k] = anyCollapsed ? false : true;
+                              }
+                              return { ...prev, ...next };
+                            });
+                            scroll.setToggleAllSignal({ action: allExpanded ? 'collapse' : 'expand', ts: Date.now() });
                           }}
-                          disabled={editable === false}
+                          className='flex items-center gap-1'
+                          size='small'
+                          icon={allExpanded ? <ChevronsDownUp size={12} /> : <ChevronsUpDown size={12} />}
                         >
-                          {t('common:btn.save')}
+                          {allExpanded ? t('form_ng.collapse_collapse_all') : t('form_ng.collapse_expand_all')}
                         </Button>
-                        <Link to='/alert-rules'>
-                          <Button>{t('common:btn.cancel')}</Button>
-                        </Link>
-                      </Space>
-                    )}
-                  </Card>
-                </AffixWrapper>
-              </div>
-              {sidebarVisible && (
-                <Sidebar sections={sectionList} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
-              )}
-            </div>
-            <RouterPrompt
-              ref={routerPromptRef}
-              when={!allowedLeave && !disabled}
-              validator={() => allowNextRouteRef.current}
-              defaultPath='/alert-rules'
-              title={t('form_ng.prompt.title')}
-              message={<div style={{ fontSize: 16 }}>{t('form_ng.prompt.message')}</div>}
-              footer={[
-                <Button key='cancel' onClick={() => routerPromptRef.current?.hidePrompt()}>
-                  {t('form_ng.prompt.cancelText')}
-                </Button>,
-                <Button key='discard' type='primary' danger onClick={() => routerPromptRef.current?.redirect()}>
-                  {t('form_ng.prompt.discardText')}
-                </Button>,
-                <Button
-                  key='ok'
-                  type='primary'
-                  onClick={async () => {
-                    try {
-                      await form.validateFields();
-                      const values = form.getFieldsValue(true);
-                      if (!handleCheck(values)) return;
-                      const data = processFormValues(values) as any;
-                      let res;
-                      if (type === 1) {
-                        res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                      } else {
-                        const curBusiId = initialValues?.group_id || Number(bgid);
-                        res = await addStrategy([data], curBusiId);
-                      }
-                      if (type === 1 && res.err) {
-                        message.error(res.error);
-                        return;
-                      }
-                      if (type !== 1) {
-                        const { dat } = res;
-                        let errorNum = 0;
-                        const msgs = Object.keys(dat).map((key) => {
-                          dat[key] && errorNum++;
-                          return dat[key];
-                        });
-                        if (errorNum) {
-                          message.error(t(msgs));
-                          return;
-                        }
-                      }
-                      setAllowedLeave(true);
-                      message.success(type === 1 ? t('common:success.modify') : `${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
-                      routerPromptRef.current?.redirect();
-                    } catch (err) {
-                      console.error(err);
-                      routerPromptRef.current?.hidePrompt();
-                      scrollToFirstError();
-                    }
+                      );
+                    })()}
+                    <Button
+                      onClick={() => {
+                        setSidebarVisible((prev) => !prev);
+                      }}
+                      className='flex items-center gap-1'
+                      size='small'
+                      icon={<PanelRight size={12} />}
+                    >
+                      {sidebarVisible ? t('form_ng.collapse_sidebar') : t('form_ng.expand_sidebar')}
+                    </Button>
+                  </div>
+                </div>
+                {editable === false && <Alert type='warning' message={t('expired')} className='mb-4' />}
+                <Form.Item name='disabled' hidden>
+                  <div />
+                </Form.Item>
+                <Form.Item name='prod' hidden>
+                  <div />
+                </Form.Item>
+                <Form.Item name='cate' hidden>
+                  <div />
+                </Form.Item>
+
+                <SectionCard
+                  item={sectionMap.basic!}
+                  index={sectionKeys.indexOf('basic')}
+                  collapsed={scroll.sectionCollapsed.basic}
+                  setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
+                  sectionRef={(node) => {
+                    scroll.sectionRefs.current.basic = node;
                   }}
                 >
-                  {t('form_ng.prompt.okText')}
-                </Button>,
-              ]}
-            />
-          </SectionsProvider>
+                  <Row gutter={16}>
+                    <Col xs={24} lg={8}>
+                      <Form.Item label={t('name')} name='name' rules={[{ required: true }]}>
+                        <Input placeholder={t('name_placeholder')} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                      <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true }]}>
+                        <Select
+                          placeholder={t('group_id_placeholder')}
+                          options={_.map(busiGroups, (item) => ({
+                            label: item.name,
+                            value: item.id,
+                          }))}
+                          showSearch
+                          optionFilterProp='label'
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} lg={8}>
+                      <Form.Item label={t('append_tags')} name='append_tags' rules={[validatorOfKVTagSelect]} tooltip={t('append_tags_note_tip')}>
+                        <KVTagSelect />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24}>
+                      <Form.Item label={t('note')} name='note' className='mb-0'>
+                        <Input.TextArea placeholder={t('note_placeholder')} autoSize={{ minRows: 3, maxRows: 6 }} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </SectionCard>
+
+                <SectionCard
+                  item={sectionMap.datasource!}
+                  index={sectionKeys.indexOf('datasource')}
+                  collapsed={scroll.sectionCollapsed.datasource}
+                  setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, datasource: collapsed }))}
+                  sectionRef={(node) => {
+                    scroll.sectionRefs.current['datasource'] = node;
+                  }}
+                >
+                  <Form.Item label={t('form_ng.cate')} name='cate' rules={[{ required: true }]}>
+                    <DatasourceCateSelectV2
+                      filterCates={(cates) => {
+                        const filtedCates = _.filter(cates, (item) => {
+                          return !!item.alertRule && (item.alertPro ? IS_PLUS : true);
+                        });
+                        const sortedCateValues = [
+                          'prometheus',
+                          'ck',
+                          'influxdb',
+                          'loki',
+                          'doris',
+                          'mysql',
+                          'oracle',
+                          'redshift',
+                          'pgsql',
+                          'victorialogs',
+                          'elasticsearch',
+                          'opensearch',
+                          'aliyun-sls',
+                          'tencent-cls',
+                          'volc-tls',
+                          'huawei-lts',
+                          'bce-bls',
+                          'tdengine',
+                          'cloudwatch',
+                          'cloudwatchlogs',
+                          'gcm',
+                        ];
+                        const sorted = _.sortBy(filtedCates, (cate) => {
+                          const idx = _.indexOf(sortedCateValues, cate.value);
+                          return idx === -1 ? 999 : idx;
+                        });
+                        return _.concat(sorted, {
+                          value: 'host',
+                          label: 'Host',
+                          type: ['host'],
+                          alertRule: true,
+                          alertPro: false,
+                          logo: '/image/logos/host.png',
+                        } as any);
+                      }}
+                      onChange={(val, record) => {
+                        const { type } = record;
+                        const curProd = type[0];
+                        const prevCate = cateRef.current || cate;
+
+                        // 保存当前 cate 的草稿（rule_config + 数据源配置）
+                        saveCateDraft(prevCate);
+
+                        // 构建新值
+                        const newValues: Record<string, any> = getDefaultValuesByCate(curProd, val) || {};
+                        newValues.datasource_values = undefined;
+
+                        // 如果有该 cate 的草稿，恢复
+                        if (cateDraftRef.current[val]) {
+                          const draft = _.cloneDeep(cateDraftRef.current[val]);
+                          newValues.rule_config = draft.rule_config;
+                          newValues.datasource_value = draft.datasource_value;
+                          newValues.datasource_values = draft.datasource_values;
+                          newValues.datasource_queries = draft.datasource_queries;
+                        }
+
+                        isProgrammaticUpdate.current = true;
+                        form.setFieldsValue(newValues);
+                        isProgrammaticUpdate.current = false;
+                        cateRef.current = val;
+                        updateAllowedLeave();
+                      }}
+                    />
+                  </Form.Item>
+                  {prod !== 'host' && (
+                    <DatasourceValueSelect datasourceList={groupedDatasourceList[cate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} showExtra />
+                  )}
+                </SectionCard>
+
+                <SectionCard
+                  item={sectionMap.rule!}
+                  index={sectionKeys.indexOf('rule')}
+                  collapsed={scroll.sectionCollapsed.rule}
+                  setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, rule: collapsed }))}
+                  sectionRef={(node) => {
+                    scroll.sectionRefs.current['rule'] = node;
+                  }}
+                >
+                  <Form.Item isListField={false} name={['rule_config', 'inhibit']} valuePropName='checked' noStyle hidden>
+                    <div />
+                  </Form.Item>
+                  {prod === 'host' && <Host />}
+                  {prod !== 'host' && <Rule />}
+                </SectionCard>
+
+                <Notify
+                  item={sectionMap.notify!}
+                  sectionKeys={sectionKeys}
+                  sectionRefs={scroll.sectionRefs}
+                  disabled={disabled}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
+
+                <Effective
+                  item={sectionMap.effective!}
+                  sectionKeys={sectionKeys}
+                  sectionRefs={scroll.sectionRefs}
+                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
+
+                <PipelineConfigsNG
+                  item={sectionMap.pipeline!}
+                  sectionKeys={sectionKeys}
+                  sectionRefs={scroll.sectionRefs}
+                  ref={pipelineConfigsRef}
+                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
+                <AdvancedSettingsSection
+                  advancedItem={sectionMap.advanced}
+                  sectionKeys={sectionKeys}
+                  sectionRefs={scroll.sectionRefs}
+                  expandSignal={scroll.expandSignal}
+                  toggleAllSignal={scroll.toggleAllSignal}
+                />
+              </div>
+              <AffixWrapper>
+                <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
+                  {!disabled && (
+                    <Space>
+                      <Button
+                        type='primary'
+                        onClick={() => {
+                          form
+                            .validateFields()
+                            .then(async () => {
+                              const values = form.getFieldsValue(true);
+                              if (!handleCheck(values)) return;
+                              const data = processFormValues(values) as any;
+                              if (type === 1) {
+                                const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                                handleMessage(res);
+                              } else {
+                                const curBusiId = initialValues?.group_id || Number(bgid);
+                                const res = await addStrategy([data], curBusiId);
+                                handleMessage(res);
+                              }
+                            })
+                            .catch((err) => {
+                              console.error(err);
+                              scrollToFirstError();
+                            });
+                        }}
+                        disabled={editable === false}
+                      >
+                        {t('common:btn.save')}
+                      </Button>
+                      <Link to='/alert-rules'>
+                        <Button>{t('common:btn.cancel')}</Button>
+                      </Link>
+                    </Space>
+                  )}
+                </Card>
+              </AffixWrapper>
+            </div>
+            {sidebarVisible && (
+              <Sidebar sections={sections} activeSection={scroll.activeSection} onSectionClick={scroll.scrollToSection} datasourceList={groupedDatasourceList[cate] || []} />
+            )}
+          </div>
+          <RouterPrompt
+            ref={routerPromptRef}
+            when={!allowedLeave && !disabled}
+            validator={() => allowNextRouteRef.current}
+            defaultPath='/alert-rules'
+            title={t('form_ng.prompt.title')}
+            message={<div style={{ fontSize: 16 }}>{t('form_ng.prompt.message')}</div>}
+            footer={[
+              <Button key='cancel' onClick={() => routerPromptRef.current?.hidePrompt()}>
+                {t('form_ng.prompt.cancelText')}
+              </Button>,
+              <Button key='discard' type='primary' danger onClick={() => routerPromptRef.current?.redirect()}>
+                {t('form_ng.prompt.discardText')}
+              </Button>,
+              <Button
+                key='ok'
+                type='primary'
+                onClick={async () => {
+                  try {
+                    await form.validateFields();
+                    const values = form.getFieldsValue(true);
+                    if (!handleCheck(values)) return;
+                    const data = processFormValues(values) as any;
+                    let res;
+                    if (type === 1) {
+                      res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+                    } else {
+                      const curBusiId = initialValues?.group_id || Number(bgid);
+                      res = await addStrategy([data], curBusiId);
+                    }
+                    if (type === 1 && res.err) {
+                      message.error(res.error);
+                      return;
+                    }
+                    if (type !== 1) {
+                      const { dat } = res;
+                      let errorNum = 0;
+                      const msgs = Object.keys(dat).map((key) => {
+                        dat[key] && errorNum++;
+                        return dat[key];
+                      });
+                      if (errorNum) {
+                        message.error(t(msgs));
+                        return;
+                      }
+                    }
+                    setAllowedLeave(true);
+                    message.success(type === 1 ? t('common:success.modify') : `${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
+                    routerPromptRef.current?.redirect();
+                  } catch (err) {
+                    console.error(err);
+                    routerPromptRef.current?.hidePrompt();
+                    scrollToFirstError();
+                  }
+                }}
+              >
+                {t('form_ng.prompt.okText')}
+              </Button>,
+            ]}
+          />
         </FormNGDataProvider>
       </Form>
     </FormStateContext.Provider>
