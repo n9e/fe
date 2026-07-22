@@ -29,13 +29,11 @@ const en_US = {
     },
     advancedSettings: {
       title: 'Advanced settings',
-      metricKey_label: 'MetricKey',
-      metricKey_tip:
-        'This field can be used to specify which fields will be used as metricName. By default, numerical fields will be used as metricName. For example, the query result is used_percent:96 host:host01, used_percent will be used as metricName, and the value is 96',
+      metricKey_label: 'Value field',
+      metricKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as curves to display on the chart',
       tags_placeholder: 'Press Enter to input multiple',
       labelKey_label: 'LabelKey',
-      labelKey_tip:
-        'This field can be used to specify which fields will be used as labelName. By default, non-numeric fields will be used as labelName. For example, the query result is used_percent:96 host:host01, host will be the name of the label, and host01 will be the value of the label.',
+      labelKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as label metadata for curves',
       timeKey_tip: 'Specify which field is the time field and use it as the x-axis coordinate for drawing the curve',
       timeFormat_tip: 'The format of the time, which will convert the time to a timestamp according to this format',
     },

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Form, Space, Row, Col, Button, Tooltip } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import _ from 'lodash';
@@ -12,6 +12,8 @@ import { WandSparkles } from 'lucide-react';
 import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
+
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NAME_SPACE, QUERY_KEY } from '../../constants';
 import AdvancedSettings from '../../components/AdvancedSettings';
@@ -27,7 +29,7 @@ interface IProps {
 }
 
 export default function index({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
   const queries = Form.useWatch(['rule_config', 'queries']);
@@ -58,7 +60,26 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                       </Col>
                       <Col flex='auto'>
                         <div className='tdengine-discover-query'>
-                          <InputGroupWithFormItem label={<Space>{t('query.query')}</Space>}>
+                          <InputGroupWithFormItem
+                            label={
+                              <Space>
+                                {t('query.query')}
+                                <Tooltip title={t('common:click_to_view_doc')}>
+                                  <QuestionCircleOutlined
+                                    onClick={() => {
+                                      DocumentDrawer({
+                                        language: i18n.language,
+                                        darkMode,
+                                        title: t('common:page_help'),
+                                        type: 'iframe',
+                                        documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/pgsql/',
+                                      });
+                                    }}
+                                  />
+                                </Tooltip>
+                              </Space>
+                            }
+                          >
                             <Form.Item
                               {...field}
                               name={[field.name, QUERY_KEY]}

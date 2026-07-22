@@ -17,8 +17,8 @@ const zh_HK = {
     `,
     range: '查詢區間',
     power_sql: 'SQL 增強',
-    query: '查詢條件',
-    query_msg: '請輸入查詢條件',
+    query: 'SQL',
+    query_msg: '請輸入SQL',
     query_tip1: 'TDengine 查詢語法可參考',
     query_tip2: '官方文檔',
     sqlTemplates: '查詢模板',
@@ -29,13 +29,11 @@ const zh_HK = {
     },
     advancedSettings: {
       title: '輔助配置',
-      metricKey_label: '指標名字段',
-      metricKey_tip:
-        '透過此字段可以指定哪些字段作為 metricName，預設會將數值類型的字段作為 metricName，例如查詢的結果為used_percent:96 host:host01，used_percent將作為 metricName, value 為 96',
+      metricKey_label: '值字段',
+      metricKey_tip: 'SQL 查詢結果通常包含多個列，您可以指定哪些列的值作為曲線展示在圖表上',
       tags_placeholder: '回車輸入多個',
       labelKey_label: '標籤字段',
-      labelKey_tip:
-        '透過此字段可以指定哪些字段為 labelName，預設會將非數值類型的字段為 labelName，例如查詢的結果為used_percent:96 host:host01，host 將作為 label 的 name, host01 為 label 的值',
+      labelKey_tip: 'SQL 查詢結果通常包含多個列，您可以指定哪些列作為曲線的標籤元信息',
       timeKey_tip: '指定哪個字段是時間字段，作為繪製曲線圖的 x 軸座標',
       timeFormat_tip: '時間的格式，會根據此格式將時間轉為時間戳',
     },

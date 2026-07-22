@@ -51,6 +51,7 @@ const zh_CN = {
     busi_group: '业务组',
     datasource: '数据源',
     team: '团队',
+    skill_scope: '可见范围',
     placeholder_select: '请选择',
     confirm: '确定',
   },

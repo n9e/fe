@@ -22,7 +22,8 @@ export default function getValueByOptions({
   // 如果 __variable_value_fixed 存在，则表示变量值是固定的，不需要再设置默认值
   if (variableValueFixed === undefined) {
     // 变量值为空，或者不在可选项中 时，设置默认值
-    if (value === undefined || (value && !includes(itemOptions, value))) {
+    const shouldValidateOptions = variable.type !== 'textbox';
+    if (value === undefined || (value && shouldValidateOptions && !includes(itemOptions, value))) {
       // 如果变量设置存在默认值，则使用默认值
       if (variable.defaultValue) {
         value = variable.defaultValue;

@@ -18,6 +18,7 @@ import ServiceCalendarWithTimeSelect from 'plus:/pages/ServiceCalendar/ServiceCa
 
 interface Props {
   item: SectionItem;
+  sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   initialValues?: any;
   expandSignal?: { key: string; ts: number } | null;
@@ -49,7 +50,7 @@ const isDefaultEffectiveConfig = (initialValues: any) => {
   return initialValues.enable_status === true && initialValues.time_zone === 'Local' && isDefaultEffectiveTime(initialValues.effective_time);
 };
 
-export default function index({ item, sectionRefs, initialValues, expandSignal, toggleAllSignal }: Props) {
+export default function index({ item, sectionKeys, sectionRefs, initialValues, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
   const { permissions, serviceCals, refreshServiceCals } = useFormNGData();
@@ -78,7 +79,7 @@ export default function index({ item, sectionRefs, initialValues, expandSignal, 
   return (
     <SectionCard
       item={item}
-      index={4}
+      index={sectionKeys.indexOf(item.key)}
       sectionRef={(node) => {
         sectionRefs.current['effective'] = node;
       }}

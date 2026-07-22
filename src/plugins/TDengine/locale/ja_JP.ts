@@ -17,8 +17,8 @@ const ja_JP = {
     `,
     range: 'クエリ範囲',
     power_sql: 'SQL強化',
-    query: 'クエリ条件',
-    query_msg: 'クエリ条件を入力してください',
+    query: 'SQL',
+    query_msg: 'SQLを入力してください',
     query_tip1: 'TDengine クエリ構文については、以下を参照してください',
     query_tip2: '公式ドキュメント',
     sqlTemplates: 'クエリテンプレート',
@@ -29,13 +29,11 @@ const ja_JP = {
     },
     advancedSettings: {
       title: '高度な設定',
-      metricKey_label: 'メトリック名フィールド',
-      metricKey_tip:
-        'このフィールドで、どのフィールドを metricName として使用するかを指定できます。デフォルトでは数値型のフィールドが metricName として使用されます。例えば、クエリ結果が used_percent:96 host:host01 の場合、used_percent が metricName、96 が値になります',
+      metricKey_label: '値フィールド',
+      metricKey_tip: 'SQLクエリの結果には通常複数の列が含まれています。これらの列のうち、どの列の値をグラフに表示するかを指定できます',
       tags_placeholder: '複数入力可能',
       labelKey_label: 'ラベルフィールド',
-      labelKey_tip:
-        'このフィールドで、どのフィールドを labelName として使用するかを指定できます。デフォルトでは非数値型のフィールドが labelName として使用されます。例えば、クエリ結果が used_percent:96 host:host01 の場合、host が label の name、host01 が label の値になります',
+      labelKey_tip: 'SQLクエリの結果には通常複数の列が含まれています。これらの列のうち、どの列をグラフのラベル情報として使用するかを指定できます',
       timeKey_tip: 'どのフィールドが時間フィールドであるかを指定し、曲線グラフのX軸座標として使用します',
       timeFormat_tip: '時間のフォーマット。このフォーマットに基づいて時間をタイムスタンプに変換します',
     },

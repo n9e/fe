@@ -46,13 +46,12 @@ function AdvancedSettings(props: IProps) {
                 <InputGroupWithFormItem
                   label={
                     <span>
-                      MetricKey{' '}
+                      {t('query.advancedSettings.metricKey_label')}{' '}
                       <Tooltip title={t('query.advancedSettings.metricKey_tip')}>
                         <QuestionCircleOutlined />
                       </Tooltip>
                     </span>
                   }
-                  labelWidth={100}
                 >
                   <Form.Item {...prefixField} name={[...prefixName, 'keys', 'metricKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
@@ -63,13 +62,12 @@ function AdvancedSettings(props: IProps) {
                 <InputGroupWithFormItem
                   label={
                     <span>
-                      LabelKey{' '}
+                      {t('query.advancedSettings.labelKey_label')}{' '}
                       <Tooltip title={t('query.advancedSettings.labelKey_tip')}>
                         <QuestionCircleOutlined />
                       </Tooltip>
                     </span>
                   }
-                  labelWidth={100}
                 >
                   <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
@@ -82,13 +80,12 @@ function AdvancedSettings(props: IProps) {
                     <InputGroupWithFormItem
                       label={
                         <span>
-                          TimeKey{' '}
+                          {t('query.advancedSettings.timeKey_label')}{' '}
                           <Tooltip title={t('query.advancedSettings.timeKey_tip')}>
                             <QuestionCircleOutlined />
                           </Tooltip>
                         </span>
                       }
-                      labelWidth={100}
                     >
                       <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeKey']} style={{ width: '100%' }} initialValue='time'>
                         <Input disabled={disabled} />

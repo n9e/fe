@@ -1,17 +1,21 @@
-import React from 'react';
-import { Form, Space, Input, Row, Col, Card, InputNumber, Select, Tooltip } from 'antd';
-import { PlusCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import React, { useContext } from 'react';
+import { Form, Space, Row, Col, InputNumber, Select, Tooltip, Button } from 'antd';
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { WandSparkles } from 'lucide-react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { CommonStateContext } from '@/App';
+import { SqlMonacoEditor } from '@fc-components/monaco-editor';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
+import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import AdvancedSettings from '../../components/AdvancedSettings';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import { MetaModal } from '../../components/Meta';
 import GraphPreview from './GraphPreview';
-
-import './style.less';
 
 interface IProps {
   form: any;
@@ -23,7 +27,8 @@ interface IProps {
 }
 
 export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
-  const { t } = useTranslation('db_iotdb');
+  const { t, i18n } = useTranslation('db_iotdb');
+  const { darkMode } = useContext(CommonStateContext);
   const datasourceID = _.isArray(datasourceValue) ? datasourceValue[0] : datasourceValue;
   const queries = Form.useWatch(['rule_config', 'queries']);
 
@@ -40,72 +45,83 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
       ]}
     >
       {(fields, { add, remove }) => (
-        <Card
-          title={
-            <Space>
-              {t('datasource:query.title')}
-              <PlusCircleOutlined
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  add({
-                    interval: 1,
-                    interval_unit: 'min',
-                  });
-                }}
-              />
-            </Space>
-          }
-          size='small'
-        >
+        <div>
+          <FormItemLabel>{t('datasource:query.title')}</FormItemLabel>
           {fields.map((field) => {
             return (
-              <div key={field.key} className='iotdb-alert-rule-query-card bg-fc-200'>
-                <Row gutter={8}>
-                  <Col flex='32px'>
-                    <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
-                      <QueryName existingNames={_.map(queries, 'ref')} />
-                    </Form.Item>
-                  </Col>
-                  <Col flex='auto'>
-                    <div className='iotdb-alert-rule-query'>
+              <CardContainer key={field.key} onClose={fields.length > 1 ? () => remove(field.name) : undefined}>
+                <CardContainerHeader>
+                  <Row gutter={8}>
+                    <Col flex='32px'>
+                      <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
+                        <QueryName existingNames={_.map(queries, 'ref')} />
+                      </Form.Item>
+                    </Col>
+                    <Col flex='auto'>
                       <InputGroupWithFormItem
                         label={
                           <Space>
                             {t('query.query')}
-                            <Tooltip
-                              title={
-                                <span>
-                                  {t('query.query_tip1')}
-                                  <a className='pl-2' target='_blank' href='https://iotdb.apache.org/UserGuide/latest-Table/API/SQL-Manual.html'>
-                                    {t('query.query_tip2')}
-                                  </a>
-                                </span>
-                              }
-                            >
-                              <InfoCircleOutlined />
+                            <Tooltip title={t('common:click_to_view_doc')}>
+                              <QuestionCircleOutlined
+                                onClick={() => {
+                                  DocumentDrawer({
+                                    language: i18n.language,
+                                    darkMode,
+                                    title: t('common:page_help'),
+                                    type: 'iframe',
+                                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/iotdb/',
+                                  });
+                                }}
+                              />
                             </Tooltip>
                           </Space>
                         }
                       >
-                        <Form.Item {...field} name={[field.name, 'query']} rules={[{ required: true, message: t('query.query_msg') }]}>
-                          <Input disabled={disabled} />
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'query']}
+                          validateTrigger={['onBlur']}
+                          trigger='onChange'
+                          rules={[{ required: true, message: t('query.query_msg') }]}
+                        >
+                          <SqlMonacoEditor
+                            disabled={disabled}
+                            maxHeight={200}
+                            placeholder='SELECT * FROM table_name'
+                            theme={darkMode ? 'dark' : 'light'}
+                            enableAutocomplete={true}
+                            enableFormat
+                            renderFormatButton={() => {
+                              return (
+                                <Tooltip title={t('common:format_sql')}>
+                                  <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
+                                </Tooltip>
+                              );
+                            }}
+                          />
                         </Form.Item>
                       </InputGroupWithFormItem>
-                      <Input.Group style={{ height: 32, width: 380 }}>
-                        <span className='ant-input-group-addon'>{t('datasource:es.interval')}</span>
-                        <Form.Item {...field} name={[field.name, 'interval']} noStyle>
-                          <InputNumber disabled={disabled} style={{ width: '100%' }} />
-                        </Form.Item>
-                        <span className='ant-input-group-addon'>
+                    </Col>
+                    <Col flex='none'>
+                      <InputGroupWithFormItem
+                        label={t('datasource:es.interval')}
+                        addonAfter={
                           <Form.Item {...field} name={[field.name, 'interval_unit']} noStyle initialValue='min'>
-                            <Select disabled={disabled}>
+                            <Select disabled={disabled} dropdownMatchSelectWidth={false}>
                               <Select.Option value='second'>{t('common:time.second')}</Select.Option>
                               <Select.Option value='min'>{t('common:time.minute')}</Select.Option>
                               <Select.Option value='hour'>{t('common:time.hour')}</Select.Option>
                             </Select>
                           </Form.Item>
-                        </span>
-                      </Input.Group>
+                        }
+                      >
+                        <Form.Item {...field} name={[field.name, 'interval']} noStyle>
+                          <InputNumber disabled={disabled} style={{ width: 80 }} />
+                        </Form.Item>
+                      </InputGroupWithFormItem>
+                    </Col>
+                    <Col flex='none'>
                       <MetaModal
                         datasourceCate={DatasourceCateEnum.iotdb}
                         datasourceValue={datasourceID}
@@ -129,18 +145,18 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                           });
                         }}
                       />
-                    </div>
-                  </Col>
-                </Row>
-                <AdvancedSettings mode='graph' prefixField={field} prefixName={[field.name]} disabled={disabled} showUnit={IS_PLUS} expanded datasourceCate={DatasourceCateEnum.iotdb} />
-                {fields.length > 1 && (
-                  <CloseCircleOutlined
-                    style={{ position: 'absolute', right: -4, top: -4 }}
-                    onClick={() => {
-                      remove(field.name);
-                    }}
-                  />
-                )}
+                    </Col>
+                  </Row>
+                </CardContainerHeader>
+                <AdvancedSettings
+                  mode='graph'
+                  prefixField={field}
+                  prefixName={[field.name]}
+                  disabled={disabled}
+                  showUnit={IS_PLUS}
+                  expanded
+                  datasourceCate={DatasourceCateEnum.iotdb}
+                />
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue }) => {
                     const cate = getFieldValue('cate');
@@ -149,10 +165,23 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                     return <GraphPreview cate={cate} datasourceValue={datasourceID} query={query} />;
                   }}
                 </Form.Item>
-              </div>
+              </CardContainer>
             );
           })}
-        </Card>
+          <Button
+            className='w-full'
+            type='dashed'
+            onClick={() => {
+              add({
+                interval: 1,
+                interval_unit: 'min',
+              });
+            }}
+            icon={<PlusOutlined />}
+          >
+            {t('datasource:query.title')}
+          </Button>
+        </div>
       )}
     </Form.List>
   );

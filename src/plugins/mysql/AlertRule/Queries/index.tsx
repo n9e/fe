@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Form, Space, Row, Col, Button, Tooltip } from 'antd';
-import { InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -62,17 +62,19 @@ export default function index({ form, prefixField = {}, fullPrefixName = [], pre
                           label={
                             <Space>
                               {t('query.query')}
-                              <InfoCircleOutlined
-                                onClick={() => {
-                                  DocumentDrawer({
-                                    language: i18n.language,
-                                    darkMode,
-                                    title: t('common:page_help'),
-                                    type: 'iframe',
-                                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/mysql/',
-                                  });
-                                }}
-                              />
+                              <Tooltip title={t('common:click_to_view_doc')}>
+                                <QuestionCircleOutlined
+                                  onClick={() => {
+                                    DocumentDrawer({
+                                      language: i18n.language,
+                                      darkMode,
+                                      title: t('common:page_help'),
+                                      type: 'iframe',
+                                      documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/mysql/',
+                                    });
+                                  }}
+                                />
+                              </Tooltip>
                             </Space>
                           }
                         >

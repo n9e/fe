@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Card, Space, Switch, Row, Col, Button, Select, Tooltip, Drawer } from 'antd';
+import { Form, Space, Switch, Row, Col, Button, Select, Tooltip, Drawer } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { arrayMoveImmutable } from 'array-move';
 
@@ -13,6 +12,7 @@ import { NS as eventPipelineNS, PERM as eventPipelinePERM } from '@/pages/eventP
 import { getList as getEventPipelineList, Item as EventPipeline } from '@/pages/eventPipeline/services';
 import EventPipelineList from '@/pages/eventPipeline/pages/List';
 import EventPipelineEdit from '@/pages/eventPipeline/pages/Edit';
+import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
 
 import { NS } from '../../../constants';
 import DragIcon from './DragIcon';
@@ -33,7 +33,15 @@ const SortableBody = SortableContainer(({ children }) => {
 const SortableItem = SortableElement(({ children }) => <div>{children}</div>);
 const DragHandle = SortableHandle(() => <Button type='text' icon={<DragIcon />} />);
 
-export default function index() {
+interface Props {
+  item: SectionItem;
+  index: number;
+  collapsed?: boolean;
+  setCollapsed?: (collapsed: boolean) => void;
+}
+
+export default function index(props: Props) {
+  const { item, index, collapsed, setCollapsed } = props;
   const { t } = useTranslation(NS);
   const isAuthorized = useIsAuthorized([eventPipelinePERM]);
   const form = Form.useFormInstance();
@@ -69,33 +77,7 @@ export default function index() {
 
   return (
     <>
-      <Card
-        className='mb-4'
-        title={
-          <Space>
-            {t('pipeline_configuration.title')}
-            {isAuthorized && (
-              <a
-                onClick={() => {
-                  setEventPipelineDrawerState({
-                    type: 'list',
-                    visible: true,
-                  });
-                }}
-              >
-                <SettingOutlined />
-              </a>
-            )}
-            <SyncOutlined
-              spin={loading}
-              onClick={(e) => {
-                fetchData();
-                e.preventDefault();
-              }}
-            />
-          </Space>
-        }
-      >
+      <SectionCard className='mt-4' item={item} index={index} collapsed={collapsed} setCollapsed={setCollapsed}>
         <Form.List name='pipeline_configs'>
           {(fields, { add, remove }) => (
             <>
@@ -179,7 +161,7 @@ export default function index() {
                   })}
                 </Space>
               </SortableBody>
-              <div>
+              <Space>
                 <Button
                   icon={<PlusOutlined />}
                   onClick={() => {
@@ -190,11 +172,30 @@ export default function index() {
                 >
                   {t('pipeline_configuration.add_btn')}
                 </Button>
-              </div>
+                {isAuthorized && (
+                  <Tooltip title={t('pipeline_configuration.manage_btn')}>
+                    <Button
+                      icon={<SettingOutlined />}
+                      onClick={() => {
+                        setEventPipelineDrawerState({
+                          type: 'list',
+                          visible: true,
+                        });
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                <Button
+                  icon={<SyncOutlined spin={loading} />}
+                  onClick={() => {
+                    fetchData();
+                  }}
+                />
+              </Space>
             </>
           )}
         </Form.List>
-      </Card>
+      </SectionCard>
       <Drawer
         title={eventPipelineDrawerState.type === 'list' ? t(`${eventPipelineNS}:title`) : t(`${eventPipelineNS}:title_edit`)}
         visible={eventPipelineDrawerState.visible}
