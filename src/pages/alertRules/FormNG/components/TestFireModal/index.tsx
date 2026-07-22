@@ -50,7 +50,7 @@ export default function TestFireModal(props: Props) {
   const [eventType, setEventType] = useState<'trigger' | 'recover'>('trigger');
   const [sampleMode, setSampleMode] = useState<'real' | 'mock'>('mock');
   const [skipSend, setSkipSend] = useState(false);
-  const [notifyRecovered, setNotifyRecovered] = useState<number>(1);
+  const [notifyRecovered, setNotifyRecovered] = useState<boolean>(true);
   const [isPrometheus, setIsPrometheus] = useState(false);
 
   const [datasourceId, setDatasourceId] = useState<number>();
@@ -96,7 +96,8 @@ export default function TestFireModal(props: Props) {
         setSeverity(getDefaultSeverity(values.rule_config));
         setEventType('trigger');
         setSkipSend(false);
-        setNotifyRecovered(values.notify_recovered);
+        // 表单里是 Switch 的布尔值，DB/接口里才是 0/1，两种形态都兼容
+        setNotifyRecovered(values.notify_recovered === true || values.notify_recovered === 1);
         setSampleMode(prometheus ? 'real' : 'mock');
         setDatasourceId(values.datasource_value);
         setPhase('settings');
@@ -274,7 +275,7 @@ export default function TestFireModal(props: Props) {
                   <Radio value='trigger'>{t('form_ng.test_fire.event_type_trigger')}</Radio>
                   <Radio value='recover'>{t('form_ng.test_fire.event_type_recover')}</Radio>
                 </Radio.Group>
-                {eventType === 'recover' && notifyRecovered !== 1 && <Alert className='mt-2' type='warning' showIcon message={t('form_ng.test_fire.recover_disabled_warning')} />}
+                {eventType === 'recover' && !notifyRecovered && <Alert className='mt-2' type='warning' showIcon message={t('form_ng.test_fire.recover_disabled_warning')} />}
               </div>
               <div>
                 <div className='mb-1 text-title'>{t('form_ng.test_fire.sample')}</div>
