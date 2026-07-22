@@ -16,6 +16,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY } from '../../constants';
 import { Item, getList, putItem, deleteItems } from '../../services';
+import { omitDerivedFields } from '../../utils/normalizeValues';
 import ScenarioList from '../../components/ScenarioList';
 import Add from '../Add';
 import Edit from '../Edit';
@@ -107,9 +108,10 @@ export default function List() {
     return true;
   });
 
-  // 行内切换启用/停用：item 是列表接口返回的完整对象，整体回传不会丢字段
+  // 行内切换启用/停用：item 是列表接口返回的完整对象，整体回传不会丢字段，
+  // 但要剔除后端派生的 nodes / connections，否则会把旧快照落库、覆盖执行时生效的配置
   const toggleDisabled = (record: Item, checked: boolean) => {
-    putItem({ ...record, disabled: !checked })
+    putItem({ ...omitDerivedFields(record), disabled: !checked })
       .then(() => {
         message.success(t('common:success.modify'));
         setData((prev) => ({
@@ -339,6 +341,7 @@ export default function List() {
       >
         {eventPipelineDrawerState.action === 'add' && (
           <Add
+            onSaved={featchData}
             onOk={() => {
               resetEventPipelineDrawerState();
               featchData();
@@ -363,6 +366,7 @@ export default function List() {
         {eventPipelineDrawerState.action === 'clone' && eventPipelineDrawerState?.data && (
           <Add
             initialValues={eventPipelineDrawerState.data}
+            onSaved={featchData}
             onOk={() => {
               resetEventPipelineDrawerState();
               featchData();

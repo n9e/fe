@@ -112,6 +112,7 @@ const zh_CN = {
     },
     delete: '批量删除',
     delete_confirm: '确认删除选中的 {{count}} 条工作流？引用它们的告警 / 通知规则将失效。',
+    delete_enabled_tip: '以下工作流仍处于启用状态，请先停用再删除：{{names}}',
   },
 
   processor: {

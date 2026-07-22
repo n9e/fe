@@ -39,6 +39,12 @@ export default function MoreOperations(props: MoreOperationsProps) {
       message.warning(t('batch.not_select'));
       return;
     }
+    // 与单行删除的「先停用再删除」保持一致：启用中的工作流可能仍被告警 / 通知规则引用
+    const enabled = _.filter(selectedRows, (item) => item.disabled === false);
+    if (enabled.length) {
+      message.warning(t('batch.delete_enabled_tip', { names: _.map(enabled, 'name').join(', ') }));
+      return;
+    }
     Modal.confirm({
       title: t('batch.delete_confirm', { count: selectedRows.length }),
       okButtonProps: { danger: true },

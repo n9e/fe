@@ -113,6 +113,7 @@ const en_US = {
     },
     delete: 'Batch Delete',
     delete_confirm: 'Delete the {{count}} selected workflow(s)? Alert / notification rules referencing them will stop working.',
+    delete_enabled_tip: 'The following workflows are still enabled. Disable them before deleting: {{names}}',
   },
 
   processor: {

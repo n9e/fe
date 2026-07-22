@@ -113,6 +113,7 @@ const ja_JP = {
     },
     delete: '一括削除',
     delete_confirm: '選択した {{count}} 件のワークフローを削除しますか？参照しているアラート/通知ルールが動作しなくなります。',
+    delete_enabled_tip: '次のワークフローは有効なままです。削除する前に無効化してください：{{names}}',
   },
 
   processor: {
