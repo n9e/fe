@@ -18,6 +18,7 @@ import { defaultValues } from '../Form/constants';
 import { processFormValues, processInitialValues, getDefaultValuesByCate } from '../Form/utils';
 import SectionCard, { SectionItem } from './components/SectionCard';
 import Sidebar from './components/Sidebar';
+import TestFireModal from './components/TestFireModal';
 import DatasourceValueSelect from './components/DatasourceValueSelect';
 import Host from './Rule/Host';
 import Rule from './Rule';
@@ -577,6 +578,7 @@ export default function FormNG(props: IProps) {
                       >
                         {t('common:btn.save')}
                       </Button>
+                      <TestFireModal bgid={initialValues?.group_id || Number(bgid)} buttonDisabled={editable === false} />
                       <Link to='/alert-rules'>
                         <Button>{t('common:btn.cancel')}</Button>
                       </Link>
