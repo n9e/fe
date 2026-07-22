@@ -45,13 +45,15 @@ export const formatSeverities = (severities?: number[]): string => {
 };
 
 /**
- * 筛选条件是否完全没有限制（没有标签条件，且数据源不限或选了 $all）
+ * 筛选条件是否完全没有限制（没有标签条件，数据源不限或选了 $all，且事件等级全选）
  * 这种规则会屏蔽业务组下的所有告警，需要给出风险提示
  */
-export const isMuteScopeUnlimited = (values?: { tags?: MuteTagItem[]; datasource_ids?: number[] }): boolean => {
+export const isMuteScopeUnlimited = (values?: { tags?: MuteTagItem[]; datasource_ids?: number[]; severities?: number[] }): boolean => {
   const hasTags = _.some(values?.tags, (tag) => !!tag?.key);
   const hasDatasource = !_.isEmpty(values?.datasource_ids) && !_.includes(values?.datasource_ids, 0);
-  return !hasTags && !hasDatasource;
+  // 级别未全选也是一种筛选，全选（默认值）时才算没收敛
+  const hasSeverityFilter = !_.isEmpty(values?.severities) && _.size(values?.severities) < 3;
+  return !hasTags && !hasDatasource && !hasSeverityFilter;
 };
 
 /**

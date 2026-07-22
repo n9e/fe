@@ -51,6 +51,15 @@ describe('isMuteScopeUnlimited', () => {
     expect(isMuteScopeUnlimited({ tags: [{ key: 'ident', func: '==', value: 'host01' }] })).toBe(false);
     expect(isMuteScopeUnlimited({ datasource_ids: [1] })).toBe(false);
   });
+
+  it('事件等级未全选时算作筛选条件，不再提示', () => {
+    expect(isMuteScopeUnlimited({ severities: [1] })).toBe(false);
+    expect(isMuteScopeUnlimited({ severities: [1, 2] })).toBe(false);
+  });
+
+  it('事件等级全选（默认值）不算筛选条件', () => {
+    expect(isMuteScopeUnlimited({ severities: [1, 2, 3] })).toBe(true);
+  });
 });
 
 describe('buildMuteScopeText', () => {

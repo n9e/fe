@@ -145,7 +145,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
     lastAutoNameRef.current = suggestion;
   }, [cateLabel, JSON.stringify(datasourceNames), JSON.stringify(severities), JSON.stringify(tags)]);
 
-  const scopeUnlimited = isMuteScopeUnlimited({ tags, datasource_ids: datasourceIds });
+  const scopeUnlimited = isMuteScopeUnlimited({ tags, datasource_ids: datasourceIds, severities });
   const durationText = formatDuration(btime, etime);
   const isExpired = muteTimeType === 0 && etime && moment(etime).isBefore(moment());
   const isLongDuration = muteTimeType === 0 && btime && etime && moment(etime).diff(moment(btime), 'days') >= LONG_DURATION_DAYS;
@@ -194,6 +194,11 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
     }
   };
 
+  // 起止时间联动后复校验结束时间；校验失败的提示由表单展示，吞掉 rejection 避免控制台 Uncaught 报错
+  const revalidateEtime = () => {
+    form.validateFields(['etime']).catch(() => {});
+  };
+
   // 点击快捷时长：保留用户已设置的开始时间，只推算结束时间
   const quickDurationChange = (val: string) => {
     const { unit, num } = parseDuration(val);
@@ -202,7 +207,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
       btime: moment(start),
       etime: moment(start).add({ [unit]: num }),
     });
-    form.validateFields(['etime']);
+    revalidateEtime();
   };
 
   // 校验失败时展开包含错误项的分区，否则被 display:none 隐藏的错误项滚动不可见，保存表现为"没反应"
@@ -392,12 +397,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 <Col span={12}>
                   {/* 开始时间变化后同步复校验结束时间，避免残留的先后关系报错 */}
                   <Form.Item label={t('btime')} name='btime' rules={[{ required: muteTimeType !== 1, message: t('btime_msg') }]}>
-                    <DatePicker
-                      showTime
-                      onChange={() => {
-                        form.validateFields(['etime']);
-                      }}
-                    />
+                    <DatePicker showTime onChange={revalidateEtime} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -549,9 +549,16 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 form={form}
                 validateFields={validateFields}
                 onOk={() => {
-                  validateFields().then((values: any) => {
-                    onFinish(values);
-                  });
+                  validateFields()
+                    .then((values: any) => {
+                      onFinish(values);
+                    })
+                    .catch((err) => {
+                      // 校验失败已由 validateFields 内部展开出错分区并滚动定位，这里只兜底非预期异常
+                      if (!err?.errorFields) {
+                        console.error(err);
+                      }
+                    });
                 }}
               />
               <AlertEventRuleTesterWithButton
