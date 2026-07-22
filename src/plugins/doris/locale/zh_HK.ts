@@ -83,6 +83,7 @@ const zh_HK = {
     default_search_tip_1: '設置為默認檢索字段',
     default_search_tip_2: '取消默認檢索字段',
     default_search_by_tip: '默認檢索字段',
+    datasource_disabled_tip: '請先選擇數據源',
     interval: '查詢區間',
     interval_tip: '僅當 SQL 中使用 $__timeFilter 時間宏時，查詢區間配置才會生效。<br />告警系統將基於該時間窗口限制掃描數據範圍，以保證 告警實時性與數據庫性能',
     offset: '延遲查詢',
@@ -112,6 +113,8 @@ const zh_HK = {
   },
   builder: {
     to_pinned_btn: '釘選',
+    open_builder: '打開構建器',
+    config_required: '構建器配置不能為空',
     to_unpinned_btn: '取消釘選',
     database_table: {
       label: '庫表',

@@ -85,6 +85,7 @@ const en_US = {
     default_search_tip_1: 'Set as default search field',
     default_search_tip_2: 'Cancel default search field',
     default_search_by_tip: 'Default search field',
+    datasource_disabled_tip: 'Please select a datasource first',
     interval: 'Interval',
     interval_tip:
       'The query interval configuration will only take effect when the $__timeFilter time macro is used in the SQL.<br />The alerting system will limit the data scanning range based on this time window to ensure alert timeliness and database performance',
@@ -116,6 +117,8 @@ const en_US = {
     },
   },
   builder: {
+    open_builder: 'Open Builder',
+    config_required: 'Builder config is required',
     to_pinned_btn: 'Pin',
     to_unpinned_btn: 'Unpin',
     database_table: {
