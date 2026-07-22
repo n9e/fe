@@ -193,6 +193,11 @@ const SideMenu = (props: SideMenuProps) => {
   useEffect(() => {
     const filteredMenus = menuList
       .map((menu) => {
+        // Top-level leaf (no children): keep by its own key so MenuItem is clickable
+        // (e.g. FlashAI). Do not treat it as an empty group to drop.
+        if (!menu.children || menu.children.length === 0) {
+          return perms?.includes(calcUrlPath(menu.key)) ? menu : null;
+        }
         const filteredChildren = menu.children
           .map((child) => {
             if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
@@ -222,13 +227,20 @@ const SideMenu = (props: SideMenuProps) => {
       .filter(Boolean) as MenuItem[];
 
     setMenus(filteredMenus);
-  }, [i18n.language, embeddedProductMenu]);
+    // getMenuList must stay in deps: ENT builds recreate it when async inputs
+    // (e.g. aiStatus) arrive; without it the FlashAI entry can be missed forever.
+    // perms is also async after login — leaf visibility depends on it.
+  }, [i18n.language, embeddedProductMenu, getMenuList, perms]);
 
   const menuPaths = useMemo(
     () =>
       menus
-        .filter((item) => item && item.children && item.children.length > 0)
+        .filter((item) => !!item)
         .map((item) => {
+          // Top-level leaf (e.g. /flashai): selectable by its own key.
+          if (!item.children || item.children.length === 0) {
+            return calcUrlPath(item.key);
+          }
           return item
             .children!.filter((child) => {
               if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {

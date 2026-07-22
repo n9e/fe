@@ -72,11 +72,13 @@ const zh_HK = {
     ai_config_agents: 'Agent 管理',
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',
+    ai_config_knowledge_base: '知識庫',
     ai_config_mcp_servers: 'MCP 管理',
     ai_config_scheduled_task: '定時任務',
     ai_task: '任務通道',
   },
   section: {
+    intelligent: '智能',
     infrastructure: 'INFRASTRUCTURE',
     insight: '洞察',
     observability: 'OBSERVABILITY',
