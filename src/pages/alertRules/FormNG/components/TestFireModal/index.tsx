@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Alert, Button, Checkbox, Collapse, Form, Modal, Radio, Select, Space, Spin, Steps, Tag, message } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -12,7 +12,7 @@ import { N9E_PATHNAME } from '@/utils/constant';
 import { processFormValues } from '@/pages/alertRules/Form/utils';
 import { alertRuleTestFire } from '@/pages/alertRules/services';
 
-import { getDefaultSeverity, parseVectorSeries, summarizeNotifyResults, SampleSeries, TestFireStage } from './utils';
+import { getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults, SampleSeries, TestFireStage } from './utils';
 
 interface Props {
   /** 保存接口同款业务组 id：initialValues?.group_id || 路由上的 bgid */
@@ -60,10 +60,17 @@ export default function TestFireModal(props: Props) {
 
   const [result, setResult] = useState<{ event: any; stages: TestFireStage[] }>();
 
+  // 数据源快速切换时，先发的旧查询可能后到并覆盖新结果；用请求序号丢弃过期响应
+  const seriesReqIdRef = useRef(0);
+
   const fetchSeries = (dsId?: number) => {
-    const promql = form.getFieldValue(['rule_config', 'queries', 0, 'prom_ql']);
+    const reqId = ++seriesReqIdRef.current;
+    // 每次拉取先清空，避免在响应回来前回显上一轮的序列/选中项
+    setSeries([]);
+    setSelectedSeriesIndex(undefined);
+    const promql = getFirstPromql(form.getFieldValue('rule_config'));
     if (!dsId || !promql) {
-      setSeries([]);
+      setSeriesLoading(false);
       return;
     }
     setSeriesLoading(true);
@@ -72,18 +79,32 @@ export default function TestFireModal(props: Props) {
       query: promql,
     })
       .then((res) => {
+        if (reqId !== seriesReqIdRef.current) return; // 过期响应丢弃
         const parsed = parseVectorSeries(res);
         setSeries(parsed);
         setSelectedSeriesIndex(parsed.length > 0 ? 0 : undefined);
       })
       .catch((error) => {
+        if (reqId !== seriesReqIdRef.current) return;
         console.error(error);
         setSeries([]);
         setSelectedSeriesIndex(undefined);
       })
       .finally(() => {
+        if (reqId !== seriesReqIdRef.current) return;
         setSeriesLoading(false);
       });
+  };
+
+  // 关闭/重开时清理本地状态，避免再次打开回显上一轮的数据（项目规范要求）
+  const resetLocalState = () => {
+    seriesReqIdRef.current += 1;
+    setSeries([]);
+    setSelectedSeriesIndex(undefined);
+    setSeriesLoading(false);
+    setLoading(false);
+    setResult(undefined);
+    setPhase('settings');
   };
 
   const openModal = () => {
@@ -92,6 +113,7 @@ export default function TestFireModal(props: Props) {
       .then(() => {
         const values = form.getFieldsValue(true);
         const prometheus = values.cate === 'prometheus';
+        resetLocalState();
         setIsPrometheus(prometheus);
         setSeverity(getDefaultSeverity(values.rule_config));
         setEventType('trigger');
@@ -100,8 +122,6 @@ export default function TestFireModal(props: Props) {
         setNotifyRecovered(values.notify_recovered === true || values.notify_recovered === 1);
         setSampleMode(prometheus ? 'real' : 'mock');
         setDatasourceId(values.datasource_value);
-        setPhase('settings');
-        setResult(undefined);
         setVisible(true);
         if (prometheus) {
           fetchSeries(values.datasource_value);
@@ -110,6 +130,11 @@ export default function TestFireModal(props: Props) {
       .catch(() => {
         message.warning(t('form_ng.test_fire.validate_first'));
       });
+  };
+
+  const closeModal = () => {
+    setVisible(false);
+    resetLocalState();
   };
 
   const run = () => {
@@ -121,7 +146,7 @@ export default function TestFireModal(props: Props) {
       ? {
           labels: selected.labels,
           value: selected.value,
-          query: form.getFieldValue(['rule_config', 'queries', 0, 'prom_ql']),
+          query: getFirstPromql(values.rule_config),
         }
       : undefined;
 
@@ -248,9 +273,7 @@ export default function TestFireModal(props: Props) {
         title={phase === 'settings' ? t('form_ng.test_fire.title') : t('form_ng.test_fire.title_result')}
         visible={visible}
         footer={null}
-        onCancel={() => {
-          setVisible(false);
-        }}
+        onCancel={closeModal}
         width={phase === 'settings' ? 680 : '80%'}
         destroyOnClose
       >
@@ -341,10 +364,10 @@ export default function TestFireModal(props: Props) {
               </div>
               {!skipSend && <Alert type='warning' showIcon message={t('form_ng.test_fire.send_warning')} />}
               <Space>
-                <Button type='primary' onClick={run}>
+                <Button type='primary' onClick={run} disabled={seriesLoading}>
                   {t('form_ng.test_fire.run')}
                 </Button>
-                <Button onClick={() => setVisible(false)}>{t('common:btn.cancel')}</Button>
+                <Button onClick={closeModal}>{t('common:btn.cancel')}</Button>
               </Space>
             </div>
           )}
@@ -379,7 +402,7 @@ export default function TestFireModal(props: Props) {
                 >
                   {t('form_ng.test_fire.back')}
                 </Button>
-                <Button onClick={() => setVisible(false)}>{t('form_ng.test_fire.close')}</Button>
+                <Button onClick={closeModal}>{t('form_ng.test_fire.close')}</Button>
               </Space>
             </div>
           )}

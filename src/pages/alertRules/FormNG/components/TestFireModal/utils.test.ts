@@ -1,4 +1,26 @@
-import { getDefaultSeverity, parseVectorSeries, summarizeNotifyResults } from './utils';
+import { getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults } from './utils';
+
+describe('getFirstPromql (按规则版本取查询表达式)', () => {
+  it('V1 取 prom_ql', () => {
+    const ruleConfig = { queries: [{ prom_ql: 'up == 0' }] } as const;
+    expect(getFirstPromql(ruleConfig)).toBe('up == 0');
+  });
+
+  it('V2 取 queries[].query，忽略 prom_ql', () => {
+    const ruleConfig = { version: 'v2', queries: [{ ref: 'A', query: 'cpu > 80' }] } as const;
+    expect(getFirstPromql(ruleConfig)).toBe('cpu > 80');
+  });
+
+  it('取第一条非空表达式', () => {
+    const ruleConfig = { queries: [{ prom_ql: '' }, { prom_ql: 'mem > 90' }] } as const;
+    expect(getFirstPromql(ruleConfig)).toBe('mem > 90');
+  });
+
+  it('没有查询时返回 undefined', () => {
+    expect(getFirstPromql(undefined)).toBeUndefined();
+    expect(getFirstPromql({ version: 'v2', queries: [{ ref: 'A' }] })).toBeUndefined();
+  });
+});
 
 describe('getDefaultSeverity (模拟触发默认级别)', () => {
   it('取各查询里数值最小（最高）的级别', () => {

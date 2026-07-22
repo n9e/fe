@@ -25,6 +25,15 @@ export function getDefaultSeverity(ruleConfig: any): number {
   return typeof min === 'number' ? min : 2;
 }
 
+/**
+ * 按规则版本读取第一条非空查询表达式：V2（高级模式）存在 queries[].query，V1 存在 prom_ql。
+ * 只读 prom_ql 会让 V2 规则取不到查询，误判为「查询无数据」。
+ */
+export function getFirstPromql(ruleConfig: any): string | undefined {
+  const field = _.get(ruleConfig, 'version') === 'v2' ? 'query' : 'prom_ql';
+  return _.find(_.map(_.get(ruleConfig, 'queries'), field), (v) => !!v) as string | undefined;
+}
+
 /** 把 Prometheus instant query 的 vector 结果解析成样本序列选项 */
 export function parseVectorSeries(promResp: any): SampleSeries[] {
   if (!promResp || promResp.resultType !== 'vector' || !_.isArray(promResp.result)) return [];
