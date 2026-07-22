@@ -32,8 +32,11 @@ export default function Edit({ id, onOk, onCancel }: Props) {
         <Form
           initialValues={data}
           onOk={(values) => {
-            putItem(normalizeFormValues(values)).then(() => {
-              message.success(t('common:success.add'));
+            // 后端 PUT 为全字段覆盖，而表单只回传已注册字段。这里以拉取到的完整对象为底，
+            // 用表单值覆盖，避免 group_id / use_case / trigger_mode / nodes / connections / inputs 等
+            // 表单未托管的字段被清零。
+            putItem({ ...data, ...normalizeFormValues(values) }).then(() => {
+              message.success(t('common:success.edit'));
               onOk?.();
             });
           }}
