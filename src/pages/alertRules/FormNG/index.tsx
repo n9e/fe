@@ -211,6 +211,11 @@ export default function FormNG(props: IProps) {
     return true;
   };
 
+  const checkBeforeSave = (values) => {
+    if (!handleCheck(values)) return false;
+    return !pipelineConfigsRef.current?.checkUnsavedAndNotify();
+  };
+
   const handleMessage = (res) => {
     if (type === 1) {
       if (res.err) {
@@ -557,7 +562,7 @@ export default function FormNG(props: IProps) {
                             .validateFields()
                             .then(async () => {
                               const values = form.getFieldsValue(true);
-                              if (!handleCheck(values)) return;
+                              if (!checkBeforeSave(values)) return;
                               const data = processFormValues(values) as any;
                               if (type === 1) {
                                 const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
@@ -610,7 +615,7 @@ export default function FormNG(props: IProps) {
                   try {
                     await form.validateFields();
                     const values = form.getFieldsValue(true);
-                    if (!handleCheck(values)) return;
+                    if (!checkBeforeSave(values)) return;
                     const data = processFormValues(values) as any;
                     let res;
                     if (type === 1) {

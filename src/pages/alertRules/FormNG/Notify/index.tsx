@@ -76,7 +76,6 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, expand
   return (
     <>
       <SectionCard
-        className='mb-8'
         item={item}
         index={sectionKeys.indexOf(item.key)}
         collapsed={effectiveCollapsed}

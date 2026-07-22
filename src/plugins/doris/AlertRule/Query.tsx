@@ -67,57 +67,59 @@ export default function Query(props: Props) {
   return (
     <CardContainer key={field.key} onClose={onClose}>
       <CardContainerHeader>
+        <Form.Item {...field} name={[field.name, 'editMode']} initialValue='code' hidden>
+          <input type='hidden' />
+        </Form.Item>
         <Space>
           <Form.Item {...field} name={[field.name, 'ref']} initialValue={generateQueryName(_.map(queries, 'ref'))}>
             <QueryName existingNames={_.map(queries, 'ref')} />
           </Form.Item>
-          <Form.Item>
-            <Form.Item {...field} name={[field.name, 'editMode']} initialValue='code' hidden>
-              <input type='hidden' />
-            </Form.Item>
-            <Segmented
-              value={editMode}
-              disabled={disabled}
-              options={[
-                { label: 'Builder', value: 'builder' },
-                { label: 'Code', value: 'code' },
-              ]}
-              onChange={(value) => {
-                if (value === 'builder' && editMode === 'code') {
-                  const sqlValue = _.get(queries, [field.name, 'sql']);
-                  if (sqlValue) {
-                    Modal.confirm({
-                      title: t('query.editMode.switch_to_builder_confirm_title'),
-                      content: t('query.editMode.switch_to_builder_confirm_content'),
-                      onOk: () => {
-                        form.setFields([
-                          {
-                            name: ['rule_config', 'queries', field.name, 'editMode'],
-                            value: 'builder',
-                          },
-                          {
-                            name: ['rule_config', 'queries', field.name, 'sql'],
-                            value: undefined,
-                          },
-                          {
-                            name: ['rule_config', 'queries', field.name, 'builderConfig'],
-                            value: undefined,
-                          },
-                        ]);
-                      },
-                    });
-                    return;
+          {IS_PLUS && (
+            <Form.Item>
+              <Segmented
+                value={editMode}
+                disabled={disabled}
+                options={[
+                  { label: 'Builder', value: 'builder' },
+                  { label: 'Code', value: 'code' },
+                ]}
+                onChange={(value) => {
+                  if (value === 'builder' && editMode === 'code') {
+                    const sqlValue = _.get(queries, [field.name, 'sql']);
+                    if (sqlValue) {
+                      Modal.confirm({
+                        title: t('query.editMode.switch_to_builder_confirm_title'),
+                        content: t('query.editMode.switch_to_builder_confirm_content'),
+                        onOk: () => {
+                          form.setFields([
+                            {
+                              name: ['rule_config', 'queries', field.name, 'editMode'],
+                              value: 'builder',
+                            },
+                            {
+                              name: ['rule_config', 'queries', field.name, 'sql'],
+                              value: undefined,
+                            },
+                            {
+                              name: ['rule_config', 'queries', field.name, 'builderConfig'],
+                              value: undefined,
+                            },
+                          ]);
+                        },
+                      });
+                      return;
+                    }
                   }
-                }
-                form.setFields([
-                  {
-                    name: ['rule_config', 'queries', field.name, 'editMode'],
-                    value,
-                  },
-                ]);
-              }}
-            />
-          </Form.Item>
+                  form.setFields([
+                    {
+                      name: ['rule_config', 'queries', field.name, 'editMode'],
+                      value,
+                    },
+                  ]);
+                }}
+              />
+            </Form.Item>
+          )}
           {showDatabase && (
             <InputGroupWithFormItem label={t('query.database')}>
               <Form.Item {...field} name={[field.name, 'database']}>
