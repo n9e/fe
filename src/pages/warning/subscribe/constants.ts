@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+export const DOC_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/';
 export const LOCAL_STORAGE_KEY = 'alert_subscribes_columns_configs_01';
 export const defaultColumnsConfigs = [
   {

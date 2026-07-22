@@ -29,7 +29,7 @@ export default function Trigger(props: IProps) {
   const [expanded, setExpanded] = React.useState(false);
 
   return (
-    <CardContainer onClose={onClose}>
+    <CardContainer className='bg-fc-150' onClose={onClose}>
       <CardContainerHeader>
         <Form.Item {...prefixField} name={[...prefixName, 'mode']}>
           <Radio.Group buttonStyle='solid' size='small' disabled={disabled}>

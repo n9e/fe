@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Form, Tooltip, Select, Space, InputNumber } from 'antd';
 import { DownOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -20,13 +20,20 @@ interface IProps {
   options?: any[];
   showUnit?: boolean;
   showOffset?: boolean;
+  valueKeyRequired?: boolean;
 }
 
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { span = 6, prefixField = {}, prefixName = [], disabled, expandTriggerVisible = true, onChange, options = [], showUnit, showOffset } = props;
+  const { span = 6, prefixField = {}, prefixName = [], disabled, expandTriggerVisible = true, onChange, options = [], showUnit, showOffset, valueKeyRequired = true } = props;
   const [open, setOpen] = useState(!!props.expanded);
   const [valueKeyIsEmpty, setValueKeyIsEmpty] = useState(false);
+
+  useEffect(() => {
+    if (!valueKeyRequired) {
+      setValueKeyIsEmpty(false);
+    }
+  }, [valueKeyRequired]);
 
   return (
     <div>
@@ -41,7 +48,7 @@ function AdvancedSettings(props: IProps) {
           >
             {open ? <DownOutlined /> : <RightOutlined />}
             {t('query.advancedSettings.title')}
-            {!open && valueKeyIsEmpty && <div className='ant-form-item-explain-error'>{t('query.advancedSettings.valueKey_required')}</div>}
+            {valueKeyRequired && !open && valueKeyIsEmpty && <div className='ant-form-item-explain-error'>{t('query.advancedSettings.valueKey_required')}</div>}
           </Space>
         </div>
       )}
@@ -64,15 +71,10 @@ function AdvancedSettings(props: IProps) {
                   name={[...prefixName, 'keys', 'valueKey']}
                   style={{ width: '100%' }}
                   rules={[
-                    () => ({
-                      validator(_, value) {
-                        setValueKeyIsEmpty(!value);
-                        if (!value) {
-                          return Promise.reject(new Error(t('query.advancedSettings.valueKey_required')));
-                        }
-                        return Promise.resolve();
-                      },
-                    }),
+                    {
+                      required: valueKeyRequired,
+                      message: t('query.advancedSettings.valueKey_required'),
+                    },
                   ]}
                 >
                   <Select

@@ -9,8 +9,6 @@ import { copy2ClipBoard } from '@/utils';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../constants';
-import AdvancedSettings from '../components/AdvancedSettings';
-import LegendInput from '../components/LegendInput';
 import SQLInputWrap from './SQLInputWrap';
 
 interface Props {
@@ -107,22 +105,6 @@ export default function SQLBuilder(props: Props) {
           }}
         />
       </Form.Item>
-      {mode === 'timeSeries' && <AdvancedSettings span={8} prefixField={field} prefixName={[field.name, 'query']} expanded />}
-      {mode === 'timeSeries' && (
-        <Form.Item
-          label='Legend'
-          {...field}
-          name={[field.name, 'legend']}
-          tooltip={{
-            getPopupContainer: () => document.body,
-            title: t('dashboard:query.legendTip2', {
-              interpolation: { skipOnVariables: true },
-            }),
-          }}
-        >
-          <LegendInput />
-        </Form.Item>
-      )}
       <Modal
         width={700}
         visible={queryWarnModalVisible}

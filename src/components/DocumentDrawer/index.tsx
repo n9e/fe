@@ -11,6 +11,7 @@ import { DOC_URL_LANG_SUFFIX } from '@/utils/docUrl';
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import Document from './Document';
 import './style.less';
+import renderVariables from './renderVariables';
 
 export { Document };
 interface Props {
@@ -22,13 +23,20 @@ interface Props {
   type?: 'md' | 'iframe';
   zIndex?: number;
   anchor?: string;
+  /** 文档里 {{key}} 占位符的替换值，例如上报地址 */
+  variables?: Record<string, string | undefined>;
   onClose?: (destroy: () => void) => void;
 }
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation();
+<<<<<<< HEAD
   const { visible, destroy, title, width = '60%', documentPath, onClose, type = 'md', zIndex, anchor } = props;
   const language = IS_ENT ? 'zh_CN' : props.language ?? 'zh_CN'; // TODO: 因为文档那边还没有多语言支持，先默认写死为中文
+=======
+  const { visible, destroy, title, width = '60%', documentPath, onClose, type = 'md', zIndex, anchor, variables } = props;
+  const language = IS_ENT ? 'zh_CN' : props.language ?? 'zh_CN'; //
+>>>>>>> main
   const darkMode = props.darkMode ?? window.document.body.classList.contains('theme-dark');
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
@@ -50,14 +58,14 @@ function index(props: Props & ModalWrapProps) {
           return res.text();
         })
         .then((res) => {
-          setDocument(res);
+          setDocument(renderVariables(res, variables));
         })
         .catch(() => {
           // 如果获取文档失败，使用 en_US 作为默认语言
           return fetch(`${documentPath}/en_US.md`)
             .then((res) => res.text())
             .then((res) => {
-              setDocument(res);
+              setDocument(renderVariables(res, variables));
             });
         });
     }

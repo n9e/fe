@@ -14,15 +14,19 @@ import { priorityColor } from '@/utils/constant';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
+import EmptyGuide from '@/components/EmptyGuide';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import usePagination from '@/components/usePagination';
-import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
+import { NS as notificationRulesNS, PERM as notificationRulesPerm } from '@/pages/notificationRules/constants';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
-import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY, DOC_URL } from './constants';
+import ScenarioList from './components/ScenarioList';
 import './locale';
 import './index.less';
 
@@ -42,6 +46,8 @@ const { confirm } = Modal;
 interface Props {
   hideBusinessGroupColumn?: boolean;
   readonly?: boolean;
+  /** 当前上下文能否新建订阅规则，决定空状态引导里是否给出新建入口 */
+  canCreate?: boolean;
   headerExtra?: React.ReactNode;
   data: subscribeItem[];
   loading: boolean;
@@ -52,8 +58,8 @@ interface Props {
 const Subscribe = (props: Props) => {
   const { t, i18n } = useTranslation('alertSubscribes');
   const history = useHistory();
-  const { datasourceList, busiGroups } = useContext(CommonStateContext);
-  const { hideBusinessGroupColumn, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
+  const { datasourceList, busiGroups, darkMode } = useContext(CommonStateContext);
+  const { hideBusinessGroupColumn, readonly, canCreate, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
   let defaultFilter = {} as Filter;
@@ -74,6 +80,7 @@ const Subscribe = (props: Props) => {
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
+  const notificationRulesAuthorized = useIsAuthorized([notificationRulesPerm]);
 
   const columns: ColumnsType = _.concat(
     [
@@ -315,11 +322,19 @@ const Subscribe = (props: Props) => {
     setRefreshFlag(_.uniqueId('refresh_'));
   };
 
+  // GET /notify-rules 后端带 perm("/notification-rules")，无权限时不发这个注定 403 的请求，
+  // 通知规则列回退到展示 id
   useEffect(() => {
-    getNotificationRules().then((res) => {
-      setNotificationRules(res);
-    });
-  }, []);
+    if (!notificationRulesAuthorized) return;
+    getNotificationRules()
+      .then((res) => {
+        setNotificationRules(res);
+      })
+      .catch((error) => {
+        console.error(error);
+        setNotificationRules([]);
+      });
+  }, [notificationRulesAuthorized]);
 
   return (
     <>
@@ -398,6 +413,47 @@ const Subscribe = (props: Props) => {
           saveState({ current: pag.current || 1 });
         }}
         loading={loading}
+        // 仅在「确实一条订阅都没有」时展示引导；搜索命中为空时回退到默认空态，避免误导
+        locale={
+          !readonly && data.length === 0
+            ? {
+                emptyText: (
+                  <EmptyGuide
+                    title={t('empty_guide.title')}
+                    descriptionClassName='max-w-[620px]'
+                    description={
+                      <>
+                        <div className='mb-1'>{t('scenario_tips.title')}</div>
+                        <ScenarioList />
+                      </>
+                    }
+                    actions={
+                      <>
+                        {canCreate && (
+                          <Button type='primary' onClick={() => history.push('/alert-subscribes/add')}>
+                            {t('common:btn.add')}
+                          </Button>
+                        )}
+                        <a
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('common:page_help'),
+                              type: 'iframe',
+                              documentPath: DOC_URL,
+                            });
+                          }}
+                        >
+                          {t('empty_guide.doc')}
+                        </a>
+                      </>
+                    }
+                  />
+                ),
+              }
+            : undefined
+        }
         dataSource={filterData()}
         columns={columns.filter((col) => {
           if (!('dataIndex' in col)) return true;
