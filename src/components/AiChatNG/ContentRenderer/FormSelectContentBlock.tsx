@@ -50,8 +50,8 @@ function getDefaultCandidateIds(candidates?: IFormSelectCandidate[]) {
   return (candidates || []).filter((c) => c.is_default).map((c) => c.id);
 }
 
-function buildContentText(params: { busiGroupName?: string; datasourceName?: string; teamNames?: string[] }) {
-  const { busiGroupName, datasourceName, teamNames } = params;
+function buildContentText(params: { busiGroupName?: string; datasourceName?: string; teamNames?: string[]; scopeName?: string }) {
+  const { busiGroupName, datasourceName, teamNames, scopeName } = params;
   const isZh = i18next.language?.startsWith('zh');
   const colon = isZh ? '：' : ': ';
   const separator = isZh ? '、' : ', ';
@@ -60,6 +60,7 @@ function buildContentText(params: { busiGroupName?: string; datasourceName?: str
   if (busiGroupName) parts.push(`${label('busi_group')}${colon}${busiGroupName}`);
   if (datasourceName) parts.push(`${label('datasource')}${colon}${datasourceName}`);
   if (teamNames?.length) parts.push(`${label('team')}${colon}${teamNames.join(separator)}`);
+  if (scopeName) parts.push(`${label('skill_scope')}${colon}${scopeName}`);
   return parts.join(' ');
 }
 
@@ -68,6 +69,8 @@ export interface IFormSelectConfirmResult {
     busi_group_id?: number;
     datasource_id?: number;
     team_ids?: number[];
+    skill_team_ids?: number[];
+    skill_scope?: number;
     approval?: number;
   };
   content: string;
@@ -146,7 +149,9 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
   const selectedBusiGroupName = React.useMemo(() => busiGroupOptions.find((o) => o.value === busiGroupId)?.label, [busiGroupId, busiGroupOptions]);
   const selectedDatasourceName = React.useMemo(() => datasourceOptions.find((o) => o.value === datasourceId)?.label, [datasourceId, datasourceOptions]);
 
-  const teamField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'team_ids'), [payload?.fields]);
+  // 团队多选有两个键：通知规则用 team_ids，创建技能的管理团队用 skill_team_ids（后端靠
+  // 键区分是哪张表单的提交值）。渲染一致，回传时原样用该字段自己的 key。
+  const teamField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'team_ids' || f.key === 'skill_team_ids'), [payload?.fields]);
   const teamOptions = React.useMemo(() => (teamField?.candidates || []).map((c) => ({ value: c.id, label: c.name })), [teamField?.candidates]);
   const [teamIds, setTeamIds] = React.useState<number[]>(() => getDefaultCandidateIds(teamField?.candidates));
 
@@ -156,14 +161,26 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
 
   const selectedTeamNames = React.useMemo(() => teamOptions.filter((o) => teamIds.includes(o.value)).map((o) => o.label), [teamIds, teamOptions]);
 
+  // 可见范围（创建技能时后端只对管理员下发该字段；候选名与默认值均由后端给出）。
+  const scopeField = React.useMemo(() => payload?.fields?.find((f) => f.key === 'skill_scope'), [payload?.fields]);
+  const scopeOptions = React.useMemo(() => (scopeField?.candidates || []).map((c) => ({ value: c.id, label: c.name })), [scopeField?.candidates]);
+  const [scopeId, setScopeId] = React.useState<number | undefined>(() => getDefaultCandidateId(scopeField?.candidates));
+
+  React.useEffect(() => {
+    setScopeId(getDefaultCandidateId(scopeField?.candidates));
+  }, [scopeField?.candidates]);
+
+  const selectedScopeName = React.useMemo(() => scopeOptions.find((o) => o.value === scopeId)?.label, [scopeId, scopeOptions]);
+
   const disabled =
     (!!busiGroupField && !busiGroupId) ||
     (!!datasourceField && !datasourceId) ||
     (!!teamField && !teamIds.length) ||
-    (!busiGroupField && !datasourceField && !teamField) ||
+    (!!scopeField && !scopeId) ||
+    (!busiGroupField && !datasourceField && !teamField && !scopeField) ||
     !payload;
 
-  if (!payload || (!busiGroupField && !datasourceField && !teamField)) {
+  if (!payload || (!busiGroupField && !datasourceField && !teamField && !scopeField)) {
     return <div className='rounded-lg border border-dashed border-fc-200 bg-fc-50 px-4 py-3 text-sm text-hint'>{t('message.unsupported_type', { type: 'form_select' })}</div>;
   }
 
@@ -215,6 +232,13 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
             />
           </>
         ) : null}
+
+        {scopeField ? (
+          <>
+            <div className='shrink-0 text-right text-sm text-title'>{t('form_select.skill_scope')}</div>
+            <Select className='w-full min-w-0' placeholder={t('form_select.placeholder_select')} value={scopeId} onChange={(value) => setScopeId(value)} options={scopeOptions} />
+          </>
+        ) : null}
       </div>
 
       <div className='mt-4 flex justify-end'>
@@ -225,7 +249,8 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
             const param: IFormSelectConfirmResult['param'] = {};
             if (busiGroupField && busiGroupId) param.busi_group_id = busiGroupId;
             if (datasourceField && datasourceId) param.datasource_id = datasourceId;
-            if (teamField && teamIds.length) param.team_ids = teamIds;
+            if (teamField && teamIds.length) param[teamField.key === 'skill_team_ids' ? 'skill_team_ids' : 'team_ids'] = teamIds;
+            if (scopeField && scopeId) param.skill_scope = scopeId;
 
             props.onConfirm({
               param,
@@ -233,6 +258,7 @@ function FormFieldsView(props: { payload?: IFormSelectPayload; onConfirm: (resul
                 busiGroupName: selectedBusiGroupName,
                 datasourceName: selectedDatasourceName,
                 teamNames: selectedTeamNames,
+                scopeName: selectedScopeName,
               }),
             });
           }}
