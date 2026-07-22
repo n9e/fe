@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Button, Modal, Tooltip, Tag, Table } from 'antd';
+import { Alert, Button, Modal, Tooltip, Tag, Table } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -7,18 +7,19 @@ import { Link } from 'react-router-dom';
 import { previewMutedEvents } from '@/services/shield';
 import { CommonStateContext } from '@/App';
 import { deleteAlertEventsModal, SeverityColor } from '@/pages/event';
-import { scrollToFirstError } from '@/utils';
 import { processFormValues } from './utils';
 
 interface Props {
   form: any;
+  /** 由表单统一提供的校验方法，校验失败时会展开出错分区并滚动定位 */
+  validateFields: () => Promise<any>;
   onOk: () => void;
 }
 
 export default function PreviewMutedEvents(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const { groupedDatasourceList } = useContext(CommonStateContext);
-  const { form, onOk } = props;
+  const { form, validateFields, onOk } = props;
   const [visible, setVisible] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
@@ -91,8 +92,7 @@ export default function PreviewMutedEvents(props: Props) {
       <Button
         type='primary'
         onClick={() => {
-          form
-            .validateFields()
+          validateFields()
             .then((values: any) => {
               fetchData(values)
                 .then((dat) => {
@@ -103,12 +103,18 @@ export default function PreviewMutedEvents(props: Props) {
                     setData(dat);
                   }
                 })
-                .catch(() => {
+                .catch((err) => {
+                  console.error(err);
                   setVisible(false);
                   setData([]);
                 });
             })
-            .catch(scrollToFirstError);
+            .catch((err) => {
+              // 校验失败已由 validateFields 内部展开出错分区并滚动定位，这里只兜底非预期异常
+              if (!err?.errorFields) {
+                console.error(err);
+              }
+            });
         }}
       >
         {t('common:btn.save')}
@@ -159,6 +165,7 @@ export default function PreviewMutedEvents(props: Props) {
         }}
         width={800}
       >
+        <Alert className='mb-2' type='info' showIcon message={t('alertMutes:preview_muted_desc')} />
         <Table
           size='small'
           tableLayout='fixed'
