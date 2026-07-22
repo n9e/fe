@@ -517,6 +517,7 @@ const en_US = {
         notify_legacy_missing: 'No receiver has a token configured for channels: {{channels}}',
         notify_summary: 'Matched {{matched}} · Sent {{sent}} · Failed {{failed}} · Not matched {{notMatched}}',
         notify_not_matched: 'Not matched',
+        notify_dropped_by_pipeline: 'Dropped by the notify rule pipeline, will not be sent',
         notify_skipped: 'Matched (dry run, not sent)',
         notify_sent: 'Sent',
         notify_send_failed: 'Send failed: {{error}}',

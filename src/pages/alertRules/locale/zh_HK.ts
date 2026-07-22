@@ -514,6 +514,7 @@ const zh_HK = {
         notify_legacy_missing: '以下渠道所有接收人都未配置 token：{{channels}}',
         notify_summary: '匹配 {{matched}} 項 · 已發送 {{sent}} · 失敗 {{failed}} · 未匹配 {{notMatched}}',
         notify_not_matched: '未匹配',
+        notify_dropped_by_pipeline: '被通知規則的事件流水線丟棄，不會發送',
         notify_skipped: '已匹配（乾跑未發送）',
         notify_sent: '發送成功',
         notify_send_failed: '發送失敗：{{error}}',

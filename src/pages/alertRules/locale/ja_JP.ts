@@ -515,6 +515,7 @@ const ja_JP = {
         notify_legacy_missing: '次のチャネルは全受信者がトークン未設定です：{{channels}}',
         notify_summary: 'マッチ {{matched}} · 送信済み {{sent}} · 失敗 {{failed}} · 不一致 {{notMatched}}',
         notify_not_matched: '不一致',
+        notify_dropped_by_pipeline: '通知ルールのパイプラインで破棄され、送信されません',
         notify_skipped: 'マッチ（ドライランのため未送信）',
         notify_sent: '送信成功',
         notify_send_failed: '送信失敗：{{error}}',

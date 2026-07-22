@@ -517,6 +517,7 @@ const ru_RU = {
         notify_legacy_missing: 'Ни у одного получателя не настроен токен для каналов: {{channels}}',
         notify_summary: 'Совпало {{matched}} · Отправлено {{sent}} · Ошибок {{failed}} · Не совпало {{notMatched}}',
         notify_not_matched: 'Не совпало',
+        notify_dropped_by_pipeline: 'Отброшено конвейером правила уведомлений, не будет отправлено',
         notify_skipped: 'Совпало (холостой прогон, не отправлено)',
         notify_sent: 'Отправлено',
         notify_send_failed: 'Ошибка отправки: {{error}}',

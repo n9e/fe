@@ -215,9 +215,11 @@ export default function TestFireModal(props: Props) {
           <div>{tf('desc.notify_summary', summary)}</div>
           {_.map(data.results, (item: any, idx) => (
             <div key={idx}>
-              {item.notify_rule_name || item.notify_rule_id} · {item.channel_name}
+              {item.notify_rule_name || item.notify_rule_id}
+              {item.channel_name ? ` · ${item.channel_name}` : ''}
               {': '}
-              {!item.matched && (
+              {item.dropped_by_notify_pipeline && <span className='text-error'>{tf('desc.notify_dropped_by_pipeline')}</span>}
+              {!item.dropped_by_notify_pipeline && !item.matched && (
                 <span className='text-soft'>
                   {tf('desc.notify_not_matched')}
                   {item.match_error ? `（${item.match_error}）` : ''}
