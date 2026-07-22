@@ -85,7 +85,7 @@ export function buildAutoName(input: AutoNameInput, texts: AutoNameTexts): strin
     parts.push(_.map(_.sortBy(severities), (item) => `S${item}`).join('/'));
   }
 
-  if (_.isNumber(input.forDuration) && input.forDuration > 0) {
+  if (input.forDuration !== undefined && input.forDuration > 0) {
     parts.push(texts.escalation);
   }
 
