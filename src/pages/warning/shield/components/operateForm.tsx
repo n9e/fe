@@ -431,6 +431,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
               {isExpired && <Alert className='mt-3' type='warning' showIcon message={t('expired_tip')} />}
               {isLongDuration && <Alert className='mt-3' type='info' showIcon message={t('long_duration_tip', { days: LONG_DURATION_DAYS })} />}
             </div>
+            {/* 固定时间模式下本区块被隐藏，必填校验也要一起关掉，否则残留的空行会拦住保存且错误不可见 */}
             <div style={{ display: muteTimeType === 1 ? 'block' : 'none' }}>
               <Form.List name='periodic_mutes'>
                 {(fields, { add, remove }) => (
@@ -474,7 +475,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                           style={{ width: 450 }}
                           rules={[
                             {
-                              required: true,
+                              required: muteTimeType === 1,
                               message: t('mute_type.days_of_week_msg'),
                             },
                           ]}
@@ -487,7 +488,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                           style={{ width: 110 }}
                           rules={[
                             {
-                              required: true,
+                              required: muteTimeType === 1,
                               message: t('mute_type.start_msg'),
                             },
                           ]}
@@ -500,7 +501,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                           style={{ width: 110 }}
                           rules={[
                             {
-                              required: true,
+                              required: muteTimeType === 1,
                               message: t('mute_type.end_msg'),
                             },
                           ]}

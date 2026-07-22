@@ -86,7 +86,7 @@ const zh_HK = {
   empty_guide: {
     title: '還沒有屏蔽規則',
     desc: '發版、維護、演練期間，用屏蔽規則臨時擋掉已知的告警，避免打擾值班同學；到期自動失效，不需要手動恢復。',
-    select_busi_group: '請先在左側選擇一個業務組',
+    select_busi_group: '請先在左側選擇一個具體的業務組，才能新建屏蔽規則',
   },
   delete_mutes: {
     title: '屏蔽規則清理',

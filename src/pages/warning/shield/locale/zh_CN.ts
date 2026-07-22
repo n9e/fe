@@ -86,7 +86,7 @@ const zh_CN = {
   empty_guide: {
     title: '还没有屏蔽规则',
     desc: '发版、维护、演练期间，用屏蔽规则临时挡掉已知的告警，避免打扰值班同学；到期自动失效，不需要手动恢复。',
-    select_busi_group: '请先在左侧选择一个业务组',
+    select_busi_group: '请先在左侧选择一个具体的业务组，才能新建屏蔽规则',
   },
   delete_mutes: {
     title: '屏蔽规则清理',

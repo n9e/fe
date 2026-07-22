@@ -89,7 +89,7 @@ const en_US = {
   empty_guide: {
     title: 'No mute rule yet',
     desc: 'During releases, maintenance or drills, a mute rule temporarily silences alerts you already know about, so the on-call is not disturbed. It expires on its own, no manual cleanup needed.',
-    select_busi_group: 'Select a business group on the left first',
+    select_busi_group: 'Pick a specific business group on the left to create a mute rule',
   },
   delete_mutes: {
     title: 'Mute Rule Cleanup',
