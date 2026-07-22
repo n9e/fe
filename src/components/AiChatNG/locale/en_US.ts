@@ -51,6 +51,7 @@ const en_US = {
     busi_group: 'Business Group',
     datasource: 'Datasource',
     team: 'Teams',
+    skill_scope: 'Visibility',
     placeholder_select: 'Please select',
     confirm: 'Confirm',
   },

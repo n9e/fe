@@ -83,6 +83,7 @@ const zh_CN = {
     default_search_tip_1: '设置为默认检索字段',
     default_search_tip_2: '取消默认检索字段',
     default_search_by_tip: '默认检索字段',
+    datasource_disabled_tip: '请先选择数据源',
     interval: '查询区间',
     interval_tip: '仅当 SQL 中使用 $__timeFilter 时间宏时，查询区间配置才会生效。<br />告警系统将基于该时间窗口限制扫描数据范围，以保证 告警实时性与数据库性能',
     offset: '延迟查询',
@@ -112,6 +113,8 @@ const zh_CN = {
   },
   builder: {
     to_pinned_btn: '固定',
+    open_builder: '打开构建器',
+    config_required: '构建器配置不能为空',
     to_unpinned_btn: '取消固定',
     database_table: {
       label: '库表',

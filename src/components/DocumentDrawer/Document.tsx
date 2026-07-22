@@ -9,16 +9,19 @@ import { IS_ENT } from '@/utils/constant';
 import { DOC_URL_LANG_SUFFIX } from '@/utils/docUrl';
 
 import './style.less';
+import renderVariables from './renderVariables';
 
 interface Props {
   documentPath: string;
   type?: 'md' | 'iframe';
+  /** 文档里 {{key}} 占位符的替换值，与 DocumentDrawer 保持一致 */
+  variables?: Record<string, string | undefined>;
 }
 
 export default function index(props: Props) {
   const { i18n } = useTranslation();
   const { darkMode } = useContext(CommonStateContext);
-  const { documentPath, type = 'md' } = props;
+  const { documentPath, type = 'md', variables } = props;
   const [document, setDocument] = useState('');
   const [loading, setLoading] = useState(true);
   // 去除 documentPath 结尾的 /
@@ -39,14 +42,14 @@ export default function index(props: Props) {
           return res.text();
         })
         .then((res) => {
-          setDocument(res);
+          setDocument(renderVariables(res, variables));
         })
         .catch(() => {
           // 如果获取文档失败，使用 en_US 作为默认语言
           return fetch(`${documentPath}/en_US.md`)
             .then((res) => res.text())
             .then((res) => {
-              setDocument(res);
+              setDocument(renderVariables(res, variables));
             });
         });
     }

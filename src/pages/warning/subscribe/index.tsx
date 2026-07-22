@@ -17,6 +17,7 @@ import './index.less';
 export { default as Add } from './add';
 export { default as Edit } from './edit';
 import ListNG from './ListNG';
+import { DOC_URL } from './constants';
 
 const N9E_GIDS_LOCALKEY = 'n9e_subscribes_gids';
 
@@ -45,7 +46,7 @@ export default function List() {
   }, [gids, refreshFlag]);
 
   return (
-    <PageLayout title={t('title')} icon={<CopyOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/'>
+    <PageLayout title={t('title')} icon={<CopyOutlined />} doc={DOC_URL}>
       <div className='shield-content'>
         <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div
@@ -57,6 +58,7 @@ export default function List() {
         >
           <ListNG
             hideBusinessGroupColumn={businessGroup.isLeaf && gids !== '-2'}
+            canCreate={businessGroup.isLeaf && gids !== '-2'}
             headerExtra={
               businessGroup.isLeaf && gids !== '-2' ? (
                 <div>

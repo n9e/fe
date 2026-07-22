@@ -87,6 +87,7 @@ const ja_JP = {
     default_search_tip_1: 'デフォルトの検索フィールドとして設定',
     default_search_tip_2: 'デフォルトの検索フィールドをキャンセル',
     default_search_by_tip: 'デフォルトの検索フィールド',
+    datasource_disabled_tip: 'データソースを選択してください',
     interval: 'クエリ間隔',
     interval_tip:
       'SQLで$__timeFilter時間マクロを使用する場合にのみ、クエリ間隔の構成が有効になります。<br />アラートシステムは、この時間ウィンドウに基づいてデータスキャン範囲を制限し、アラートの即時性とデータベースのパフォーマンスを保証します',
@@ -118,6 +119,8 @@ const ja_JP = {
     },
   },
   builder: {
+    open_builder: 'ビルダーを開く',
+    config_required: 'ビルダー設定は必須です',
     to_pinned_btn: 'ピン留め',
     to_unpinned_btn: 'ピン留めを解除',
     database_table: {

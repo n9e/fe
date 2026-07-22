@@ -52,8 +52,8 @@ const AddShield: React.FC = () => {
             });
           } catch (e) {}
         }
+        // 不预填规则标题，交给表单按筛选条件自动生成
         setEventDetail({
-          note: t('quick_mute'),
           group_id: dat.group_id,
           prod: dat.rule_prod,
           cate: dat.cate,

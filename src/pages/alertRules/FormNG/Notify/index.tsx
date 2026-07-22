@@ -6,10 +6,11 @@ import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined, RightO
 
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
 
+import RuleDropdownSelect from '@/pages/notificationRules/components/RuleDropdownSelect';
+
 import SectionCard, { SectionItem } from '../components/SectionCard';
 import { useFormNGData } from '../context';
 import TaskTpls from './TaskTpls';
-import NotificationRuleDropdownSelect from './NotificationRuleDropdownSelect';
 import VersionSwitch from './VersionSwitch';
 
 // @ts-ignore
@@ -26,7 +27,16 @@ interface Props {
 
 export default function index({ item, sectionKeys, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
-  const { notifyChannels: contactList, teams: notifyGroups, webhooks, callbacks } = useFormNGData();
+  const {
+    notifyChannels: contactList,
+    teams: notifyGroups,
+    webhooks,
+    callbacks,
+    permissions,
+    notificationRules,
+    notificationRulesLoading,
+    refreshNotificationRules,
+  } = useFormNGData();
 
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
   const [effectiveCollapsed, setEffectiveCollapsed] = useState(true);
@@ -66,7 +76,6 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, expand
   return (
     <>
       <SectionCard
-        className='mb-8'
         item={item}
         index={sectionKeys.indexOf(item.key)}
         collapsed={effectiveCollapsed}
@@ -134,7 +143,14 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, expand
             display: notify_version === 1 ? 'block' : 'none',
           }}
         >
-          <NotificationRuleDropdownSelect />
+          <RuleDropdownSelect
+            className='mb-4'
+            label={t('notify_rule_ids')}
+            notificationRules={notificationRules}
+            loading={notificationRulesLoading}
+            refresh={refreshNotificationRules}
+            isAuthorized={permissions.notificationRules}
+          />
         </div>
         <div className='mb-4'>
           <Space>

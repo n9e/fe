@@ -307,7 +307,7 @@ export function buildSql(data: {
       order_by: {
         field: string;
         direction: string;
-      };
+      }[];
       limit: number;
     },
   ];
