@@ -112,8 +112,10 @@ export default function index(props: Props) {
   // 自动命名：仅当名称为空或仍是上次自动生成值时覆盖，用户手动改过就不再干预
   const lastAutoNameRef = useRef<string>();
   useEffect(() => {
+    // 关掉过滤开关后过滤条件仍留在表单里（只是 display:none），此时实际会处理所有告警事件，
+    // 名称不能再宣称只处理某个范围，否则与页面上的 no_filter_warning 自相矛盾
     const suggestion = buildWorkflowName(
-      { labelFilters, attrFilters, processorLabels },
+      { labelFilters: filterEnable ? labelFilters : undefined, attrFilters: filterEnable ? attrFilters : undefined, processorLabels },
       { joiner: t('name_auto.joiner'), arrow: t('name_auto.arrow'), all: t('name_auto.all') },
     );
     if (!suggestion) return;
@@ -121,7 +123,7 @@ export default function index(props: Props) {
     if (current && current !== lastAutoNameRef.current) return;
     if (current !== suggestion) form.setFieldsValue({ name: suggestion });
     lastAutoNameRef.current = suggestion;
-  }, [i18n.language, JSON.stringify(labelFilters), JSON.stringify(attrFilters), JSON.stringify(processorLabels)]);
+  }, [i18n.language, filterEnable, JSON.stringify(labelFilters), JSON.stringify(attrFilters), JSON.stringify(processorLabels)]);
 
   const expandErrorSections = (errorFields?: { name: (string | number)[] }[]) => {
     const keys = _.compact(_.map(errorFields, ({ name }) => FIELD_SECTION_MAP[_.toString(name?.[0])]));
@@ -253,6 +255,8 @@ export default function index(props: Props) {
                       onOk && onOk(values);
                     })
                     .catch((err) => {
+                      // 校验失败的 err 带 errorFields；onOk 里同步抛出的异常没有，不能跟着一起静默掉
+                      if (!err?.errorFields) console.error(err);
                       expandErrorSections(err?.errorFields);
                       scrollToFirstError();
                     });

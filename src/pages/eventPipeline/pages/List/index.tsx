@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { Space, Button, Input, Modal, Drawer, Select, Switch, message } from 'antd';
@@ -15,7 +15,7 @@ import EmptyGuide from '@/components/EmptyGuide';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY } from '../../constants';
-import { Item, getList, putItem, deleteItems } from '../../services';
+import { Item, getList, getItem, putItem, deleteItems } from '../../services';
 import { omitDerivedFields } from '../../utils/normalizeValues';
 import ScenarioList from '../../components/ScenarioList';
 import Add from '../Add';
@@ -50,7 +50,12 @@ export default function List() {
     list: [],
     loading: false,
   });
-  const [selectedRows, setSelectedRows] = useState<Item[]>([]);
+  // 选择态只存 id，行数据渲染时从最新的 data.list 现查：
+  // 存 record 引用的话，行内启停或列表刷新后拿到的仍是勾选那一刻的旧对象，
+  // 批量删除的「启用中不可删」校验会读到过期的 disabled 值而被绕过。
+  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  // 切换中的行：一次切换要先 GET 再 PUT，期间必须挡住重复点击，否则两次请求的落库顺序不保证
+  const [togglingIds, setTogglingIds] = useState<number[]>([]);
 
   const pagination = usePagination({ PAGESIZE_KEY: 'event-pipelines-pagesize' });
 
@@ -96,6 +101,8 @@ export default function List() {
     featchData();
   }, []);
 
+  const selectedRows = useMemo(() => _.filter(data.list, (item) => _.includes(selectedRowKeys, item.id)), [data.list, selectedRowKeys]);
+
   const filteredData = _.filter(data.list, (item) => {
     if (filter?.search) {
       const keyword = filter.search.toLowerCase();
@@ -108,19 +115,25 @@ export default function List() {
     return true;
   });
 
-  // 行内切换启用/停用：item 是列表接口返回的完整对象，整体回传不会丢字段，
-  // 但要剔除后端派生的 nodes / connections，否则会把旧快照落库、覆盖执行时生效的配置
+  // 行内切换启用/停用。后端 PUT 是全字段覆盖，而列表里的 record 是页面加载时的快照，
+  // 期间别人可能已经改过这条工作流的 processors / 过滤条件——直接回传旧快照会静默回退对方的改动。
+  // 所以先取一次最新详情，只在它之上改 disabled；再剔除后端派生的 nodes / connections。
   const toggleDisabled = (record: Item, checked: boolean) => {
-    putItem({ ...omitDerivedFields(record), disabled: !checked })
+    if (_.includes(togglingIds, record.id)) return;
+    setTogglingIds((prev) => [...prev, record.id]);
+    getItem(record.id)
+      .then((latest) => putItem({ ...omitDerivedFields(latest), disabled: !checked }))
       .then(() => {
         message.success(t('common:success.modify'));
-        setData((prev) => ({
-          ...prev,
-          list: _.map(prev.list, (item) => (item.id === record.id ? { ...item, disabled: !checked } : item)),
-        }));
+        // 重新拉列表而不是本地打补丁：详情接口不返回 update_by_nickname，
+        // 拿它的返回值回填会把「更新人」列刷成空
+        featchData();
       })
       .catch((err) => {
         console.error(err);
+      })
+      .finally(() => {
+        setTogglingIds((prev) => _.without(prev, record.id));
       });
   };
 
@@ -172,7 +185,7 @@ export default function List() {
           <MoreOperations
             selectedRows={selectedRows}
             onFinished={() => {
-              setSelectedRows([]);
+              setSelectedRowKeys([]);
               featchData();
             }}
           />
@@ -241,7 +254,9 @@ export default function List() {
             render: (_val, item: Item) => {
               const types = getProcessorTypes(item);
               if (_.isEmpty(types)) return '-';
-              return <Tags type='outline' maxWidth={240} data={types} getKey={(typ) => typ} getLabel={(typ) => t(`processor.options.${typ}`)} />;
+              // Tags 对字符串元素会短路掉 getLabel/getKey，必须先翻译再传入
+              const labels = _.map(types, (typ) => t(`processor.options.${typ}`));
+              return <Tags type='outline' maxWidth={240} data={labels} />;
             },
           },
           {
@@ -264,16 +279,18 @@ export default function List() {
             }),
             key: 'disabled',
             width: 90,
-            render: (value, record: Item) => <Switch size='small' checked={value === false} onChange={(checked) => toggleDisabled(record, checked)} />,
+            render: (value, record: Item) => (
+              <Switch size='small' checked={value === false} loading={_.includes(togglingIds, record.id)} onChange={(checked) => toggleDisabled(record, checked)} />
+            ),
           },
         ]}
         dataSource={filteredData}
         loading={data.loading}
         pagination={pagination}
         rowSelection={{
-          selectedRowKeys: selectedRows.map((item) => item.id),
-          onChange: (_selectedRowKeys: React.Key[], rows: Item[]) => {
-            setSelectedRows(rows);
+          selectedRowKeys,
+          onChange: (keys: React.Key[]) => {
+            setSelectedRowKeys(keys as number[]);
           },
         }}
         rowActions={(item: Item) => ({
