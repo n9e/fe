@@ -486,7 +486,6 @@ const zh_CN = {
         pipeline: '事件处理',
         mute: '屏蔽检查',
         notify: '通知发送',
-        subscribe: '订阅匹配',
         side_effects: '自愈与回调',
       },
       status: {
@@ -518,8 +517,6 @@ const zh_CN = {
         notify_skipped: '已匹配（干跑未发送）',
         notify_sent: '发送成功',
         notify_send_failed: '发送失败：{{error}}',
-        subscribe_none: '未命中订阅规则',
-        subscribe_matched: '将同时命中订阅规则：{{names}}（测试不触发订阅通知）',
         side_effects: '测试模式已跳过：回调 {{callbacks}} 个、自愈任务 {{taskTpls}} 个',
       },
     },

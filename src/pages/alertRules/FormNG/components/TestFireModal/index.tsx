@@ -20,7 +20,7 @@ interface Props {
   buttonDisabled?: boolean;
 }
 
-const STAGE_KEYS = ['synthesize', 'effective', 'pipeline', 'mute', 'notify', 'subscribe', 'side_effects'];
+const STAGE_KEYS = ['synthesize', 'effective', 'pipeline', 'mute', 'notify', 'side_effects'];
 
 const statusIconMap: Record<string, React.ReactNode> = {
   pass: <CheckCircleOutlined className='text-success' />,
@@ -232,10 +232,6 @@ export default function TestFireModal(props: Props) {
           ))}
         </>
       );
-    }
-    if (stage.stage === 'subscribe') {
-      if (_.isEmpty(data.matched_subs)) return tf('desc.subscribe_none');
-      return tf('desc.subscribe_matched', { names: _.map(data.matched_subs, 'note').join('、') });
     }
     if (stage.stage === 'side_effects') {
       return tf('desc.side_effects', { callbacks: data.callbacks || 0, taskTpls: data.task_tpls || 0 });

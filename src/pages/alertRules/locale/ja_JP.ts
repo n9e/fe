@@ -487,7 +487,6 @@ const ja_JP = {
         pipeline: 'イベント処理',
         mute: 'ミュートチェック',
         notify: '通知送信',
-        subscribe: 'サブスクリプション',
         side_effects: 'コールバックと自動復旧',
       },
       status: {
@@ -519,8 +518,6 @@ const ja_JP = {
         notify_skipped: 'マッチ（ドライランのため未送信）',
         notify_sent: '送信成功',
         notify_send_failed: '送信失敗：{{error}}',
-        subscribe_none: 'サブスクリプションルールに一致しませんでした',
-        subscribe_matched: 'サブスクリプションルール {{names}} にも一致します（テストでは通知しません）',
         side_effects: 'テストモードでスキップ：コールバック {{callbacks}} 件、自動復旧タスク {{taskTpls}} 件',
       },
     },

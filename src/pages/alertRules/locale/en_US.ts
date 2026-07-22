@@ -489,7 +489,6 @@ const en_US = {
         pipeline: 'Event pipeline',
         mute: 'Mute check',
         notify: 'Notification',
-        subscribe: 'Subscription match',
         side_effects: 'Callbacks & self-healing',
       },
       status: {
@@ -521,8 +520,6 @@ const en_US = {
         notify_skipped: 'Matched (dry run, not sent)',
         notify_sent: 'Sent',
         notify_send_failed: 'Send failed: {{error}}',
-        subscribe_none: 'No subscription rule matched',
-        subscribe_matched: 'Would also match subscription rules: {{names}} (subscriptions are not triggered in test mode)',
         side_effects: 'Skipped in test mode: {{callbacks}} callbacks, {{taskTpls}} self-healing tasks',
       },
     },
