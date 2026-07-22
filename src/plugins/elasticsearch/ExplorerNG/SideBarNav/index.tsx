@@ -68,6 +68,7 @@ export default function indexCpt(props: Props) {
       getFullFields(datasourceValue, queryValues.index, {
         type: 'date',
         allowHideSystemIndices: !!queryValues?.allow_hide_system_indices,
+        crossClusterEnabled: queryValues?.cross_cluster_enabled === 1,
       })
         .then((res) => {
           const fieldData = _.map(res.allFields, (item) => {
@@ -85,7 +86,7 @@ export default function indexCpt(props: Props) {
           return [];
         }),
     {
-      refreshDeps: [datasourceValue, queryValues?.index, queryValues?.allow_hide_system_indices],
+      refreshDeps: [datasourceValue, queryValues?.index, queryValues?.allow_hide_system_indices, queryValues?.cross_cluster_enabled],
       ready: !!datasourceValue && !!queryValues?.index,
       debounceWait: 500,
     },
@@ -115,6 +116,7 @@ export default function indexCpt(props: Props) {
           queryValues.date_field = indexPattern.time_field;
           queryValues.index = indexPattern.name;
           queryValues.allow_hide_system_indices = indexPattern.allow_hide_system_indices;
+          queryValues.cross_cluster_enabled = indexPattern.cross_cluster_enabled;
           form.setFieldsValue({
             query: queryValues,
             fieldConfig,
@@ -137,6 +139,7 @@ export default function indexCpt(props: Props) {
         queryValues.date_field = firstPattern.time_field;
         queryValues.index = firstPattern.name;
         queryValues.allow_hide_system_indices = firstPattern.allow_hide_system_indices;
+        queryValues.cross_cluster_enabled = firstPattern.cross_cluster_enabled;
         form.setFieldsValue({
           query: queryValues,
           fieldConfig,
@@ -271,6 +274,9 @@ export default function indexCpt(props: Props) {
               <Form.Item name={['query', 'allow_hide_system_indices']} hidden>
                 <div />
               </Form.Item>
+              <Form.Item name={['query', 'cross_cluster_enabled']} hidden>
+                <div />
+              </Form.Item>
               <Form.Item name={['query', 'date_field']} hidden>
                 <div />
               </Form.Item>
@@ -353,6 +359,7 @@ export default function indexCpt(props: Props) {
                       queryValues.date_field = selected.time_field;
                       queryValues.index = selected.name;
                       queryValues.allow_hide_system_indices = selected.allow_hide_system_indices;
+                      queryValues.cross_cluster_enabled = selected.cross_cluster_enabled;
                       form.setFieldsValue({
                         refreshFlag: undefined,
                         query: queryValues,
