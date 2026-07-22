@@ -511,6 +511,7 @@ const en_US = {
         pipeline_dropped: 'Event dropped by this pipeline',
         mute_none: 'No mute rule matched',
         mute_matched: 'A real event would be blocked by mute rules: {{names}} (test continues)',
+        notify_recover_disabled: 'Recovery notification is disabled on this rule; the real chain would not send it, so sending was skipped in this test',
         notify_no_targets: 'No notification rule configured, nobody will be notified when the alert fires',
         notify_legacy_ok: 'Legacy notification channel tokens are configured',
         notify_legacy_missing: 'No receiver has a token configured for channels: {{channels}}',

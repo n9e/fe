@@ -508,6 +508,7 @@ const zh_HK = {
         pipeline_dropped: '事件被該流水線丟棄',
         mute_none: '未命中任何屏蔽規則',
         mute_matched: '若為真實事件，將被屏蔽規則攔截：{{names}}（測試繼續執行）',
+        notify_recover_disabled: '規則未開啟「恢復時通知」，真實鏈路不會發送恢復通知，本次測試跳過發送',
         notify_no_targets: '未配置任何通知規則，告警觸發後不會發出通知',
         notify_legacy_ok: '舊版通知渠道接收人 token 配置齊全',
         notify_legacy_missing: '以下渠道所有接收人都未配置 token：{{channels}}',

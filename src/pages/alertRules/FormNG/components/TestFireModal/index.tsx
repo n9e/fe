@@ -204,6 +204,7 @@ export default function TestFireModal(props: Props) {
       return tf('desc.mute_matched', { names: _.map(data.matched_mutes, 'note').join('、') });
     }
     if (stage.stage === 'notify') {
+      if (data.recover_notify_disabled) return <span className='text-soft'>{tf('desc.notify_recover_disabled')}</span>;
       if (data.no_targets) return <span className='text-error'>{tf('desc.notify_no_targets')}</span>;
       if (data.legacy) {
         return _.isEmpty(data.missing_channels) ? tf('desc.notify_legacy_ok') : tf('desc.notify_legacy_missing', { channels: _.join(data.missing_channels, ', ') });

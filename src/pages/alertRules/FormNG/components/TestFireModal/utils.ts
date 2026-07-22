@@ -14,9 +14,13 @@ export interface SampleSeries {
   labelStr: string;
 }
 
-/** 默认模拟级别：取规则各查询里配置的最高级别（数值最小），没有则回退 S2 */
+/**
+ * 默认模拟级别：取规则里配置的最高级别（数值最小），没有则回退 S2。
+ * 级别按数据源形态可能配在 queries（Prometheus V1/Host/Loki）或 triggers（ES/SQL 插件、Prometheus V2）里
+ */
 export function getDefaultSeverity(ruleConfig: any): number {
-  const severities = _.filter(_.map(_.get(ruleConfig, 'queries'), 'severity'), (item) => _.includes([1, 2, 3], item));
+  const candidates = _.concat(_.map(_.get(ruleConfig, 'queries'), 'severity'), _.map(_.get(ruleConfig, 'triggers'), 'severity'));
+  const severities = _.filter(candidates, (item) => _.includes([1, 2, 3], item));
   const min = _.min(severities);
   return typeof min === 'number' ? min : 2;
 }

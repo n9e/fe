@@ -508,6 +508,7 @@ const zh_CN = {
         pipeline_dropped: '事件被该流水线丢弃',
         mute_none: '未命中任何屏蔽规则',
         mute_matched: '若为真实事件，将被屏蔽规则拦截：{{names}}（测试继续执行）',
+        notify_recover_disabled: '规则未开启「恢复时通知」，真实链路不会发送恢复通知，本次测试跳过发送',
         notify_no_targets: '未配置任何通知规则，告警触发后不会发出通知',
         notify_legacy_ok: '旧版通知渠道接收人 token 配置齐全',
         notify_legacy_missing: '以下渠道所有接收人都未配置 token：{{channels}}',

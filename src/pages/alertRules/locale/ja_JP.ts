@@ -509,6 +509,7 @@ const ja_JP = {
         pipeline_dropped: 'イベントはこのパイプラインで破棄されました',
         mute_none: 'ミュートルールに一致しませんでした',
         mute_matched: '実イベントの場合、ミュートルール {{names}} にブロックされます（テストは継続）',
+        notify_recover_disabled: 'このルールは「復旧時通知」が無効のため、実際のチェーンでは送信されません。テストでも送信をスキップしました',
         notify_no_targets: '通知ルールが未設定のため、アラート発火時に誰にも通知されません',
         notify_legacy_ok: '旧版通知チャネルのトークンは設定済みです',
         notify_legacy_missing: '次のチャネルは全受信者がトークン未設定です：{{channels}}',

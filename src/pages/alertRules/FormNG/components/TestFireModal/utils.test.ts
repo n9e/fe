@@ -20,6 +20,22 @@ describe('getDefaultSeverity (模拟触发默认级别)', () => {
     } as const;
     expect(getDefaultSeverity(ruleConfig)).toBe(3);
   });
+
+  it('级别配在 triggers 里（ES/SQL 插件、Prometheus V2）也能取到', () => {
+    const ruleConfig = {
+      queries: [{ ref: 'A' }],
+      triggers: [{ severity: 3 }, { severity: 1 }],
+    } as const;
+    expect(getDefaultSeverity(ruleConfig)).toBe(1);
+  });
+
+  it('queries 与 triggers 同时有级别时取两者最小', () => {
+    const ruleConfig = {
+      queries: [{ severity: 2 }],
+      triggers: [{ severity: 3 }],
+    } as const;
+    expect(getDefaultSeverity(ruleConfig)).toBe(2);
+  });
 });
 
 describe('parseVectorSeries (样本序列解析)', () => {
