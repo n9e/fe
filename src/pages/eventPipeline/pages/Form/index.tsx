@@ -86,6 +86,10 @@ export default function index(props: Props) {
     [i18n.language],
   );
 
+  // 分区顺序的唯一来源：SectionCard 头部的圆形序号按它推导，
+  // 增删或调整分区时只改上面的 sections，不用再去每个调用点对数字
+  const sectionKeys = useMemo(() => _.keys(sections), [sections]);
+
   const processorTypes = useMemo(() => _.compact(_.map(processors, (p: any) => p?.typ ?? p?.type)), [processors]);
   const processorLabels = useMemo(() => _.map(processorTypes, (typ) => t(`processor.options.${typ}`)), [processorTypes, i18n.language]);
 
@@ -143,7 +147,7 @@ export default function index(props: Props) {
 
         <SectionCard
           item={sections.filter}
-          index={0}
+          index={sectionKeys.indexOf('filter')}
           summary={filterSummary}
           collapsed={sectionCollapsed.filter}
           setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, filter: collapsed }))}
@@ -174,7 +178,7 @@ export default function index(props: Props) {
         <SectionCard
           className='mt-4'
           item={sections.processor}
-          index={1}
+          index={sectionKeys.indexOf('processor')}
           summary={processorSummary}
           collapsed={sectionCollapsed.processor}
           setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, processor: collapsed }))}
@@ -202,7 +206,7 @@ export default function index(props: Props) {
         <SectionCard
           className='mt-4'
           item={sections.basic}
-          index={2}
+          index={sectionKeys.indexOf('basic')}
           summary={basicSummary}
           collapsed={sectionCollapsed.basic}
           setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
