@@ -79,6 +79,21 @@ export default function indexCpt(props: Props) {
           });
           setDateFields(res.fields);
           onIndexDataChange(fieldData);
+          if (queryValues?.mode === 'indices') {
+            const query = form.getFieldValue('query');
+            if (!query) return fieldData;
+            const dateField = _.find(res.fields, { field: query.date_field })?.field;
+            const defaultDateField = _.find(res.fields, { field: '@timestamp' })?.field || res.fields[0]?.field;
+            const nextDateField = dateField || defaultDateField;
+            if (nextDateField && query.date_field !== nextDateField) {
+              form.setFieldsValue({
+                query: {
+                  ...query,
+                  date_field: nextDateField,
+                },
+              });
+            }
+          }
           return fieldData;
         })
         .catch(() => {
