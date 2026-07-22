@@ -61,7 +61,10 @@ interface Props {
   type?: number; // 1:编辑; 2:克隆
 }
 
-// 校验失败时，把出错字段映射到所在分区，展开后错误项才可见、才能被滚动定位
+const SEVERITIES = [1, 2, 3];
+
+// 校验失败时，把出错字段映射到所在分区，展开后错误项才可见、才能被滚动定位。
+// 没登记在这里的字段（如 plus 侧的 extra_config）会走全展开兜底，见 expandErrorSections
 const FIELD_SECTION_MAP: Record<string, string> = {
   cate: 'filter',
   datasource_ids: 'filter',
@@ -259,15 +262,18 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
     };
   }, [selectedRules, busiGroupsValue, tagsValue]);
 
+  // 级别未全选也是一种筛选，全选（默认值）时才算没收敛
+  const hasSeverityFilter = !_.isEmpty(severitiesValue) && _.size(severitiesValue) < _.size(SEVERITIES);
+
   // 一条筛选条件都没有时，订阅会命中全部告警事件，这里给出提示避免误配
-  const hasAnyFilter = !!cate || !!filterCounts.rules || !!filterCounts.busiGroups || !!filterCounts.tags || !!forDurationValue;
+  const hasAnyFilter = hasSeverityFilter || !!cate || !!filterCounts.rules || !!filterCounts.busiGroups || !!filterCounts.tags || !!forDurationValue;
 
   // 分区折叠后仍能看到里面配了什么
   const filterSummary = useMemo(() => {
     const parts: string[] = [];
     if (_.isEmpty(severitiesValue)) {
       parts.push(t('section_summary.severities_none'));
-    } else if (_.size(severitiesValue) === 3) {
+    } else if (_.size(severitiesValue) === _.size(SEVERITIES)) {
       parts.push(t('section_summary.severities_all'));
     } else {
       parts.push(_.map(_.sortBy(severitiesValue), (item) => `S${item}`).join('/'));
@@ -307,7 +313,9 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   };
 
   const expandErrorSections = (errorFields?: { name: (string | number)[] }[]) => {
-    const keys = _.compact(_.map(errorFields, ({ name }) => FIELD_SECTION_MAP[_.toString(name?.[0])]));
+    const sectionOfField = _.map(errorFields, ({ name }) => FIELD_SECTION_MAP[_.toString(name?.[0])]);
+    // 出错字段没登记在映射表里时宁可全展开，否则错误项会留在 display:none 的分区里，用户只看到「提交没反应」
+    const keys = _.some(sectionOfField, _.isUndefined) ? sectionKeys : _.compact(sectionOfField);
     if (keys.length) {
       setSectionCollapsed((prev) => ({
         ...prev,
@@ -350,7 +358,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               value: _.includes(['in', 'not in'], item.func) ? item.value.split(' ') : item.value,
             };
           }),
-          severities: detail.severities || [1, 2, 3],
+          severities: detail.severities || [...SEVERITIES],
           redefine_severity: detail?.redefine_severity ? true : false,
           redefine_channels: detail?.redefine_channels ? true : false,
           redefine_webhooks: detail?.redefine_webhooks ? true : false,
@@ -420,22 +428,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
               </div>
               <div className='filter-settings-row-content'>
                 <Form.Item label={t('severities')} name='severities' rules={[{ required: true, message: t('severities_msg') }]}>
-                  <Checkbox.Group
-                    options={[
-                      {
-                        label: t('common:severity.1'),
-                        value: 1,
-                      },
-                      {
-                        label: t('common:severity.2'),
-                        value: 2,
-                      },
-                      {
-                        label: t('common:severity.3'),
-                        value: 3,
-                      },
-                    ]}
-                  />
+                  <Checkbox.Group options={_.map(SEVERITIES, (item) => ({ label: t(`common:severity.${item}`), value: item }))} />
                 </Form.Item>
               </div>
             </div>
