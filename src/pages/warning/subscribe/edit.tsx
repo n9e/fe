@@ -22,6 +22,8 @@ import OperateForm from './components/operateForm';
 import { useTranslation } from 'react-i18next';
 import { getSubscribeData } from '@/services/subscribe';
 
+import { DOC_URL } from './constants';
+
 import './index.less';
 
 function useQuery() {
@@ -59,7 +61,7 @@ const EditSubscribe: React.FC = () => {
   };
 
   return (
-    <PageLayout title={t('title')} showBack doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/'>
+    <PageLayout title={t('title')} showBack doc={DOC_URL}>
       {curSubscribeData?.id && <OperateForm detail={curSubscribeData} type={!isClone ? 1 : 2} />}
     </PageLayout>
   );

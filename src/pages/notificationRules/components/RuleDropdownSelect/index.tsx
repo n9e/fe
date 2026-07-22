@@ -1,22 +1,31 @@
 import React, { useMemo, useState } from 'react';
 import { Form, Dropdown, Button, Input, Space, Drawer, Spin, message } from 'antd';
 import { PlusOutlined, PlusCircleOutlined, SyncOutlined } from '@ant-design/icons';
+import { Rule } from 'antd/lib/form';
 import { Bell, Check, ExternalLink, Eye, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 import { getNotificationChannelTypes } from '@/pages/notificationChannels/constants';
-import { getItem as getNotificationRule, putItem as putNotificationRule, postItems as createNotificationRules, RuleItem } from '@/pages/notificationRules/services';
-import { NS as notificationRulesNS, CN as notificationRulesCN } from '@/pages/notificationRules/constants';
-import NotificationRuleForm from '@/pages/notificationRules/pages/Form';
-import { normalizeInitialValues } from '@/pages/notificationRules/utils/normalizeValues';
-import { useFormNGData } from '../context';
+
+import { getItem as getNotificationRule, putItem as putNotificationRule, postItems as createNotificationRules, RuleItem } from '../../services';
+import { NS, CN } from '../../constants';
+import NotificationRuleForm from '../../pages/Form';
+import { normalizeInitialValues } from '../../utils/normalizeValues';
 
 const channelTypes = getNotificationChannelTypes();
 
+type NotifyConfig = { channel_id: number; channel_ident?: string; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] };
+
+export type RuleItemData = {
+  id: number;
+  name: string;
+  notify_configs?: NotifyConfig[];
+};
+
 /** 取通知规则第一条通知媒介配置的副标题 */
-function getRuleSubtitle(rule: { notify_configs?: { channel_id: number; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] }[] }) {
+function getRuleSubtitle(rule: RuleItemData) {
   const firstConfig = rule.notify_configs?.[0];
   if (!firstConfig) return '';
 
@@ -45,14 +54,6 @@ function getRuleIcon(ident?: string) {
   return null;
 }
 
-type NotifyConfig = { channel_id: number; channel_ident?: string; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] };
-
-type RuleItemData = {
-  id: number;
-  name: string;
-  notify_configs?: NotifyConfig[];
-};
-
 interface NotificationRuleItemProps {
   rule: RuleItemData;
   showCheckbox?: boolean;
@@ -65,7 +66,7 @@ interface NotificationRuleItemProps {
 }
 
 function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showViewButton = 'hover', onView, onRemove, className = '' }: NotificationRuleItemProps) {
-  const { t } = useTranslation('alertRules');
+  const { t } = useTranslation(NS);
   const subtitle = getRuleSubtitle(rule);
   const configCount = rule.notify_configs?.length ?? 0;
   const firstIdent = rule.notify_configs?.[0]?.channel_ident;
@@ -85,7 +86,7 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
       <div className='flex-1 min-w-0'>
         <div className='flex items-center gap-1'>
           <span className='font-bold leading-[1.4] max-w-[500px] truncate'>{rule.name}</span>
-          {configCount > 1 && <span className='px-1 py-0 rounded text-[10px] bg-primary/10 text-primary shrink-0'>{t('notify_rule_total', { total: configCount })}</span>}
+          {configCount > 1 && <span className='px-1 py-0 rounded text-[10px] bg-primary/10 text-primary shrink-0'>{t('rule_select.total', { total: configCount })}</span>}
         </div>
         {subtitle && <div className='leading-[1.4] text-soft mt-0.5 truncate'>{subtitle}</div>}
       </div>
@@ -100,7 +101,7 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
           }}
         >
           <Eye size={12} />
-          {t('notify_rule_view')}
+          {t('rule_select.view')}
         </Button>
       )}
       {showViewButton === 'hover' && (
@@ -114,7 +115,7 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
           }}
         >
           <Eye size={12} />
-          {t('notify_rule_view')}
+          {t('rule_select.view')}
         </Button>
       )}
       {onRemove && (
@@ -134,17 +135,21 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
   );
 }
 
-interface Props {
+interface ContentProps {
+  value?: number[];
+  onChange?: (value: number[]) => void;
   label?: React.ReactNode;
+  required?: boolean;
+  notificationRules: RuleItemData[];
+  loading?: boolean;
+  refresh?: () => void;
+  isAuthorized?: boolean;
 }
 
-export default function NotificationRuleDropdownSelect(props: Props) {
-  const { t } = useTranslation('alertRules');
-  const { permissions, notificationRules, notificationRulesLoading, refreshNotificationRules } = useFormNGData();
-  const isAuthorized = permissions.notificationRules;
-
-  const form = Form.useFormInstance();
-  const selectedIds = Form.useWatch('notify_rule_ids') || [];
+function Content(props: ContentProps) {
+  const { t } = useTranslation(NS);
+  const { value, onChange, label, required, notificationRules, loading, refresh, isAuthorized } = props;
+  const selectedIds = value ?? [];
 
   const [searchText, setSearchText] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -162,7 +167,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
   }, [notificationRules, searchText]);
 
   const selectedRules = useMemo(() => {
-    return notificationRules.filter((rule) => selectedIds.includes(rule.id));
+    return _.filter(notificationRules, (rule) => _.includes(selectedIds, rule.id));
   }, [notificationRules, selectedIds]);
 
   const toggleRule = (id: number) => {
@@ -173,7 +178,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
     } else {
       current.push(id);
     }
-    form.setFieldsValue({ notify_rule_ids: current });
+    onChange?.(current);
   };
 
   const handleOpenDrawer = () => {
@@ -230,7 +235,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
       </div>
       <div className='flex-1 overflow-y-auto max-h-[320px]'>
         {filteredRules.map((rule) => {
-          const isSelected = selectedIds.includes(rule.id);
+          const isSelected = _.includes(selectedIds, rule.id);
           return (
             <NotificationRuleItem
               key={rule.id}
@@ -244,7 +249,16 @@ export default function NotificationRuleDropdownSelect(props: Props) {
             />
           );
         })}
-        {filteredRules.length === 0 && <div className='px-3 py-6 text-center'>{t('common:nodata')}</div>}
+        {filteredRules.length === 0 && (
+          <div className='px-3 py-6 text-center'>
+            <div className='text-soft'>{t('common:nodata')}</div>
+            {isAuthorized && !searchText && (
+              <Button type='link' size='small' icon={<PlusOutlined />} onClick={handleCreateRule}>
+                {t('rule_select.create')}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       <div
         className='px-3 py-2 flex justify-between items-center'
@@ -253,9 +267,9 @@ export default function NotificationRuleDropdownSelect(props: Props) {
           fontSize: '11px',
         }}
       >
-        <span className='text-soft'>{t('notify_rule_footer_total', { total: filteredRules.length })}</span>
-        <Link to='/notification-rules' target='_blank'>
-          {t('notify_rule_manage')} <ExternalLink size={11} />
+        <span className='text-soft'>{t('rule_select.footer_total', { total: filteredRules.length })}</span>
+        <Link to={`/${NS}`} target='_blank'>
+          {t('rule_select.manage')} <ExternalLink size={11} />
         </Link>
       </div>
     </div>
@@ -263,16 +277,19 @@ export default function NotificationRuleDropdownSelect(props: Props) {
 
   return (
     <>
-      <Form.Item name='notify_rule_ids' hidden />
       <div className='mb-2'>
         <Space>
-          {t('notify_rule_ids')}
+          <span>
+            {required && <span className='text-error mr-1'>*</span>}
+            {label}
+          </span>
           {isAuthorized && <PlusCircleOutlined className='cursor-pointer' onClick={handleCreateRule} />}
-          {isAuthorized && (
+          {isAuthorized && refresh && (
             <SyncOutlined
-              spin={notificationRulesLoading}
+              spin={loading}
+              className='cursor-pointer'
               onClick={(e) => {
-                refreshNotificationRules();
+                refresh();
                 e.preventDefault();
               }}
             />
@@ -287,12 +304,12 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         </div>
       )}
       <Dropdown overlay={overlay} trigger={['click']} placement='bottomLeft' visible={dropdownOpen} onVisibleChange={handleDropdownVisibleChange}>
-        <Button type='dashed' icon={<PlusOutlined />} className='w-full justify-start text-left mb-4'>
-          {t('notify_rule_select')}
+        <Button type='dashed' icon={<PlusOutlined />} className='w-full justify-start text-left'>
+          {t('rule_select.select')}
         </Button>
       </Dropdown>
       <Drawer
-        title={t(`${notificationRulesNS}:title`)}
+        title={t('title')}
         placement='right'
         width='80%'
         destroyOnClose
@@ -300,7 +317,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         onClose={handleCloseViewDrawer}
         visible={viewDrawerVisible}
       >
-        <div className={`n9e ${notificationRulesCN}`}>
+        <div className={`n9e ${CN}`}>
           {viewDrawerData ? (
             <NotificationRuleForm
               initialValues={viewDrawerData}
@@ -308,7 +325,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
                 putNotificationRule(values).then(() => {
                   message.success(t('common:success.edit'));
                   handleCloseViewDrawer();
-                  refreshNotificationRules();
+                  refresh?.();
                 });
               }}
               onCancel={handleCloseViewDrawer}
@@ -319,7 +336,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         </div>
       </Drawer>
       <Drawer
-        title={t(`${notificationRulesNS}:title`)}
+        title={t('title')}
         placement='right'
         width='80%'
         destroyOnClose
@@ -327,7 +344,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         onClose={handleCloseCreateDrawer}
         visible={createDrawerVisible}
       >
-        <div className={`n9e ${notificationRulesCN}`}>
+        <div className={`n9e ${CN}`}>
           <NotificationRuleForm
             disabled={createSaving}
             onOk={(values) => {
@@ -336,7 +353,7 @@ export default function NotificationRuleDropdownSelect(props: Props) {
                 .then(() => {
                   message.success(t('common:success.add'));
                   handleCloseCreateDrawer();
-                  refreshNotificationRules();
+                  refresh?.();
                 })
                 .finally(() => {
                   setCreateSaving(false);
@@ -347,5 +364,28 @@ export default function NotificationRuleDropdownSelect(props: Props) {
         </div>
       </Drawer>
     </>
+  );
+}
+
+interface Props {
+  name?: string | (string | number)[];
+  label?: React.ReactNode;
+  rules?: Rule[];
+  className?: string;
+  notificationRules: RuleItemData[];
+  loading?: boolean;
+  refresh?: () => void;
+  isAuthorized?: boolean;
+}
+
+export default function RuleDropdownSelect(props: Props) {
+  const { t } = useTranslation(NS);
+  const { name = 'notify_rule_ids', label = t('rule_select.label'), rules, className, notificationRules, loading, refresh, isAuthorized } = props;
+  const required = _.some(rules, (rule) => (rule as { required?: boolean })?.required);
+
+  return (
+    <Form.Item name={name} rules={rules} className={className}>
+      <Content label={label} required={required} notificationRules={notificationRules} loading={loading} refresh={refresh} isAuthorized={isAuthorized} />
+    </Form.Item>
   );
 }
