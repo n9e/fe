@@ -65,6 +65,10 @@ export function getMenuPerm() {
     if (_.includes(perms, '/embedded-products')) {
       perms = _.concat(perms, ['/embedded-product']);
     }
+    // Backend role op is `/flashAI`; frontend path/menu key is `/flashai` (case-sensitive indexOf/includes).
+    if (_.includes(perms, '/flashAI') && !_.includes(perms, '/flashai')) {
+      perms = _.concat(perms, ['/flashai']);
+    }
     return {
       ...(res || {}),
       dat: perms,
