@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
-import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined } from '@ant-design/icons';
+import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import semver from 'semver';
 import { useAntdTable } from 'ahooks';
@@ -31,7 +31,9 @@ import VersionSelect from 'plus:/parcels/Targets/VersionSelect';
 
 import { NS } from '../../constants';
 import { Item, OperateType } from '../../types';
-import { getList } from '../../services';
+import { getList, getCategrafInstallMeta, CategrafInstallMeta } from '../../services';
+import InstallCategraf from './InstallCategraf';
+import { normalizeServerAddr } from './InstallCategraf/buildCommand';
 import getAuthLevelDisplayMap from '../../utils/getAuthLevelDisplayMap';
 import VersionIcon from './VersionIcon';
 import Tags from './Tags';
@@ -39,6 +41,8 @@ import { formatBeatTimeDisplay } from './formatBeatTimeDisplay';
 import AuthLevelDropdown from './AuthLevelDropdown';
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
+/** 老后端拿不到 installMeta 时文档里手动安装的兜底版本，随 categraf release 更新（2026-07 时为最新版） */
+const FALLBACK_CATEGRAF_VERSION = 'v0.5.15';
 const AI_TASK_AGENT_MIN_VERSION = '0.5.27';
 const AI_TASK_WINDOWS_AGENT_MIN_VERSION = '0.5.30';
 
@@ -117,7 +121,7 @@ interface Props {
 export default function List(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { t: tTargets } = useTranslation('targets');
-  const { darkMode } = useContext(CommonStateContext);
+  const { darkMode, siteInfo } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'hosts-ng' });
 
   const { allCollapseNode, editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType, aiTaskMode = false } = props;
@@ -128,6 +132,9 @@ export default function List(props: Props) {
   const [metaDrawerOpen, setMetaDrawerOpen] = useState(false);
   const [metaDrawerIdent, setMetaDrawerIdent] = useState('');
   const [upgradeTargetIdent, setUpgradeTargetIdent] = useState<string | null>(null);
+  // null 表示后端不支持一键安装（老版本 / 企业版），此时不展示入口，避免死按钮
+  const [installMeta, setInstallMeta] = useState<CategrafInstallMeta | null>(null);
+  const [installVisible, setInstallVisible] = useState(false);
 
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
@@ -184,12 +191,22 @@ export default function List(props: Props) {
     }
   }, [refreshFlag]);
 
+  useEffect(() => {
+    if (aiTaskMode) return;
+    getCategrafInstallMeta().then(setInstallMeta);
+  }, []);
+
   const openCategrafDoc = () => {
     DocumentDrawer({
       language: i18n.language,
       darkMode,
       title: t('categraf_doc'),
       documentPath: '/n9e-docs/categraf',
+      variables: {
+        // site_url 是站点设置里的自由文本，可能缺协议或带尾斜杠，统一 normalize 后再进文档
+        server_addr: normalizeServerAddr(installMeta?.base_url || siteInfo?.site_url) || window.location.origin,
+        categraf_version: installMeta?.version || FALLBACK_CATEGRAF_VERSION,
+      },
     });
   };
 
@@ -232,6 +249,11 @@ export default function List(props: Props) {
               setRefreshFlag(_.uniqueId('refreshFlag_'));
             }}
           />
+          {!aiTaskMode && installMeta && (
+            <Button type='primary' ghost icon={<DownloadOutlined />} onClick={() => setInstallVisible(true)}>
+              {t('install.entry')}
+            </Button>
+          )}
           <Input
             style={{ width: 300 }}
             prefix={<SearchOutlined />}
@@ -402,8 +424,8 @@ export default function List(props: Props) {
                   description={t('empty_guide.desc')}
                   actions={
                     <>
-                      <Button type='primary' onClick={openCategrafDoc}>
-                        {t('empty_guide.deploy_btn')}
+                      <Button type='primary' onClick={() => (installMeta ? setInstallVisible(true) : openCategrafDoc())}>
+                        {installMeta ? t('install.entry') : t('empty_guide.deploy_btn')}
                       </Button>
                       <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
                     </>
@@ -953,6 +975,16 @@ export default function List(props: Props) {
         }}
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
+      {installVisible && installMeta && (
+        <InstallCategraf
+          meta={installMeta}
+          onClose={(detected) => {
+            setInstallVisible(false);
+            // 只有确实检测到新机器才刷新，避免随手打开又关闭时无谓地重拉列表
+            if (detected) setRefreshFlag(_.uniqueId('refreshFlag_'));
+          }}
+        />
+      )}
       {upgradeTargetIdent && (
         <UpgradeAgent
           selectedIdents={[upgradeTargetIdent]}
