@@ -31,6 +31,7 @@ src/
 - 组件 Props 使用 `interface` 显式声明，避免 `any`。
 - 遵循仓库既有格式与 Prettier 配置；改动保持最小范围，不重写无关模块。
 - 不臆测接口或业务逻辑；上下文不足时说明缺口或反问。
+- **类型收窄优先使用原生接口**：用 `Array.isArray` 代替 `_.isArray`，用 `typeof x === 'number'` 代替 `_.isNumber`，用 `x == null` 代替 `_.isNil`，以此类推。lodash 的类型守卫函数在缺少 `@types/lodash` 时不会被 TypeScript 识别为类型守卫，导致 `unknown` 类型无法收窄。
 
 ## 数据与错误
 
