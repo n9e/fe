@@ -31,7 +31,7 @@ export default function Callback(props: Props) {
             EditorView.lineWrapping,
             EditorView.theme({
               '&': {
-                backgroundColor: '#F6F6F6 !important',
+                backgroundColor: 'var(--fc-fill-2) !important',
               },
               '&.cm-editor.cm-focused': {
                 outline: 'unset',
