@@ -95,6 +95,9 @@ function FormCpt(props: IProps, ref) {
                     isPreview
                     themeMode={darkMode ? 'dark' : undefined}
                     annotations={[]}
+                    onOverridesChange={(overrides) => {
+                      chartForm.setFieldsValue({ overrides });
+                    }}
                   />
                 )}
               </div>
