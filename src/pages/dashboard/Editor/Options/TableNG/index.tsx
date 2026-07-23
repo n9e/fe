@@ -19,7 +19,12 @@ export default function Table({ targets }) {
       {cellOptionsType !== 'none' && <Thresholds showMode />}
       <ValueMappings isActive={false} />
       <StandardOptions isActive={false} />
-      <Overrides targets={targets} matcherNames={['byName']} defaultMatcherId='byName' overrideOptions={['custom.cellOptions', 'thresholds', 'thresholds_showMode']} />
+      <Overrides
+        targets={targets}
+        matcherNames={['byName']}
+        defaultMatcherId='byName'
+        overrideOptions={['custom.width', 'custom.cellOptions', 'thresholds', 'thresholds_showMode']}
+      />
     </>
   );
 }

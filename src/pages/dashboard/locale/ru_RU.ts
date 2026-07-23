@@ -310,6 +310,7 @@ const ru_RU = {
       displayName_tip: 'Пользовательское название серии',
     },
     overrides: {
+      columnWidth: 'Ширина столбца',
       matcher: {
         id: 'Тип сопоставления',
         byFrameRefID: {

@@ -344,6 +344,7 @@ const zh_CN = {
       displayName_tip: '自定义系列名称',
     },
     overrides: {
+      columnWidth: '列宽',
       matcher: {
         id: '匹配类型',
         byFrameRefID: {

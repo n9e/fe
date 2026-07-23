@@ -344,6 +344,7 @@ const zh_HK = {
       displayName_tip: '自定義顯示名稱',
     },
     overrides: {
+      columnWidth: '欄寬',
       matcher: {
         id: '匹配類型',
         byFrameRefID: {
