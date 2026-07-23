@@ -59,14 +59,16 @@ export function getResolvedColumnWidths(cachedWidths: ColumnWidths, overrides: I
 export function upsertColumnWidthOverride(overrides: IOverride[] = [], field: string, width: number): IOverride[] {
   if (!field || !isValidColumnWidth(width)) return overrides;
 
-  const lastMatchedIndex = _.findLastIndex(overrides, (override) => {
+  // 编辑器默认会保留一条未选择匹配值的 override，占位规则不应阻止拖拽生成有效配置。
+  const effectiveOverrides = overrides.length === 1 && !_.trim(overrides[0]?.matcher?.value) ? [] : overrides;
+  const lastMatchedIndex = _.findLastIndex(effectiveOverrides, (override) => {
     const matcherType = override?.matcher?.id || override?.matcher?.type;
     return matcherType === 'byName' && override?.matcher?.value === field;
   });
 
   if (lastMatchedIndex === -1) {
     return [
-      ...overrides,
+      ...effectiveOverrides,
       {
         matcher: {
           id: 'byName',
@@ -79,7 +81,7 @@ export function upsertColumnWidthOverride(overrides: IOverride[] = [], field: st
     ];
   }
 
-  return _.map(overrides, (override, index) => {
+  return _.map(effectiveOverrides, (override, index) => {
     if (index !== lastMatchedIndex) return override;
     return {
       ...override,
