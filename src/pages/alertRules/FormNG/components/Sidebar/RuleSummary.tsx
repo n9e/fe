@@ -245,8 +245,10 @@ function QueryTextTag(props: { text?: string; fullText?: string; previewType?: Q
 
   return (
     <Popover content={content} trigger='click' placement='leftTop'>
-      <ThemeTag title={fullText} className='max-w-full truncate cursor-pointer hover:border-primary hover:bg-primary/10'>
-        {text}
+      <ThemeTag title={fullText} className='max-w-full items-start whitespace-normal cursor-pointer hover:border-primary hover:bg-primary/10'>
+        <span className='line-clamp-3 min-w-0 break-words'>
+          {text}
+        </span>
       </ThemeTag>
     </Popover>
   );
