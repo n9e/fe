@@ -8,7 +8,7 @@ type ColumnWidths = Record<string, number>;
 type ColumnWidthStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 export function isValidColumnWidth(value: unknown): value is number {
-  return _.isNumber(value) && Number.isFinite(value) && value >= TABLE_COLUMN_MIN_WIDTH;
+  return typeof value === 'number' && Number.isFinite(value) && value >= TABLE_COLUMN_MIN_WIDTH;
 }
 
 export function getColumnWidthColDef(width: unknown): { width: number; flex: 0 } | Record<string, never> {
