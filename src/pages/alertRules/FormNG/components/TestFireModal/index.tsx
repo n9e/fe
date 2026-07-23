@@ -12,7 +12,7 @@ import { N9E_PATHNAME } from '@/utils/constant';
 import { processFormValues } from '@/pages/alertRules/Form/utils';
 import { alertRuleTestFire } from '@/pages/alertRules/services';
 
-import { getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults, SampleSeries, TestFireStage } from './utils';
+import { getConfiguredSeverities, getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults, SampleSeries, TestFireStage } from './utils';
 
 interface Props {
   /** 保存接口同款业务组 id：initialValues?.group_id || 路由上的 bgid */
@@ -20,7 +20,7 @@ interface Props {
   buttonDisabled?: boolean;
 }
 
-const STAGE_KEYS = ['synthesize', 'effective', 'pipeline', 'mute', 'notify', 'side_effects'];
+const STAGE_KEYS = ['query_check', 'synthesize', 'effective', 'pipeline', 'mute', 'notify'];
 
 const statusIconMap: Record<string, React.ReactNode> = {
   pass: <CheckCircleOutlined className='text-success' />,
@@ -47,8 +47,9 @@ export default function TestFireModal(props: Props) {
   const [loading, setLoading] = useState(false);
 
   const [severity, setSeverity] = useState(2);
+  // 规则里实际配置过的档位：多档位时供选择「模拟命中哪一档」，单档位时收敛为说明文字
+  const [severityOptions, setSeverityOptions] = useState<number[]>([1, 2, 3]);
   const [eventType, setEventType] = useState<'trigger' | 'recover'>('trigger');
-  const [sampleMode, setSampleMode] = useState<'real' | 'mock'>('mock');
   const [skipSend, setSkipSend] = useState(false);
   const [notifyRecovered, setNotifyRecovered] = useState<boolean>(true);
   const [isPrometheus, setIsPrometheus] = useState(false);
@@ -115,12 +116,13 @@ export default function TestFireModal(props: Props) {
         const prometheus = values.cate === 'prometheus';
         resetLocalState();
         setIsPrometheus(prometheus);
+        const configured = getConfiguredSeverities(values.rule_config);
+        setSeverityOptions(configured.length > 0 ? configured : [1, 2, 3]);
         setSeverity(getDefaultSeverity(values.rule_config));
         setEventType('trigger');
         setSkipSend(false);
         // 表单里是 Switch 的布尔值，DB/接口里才是 0/1，两种形态都兼容
         setNotifyRecovered(values.notify_recovered === true || values.notify_recovered === 1);
-        setSampleMode(prometheus ? 'real' : 'mock');
         setDatasourceId(values.datasource_value);
         setVisible(true);
         if (prometheus) {
@@ -141,7 +143,7 @@ export default function TestFireModal(props: Props) {
     // processFormValues 会派生新对象，但按仓库约定先 cloneDeep 保护表单原始引用
     const values = _.cloneDeep(form.getFieldsValue(true));
     const config = processFormValues(values);
-    const selected = sampleMode === 'real' && selectedSeriesIndex !== undefined ? series[selectedSeriesIndex] : undefined;
+    const selected = isPrometheus && selectedSeriesIndex !== undefined ? series[selectedSeriesIndex] : undefined;
     const sample = selected
       ? {
           labels: selected.labels,
@@ -185,10 +187,79 @@ export default function TestFireModal(props: Props) {
       return <span className='text-error'>{data.error}</span>;
     }
 
+    if (stage.stage === 'query_check') {
+      // data.error 的场景（rule_config 解析失败等）已被上方的通用错误分支消化，
+      // 走到这里必然有 queries/triggers/host_count 明细
+      return (
+        <>
+          {data.only_first_checked && <div className='text-soft'>{tf('desc.query_only_first', { ids: _.join(data.matched_datasource_ids, ', ') })}</div>}
+          {data.host_count !== undefined && <div>{tf('desc.query_host_count', { count: data.host_count })}</div>}
+          {_.map(data.queries, (q: any, idx: number) => {
+            if (q.skipped) {
+              return (
+                <div key={idx} className='text-soft'>
+                  {tf('desc.query_skipped')}
+                </div>
+              );
+            }
+            const label = q.promql || (q.ref ? `${tf('desc.query_ref')} ${q.ref}` : `#${idx + 1}`);
+            return (
+              <div key={idx}>
+                {label}
+                {': '}
+                {q.skipped_var && <span className='text-soft'>{tf('desc.query_skipped_var')}</span>}
+                {!q.skipped_var && q.ok && (
+                  <span className={q.series_count === 0 ? 'text-soft' : 'text-success'}>
+                    {q.series_count === 0 ? tf('desc.query_no_data') : tf('desc.query_ok', { count: q.series_count, value: q.latest_value })}
+                  </span>
+                )}
+                {q.ok === false && <span className='text-error'>{q.syntax_error || q.error}</span>}
+              </div>
+            );
+          })}
+          {_.map(data.triggers, (tr: any, idx: number) => {
+            if (tr.skipped) {
+              return (
+                <div key={`t${idx}`} className='text-soft'>
+                  {tf('desc.trigger_skipped')}
+                </div>
+              );
+            }
+            return (
+              <div key={`t${idx}`}>
+                {tr.exp}
+                {': '}
+                {tr.ok === false && !_.isEmpty(tr.missing_refs) && <span className='text-error'>{tf('desc.trigger_missing_refs', { refs: _.join(tr.missing_refs, ', ') })}</span>}
+                {tr.ok === false && !_.isEmpty(tr.missing_join_refs) && (
+                  <span className='text-error'>{tf('desc.trigger_missing_refs', { refs: _.join(tr.missing_join_refs, ', ') })}</span>
+                )}
+                {tr.ok === false && tr.syntax_error && <span className='text-error'>{tf('desc.trigger_syntax_error', { error: tr.syntax_error })}</span>}
+                {tr.ok === false && tr.recover_exp_error && <span className='text-error'>{tf('desc.trigger_recover_exp_error', { error: tr.recover_exp_error })}</span>}
+                {tr.ok === false && tr.error && <span className='text-error'>{tr.error}</span>}
+                {tr.ok && tr.no_data && <span className='text-soft'>{tf('desc.trigger_no_data')}</span>}
+                {tr.ok && !tr.no_data && (
+                  <span className={tr.fired_groups > 0 ? 'text-success' : 'text-soft'}>{tf('desc.trigger_evaluated', { groups: tr.groups, fired: tr.fired_groups })}</span>
+                )}
+                {tr.ok && !tr.no_data && !_.isEmpty(tr.sample_vars) && (
+                  <span className='text-soft'>{` · ${_.map(tr.sample_vars, (v, k) => `${k}=${v}`).join(' ')}`}</span>
+                )}
+                {tr.eval_error && <span className='text-error'> · {tf('desc.trigger_eval_error', { error: tr.eval_error })}</span>}
+              </div>
+            );
+          })}
+        </>
+      );
+    }
     if (stage.stage === 'synthesize') {
       return (
         <>
-          <div>{data.sample_source === 'real' ? tf('desc.synthesize_real', { value: data.value }) : tf('desc.synthesize_mock', { value: data.value })}</div>
+          <div>
+            {data.sample_source === 'real'
+              ? tf('desc.synthesize_real', { value: data.value })
+              : data.sample_source === 'real_auto'
+              ? tf('desc.synthesize_real_auto', { value: data.value })
+              : tf('desc.synthesize_mock', { value: data.value })}
+          </div>
           {!_.isEmpty(data.render_errors) && (
             <div className='text-error'>
               {tf('desc.render_errors')}
@@ -206,6 +277,7 @@ export default function TestFireModal(props: Props) {
         <>
           {data.disabled && <div>{tf('desc.effective_disabled')}</div>}
           {data.in_time_span === false && <div>{tf('desc.effective_time')}</div>}
+          {data.ident_exists === false && <div>{tf('desc.effective_ident')}</div>}
           {data.bg_match === false && <div>{tf('desc.effective_bg')}</div>}
         </>
       );
@@ -225,8 +297,16 @@ export default function TestFireModal(props: Props) {
       );
     }
     if (stage.stage === 'mute') {
-      if (_.isEmpty(data.matched_mutes)) return tf('desc.mute_none');
-      return tf('desc.mute_matched', { names: _.map(data.matched_mutes, 'note').join('、') });
+      if (_.isEmpty(data.matched_mutes) && !data.hook_muted) return tf('desc.mute_none');
+      return (
+        <>
+          {_.map(data.matched_mutes, (m: any) => (
+            <div key={m.id}>{m.mute_type === 1 ? tf('desc.mute_matched_notify_only', { name: m.note }) : tf('desc.mute_matched_full', { name: m.note })}</div>
+          ))}
+          {data.hook_muted && <div>{tf('desc.mute_hook')}</div>}
+          <div className='text-soft'>{tf('desc.mute_continue')}</div>
+        </>
+      );
     }
     if (stage.stage === 'notify') {
       if (data.recover_notify_disabled) return <span className='text-soft'>{tf('desc.notify_recover_disabled')}</span>;
@@ -243,8 +323,9 @@ export default function TestFireModal(props: Props) {
               {item.notify_rule_name || item.notify_rule_id}
               {item.channel_name ? ` · ${item.channel_name}` : ''}
               {': '}
+              {item.added_by_pipeline && <span className='text-soft'>{tf('desc.notify_added_by_pipeline')}</span>}
               {item.dropped_by_notify_pipeline && <span className='text-error'>{tf('desc.notify_dropped_by_pipeline')}</span>}
-              {!item.dropped_by_notify_pipeline && !item.matched && (
+              {!item.added_by_pipeline && !item.dropped_by_notify_pipeline && !item.matched && (
                 <span className='text-soft'>
                   {tf('desc.notify_not_matched')}
                   {item.match_error ? `（${item.match_error}）` : ''}
@@ -257,9 +338,6 @@ export default function TestFireModal(props: Props) {
           ))}
         </>
       );
-    }
-    if (stage.stage === 'side_effects') {
-      return tf('desc.side_effects', { callbacks: data.callbacks || 0, taskTpls: data.task_tpls || 0 });
     }
     return null;
   };
@@ -281,16 +359,24 @@ export default function TestFireModal(props: Props) {
           {phase === 'settings' && (
             <div className='flex flex-col gap-4'>
               <Alert type='info' showIcon message={t('form_ng.test_fire.intro')} />
-              <div>
-                <div className='mb-1 text-title'>{t('form_ng.test_fire.severity')}</div>
-                <Radio.Group value={severity} onChange={(e) => setSeverity(e.target.value)}>
-                  {_.map([1, 2, 3], (item) => (
-                    <Radio key={item} value={item}>
-                      {t(`common:severity.${item}`)}
-                    </Radio>
-                  ))}
-                </Radio.Group>
-              </div>
+              {severityOptions.length === 1 ? (
+                <div>
+                  <div className='mb-1 text-title'>{t('form_ng.test_fire.severity')}</div>
+                  <div className='text-soft'>{t('form_ng.test_fire.severity_single', { severity: t(`common:severity.${severityOptions[0]}`) })}</div>
+                </div>
+              ) : (
+                <div>
+                  <div className='mb-1 text-title'>{t('form_ng.test_fire.severity')}</div>
+                  <Radio.Group value={severity} onChange={(e) => setSeverity(e.target.value)}>
+                    {_.map(severityOptions, (item) => (
+                      <Radio key={item} value={item}>
+                        {t(`common:severity.${item}`)}
+                      </Radio>
+                    ))}
+                  </Radio.Group>
+                  <div className='text-soft mt-1'>{t('form_ng.test_fire.severity_multi_tip')}</div>
+                </div>
+              )}
               <div>
                 <div className='mb-1 text-title'>{t('form_ng.test_fire.event_type')}</div>
                 <Radio.Group value={eventType} onChange={(e) => setEventType(e.target.value)}>
@@ -302,58 +388,43 @@ export default function TestFireModal(props: Props) {
               <div>
                 <div className='mb-1 text-title'>{t('form_ng.test_fire.sample')}</div>
                 {isPrometheus ? (
-                  <>
-                    <Radio.Group
-                      value={sampleMode}
-                      onChange={(e) => {
-                        setSampleMode(e.target.value);
-                        if (e.target.value === 'real' && _.isEmpty(series)) {
-                          fetchSeries(datasourceId);
-                        }
-                      }}
-                    >
-                      <Radio value='real'>{t('form_ng.test_fire.sample_real')}</Radio>
-                      <Radio value='mock'>{t('form_ng.test_fire.sample_mock')}</Radio>
-                    </Radio.Group>
-                    {sampleMode === 'real' && (
-                      <Spin spinning={seriesLoading}>
-                        <div className='mt-2 flex flex-col gap-2'>
-                          <Select
-                            style={{ width: 300 }}
-                            showSearch
-                            optionFilterProp='label'
-                            placeholder={t('form_ng.test_fire.sample_datasource')}
-                            value={datasourceId}
-                            onChange={(value) => {
-                              setDatasourceId(value);
-                              fetchSeries(value);
-                            }}
-                            options={_.map(groupedDatasourceList.prometheus, (item) => ({
-                              label: item.name,
-                              value: item.id,
-                            }))}
-                          />
-                          {_.isEmpty(series) ? (
-                            <Alert type='warning' showIcon message={t('form_ng.test_fire.sample_empty')} />
-                          ) : (
-                            <Select
-                              style={{ width: '100%' }}
-                              showSearch
-                              optionFilterProp='label'
-                              value={selectedSeriesIndex}
-                              onChange={(value) => setSelectedSeriesIndex(value)}
-                              options={_.map(series, (item, idx) => ({
-                                label: `${item.labelStr} = ${item.value}`,
-                                value: idx,
-                              }))}
-                            />
-                          )}
-                        </div>
-                      </Spin>
-                    )}
-                  </>
+                  // 与其他数据源交互统一：自动取真实序列（默认第一条，可换选），查询无数据时自动用内置模拟值
+                  <Spin spinning={seriesLoading}>
+                    <div className='flex flex-col gap-2'>
+                      <Select
+                        style={{ width: 300 }}
+                        showSearch
+                        optionFilterProp='label'
+                        placeholder={t('form_ng.test_fire.sample_datasource')}
+                        value={datasourceId}
+                        onChange={(value) => {
+                          setDatasourceId(value);
+                          fetchSeries(value);
+                        }}
+                        options={_.map(groupedDatasourceList.prometheus, (item) => ({
+                          label: item.name,
+                          value: item.id,
+                        }))}
+                      />
+                      {_.isEmpty(series) ? (
+                        !seriesLoading && <Alert type='warning' showIcon message={t('form_ng.test_fire.sample_empty')} />
+                      ) : (
+                        <Select
+                          style={{ width: '100%' }}
+                          showSearch
+                          optionFilterProp='label'
+                          value={selectedSeriesIndex}
+                          onChange={(value) => setSelectedSeriesIndex(value)}
+                          options={_.map(series, (item, idx) => ({
+                            label: `${item.labelStr} = ${item.value}`,
+                            value: idx,
+                          }))}
+                        />
+                      )}
+                    </div>
+                  </Spin>
                 ) : (
-                  <div className='text-soft'>{t('form_ng.test_fire.sample_mock_only')}</div>
+                  <div className='text-soft'>{t('form_ng.test_fire.sample_auto')}</div>
                 )}
               </div>
               <div>

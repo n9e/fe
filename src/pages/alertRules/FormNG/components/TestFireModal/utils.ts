@@ -15,13 +15,17 @@ export interface SampleSeries {
 }
 
 /**
- * 默认模拟级别：取规则里配置的最高级别（数值最小），没有则回退 S2。
+ * 规则里实际配置过的告警档位（升序去重，可能为空）。
  * 级别按数据源形态可能配在 queries（Prometheus V1/Host/Loki）或 triggers（ES/SQL 插件、Prometheus V2）里
  */
-export function getDefaultSeverity(ruleConfig: any): number {
+export function getConfiguredSeverities(ruleConfig: any): number[] {
   const candidates = _.concat(_.map(_.get(ruleConfig, 'queries'), 'severity'), _.map(_.get(ruleConfig, 'triggers'), 'severity'));
-  const severities = _.filter(candidates, (item) => _.includes([1, 2, 3], item));
-  const min = _.min(severities);
+  return _.sortBy(_.uniq(_.filter(candidates, (item) => _.includes([1, 2, 3], item))));
+}
+
+/** 默认模拟级别：取规则里配置的最高级别（数值最小），没有则回退 S2 */
+export function getDefaultSeverity(ruleConfig: any): number {
+  const min = getConfiguredSeverities(ruleConfig)[0];
   return typeof min === 'number' ? min : 2;
 }
 

@@ -1,4 +1,23 @@
-import { getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults } from './utils';
+import { getConfiguredSeverities, getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults } from './utils';
+
+describe('getConfiguredSeverities (规则里配置过的档位)', () => {
+  it('queries 与 triggers 的档位合并、去重、升序', () => {
+    const ruleConfig = {
+      queries: [{ severity: 3 }, { severity: 2 }],
+      triggers: [{ severity: 2 }, { severity: 1 }],
+    } as const;
+    expect(getConfiguredSeverities(ruleConfig)).toEqual([1, 2, 3]);
+  });
+
+  it('单档位规则只返回该档位', () => {
+    expect(getConfiguredSeverities({ triggers: [{ severity: 3 }] })).toEqual([3]);
+  });
+
+  it('忽略非法值，解析不出时返回空数组', () => {
+    expect(getConfiguredSeverities({ queries: [{ severity: 0 }, { severity: 9 }] })).toEqual([]);
+    expect(getConfiguredSeverities(undefined)).toEqual([]);
+  });
+});
 
 describe('getFirstPromql (按规则版本取查询表达式)', () => {
   it('V1 取 prom_ql', () => {
