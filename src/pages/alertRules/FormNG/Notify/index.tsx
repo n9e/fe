@@ -21,11 +21,12 @@ interface Props {
   sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   disabled?: boolean;
+  initiallyCollapsed?: boolean;
   expandSignal?: { key: string; ts: number } | null;
   toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
 }
 
-export default function index({ item, sectionKeys, sectionRefs, disabled, expandSignal, toggleAllSignal }: Props) {
+export default function index({ item, sectionKeys, sectionRefs, disabled, initiallyCollapsed = false, expandSignal, toggleAllSignal }: Props) {
   const { t } = useTranslation('alertRules');
   const {
     notifyChannels: contactList,
@@ -39,7 +40,7 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, expand
   } = useFormNGData();
 
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
-  const [effectiveCollapsed, setEffectiveCollapsed] = useState(true);
+  const [effectiveCollapsed, setEffectiveCollapsed] = useState(initiallyCollapsed);
 
   const notify_version = Form.useWatch('notify_version');
   const notify_channels = Form.useWatch('notify_channels');

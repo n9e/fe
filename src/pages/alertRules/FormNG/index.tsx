@@ -521,6 +521,7 @@ export default function FormNG(props: IProps) {
                   sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
                   disabled={disabled}
+                  initiallyCollapsed={type === 1 && _.isEmpty(initialValues?.notify_rule_ids)}
                   expandSignal={scroll.expandSignal}
                   toggleAllSignal={scroll.toggleAllSignal}
                 />
