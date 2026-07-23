@@ -11,6 +11,7 @@ import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { Record } from '../services';
+import '@/pages/explorer/index.less';
 
 interface Props {
   panel: Record;

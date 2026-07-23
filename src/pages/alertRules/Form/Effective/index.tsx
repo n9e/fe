@@ -115,7 +115,7 @@ export default function index({ initialValues }: { initialValues: any }) {
                 <Space align='baseline'>
                   {t('effective_time')}
                   <PlusCircleOutlined
-                    className='control-icon-normal'
+                    className='leading-[32px]'
                     onClick={() =>
                       add({
                         enable_stime: moment('00:00', 'HH:mm'),

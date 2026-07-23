@@ -6,6 +6,7 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import ListNG from '@/pages/historyEvents/ListNG';
 
 import { getNotifyEvents } from '../../services';
+import '@/pages/event/index.less';
 
 interface Props {
   id: number;

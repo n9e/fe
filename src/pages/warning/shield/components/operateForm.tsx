@@ -440,7 +440,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                       <div style={{ width: 450 }}>
                         <Space align='baseline'>
                           {t('mute_type.days_of_week')}
-                          <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                          <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
                         </Space>
                       </div>
                       <div style={{ width: 110 }}>

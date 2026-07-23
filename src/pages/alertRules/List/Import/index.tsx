@@ -42,7 +42,7 @@ function Import(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
-      className='dashboard-import-modal'
+      className='n9e-modal-with-tabs'
       title={
         <Tabs activeKey={modalType} onChange={(e: ModalType) => setModalType(e)} className='custom-import-alert-title'>
           <TabPane tab={t('batch.import_builtin')} key='ImportBuiltin'></TabPane>

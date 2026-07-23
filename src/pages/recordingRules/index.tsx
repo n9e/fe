@@ -8,6 +8,7 @@ import PageTable from './PageTable';
 import Edit from './edit';
 import Add from './add';
 import './locale';
+import './index.less';
 
 export { Edit, Add };
 const N9E_GIDS_LOCALKEY = 'n9e_recording_rules_gids';

@@ -111,7 +111,7 @@ export default function index({ item, sectionKeys, sectionRefs, initialValues, e
                 <Space align='baseline'>
                   {t('effective_time')}
                   <PlusCircleOutlined
-                    className='control-icon-normal'
+                    className='leading-[32px]'
                     onClick={() =>
                       add({
                         enable_days_of_week: ['0', '1', '2', '3', '4', '5', '6'],
