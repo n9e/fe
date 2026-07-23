@@ -72,10 +72,10 @@ const getTLSProject = async () => {
 const getTLSTopic = async () => {
   return {};
 };
-const getLTSProject = async () => {
+const getProject = async () => {
   return {};
 };
-const getLTSTopic = async () => {
+const getTopic = async () => {
   return {};
 };
 export {
@@ -109,6 +109,6 @@ export {
   getCLSTopic,
   getTLSProject,
   getTLSTopic,
-  getLTSProject,
-  getLTSTopic,
+  getProject,
+  getTopic,
 };
