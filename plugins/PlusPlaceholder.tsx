@@ -60,6 +60,24 @@ const options = [];
 const esQueryBuilder = async () => {
   return {};
 };
+const getCLSLogset = async () => {
+  return {};
+};
+const getCLSTopic = async () => {
+  return {};
+};
+const getTLSProject = async () => {
+  return {};
+};
+const getTLSTopic = async () => {
+  return {};
+};
+const getLTSProject = async () => {
+  return {};
+};
+const getLTSTopic = async () => {
+  return {};
+};
 export {
   AlertRule,
   QueryBuilder,
@@ -87,4 +105,10 @@ export {
   getBrainLicense,
   options,
   esQueryBuilder,
+  getCLSLogset,
+  getCLSTopic,
+  getTLSProject,
+  getTLSTopic,
+  getLTSProject,
+  getLTSTopic,
 };
