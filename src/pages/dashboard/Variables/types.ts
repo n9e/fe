@@ -26,6 +26,7 @@ export interface IVariable<QueryType = any> {
     index: string; // elasticsearch 源的索引配置
     date_field: string; // elasticsearch 源的时间字段配置
   };
+  width?: number; // v9 新增，设置变量宽度
   value?: number | string | string[] | number; // 变量的值, 只有 datasource 的值是 number 类型
   hide?: boolean; // v6 新增，用于隐藏变量
   query?: QueryType; // v8 新增，用于规范各类数据的查询条件
