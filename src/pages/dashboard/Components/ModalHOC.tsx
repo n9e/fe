@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { createRoot, Root } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -32,20 +32,20 @@ export default function ModalHOC(Component: any) {
   return function ModalControl(config: any) {
     const div = document.createElement('div');
     document.body.appendChild(div);
-    const root: Root = createRoot(div);
 
     function destroy() {
-      root.unmount();
-      if (div.parentNode) {
+      const unmountResult = ReactDOM.unmountComponentAtNode(div);
+      if (unmountResult && div.parentNode) {
         div.parentNode.removeChild(div);
       }
     }
 
     function render(props: any) {
-      root.render(
+      ReactDOM.render(
         <Router>
           <Component {...props} />
         </Router>,
+        div,
       );
     }
 

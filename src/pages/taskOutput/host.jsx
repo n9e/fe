@@ -20,6 +20,11 @@ export default class index extends Component {
     document.body.style.color = '#000';
   };
 
+  componentWillMount = () => {
+    document.body.style.backgroundColor = '#f0f2f5';
+    document.body.style.color = 'rgba(0, 0, 0, 0.65)';
+  };
+
   fetchData() {
     const busiId = _.get(this.props, 'match.params.busiId');
     const taskId = _.get(this.props, 'match.params.taskId');
