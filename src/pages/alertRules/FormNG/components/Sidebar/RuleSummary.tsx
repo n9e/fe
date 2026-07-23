@@ -13,8 +13,12 @@ import { CommonStateContext } from '@/App';
 import { cn } from '@/utils';
 import { getTargetList } from '@/services/targets';
 import PromQLInputNG from '@/components/PromQLInputNG';
+
+// @ts-ignore
 import { getCLSLogset, getCLSTopic } from 'plus:/datasource/tencentCLS/services';
+// @ts-ignore
 import { getTLSProject, getTLSTopic } from 'plus:/datasource/volcTLS/services';
+// @ts-ignore
 import { getProject as getLTSProject, getTopic as getLTSTopic } from 'plus:/datasource/huaweiLTS/services';
 
 import { useFormNGData } from '../../context';

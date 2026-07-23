@@ -163,6 +163,9 @@ module.exports = {
         height: 'height',
         spacing: 'margin, padding',
       },
+      transitionTimingFunction: {
+        smooth: 'cubic-bezier(0.2, 0, 0, 1)',
+      },
       fontFamily: {
         default: ['Inter', 'PingFangSC-Regular', 'microsoft yahei ui', 'microsoft yahei', 'simsun', 'sans-serif'],
         // 粗体需要使用 font-bolder 类名，而不是这里定义的 font-bold-family
