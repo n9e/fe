@@ -18,7 +18,7 @@ import React, { useImperativeHandle, ReactNode } from 'react';
 import { Form, Input } from 'antd';
 import { UserAndPasswordFormProps } from '@/store/manageInterface';
 import { useTranslation } from 'react-i18next';
-const PasswordForm = React.forwardRef<any, UserAndPasswordFormProps>((props, ref) => {
+const PasswordForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, ref) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   useImperativeHandle(ref, () => ({

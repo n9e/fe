@@ -82,12 +82,12 @@
     "pinyin-pro": "^3.20.4",
     "query-string": "^7.0.1",
     "re-resizable": "^6.9.9",
-    "react": "^18.3.1",
+    "react": "^17.0.0",
     "react-ace": "^10.1.0",
     "react-beforeunload": "^2.6.0",
     "react-color": "^2.19.3",
     "react-data-grid": "7.0.0-beta.16",
-    "react-dom": "^18.3.1",
+    "react-dom": "^17.0.0",
     "react-draggable": "^4.4.5",
     "react-fast-compare": "^3.2.0",
     "react-grid-layout": "^1.2.5",
@@ -123,8 +123,8 @@
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.19.100",
-    "@types/react": "^18.3.31",
-    "@types/react-dom": "^18.3.7",
+    "@types/react": "^17.0.14",
+    "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.1.7",
     "@types/spark-md5": "^3.0.5",
     "@vitejs/plugin-react": "^4.4.1",
@@ -148,6 +148,7 @@
     "vite-plugin-svgr": "^4.3.0"
   },
   "overrides": {
+    "@types/react": "^17.0.14",
     "@types/d3-dispatch": "3.0.6"
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { createRoot, Root } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
 import moment from 'moment';
@@ -83,7 +83,6 @@ export default function index(props: Props) {
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const [annotationSettingUp, setAnnotationSettingUp] = useState(false);
-  const rootRefs = useRef<Map<HTMLElement, Root>>(new Map());
   const xMinMax = useMemo(() => {
     return getScalesXMinMax({ range, queryOptionsTime });
   }, [range, JSON.stringify(queryOptionsTime)]);
@@ -123,12 +122,7 @@ export default function index(props: Props) {
           graphTooltip: dashboardMeta.graphTooltip as any,
           timeZone: timezone,
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
-            let root = rootRefs.current.get(domNode);
-            if (!root) {
-              root = createRoot(domNode);
-              rootRefs.current.set(domNode, root);
-            }
-            root.render(
+            ReactDOM.render(
               <AddAnnotationButton
                 panelID={id}
                 timeZone={timezone}
@@ -141,6 +135,7 @@ export default function index(props: Props) {
                   }
                 }}
               />,
+              domNode,
             );
           },
           pointNameformatter: (val, point) => {
@@ -179,12 +174,7 @@ export default function index(props: Props) {
         annotationsPlugin({
           annotations,
           renderMarkers: (xAxisEle) => {
-            let root = rootRefs.current.get(xAxisEle);
-            if (!root) {
-              root = createRoot(xAxisEle);
-              rootRefs.current.set(xAxisEle, root);
-            }
-            root.render(
+            ReactDOM.render(
               <AddAnnotatsMarkers
                 annotations={annotations}
                 uplotRef={uplotRef}
@@ -200,6 +190,7 @@ export default function index(props: Props) {
                   }
                 }}
               />,
+              xAxisEle,
             );
           },
         }),
@@ -363,8 +354,6 @@ export default function index(props: Props) {
           }}
           onDelete={(id) => {
             uplotsMap.delete(id);
-            rootRefs.current.forEach((r) => r.unmount());
-            rootRefs.current.clear();
           }}
         />
         {!hideResetBtn && (

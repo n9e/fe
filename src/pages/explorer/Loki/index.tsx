@@ -185,7 +185,7 @@ export default function index(props: IProps) {
         }
       }
     } catch (err) {
-      message.error(err as string);
+      message.error(err);
     } finally {
       setLoading(false);
     }

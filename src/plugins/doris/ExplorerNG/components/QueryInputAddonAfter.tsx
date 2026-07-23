@@ -43,7 +43,7 @@ export default function QueryInputAddonAfter(props: Props) {
                 return (
                   <span key={key} className='whitespace-nowrap'>
                     <span className='bg-[var(--fc-fill-1)] inline-block p-1 mr-1'>{t(`query.${key}`)}:</span>
-                    <span className='pr-1'>{String(value)}</span>
+                    <span className='pr-1'>{value}</span>
                   </span>
                 );
               })}
