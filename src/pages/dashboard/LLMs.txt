@@ -1,0 +1,64 @@
+# Nightingale dashboard config notes for LLMs
+
+This file documents the minimum fields that matter most when an LLM generates dashboard configs for the detail page.
+
+The runtime is intentionally tolerant. Missing optional fields can be completed by compatibility code or editor defaults. The fields below should still be generated correctly because the render path depends on them.
+
+## Panels
+
+`panels` should be an array. Each panel item should include:
+
+```json
+{
+  "id": "panel-1",
+  "type": "timeseries",
+  "layout": {
+    "h": 4,
+    "w": 12,
+    "x": 0,
+    "y": 0,
+    "i": "panel-1"
+  }
+}
+```
+
+Required fields:
+
+- `id`: non-empty string.
+- `type`: non-empty string. Common values include `row`, `timeseries`, `stat`, `tableNG`, `table`, `pie`, `barGauge`, `text`, `gauge`, `iframe`, `heatmap`, and `barchart`.
+- `layout`: object.
+- `layout.h`, `layout.w`, `layout.x`, `layout.y`: numbers.
+- `layout.i`: non-empty string. It should be the same as `panel.id`.
+
+For row panels, `panels` may contain cached child panels when the row is collapsed. Child panels follow the same minimum panel rules.
+
+## Variables
+
+`var` should be an array when variables are present. Each variable item should include:
+
+```json
+{
+  "name": "cluster",
+  "type": "query",
+  "definition": "label_values(up, cluster)"
+}
+```
+
+Required fields for validation:
+
+- `name`: non-empty string.
+- `type`: non-empty string. Common values include `query`, `custom`, `textbox`, `constant`, `datasource`, `datasourceIdentifier`, and `hostIdent`.
+
+Recommended fields:
+
+- `definition`: string. Most variable types need it to produce useful values.
+- `datasource`: object for query variables that need a datasource.
+
+## Practical checklist
+
+- Generate valid JSON, not JavaScript.
+- Keep every panel id unique.
+- Keep `panel.id` and `panel.layout.i` identical.
+- Use numeric layout values, not strings.
+- Use `var: []` when there are no variables.
+- Use `panels: []` when the dashboard has no panels yet.

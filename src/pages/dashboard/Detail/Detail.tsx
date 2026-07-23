@@ -46,6 +46,7 @@ import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
 import Editor from '../Editor';
+import { validateDashboardConfig } from '../utils/validateDashboardConfig';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
 import { useGlobalState, DashboardMeta } from '../globalState';
 import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
@@ -143,6 +144,10 @@ export default function DetailV2(props: IProps) {
         configs = dashboardMigrator(configs);
         if (props.onLoaded && !props.onLoaded(configs)) {
           return;
+        }
+        const validationResult = validateDashboardConfig(configs);
+        if (!validationResult.valid) {
+          console.warn('Dashboard panels/variables config warnings:', validationResult.errors);
         }
         if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
           setMigrationVisible(true);
