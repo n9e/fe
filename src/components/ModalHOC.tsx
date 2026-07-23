@@ -1,5 +1,5 @@
 import React from 'react';
-import { createRoot, Root } from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import _ from 'lodash';
 import { ConfigProvider } from 'antd';
@@ -20,11 +20,10 @@ export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
     const div = document.createElement('div');
     document.body.appendChild(div);
     div.className = 'theme-dark';
-    const root: Root = createRoot(div);
 
     function destroy() {
-      root.unmount();
-      if (div.parentNode) {
+      const unmountResult = ReactDOM.unmountComponentAtNode(div);
+      if (unmountResult && div.parentNode) {
         div.parentNode.removeChild(div);
       }
     }
@@ -32,12 +31,13 @@ export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
     const language = config.language ? config.language : window.localStorage.getItem('language') || 'zh_CN';
 
     function render(props: any) {
-      root.render(
+      ReactDOM.render(
         <ConfigProvider locale={getAntdLocale(language)}>
           <Router>
             <Component {...props} />
           </Router>
         </ConfigProvider>,
+        div,
       );
     }
 

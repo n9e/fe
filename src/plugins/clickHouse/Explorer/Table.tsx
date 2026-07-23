@@ -50,7 +50,7 @@ export default function TableCpt(props: Props) {
   });
   const { components, resizableColumns, tableWidth, resetColumns } = useAntdResizableHeader({
     columns: useMemo(() => columns, [columnsKeys]),
-    tooltipRender: (props: any) => <Tooltip {...props} />,
+    tooltipRender: (props) => <Tooltip {...props} />,
     defaultWidth: 150,
   });
 
