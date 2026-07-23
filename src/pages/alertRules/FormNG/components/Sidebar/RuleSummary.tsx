@@ -42,7 +42,7 @@ const cateNameMap: Record<string, string> = {
 };
 
 async function enrichLogServiceQueries(cate: string | undefined, datasourceValue: number | undefined, queries: any[] | undefined): Promise<any[] | undefined> {
-  if (!_.isArray(queries) || !datasourceValue) return queries;
+  if (!Array.isArray(queries) || !datasourceValue) return queries;
 
   if (cate === 'tencent-cls') {
     try {
