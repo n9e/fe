@@ -430,7 +430,7 @@ const SideMenu = (props: SideMenuProps) => {
           className={cn(
             'relative z-20 flex h-full shrink-0 select-none flex-col justify-between border-0 border-r border-solid bg-sidebar',
             collapsed ? 'side-menu-collapsed-panel' : '',
-            !isResizingMenu && 'transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]',
+            !isResizingMenu && 'transition-all duration-300 ease-smooth',
             !IS_ENT ? 'border-fc-300' : '',
           )}
           style={{
