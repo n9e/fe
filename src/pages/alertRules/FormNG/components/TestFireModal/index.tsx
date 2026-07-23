@@ -108,29 +108,36 @@ export default function TestFireModal(props: Props) {
     setPhase('settings');
   };
 
+  const initAndOpen = () => {
+    const values = form.getFieldsValue(true);
+    const prometheus = values.cate === 'prometheus';
+    resetLocalState();
+    setIsPrometheus(prometheus);
+    const configured = getConfiguredSeverities(values.rule_config);
+    setSeverityOptions(configured.length > 0 ? configured : [1, 2, 3]);
+    setSeverity(getDefaultSeverity(values.rule_config));
+    setEventType('trigger');
+    setSkipSend(false);
+    // 表单里是 Switch 的布尔值，DB/接口里才是 0/1，两种形态都兼容
+    setNotifyRecovered(values.notify_recovered === true || values.notify_recovered === 1);
+    setDatasourceId(values.datasource_value);
+    setVisible(true);
+    if (prometheus) {
+      fetchSeries(values.datasource_value);
+    }
+  };
+
   const openModal = () => {
+    // 用 then(onOk, onErr) 而不是 then().catch()：初始化逻辑放在 catch 前面的话，
+    // 它抛出的异常也会被当成「必填项没填」提示掉，排查时控制台没有任何线索
     form
       .validateFields()
-      .then(() => {
-        const values = form.getFieldsValue(true);
-        const prometheus = values.cate === 'prometheus';
-        resetLocalState();
-        setIsPrometheus(prometheus);
-        const configured = getConfiguredSeverities(values.rule_config);
-        setSeverityOptions(configured.length > 0 ? configured : [1, 2, 3]);
-        setSeverity(getDefaultSeverity(values.rule_config));
-        setEventType('trigger');
-        setSkipSend(false);
-        // 表单里是 Switch 的布尔值，DB/接口里才是 0/1，两种形态都兼容
-        setNotifyRecovered(values.notify_recovered === true || values.notify_recovered === 1);
-        setDatasourceId(values.datasource_value);
-        setVisible(true);
-        if (prometheus) {
-          fetchSeries(values.datasource_value);
-        }
-      })
-      .catch(() => {
+      .then(initAndOpen, (error) => {
+        console.error(error);
         message.warning(t('form_ng.test_fire.validate_first'));
+      })
+      .catch((error) => {
+        console.error(error);
       });
   };
 
@@ -240,9 +247,7 @@ export default function TestFireModal(props: Props) {
                 {tr.ok && !tr.no_data && (
                   <span className={tr.fired_groups > 0 ? 'text-success' : 'text-soft'}>{tf('desc.trigger_evaluated', { groups: tr.groups, fired: tr.fired_groups })}</span>
                 )}
-                {tr.ok && !tr.no_data && !_.isEmpty(tr.sample_vars) && (
-                  <span className='text-soft'>{` · ${_.map(tr.sample_vars, (v, k) => `${k}=${v}`).join(' ')}`}</span>
-                )}
+                {tr.ok && !tr.no_data && !_.isEmpty(tr.sample_vars) && <span className='text-soft'>{` · ${_.map(tr.sample_vars, (v, k) => `${k}=${v}`).join(' ')}`}</span>}
                 {tr.eval_error && <span className='text-error'> · {tf('desc.trigger_eval_error', { error: tr.eval_error })}</span>}
               </div>
             );
