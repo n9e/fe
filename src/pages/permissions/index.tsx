@@ -11,6 +11,7 @@ import { getRoles, deleteRoles, getOperations } from './services';
 import RoleFormModal from './RoleFormModal';
 import Operations from './Operations';
 import './locale';
+import '@/pages/user/index.less';
 
 const { confirm } = Modal;
 

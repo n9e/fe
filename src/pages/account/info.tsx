@@ -213,10 +213,10 @@ export default function Info() {
                         >
                           <Input />
                         </Form.Item>
-                        <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(name)} />
+                        <MinusCircleOutlined className='leading-[32px]' onClick={() => remove(name)} />
                       </Space>
                     ))}
-                    <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                    <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
                   </>
                 )}
               </Form.List>

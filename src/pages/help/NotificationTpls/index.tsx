@@ -12,6 +12,7 @@ import FormModal from './FormModal';
 import { putNotifyTplContent } from './services';
 import './style.less';
 import './locale';
+import '@/pages/user/index.less';
 
 export default function index() {
   const { t } = useTranslation('notificationTpls');

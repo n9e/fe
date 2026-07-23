@@ -26,7 +26,7 @@ function FormModal(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
-      className='dashboard-import-modal'
+      className='n9e-modal-with-tabs'
       title={t(`${mode}_title`)}
       visible={visible}
       onCancel={() => {

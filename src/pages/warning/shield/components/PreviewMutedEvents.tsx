@@ -8,6 +8,7 @@ import { previewMutedEvents } from '@/services/shield';
 import { CommonStateContext } from '@/App';
 import { deleteAlertEventsModal, SeverityColor } from '@/pages/event';
 import { processFormValues } from './utils';
+import '@/pages/event/index.less';
 
 interface Props {
   form: any;

@@ -34,7 +34,7 @@ function BatchClone(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
-      className='dashboard-import-modal'
+      className='n9e-modal-with-tabs'
       title={t('common:btn.batch_clone')}
       visible={visible}
       onCancel={() => {

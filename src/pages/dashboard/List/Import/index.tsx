@@ -82,7 +82,7 @@ export default function Import(props: IProps) {
   return (
     <Modal
       width={900}
-      className='dashboard-import-modal'
+      className='n9e-modal-with-tabs'
       maskClosable={false}
       destroyOnClose
       title={

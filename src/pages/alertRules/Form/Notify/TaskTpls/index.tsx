@@ -33,7 +33,7 @@ export default function TaskTpls() {
         <>
           <Space align='baseline'>
             {t('task_tpls.title')}
-            <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+            <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
             {fields.length > 0 && (
               <Link target='_blank' to={`/job-tpls/add?gid=${group_id}`}>
                 {t('task_tpls.add_btn')}
@@ -46,7 +46,7 @@ export default function TaskTpls() {
                 <TplSettings field={field} tpls={tpls} />
               </Col>
               <Col flex='40px'>
-                <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                <MinusCircleOutlined className='leading-[32px]' onClick={() => remove(field.name)} />
               </Col>
             </Row>
           ))}

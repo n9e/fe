@@ -34,6 +34,7 @@ import { listToTree, getCollapsedKeys, getLocaleExpandedKeys, setLocaleExpandedK
 import Tree from '@/components/BusinessGroup/components/Tree';
 import '@/components/BlankBusinessPlaceholder/index.less';
 import './index.less';
+import '@/pages/monitor/object/style.less';
 import usePagination from '@/components/usePagination';
 
 const { confirm } = Modal;

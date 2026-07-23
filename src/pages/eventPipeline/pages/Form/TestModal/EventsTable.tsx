@@ -13,6 +13,7 @@ import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getEvents } from '@/pages/historyEvents/services';
 import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
+import '@/pages/event/index.less';
 
 interface Props {
   cate?: string;

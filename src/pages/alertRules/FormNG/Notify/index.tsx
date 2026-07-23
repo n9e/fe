@@ -232,7 +232,7 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, initia
                   >
                     <InfoCircleOutlined />
                   </Tooltip>
-                  <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                  <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
                 </Space>
                 {fields.map((field) => (
                   <Row gutter={16} key={field.key}>
@@ -254,7 +254,7 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, initia
                       </Form.Item>
                     </Col>
                     <Col flex='40px'>
-                      <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                      <MinusCircleOutlined className='leading-[32px]' onClick={() => remove(field.name)} />
                     </Col>
                   </Row>
                 ))}
