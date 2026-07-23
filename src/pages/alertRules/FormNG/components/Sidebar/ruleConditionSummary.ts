@@ -253,11 +253,18 @@ function buildLogServiceQuery(index: number, query: any, labels: ConditionSummar
     'bce-bls': 'bls',
     'huawei-lts': 'lts',
   };
+  const metaMap: Record<string, unknown[]> = {
+    'aliyun-sls': [query?.project, query?.logstore],
+    'tencent-cls': [query?.logset || query?.logset_id, query?.topic || query?.topic_id],
+    'volc-tls': [query?.project || query?.project_id, query?.topic || query?.topic_id],
+    'bce-bls': [query?.project, query?.logstore, query?.logstream],
+    'huawei-lts': [query?.group || query?.group_id, query?.stream || query?.stream_id],
+  };
   return createQueryItem(
     index,
     query,
     getTitleParts(query, labels),
-    [query?.project || query?.project_id, query?.logstore || query?.logset_id, query?.topic_id || query?.logstream],
+    cate ? metaMap[cate] : [],
     query?.query,
     'logql',
     cate ? vendorMap[cate] : undefined,
@@ -266,10 +273,14 @@ function buildLogServiceQuery(index: number, query: any, labels: ConditionSummar
 
 function buildGenericQuery(index: number, query: any, labels: ConditionSummaryLabels, cate?: string): ConditionSummaryItem {
   const text = findRawText(query);
-  const visibleKeys = Object.keys(query || {}).filter((key) => !['ref', 'unit', 'keys'].includes(key));
-  const sqlCates = ['ck', 'mysql', 'pgsql', 'oracle', 'redshift', 'doris', 'influxdb', 'tdengine', 'iotdb'];
-  const previewType: QueryPreviewType | undefined = cate === 'loki' ? 'loki' : sqlCates.includes(cate || '') ? 'sql' : undefined;
-  return createQueryItem(index, query, getTitleParts(query, labels), [!text && visibleKeys.length ? `${visibleKeys.length} ${labels.fields}` : undefined], text, previewType);
+  const sqlCates = ['ck', 'mysql', 'pgsql', 'oracle', 'redshift', 'doris', 'influxdb', 'tdengine', 'iotdb', 'vlogs'];
+  const previewType: QueryPreviewType | undefined = sqlCates.includes(cate || '') ? 'sql' : undefined;
+  return createQueryItem(index, query, getTitleParts(query, labels), [], text, previewType);
+}
+
+function buildLokiQuery(index: number, query: any, labels: ConditionSummaryLabels): ConditionSummaryItem {
+  const severityText = query?.severity !== undefined ? `P${query.severity}` : undefined;
+  return createQueryItem(index, query, [severityText], [], query?.prom_ql, 'loki');
 }
 
 function buildPrometheusQuery(index: number, query: any, version: string | undefined, labels: ConditionSummaryLabels): ConditionSummaryItem {
@@ -348,6 +359,7 @@ export function buildRuleConditionSummary({ cate, queries, triggers, version, no
           if (cate === 'gcm') return buildGcmQuery(index, query, labels);
           if (cate === 'elasticsearch' || cate === 'opensearch') return buildElasticsearchQuery(index, query, labels);
           if (['aliyun-sls', 'tencent-cls', 'volc-tls', 'bce-bls', 'huawei-lts'].includes(cate || '')) return buildLogServiceQuery(index, query, labels, cate);
+          if (cate === 'loki') return buildLokiQuery(index, query, labels);
           return buildGenericQuery(index, query, labels, cate);
         });
   const triggerItems =
