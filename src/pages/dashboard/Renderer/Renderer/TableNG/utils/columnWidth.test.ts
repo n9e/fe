@@ -69,6 +69,40 @@ describe('TableNG column width utils', () => {
     ]);
   });
 
+  it('replaces the only override when it has no matcher value', () => {
+    const placeholder = {
+      matcher: { id: 'byName', value: '' },
+      properties: { cellOptions: { type: 'color-text' } },
+    } as IOverride;
+
+    expect(upsertColumnWidthOverride([placeholder], 'host', 200)).toEqual([
+      {
+        matcher: { id: 'byName', value: 'host' },
+        properties: { width: 200 },
+      },
+    ]);
+  });
+
+  it('does not remove an empty override when other override rules exist', () => {
+    const placeholder = {
+      matcher: { id: 'byName', value: '' },
+      properties: {},
+    } as IOverride;
+    const existing = {
+      matcher: { id: 'byName', value: 'value' },
+      properties: { width: 160 },
+    } as IOverride;
+
+    expect(upsertColumnWidthOverride([placeholder, existing], 'host', 200)).toEqual([
+      placeholder,
+      existing,
+      {
+        matcher: { id: 'byName', value: 'host' },
+        properties: { width: 200 },
+      },
+    ]);
+  });
+
   it('removes only the migrated field and removes the storage key when no widths remain', () => {
     const storage = createStorage({
       widths: JSON.stringify({ host: 180, value: 220 }),
