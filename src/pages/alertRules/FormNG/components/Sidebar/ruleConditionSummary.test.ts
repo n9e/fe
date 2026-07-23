@@ -281,6 +281,110 @@ describe('ruleConditionSummary', () => {
     });
   });
 
+  it('builds cls log service summary with readable names before ids', () => {
+    const summary = buildRuleConditionSummary({
+      cate: 'tencent-cls',
+      queries: [
+        {
+          ref: 'A',
+          logset: 'app-logset',
+          logset_id: 'logset-id',
+          topic: 'nginx-topic',
+          topic_id: 'topic-id',
+          query: 'CLS QUERY STRING',
+        },
+      ],
+    });
+
+    expect(summary.queries[0]).toMatchObject({
+      title: 'A',
+      meta: ['app-logset', 'nginx-topic'],
+      queryText: 'CLS QUERY STRING',
+      queryPreviewType: 'logql',
+      queryPreviewVendor: 'cls',
+    });
+  });
+
+  it('builds tls log service summary with readable names before ids', () => {
+    const summary = buildRuleConditionSummary({
+      cate: 'volc-tls',
+      queries: [
+        {
+          ref: 'A',
+          project: 'tls-project',
+          project_id: 'project-id',
+          topic: 'tls-topic',
+          topic_id: 'topic-id',
+          query: 'tls query',
+        },
+      ],
+    });
+
+    expect(summary.queries[0]).toMatchObject({
+      title: 'A',
+      meta: ['tls-project', 'tls-topic'],
+      queryText: 'tls query',
+      queryPreviewType: 'logql',
+      queryPreviewVendor: 'tls',
+    });
+  });
+
+  it('builds lts log service summary with log group and stream names', () => {
+    const summary = buildRuleConditionSummary({
+      cate: 'huawei-lts',
+      queries: [
+        {
+          ref: 'A',
+          group: 'lts-group',
+          group_id: 'group-id',
+          stream: 'lts-stream',
+          stream_id: 'stream-id',
+          query: 'lts query',
+        },
+      ],
+    });
+
+    expect(summary.queries[0]).toMatchObject({
+      title: 'A',
+      meta: ['lts-group', 'lts-stream'],
+      queryText: 'lts query',
+      queryPreviewType: 'logql',
+      queryPreviewVendor: 'lts',
+    });
+  });
+
+  it('falls back to ids for cls tls and lts log service summaries', () => {
+    const summaries = [
+      buildRuleConditionSummary({ cate: 'tencent-cls', queries: [{ ref: 'A', logset_id: 'logset-id', topic_id: 'topic-id' }] }).queries[0],
+      buildRuleConditionSummary({ cate: 'volc-tls', queries: [{ ref: 'A', project_id: 'project-id', topic_id: 'topic-id' }] }).queries[0],
+      buildRuleConditionSummary({ cate: 'huawei-lts', queries: [{ ref: 'A', group_id: 'group-id', stream_id: 'stream-id' }] }).queries[0],
+    ];
+
+    expect(summaries.map((item) => item.meta)).toEqual([
+      ['logset-id', 'topic-id'],
+      ['project-id', 'topic-id'],
+      ['group-id', 'stream-id'],
+    ]);
+  });
+
+  it('does not build generic sql field count meta', () => {
+    const cates = ['doris', 'influxdb', 'tdengine', 'vlogs'];
+
+    cates.forEach((cate) => {
+      const summary = buildRuleConditionSummary({
+        cate,
+        queries: [{ ref: 'A', unit: 'none', keys: { valueKey: 'value' }, datasource_id: 1, database: 'db' }],
+      });
+
+      expect(summary.queries[0]).toMatchObject({
+        title: 'A',
+        meta: [],
+        queryText: '',
+        queryPreviewType: 'sql',
+      });
+    });
+  });
+
   it('builds generic sql with preserved full text and multiple trigger summaries', () => {
     const sql = 'select\n  1';
     const summary = buildRuleConditionSummary({

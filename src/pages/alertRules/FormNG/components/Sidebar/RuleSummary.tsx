@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import i18next from 'i18next';
 import { Form, Row, Col, Divider, Tooltip, Popover } from 'antd';
@@ -13,6 +13,9 @@ import { CommonStateContext } from '@/App';
 import { cn } from '@/utils';
 import { getTargetList } from '@/services/targets';
 import PromQLInputNG from '@/components/PromQLInputNG';
+import { getCLSLogset, getCLSTopic } from 'plus:/datasource/tencentCLS/services';
+import { getTLSProject, getTLSTopic } from 'plus:/datasource/volcTLS/services';
+import { getProject as getLTSProject, getTopic as getLTSTopic } from 'plus:/datasource/huaweiLTS/services';
 
 import { useFormNGData } from '../../context';
 import { getDatasourcesByQueries } from '../DatasourceValueSelect/services';
@@ -33,6 +36,84 @@ const cateNameMap: Record<string, string> = {
   doris: 'Doris',
   host: 'Host',
 };
+
+async function enrichLogServiceQueries(cate: string | undefined, datasourceValue: number | undefined, queries: any[] | undefined): Promise<any[] | undefined> {
+  if (!_.isArray(queries) || !datasourceValue) return queries;
+
+  if (cate === 'tencent-cls') {
+    try {
+      const logsets = await getCLSLogset({ cate, datasource_id: datasourceValue });
+      const logsetNameMap = _.keyBy(logsets, 'LogsetId');
+      return Promise.all(
+        queries.map(async (query) => {
+          const next = { ...query };
+          if (query?.logset_id) next.logset = logsetNameMap[query.logset_id]?.LogsetName;
+          if (query?.logset_id && query?.topic_id) {
+            try {
+              const topics = await getCLSTopic({ cate, datasource_id: datasourceValue, logset_id: query.logset_id, topic_id: query.topic_id });
+              next.topic = _.find(topics, { TopicId: query.topic_id })?.TopicName;
+            } catch (e) {
+              return next;
+            }
+          }
+          return next;
+        }),
+      );
+    } catch (e) {
+      return queries;
+    }
+  }
+
+  if (cate === 'volc-tls') {
+    try {
+      const projects = await getTLSProject({ cate, datasource_id: datasourceValue });
+      const projectNameMap = _.keyBy(projects, 'ProjectId');
+      return Promise.all(
+        queries.map(async (query) => {
+          const next = { ...query };
+          if (query?.project_id) next.project = projectNameMap[query.project_id]?.ProjectName;
+          if (query?.project_id && query?.topic_id) {
+            try {
+              const topics = await getTLSTopic({ cate, datasource_id: datasourceValue, project_id: query.project_id });
+              next.topic = _.find(topics, { TopicId: query.topic_id })?.TopicName;
+            } catch (e) {
+              return next;
+            }
+          }
+          return next;
+        }),
+      );
+    } catch (e) {
+      return queries;
+    }
+  }
+
+  if (cate === 'huawei-lts') {
+    try {
+      const groups = await getLTSProject({ cate, datasource_id: datasourceValue });
+      const groupNameMap = _.keyBy(groups, 'id');
+      return Promise.all(
+        queries.map(async (query) => {
+          const next = { ...query };
+          if (query?.group_id) next.group = groupNameMap[query.group_id]?.name;
+          if (query?.group_id && query?.stream_id) {
+            try {
+              const streams = await getLTSTopic({ cate, datasource_id: datasourceValue, group_id: query.group_id });
+              next.stream = _.find(streams, { id: query.stream_id })?.name;
+            } catch (e) {
+              return next;
+            }
+          }
+          return next;
+        }),
+      );
+    } catch (e) {
+      return queries;
+    }
+  }
+
+  return queries;
+}
 
 function SectionTitle(props: { children: React.ReactNode }) {
   return (
@@ -309,17 +390,43 @@ function RuleConditionSummary() {
   const { t } = useTranslation('alertRules');
   const cate = Form.useWatch('cate');
   const prod = Form.useWatch('prod');
+  const datasourceValueFromForm = Form.useWatch('datasource_value');
   const datasourceIds = Form.useWatch('datasource_ids');
   const datasourceQueries = Form.useWatch('datasource_queries');
   const queries = Form.useWatch(['rule_config', 'queries']);
   const triggers = Form.useWatch(['rule_config', 'triggers']);
   const version = Form.useWatch(['rule_config', 'version']);
   const nodataTrigger = Form.useWatch(['rule_config', 'nodata_trigger']);
+  const datasourceValue = useMemo(() => {
+    if (_.isNumber(datasourceValueFromForm)) return datasourceValueFromForm;
+    const idFromDatasourceIds = _.find(datasourceIds, _.isNumber);
+    if (idFromDatasourceIds !== undefined) return idFromDatasourceIds;
+    return _.find(
+      _.flatMap(datasourceQueries, (item: any) => item?.values || []),
+      _.isNumber,
+    );
+  }, [datasourceValueFromForm, datasourceIds, datasourceQueries]);
+  const [summaryQueries, setSummaryQueries] = useState<any[] | undefined>(queries);
+
+  useEffect(() => {
+    let ignore = false;
+    setSummaryQueries(queries);
+    enrichLogServiceQueries(cate, datasourceValue, queries)
+      .then((nextQueries) => {
+        if (!ignore) setSummaryQueries(nextQueries);
+      })
+      .catch(() => {
+        if (!ignore) setSummaryQueries(queries);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [cate, datasourceValue, queries]);
 
   const summary = useMemo(() => {
     return buildRuleConditionSummary({
       cate,
-      queries,
+      queries: summaryQueries,
       triggers,
       version,
       nodataTrigger,
@@ -349,19 +456,11 @@ function RuleConditionSummary() {
         },
       },
     });
-  }, [cate, queries, triggers, version, nodataTrigger, t]);
+  }, [cate, summaryQueries, triggers, version, nodataTrigger, t]);
 
   const hasQueries = summary.queries.length > 0;
   const hasTriggers = summary.triggers.length > 0;
   const isHost = prod === 'host' || cate === 'host';
-  const datasourceValue = useMemo(() => {
-    const idFromDatasourceIds = _.find(datasourceIds, _.isNumber);
-    if (idFromDatasourceIds !== undefined) return idFromDatasourceIds;
-    return _.find(
-      _.flatMap(datasourceQueries, (item: any) => item?.values || []),
-      _.isNumber,
-    );
-  }, [datasourceIds, datasourceQueries]);
 
   if (!isHost && !hasQueries && !hasTriggers) return null;
 
