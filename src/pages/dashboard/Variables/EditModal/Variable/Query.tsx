@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { createPortal } from 'react-dom';
-import { Form, Input, Row, Col, Switch } from 'antd';
+import { Form, Input, InputNumber, Row, Col, Switch } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { useRequest } from 'ahooks';
@@ -198,6 +198,9 @@ export default function Query(props: Props) {
         rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
       >
         <Input placeholder='/*.hna/' />
+      </Form.Item>
+      <Form.Item label={t('var.width')} name='width' tooltip={t('var.width_tip')}>
+        <InputNumber min={120} placeholder='180' style={{ width: '100%' }} />
       </Form.Item>
       {isQueryVariableMultiSelectEnabled(datasourceCate, queryType) && (
         <Row gutter={16}>
