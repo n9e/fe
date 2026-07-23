@@ -24,7 +24,7 @@ import { debounce } from 'lodash';
 import { CommonStateContext } from '@/App';
 
 const { Option } = Select;
-const TeamForm = React.forwardRef<ReactNode, TeamProps>((props, ref) => {
+const TeamForm = React.forwardRef<any, TeamProps>((props, ref) => {
   const { siteInfo } = useContext(CommonStateContext);
   const { t } = useTranslation('user');
   const { businessId, action } = props;
