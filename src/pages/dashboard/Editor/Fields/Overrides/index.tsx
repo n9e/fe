@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { Form, Space, Select, Row, Col } from 'antd';
+import { Form, Space, Select, Row, Col, InputNumber } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -133,6 +133,11 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
                   </Form.Item>
                 </Col>
               </Row>
+              {_.includes(overrideOptions, 'custom.width') && (
+                <Form.Item label={t('panel.overrides.columnWidth')} {...restField} name={[name, 'properties', 'width']}>
+                  <InputNumber min={100} placeholder='auto' style={{ width: '100%' }} />
+                </Form.Item>
+              )}
               {_.includes(overrideOptions, 'custom.cellOptions') && (
                 <Panel header={t('panel.custom.title')} isActive={_.includes(activeOptions, 'custom.cellOptions')}>
                   <CellOptions prefixNamePath={namePrefix} namePath={[name, 'properties', 'cellOptions']} hideWrapText />

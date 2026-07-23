@@ -338,6 +338,7 @@ const en_US = {
       displayName_tip: 'Change the series name',
     },
     overrides: {
+      columnWidth: 'Column width',
       matcher: {
         id: 'Matcher',
         byFrameRefID: {
