@@ -6,12 +6,13 @@ import { Form } from 'antd';
 import { useRequest } from 'ahooks';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/utils/getFieldsFromTableData';
+import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
 import { NAME_SPACE } from '../../../constants';
 import { DEFAULT_LOGS_PAGE_SIZE, DEFAULT_RAW_LOG_LIMIT, DEFAULT_TIME_FIELD, LOGS_OPTIONS_CACHE_KEY, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, MAX_RAW_LOG_LIMIT } from '../../constants';
@@ -24,6 +25,9 @@ import renderBuiltinFields from '../../utils/renderBuiltinFields';
 import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
 import ContextViewer from './components/ContextViewer';
 import { buildLogHighlights, getLineHighlightFilters } from './utils/highlights';
+
+// @ts-ignore
+import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
   indexData: Field[];
@@ -272,11 +276,20 @@ export default function Raw(props: Props) {
     [queryValues?.query, queryValues?.querySource, queryValues?.builderStatus, queryValues?.builder],
   );
   const highlights = useMemo(() => buildLogHighlights(pageLogs, lineHighlightFilters), [pageLogs, lineHighlightFilters]);
+  const currentFieldConfig = useFieldConfig(
+    {
+      cate: DatasourceCateEnum.loki,
+      datasource_id: datasourceValue,
+      query: queryValues?.query,
+    },
+    refreshFlag,
+  );
 
   return refreshFlag ? (
     <>
       {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
         <LogsViewer
+          fieldConfig={currentFieldConfig}
           indexData={indexData}
           id_key='___id___'
           raw_key='___raw___'
@@ -316,6 +329,7 @@ export default function Raw(props: Props) {
                 <Space>
                   {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
                   {toggleNode}
+                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }} />}
                 </Space>
               );
             }

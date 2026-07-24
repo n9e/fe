@@ -8,7 +8,7 @@ import { useRequest, useSize } from 'ahooks';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import UPlotChart, { axisBuilder, cursorBuider, paddingSide, scalesBuilder, seriesBuider, tooltipPlugin } from '@/components/UPlotChart';
@@ -34,6 +34,9 @@ import { inferMetricTimeseriesKeysFromQuery } from '../../utils/logsQL';
 import renderBuiltinFields from '../../utils/renderBuiltinFields';
 import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
 import ResetZoomButton from './ResetZoomButton';
+
+// @ts-ignore
+import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
   indexData: Field[];
@@ -493,6 +496,7 @@ export default function Metric(props: Props) {
                 <span>{tableData?.total}</span>
               </Space>
             )}
+            {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'metric', total: tableData?.total }} />}
           </Space>
         }
         onOptionsChange={updateOptions}
