@@ -20,6 +20,16 @@ const zh_HK = {
   clear_cache_btn: '清除缓存',
   clear_cache_btn_tip: '清除表格列寬缓存，刷新頁面後生效',
   inspect_btn: '排查',
+  table_upgrade: {
+    action: '升級到 TableNG',
+    confirm_title: '升級到 TableNG',
+    confirm_content: '將保留現有面板設定，並轉換舊版表格顯示方式。',
+    confirm_ok: '升級',
+    switch_title: '升級到 TableNG',
+    switch_content: '是否自動遷移舊版 Table 的設定？',
+    auto_upgrade: '自動升級',
+    switch_only: '僅切換類型',
+  },
   public: {
     name: '公開',
     unpublic: '未公開',
