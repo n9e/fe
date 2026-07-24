@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { i18nInit } from './i18n'; // loaded and initialized first
 import App from './App';
 import { I18nextProvider } from 'react-i18next';
@@ -28,9 +28,9 @@ initTheme();
 // 指向官网/Flashduty 的链接统一携带 from=n9e-user 渠道参数
 initFlashcatFrom();
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root')!);
+root.render(
   <I18nextProvider i18n={i18nInit}>
     <App />
   </I18nextProvider>,
-  document.getElementById('root'),
 );
