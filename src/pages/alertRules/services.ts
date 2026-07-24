@@ -53,6 +53,13 @@ export const alertRulesEnableTryrun = (data) => {
   });
 };
 
+export const alertRuleTestFire = (bgid: number, data) => {
+  return request(`/api/n9e/busi-group/${bgid}/alert-rule/test-fire`, {
+    method: RequestMethod.Post,
+    data,
+  });
+};
+
 export const getTimezones = (): Promise<string[]> => {
   return request('/api/n9e/timezones', {
     method: RequestMethod.Get,

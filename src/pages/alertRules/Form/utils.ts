@@ -181,6 +181,10 @@ export function processFormValues(values) {
 
 export function processInitialValues(values) {
   values = _.cloneDeep(values);
+  // datasource_ids 是后端 DB2FE 反填的 Deprecated 字段（引擎只认 datasource_queries），
+  // 前端表单以 datasource_queries 为准、没有 datasource_ids 的 UI 绑定；若保留会在提交/模拟触发时
+  // 携带旧数据源 id，故在 DB→表单 的初始化转换里统一剥离。
+  delete values.datasource_ids;
   if (values?.rule_config?.queries) {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       if (item?.keys?.labelKey !== undefined) {
