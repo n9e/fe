@@ -20,6 +20,16 @@ const en_US = {
   clear_cache_btn: 'Clear cache',
   clear_cache_btn_tip: 'Clear the table column width cache, take effect after refreshing the page',
   inspect_btn: 'Inspect',
+  table_upgrade: {
+    action: 'Upgrade to TableNG',
+    confirm_title: 'Upgrade to TableNG',
+    confirm_content: 'The existing panel configuration and legacy table layout will be migrated.',
+    confirm_ok: 'Upgrade',
+    switch_title: 'Upgrade to TableNG',
+    switch_content: 'Automatically migrate the legacy Table configuration?',
+    auto_upgrade: 'Auto upgrade',
+    switch_only: 'Switch type only',
+  },
   public: {
     name: 'Public',
     unpublic: 'Unpublic',

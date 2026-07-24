@@ -30,6 +30,8 @@ import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsVa
 import FormCpt from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
+import { upgradeTableToNG } from '../utils/upgradeTableToNG';
+import { useGlobalState } from '../globalState';
 
 import './style.less';
 
@@ -54,7 +56,39 @@ function index(props: IProps) {
   const formRef = useRef<any>();
   const { panelWidth, mode, visible, setVisible, id, time, timezone, setTimezone } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
+  const [series] = useGlobalState('series');
   const [range, setRange] = useState<IRawTimeRange>(time);
+  const changeVisualization = (val: string, migrateLegacyTable = false) => {
+    if (!formRef.current?.getFormInstance) return;
+    const formInstance = formRef.current.getFormInstance();
+    const values = formInstance.getFieldsValue();
+    if (migrateLegacyTable) {
+      const availableFields = _.uniq(_.flatMap(series || [], (item) => ['__time', ...Object.keys(item.metric || {}), `__value_#${item.refId}`]));
+      setInitialValues(upgradeTableToNG(values, availableFields));
+      return;
+    }
+    const valuesCopy = _.cloneDeep(values);
+    _.set(valuesCopy, 'type', val);
+    _.set(valuesCopy, 'custom', defaultCustomValuesMap[val]);
+    _.set(valuesCopy, 'options', defaultOptionsValuesMap[val]);
+    _.set(
+      valuesCopy,
+      'targets',
+      valuesCopy.targets
+        ? _.map(valuesCopy.targets, (item) => {
+            // 如果切换到时序图类型，但是面板的查询配置里的模式不是时序图数据，则切换到时序图模式
+            if (val === 'timeseries' && item.query?.mode && item.query?.mode !== 'timeSeries') {
+              return { ...item, query: { ...item.query, mode: 'timeSeries' } };
+            }
+            return item;
+          })
+        : [{ refId: 'A' }],
+    );
+    _.set(valuesCopy, 'datasourceCate', valuesCopy.datasourceCate || 'prometheus');
+    _.set(valuesCopy, 'datasourceValue', valuesCopy.datasourceValue || groupedDatasourceList['prometheus'][0]?.id);
+    _.set(valuesCopy, 'overrides', []);
+    setInitialValues(valuesCopy);
+  };
   const handleAddChart = async () => {
     if (formRef.current && formRef.current.getFormInstance) {
       const formInstance = formRef.current.getFormInstance();
@@ -105,32 +139,19 @@ function index(props: IProps) {
               dropdownMatchSelectWidth={false}
               value={initialValues.type}
               onChange={(val) => {
-                if (formRef.current && formRef.current.getFormInstance) {
-                  const formInstance = formRef.current.getFormInstance();
-                  const values = formInstance.getFieldsValue();
-                  const valuesCopy = _.cloneDeep(values);
-                  _.set(valuesCopy, 'type', val);
-                  _.set(valuesCopy, 'custom', defaultCustomValuesMap[val]);
-                  _.set(valuesCopy, 'options', defaultOptionsValuesMap[val]);
-                  _.set(
-                    valuesCopy,
-                    'targets',
-                    valuesCopy.targets
-                      ? _.map(valuesCopy.targets, (item) => {
-                          // 如果切换到时序图类型，但是面板的查询配置里的模式不是时序图数据，则切换到时序图模式
-                          if (val === 'timeseries' && item.query?.mode && item.query?.mode !== 'timeSeries') {
-                            return { ...item, query: { ...item.query, mode: 'timeSeries' } };
-                          }
-                          return item;
-                        })
-                      : [{ refId: 'A' }],
-                  );
-                  _.set(valuesCopy, 'datasourceCate', valuesCopy.datasourceCate || 'prometheus');
-                  _.set(valuesCopy, 'datasourceValue', valuesCopy.datasourceValue || groupedDatasourceList['prometheus'][0]?.id);
-                  // 清空 overrides
-                  _.set(valuesCopy, 'overrides', []);
-                  setInitialValues(valuesCopy);
+                const currentType = formRef.current?.getFormInstance?.()?.getFieldValue('type');
+                if (currentType === 'table' && val === 'tableNG') {
+                  Modal.confirm({
+                    title: t('table_upgrade.switch_title'),
+                    content: t('table_upgrade.switch_content'),
+                    okText: t('table_upgrade.auto_upgrade'),
+                    cancelText: t('table_upgrade.switch_only'),
+                    onOk: () => changeVisualization(val, true),
+                    onCancel: () => changeVisualization(val),
+                  });
+                  return;
                 }
+                changeVisualization(val);
               }}
             >
               {_.map(visualizations, (item) => {

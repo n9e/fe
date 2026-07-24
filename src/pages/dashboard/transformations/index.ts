@@ -4,6 +4,8 @@ import OrganizeFieldsTransformation from './OrganizeFieldsTransformation';
 import JoinByFieldTransformation from './JoinByFieldTransformation';
 import TimeSeriesTableTransformation from './TimeSeriesTableTransformation';
 import GroupedAggregateTableTransformation from './GroupedAggregateTableTransformation';
+import SeriesToRowsTransformation from './SeriesToRowsTransformation';
+import LabelsToFieldsTransformation from './LabelsToFieldsTransformation';
 
 export type { DataPoint, TimeSeries, TableData, Transformation };
 
@@ -31,4 +33,6 @@ export const transformationsMap = {
   joinByField: JoinByFieldTransformation,
   timeSeriesTable: TimeSeriesTableTransformation,
   groupedAggregateTable: GroupedAggregateTableTransformation,
+  seriesToRows: SeriesToRowsTransformation,
+  labelsToFields: LabelsToFieldsTransformation,
 };

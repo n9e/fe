@@ -20,6 +20,16 @@ const zh_CN = {
   clear_cache_btn: '清除缓存',
   clear_cache_btn_tip: '清除表格列宽缓存，刷新页面后生效',
   inspect_btn: '排查',
+  table_upgrade: {
+    action: '升级到 TableNG',
+    confirm_title: '升级到 TableNG',
+    confirm_content: '将保留现有面板配置，并转换旧版表格展示方式。',
+    confirm_ok: '升级',
+    switch_title: '升级到 TableNG',
+    switch_content: '是否自动迁移旧版 Table 的配置？',
+    auto_upgrade: '自动升级',
+    switch_only: '仅切换类型',
+  },
   public: {
     name: '公开',
     unpublic: '不公开',
