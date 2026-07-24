@@ -1,6 +1,6 @@
 {
   "name": "n9e-fe",
-  "version": "v9.0.0-beta.4",
+  "version": "v9.0.0",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
@@ -49,7 +49,7 @@
     "ag-grid-react": "^34.0.2",
     "ahooks": "^3.5.0",
     "ansi_up": "^6.0.2",
-    "ansi-to-react": "^6.1.6",
+    "ansi-to-react": "^6.2.6",
     "antd": "4.21.0",
     "array-move": "^4.0.0",
     "classnames": "^2.3.1",
@@ -91,7 +91,7 @@
     "react-draggable": "^4.4.5",
     "react-fast-compare": "^3.2.0",
     "react-grid-layout": "^1.2.5",
-    "react-highlight-words": "^0.17.0",
+    "react-highlight-words": "^0.21.0",
     "react-hooks-global-state": "^2.0.0",
     "react-i18next": "^14.0.0",
     "react-infinite-scroll-component": "^6.1.0",
@@ -148,6 +148,10 @@
     "vite-plugin-svgr": "^4.3.0"
   },
   "overrides": {
-    "@types/d3-dispatch": "3.0.6"
+    "@types/d3-dispatch": "3.0.6",
+    "react-sortable-hoc": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   }
 }
