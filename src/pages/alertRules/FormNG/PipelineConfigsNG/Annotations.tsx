@@ -21,7 +21,7 @@ export default function Annotations() {
           <div>
             <Space align='baseline'>
               {t('annotations')}
-              <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+              <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
             </Space>
             {fields.map((field) => (
               <CardContainer className='pb-0' key={field.key} onClose={() => remove(field.name)}>

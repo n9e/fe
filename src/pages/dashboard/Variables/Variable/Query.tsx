@@ -19,7 +19,7 @@ export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
   const { hide, item: variable, variableValueFixed, value, setValue } = props;
-  const { name, label, multi, allOption, options } = variable;
+  const { name, label, multi, allOption, options, width } = variable;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -155,7 +155,7 @@ export default function Query(props: Props) {
           allowClear
           mode={multi ? 'multiple' : undefined}
           style={{
-            width: '180px',
+            width: width || '180px',
           }}
           maxTagCount='responsive'
           onSelect={(v: string) => {

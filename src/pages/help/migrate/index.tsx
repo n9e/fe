@@ -58,7 +58,7 @@ export default function index() {
       <div style={{ display: 'flex' }}>
         <BusinessGroup />
         {businessGroup.ids ? (
-          <div className='dashboards-v2'>
+          <div style={{ padding: 16, flex: 1, overflow: 'auto' }}>
             <div style={{ marginBottom: 10 }}>
               <Button
                 type='primary'

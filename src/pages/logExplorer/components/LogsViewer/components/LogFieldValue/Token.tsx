@@ -1,5 +1,6 @@
 import React, { useState, useContext, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Popover, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import purify from 'dompurify';
 
@@ -7,6 +8,7 @@ import { Link } from '@/pages/explorer/components/Links';
 import { parseRange } from '@/components/TimeRangePicker';
 import { getHighlightHtml, getTokenHighlights } from '@/pages/logExplorer/utils/highlight/highlight_html';
 import { LOG_FIELD_SELECT_POPOVER_CLASS, LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS } from '@/pages/logExplorer/components/LogsViewer/utils/clickAway';
+import { NAME_SPACE } from '@/pages/logExplorer/constants';
 
 import { TokenActionMenuContent } from './tokenActionMenu';
 import { getHighlightSource, getTokenDisplayValue } from './tokenValue';
@@ -50,7 +52,8 @@ function eventTargetToElement(target: EventTarget | null): Element | null {
 }
 
 function TokenWithContext(props: Props & { indexData: Field[] }) {
-  const { raw_key, fieldConfig, range, getAddToQueryInfo } = useContext(LogsViewerStateContext);
+  const { t } = useTranslation(NAME_SPACE);
+  const { raw_key, fieldConfig, range, getAddToQueryInfo, drilldownContext, openAddDrilldownLink: openAddDrilldownLinkFromContext } = useContext(LogsViewerStateContext);
 
   const {
     segmented,
@@ -122,7 +125,15 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
     setPopoverVisible(false);
   }, []);
 
-  const getPopupContainer = useCallback((triggerNode: HTMLElement) => {
+  const openAddDrilldownLink = useCallback(() => {
+    if (!drilldownContext || !openAddDrilldownLinkFromContext) return;
+    openAddDrilldownLinkFromContext({
+      linkField: parentKey || name,
+      linkName: t('logs.drilldown_link_default_name'),
+    });
+  }, [drilldownContext, openAddDrilldownLinkFromContext, parentKey, name, t]);
+
+  const getPopupContainer = useCallback((triggerNode?: HTMLElement) => {
     const host = triggerNode || hostRef.current;
     return (host?.closest(`.${LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS}`) || host?.closest('.ant-drawer-content') || document.body) as HTMLElement;
   }, []);
@@ -248,6 +259,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       end={end}
       rawValue={rawValue}
       fieldConfig={fieldConfig}
+      onAddDrilldownLink={openAddDrilldownLinkFromContext ? openAddDrilldownLink : undefined}
     />
   );
 
@@ -303,36 +315,38 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
   }
 
   return (
-    <Popover
-      visible={popoverVisible}
-      onVisibleChange={(visible) => {
-        setPopoverVisible(visible);
-      }}
-      trigger={['click']}
-      overlayClassName='explorer-origin-field-val-popover'
-      content={menuContent}
-      getPopupContainer={getPopupContainer}
-    >
-      <Tooltip
-        title={enableTooltip ? <pre className='whitespace-pre-wrap overflow-hidden mb-0 ant-tooltip-max-height-400 overflow-y-auto'>{adjustedValue}</pre> : undefined}
-        placement='topLeft'
-        overlayClassName='ant-tooltip-max-width-600'
+    <>
+      <Popover
+        visible={popoverVisible}
+        onVisibleChange={(visible) => {
+          setPopoverVisible(visible);
+        }}
+        trigger={['click']}
+        overlayClassName='explorer-origin-field-val-popover'
+        content={menuContent}
+        getPopupContainer={getPopupContainer}
       >
-        {relatedLinks && relatedLinks.length > 0 ? (
-          <Link
-            text={adjustedValue}
-            linkContext={{
-              rawValue: rawValue!,
-              name,
-              fieldConfig,
-              range,
-              parentKey,
-            }}
-          />
-        ) : (
-          <div className={`inline text-main m-0 p-0 cursor-pointer hover:underline ${fieldValueClassName ?? ''}`}>{adjustedValue}</div>
-        )}
-      </Tooltip>
-    </Popover>
+        <Tooltip
+          title={enableTooltip ? <pre className='whitespace-pre-wrap overflow-hidden mb-0 ant-tooltip-max-height-400 overflow-y-auto'>{adjustedValue}</pre> : undefined}
+          placement='topLeft'
+          overlayClassName='ant-tooltip-max-width-600'
+        >
+          {relatedLinks && relatedLinks.length > 0 ? (
+            <Link
+              text={adjustedValue}
+              linkContext={{
+                rawValue: rawValue!,
+                name,
+                fieldConfig,
+                range,
+                parentKey,
+              }}
+            />
+          ) : (
+            <div className={`inline text-main m-0 p-0 cursor-pointer hover:underline ${fieldValueClassName ?? ''}`}>{adjustedValue}</div>
+          )}
+        </Tooltip>
+      </Popover>
+    </>
   );
 }

@@ -110,6 +110,8 @@ const zh_CN = {
     multi: '多选',
     allOption: '包含全选',
     allValue: '自定义全选值',
+    width: '宽度',
+    width_tip: '设置变量选择框的宽度，留空则使用默认宽度 180px',
     textbox: {
       defaultValue: '默认值',
       defaultValue_tip: '可选，仅作为初次加载时的默认值',

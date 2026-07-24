@@ -18,6 +18,8 @@ export interface Resource {
   es_resource?: EsResource;
   sls_resource?: SlsResource;
   doris_resource?: DorisResource;
+  victorialogs_resource?: VictoriaLogsResource;
+  clickhouse_resource?: ClickHouseResource;
   cls_resource?: ClsResource;
   lts_resource?: LtsResource;
 }
@@ -32,6 +34,19 @@ export interface SlsResource {
 }
 
 export interface DorisResource {
+  database: string;
+  table: string;
+}
+
+export interface VictoriaLogsResource {
+  field_filters: {
+    key: string;
+    op: string;
+    values: string[];
+  }[];
+}
+
+export interface ClickHouseResource {
   database: string;
   table: string;
 }

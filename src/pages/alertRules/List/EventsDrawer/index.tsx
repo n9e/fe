@@ -22,6 +22,7 @@ import { NS as alertCurEventNS } from '@/pages/alertCurEvent/constants';
 import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawer';
 
 import './style.less';
+import '@/pages/event/index.less';
 
 // @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';

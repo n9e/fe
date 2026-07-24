@@ -355,7 +355,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                             {action === 'annotations_add' && t('batch.update.callback_cover.callback_add')}
                             {action === 'annotations_del' && t('batch.update.callback_cover.callback_del')}
                             <PlusCircleOutlined
-                              className='control-icon-normal'
+                              className='leading-[32px]'
                               onClick={() =>
                                 add({
                                   key: '',
@@ -393,7 +393,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                                 </Form.Item>
                               </Col>
                               <Col flex='40px'>
-                                <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                                <MinusCircleOutlined className='leading-[32px]' onClick={() => remove(field.name)} />
                               </Col>
                             </Row>
                           ))}
@@ -628,11 +628,11 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                                         </Col>
 
                                         <Col span={1}>
-                                          <MinusCircleOutlined className='control-icon-normal' onClick={() => remove(field.name)} />
+                                          <MinusCircleOutlined className='leading-[32px]' onClick={() => remove(field.name)} />
                                         </Col>
                                       </Row>
                                     ))}
-                                    <PlusCircleOutlined className='control-icon-normal' onClick={() => add()} />
+                                    <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
                                   </>
                                 )}
                               </Form.List>

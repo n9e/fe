@@ -1,0 +1,141 @@
+import { getConfiguredSeverities, getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults } from './utils';
+
+describe('getConfiguredSeverities (规则里配置过的档位)', () => {
+  it('queries 与 triggers 的档位合并、去重、升序', () => {
+    const ruleConfig = {
+      queries: [{ severity: 3 }, { severity: 2 }],
+      triggers: [{ severity: 2 }, { severity: 1 }],
+    } as const;
+    expect(getConfiguredSeverities(ruleConfig)).toEqual([1, 2, 3]);
+  });
+
+  it('单档位规则只返回该档位', () => {
+    expect(getConfiguredSeverities({ triggers: [{ severity: 3 }] })).toEqual([3]);
+  });
+
+  it('忽略非法值，解析不出时返回空数组', () => {
+    expect(getConfiguredSeverities({ queries: [{ severity: 0 }, { severity: 9 }] })).toEqual([]);
+    expect(getConfiguredSeverities(undefined)).toEqual([]);
+  });
+});
+
+describe('getFirstPromql (按规则版本取查询表达式)', () => {
+  it('V1 取 prom_ql', () => {
+    const ruleConfig = { queries: [{ prom_ql: 'up == 0' }] } as const;
+    expect(getFirstPromql(ruleConfig)).toBe('up == 0');
+  });
+
+  it('V2 取 queries[].query，忽略 prom_ql', () => {
+    const ruleConfig = { version: 'v2', queries: [{ ref: 'A', query: 'cpu > 80' }] } as const;
+    expect(getFirstPromql(ruleConfig)).toBe('cpu > 80');
+  });
+
+  it('取第一条非空表达式', () => {
+    const ruleConfig = { queries: [{ prom_ql: '' }, { prom_ql: 'mem > 90' }] } as const;
+    expect(getFirstPromql(ruleConfig)).toBe('mem > 90');
+  });
+
+  it('没有查询时返回 undefined', () => {
+    expect(getFirstPromql(undefined)).toBeUndefined();
+    expect(getFirstPromql({ version: 'v2', queries: [{ ref: 'A' }] })).toBeUndefined();
+  });
+});
+
+describe('getDefaultSeverity (模拟触发默认级别)', () => {
+  it('取各查询里数值最小（最高）的级别', () => {
+    const ruleConfig = {
+      queries: [{ severity: 3 }, { severity: 1 }, { severity: 2 }],
+    } as const;
+    expect(getDefaultSeverity(ruleConfig)).toBe(1);
+  });
+
+  it('没有任何合法级别时回退 S2', () => {
+    expect(getDefaultSeverity(undefined)).toBe(2);
+    expect(getDefaultSeverity({ queries: [] })).toBe(2);
+    expect(getDefaultSeverity({ queries: [{ severity: 0 }, { severity: 9 }] })).toBe(2);
+  });
+
+  it('忽略非法级别只在合法值里取最小', () => {
+    const ruleConfig = {
+      queries: [{ severity: 9 }, { severity: 3 }],
+    } as const;
+    expect(getDefaultSeverity(ruleConfig)).toBe(3);
+  });
+
+  it('级别配在 triggers 里（ES/SQL 插件、Prometheus V2）也能取到', () => {
+    const ruleConfig = {
+      queries: [{ ref: 'A' }],
+      triggers: [{ severity: 3 }, { severity: 1 }],
+    } as const;
+    expect(getDefaultSeverity(ruleConfig)).toBe(1);
+  });
+
+  it('queries 与 triggers 同时有级别时取两者最小', () => {
+    const ruleConfig = {
+      queries: [{ severity: 2 }],
+      triggers: [{ severity: 3 }],
+    } as const;
+    expect(getDefaultSeverity(ruleConfig)).toBe(2);
+  });
+});
+
+describe('parseVectorSeries (样本序列解析)', () => {
+  it('解析 vector 结果为样本序列，label 展示串剔除内部 label', () => {
+    const resp = {
+      resultType: 'vector',
+      result: [
+        {
+          metric: { __name__: 'cpu_usage_active', ident: 'web-01', cpu: 'cpu-total' },
+          value: [1700000000, '92.3'],
+        },
+      ],
+    } as const;
+
+    const series = parseVectorSeries(resp);
+    expect(series).toHaveLength(1);
+    expect(series[0].value).toBe(92.3);
+    expect(series[0].labelStr).toBe('cpu_usage_active{ident=web-01, cpu=cpu-total}');
+    expect(series[0].labels).toEqual(resp.result[0].metric);
+  });
+
+  it('非 vector / 空入参 / 非法数值返回空数组或被剔除', () => {
+    expect(parseVectorSeries(undefined)).toEqual([]);
+    expect(parseVectorSeries({ resultType: 'matrix', result: [] })).toEqual([]);
+    expect(
+      parseVectorSeries({
+        resultType: 'vector',
+        result: [{ metric: { ident: 'a' }, value: [1700000000, 'NaN'] }],
+      }),
+    ).toEqual([]);
+  });
+
+  it('相同入参多次调用结果一致（幂等性）', () => {
+    const resp = {
+      resultType: 'vector',
+      result: [{ metric: { ident: 'web-01' }, value: [1700000000, '1.5'] }],
+    } as const;
+    expect(parseVectorSeries(resp)).toEqual(parseVectorSeries(resp));
+  });
+});
+
+describe('summarizeNotifyResults (通知结果汇总)', () => {
+  it('分别统计 匹配/已发送/发送失败/未匹配', () => {
+    const results = [
+      { matched: true, sent: true },
+      { matched: true, sent: false, error: 'smtp timeout' },
+      { matched: true, sent: false, skipped: true },
+      { matched: false, match_error: 'severity not match' },
+    ] as const;
+
+    expect(summarizeNotifyResults(results as any)).toEqual({
+      matched: 3,
+      sent: 1,
+      failed: 1,
+      notMatched: 1,
+    });
+  });
+
+  it('空数组返回全零', () => {
+    expect(summarizeNotifyResults([])).toEqual({ matched: 0, sent: 0, failed: 0, notMatched: 0 });
+  });
+});

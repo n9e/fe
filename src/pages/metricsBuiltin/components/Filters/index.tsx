@@ -18,6 +18,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'rea
 import { useTranslation } from 'react-i18next';
 import { InfoCircleOutlined, PlusSquareOutlined, SearchOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Input, Space, Tooltip, Modal, Empty, message, Alert } from 'antd';
+import '@/pages/monitor/object/style.less';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { getFilters, deleteFilter } from '../../services';

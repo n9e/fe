@@ -34,7 +34,7 @@ function Import(props: IProps & ModalWrapProps) {
 
   return (
     <Modal
-      className='dashboard-import-modal'
+      className='n9e-modal-with-tabs'
       title={`${t('batch.import.title')} JSON`}
       visible={visible}
       onCancel={() => {

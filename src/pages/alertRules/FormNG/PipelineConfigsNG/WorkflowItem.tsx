@@ -61,6 +61,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
   const processors = Form.useWatch([...prefixNamePath, ...namePath, 'processors']);
   const item = workflowId ? workflowMap[workflowId] : undefined;
   const loading = permissions.eventPipelines && !!workflowId && !item && (workflowItemsLoading || workflowsLoading);
+  const shouldAutoEnable = !workflowEnabled && (!processors || processors.length === 0);
 
   useEffect(() => {
     if (workflowId && item?.processors) {
@@ -208,6 +209,9 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
                       const currentValues = _.cloneDeep(form.getFieldsValue());
                       _.unset(currentValues, [...prefixNamePath, ...namePath, 'pipeline_id']);
                       _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], [DEFAULT_VALUES.processors[0]]);
+                      if (shouldAutoEnable) {
+                        _.set(currentValues, [...prefixNamePath, ...namePath, 'enable'], true);
+                      }
                       form.setFieldsValue(currentValues);
                     }}
                   >
@@ -223,6 +227,9 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
                           const currentValues = _.cloneDeep(form.getFieldsValue());
                           _.set(currentValues, [...prefixNamePath, ...namePath, 'pipeline_id'], workflow.id);
                           _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], []);
+                          if (shouldAutoEnable) {
+                            _.set(currentValues, [...prefixNamePath, ...namePath, 'enable'], true);
+                          }
                           form.setFieldsValue(currentValues);
                         }}
                       >
@@ -294,7 +301,19 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
                 />
               </Col>
               <Col flex='auto'>
-                <Button className='w-full' type='dashed' onClick={() => add(DEFAULT_VALUES.processors[0])} icon={<PlusOutlined />}>
+                <Button
+                  className='w-full'
+                  type='dashed'
+                  onClick={() => {
+                    add(DEFAULT_VALUES.processors[0]);
+                    if (shouldAutoEnable) {
+                      const currentValues = _.cloneDeep(form.getFieldsValue());
+                      _.set(currentValues, [...prefixNamePath, ...namePath, 'enable'], true);
+                      form.setFieldsValue(currentValues);
+                    }
+                  }}
+                  icon={<PlusOutlined />}
+                >
                   {t(`${EVENTPIPELINE_NS}:processor.add_btn`)}
                 </Button>
               </Col>
