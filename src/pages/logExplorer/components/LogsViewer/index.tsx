@@ -1,10 +1,11 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, useMemo, useCallback } from 'react';
 import { Spin, Space, Radio } from 'antd';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
+import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker/types';
 
 import { NAME_SPACE } from '../../constants';
@@ -19,6 +20,7 @@ import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
+import DrilldownBtn, { type DrilldownInitialValues } from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
 interface Props {
   /** 时间字段 */
@@ -106,6 +108,7 @@ interface Props {
     isIndex: boolean;
     indexName: string;
   };
+  drilldownContext?: DrilldownInitialValues;
   /** 为 true 时字段值不按 delimiter 分词，划选文本后弹出与点击 token 相同的菜单（与分词互斥） */
   enableLogTextSelectMenu?: boolean;
   hideTypeIcon?: boolean;
@@ -119,12 +122,15 @@ interface LogsViewerState {
   indexData?: Props['indexData'];
   range?: Props['range'];
   getAddToQueryInfo?: Props['getAddToQueryInfo'];
+  drilldownContext?: Props['drilldownContext'];
+  openAddDrilldownLink?: (params: { linkField: string; linkName: string }) => void;
   enableLogTextSelectMenu?: boolean;
 }
 export const LogsViewerStateContext = createContext({} as LogsViewerState);
 
 export default function LogsViewer(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
+  const { isPlus } = useContext(CommonStateContext);
   const {
     timeField,
     hideHistogram = false,
@@ -176,6 +182,8 @@ export default function LogsViewer(props: Props) {
   const isClusteringEnabled = !!logClusting?.enabled;
   const logMode = options.logMode === 'clustering' && !isClusteringEnabled ? 'origin' : options.logMode;
   const viewerOptions = logMode === options.logMode ? options : { ...options, logMode };
+  const [drilldownDrawerVisible, setDrilldownDrawerVisible] = useState(false);
+  const [drilldownInitialValues, setDrilldownInitialValues] = useState<DrilldownInitialValues | undefined>();
 
   const updateOptions = (newOptions: any, reload?: boolean) => {
     onOptionsChange?.(newOptions, reload);
@@ -188,6 +196,34 @@ export default function LogsViewer(props: Props) {
   useEffect(() => {
     setOptions(props.options);
   }, [props.options]);
+
+  const drilldownContext = useMemo(() => {
+    if (!isPlus || !props.drilldownContext) return undefined;
+    return {
+      ...props.drilldownContext,
+      logMode: props.drilldownContext.logMode || options.logMode,
+    };
+  }, [isPlus, props.drilldownContext, options.logMode]);
+
+  const openAddDrilldownLink = useCallback(
+    ({ linkField, linkName }: { linkField: string; linkName: string }) => {
+      if (!drilldownContext) return;
+      setDrilldownInitialValues({
+        ...drilldownContext,
+        linkField,
+        linkName,
+      });
+      setDrilldownDrawerVisible(true);
+    },
+    [drilldownContext],
+  );
+
+  const handleDrilldownVisibleChange = useCallback((visible: boolean) => {
+    setDrilldownDrawerVisible(visible);
+    if (!visible) {
+      setDrilldownInitialValues(undefined);
+    }
+  }, []);
 
   // 日志聚类相关状态
   const clusteringOptionsEleRef = React.useRef<HTMLDivElement>(null);
@@ -209,6 +245,8 @@ export default function LogsViewer(props: Props) {
         indexData: props.indexData,
         range: props.range,
         getAddToQueryInfo: props.getAddToQueryInfo,
+        drilldownContext,
+        openAddDrilldownLink: drilldownContext ? openAddDrilldownLink : undefined,
         enableLogTextSelectMenu,
       }}
     >
@@ -413,6 +451,16 @@ export default function LogsViewer(props: Props) {
             </div>
           </div>
         </FullscreenButton.Provider>
+        {isPlus && (
+          <DrilldownBtn
+            type='none'
+            dataSourceId={drilldownInitialValues?.datasource_id}
+            visible={drilldownDrawerVisible}
+            onVisibleChange={handleDrilldownVisibleChange}
+            initialMode='add'
+            initialValues={drilldownInitialValues}
+          />
+        )}
       </>
     </LogsViewerStateContext.Provider>
   );
