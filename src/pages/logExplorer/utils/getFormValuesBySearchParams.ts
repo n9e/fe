@@ -12,6 +12,31 @@ import { isMathString, IRawTimeRange } from '@/components/TimeRangePicker';
  * 合并后的 filter 为 AND 关系（2026-07-07 起废弃）
  */
 
+function parseFiltersFromSearchParams(params: { [index: string]: string | null }): any[] {
+  try {
+    if (params?.filters) {
+      const parsedFilters = JSON.parse(params.filters);
+      if (Array.isArray(parsedFilters)) {
+        return parsedFilters;
+      }
+    }
+  } catch (error) {
+    console.error('Failed to parse filters from URL params', error);
+  }
+  return [];
+}
+
+function stringifyFiltersForSearchParams(filters: unknown): string {
+  if (Array.isArray(filters) && filters.length > 0) {
+    try {
+      return JSON.stringify(filters);
+    } catch (error) {
+      console.error('Failed to stringify filters for URL params', error);
+    }
+  }
+  return '';
+}
+
 const getESFilterByQuery = (query: { [index: string]: string | null }) => {
   if (query?.query) {
     return query?.query;
@@ -91,6 +116,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const sql = _.get(params, 'sql');
       const labelKey = _.get(params, 'labelKey') ?? [];
       const valueKey = _.get(params, 'valueKey') ?? [];
+      const query_builder_filter = parseFiltersFromSearchParams(params);
 
       return {
         ...formValues,
@@ -105,6 +131,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           stackByField,
           defaultSearchField,
           query,
+          ...(query_builder_filter.length > 0 ? { query_builder_filter } : {}),
           sql,
           organizeFields,
           keys: {
@@ -125,6 +152,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const sql = _.get(params, 'sql');
       const labelKey = _.get(params, 'labelKey') ?? [];
       const valueKey = _.get(params, 'valueKey') ?? [];
+      const query_builder_filter = parseFiltersFromSearchParams(params);
 
       return {
         ...formValues,
@@ -138,6 +166,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
           stackByField,
           defaultSearchField,
           query,
+          ...(query_builder_filter.length > 0 ? { query_builder_filter } : {}),
           sql,
           organizeFields,
           keys: {
@@ -192,17 +221,7 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
       const sqlVizType = _.get(params, 'sqlVizType') || undefined;
       const labelKey = _.get(params, 'labelKey') ?? [];
       const valueKey = _.get(params, 'valueKey') ?? [];
-      let filters: any[] = [];
-      try {
-        if (params?.filters) {
-          const parsedFilters = JSON.parse(params.filters);
-          if (Array.isArray(parsedFilters)) {
-            filters = parsedFilters;
-          }
-        }
-      } catch (error) {
-        console.error('Failed to parse filters from URL params', error);
-      }
+      const filters = parseFiltersFromSearchParams(params);
 
       if (mode === 'index-patterns' || index_pattern) {
         return {
@@ -413,6 +432,10 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.stackByField = formValues.query?.stackByField;
     query.defaultSearchField = formValues.query?.defaultSearchField;
     query.query = formValues.query?.query;
+    const dorisFilters = stringifyFiltersForSearchParams(formValues.query?.query_builder_filter);
+    if (dorisFilters) {
+      query.filters = dorisFilters;
+    }
     query.sql = formValues.query?.sql;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
@@ -430,6 +453,10 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.stackByField = formValues.query?.stackByField;
     query.defaultSearchField = formValues.query?.defaultSearchField;
     query.query = formValues.query?.query;
+    const ckFilters = stringifyFiltersForSearchParams(formValues.query?.query_builder_filter);
+    if (ckFilters) {
+      query.filters = ckFilters;
+    }
     query.sql = formValues.query?.sql;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
@@ -455,16 +482,6 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.elasticsearch) {
-    let filtersString = '';
-    const filters = formValues.query?.filters;
-    if (filters && Array.isArray(filters) && filters.length > 0) {
-      try {
-        filtersString = JSON.stringify(filters);
-      } catch (error) {
-        console.error('Failed to stringify filters for URL params', error);
-      }
-    }
-
     query.mode = formValues.query?.mode;
     query.index = formValues.query?.index;
     query.index_pattern = formValues.query?.index_pattern;
@@ -472,7 +489,7 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.syntax = formValues.query?.syntax;
     query.query = formValues.query?.query;
     query.allow_hide_system_indices = formValues.query?.allow_hide_system_indices ? 'true' : 'false';
-    query.filters = filtersString;
+    query.filters = stringifyFiltersForSearchParams(formValues.query?.filters);
     query.sql = formValues.query?.sql;
     query.sqlVizType = formValues.query?.sqlVizType;
     query.labelKey = formValues.query?.keys?.labelKey;

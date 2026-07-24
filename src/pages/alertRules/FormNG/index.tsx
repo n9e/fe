@@ -18,6 +18,7 @@ import { defaultValues } from '../Form/constants';
 import { processFormValues, processInitialValues, getDefaultValuesByCate } from '../Form/utils';
 import SectionCard, { SectionItem } from './components/SectionCard';
 import Sidebar from './components/Sidebar';
+import TestFireModal from './components/TestFireModal';
 import DatasourceValueSelect from './components/DatasourceValueSelect';
 import Host from './Rule/Host';
 import Rule from './Rule';
@@ -477,6 +478,10 @@ export default function FormNG(props: IProps) {
                         // 构建新值
                         const newValues: Record<string, any> = getDefaultValuesByCate(curProd, val) || {};
                         newValues.datasource_values = undefined;
+                        // 清理旧 cate 的数据源残留：datasource_ids 是无 UI 绑定的 Deprecated 字段，
+                        // 不清会带着旧数据源 id 提交；datasource_value 是 prometheus 预览用字段
+                        newValues.datasource_ids = undefined;
+                        newValues.datasource_value = undefined;
 
                         // 如果有该 cate 的草稿，恢复
                         if (cateDraftRef.current[val]) {
@@ -489,6 +494,9 @@ export default function FormNG(props: IProps) {
 
                         isProgrammaticUpdate.current = true;
                         form.setFieldsValue(newValues);
+                        // setFieldsValue 对数组按索引 merge，重置用的空 values:[] 盖不掉旧值
+                        //（旧 cate 选中的数据源 id 会残留），这里对 datasource_queries 强制整体替换
+                        form.setFields([{ name: 'datasource_queries', value: newValues.datasource_queries }]);
                         isProgrammaticUpdate.current = false;
                         cateRef.current = val;
                         updateAllowedLeave();
@@ -583,6 +591,7 @@ export default function FormNG(props: IProps) {
                       >
                         {t('common:btn.save')}
                       </Button>
+                      <TestFireModal bgid={initialValues?.group_id || Number(bgid)} buttonDisabled={editable === false} />
                       <Link to='/alert-rules'>
                         <Button>{t('common:btn.cancel')}</Button>
                       </Link>
