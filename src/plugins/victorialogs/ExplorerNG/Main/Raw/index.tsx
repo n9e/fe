@@ -20,6 +20,7 @@ import filteredFields, { filterOutBuiltinFields } from '../../utils/filteredFiel
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import renderBuiltinFields from '../../utils/renderBuiltinFields';
 import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
+import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 import { getIsAtBottom, scrollToTop } from '../../utils/tableElementMethods';
 
 // @ts-ignore
@@ -304,10 +305,20 @@ export default function Raw(props: Props) {
     updateOptions({ organizeFields: newOrganizeFields || [] });
   };
 
+  const currentFieldConfig = useFieldConfig(
+    {
+      cate: DatasourceCateEnum.victorialogs,
+      datasource_id: datasourceValue,
+      query: queryValues?.query,
+    },
+    refreshFlag,
+  );
+
   return refreshFlag ? (
     <>
       {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
         <LogsViewer
+          fieldConfig={currentFieldConfig}
           indexData={indexData}
           range={queryValues?.range}
           id_key='__n9e_id_n9e__'
@@ -338,7 +349,7 @@ export default function Raw(props: Props) {
                     </>
                   )}
                   {toggleNode}
-                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'query', total: data?.total }} />}
+                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }} />}
                 </Space>
               );
             }
