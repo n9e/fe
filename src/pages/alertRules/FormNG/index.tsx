@@ -242,10 +242,6 @@ export default function FormNG(props: IProps) {
 
     if (type === 1 || type === 2 || type === 3 || !_.isEmpty(initialValues)) {
       const processed = processInitialValues(initialValues);
-      // datasource_ids 是后端 DB2FE 反填的 Deprecated 展示字段（引擎只认 datasource_queries）。
-      // 表单里没有它的 UI 绑定，留在 values 里会在切换数据源类型后携带旧数据源 id 提交出去，
-      // 导致模拟触发解析到错误的数据源
-      delete processed.datasource_ids;
       form.setFieldsValue(processed);
 
       // 初始化 cate 草稿
