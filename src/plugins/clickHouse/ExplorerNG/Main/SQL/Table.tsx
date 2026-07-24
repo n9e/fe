@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Form, Space, Pagination, Radio, Empty } from 'antd';
 import _ from 'lodash';
 import moment from 'moment';
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { useRequest, useGetState } from 'ahooks';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -20,6 +20,9 @@ import filteredFields from '../../utils/filteredFields';
 import replaceTemplateVariables from '../../utils/replaceTemplateVariables';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import AddTo from '../../components/AddTo';
+
+// @ts-ignore
+import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface IProps {
   sqlVizType: string;
@@ -262,6 +265,7 @@ export default function Table(props: IProps) {
                       <span>{data?.total}</span>
                     </Space>
                   )}
+                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'sql', total: data?.total }} />}
                   <AddTo />
                 </Space>
               }

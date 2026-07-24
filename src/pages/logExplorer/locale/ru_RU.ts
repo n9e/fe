@@ -134,6 +134,8 @@ const ru_RU = {
     filterAllAnd: 'Добавить все к текущему запросу',
     filterAllNot: 'Исключить все из текущего запроса',
     filterExists: 'Фильтровать документы с этим полем',
+    add_drilldown_link: 'Добавить ссылку детализации',
+    drilldown_link_default_name: 'Ссылка детализации',
     total: 'Количество логов',
     stack_group_by_tip: 'Отобразить график тренда со стеком по значению этого поля',
     collapse: 'Свернуть',

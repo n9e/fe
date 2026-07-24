@@ -5,7 +5,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useRequest, useGetState } from 'ahooks';
 
-import { DatasourceCateEnum } from '@/utils/constant';
+import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
@@ -30,6 +30,9 @@ import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
 import { HandleValueFilterParams } from '../../types';
 import QueryBuilderFilters from './QueryBuilderFilters';
+
+// @ts-ignore
+import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 
 interface Props {
   tableSelector: {
@@ -305,6 +308,7 @@ export default function index(props: Props) {
     {
       cate: DatasourceCateEnum.ck,
       datasource_id: form.getFieldValue('datasourceValue'),
+      resource: { clickhouse_resource: { database: queryValues?.database, table: queryValues?.table } },
     },
     refreshFlag,
   );
@@ -379,6 +383,7 @@ export default function index(props: Props) {
                         </>
                       )}
                       {toggleNode}
+                      {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'query', total: data?.total }} />}
                     </Space>
                   );
                 }
