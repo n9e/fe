@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
-import { Drawer, Table, Tag, Dropdown, Menu, Button, Row, Col, Space, Select, Input } from 'antd';
-import { MoreOutlined, SearchOutlined } from '@ant-design/icons';
+import React, { useState, useContext, useEffect } from 'react';
+import { Drawer, Tag, Dropdown, Menu, Button, Row, Col, Space, Select, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
@@ -20,14 +20,18 @@ import { allCates } from '@/components/AdvancedWrap/utils';
 import { getEventById } from '@/pages/alertCurEvent/services';
 import { NS as alertCurEventNS } from '@/pages/alertCurEvent/constants';
 import EventDetailDrawer from '@/pages/alertCurEvent/pages/List/EventDetailDrawer';
+import EnhancedTable, { type RowAction } from '@/components/EnhancedTable';
+import type { ColumnsType } from 'antd/lib/table';
 
 import './style.less';
 import '@/pages/event/index.less';
 
 // @ts-ignore
+import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
+// @ts-ignore
 import AckBtn from 'plus:/parcels/Event/Acknowledge/AckBtn';
 // @ts-ignore
-import BatchAckBtn from 'plus:/parcels/Event/Acknowledge/BatchAckBtn';
+import { getBrainLicense } from 'plus:/components/License/services';
 
 export interface Props {
   title?: string;
@@ -65,6 +69,7 @@ export default function index(props: Props) {
   const [filter, setFilter] = useState<any>({});
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  const [alertEscalationEnable, setAlertEscalationEnable] = useState(false);
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
     data?: any;
@@ -87,7 +92,19 @@ export default function index(props: Props) {
       debounceWait: 500,
     },
   );
-  const columns = [
+
+  useEffect(() => {
+    if (!IS_PLUS || !getBrainLicense) return;
+
+    getBrainLicense()
+      .then((res) => {
+        setAlertEscalationEnable(res?.['alert-escalation-enable'] === true);
+      })
+      .catch(() => {
+        setAlertEscalationEnable(false);
+      });
+  }, []);
+  const columns: ColumnsType<any> = [
     {
       title: t(`${alertCurEventNS}:event_name`),
       dataIndex: 'rule_name',
@@ -171,74 +188,6 @@ export default function index(props: Props) {
       fixed: 'right' as const,
       render(value) {
         return moment(value * 1000).format('YYYY-MM-DD HH:mm:ss');
-      },
-    },
-    {
-      title: t('common:table.operations'),
-      dataIndex: 'operate',
-      fixed: 'right' as const,
-      render(_value, record) {
-        return (
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item key='AckBtn'>
-                  <AckBtn
-                    data={record}
-                    onOk={() => {
-                      setRefreshFlag(_.uniqueId('refresh_'));
-                    }}
-                  />
-                </Menu.Item>
-                {!_.includes(['firemap', 'northstar'], record?.rule_prod) && (
-                  <Menu.Item key='mute'>
-                    <Button
-                      style={{ padding: 0 }}
-                      size='small'
-                      type='link'
-                      onClick={() => {
-                        history.push({
-                          pathname: '/alert-mutes/add',
-                          search: queryString.stringify({
-                            busiGroup: record.group_id,
-                            prod: record.rule_prod,
-                            cate: record.cate,
-                            datasource_ids: [record.datasource_id],
-                            tags: record.tags,
-                          }),
-                        });
-                      }}
-                    >
-                      {t('shield')}
-                    </Button>
-                  </Menu.Item>
-                )}
-                <Menu.Item key='delete'>
-                  <Button
-                    style={{ padding: 0 }}
-                    size='small'
-                    type='link'
-                    danger
-                    onClick={() =>
-                      deleteAlertEventsModal(
-                        [record.id],
-                        () => {
-                          setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                          setRefreshFlag(_.uniqueId('refresh_'));
-                        },
-                        t,
-                      )
-                    }
-                  >
-                    {t('common:btn.delete')}
-                  </Button>
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type='link' icon={<MoreOutlined />} />
-          </Dropdown>
-        );
       },
     },
   ];
@@ -401,13 +350,66 @@ export default function index(props: Props) {
           </Dropdown>
         </Col>
       </Row>
-      <Table
+      <EnhancedTable
         className='mt-2 alert-rules-events-table'
         size='small'
         tableLayout='auto'
         scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
         rowKey={(record) => record.id}
         columns={columns}
+        rowActions={(record) => ({
+          inline: _.compact([
+            IS_PLUS && alertEscalationEnable
+              ? {
+                  key: 'ack',
+                  node: (
+                    <AckBtn
+                      data={record}
+                      iconOnly
+                      onOk={() => {
+                        setRefreshFlag(_.uniqueId('refresh_'));
+                      }}
+                    />
+                  ),
+                }
+              : undefined,
+            !_.includes(['firemap', 'northstar'], record?.rule_prod)
+              ? {
+                  key: 'shield',
+                  icon: 'shield',
+                  text: t('shield'),
+                  onClick: () => {
+                    history.push({
+                      pathname: '/alert-mutes/add',
+                      search: queryString.stringify({
+                        busiGroup: record.group_id,
+                        prod: record.rule_prod,
+                        cate: record.cate,
+                        datasource_ids: [record.datasource_id],
+                        tags: record.tags,
+                      }),
+                    });
+                  },
+                }
+              : undefined,
+            {
+              key: 'delete',
+              icon: 'delete',
+              text: t('common:btn.delete'),
+              danger: true,
+              onClick: () =>
+                deleteAlertEventsModal(
+                  [record.id],
+                  () => {
+                    setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                    setRefreshFlag(_.uniqueId('refresh_'));
+                  },
+                  t,
+                ),
+            },
+          ]) as RowAction[],
+        })}
+        actionColumn={{ title: t('common:table.operations'), width: 100 }}
         {...tableProps}
         rowClassName={(record) => {
           return SeverityColor[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
