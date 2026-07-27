@@ -246,9 +246,7 @@ function QueryTextTag(props: { text?: string; fullText?: string; previewType?: Q
   return (
     <Popover content={content} trigger='click' placement='leftTop'>
       <ThemeTag title={fullText} className='max-w-full items-start whitespace-normal cursor-pointer hover:border-primary hover:bg-primary/10'>
-        <span className='line-clamp-3 min-w-0 break-words'>
-          {text}
-        </span>
+        <span className='line-clamp-3 min-w-0 break-words'>{text}</span>
       </ThemeTag>
     </Popover>
   );
@@ -268,6 +266,22 @@ function SummaryMeta(props: { items: string[] }) {
   );
 }
 
+const severityTagColors: Record<number, { bg: string; text: string }> = {
+  1: { bg: 'var(--fc-red-3)', text: 'var(--fc-red-11)' },
+  2: { bg: 'var(--fc-orange-3)', text: 'var(--fc-orange-11)' },
+  3: { bg: 'var(--fc-yellow-3)', text: 'var(--fc-yellow-11)' },
+};
+
+function SeverityTag(props: { severity: number }) {
+  const colors = severityTagColors[props.severity];
+  if (!colors) return <span className='text-[11px]'>S{props.severity}</span>;
+  return (
+    <span className='inline-flex items-center rounded px-1 py-0 text-[11px] font-medium leading-tight' style={{ backgroundColor: colors.bg, color: colors.text }}>
+      S{props.severity}
+    </span>
+  );
+}
+
 function SummaryList(props: { items: ConditionSummaryItem[]; datasourceValue?: number }) {
   const visibleItems = props.items.slice(0, MAX_VISIBLE_CONDITION_ITEMS);
   const extraCount = props.items.length - MAX_VISIBLE_CONDITION_ITEMS;
@@ -276,7 +290,10 @@ function SummaryList(props: { items: ConditionSummaryItem[]; datasourceValue?: n
     <div className='space-y-2'>
       {visibleItems.map((item) => (
         <div key={item.key} className='min-w-0'>
-          <div className='text-[11px] text-foreground/90 truncate'>{item.title}</div>
+          <div className='flex items-center gap-1.5 text-[11px] text-foreground/90 truncate'>
+            <span className='truncate'>{item.title}</span>
+            {item.severity != null && <SeverityTag severity={item.severity} />}
+          </div>
           <SummaryMeta items={item.meta} />
           {item.queryText && (
             <div className='mt-1 flex flex-wrap gap-1'>
