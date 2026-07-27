@@ -21,5 +21,9 @@ const en_US = {
   tooltip_sort_asc: 'Ascending',
   show_legend: 'Show Legend',
   value_format: 'Value format',
+  series: 'Series ({{count}})',
+  series_filter: 'Search series name',
+  filtered: 'Filtered',
+  value: 'Value',
 };
 export default en_US;

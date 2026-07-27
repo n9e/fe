@@ -58,6 +58,9 @@ interface IProps {
   defaultUnit?: string;
   panelWidth?: number; // 用于 Graph 组件的宽度计算
   refetchOnZoom?: boolean;
+  seriesFilterText?: string;
+  onSeriesFilterTextChange?: (value: string) => void;
+  onQueryRequest?: () => void;
 }
 
 enum ChartType {
@@ -77,7 +80,7 @@ const getSerieName = (metric: any) => {
 };
 
 export default function Graph(props: IProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('promGraphCpt');
   const { datasourceList, darkMode: appDarkMode, siteInfo } = useContext(CommonStateContext);
   const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const {
@@ -102,6 +105,9 @@ export default function Graph(props: IProps) {
     defaultUnit,
     panelWidth,
     refetchOnZoom = false,
+    seriesFilterText,
+    onSeriesFilterTextChange,
+    onQueryRequest,
   } = props;
   const [data, setData] = useState<any[]>([]);
   const [zoomRangeState, setZoomRangeState] = useState<{ range: IRawTimeRange; sourceKey: string }>();
@@ -182,6 +188,7 @@ export default function Graph(props: IProps) {
 
   useEffect(() => {
     if (datasourceValue && promql) {
+      onQueryRequest?.();
       const parsedRange = parseRange(effectiveRange);
       const start = moment(parsedRange.start).unix();
       const end = moment(parsedRange.end).unix();
@@ -234,7 +241,7 @@ export default function Graph(props: IProps) {
           setLoading(false);
         });
     }
-  }, [effectiveRangeKey, minStep, maxDataPoints, datasourceValue, promql, refreshFlag]);
+  }, [effectiveRangeKey, minStep, maxDataPoints, datasourceValue, promql, refreshFlag, onQueryRequest]);
 
   return (
     <div className={activeZoomRange ? 'prom-graph-graph-container prom-graph-graph-zoom-owner' : 'prom-graph-graph-container'}>
@@ -385,6 +392,9 @@ export default function Graph(props: IProps) {
         themeMode={darkMode ? 'dark' : undefined}
         legendTableMaxHeight={contentMaxHeight - 200} // line chart height
         onZoomWithoutDefult={refetchOnZoom ? (handleZoomWithoutDefault as any) : undefined}
+        legendSeriesFilterText={seriesFilterText}
+        onLegendSeriesFilterTextChange={onSeriesFilterTextChange}
+        legendFilteredText={t('filtered')}
       />
     </div>
   );

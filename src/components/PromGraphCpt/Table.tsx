@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
-import { Input, DatePicker, List, Space, Button, message } from 'antd';
+import { Input, DatePicker, Space, Button, message, Popover, Table as AntdTable } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { json2csv } from 'json-2-csv';
 
@@ -31,6 +32,9 @@ interface IProps {
   showUnitPicker?: boolean; // 是否显示单位选择器
   controlsPortalDomNode?: HTMLDivElement | null; // 用于渲染控件的容器节点
   showExportButton?: boolean; // 是否显示导出按钮
+  seriesFilterText?: string;
+  onSeriesFilterTextChange?: (value: string) => void;
+  onQueryRequest?: () => void;
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
@@ -56,6 +60,19 @@ function getListItemLabel(resultType, record) {
       <span className='prom-graph-table-bracket'>{'}'}</span>
     </>
   );
+}
+
+function getListItemName(resultType, record) {
+  if (resultType === 'scalar') return 'scalar';
+  if (resultType === 'string') return 'string';
+
+  const metric = record?.metric || {};
+  const metricName = metric.__name__ || '';
+  const labels = _.keys(metric)
+    .filter((label) => label !== '__name__')
+    .map((label) => `${label}="${metric[label]}"`);
+
+  return `${metricName}{${labels.join(', ')}}`;
 }
 
 // step 只取整数部分(秒)
@@ -100,7 +117,7 @@ function getListItemValue(resultType, record, unit) {
 }
 
 export default function Table(props: IProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation('promGraphCpt');
   const {
     url,
     datasourceValue,
@@ -117,6 +134,9 @@ export default function Table(props: IProps) {
     showUnitPicker = true,
     controlsPortalDomNode,
     showExportButton = false,
+    seriesFilterText: controlledSeriesFilterText,
+    onSeriesFilterTextChange,
+    onQueryRequest,
   } = props;
   const [data, setData] = useState<{
     resultType: ResultType;
@@ -126,6 +146,15 @@ export default function Table(props: IProps) {
     result: [],
   });
   const [unit, setUnit] = useState(defaultUnit || 'sishort');
+  const [internalSeriesFilterText, setInternalSeriesFilterText] = useState('');
+  const [seriesFilterVisible, setSeriesFilterVisible] = useState(false);
+  const seriesFilterText = controlledSeriesFilterText ?? internalSeriesFilterText;
+  const setSeriesFilterText = (value: string) => {
+    onSeriesFilterTextChange?.(value);
+    if (controlledSeriesFilterText === undefined) {
+      setInternalSeriesFilterText(value);
+    }
+  };
   const rawResultRef = useRef<any[]>([]);
   const controls = (
     <Space>
@@ -174,6 +203,7 @@ export default function Table(props: IProps) {
 
   useEffect(() => {
     if (datasourceValue && promql) {
+      onQueryRequest?.();
       const queryStart = Date.now();
       setLoading(true);
       getPromData(`${url}/${datasourceValue}/api/v1/query`, {
@@ -230,7 +260,7 @@ export default function Table(props: IProps) {
           setLoading(false);
         });
     }
-  }, [timestamp, datasourceValue, promql, refreshFlag]);
+  }, [timestamp, datasourceValue, promql, refreshFlag, onQueryRequest]);
 
   useEffect(() => {
     if (defaultUnit) {
@@ -238,37 +268,92 @@ export default function Table(props: IProps) {
     }
   }, [defaultUnit]);
 
+  const filteredResult = useMemo(() => {
+    if (!seriesFilterText) return data.result;
+    const keyword = seriesFilterText.toLowerCase();
+    return data.result.filter((item) => getListItemName(data.resultType, item).toLowerCase().includes(keyword));
+  }, [data, seriesFilterText]);
+
+  const columns = [
+    {
+      title: (
+        <Popover
+          placement='topLeft'
+          trigger='click'
+          visible={seriesFilterVisible}
+          onVisibleChange={setSeriesFilterVisible}
+          content={
+            <SeriesFilterDropdown
+              initialValue={seriesFilterText}
+              onConfirm={(value) => {
+                setSeriesFilterText(value);
+                setSeriesFilterVisible(false);
+              }}
+            />
+          }
+          getPopupContainer={() => document.body}
+          destroyTooltipOnHide
+        >
+          <Space>
+            <span>{t('series', { count: filteredResult.length })}</span>
+            <SearchOutlined className='cursor-pointer' style={{ color: seriesFilterText ? 'var(--fc-primary-color)' : undefined }} title={t('series_filter')} />
+            {seriesFilterText && <span className='text-soft'>({t('filtered')})</span>}
+          </Space>
+        </Popover>
+      ),
+      dataIndex: 'name',
+      render: (_text, record) => <div style={{ wordBreak: 'break-all' }}>{data.resultType !== 'streams' && getListItemLabel(data.resultType, record)}</div>,
+    },
+    {
+      title: t('value'),
+      dataIndex: 'value',
+      className: 'prom-graph-table-value',
+      render: (_text, record) => <div>{getListItemValue(data.resultType, record, unit)}</div>,
+    },
+  ];
+
   return (
     <div className='prom-graph-table-container'>
       {controlsPortalDomNode ? createPortal(controls, controlsPortalDomNode) : controls}
-      <List
+      <AntdTable
         className='prom-graph-table-list'
         style={{
           maxHeight: contentMaxHeight,
         }}
         size='small'
         loading={loading}
-        dataSource={data ? data.result : []}
-        renderItem={(item) => {
-          return (
-            <List.Item
-              style={{
-                wordBreak: 'break-all',
-                gap: 40,
-              }}
-            >
-              {data?.resultType != 'streams' && <div>{getListItemLabel(data?.resultType, item)}</div>}
-              <div
-                style={{
-                  flexShrink: 0,
-                }}
-              >
-                {getListItemValue(data?.resultType, item, unit)}
-              </div>
-            </List.Item>
-          );
-        }}
+        rowKey={(_record, index) => index!}
+        dataSource={filteredResult}
+        columns={columns}
+        pagination={false}
+        scroll={{ x: 'max-content' }}
       />
+    </div>
+  );
+}
+
+function SeriesFilterDropdown({ initialValue, onConfirm }: { initialValue: string; onConfirm: (value: string) => void }) {
+  const { t } = useTranslation('promGraphCpt');
+  const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  return (
+    <div className='flex items-center gap-2'>
+      <Input
+        allowClear
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onPressEnter={() => onConfirm(value)}
+        style={{ width: 160 }}
+        size='small'
+        placeholder={t('series_filter')}
+      />
+      <Button type='primary' size='small' onClick={() => onConfirm(value)}>
+        {t('common:btn.ok')}
+      </Button>
     </div>
   );
 }
