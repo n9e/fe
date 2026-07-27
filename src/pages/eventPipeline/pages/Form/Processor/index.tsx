@@ -62,30 +62,33 @@ export default function NotifyConfig(props: Props) {
   const typeLabel = processorType ? t(`processor.options.${processorType}`) : t('processor.title');
   const summaryText = getProcessorSummary(processorType, processorConfig?.config);
 
-  const applyType = (newTyp: string) => {
-    const newConfig = _.cloneDeep(DEFAULT_PROCESSOR_CONFIG_MAP[newTyp]);
+  // 整体替换该处理器。setFieldsValue 对数组是整体覆盖，因此能顺带清掉
+  // 新类型编辑器挂载时写进 config 的 initialValue，而不是与旧字段合并
+  const replaceProcessor = (value: any) => {
     const formValues = _.cloneDeep(form.getFieldsValue());
-    _.set(formValues, ['processors', field.name, 'config'], newConfig);
+    _.set(formValues, ['processors', field.name], value);
     form.setFieldsValue(formValues);
   };
 
   const onTypeChange = (newTyp: string) => {
-    const currentTyp = processorType;
-    const currentConfig = processorConfig?.config;
-    const touched = !_.isEmpty(currentConfig) && !_.isEqual(currentConfig, DEFAULT_PROCESSOR_CONFIG_MAP[currentTyp]);
+    // Form.Item 先把新 typ 写进表单才调用这里，Form.useWatch 的值仍是切换前的那次渲染结果，正好当快照
+    const snapshot = _.cloneDeep(processorConfig);
+    const currentConfig = snapshot?.config;
+    const touched = !_.isEmpty(currentConfig) && !_.isEqual(currentConfig, DEFAULT_PROCESSOR_CONFIG_MAP[snapshot?.typ]);
+    const applyType = () => replaceProcessor({ ...snapshot, typ: newTyp, config: _.cloneDeep(DEFAULT_PROCESSOR_CONFIG_MAP[newTyp]) });
+
     if (!touched) {
-      applyType(newTyp);
+      applyType();
       return;
     }
+    // 此刻新类型的编辑器已经挂载，并把自己的 initialValue（如 ai_summary 的提示词模板、超时）写进了 config。
+    // 若放着不管：确认后 applyType 会把 config 整体换成默认值，已挂载的编辑器不会再补 initialValue，必填项变空；
+    // 取消则只回退 typ，新写入的字段残留在旧配置里。所以先整体回滚到快照，确认后再一次性写入 typ 与默认 config，
+    // 让目标编辑器在 config 就位之后才挂载。
+    replaceProcessor(snapshot);
     Modal.confirm({
       title: t('processor.switch_type_confirm'),
-      onOk: () => applyType(newTyp),
-      onCancel: () => {
-        // 取消则把类型回退到切换前，避免配置被清掉
-        const formValues = _.cloneDeep(form.getFieldsValue());
-        _.set(formValues, ['processors', field.name, 'typ'], currentTyp);
-        form.setFieldsValue(formValues);
-      },
+      onOk: applyType,
     });
   };
 

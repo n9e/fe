@@ -44,7 +44,7 @@ export default function index() {
     });
   };
 
-  const { tableProps, run, params } = useAntdTable(service, {
+  const { tableProps, run, params, error } = useAntdTable(service, {
     refreshDeps: [JSON.stringify(filters), pipelineId],
     defaultPageSize,
   });
@@ -130,7 +130,8 @@ export default function index() {
             rowKey='id'
             scroll={{ x: 'max-content' }}
             locale={
-              !hasFilters && pipelineId === undefined && !tableProps.loading && dataSource.length === 0
+              // 请求失败时 dataSource 同样为空，不能把接口故障说成「还没有执行记录」
+              !hasFilters && pipelineId === undefined && !tableProps.loading && !error && dataSource.length === 0
                 ? { emptyText: <EmptyGuide title={t('executions.empty_guide.title')} description={t('executions.empty_guide.desc')} /> }
                 : undefined
             }

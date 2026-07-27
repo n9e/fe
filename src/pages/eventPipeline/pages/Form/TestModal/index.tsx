@@ -49,11 +49,17 @@ export default function TestModal(props: Props) {
   const [loading, setLoading] = useState<boolean>(false);
   const form = Form.useFormInstance();
 
-  const reset = () => {
-    setVisible(false);
+  // 回到选择事件视图：EventsTable 会重新挂载并丢掉选中行，此时必须一并清掉 eventID，
+  // 否则界面上没有任何勾选、试跑按钮却仍可点，点下去是静默拿上一次的事件再跑一遍
+  const backToSettings = () => {
     setView('settings');
     setResult(undefined);
     setEventID(undefined);
+  };
+
+  const reset = () => {
+    setVisible(false);
+    backToSettings();
   };
 
   const runTest = () => {
@@ -110,7 +116,7 @@ export default function TestModal(props: Props) {
         <Spin spinning={loading}>
           {view === 'settings' && (
             <>
-              {visible && <EventsTable rowSelectionType='radio' onChange={(ids) => setEventID(ids[0])} />}
+              {visible && <EventsTable rowSelectionType='radio' selectedEventIds={eventID ? [eventID] : []} onChange={(ids) => setEventID(ids[0])} />}
               <Button type='primary' disabled={!eventID} onClick={runTest}>
                 {t('common:btn.test')}
               </Button>
@@ -119,7 +125,7 @@ export default function TestModal(props: Props) {
           {view === 'result' && result && (
             <>
               <div className='mb-3 flex items-center justify-between'>
-                <Button size='small' icon={<LeftOutlined />} onClick={() => setView('settings')}>
+                <Button size='small' icon={<LeftOutlined />} onClick={backToSettings}>
                   {t('test_modal.back_btn')}
                 </Button>
               </div>

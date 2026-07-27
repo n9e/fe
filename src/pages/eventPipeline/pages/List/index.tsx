@@ -46,9 +46,13 @@ export default function List() {
   const [data, setData] = useState<{
     list: Item[];
     loading: boolean;
+    // 首次请求成功返回过才算「加载完成」：只有这时列表为空才是真的没有工作流，
+    // 否则（尚未发起 / 请求失败）会把首帧和接口故障都误报成空状态引导
+    loaded: boolean;
   }>({
     list: [],
-    loading: false,
+    loading: true,
+    loaded: false,
   });
   // 选择态只存 id，行数据渲染时从最新的 data.list 现查：
   // 存 record 引用的话，行内启停或列表刷新后拿到的仍是勾选那一刻的旧对象，
@@ -72,9 +76,10 @@ export default function List() {
     setData((prev) => ({ ...prev, loading: true }));
     getList()
       .then((res) => {
-        setData({ list: res, loading: false });
+        setData({ list: res, loading: false, loaded: true });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error(err);
         setData((prev) => ({ ...prev, loading: false }));
       });
   };
@@ -196,7 +201,7 @@ export default function List() {
         rowKey='id'
         scroll={{ x: 'max-content' }}
         locale={
-          !data.loading && data.list.length === 0
+          data.loaded && !data.loading && data.list.length === 0
             ? {
                 emptyText: (
                   <EmptyGuide
