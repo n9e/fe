@@ -31,6 +31,7 @@ interface IProps {
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
   setRefreshFlag: (refreshFlag: string) => void;
   eventColumnExpanded: boolean;
+  alertEscalationEnable: boolean;
 }
 
 function formatDuration(ms: number) {
@@ -57,7 +58,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, eventColumnExpanded } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, eventColumnExpanded, alertEscalationEnable } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
@@ -273,7 +274,7 @@ export default function AlertTable(props: IProps) {
         }}
         rowActions={(record) => ({
           inline: _.compact([
-            IS_PLUS
+            IS_PLUS && alertEscalationEnable
               ? {
                   key: 'ack',
                   icon: record.status === 0 ? 'claim' : 'unclaim',
