@@ -1,4 +1,5 @@
-import { buildWorkflowName, WorkflowNameTexts } from './buildWorkflowName';
+import { buildWorkflowName, truncateName, WorkflowNameTexts } from './buildWorkflowName';
+import { MAX_NAME_LENGTH } from '../constants';
 
 const texts = {
   joiner: '-',
@@ -43,5 +44,35 @@ describe('buildWorkflowName', () => {
 
   it('只有处理器、无 key 的过滤条件被忽略', () => {
     expect(buildWorkflowName({ labelFilters: [{ func: '==', value: 'x' }], processorLabels: ['回调'] }, texts)).toBe('全部告警-回调');
+  });
+
+  it('超长的标签值会被截断到后端能存下的长度', () => {
+    const result = buildWorkflowName({ labelFilters: [{ key: 'service', value: 'a'.repeat(200) }], processorLabels: ['回调'] }, texts);
+
+    expect(Array.from(result).length).toBe(MAX_NAME_LENGTH);
+    expect(result.startsWith('service=aaa')).toBe(true);
+  });
+});
+
+describe('truncateName', () => {
+  it('未超长时原样返回', () => {
+    expect(truncateName('service=mon-回调')).toBe('service=mon-回调');
+  });
+
+  it('按码点截断，不产生半个代理对', () => {
+    // 4 个 emoji 每个占 2 个 UTF-16 码元，按码点截断应得到完整的 2 个
+    const result = truncateName('🚀🚀🚀🚀', 2);
+
+    expect(result).toBe('🚀🚀');
+    expect(Array.from(result).length).toBe(2);
+  });
+
+  it('中文按字符计数，与 MySQL varchar 语义一致', () => {
+    expect(truncateName('告'.repeat(200))).toBe('告'.repeat(MAX_NAME_LENGTH));
+  });
+
+  it('空值安全', () => {
+    expect(truncateName('')).toBe('');
+    expect(truncateName(undefined as unknown as string)).toBe('');
   });
 });

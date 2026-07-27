@@ -13,7 +13,7 @@ import { KVTags } from '@/components/KVTagSelect';
 import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
 
 import { Item } from '../../types';
-import { NS, DEFAULT_VALUES, DOC_URL } from '../../constants';
+import { NS, DEFAULT_VALUES, DOC_URL, MAX_NAME_LENGTH } from '../../constants';
 import { buildWorkflowName } from '../../components/buildWorkflowName';
 import Attributes from './Attributes';
 import Processor from './Processor';
@@ -213,8 +213,8 @@ export default function index(props: Props) {
         >
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label={t('common:table.name')} name='name' tooltip={t('name_auto.tip')} rules={[{ required: true }]}>
-                <Input />
+              <Form.Item label={t('common:table.name')} name='name' tooltip={t('name_auto.tip')} rules={[{ required: true }, { max: MAX_NAME_LENGTH }]}>
+                <Input maxLength={MAX_NAME_LENGTH} />
               </Form.Item>
             </Col>
             <Col flex='auto'>

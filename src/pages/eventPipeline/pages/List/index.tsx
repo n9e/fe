@@ -14,9 +14,10 @@ import EllipsisText from '@/components/EllipsisText';
 import EmptyGuide from '@/components/EmptyGuide';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY } from '../../constants';
+import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY, MAX_NAME_LENGTH } from '../../constants';
 import { Item, getList, getItem, putItem, deleteItems } from '../../services';
 import { omitDerivedFields } from '../../utils/normalizeValues';
+import { truncateName } from '../../components/buildWorkflowName';
 import ScenarioList from '../../components/ScenarioList';
 import Add from '../Add';
 import Edit from '../Edit';
@@ -315,7 +316,8 @@ export default function List() {
                   action: 'clone',
                   data: {
                     ..._.omit(item, 'id'),
-                    name: `${item.name}${t('clone_suffix')}`,
+                    // 原名称已接近上限时直接拼后缀会超出后端 varchar(128)，先给后缀留出位置
+                    name: `${truncateName(item.name, MAX_NAME_LENGTH - Array.from(t('clone_suffix')).length)}${t('clone_suffix')}`,
                   },
                 });
               },
