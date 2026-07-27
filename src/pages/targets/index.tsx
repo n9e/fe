@@ -344,6 +344,9 @@ const Targets: React.FC = () => {
     <PageLayout icon={<DatabaseOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/infrastructure/server-list/'>
       <div className='object-manage-page-content'>
         <BusinessGroup2
+          // 「公开仪表盘」不是机器列表的有效筛选，转换为「全部机器」后，
+          // 也要覆盖左侧组件从全局业务组状态读取的 group,-1，保证 URL 为 ids=-2。
+          selected={businessGroup.ids === '-1' ? 'group,-2' : undefined}
           presetFilterTitle={t('default_filter')}
           presetFilters={[
             { value: '0', label: t('ungrouped_targets') },

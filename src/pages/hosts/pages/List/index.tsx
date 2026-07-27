@@ -48,6 +48,9 @@ export default function index() {
         <div className='flex gap-[6px] h-full'>
           <BusinessGroup2
             ref={businessGroupRef}
+            // 「公开仪表盘」仅仪表盘页支持；切到机器列表时已将其转换为「全部机器」，
+            // 同步左侧组件的选中值，避免它依据全局的 group,-1 将 URL 回写为 ids=-1。
+            selected={businessGroup.ids === '-1' ? 'group,-2' : undefined}
             presetFilterTitle={t('default_filter')}
             presetFilters={[
               { value: '0', label: t('ungrouped_targets') },
