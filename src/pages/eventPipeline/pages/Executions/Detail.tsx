@@ -66,8 +66,9 @@ export default function ItemDetaildrawer(props: Props) {
         <Descriptions.Item label={t('executions.trigger_by')}>{data?.trigger_by}</Descriptions.Item>
         {data?.error_node && <Descriptions.Item label={t('executions.error_node')}>{data?.error_node}</Descriptions.Item>}
         {data?.error_message && (
-          <Descriptions.Item label={t('executions.error_message')} span={2}>
-            <div className='text-error'>{data?.error_message}</div>
+          // 同列表页：error_message 里也可能是成功终止的说明，只有 failed 才按错误呈现
+          <Descriptions.Item label={t(data?.status === 'failed' ? 'executions.error_message' : 'executions.message')} span={2}>
+            <div className={data?.status === 'failed' ? 'text-error' : undefined}>{data?.error_message}</div>
           </Descriptions.Item>
         )}
         {data?.inputs_snapshot && (

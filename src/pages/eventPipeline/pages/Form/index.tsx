@@ -61,6 +61,11 @@ export default function index(props: Props) {
   const disabledValue = Form.useWatch(['disabled'], form);
 
   const [sectionCollapsed, setSectionCollapsed] = useState<Record<string, boolean>>({ filter: false, processor: false, basic: false });
+  // 校验失败时要展开出错的处理器卡片：卡片折叠态是 Processor 的内部 state，折叠时内容为 display:none，
+  // 里面的错误项既看不见、也无法被 scrollToFirstError 定位（无布局盒子），点保存会毫无反应。
+  // 这里只下发「请展开这些下标」的信号而不接管折叠态；校验与展开之间不会发生排序，用下标是安全的。
+  // tick 用于让同一批下标能重复触发（连续两次点保存都错在同一张卡片）。
+  const [expandProcessorSignal, setExpandProcessorSignal] = useState<{ indexes: number[]; tick: number }>();
 
   useEffect(() => {
     form.setFieldsValue(initialValues ?? DEFAULT_VALUES);
@@ -134,6 +139,17 @@ export default function index(props: Props) {
     if (keys.length) {
       setSectionCollapsed((prev) => ({ ...prev, ..._.zipObject(keys, _.map(keys, () => false)) }));
     }
+    // 出错字段在某个处理器内时 name 形如 ['processors', 0, 'config', 'url']，取下标展开对应卡片。
+    // 不能用 _.compact 过滤：它会把下标 0（最常见的那张卡片）一起丢掉。
+    const processorIndexes = _.uniq(
+      _.filter(
+        _.map(errorFields, ({ name }) => (name?.[0] === 'processors' && _.isNumber(name?.[1]) ? (name[1] as number) : -1)),
+        (index) => index >= 0,
+      ),
+    );
+    if (processorIndexes.length) {
+      setExpandProcessorSignal((prev) => ({ indexes: processorIndexes, tick: (prev?.tick ?? 0) + 1 }));
+    }
   };
 
   return (
@@ -189,7 +205,16 @@ export default function index(props: Props) {
                 <SortableList useDragHandle helperClass='row-dragging' onSortEnd={({ oldIndex, newIndex }) => move(oldIndex, newIndex)}>
                   {fields.map((field, idx) => (
                     <SortableItem key={field.key} index={idx}>
-                      <Processor disabled={disabled} fields={fields} field={field} add={add} remove={remove} move={move} dragHandle={disabled ? undefined : <DragHandle />} />
+                      <Processor
+                        disabled={disabled}
+                        fields={fields}
+                        field={field}
+                        add={add}
+                        remove={remove}
+                        move={move}
+                        dragHandle={disabled ? undefined : <DragHandle />}
+                        expandSignal={expandProcessorSignal}
+                      />
                     </SortableItem>
                   ))}
                 </SortableList>

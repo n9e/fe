@@ -132,7 +132,15 @@ export default function TestModal(props: Props) {
               {dropped ? (
                 <Alert className='mb-4' type='warning' showIcon message={result.result || t('test_modal.dropped')} />
               ) : (
-                <Alert className='mb-4' type={failed ? 'error' : 'success'} showIcon message={failed ? t('test_modal.result_failed') : t('test_modal.result_success')} />
+                <Alert
+                  className='mb-4'
+                  type={failed ? 'error' : 'success'}
+                  showIcon
+                  message={failed ? t('test_modal.result_failed') : t('test_modal.result_success')}
+                  // 处理器级试跑只返回 {event, result}，没有 node_results 兜住这条 message，
+                  // 不在这里展示的话，event_drop 条件不命中时用户只看到「执行成功」，看不到 "drop event failed"
+                  description={result.result || undefined}
+                />
               )}
               {!_.isEmpty(result.node_results) && (
                 <div className='mb-4'>

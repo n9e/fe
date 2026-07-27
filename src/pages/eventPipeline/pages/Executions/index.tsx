@@ -180,13 +180,16 @@ export default function index() {
                 render: (value) => (value ? formatMsToHuman(value) : '-'),
               },
               {
-                title: t('executions.error_message'),
+                // 后端把执行结果 message 也写进 error_message（engine.go saveExecutionRecord：ErrorMessage: result.Message），
+                // 事件被丢弃时 status 仍是 success 而 message 非空（"workflow terminated at node X"），
+                // 所以列名用中性的「执行消息」，且只有 failed 才按错误标红
+                title: t('executions.message'),
                 dataIndex: 'error_message',
                 width: 220,
-                render: (value) =>
+                render: (value, record: ExecutionItem) =>
                   value ? (
                     <Tooltip title={value}>
-                      <div className='text-error truncate' style={{ maxWidth: 220 }}>
+                      <div className={record.status === 'failed' ? 'text-error truncate' : 'truncate'} style={{ maxWidth: 220 }}>
                         {value}
                       </div>
                     </Tooltip>

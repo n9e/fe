@@ -1,6 +1,6 @@
 import React from 'react';
 import { Steps, Tag, Space } from 'antd';
-import { LoadingOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { LoadingOutlined, CheckCircleOutlined, CloseCircleOutlined, StopOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -28,15 +28,31 @@ interface Props {
 export default function NodeResultsSteps({ data }: Props) {
   const { t } = useTranslation(NS);
 
+  // 后端节点状态除 running/success/failed 外，还有 terminated（事件被丢弃/抑制，执行引擎
+  // engine.go 里 drop 走的正是这条）、skipped、streaming；漏掉它们会让「把事件丢掉的那一步」
+  // 看起来和正常完成的步骤毫无区别，而这恰好是试跑最需要看清的信息
   const statusMap = {
     running: <Tag color='purple'>{t('executions.status.running')}</Tag>,
+    streaming: <Tag color='blue'>{t('executions.status.streaming')}</Tag>,
     success: <Tag color='green'>{t('executions.status.success')}</Tag>,
     failed: <Tag color='red'>{t('executions.status.failed')}</Tag>,
+    terminated: <Tag color='orange'>{t('executions.status.terminated')}</Tag>,
+    skipped: <Tag>{t('executions.status.skipped')}</Tag>,
   };
   const iconMap = {
     running: <LoadingOutlined />,
+    streaming: <LoadingOutlined />,
     success: <CheckCircleOutlined className='text-success' />,
     failed: <CloseCircleOutlined className='text-error' />,
+    terminated: <StopOutlined className='text-warning' />,
+    skipped: <MinusCircleOutlined className='text-soft' />,
+  };
+  // Step 的 status 决定连接线与文字色，不能统一写死 finish（否则失败节点也呈现为已完成）
+  const stepStatusMap: Record<string, 'finish' | 'error' | 'process' | 'wait'> = {
+    failed: 'error',
+    running: 'process',
+    streaming: 'process',
+    skipped: 'wait',
   };
 
   return (
@@ -44,7 +60,7 @@ export default function NodeResultsSteps({ data }: Props) {
       {_.map(data, (node) => {
         return (
           <Steps.Step
-            status='finish'
+            status={stepStatusMap[node.status] ?? 'finish'}
             key={node.node_id}
             icon={iconMap[node.status]}
             title={

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Card, Space, Form, Select, Tooltip, Modal, Tag } from 'antd';
 import { MinusCircleOutlined, CopyOutlined, UpCircleOutlined, DownCircleOutlined, DownOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
@@ -29,6 +29,8 @@ interface Props {
   move: (from: number, to: number) => void;
   /** 由父级 Form.List 注入的拖拽手柄（react-sortable-hoc 的 SortableHandle） */
   dragHandle?: React.ReactNode;
+  /** 父级校验失败后要求展开的处理器下标；tick 变化即为一次新的展开请求 */
+  expandSignal?: { indexes: number[]; tick: number };
 }
 
 // 处理器分类，用于类型选择器分组
@@ -51,8 +53,17 @@ const TYPE_CATEGORY: Record<string, string> = {
 export default function NotifyConfig(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { darkMode } = useContext(CommonStateContext);
-  const { disabled, fields, field, add, remove, move, dragHandle } = props;
+  const { disabled, fields, field, add, remove, move, dragHandle, expandSignal } = props;
   const [collapsed, setCollapsed] = useState(false);
+
+  // 折叠时卡片内容是 display:none，里面的必填错误既看不见也无法被 scrollToFirstError 定位，
+  // 所以校验失败时必须由父级把出错的卡片重新展开，否则点保存表现为「毫无反应」
+  useEffect(() => {
+    if (expandSignal && _.includes(expandSignal.indexes, field.name)) {
+      setCollapsed(false);
+    }
+  }, [expandSignal?.tick]);
+
   const resetField = _.omit(field, ['name', 'key']);
   const form = Form.useFormInstance();
   const processorConfig = Form.useWatch(['processors', field.name]);

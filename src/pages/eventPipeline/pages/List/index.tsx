@@ -107,19 +107,26 @@ export default function List() {
     featchData();
   }, []);
 
-  const selectedRows = useMemo(() => _.filter(data.list, (item) => _.includes(selectedRowKeys, item.id)), [data.list, selectedRowKeys]);
+  const filteredData = useMemo(
+    () =>
+      _.filter(data.list, (item) => {
+        if (filter?.search) {
+          const keyword = filter.search.toLowerCase();
+          const haystack = _.compact([item.name, item.description, ...getProcessorTypes(item).map((typ) => t(`processor.options.${typ}`))])
+            .join(' ')
+            .toLowerCase();
+          if (!_.includes(haystack, keyword)) return false;
+        }
+        if (filter?.disabled !== undefined && item.disabled !== filter.disabled) return false;
+        return true;
+      }),
+    [data.list, filter?.search, filter?.disabled, i18n.language],
+  );
 
-  const filteredData = _.filter(data.list, (item) => {
-    if (filter?.search) {
-      const keyword = filter.search.toLowerCase();
-      const haystack = _.compact([item.name, item.description, ...getProcessorTypes(item).map((typ) => t(`processor.options.${typ}`))])
-        .join(' ')
-        .toLowerCase();
-      if (!_.includes(haystack, keyword)) return false;
-    }
-    if (filter?.disabled !== undefined && item.disabled !== filter.disabled) return false;
-    return true;
-  });
+  // 选中项只从当前筛选结果里取。antd 的 useSelection 仅在用户点勾选框时（setSelectedKeys 内部）
+  // 才剔除不在 dataSource 里的 key，筛选条件变化本身不会裁剪受控的 selectedRowKeys；
+  // 若从未筛选的 data.list 派生，批量删除会删掉页面上一个勾选都看不到的行。
+  const selectedRows = useMemo(() => _.filter(filteredData, (item) => _.includes(selectedRowKeys, item.id)), [filteredData, selectedRowKeys]);
 
   // 行内切换启用/停用。后端 PUT 是全字段覆盖，而列表里的 record 是页面加载时的快照，
   // 期间别人可能已经改过这条工作流的 processors / 过滤条件——直接回传旧快照会静默回退对方的改动。
