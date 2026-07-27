@@ -317,6 +317,34 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         };
       }
     }
+    if (data_source_name === DatasourceCateEnum.volcTLS) {
+      const mode = _.get(params, 'mode');
+      const submode = _.get(params, 'submode');
+      const project = _.get(params, 'project');
+      const topic = _.get(params, 'topic');
+      const labelKey = _.get(params, 'labelKey') ?? [];
+      const valueKey = _.get(params, 'valueKey') ?? [];
+      const timeKey = _.get(params, 'timeKey') ?? '';
+      if (project && topic) {
+        return {
+          ...formValues,
+          query: {
+            range,
+            mode,
+            submode,
+            project,
+            topic,
+            query,
+            organizeFields,
+            keys: {
+              labelKey: Array.isArray(labelKey) ? labelKey : [labelKey],
+              valueKey: Array.isArray(valueKey) ? valueKey : [valueKey],
+              timeKey,
+            },
+          },
+        };
+      }
+    }
     if (data_source_name === DatasourceCateEnum.bceBLS) {
       const mode = _.get(params, 'mode');
       const submode = _.get(params, 'submode');
@@ -507,6 +535,20 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     query.submode = formValues.query?.submode;
     query.logset = formValues.query?.logNamespace;
     query.topic = formValues.query?.logSource;
+    query.query = formValues.query?.query;
+    query.labelKey = formValues.query?.keys?.labelKey;
+    query.valueKey = formValues.query?.keys?.valueKey;
+    query.timeKey = formValues.query?.keys?.timeKey;
+    if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
+      query.organize_fields = formValues.query?.organizeFields;
+    }
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.volcTLS) {
+    query.mode = formValues.query?.mode;
+    query.submode = formValues.query?.submode;
+    query.project = formValues.query?.project;
+    query.topic = formValues.query?.topic;
     query.query = formValues.query?.query;
     query.labelKey = formValues.query?.keys?.labelKey;
     query.valueKey = formValues.query?.keys?.valueKey;
