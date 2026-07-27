@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { Input, Button, Modal } from 'antd';
+import { Input, Button, Modal, Space } from 'antd';
 import { useDebounce } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
@@ -10,19 +10,25 @@ import SourceCards from './components/SourceCards';
 import TableSource from './components/TableSource';
 import Detail from './Detail';
 import Form from './Form';
+import GrafanaImportModal from './components/GrafanaImportModal';
 import './locale';
 import { SearchOutlined } from '@ant-design/icons';
+// @ts-ignore
+import useIsPlus from 'plus:/components/useIsPlus';
 
 export { Form };
 
 export default function index() {
   const { t } = useTranslation('datasourceManage');
+  const isPlus = useIsPlus();
   const [pluginList, setPluginList] = useState<any[]>();
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailData, setDetailData] = useState();
   const [searchVal, setSearchVal] = useState<string>('');
   const debouncedSearchValue = useDebounce(searchVal, { wait: 500 });
   const [chooseDataSourceTypeModalVisible, setChooseDataSourceTypeModalVisible] = useState(false);
+  const [grafanaImportVisible, setGrafanaImportVisible] = useState(false);
+  const [listRefreshKey, setListRefreshKey] = useState(0);
 
   useEffect(() => {
     getDataSourcePluginList().then((res) => {
@@ -66,17 +72,21 @@ export default function index() {
                 setSearchVal(e.target.value);
               }}
             />
-            <Button
-              type='primary'
-              onClick={() => {
-                setChooseDataSourceTypeModalVisible(true);
-              }}
-            >
-              {t('common:btn.add')}
-            </Button>
+            <Space>
+              <Button
+                type='primary'
+                onClick={() => {
+                  setChooseDataSourceTypeModalVisible(true);
+                }}
+              >
+                {t('common:btn.add')}
+              </Button>
+              {isPlus && <Button onClick={() => setGrafanaImportVisible(true)}>{t('import_grafana.entry')}</Button>}
+            </Space>
           </div>
           {pluginList && (
             <TableSource
+              key={listRefreshKey}
               debouncedSearchValue={debouncedSearchValue}
               pluginList={pluginList}
               nameClick={(record) => {
@@ -86,6 +96,7 @@ export default function index() {
               onAdd={() => {
                 setChooseDataSourceTypeModalVisible(true);
               }}
+              onImportGrafana={isPlus ? () => setGrafanaImportVisible(true) : undefined}
             />
           )}
           {detailVisible && (
@@ -111,6 +122,11 @@ export default function index() {
       >
         <SourceCards sourceMap={pluginList} urlPrefix='datasources' />
       </Modal>
+      <GrafanaImportModal
+        visible={grafanaImportVisible}
+        onClose={() => setGrafanaImportVisible(false)}
+        onImported={() => setListRefreshKey((k) => k + 1)}
+      />
     </PageLayout>
   );
 }
