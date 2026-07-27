@@ -21,7 +21,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 // @ts-ignore
 import { getBrainLicense } from 'plus:/components/License/services';
 
-import { NS, MY_GRPUPS_CACHE_KEY } from '../../constants';
+import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
@@ -101,6 +101,13 @@ const AlertCurEvent: React.FC = () => {
       }
       if (_.has(patch, 'range')) {
         setRange(nextFilter.range);
+      }
+      if (_.has(patch, 'aggr_rule_id')) {
+        if (nextFilter.aggr_rule_id) {
+          localStorage.setItem(AGGR_RULE_ID_CACHE_KEY, String(nextFilter.aggr_rule_id));
+        } else {
+          localStorage.removeItem(AGGR_RULE_ID_CACHE_KEY);
+        }
       }
     },
     [history, normalizeFilterForUrl],
