@@ -30,6 +30,8 @@ interface Props {
   data: any;
   hosts: { host: string }[];
   taskId: string;
+  /** 任务所属业务组，克隆时需带上，否则「全部任务」视图下会用当前选中组请求到错误的 busi-group */
+  busiId?: number;
   hideCloneTask?: boolean;
 }
 
@@ -44,7 +46,7 @@ type SizeType = 'small' | 'middle' | 'large';
 export default function MetaDrawer(props: Props) {
   const { t } = useTranslation('common');
   const { t: tn } = useTranslation('navigableDrawer');
-  const { visible, loading = false, onClose, data, hosts, taskId, hideCloneTask } = props;
+  const { visible, loading = false, onClose, data, hosts, taskId, busiId, hideCloneTask } = props;
   const [size, setSize] = useState<SizeType>('middle');
 
   return (
@@ -67,7 +69,7 @@ export default function MetaDrawer(props: Props) {
       }
       footer={
         !hideCloneTask && (
-          <Link to={{ pathname: '/job-tasks/add', search: `task=${taskId}` }}>
+          <Link to={{ pathname: '/job-tasks/add', search: busiId ? `task=${taskId}&gid=${busiId}` : `task=${taskId}` }}>
             <Button type='primary'>{t('task.clone.new')}</Button>
           </Link>
         )

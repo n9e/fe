@@ -1,5 +1,5 @@
-import React from 'react';
-import { Form, Modal, Space, Select } from 'antd';
+import React, { useState } from 'react';
+import { Form, Modal, Space, Select, Radio, message } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -10,15 +10,17 @@ import Preview from './Preview';
 
 interface Props {
   group_id: number;
-  onOk: (hosts: any[]) => void;
+  onOk: (hosts: any[], mode: 'replace' | 'append') => void;
 }
 
 const queryKeyOptions = ['all_hosts', 'tags', 'hosts'];
 
 function hostsFilterModal(props: Props & ModalWrapProps) {
   const { t } = useTranslation('alertRules');
+  const { t: tsh } = useTranslation('alertSelfHealing');
   const { visible, destroy, group_id, onOk } = props;
   const [form] = Form.useForm();
+  const [mode, setMode] = useState<'replace' | 'append'>('replace');
 
   return (
     <Form form={form}>
@@ -60,13 +62,21 @@ function hostsFilterModal(props: Props & ModalWrapProps) {
                   limit: 100000, // TODO 临时解决方案，limit 100000 认为是获取全部
                   queries,
                 }).then((res) => {
-                  onOk(res?.dat?.list || []);
+                  const list = res?.dat?.list || [];
+                  message.success(tsh('filter_mode.matched', { count: list.length }));
+                  onOk(list, mode);
                   destroy();
                 });
               });
             }}
             onCancel={destroy}
           >
+            <div className='mb-3'>
+              <Radio.Group value={mode} onChange={(e) => setMode(e.target.value)} optionType='button' size='small'>
+                <Radio value='replace'>{tsh('filter_mode.replace')}</Radio>
+                <Radio value='append'>{tsh('filter_mode.append')}</Radio>
+              </Radio.Group>
+            </div>
             {fields.map((field, idx) => (
               <div key={field.key}>
                 <Space align='baseline'>

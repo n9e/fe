@@ -26,18 +26,21 @@ interface Props {
   readOnly: boolean;
   value?: string;
   onChange?: (value: string) => void;
+  /** 拿到底层 ace 实例，用于光标处插入变量 / 骨架 */
+  onLoad?: (editor: any) => void;
 }
 
 export default function Editor(props: Props) {
   const { darkMode } = useContext(CommonStateContext);
   return (
     <AceEditor
-      placeholder='Placeholder Text'
+      placeholder='#!/bin/bash'
       style={{ width: '100%' }}
       height={props.height}
       mode='sh'
       theme={darkMode ? 'monokai' : 'kuroir'}
-      name='blah2'
+      name='job-tpl-editor'
+      onLoad={props.onLoad}
       fontSize={14}
       showPrintMargin={false}
       showGutter

@@ -36,7 +36,7 @@ const en_US = {
     alert_subscribes: 'Subscription rules',
     job: 'Self-healing',
     job_tpls: 'Self-Healing script',
-    job_tasks: 'Task history',
+    job_tasks: 'Execution history',
     events: 'Events',
     cur_events: 'Active events',
     his_events: 'Historical events',

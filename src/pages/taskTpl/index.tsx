@@ -30,6 +30,8 @@ import { RequestMethod } from '@/store/common';
 import api from '@/utils/api';
 import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
+import EmptyGuide from '@/components/EmptyGuide';
+import DocumentDrawer from '@/components/DocumentDrawer';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import SearchInput from '@/components/BaseSearchInput';
@@ -38,6 +40,9 @@ import usePagination from '@/components/usePagination';
 import { Tpl } from './interface';
 import BindTags from './bindTags';
 import UnBindTags from './unBindTags';
+import ScenarioList from './components/ScenarioList';
+import TemplateLibrary from './components/TemplateLibrary';
+import { DOC_URL, SCRIPT_TEMPLATES_ENABLED } from './constants';
 
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_TPL_NODE_ID';
 const SEARCH_SESSION_KEY = 'taskTpl_query';
@@ -64,10 +69,13 @@ function getTableData(options: any, gids: string | undefined, query: string) {
 
 const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
+  const { t: tsh } = useTranslation('alertSelfHealing');
   const history = useHistory();
+  const { darkMode } = useContext(CommonStateContext);
   const [query, setQuery] = useState(() => sessionStorage.getItem(SEARCH_SESSION_KEY) || '');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
+  const [templateVisible, setTemplateVisible] = useState(false);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   useEffect(() => {
     sessionStorage.setItem(SEARCH_SESSION_KEY, query);
@@ -104,7 +112,9 @@ const index = (_props: any) => {
   function handleBatchUnBindTags() {
     if (!_.isEmpty(selectedIds)) {
       let uniqueTags = [] as any[];
-      _.each(tableProps.dataSource, (item) => {
+      // 候选标签只取「被选中的行」的并集：只能解绑选中脚本上真实存在的标签
+      const selectedRows = _.filter(tableProps.dataSource, (item: any) => _.includes(selectedIds, item.id));
+      _.each(selectedRows, (item) => {
         const tags = item.tags;
         uniqueTags = _.union(uniqueTags, tags);
       });
@@ -144,7 +154,7 @@ const index = (_props: any) => {
     [
       tagsColumn({ title: t('tpl.tags'), dataIndex: 'tags', maxWidth: 180, onTagClick: handleTagClick }),
       updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
-      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
     ] as any,
   );
 
@@ -171,6 +181,11 @@ const index = (_props: any) => {
               </Col>
               {businessGroup.isLeaf && gids !== '-2' && (
                 <Col span={10} className='textAlignRight'>
+                  {SCRIPT_TEMPLATES_ENABLED && (
+                    <Button style={{ marginRight: 10 }} onClick={() => setTemplateVisible(true)}>
+                      {tsh('templates.entry_btn')}
+                    </Button>
+                  )}
                   <Link to={{ pathname: `/job-tpls/add`, search: `gid=${gids}` }}>
                     <Button style={{ marginRight: 10 }} type='primary'>
                       {t('tpl.create')}
@@ -256,6 +271,33 @@ const index = (_props: any) => {
               })}
               actionColumn={{ title: t('table.operations'), width: 130 }}
               {...(tableProps as any)}
+              locale={{
+                // 仅在「确实一条脚本都没有 + 无搜索 + 可创建」时给引导，搜索无结果时回退默认空态
+                emptyText:
+                  businessGroup.isLeaf && gids !== '-2' && !query && _.isEmpty(tableProps.dataSource) ? (
+                    <EmptyGuide
+                      title={tsh('empty_guide.title')}
+                      descriptionClassName='max-w-[620px]'
+                      description={
+                        <>
+                          <div className='mb-1'>{tsh('empty_guide.desc_title')}</div>
+                          <ScenarioList />
+                        </>
+                      }
+                      actions={
+                        <>
+                          <Button type='primary' onClick={() => history.push({ pathname: '/job-tpls/add', search: `gid=${gids}` })}>
+                            {t('tpl.create')}
+                          </Button>
+                          {SCRIPT_TEMPLATES_ENABLED && <Button onClick={() => setTemplateVisible(true)}>{tsh('templates.entry_btn')}</Button>}
+                          <a onClick={() => DocumentDrawer({ language: i18n.language, darkMode, title: t('common:page_help'), type: 'iframe', documentPath: DOC_URL })}>
+                            {tsh('empty_guide.doc')}
+                          </a>
+                        </>
+                      }
+                    />
+                  ) : undefined,
+              }}
               rowSelection={{
                 selectedRowKeys: selectedIds,
                 onChange: (selectedRowKeys) => {
@@ -272,6 +314,7 @@ const index = (_props: any) => {
           <BlankBusinessPlaceholder text={t('tpl')} />
         )}
       </div>
+      {SCRIPT_TEMPLATES_ENABLED && <TemplateLibrary visible={templateVisible} onClose={() => setTemplateVisible(false)} gid={gids} />}
     </PageLayout>
   );
 };

@@ -36,7 +36,7 @@ const zh_CN = {
     alert_subscribes: '订阅规则',
     job: '告警自愈',
     job_tpls: '自愈脚本',
-    job_tasks: '历史任务',
+    job_tasks: '执行历史',
     events: '告警事件',
     cur_events: '活跃告警',
     his_events: '历史告警',

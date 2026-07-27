@@ -15,8 +15,8 @@
  *
  */
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Button, Spin, Row, Col, Card, Alert, message } from 'antd';
-import { RollbackOutlined } from '@ant-design/icons';
+import { Button, Spin, Row, Col, Card, Alert, Modal, message } from 'antd';
+import { RollbackOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -40,26 +40,54 @@ const Add = (props: any) => {
   const [action, setAction] = useState('');
   const groupId = useRef<number>(Number(curBusiId));
 
+  const doSubmit = (values: any) => {
+    request(api.tasks(groupId.current), {
+      method: 'POST',
+      body: JSON.stringify({
+        ...values,
+        action,
+      }),
+    }).then((res) => {
+      message.success(t('msg.create.success'));
+      // 携带创建时实际使用的组 id（可能来自模板/克隆源），与列表页跳转保持一致，
+      // 避免「全部」(-2) 视图下结果页用全局 businessGroup.id 请求到错误的 busi-group
+      props.history.push({
+        pathname: `/job-tasks/${res.dat}/result`,
+        search: `gid=${groupId.current}`,
+      });
+    });
+  };
+
   const handleSubmit = (values: any) => {
     if (!groupId.current) {
       message.error(t('task.error.no_group'));
       return;
     }
-    if (action) {
-      values.pause = _.join(values.pause, ',');
-      request(api.tasks(groupId.current), {
-        method: 'POST',
-        body: JSON.stringify({
-          ...values,
-          action,
-        }),
-      }).then((res) => {
-        message.success(t('msg.create.success'));
-        props.history.push({
-          pathname: `/job-tasks/${res.dat}/result`,
-        });
-      });
+    if (!action) {
+      return;
     }
+    // 「保存立刻执行」会立即在多台机器上跑 shell，执行前二次确认（保存暂不执行不弹）
+    if (action === 'start') {
+      const hostCount = _.size(values.hosts);
+      const scriptFirstLine = _.trim(_.head(_.split(values.script || '', '\n')) || '');
+      Modal.confirm({
+        title: t('task.confirm.execute.title'),
+        icon: <ExclamationCircleOutlined />,
+        content: (
+          <div className='leading-7'>
+            <div>{t('task.confirm.execute.hosts', { count: hostCount })}</div>
+            <div>{t('task.confirm.execute.account', { account: values.account })}</div>
+            <div className='truncate'>{t('task.confirm.execute.script', { script: scriptFirstLine })}</div>
+          </div>
+        ),
+        okText: t('task.save.execute'),
+        okButtonProps: { danger: true },
+        cancelText: t('common:btn.cancel'),
+        onOk: () => doSubmit(values),
+      });
+      return;
+    }
+    doSubmit(values);
   };
 
   useEffect(() => {

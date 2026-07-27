@@ -18,6 +18,7 @@ import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { RollbackOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import queryString from 'query-string';
 
 import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
@@ -27,7 +28,9 @@ import ResultContent from './ResultContent';
 const index = (props: any) => {
   const history = useHistory();
   const { businessGroup } = useContext(CommonStateContext);
-  const curBusiId = businessGroup.id!;
+  const query = queryString.parse(props.location?.search);
+  // 优先用列表页传来的 gid，避免「全部任务」(-2) 视图下取当前选中组导致越权/定位错误
+  const curBusiId = Number(query.gid) || businessGroup.id!;
   const { params } = props.match;
   const taskId = params.id;
   const { t } = useTranslation('common');

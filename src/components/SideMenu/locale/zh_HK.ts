@@ -36,7 +36,7 @@ const zh_HK = {
     alert_subscribes: '訂閱規則',
     job: '告警自癒',
     job_tpls: '自癒腳本',
-    job_tasks: '歷史任務',
+    job_tasks: '執行歷史',
     events: '告警事件',
     cur_events: '活躍告警',
     his_events: '歷史告警',

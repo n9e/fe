@@ -92,7 +92,7 @@ const zh_HK = {
       alert_aggr_events_link: '聚合事件',
     },
     task_tpls: {
-      label: '自癒模板',
+      label: '自愈腳本',
     },
     step_tip: '曲線時間間隔，單位秒',
     query_label: '查詢條件',

@@ -16,8 +16,9 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Divider, Tag, Row, Col, Button, Card } from 'antd';
+import { Divider, Tag, Row, Col, Button, Card, Modal, message } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
+import classnames from 'classnames';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -47,8 +48,22 @@ interface Props {
 
 const taskResultCls = 'job-task-result';
 
+const FAILED_STATUSES = ['failed', 'killfailed', 'timeout'];
+
+// 一键重试的单批并发数，批与批之间串行
+const RETRY_BATCH_SIZE = 10;
+
+// 主机状态标签色：成功 / 中性（取消、忽略）/ 失败，供状态列与概况条共用
+function statusColor(status: string): string {
+  if (status === 'success') return '#87d068';
+  if (status === 'cancelled' || status === 'ignored') return '#ec971f';
+  if (_.includes(FAILED_STATUSES, status)) return '#f50';
+  return '';
+}
+
 const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAlias, initialOutputMode, onOutputOpen, onOutputClose }) => {
   const { t } = useTranslation('common');
+  const { t: tsh } = useTranslation('alertSelfHealing');
   const [activeStatus, setActiveStatus] = useState<string[]>();
   const [data, setData] = useState({} as any);
   const [hosts, setHosts] = useState<HostItem[]>([]);
@@ -78,7 +93,7 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
 
   useEffect(() => {
     getTableData();
-  }, []);
+  }, [taskId, busiId]);
 
   useEffect(() => {
     if (initialOutputMode) {
@@ -110,6 +125,21 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
     });
   };
 
+  // 单机强杀前二次确认，其余动作直接执行
+  const confirmHostAction = (host: string, action: string) => {
+    if (action === 'kill') {
+      Modal.confirm({
+        title: t('task.confirm.host.kill'),
+        okButtonProps: { danger: true },
+        okText: t('task.action.kill'),
+        cancelText: t('common:btn.cancel'),
+        onOk: () => handleHostAction(host, action),
+      });
+      return;
+    }
+    handleHostAction(host, action);
+  };
+
   const handleTaskAction = (action: string) => {
     request(`${api.task(busiId)}/${taskId}/action`, {
       method: 'PUT',
@@ -121,8 +151,61 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
     });
   };
 
+  // 取消执行 / 强制终止会影响正在运行的任务，执行前二次确认
+  const confirmTaskAction = (action: string) => {
+    if (action === 'cancel' || action === 'kill') {
+      Modal.confirm({
+        title: action === 'kill' ? t('task.confirm.kill') : t('task.confirm.cancel'),
+        okButtonProps: { danger: true },
+        okText: action === 'kill' ? t('task.action.kill') : t('task.action.cancel'),
+        cancelText: t('common:btn.cancel'),
+        onOk: () => handleTaskAction(action),
+      });
+      return;
+    }
+    handleTaskAction(action);
+  };
+
+  const groupedHosts = _.groupBy(hosts, 'status');
+  const failedHosts = _.filter(hosts, (h) => _.includes(FAILED_STATUSES, h.status));
+
+  // 一键重试所有失败 / 超时的主机，避免逐台点 redo
+  const retryFailedHosts = () => {
+    if (_.isEmpty(failedHosts)) {
+      message.info(tsh('result.no_failed'));
+      return;
+    }
+    Modal.confirm({
+      title: tsh('result.retry_failed_confirm', { count: failedHosts.length }),
+      onOk: async () => {
+        let failedCount = 0;
+        // 主机列表是全量返回的（可达上千台），分批串行发起，避免一次点击打爆浏览器连接池；
+        // 批内用 allSettled：单台 redo 失败不应吞掉其余已成功的重试
+        for (const chunk of _.chunk(failedHosts, RETRY_BATCH_SIZE)) {
+          const results = await Promise.allSettled(
+            _.map(chunk, (h) =>
+              request(`${api.task(busiId)}/${taskId}/host/${h.host}/action`, {
+                method: 'PUT',
+                body: JSON.stringify({ action: 'redo' }),
+              }),
+            ),
+          );
+          failedCount += _.filter(results, (r) => r.status === 'rejected').length;
+        }
+        if (failedCount > 0) {
+          message.error(tsh('result.retry_partial_failed', { count: failedCount }));
+        }
+        getTableData();
+      },
+    });
+  };
+
+  // 点击概况条上的状态徽标，切换表格按该状态过滤（再次点击取消）
+  const toggleStatusFilter = (status: string) => {
+    setActiveStatus((prev) => (prev?.length === 1 && prev[0] === status ? undefined : [status]));
+  };
+
   const renderHostStatusFilter = () => {
-    const groupedHosts = _.groupBy(hosts, 'status');
     return _.map(groupedHosts, (chosts, status) => {
       return {
         text: `${status} (${chosts.length})`,
@@ -140,18 +223,13 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
       title: t('task.status'),
       dataIndex: 'status',
       filters: renderHostStatusFilter(),
+      filteredValue: activeStatus ?? null,
       onFilter: (value: string, record) => {
         return record.status === value;
       },
       render: (text) => {
-        if (text === 'success') {
-          return <Tag color='#87d068'>{text}</Tag>;
-        } else if (text === 'cancelled' || text === 'ignored') {
-          return <Tag color='#ec971f'>{text}</Tag>;
-        } else if (text === 'failed' || text === 'killfailed' || text === 'timeout') {
-          return <Tag color='#f50'>{text}</Tag>;
-        }
-        return <Tag>{text}</Tag>;
+        const color = statusColor(text);
+        return color ? <Tag color={color}>{text}</Tag> : <Tag>{text}</Tag>;
       },
     },
     {
@@ -191,12 +269,39 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
             <AutoRefresh
               ref={AutoRefreshRef}
               disabled={data.done}
+              // 任务未完成时默认 10s 自动刷新，完成后置 0 停止（另有 data.done effect 兜底关闭）
+              intervalSeconds={data.done ? 0 : 10}
               onRefresh={() => {
                 getTableData();
               }}
             />
           }
         >
+          {!_.isEmpty(hosts) && (
+            <div className='mb-4 flex flex-wrap items-center gap-2'>
+              <span className='text-soft'>{tsh('result.status_bar')}：</span>
+              {_.map(groupedHosts, (list, status) => {
+                const color = statusColor(status);
+                const active = activeStatus?.length === 1 && activeStatus[0] === status;
+                return (
+                  <Tag
+                    key={status}
+                    color={active ? color || undefined : undefined}
+                    className={classnames('cursor-pointer m-0', active && 'ring-2 ring-offset-1')}
+                    style={!active && color ? { borderColor: color, color } : undefined}
+                    onClick={() => toggleStatusFilter(status)}
+                  >
+                    {status} {list.length}
+                  </Tag>
+                );
+              })}
+              {!data.done && failedHosts.length > 0 && (
+                <Button size='small' onClick={retryFailedHosts}>
+                  {tsh('result.retry_failed')}
+                </Button>
+              )}
+            </div>
+          )}
           <Row style={{ marginBottom: 20 }}>
             <Col span={18}>
               <div>
@@ -220,26 +325,26 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
                 <Divider type='vertical' />
                 <a onClick={() => setMetaDrawerVisible(true)}>{metaAlias ?? t('task.meta')}</a>
                 {!hideCloneTask && <Divider type='vertical' />}
-                {!hideCloneTask && <Link to={{ pathname: '/job-tasks/add', search: `task=${taskId}` }}>{t('task.clone')}</Link>}
+                {!hideCloneTask && <Link to={{ pathname: '/job-tasks/add', search: `task=${taskId}&gid=${busiId}` }}>{t('task.clone')}</Link>}
               </div>
             </Col>
             <Col span={6} className='textAlignRight'>
               {!data.done ? (
                 <span>
                   {data.action === 'start' ? (
-                    <Button className='success-btn' onClick={() => handleTaskAction('pause')}>
-                      Pause
+                    <Button type='primary' onClick={() => handleTaskAction('pause')}>
+                      {t('task.action.pause')}
                     </Button>
                   ) : (
-                    <Button className='success-btn' onClick={() => handleTaskAction('start')}>
-                      Start
+                    <Button type='primary' onClick={() => handleTaskAction('start')}>
+                      {t('task.action.start')}
                     </Button>
                   )}
-                  <Button className='ml-2 warning-btn' onClick={() => handleTaskAction('cancel')}>
-                    Cancel
+                  <Button className='ml-2' onClick={() => confirmTaskAction('cancel')}>
+                    {t('task.action.cancel')}
                   </Button>
-                  <Button className='ml-2 danger-btn' onClick={() => handleTaskAction('kill')}>
-                    Kill
+                  <Button className='ml-2' danger onClick={() => confirmTaskAction('kill')}>
+                    {t('task.action.kill')}
                   </Button>
                 </span>
               ) : null}
@@ -255,9 +360,9 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
               ? {
                   rowActions: (record) => ({
                     inline: [
-                      { key: 'ignore', icon: 'default', text: 'ignore', onClick: () => handleHostAction(record.host, 'ignore') },
-                      { key: 'redo', icon: 'run', text: 'redo', onClick: () => handleHostAction(record.host, 'redo') },
-                      { key: 'kill', icon: 'delete', text: 'kill', danger: true, onClick: () => handleHostAction(record.host, 'kill') },
+                      { key: 'ignore', icon: 'default', text: t('task.action.ignore'), onClick: () => handleHostAction(record.host, 'ignore') },
+                      { key: 'redo', icon: 'run', text: t('task.action.redo'), onClick: () => handleHostAction(record.host, 'redo') },
+                      { key: 'kill', icon: 'delete', text: t('task.action.kill'), danger: true, onClick: () => confirmHostAction(record.host, 'kill') },
                     ],
                   }),
                   actionColumn: { title: t('table.operations'), width: 110 },
@@ -290,7 +395,7 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
         title={`${data.title} - ${outputDrawer.host ? `${outputDrawer.host} - ` : ''}${outputDrawer.outputType}`}
         onOutputClose={onOutputClose}
       />
-      <MetaDrawer visible={metaDrawerVisible} onClose={() => setMetaDrawerVisible(false)} data={data} hosts={hosts} taskId={taskId} hideCloneTask={hideCloneTask} />
+      <MetaDrawer visible={metaDrawerVisible} onClose={() => setMetaDrawerVisible(false)} data={data} hosts={hosts} taskId={taskId} busiId={busiId} hideCloneTask={hideCloneTask} />
     </>
   );
 };
