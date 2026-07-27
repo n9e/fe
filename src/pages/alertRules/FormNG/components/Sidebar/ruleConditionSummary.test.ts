@@ -29,7 +29,8 @@ describe('ruleConditionSummary', () => {
     });
 
     expect(summary.queries[0]).toMatchObject({
-      title: 'A · Normal · P2',
+      title: 'A · Normal',
+      severity: 2,
       queryText: '1 < 0',
       queryPreviewType: 'promql',
     });
@@ -56,12 +57,14 @@ describe('ruleConditionSummary', () => {
       queryPreviewType: 'promql',
     });
     expect(summary.triggers[0]).toMatchObject({
-      title: '#1 · P2',
+      title: '#1',
+      severity: 2,
       meta: [],
       valueTags: ['$A < 0'],
     });
     expect(summary.triggers[1]).toMatchObject({
-      title: 'No data · P1',
+      title: 'No data',
+      severity: 1,
       meta: ['Auto recover after 1800s'],
     });
   });
@@ -153,7 +156,7 @@ describe('ruleConditionSummary', () => {
               query_type: 'metric_search',
               metric_editor_mode: 1,
               region: 'ap-southeast-2',
-              expression: 'SEARCH("{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"", "Average", 300)',
+              expression: 'SEARCH("{AWS/EC2,InstanceId} MetricName="CPUUtilization"", "Average", 300)',
             },
           ],
         },
@@ -403,7 +406,8 @@ describe('ruleConditionSummary', () => {
     expect(summary.queries[0].queryFullText).toBe(sql);
     expect(summary.queries.map((item) => item.queryPreviewType)).toEqual(['sql', 'sql']);
     expect(summary.triggers.map((item) => item.valueTags?.[0])).toEqual(['$A > 0', '$B <= 10']);
-    expect(summary.triggers.map((item) => item.title)).toEqual(['#1 · P2', '#2 · P1']);
+    expect(summary.triggers.map((item) => item.title)).toEqual(['#1', '#2']);
+    expect(summary.triggers.map((item) => item.severity)).toEqual([2, 1]);
   });
 
   it('does not build nodata trigger when disabled', () => {
@@ -439,9 +443,9 @@ describe('ruleConditionSummary', () => {
 
     expect(summary.queries).toEqual([]);
     expect(summary.triggers).toMatchObject([
-      { title: '机器失联 · P2', meta: [], valueTags: ['超过 30秒'] },
-      { title: '机器集群失联 · P1', meta: [], valueTags: ['超过 60秒，失联比例超过', '80%'] },
-      { title: '机器时间偏移 · P3', meta: [], valueTags: ['超过 500毫秒'] },
+      { title: '机器失联', severity: 2, meta: [], valueTags: ['超过 30秒'] },
+      { title: '机器集群失联', severity: 1, meta: [], valueTags: ['超过 60秒，失联比例超过', '80%'] },
+      { title: '机器时间偏移', severity: 3, meta: [], valueTags: ['超过 500毫秒'] },
     ]);
   });
 
@@ -455,17 +459,7 @@ describe('ruleConditionSummary', () => {
   });
 
   it('builds host machine preview tags with extra count', () => {
-    expect(
-      buildHostMachinePreviewSummary(
-        [
-          { ident: 'host-a' },
-          { ident: 'host-b' },
-          { ident: 'host-c' },
-        ],
-        5,
-        3,
-      ),
-    ).toEqual({
+    expect(buildHostMachinePreviewSummary([{ ident: 'host-a' }, { ident: 'host-b' }, { ident: 'host-c' }], 5, 3)).toEqual({
       names: ['host-a', 'host-b', 'host-c'],
       extraCount: 2,
     });
