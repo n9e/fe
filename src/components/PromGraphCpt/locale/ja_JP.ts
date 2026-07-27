@@ -21,6 +21,10 @@ const ja_JP = {
   tooltip_sort_asc: '昇順',
   show_legend: '凡例を表示',
   value_format: '値の形式',
+  series: '系列 ({{count}})',
+  series_filter: '系列名を検索',
+  filtered: 'フィルター済み',
+  value: '値',
 };
 
 export default ja_JP;

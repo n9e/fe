@@ -21,5 +21,9 @@ const zh_CN = {
   tooltip_sort_asc: '升序',
   show_legend: '显示图例',
   value_format: '数值格式',
+  series: '序列 ({{count}})',
+  series_filter: '搜索序列名称',
+  filtered: '已筛选',
+  value: '值',
 };
 export default zh_CN;
