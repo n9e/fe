@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Switch, Space, Select, TimePicker, Tooltip } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -20,9 +20,8 @@ interface Props {
   item: SectionItem;
   sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
-  initialValues?: any;
-  expandSignal?: { key: string; ts: number } | null;
-  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
 
 const isDefaultEffectiveTime = (effectiveTime: any) => {
@@ -42,7 +41,7 @@ const isDefaultEffectiveTime = (effectiveTime: any) => {
   return isDefaultDays && isDefaultStart && isDefaultEnd;
 };
 
-const isDefaultEffectiveConfig = (initialValues: any) => {
+export const isDefaultEffectiveConfig = (initialValues: any) => {
   if (!initialValues) {
     return false;
   }
@@ -50,29 +49,27 @@ const isDefaultEffectiveConfig = (initialValues: any) => {
   return initialValues.enable_status === true && initialValues.time_zone === 'Local' && isDefaultEffectiveTime(initialValues.effective_time);
 };
 
-export default function index({ item, sectionKeys, sectionRefs, initialValues, expandSignal, toggleAllSignal }: Props) {
-  const { t } = useTranslation('alertRules');
+export default function index({ item, sectionKeys, sectionRefs, collapsed, setCollapsed }: Props) {
+  const { t, i18n } = useTranslation('alertRules');
   const { isPlus } = useContext(CommonStateContext);
   const { permissions, serviceCals, refreshServiceCals } = useFormNGData();
 
-  const [collapsed, setCollapsed] = useState(() => isDefaultEffectiveConfig(initialValues));
-
   const form = Form.useFormInstance();
   const time_zone = Form.useWatch('time_zone');
+  const enable_status = Form.useWatch('enable_status');
+  const effective_time = Form.useWatch('effective_time');
 
-  // Expand this section when sidebar triggers expansion
-  useEffect(() => {
-    if (expandSignal?.key === 'effective') {
-      setCollapsed(false);
+  const summary = useMemo(() => {
+    if (enable_status === false) return t('form_ng.section_summary.effective_disabled');
+    const parts: string[] = [];
+    if (isDefaultEffectiveTime(effective_time)) {
+      parts.push(t('form_ng.section_summary.effective_all_time'));
+    } else {
+      parts.push(t('form_ng.section_summary.effective_windows', { count: Array.isArray(effective_time) ? effective_time.length : 0 }));
     }
-  }, [expandSignal]);
-
-  // Respond to global collapse/expand all
-  useEffect(() => {
-    if (toggleAllSignal) {
-      setCollapsed(toggleAllSignal.action === 'collapse');
-    }
-  }, [toggleAllSignal]);
+    if (time_zone && time_zone !== 'Local') parts.push(time_zone);
+    return parts.join(' · ');
+  }, [i18n.language, enable_status, effective_time, time_zone]);
 
   const { data: timezones } = useRequest(() => getTimezones());
 
@@ -85,6 +82,7 @@ export default function index({ item, sectionKeys, sectionRefs, initialValues, e
       }}
       collapsed={collapsed}
       setCollapsed={setCollapsed}
+      summary={summary}
     >
       <div className='mb-4'>
         <Space>

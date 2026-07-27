@@ -20,7 +20,8 @@ import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTabl
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
-import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
+import { NS as notificationRulesNS, PERM as notificationRulesPerm } from '@/pages/notificationRules/constants';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
@@ -32,6 +33,7 @@ interface Filter {
   prod?: string;
   severities?: number[];
   disabled?: 0 | 1;
+  eventStatus?: 'alerting' | 'ok';
 }
 
 const FILTER_SESSION_STORAGE_KEY = 'alert-rules-filter';
@@ -90,6 +92,7 @@ export default function AlertRules(props: Props) {
     },
   });
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
+  const notificationRulesAuthorized = useIsAuthorized([notificationRulesPerm]);
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
     [
       {
@@ -344,7 +347,8 @@ export default function AlertRules(props: Props) {
           !datasourceIds ||
           // 如果数据源值包含 host (-999) 则以 prod 判断
           (_.includes(datasourceIds, -999) && item.prod === 'host')) &&
-        (filter.disabled === undefined || item.disabled === filter.disabled)
+        (filter.disabled === undefined || item.disabled === filter.disabled) &&
+        (filter.eventStatus === undefined || (filter.eventStatus === 'alerting' ? item.cur_event_count > 0 : !(item.cur_event_count > 0)))
       );
     });
   };
@@ -354,11 +358,19 @@ export default function AlertRules(props: Props) {
     }
   };
 
+  // GET /notify-rules 后端带 perm("/notification-rules")，无权限时不发这个注定 403 的请求，
+  // 通知规则列回退到展示 id
   useEffect(() => {
-    getNotificationRules().then((res) => {
-      setNotificationRules(res);
-    });
-  }, []);
+    if (!notificationRulesAuthorized) return;
+    getNotificationRules()
+      .then((res) => {
+        setNotificationRules(res);
+      })
+      .catch((error) => {
+        console.error(error);
+        setNotificationRules([]);
+      });
+  }, [notificationRulesAuthorized]);
 
   return (
     <>
@@ -401,6 +413,29 @@ export default function AlertRules(props: Props) {
             <Select.Option value={2}>S2（Warning）</Select.Option>
             <Select.Option value={3}>S3（Info）</Select.Option>
           </Select>
+          <Select
+            allowClear
+            placeholder={t('filter_event_status_placeholder')}
+            options={[
+              {
+                label: t('status_triggered'),
+                value: 'alerting',
+              },
+              {
+                label: t('status_normal'),
+                value: 'ok',
+              },
+            ]}
+            value={filter.eventStatus}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                eventStatus: val,
+              };
+              handleFilterChange(newFilter);
+            }}
+            dropdownMatchSelectWidth={false}
+          />
           <Input
             placeholder={t('search_placeholder')}
             style={{ width: 200 }}

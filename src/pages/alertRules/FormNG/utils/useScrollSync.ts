@@ -23,21 +23,24 @@ export interface UseScrollSyncReturn {
   handleUserScroll: () => void;
 }
 
-export default function useScrollSync(sections: SectionItem[]): UseScrollSyncReturn {
+export default function useScrollSync(sections: SectionItem[], initialCollapsed?: Record<string, boolean>): UseScrollSyncReturn {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const userScrolledRef = useRef(true);
 
   const [activeSection, setActiveSection] = useState('basic');
-  const [sectionCollapsed, setSectionCollapsed] = useState<Record<string, boolean>>({
-    basic: false,
-    datasource: false,
-    rule: false,
-    pipeline: true,
-    notify: true,
-    effective: true,
-    advanced: true,
-  });
+  const [sectionCollapsed, setSectionCollapsed] = useState<Record<string, boolean>>(
+    () =>
+      initialCollapsed ?? {
+        basic: false,
+        datasource: false,
+        rule: false,
+        pipeline: true,
+        notify: true,
+        effective: true,
+        advanced: true,
+      },
+  );
   const [expandSignal, setExpandSignal] = useState<{ key: string; ts: number } | null>(null);
   const [toggleAllSignal, setToggleAllSignal] = useState<{ action: 'expand' | 'collapse'; ts: number } | null>(null);
 

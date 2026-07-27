@@ -71,6 +71,28 @@ export default function MoreOperations(props: MoreOperationsProps) {
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const { isPlus, busiGroups } = useContext(CommonStateContext);
 
+  // 批量启停是静默、演练、变更窗口的高频操作，直接一级入口，不必进「批量更新」弹窗选字段
+  const batchUpdateDisabled = (disabled: 0 | 1) => {
+    if (selectRowKeys.length === 0) {
+      message.warning(t('batch.not_select'));
+      return;
+    }
+    updateAlertRules(
+      {
+        ids: selectRowKeys,
+        fields: { disabled },
+      },
+      bgid!,
+    ).then((res) => {
+      if (!res.err) {
+        message.success(t('common:success.modify'));
+        getAlertRules();
+      } else {
+        message.error(res.err);
+      }
+    });
+  };
+
   return (
     <>
       <Dropdown
@@ -93,6 +115,26 @@ export default function MoreOperations(props: MoreOperationsProps) {
             >
               <span>{t('batch.export.title')}</span>
             </li>
+            {isLeaf && (
+              <li
+                className='ant-dropdown-menu-item'
+                onClick={() => {
+                  batchUpdateDisabled(0);
+                }}
+              >
+                <span>{t('batch.enable')}</span>
+              </li>
+            )}
+            {isLeaf && (
+              <li
+                className='ant-dropdown-menu-item'
+                onClick={() => {
+                  batchUpdateDisabled(1);
+                }}
+              >
+                <span>{t('batch.disable')}</span>
+              </li>
+            )}
             {isLeaf && (
               <li
                 className='ant-dropdown-menu-item'

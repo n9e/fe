@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { useContext, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Space, Form, Tabs, Tag } from 'antd';
 import { RightOutlined, DownOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -22,28 +22,29 @@ interface PipelineConfigsNGProps {
   sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   initialValues?: any;
-  expandSignal?: { key: string; ts: number } | null;
-  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
+
+// 初始是否折叠：没有任何事件处理配置（工作流/Relabel/附加信息/附加查询）时默认收起
+export const isPipelineConfigEmpty = (initialValues: any) => {
+  const pipelineConfigs = initialValues?.pipeline_configs ?? [];
+  const eventRelabelConfig = initialValues?.rule_config?.event_relabel_config ?? [];
+  const annotations = initialValues?.annotations ?? [];
+  const enrichQueries = initialValues?.extra_config?.enrich_queries ?? [];
+
+  const hasPipelineId = pipelineConfigs.some((pc: any) => pc?.pipeline_id !== undefined && pc?.pipeline_id !== 0);
+  const hasEventRelabelConfig = eventRelabelConfig.length > 0;
+  const hasAnnotations = annotations.length > 0;
+  const hasEnrichQueries = enrichQueries.length > 0;
+
+  return !(hasPipelineId || hasEventRelabelConfig || hasAnnotations || hasEnrichQueries);
+};
 
 const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigsNGProps>((props, ref) => {
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
-
-  const [collapsed, setCollapsed] = useState(() => {
-    const { initialValues } = props;
-    const pipelineConfigs = initialValues?.pipeline_configs ?? [];
-    const eventRelabelConfig = initialValues?.rule_config?.event_relabel_config ?? [];
-    const annotations = initialValues?.annotations ?? [];
-    const enrichQueries = initialValues?.extra_config?.enrich_queries ?? [];
-
-    const hasPipelineId = pipelineConfigs.some((pc: any) => pc?.pipeline_id !== undefined && pc?.pipeline_id !== 0);
-    const hasEventRelabelConfig = eventRelabelConfig.length > 0;
-    const hasAnnotations = annotations.length > 0;
-    const hasEnrichQueries = enrichQueries.length > 0;
-
-    return !(hasPipelineId || hasEventRelabelConfig || hasAnnotations || hasEnrichQueries);
-  });
+  const { collapsed, setCollapsed } = props;
 
   const [relabelCollapsed, setRelabelCollapsed] = useState(() => {
     const { initialValues } = props;
@@ -59,19 +60,26 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
 
   const isMultiWorkflow = _.get(pipeline_configs, 'length', 0) > 1;
 
-  // Expand this section when sidebar triggers expansion
-  useEffect(() => {
-    if (props.expandSignal?.key === 'pipeline') {
-      setCollapsed(false);
-    }
-  }, [props.expandSignal]);
+  const eventRelabelConfigValue = Form.useWatch(['rule_config', 'event_relabel_config']);
+  const annotationsValue = Form.useWatch('annotations');
+  const enrichQueriesValue = Form.useWatch(['extra_config', 'enrich_queries']);
 
-  // Respond to global collapse/expand all
-  useEffect(() => {
-    if (props.toggleAllSignal) {
-      setCollapsed(props.toggleAllSignal.action === 'collapse');
+  const summary = useMemo(() => {
+    const parts: string[] = [];
+    const workflowCount = _.filter(pipeline_configs, (pc: any) => pc?.pipeline_id !== undefined && pc?.pipeline_id !== 0).length;
+    if (workflowCount > 0) parts.push(t('form_ng.section_summary.pipeline_workflows', { count: workflowCount }));
+    if (_.isArray(eventRelabelConfigValue) && eventRelabelConfigValue.length > 0) {
+      parts.push(`${t('relabel.title')} ${t('form_ng.items_count', { count: eventRelabelConfigValue.length })}`);
     }
-  }, [props.toggleAllSignal]);
+    if (_.isArray(annotationsValue) && annotationsValue.length > 0) {
+      parts.push(`${t('annotations')} ${t('form_ng.items_count', { count: annotationsValue.length })}`);
+    }
+    if (_.isArray(enrichQueriesValue) && enrichQueriesValue.length > 0) {
+      parts.push(`${t('form_ng.enrich_queries_title')} ${t('form_ng.items_count', { count: enrichQueriesValue.length })}`);
+    }
+    if (_.isEmpty(parts)) return t('form_ng.section_summary.pipeline_none');
+    return parts.join(' · ');
+  }, [i18n.language, pipeline_configs, eventRelabelConfigValue, annotationsValue, enrichQueriesValue]);
 
   useImperativeHandle(ref, () => ({
     checkUnsavedAndNotify: () => {
@@ -115,6 +123,7 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
       }}
       collapsed={collapsed}
       setCollapsed={setCollapsed}
+      summary={summary}
     >
       {isMultiWorkflow && (
         <div className='mb-2'>

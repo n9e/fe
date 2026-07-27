@@ -20,12 +20,14 @@ import SectionCard, { SectionItem } from './components/SectionCard';
 import Sidebar from './components/Sidebar';
 import TestFireModal from './components/TestFireModal';
 import DatasourceValueSelect from './components/DatasourceValueSelect';
+import { BasicSectionSummary, DatasourceSectionSummary, RuleSectionSummary } from './components/SectionSummaries';
 import Host from './Rule/Host';
 import Rule from './Rule';
-import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
-import Effective from './Effective';
+import PipelineConfigsNG, { PipelineConfigsNGRef, isPipelineConfigEmpty } from './PipelineConfigsNG';
+import Effective, { isDefaultEffectiveConfig } from './Effective';
 import Notify from './Notify';
 import useScrollSync from './utils/useScrollSync';
+import getErrorSectionKey from './utils/getErrorSectionKey';
 import shouldShowAdvancedSettings from './utils/shouldShowAdvancedSettings';
 import { FormNGDataProvider, useFormNGData } from './context';
 
@@ -38,6 +40,8 @@ interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
   initialValues?: any;
   editable?: boolean;
+  /** 编辑态「保存」（留在当前页）成功后的回调，父组件可借此刷新 update_at 基准等状态 */
+  onSaveStay?: () => void;
 }
 
 export const FormStateContext = createContext({
@@ -70,7 +74,7 @@ function AdvancedSettingsSection(props: {
 }
 
 export default function FormNG(props: IProps) {
-  const { type, initialValues, editable = true } = props;
+  const { type, initialValues, editable = true, onSaveStay } = props;
   const history = useHistory();
   const { bgid } = useParams<{ bgid: string }>();
   const { t, i18n } = useTranslation('alertRules');
@@ -189,13 +193,56 @@ export default function FormNG(props: IProps) {
   );
 
   const pipelineConfigsRef = React.useRef<PipelineConfigsNGRef>(null);
-  const scroll = useScrollSync(sections);
+
+  // 同一渲染周期内复用转换结果，避免多处重复调用 processInitialValues
+  const processedInitialValues = useMemo(() => (initialValues ? processInitialValues(initialValues) : defaultValues), [initialValues]);
+
+  // 各分区初始折叠状态（仅取首帧值，与原先各分区组件 useState 初始化行为一致）
+  const [initialSectionCollapsed] = useState<Record<string, boolean>>(() => ({
+    basic: false,
+    datasource: false,
+    rule: false,
+    pipeline: isPipelineConfigEmpty(processedInitialValues),
+    notify: type === 1 && _.isEmpty(initialValues?.notify_rule_ids),
+    effective: isDefaultEffectiveConfig(processedInitialValues),
+    advanced: true,
+  }));
+  const scroll = useScrollSync(sections, initialSectionCollapsed);
+
+  const expandErrorSections = useCallback(
+    (errorFields?: { name: (string | number)[] }[]) => {
+      if (_.isEmpty(errorFields)) return;
+      const keys = _.map(errorFields, ({ name }) => getErrorSectionKey(name));
+      // 未登记字段兜底：全部展开，保证错误项一定可见（toggleAllSignal 同时通知 plus 高级分区）
+      if (_.some(keys, (key) => !key || !_.includes(sectionKeys, key))) {
+        scroll.setSectionCollapsed((prev) => _.mapValues(prev, () => false));
+        scroll.setToggleAllSignal({ action: 'expand', ts: Date.now() });
+        return;
+      }
+      const uniqKeys = _.uniq(_.compact(keys));
+      scroll.setSectionCollapsed((prev) => ({
+        ...prev,
+        ..._.zipObject(
+          uniqKeys,
+          _.map(uniqKeys, () => false),
+        ),
+      }));
+    },
+    [sectionKeys, scroll.setSectionCollapsed, scroll.setToggleAllSignal],
+  );
 
   const leaveAfterSave = useCallback(() => {
     allowNextRouteRef.current = true;
     setAllowedLeave(true);
     history.push('/alert-rules');
   }, [history]);
+
+  // 保存后留在当前页：以当前表单值为新基线，避免 RouterPrompt 误报未保存变更
+  const stayAfterSave = useCallback(() => {
+    initialFormValuesRef.current = _.cloneDeep(form.getFieldsValue(true));
+    setAllowedLeave(true);
+    onSaveStay?.();
+  }, [form, onSaveStay]);
 
   const handleCheck = (values) => {
     if (values.cate === 'prometheus') {
@@ -217,13 +264,44 @@ export default function FormNG(props: IProps) {
     return !pipelineConfigsRef.current?.checkUnsavedAndNotify();
   };
 
-  const handleMessage = (res) => {
+  // stay=true 表示保存成功后留在当前页（编辑态调阈值的「改一点→保存→看效果」循环不必反复进出列表）
+  const handleSave = (stay?: boolean) => {
+    form
+      .validateFields()
+      .then(async () => {
+        const values = form.getFieldsValue(true);
+        if (!checkBeforeSave(values)) return;
+        const data = processFormValues(values) as any;
+        if (type === 1) {
+          const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
+          handleMessage(res, stay);
+        } else {
+          const curBusiId = initialValues?.group_id || Number(bgid);
+          const res = await addStrategy([data], curBusiId);
+          handleMessage(res, stay);
+        }
+      })
+      .catch((err) => {
+        if (err?.errorFields) {
+          expandErrorSections(err.errorFields);
+        } else {
+          console.error(err);
+        }
+        scrollToFirstError();
+      });
+  };
+
+  const handleMessage = (res, stay?: boolean) => {
     if (type === 1) {
       if (res.err) {
         message.error(res.error);
       } else {
         message.success(t('common:success.modify'));
-        leaveAfterSave();
+        if (stay) {
+          stayAfterSave();
+        } else {
+          leaveAfterSave();
+        }
       }
     } else {
       const { dat } = res;
@@ -321,6 +399,8 @@ export default function FormNG(props: IProps) {
                           effective: true,
                           advanced: true,
                         }));
+                        // plus 高级分区自持折叠状态，只认信号
+                        scroll.setToggleAllSignal({ action: 'collapse', ts: Date.now() });
                       }}
                       className='flex items-center gap-1'
                       size='small'
@@ -379,6 +459,7 @@ export default function FormNG(props: IProps) {
                   item={sectionMap.basic!}
                   index={sectionKeys.indexOf('basic')}
                   collapsed={scroll.sectionCollapsed.basic}
+                  summary={<BasicSectionSummary />}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, basic: collapsed }))}
                   sectionRef={(node) => {
                     scroll.sectionRefs.current.basic = node;
@@ -420,6 +501,7 @@ export default function FormNG(props: IProps) {
                   item={sectionMap.datasource!}
                   index={sectionKeys.indexOf('datasource')}
                   collapsed={scroll.sectionCollapsed.datasource}
+                  summary={<DatasourceSectionSummary />}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, datasource: collapsed }))}
                   sectionRef={(node) => {
                     scroll.sectionRefs.current['datasource'] = node;
@@ -512,6 +594,7 @@ export default function FormNG(props: IProps) {
                   item={sectionMap.rule!}
                   index={sectionKeys.indexOf('rule')}
                   collapsed={scroll.sectionCollapsed.rule}
+                  summary={<RuleSectionSummary />}
                   setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, rule: collapsed }))}
                   sectionRef={(node) => {
                     scroll.sectionRefs.current['rule'] = node;
@@ -529,18 +612,16 @@ export default function FormNG(props: IProps) {
                   sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
                   disabled={disabled}
-                  initiallyCollapsed={type === 1 && _.isEmpty(initialValues?.notify_rule_ids)}
-                  expandSignal={scroll.expandSignal}
-                  toggleAllSignal={scroll.toggleAllSignal}
+                  collapsed={scroll.sectionCollapsed.notify}
+                  setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, notify: collapsed }))}
                 />
 
                 <Effective
                   item={sectionMap.effective!}
                   sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
-                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
-                  expandSignal={scroll.expandSignal}
-                  toggleAllSignal={scroll.toggleAllSignal}
+                  collapsed={scroll.sectionCollapsed.effective}
+                  setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, effective: collapsed }))}
                 />
 
                 <PipelineConfigsNG
@@ -548,9 +629,9 @@ export default function FormNG(props: IProps) {
                   sectionKeys={sectionKeys}
                   sectionRefs={scroll.sectionRefs}
                   ref={pipelineConfigsRef}
-                  initialValues={initialValues ? processInitialValues(initialValues) : defaultValues}
-                  expandSignal={scroll.expandSignal}
-                  toggleAllSignal={scroll.toggleAllSignal}
+                  initialValues={processedInitialValues}
+                  collapsed={scroll.sectionCollapsed.pipeline}
+                  setCollapsed={(collapsed) => scroll.setSectionCollapsed((prev) => ({ ...prev, pipeline: collapsed }))}
                 />
                 <AdvancedSettingsSection
                   advancedItem={sectionMap.advanced}
@@ -567,30 +648,22 @@ export default function FormNG(props: IProps) {
                       <Button
                         type='primary'
                         onClick={() => {
-                          form
-                            .validateFields()
-                            .then(async () => {
-                              const values = form.getFieldsValue(true);
-                              if (!checkBeforeSave(values)) return;
-                              const data = processFormValues(values) as any;
-                              if (type === 1) {
-                                const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-                                handleMessage(res);
-                              } else {
-                                const curBusiId = initialValues?.group_id || Number(bgid);
-                                const res = await addStrategy([data], curBusiId);
-                                handleMessage(res);
-                              }
-                            })
-                            .catch((err) => {
-                              console.error(err);
-                              scrollToFirstError();
-                            });
+                          handleSave(type === 1);
                         }}
                         disabled={editable === false}
                       >
                         {t('common:btn.save')}
                       </Button>
+                      {type === 1 && (
+                        <Button
+                          onClick={() => {
+                            handleSave(false);
+                          }}
+                          disabled={editable === false}
+                        >
+                          {t('form_ng.save_and_back')}
+                        </Button>
+                      )}
                       <TestFireModal bgid={initialValues?.group_id || Number(bgid)} buttonDisabled={editable === false} />
                       <Link to='/alert-rules'>
                         <Button>{t('common:btn.cancel')}</Button>
@@ -653,8 +726,12 @@ export default function FormNG(props: IProps) {
                     setAllowedLeave(true);
                     message.success(type === 1 ? t('common:success.modify') : `${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
                     routerPromptRef.current?.redirect();
-                  } catch (err) {
-                    console.error(err);
+                  } catch (err: any) {
+                    if (err?.errorFields) {
+                      expandErrorSections(err.errorFields);
+                    } else {
+                      console.error(err);
+                    }
                     routerPromptRef.current?.hidePrompt();
                     scrollToFirstError();
                   }

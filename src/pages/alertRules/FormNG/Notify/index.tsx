@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
-import { Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, AutoComplete } from 'antd';
+import { Alert, Form, Checkbox, Switch, Space, Select, Tooltip, Row, Col, InputNumber, AutoComplete } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, QuestionCircleOutlined, RightOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 import AuthorizationWrapper from '@/components/AuthorizationWrapper';
@@ -21,13 +21,12 @@ interface Props {
   sectionKeys: string[];
   sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
   disabled?: boolean;
-  initiallyCollapsed?: boolean;
-  expandSignal?: { key: string; ts: number } | null;
-  toggleAllSignal?: { action: 'expand' | 'collapse'; ts: number } | null;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }
 
-export default function index({ item, sectionKeys, sectionRefs, disabled, initiallyCollapsed = false, expandSignal, toggleAllSignal }: Props) {
-  const { t } = useTranslation('alertRules');
+export default function index({ item, sectionKeys, sectionRefs, disabled, collapsed, setCollapsed }: Props) {
+  const { t, i18n } = useTranslation('alertRules');
   const {
     notifyChannels: contactList,
     teams: notifyGroups,
@@ -37,13 +36,17 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, initia
     notificationRules,
     notificationRulesLoading,
     refreshNotificationRules,
+    notificationRuleMap,
+    teamMap,
+    notifyChannelMap,
   } = useFormNGData();
 
   const [notifyTargetCollapsed, setNotifyTargetCollapsed] = useState<boolean>(false);
-  const [effectiveCollapsed, setEffectiveCollapsed] = useState(initiallyCollapsed);
 
   const notify_version = Form.useWatch('notify_version');
   const notify_channels = Form.useWatch('notify_channels');
+  const notify_groups = Form.useWatch('notify_groups');
+  const notify_rule_ids = Form.useWatch('notify_rule_ids');
   const callbacksValue = Form.useWatch('callbacks');
 
   const globalFlashdutyPushConfigured = useMemo(() => {
@@ -60,31 +63,47 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, initia
     }
   }, [globalFlashdutyPushConfigured]);
 
-  // Expand this section when sidebar triggers expansion
-  useEffect(() => {
-    if (expandSignal?.key === 'notify') {
-      setEffectiveCollapsed(false);
+  // 未配置任何通知目标：告警触发后不会有人收到通知，是新人最容易踩的坑，用内联警告显式提示
+  const hasNoNotifyTarget = useMemo(() => {
+    if (globalFlashdutyPushConfigured) return false;
+    if (notify_version === 1) return _.isEmpty(notify_rule_ids);
+    if (notify_version === 0) {
+      const hasCallback = _.some(callbacksValue, (item) => item?.url);
+      return _.isEmpty(notify_channels) && _.isEmpty(notify_groups) && !hasCallback;
     }
-  }, [expandSignal]);
+    return false;
+  }, [globalFlashdutyPushConfigured, notify_version, notify_rule_ids, notify_channels, notify_groups, callbacksValue]);
 
-  // Respond to global collapse/expand all
-  useEffect(() => {
-    if (toggleAllSignal) {
-      setEffectiveCollapsed(toggleAllSignal.action === 'collapse');
+  const summary = useMemo(() => {
+    if (hasNoNotifyTarget) return t('form_ng.section_summary.notify_targets_none');
+    const separator = t('form_ng.section_summary.separator');
+    let targetNames: string[] = [];
+    if (notify_version === 1) {
+      targetNames = _.map(notify_rule_ids, (id: number) => notificationRuleMap[id]?.name ?? _.toString(id));
+    } else if (notify_version === 0) {
+      targetNames = _.concat(
+        _.map(notify_channels, (key: string) => notifyChannelMap[key]?.label ?? key),
+        _.map(notify_groups, (id: string) => teamMap[id]?.name ?? id),
+      );
     }
-  }, [toggleAllSignal]);
+    if (!_.isEmpty(targetNames)) return targetNames.join(separator);
+    if (globalFlashdutyPushConfigured) return t('form_ng.section_summary.notify_flashduty');
+    return undefined;
+  }, [i18n.language, hasNoNotifyTarget, globalFlashdutyPushConfigured, notify_version, notify_rule_ids, notify_channels, notify_groups, notificationRuleMap, teamMap, notifyChannelMap]);
 
   return (
     <>
       <SectionCard
         item={item}
         index={sectionKeys.indexOf(item.key)}
-        collapsed={effectiveCollapsed}
-        setCollapsed={setEffectiveCollapsed}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+        summary={summary}
         sectionRef={(node) => {
           sectionRefs.current['notify'] = node;
         }}
       >
+        {hasNoNotifyTarget && <Alert className='mb-4' type='warning' showIcon message={t('notify_targets_empty_warning')} />}
         <div className='mb-4'>
           <VersionSwitch />
         </div>

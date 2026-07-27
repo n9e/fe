@@ -7,6 +7,7 @@ import { Space, Button } from 'antd';
 import { CommonStateContext } from '@/App';
 import { getBusiGroupsAlertRules } from '@/services/warning';
 import EmptyGuide from '@/components/EmptyGuide';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { AlertRuleType } from '../types';
 import MoreOperations from './MoreOperations';
@@ -72,9 +73,11 @@ function HeaderExtra(
   );
 }
 
+const DOC_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/';
+
 export default function List(props: ListProps) {
-  const { t } = useTranslation('alertRules');
-  const { businessGroup, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
+  const { t, i18n } = useTranslation('alertRules');
+  const { businessGroup, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
   const history = useHistory();
   const { gids } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
@@ -109,36 +112,62 @@ export default function List(props: ListProps) {
         loading={loading}
         setRefreshFlag={setRefreshFlag}
         emptyGuide={
-          <EmptyGuide
-            title={t('empty_guide.title')}
-            description={t('empty_guide.desc')}
-            actions={
-              <>
-                {canManageInGroup && (
-                  <Button type='primary' onClick={() => history.push(`/alert-rules/add/${businessGroup.id}`)}>
-                    {t('common:btn.add')}
-                  </Button>
-                )}
-                {canManageInGroup ? (
+          // 仅在「确实一条规则都没有」时展示引导；加载中或筛选未命中时回退默认空态，避免误导
+          !loading && data.length === 0 ? (
+            <EmptyGuide
+              title={t('empty_guide.title')}
+              descriptionClassName='max-w-[620px]'
+              description={
+                <>
+                  <div className='mb-1'>{t('empty_guide.steps_intro')}</div>
+                  <ol className='mb-0 pl-[18px] list-decimal text-left'>
+                    <li className='leading-[1.7]'>{t('empty_guide.step_datasource')}</li>
+                    <li className='leading-[1.7]'>{t('empty_guide.step_rule')}</li>
+                    <li className='leading-[1.7]'>{t('empty_guide.step_notify')}</li>
+                  </ol>
+                </>
+              }
+              actions={
+                <>
+                  {canManageInGroup && (
+                    <Button type='primary' onClick={() => history.push(`/alert-rules/add/${businessGroup.id}`)}>
+                      {t('common:btn.add')}
+                    </Button>
+                  )}
+                  {canManageInGroup ? (
+                    <a
+                      onClick={() =>
+                        Import({
+                          busiId: businessGroup.id!, // canManageInGroup 已保证非空
+                          refreshList: fetchData,
+                          groupedDatasourceList,
+                          reloadGroupedDatasourceList,
+                          datasourceCateOptions,
+                        })
+                      }
+                    >
+                      {t('empty_guide.from_template')}
+                    </a>
+                  ) : (
+                    <a onClick={() => history.push('/components')}>{t('empty_guide.from_template')}</a>
+                  )}
                   <a
-                    onClick={() =>
-                      Import({
-                        busiId: businessGroup.id!, // canManageInGroup 已保证非空
-                        refreshList: fetchData,
-                        groupedDatasourceList,
-                        reloadGroupedDatasourceList,
-                        datasourceCateOptions,
-                      })
-                    }
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language,
+                        darkMode,
+                        title: t('common:page_help'),
+                        type: 'iframe',
+                        documentPath: DOC_URL,
+                      });
+                    }}
                   >
-                    {t('empty_guide.from_template')}
+                    {t('empty_guide.doc')}
                   </a>
-                ) : (
-                  <a onClick={() => history.push('/components')}>{t('empty_guide.from_template')}</a>
-                )}
-              </>
-            }
-          />
+                </>
+              }
+            />
+          ) : undefined
         }
       />
     </div>

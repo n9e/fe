@@ -44,10 +44,27 @@ export default function Edit() {
         if (data.prod === 'loki') {
           data.prod = 'logging';
         }
+        // 克隆时名称追加后缀，避免保存后列表出现两条同名规则难以区分
+        if (mode === 'clone' && data.name) {
+          data.name = `${data.name}${t('clone_suffix')}`;
+        }
         setValues(data);
       });
     }
   }, [alertRuleId]);
+
+  // 「保存」（留在当前页）成功后刷新 update_at 基准，避免轮询把自己的这次保存误判为他人修改而锁定表单
+  const handleSaveStay = () => {
+    getAlertRulePure(alertRuleId)
+      .then((res) => {
+        if (res?.update_at) {
+          updateAtRef.current = res.update_at;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   useInterval(() => {
     if (import.meta.env.PROD && typeof alertRuleId === 'number' && mode === undefined) {
@@ -63,7 +80,9 @@ export default function Edit() {
 
   return (
     <PageLayout title={t('title')} showBack backPath='/alert-rules'>
-      <div className='n9e h-full overflow-hidden p-0'>{!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />}</div>
+      <div className='n9e h-full overflow-hidden p-0'>
+        {!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} onSaveStay={handleSaveStay} />}
+      </div>
     </PageLayout>
   );
 }
