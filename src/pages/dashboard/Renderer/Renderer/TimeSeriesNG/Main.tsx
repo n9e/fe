@@ -351,6 +351,8 @@ export default function index(props: Props) {
           onCreate={(id, uplot) => {
             uplotRef.current = uplot;
             uplotsMap.set(id, uplot);
+            // 配置变更会重建图表并将坐标范围恢复为初始值，此时同步清除旧实例的缩放状态
+            setShowResetZoomBtn(false);
           }}
           onDelete={(id) => {
             uplotsMap.delete(id);
@@ -364,6 +366,9 @@ export default function index(props: Props) {
             }}
             xScaleInitMinMax={xScaleInitMinMaxRef.current}
             yScaleInitMinMax={yScaleInitMinMaxRef.current}
+            onReset={() => {
+              setShowResetZoomBtn(false);
+            }}
           />
         )}
       </div>
