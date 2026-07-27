@@ -83,14 +83,19 @@ export default function MoreOperations(props: MoreOperationsProps) {
         fields: { disabled },
       },
       bgid!,
-    ).then((res) => {
-      if (!res.err) {
-        message.success(t('common:success.modify'));
-        getAlertRules();
-      } else {
-        message.error(res.err);
-      }
-    });
+    )
+      .then((res) => {
+        if (!res.err) {
+          message.success(t('common:success.modify'));
+          getAlertRules();
+        } else {
+          message.error(res.err);
+        }
+      })
+      .catch((error) => {
+        // 网络错误 / 5xx / 权限错误由全局 errorHandler 抛出，不会走到上面的 res.err 分支
+        console.error(error);
+      });
   };
 
   return (

@@ -237,12 +237,18 @@ export default function FormNG(props: IProps) {
     history.push('/alert-rules');
   }, [history]);
 
-  // 保存后留在当前页：以当前表单值为新基线，避免 RouterPrompt 误报未保存变更
-  const stayAfterSave = useCallback(() => {
-    initialFormValuesRef.current = _.cloneDeep(form.getFieldsValue(true));
-    setAllowedLeave(true);
-    onSaveStay?.();
-  }, [form, onSaveStay]);
+  // 保存后留在当前页：以本次实际提交的快照为新基线，避免 RouterPrompt 误报未保存变更。
+  // 基线必须用提交时的快照而不是响应到达时的表单值，否则请求飞行期间的编辑会被误标记为已保存，
+  // 离开页面时不再提示，这部分改动会静默丢失。
+  const stayAfterSave = useCallback(
+    (savedValues: any) => {
+      initialFormValuesRef.current = _.cloneDeep(savedValues);
+      // 用新基线重新判定一次：飞行期间没改过 → 允许离开；改过 → 仍按未保存处理
+      updateAllowedLeave();
+      onSaveStay?.();
+    },
+    [updateAllowedLeave, onSaveStay],
+  );
 
   const handleCheck = (values) => {
     if (values.cate === 'prometheus') {
@@ -274,11 +280,11 @@ export default function FormNG(props: IProps) {
         const data = processFormValues(values) as any;
         if (type === 1) {
           const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
-          handleMessage(res, stay);
+          handleMessage(res, stay, values);
         } else {
           const curBusiId = initialValues?.group_id || Number(bgid);
           const res = await addStrategy([data], curBusiId);
-          handleMessage(res, stay);
+          handleMessage(res, stay, values);
         }
       })
       .catch((err) => {
@@ -291,14 +297,14 @@ export default function FormNG(props: IProps) {
       });
   };
 
-  const handleMessage = (res, stay?: boolean) => {
+  const handleMessage = (res, stay?: boolean, savedValues?: any) => {
     if (type === 1) {
       if (res.err) {
         message.error(res.error);
       } else {
         message.success(t('common:success.modify'));
         if (stay) {
-          stayAfterSave();
+          stayAfterSave(savedValues);
         } else {
           leaveAfterSave();
         }

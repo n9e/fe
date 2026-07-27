@@ -53,22 +53,33 @@ export default function Edit() {
     }
   }, [alertRuleId]);
 
-  // 「保存」（留在当前页）成功后刷新 update_at 基准，避免轮询把自己的这次保存误判为他人修改而锁定表单
+  // 「保存」（留在当前页）成功后刷新 update_at 基准，避免轮询把自己的这次保存误判为他人修改而锁定表单。
+  // PUT 接口只返回 { err }，拿不到本次写入的 update_at，只能补一次 GET；期间必须屏蔽轮询，
+  // 否则轮询会拿保存后的 update_at 去和保存前的基准比对，误报「已被他人修改」。
+  const baselineRefreshingRef = useRef(false);
+
   const handleSaveStay = () => {
+    baselineRefreshingRef.current = true;
     getAlertRulePure(alertRuleId)
       .then((res) => {
-        if (res?.update_at) {
-          updateAtRef.current = res.update_at;
-        }
+        // 拿不到 update_at 时一并置空：宁可本次会话不做冲突检测，也不能留着过期基准把表单永久锁死
+        updateAtRef.current = res?.update_at;
       })
       .catch((error) => {
         console.error(error);
+        updateAtRef.current = undefined;
+      })
+      .finally(() => {
+        baselineRefreshingRef.current = false;
       });
   };
 
   useInterval(() => {
+    if (baselineRefreshingRef.current) return;
     if (import.meta.env.PROD && typeof alertRuleId === 'number' && mode === undefined) {
       getAlertRulePure(alertRuleId).then((res) => {
+        // 请求发出后若开始刷新基准，说明这中间发生了一次保存，本次响应已过期，直接丢弃
+        if (baselineRefreshingRef.current) return;
         if (updateAtRef.current && res.update_at > updateAtRef.current) {
           if (editable) setEditable(false);
         } else {

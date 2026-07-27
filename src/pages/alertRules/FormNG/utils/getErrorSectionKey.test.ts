@@ -10,9 +10,12 @@ describe('getErrorSectionKey', () => {
     expect(getErrorSectionKey(['pipeline_configs', 0, 'pipeline_id'])).toBe('pipeline');
   });
 
-  it('rule_config 默认映射到 rule，event_relabel_config 子路径映射到 pipeline', () => {
+  it('rule_config 默认映射到 rule，特殊子路径映射到各自所在分区', () => {
     expect(getErrorSectionKey(['rule_config', 'triggers', 0, 'severity'])).toBe('rule');
+    expect(getErrorSectionKey(['rule_config', 'queries', 0, 'prom_ql'])).toBe('rule');
     expect(getErrorSectionKey(['rule_config', 'event_relabel_config', 0, 'action'])).toBe('pipeline');
+    // 自愈任务模板渲染在通知分区，不能跟着 rule_config 落到 rule
+    expect(getErrorSectionKey(['rule_config', 'task_tpls', 0, 'tpl_id'])).toBe('notify');
   });
 
   it('extra_config 按第二级路径映射', () => {
