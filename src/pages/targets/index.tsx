@@ -26,6 +26,7 @@ import { CommonStateContext } from '@/App';
 import List, { ITargetProps } from './List';
 import BusinessGroup from './BusinessGroup';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
+import { getTargetsCompatibleGids } from '@/components/BusinessGroup/presetFilters';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 import './locale';
 import './index.less';
@@ -328,13 +329,13 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 const Targets: React.FC = () => {
   const { t } = useTranslation('targets');
   const { businessGroup } = useContext(CommonStateContext);
-  const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
+  const [gids, setGids] = useState<string | undefined>(() => getTargetsCompatibleGids(businessGroup.ids));
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRows, setSelectedRows] = useState<ITargetProps[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
 
   useEffect(() => {
-    setGids(businessGroup.ids);
+    setGids(getTargetsCompatibleGids(businessGroup.ids));
   }, [businessGroup.ids]);
 
   return (
