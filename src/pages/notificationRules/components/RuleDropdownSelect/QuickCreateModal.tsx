@@ -43,14 +43,19 @@ export default function QuickCreateModal(props: Props) {
     if (!visible) return;
     form.resetFields();
     lastAutoNameRef.current = undefined;
-    getTeamInfoList().then((res) => {
-      const list = res.dat ?? [];
-      setTeams(list);
-      // 预填第一个团队：后端要求非管理员创建时授权团队须含自己所在团队
-      if (list.length > 0 && _.isEmpty(form.getFieldValue('user_group_ids'))) {
-        form.setFieldsValue({ user_group_ids: [list[0].id] });
-      }
-    });
+    getTeamInfoList()
+      .then((res) => {
+        const list = res.dat ?? [];
+        setTeams(list);
+        // 预填第一个团队：后端要求非管理员创建时授权团队须含自己所在团队
+        if (list.length > 0 && _.isEmpty(form.getFieldValue('user_group_ids'))) {
+          form.setFieldsValue({ user_group_ids: [list[0].id] });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        setTeams([]);
+      });
   }, [visible]);
 
   const handleUrlChange = (value: string) => {
@@ -79,10 +84,12 @@ export default function QuickCreateModal(props: Props) {
           onSuccess(ruleId, reused);
           onCancel();
         })
-        .catch((e) => {
+        .catch((error) => {
           // 接口层错误由 utils/request 统一弹 notification，这里只提示快捷创建自身的业务错误
-          if (e instanceof QuickCreateError && e.message) {
-            message.error(e.message);
+          if (error instanceof QuickCreateError && error.message) {
+            message.error(error.message);
+          } else {
+            console.error(error);
           }
         })
         .finally(() => {
