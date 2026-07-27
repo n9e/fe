@@ -29,10 +29,13 @@ export function getDefaultGids(localeKey: string, businessGroup: any, queryParam
 }
 
 export function getDefaultGidsInDashboard(queryParams: any, localeKey: string, businessGroup: any) {
+  if (typeof queryParams.ids === 'string') {
+    return queryParams.ids;
+  }
   if (queryParams['preset-filter'] === 'public') {
     return '-1';
   }
-  return localStorage.getItem(localeKey) || businessGroup.ids || '-1';
+  return businessGroup.ids || localStorage.getItem(localeKey) || '-1';
 }
 
 export default function BusinessGroupSideBarWithAll(props: Props) {

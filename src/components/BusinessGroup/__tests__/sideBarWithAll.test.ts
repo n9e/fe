@@ -109,20 +109,27 @@ describe('getDefaultGidsInDashboard', () => {
     localStorage.clear();
   });
 
+  it('URL 的 ids 参数优先于其他筛选来源', () => {
+    localStorage.setItem(localeKey, '-1');
+    const result = getDefaultGidsInDashboard({ ids: '0', 'preset-filter': 'public' }, localeKey, businessGroup);
+    expect(result).toBe('0');
+  });
+
   it('preset-filter=public 时返回 -1', () => {
     const result = getDefaultGidsInDashboard({ 'preset-filter': 'public' }, localeKey, businessGroup);
     expect(result).toBe('-1');
   });
 
-  it('无 preset-filter 时读取 localStorage', () => {
+  it('无 URL 筛选时优先读取当前业务组', () => {
     localStorage.setItem(localeKey, '-2');
     const result = getDefaultGidsInDashboard({}, localeKey, businessGroup);
-    expect(result).toBe('-2');
+    expect(result).toBe('1,2');
   });
 
-  it('无缓存时回退到 businessGroup.ids', () => {
-    const result = getDefaultGidsInDashboard({}, localeKey, businessGroup);
-    expect(result).toBe('1,2');
+  it('当前业务组为空时回退到 localStorage', () => {
+    localStorage.setItem(localeKey, '-2');
+    const result = getDefaultGidsInDashboard({}, localeKey, {});
+    expect(result).toBe('-2');
   });
 
   it('全部回退都无值时返回 -1', () => {
