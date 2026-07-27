@@ -6,6 +6,7 @@ import { Button, Tooltip } from 'antd';
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
+import { getTargetsCompatibleGids } from '@/components/BusinessGroup/presetFilters';
 
 import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
@@ -18,7 +19,7 @@ export default function index() {
   const { t } = useTranslation(NS);
   const { businessGroup } = useContext(CommonStateContext);
 
-  const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
+  const [gids, setGids] = useState<string | undefined>(() => getTargetsCompatibleGids(businessGroup.ids));
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRows, setSelectedRows] = useState<Item[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>();
@@ -38,7 +39,7 @@ export default function index() {
   }, []);
 
   useEffect(() => {
-    setGids(businessGroup.ids);
+    setGids(getTargetsCompatibleGids(businessGroup.ids));
   }, [businessGroup.ids]);
 
   return (

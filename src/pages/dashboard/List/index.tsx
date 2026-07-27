@@ -32,6 +32,7 @@ import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard,
 import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
+import { getDashboardCompatibleGids } from '@/components/BusinessGroup/presetFilters';
 import EnhancedTable from '@/components/EnhancedTable';
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
@@ -65,7 +66,7 @@ export default function index() {
   const { t } = useTranslation('dashboard');
   const { businessGroup, perms } = useContext(CommonStateContext);
   const queryParams = queryString.parse(useLocation().search);
-  const [gids, setGids] = useState<string | undefined>(getDefaultGidsInDashboard(queryParams, N9E_GIDS_LOCALKEY, businessGroup));
+  const [gids, setGids] = useState<string | undefined>(() => getDashboardCompatibleGids(getDefaultGidsInDashboard(queryParams, N9E_GIDS_LOCALKEY, businessGroup)));
   const [list, setList] = useState<any[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
@@ -82,7 +83,7 @@ export default function index() {
   const [importData, setImportData] = useState<{ visible: boolean; busiId?: number; type?: ModalType }>({ visible: false });
 
   useUpdateEffect(() => {
-    setGids(businessGroup.ids);
+    setGids(getDashboardCompatibleGids(businessGroup.ids));
     setsearchVal('');
     setCurrent(1);
     sessionStorage.removeItem(SEARCH_SESSION_STORAGE_KEY);
