@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Form, Dropdown, Button, Input, Space, Drawer, Spin, message } from 'antd';
-import { PlusOutlined, PlusCircleOutlined, SyncOutlined } from '@ant-design/icons';
+import { Form, Dropdown, Button, Input, Space, Drawer, Spin, Tooltip, message } from 'antd';
+import { PlusOutlined, PlusCircleOutlined, SyncOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Rule } from 'antd/lib/form';
 import { Bell, Check, ExternalLink, Eye, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { getItem as getNotificationRule, putItem as putNotificationRule, postIte
 import { NS, CN } from '../../constants';
 import NotificationRuleForm from '../../pages/Form';
 import { normalizeInitialValues } from '../../utils/normalizeValues';
+import QuickCreateModal from './QuickCreateModal';
 
 const channelTypes = getNotificationChannelTypes();
 
@@ -21,6 +22,7 @@ type NotifyConfig = { channel_id: number; channel_ident?: string; params?: Recor
 export type RuleItemData = {
   id: number;
   name: string;
+  enable?: boolean;
   notify_configs?: NotifyConfig[];
 };
 
@@ -86,6 +88,7 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
       <div className='flex-1 min-w-0'>
         <div className='flex items-center gap-1'>
           <span className='font-bold leading-[1.4] max-w-[500px] truncate'>{rule.name}</span>
+          {rule.enable === false && <span className='px-1 py-0 rounded text-[10px] bg-error/10 text-error shrink-0'>{t('common:disabled')}</span>}
           {configCount > 1 && <span className='px-1 py-0 rounded text-[10px] bg-primary/10 text-primary shrink-0'>{t('rule_select.total', { total: configCount })}</span>}
         </div>
         {subtitle && <div className='leading-[1.4] text-soft mt-0.5 truncate'>{subtitle}</div>}
@@ -157,6 +160,7 @@ function Content(props: ContentProps) {
   const [viewDrawerData, setViewDrawerData] = useState<RuleItem>();
   const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
   const [createSaving, setCreateSaving] = useState(false);
+  const [quickCreateVisible, setQuickCreateVisible] = useState(false);
   const [shouldRestoreDropdownAfterDrawerClose, setShouldRestoreDropdownAfterDrawerClose] = useState(false);
 
   const filteredRules = useMemo(() => {
@@ -218,8 +222,24 @@ function Content(props: ContentProps) {
     setCreateDrawerVisible(true);
   };
 
+  const handleQuickCreate = () => {
+    setDropdownOpen(false);
+    setQuickCreateVisible(true);
+  };
+
+  /** 创建/复用成功后把规则追加进已选列表，避免用户再手动勾选 */
+  const selectRule = (ruleId: number) => {
+    if (_.includes(selectedIds, ruleId)) return;
+    onChange?.([...selectedIds, ruleId]);
+  };
+
+  const handleQuickCreateSuccess = (ruleId: number) => {
+    refresh?.();
+    selectRule(ruleId);
+  };
+
   const handleDropdownVisibleChange = (visible: boolean) => {
-    if (visible && (viewDrawerVisible || createDrawerVisible)) return;
+    if (visible && (viewDrawerVisible || createDrawerVisible || quickCreateVisible)) return;
     setDropdownOpen(visible);
   };
 
@@ -253,9 +273,14 @@ function Content(props: ContentProps) {
           <div className='px-3 py-6 text-center'>
             <div className='text-soft'>{t('common:nodata')}</div>
             {isAuthorized && !searchText && (
-              <Button type='link' size='small' icon={<PlusOutlined />} onClick={handleCreateRule}>
-                {t('rule_select.create')}
-              </Button>
+              <>
+                <Button type='link' size='small' icon={<ThunderboltOutlined />} onClick={handleQuickCreate}>
+                  {t('rule_select.quick_create.action')}
+                </Button>
+                <Button type='link' size='small' icon={<PlusOutlined />} onClick={handleCreateRule}>
+                  {t('rule_select.create')}
+                </Button>
+              </>
             )}
           </div>
         )}
@@ -283,7 +308,11 @@ function Content(props: ContentProps) {
             {required && <span className='text-error mr-1'>*</span>}
             {label}
           </span>
-          {isAuthorized && <PlusCircleOutlined className='cursor-pointer' onClick={handleCreateRule} />}
+          {isAuthorized && (
+            <Tooltip title={t('rule_select.create')}>
+              <PlusCircleOutlined className='cursor-pointer' onClick={handleCreateRule} />
+            </Tooltip>
+          )}
           {isAuthorized && refresh && (
             <SyncOutlined
               spin={loading}
@@ -293,6 +322,12 @@ function Content(props: ContentProps) {
                 e.preventDefault();
               }}
             />
+          )}
+          {isAuthorized && (
+            <a onClick={handleQuickCreate}>
+              <ThunderboltOutlined className='mr-1' />
+              {t('rule_select.quick_create.action')}
+            </a>
           )}
         </Space>
       </div>
@@ -350,10 +385,16 @@ function Content(props: ContentProps) {
             onOk={(values) => {
               setCreateSaving(true);
               createNotificationRules([values])
-                .then(() => {
+                .then((dat) => {
                   message.success(t('common:success.add'));
                   handleCloseCreateDrawer();
                   refresh?.();
+                  // 自动选中新建的规则，免去用户再去下拉里手动勾选
+                  const first = Array.isArray(dat) ? dat[0] : undefined;
+                  const newId = typeof first === 'object' ? Number(first?.id) : Number(first);
+                  if (Number.isFinite(newId) && newId > 0) {
+                    selectRule(newId);
+                  }
                 })
                 .finally(() => {
                   setCreateSaving(false);
@@ -363,6 +404,7 @@ function Content(props: ContentProps) {
           />
         </div>
       </Drawer>
+      <QuickCreateModal visible={quickCreateVisible} onCancel={() => setQuickCreateVisible(false)} onSuccess={handleQuickCreateSuccess} />
     </>
   );
 }
