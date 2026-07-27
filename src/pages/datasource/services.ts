@@ -2,6 +2,8 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import _ from 'lodash';
 
+import { N9E_PATHNAME } from '@/utils/constant';
+
 interface IItem {
   id: number;
   plugin_type_name: string;
@@ -77,4 +79,20 @@ export const postDatasourceLabelMapping = (data) => {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat);
+};
+
+// 拉取 Grafana 数据源预览（不写库）。返回 { items: [{ ...meta, duplicate, datasource }] }。
+export const fetchGrafanaDatasources = (payload) => {
+  return request(`/api/${N9E_PATHNAME}/datasource/grafana/fetch`, {
+    method: RequestMethod.Post,
+    data: payload,
+  }).then((res) => res.data);
+};
+
+// 批量导入选中的 Grafana 数据源。返回 { items: [{ name, status, reason }] }。
+export const importGrafanaDatasources = (body) => {
+  return request(`/api/${N9E_PATHNAME}/datasource/grafana/import`, {
+    method: RequestMethod.Post,
+    data: body,
+  }).then((res) => res.data);
 };

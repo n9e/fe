@@ -35,6 +35,7 @@ export interface IPropsType {
   }[];
   nameClick: (val) => void;
   onAdd?: () => void;
+  onImportGrafana?: () => void;
 }
 
 export interface IKeyValue {
@@ -44,7 +45,7 @@ export interface IKeyValue {
 const TableSource = (props: IPropsType) => {
   const { t } = useTranslation('datasourceManage');
   const isPlus = useIsPlus();
-  const { nameClick, pluginList, debouncedSearchValue, onAdd } = props;
+  const { nameClick, pluginList, debouncedSearchValue, onAdd, onImportGrafana } = props;
   const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
   const { reloadDatasourceList } = useContext(CommonStateContext);
   const [tableData, setTableData] = useState<any>([]);
@@ -256,9 +257,12 @@ const TableSource = (props: IPropsType) => {
               description={t('empty_guide.desc')}
               actions={
                 onAdd ? (
-                  <Button type='primary' onClick={onAdd}>
-                    {t('common:btn.add')}
-                  </Button>
+                  <Space>
+                    <Button type='primary' onClick={onAdd}>
+                      {t('common:btn.add')}
+                    </Button>
+                    {onImportGrafana && <Button onClick={onImportGrafana}>{t('import_grafana.entry')}</Button>}
+                  </Space>
                 ) : undefined
               }
             />
