@@ -22,6 +22,13 @@ const ja_JP = {
     no_more_bottom: 'これ以上新しいログはありません',
     query_failed: 'コンテキストログの読み込みに失敗しました',
   },
+  mode_switch: {
+    confirm_title: 'モード切り替え確認',
+    confirm_content:
+      '現在の統計グラフモードのクエリには範囲集計関数が含まれています。この関数はログ本文モードでは使用できません。切り替えると現在のクエリがクリアされます。続行しますか？',
+    confirm_ok: '切り替え',
+    confirm_cancel: 'キャンセル',
+  },
   query_placeholder: 'LogQL クエリを入力',
   builder: {
     labels: 'ラベル',
