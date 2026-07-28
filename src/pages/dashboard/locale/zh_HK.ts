@@ -453,6 +453,19 @@ const zh_HK = {
         filterable: '可篩選',
         sortColumn: '預設排序列',
         sortOrder: '預設排序',
+        enableRowDetail: '啟用行詳情',
+        enableRowDetail_tip: '開啟後，表格首列將顯示詳情圖標。點擊圖標可在右側抽屜中查看該行的完整字段和值，並支持整行或字段複製。',
+        rowDetail: {
+          triggerTip: '查看行詳情',
+          title: '詳情',
+          tableTab: '表格',
+          jsonTab: 'JSON',
+          field: '字段',
+          value: '值',
+          copyRow: '複製整行',
+          copyFieldAndValue: '複製字段和值',
+          copyFieldValue: '複製字段值',
+        },
         cellOptions: {
           type: {
             label: '單元格類型',

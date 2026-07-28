@@ -453,6 +453,19 @@ const zh_CN = {
         filterable: '启用列过滤器',
         sortColumn: '默认排序列',
         sortOrder: '默认排序',
+        enableRowDetail: '启用行详情',
+        enableRowDetail_tip: '开启后，表格首列将显示详情图标。点击图标可在右侧抽屉中查看该行的完整字段和值，并支持整行或字段复制。',
+        rowDetail: {
+          triggerTip: '查看行详情',
+          title: '详情',
+          tableTab: '表格',
+          jsonTab: 'JSON',
+          field: '字段',
+          value: '值',
+          copyRow: '复制整行',
+          copyFieldAndValue: '复制字段和值',
+          copyFieldValue: '复制字段值',
+        },
         cellOptions: {
           type: {
             label: '单元格类型',

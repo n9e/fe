@@ -450,6 +450,20 @@ const ja_JP = {
         filterable: '列フィルターを有効にする',
         sortColumn: 'ソート列',
         sortOrder: 'ソート順',
+        enableRowDetail: '行の詳細を有効にする',
+        enableRowDetail_tip:
+          '有効にすると、表の最初の列に詳細アイコンが表示されます。クリックすると、その行のすべてのフィールドと値を右側のドロワーで確認し、行またはフィールドをコピーできます。',
+        rowDetail: {
+          triggerTip: '行の詳細を表示',
+          title: '詳細',
+          tableTab: 'テーブル',
+          jsonTab: 'JSON',
+          field: 'フィールド',
+          value: '値',
+          copyRow: '行をコピー',
+          copyFieldAndValue: 'フィールドと値をコピー',
+          copyFieldValue: 'フィールド値をコピー',
+        },
         cellOptions: {
           type: {
             label: 'セルタイプ',

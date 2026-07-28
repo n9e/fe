@@ -12,11 +12,12 @@ interface CellOptionsProps {
   namePath?: (string | number)[];
   prefixNamePath?: (string | number)[];
   hideWrapText?: boolean;
+  wrapTextExtra?: React.ReactNode;
 }
 
 export default function CellOptions(props: CellOptionsProps) {
   const { t } = useTranslation('dashboard');
-  const { namePath = [], prefixNamePath = [], hideWrapText } = props;
+  const { namePath = [], prefixNamePath = [], hideWrapText, wrapTextExtra } = props;
   const form = Form.useFormInstance();
   const type = form.getFieldValue([...prefixNamePath, ...namePath, 'type']);
 
@@ -49,15 +50,18 @@ export default function CellOptions(props: CellOptionsProps) {
         </Col>
       )} */}
       {!hideWrapText && (type === 'none' || type === 'color-text') && (
-        <Form.Item
-          label={t('panel.custom.tableNG.cellOptions.wrapText')}
-          tooltip={t('panel.custom.tableNG.cellOptions.wrapText_tip')}
-          name={[...namePath, 'wrapText']}
-          valuePropName='checked'
-        >
-          <Switch />
-        </Form.Item>
+        <Col span={12}>
+          <Form.Item
+            label={t('panel.custom.tableNG.cellOptions.wrapText')}
+            tooltip={t('panel.custom.tableNG.cellOptions.wrapText_tip')}
+            name={[...namePath, 'wrapText']}
+            valuePropName='checked'
+          >
+            <Switch />
+          </Form.Item>
+        </Col>
       )}
+      {wrapTextExtra}
       {type === 'gauge' && (
         <>
           <Col span={12}>

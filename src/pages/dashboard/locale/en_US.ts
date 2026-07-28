@@ -449,6 +449,20 @@ const en_US = {
         filterable: 'Enable column filter',
         sortColumn: 'Sort column',
         sortOrder: 'Sort order',
+        enableRowDetail: 'Enable row details',
+        enableRowDetail_tip:
+          'When enabled, a details icon appears in the first column. Click it to view all fields and values for the row in a drawer, with row and field copy actions.',
+        rowDetail: {
+          triggerTip: 'View row details',
+          title: 'Details',
+          tableTab: 'Table',
+          jsonTab: 'JSON',
+          field: 'Field',
+          value: 'Value',
+          copyRow: 'Copy row',
+          copyFieldAndValue: 'Copy field and value',
+          copyFieldValue: 'Copy field value',
+        },
         cellOptions: {
           type: {
             label: 'Cell type',
