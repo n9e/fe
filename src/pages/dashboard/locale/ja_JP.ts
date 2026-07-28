@@ -21,10 +21,6 @@ const ja_JP = {
   clear_cache_btn_tip: 'テーブルの列幅キャッシュをクリアします。ページをリフレッシュすると有効になります',
   inspect_btn: '調査',
   table_upgrade: {
-    action: 'TableNG にアップグレード',
-    confirm_title: 'TableNG にアップグレード',
-    confirm_content: '既存のパネル設定と旧テーブルの表示方法を移行します。',
-    confirm_ok: 'アップグレード',
     switch_title: 'TableNG にアップグレード',
     switch_content: '旧 Table の設定を自動移行しますか？',
     auto_upgrade: '自動アップグレード',
@@ -455,6 +451,20 @@ const ja_JP = {
         filterable: '列フィルターを有効にする',
         sortColumn: 'ソート列',
         sortOrder: 'ソート順',
+        enableRowDetail: '行の詳細を有効にする',
+        enableRowDetail_tip:
+          '有効にすると、表の最初の列に詳細アイコンが表示されます。クリックすると、その行のすべてのフィールドと値を右側のドロワーで確認し、行またはフィールドをコピーできます。',
+        rowDetail: {
+          triggerTip: '行の詳細を表示',
+          title: '詳細',
+          tableTab: 'テーブル',
+          jsonTab: 'JSON',
+          field: 'フィールド',
+          value: '値',
+          copyRow: '行をコピー',
+          copyFieldAndValue: 'フィールドと値をコピー',
+          copyFieldValue: 'フィールド値をコピー',
+        },
         cellOptions: {
           type: {
             label: 'セルタイプ',

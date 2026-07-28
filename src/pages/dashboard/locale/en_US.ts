@@ -21,10 +21,6 @@ const en_US = {
   clear_cache_btn_tip: 'Clear the table column width cache, take effect after refreshing the page',
   inspect_btn: 'Inspect',
   table_upgrade: {
-    action: 'Upgrade to TableNG',
-    confirm_title: 'Upgrade to TableNG',
-    confirm_content: 'The existing panel configuration and legacy table layout will be migrated.',
-    confirm_ok: 'Upgrade',
     switch_title: 'Upgrade to TableNG',
     switch_content: 'Automatically migrate the legacy Table configuration?',
     auto_upgrade: 'Auto upgrade',
@@ -454,6 +450,20 @@ const en_US = {
         filterable: 'Enable column filter',
         sortColumn: 'Sort column',
         sortOrder: 'Sort order',
+        enableRowDetail: 'Enable row details',
+        enableRowDetail_tip:
+          'When enabled, a details icon appears in the first column. Click it to view all fields and values for the row in a drawer, with row and field copy actions.',
+        rowDetail: {
+          triggerTip: 'View row details',
+          title: 'Details',
+          tableTab: 'Table',
+          jsonTab: 'JSON',
+          field: 'Field',
+          value: 'Value',
+          copyRow: 'Copy row',
+          copyFieldAndValue: 'Copy field and value',
+          copyFieldValue: 'Copy field value',
+        },
         cellOptions: {
           type: {
             label: 'Cell type',

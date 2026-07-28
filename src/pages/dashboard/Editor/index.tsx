@@ -32,6 +32,7 @@ import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
 import { upgradeTableToNG } from '../utils/upgradeTableToNG';
 import { useGlobalState } from '../globalState';
+import normalizeData from '../Renderer/Renderer/TableNG/utils/normalizeData';
 
 import './style.less';
 
@@ -63,7 +64,7 @@ function index(props: IProps) {
     const formInstance = formRef.current.getFormInstance();
     const values = formInstance.getFieldsValue();
     if (migrateLegacyTable) {
-      const availableFields = _.uniq(_.flatMap(series || [], (item) => ['__time', ...Object.keys(item.metric || {}), `__value_#${item.refId}`]));
+      const availableFields = _.uniq(_.flatMap(normalizeData(series || []), 'columns'));
       setInitialValues(upgradeTableToNG(values, availableFields));
       return;
     }

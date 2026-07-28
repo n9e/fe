@@ -21,10 +21,6 @@ const zh_CN = {
   clear_cache_btn_tip: '清除表格列宽缓存，刷新页面后生效',
   inspect_btn: '排查',
   table_upgrade: {
-    action: '升级到 TableNG',
-    confirm_title: '升级到 TableNG',
-    confirm_content: '将保留现有面板配置，并转换旧版表格展示方式。',
-    confirm_ok: '升级',
     switch_title: '升级到 TableNG',
     switch_content: '是否自动迁移旧版 Table 的配置？',
     auto_upgrade: '自动升级',
@@ -458,6 +454,19 @@ const zh_CN = {
         filterable: '启用列过滤器',
         sortColumn: '默认排序列',
         sortOrder: '默认排序',
+        enableRowDetail: '启用行详情',
+        enableRowDetail_tip: '开启后，表格首列将显示详情图标。点击图标可在右侧抽屉中查看该行的完整字段和值，并支持整行或字段复制。',
+        rowDetail: {
+          triggerTip: '查看行详情',
+          title: '详情',
+          tableTab: '表格',
+          jsonTab: 'JSON',
+          field: '字段',
+          value: '值',
+          copyRow: '复制整行',
+          copyFieldAndValue: '复制字段和值',
+          copyFieldValue: '复制字段值',
+        },
         cellOptions: {
           type: {
             label: '单元格类型',

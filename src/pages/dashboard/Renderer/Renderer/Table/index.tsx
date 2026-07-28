@@ -102,6 +102,7 @@ function TableCpt(props: IProps, ref: any) {
   const [tableFields, setTableFields] = useGlobalState('tableFields');
   const [displayedTableFields, setDisplayedTableFields] = useGlobalState('displayedTableFields');
   const [tableRefIds, setTableRefIds] = useGlobalState('tableRefIds');
+  const [, setSeries] = useGlobalState('series');
   const isAppendLinkColumn = !_.isEmpty(custom.links) && custom.linkMode !== 'cellLink';
 
   useEffect(() => {
@@ -140,6 +141,7 @@ function TableCpt(props: IProps, ref: any) {
       [],
     );
     if (isPreview) {
+      setSeries(series);
       setTableRefIds(groupNames);
       setDisplayedTableFields(fields);
       setTableFields(getColumnsKeys(data));
