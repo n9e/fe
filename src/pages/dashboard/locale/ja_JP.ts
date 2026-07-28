@@ -347,6 +347,7 @@ const ja_JP = {
       displayName_tip: 'シリーズ名をカスタム',
     },
     overrides: {
+      columnWidth: '列幅',
       matcher: {
         id: 'マッチングタイプ',
         byFrameRefID: {

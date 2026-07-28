@@ -12,11 +12,19 @@ import getFontFamily from '@/utils/getFontFamily';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
-import { IPanel } from '../../../types';
+import { IOverride, IPanel } from '../../../types';
 import { downloadCsv } from '../Table/utils';
 import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
 import getFormattedRowData from './utils/getFormattedRowData';
 import normalizeData from './utils/normalizeData';
+import {
+  getColumnWidthColDef,
+  getResolvedColumnWidths,
+  readCachedColumnWidths,
+  removeCachedColumnWidth,
+  TABLE_COLUMN_MIN_WIDTH,
+  upsertColumnWidthOverride,
+} from './utils/columnWidth';
 import CellRenderer from './CellRenderer';
 import { TextObject } from './CellRenderer/types';
 import CustomColumnFilter, { doesFilterPass } from './CustomColumnFilter';
@@ -65,6 +73,7 @@ interface Props {
     >,
   ) => void;
   domLayout?: DomLayoutType;
+  onOverridesChange?: (overrides: IOverride[]) => void;
 }
 
 function index(props: Props, ref: React.Ref<any>) {
@@ -87,31 +96,19 @@ function index(props: Props, ref: React.Ref<any>) {
     showUnderline = false,
     onCellClick,
     domLayout,
+    onOverridesChange,
   } = props;
 
   // 列宽缓存 key：dashboardID + panelID
   const cacheKey = dashboardId && values?.id ? `tableNG_colWidths_${dashboardId}_${values.id}` : null;
 
-  // 从 localStorage 同步读取已缓存的（仅被用户修改过的）列宽，供 onGridReady 时恢复使用
-  const readCachedColWidths = (key: string | null): Record<string, number> => {
-    if (!key) return {};
-    try {
-      return JSON.parse(localStorage.getItem(key) || '{}');
-    } catch {
-      return {};
-    }
-  };
-
-  // useRef 不支持懒初始化，在渲染时直接同步读取初始值
-  const modifiedColWidthsRef = React.useRef<Record<string, number>>(readCachedColWidths(cacheKey));
-
-  // cacheKey 变化时（如面板切换）重新从 localStorage 加载列宽
-  React.useEffect(() => {
-    modifiedColWidthsRef.current = readCachedColWidths(cacheKey);
-  }, [cacheKey]);
-
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder, enableRowDetail = false } = custom || {};
+  // useRef 不支持懒初始化，在渲染时直接同步读取初始值
+  const cachedColWidthsRef = React.useRef<Record<string, number>>(readCachedColumnWidths(cacheKey));
+  const appliedColWidthsRef = React.useRef<Record<string, number>>({});
+  const gridApiRef = React.useRef<any>(null);
+  const persistedColumnWidths = getResolvedColumnWidths(cachedColWidthsRef.current, overrides);
   const linksRef = React.useRef<any>(null);
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -206,6 +203,30 @@ function index(props: Props, ref: React.Ref<any>) {
     }
   }, [JSON.stringify(_.map(series, 'id'))]);
 
+  const applyPersistedColumnWidths = (api = gridApiRef.current) => {
+    if (!api) return;
+    const columnWidths = getResolvedColumnWidths(cachedColWidthsRef.current, overrides);
+    const removedFields = _.difference(_.keys(appliedColWidthsRef.current), _.keys(columnWidths));
+    const state = [..._.map(columnWidths, (width, colId) => ({ colId, width, flex: null })), ..._.map(removedFields, (colId) => ({ colId, flex: 1 }))];
+    if (_.isEmpty(state)) return;
+
+    api.applyColumnState({
+      state,
+    });
+    appliedColWidthsRef.current = columnWidths;
+  };
+
+  // cacheKey 变化时（如面板切换）重新加载旧缓存。
+  useEffect(() => {
+    cachedColWidthsRef.current = readCachedColumnWidths(cacheKey);
+    applyPersistedColumnWidths();
+  }, [cacheKey]);
+
+  // 编辑器表单或仪表盘状态更新 override 后，立即同步到当前网格。
+  useEffect(() => {
+    applyPersistedColumnWidths();
+  }, [JSON.stringify(overrides)]);
+
   return (
     <div
       ref={tableContainerRef}
@@ -273,10 +294,13 @@ function index(props: Props, ref: React.Ref<any>) {
               ]
             : []),
           ..._.map(ajustColumns ? ajustColumns(columns) : columns, (item) => {
+            const persistedWidth = persistedColumnWidths[item];
             return {
               field: item,
               unSortIcon: true,
               headerName: item,
+              // 重渲染首帧直接使用持久化宽度，避免 defaultColDef.flex 先回排再由 effect 修正造成闪动。
+              ...getColumnWidthColDef(persistedWidth),
               cellStyle: {
                 padding: 0,
               },
@@ -327,7 +351,7 @@ function index(props: Props, ref: React.Ref<any>) {
         defaultColDef={{
           flex: 1,
           resizable: true,
-          minWidth: 100,
+          minWidth: TABLE_COLUMN_MIN_WIDTH,
           sortable: true, // 启用排序功能
           cellStyle: {
             fontFamily: getFontFamily(siteInfo?.font_family),
@@ -349,28 +373,18 @@ function index(props: Props, ref: React.Ref<any>) {
           },
         }}
         onColumnResized={(event) => {
-          // 仅在拖拽结束时保存，且只保存被修改的列宽
-          if (!event.finished || !cacheKey || !event.column) return;
+          // 仅持久化用户完成的拖拽；初始化和 API 回放不会反向生成 override。
+          if (!event.finished || event.source !== 'uiColumnResized' || !event.column || !onOverridesChange) return;
           const colId = event.column.getColId();
           const width = event.column.getActualWidth();
-          modifiedColWidthsRef.current = {
-            ...modifiedColWidthsRef.current,
-            [colId]: width,
-          };
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify(modifiedColWidthsRef.current));
-          } catch {
-            // ignore storage errors
-          }
+          const nextOverrides = upsertColumnWidthOverride(overrides, colId, width);
+          onOverridesChange(nextOverrides);
+          cachedColWidthsRef.current = removeCachedColumnWidth(cacheKey, colId);
         }}
         onGridReady={(params) => {
-          // 恢复缓存的列宽
-          const cachedWidths = modifiedColWidthsRef.current;
-          if (!_.isEmpty(cachedWidths)) {
-            params.api.applyColumnState({
-              state: _.map(cachedWidths, (width, colId) => ({ colId, width })),
-            });
-          }
+          gridApiRef.current = params.api;
+          // override 优先，旧 localStorage 缓存只为尚未迁移的字段兜底。
+          applyPersistedColumnWidths(params.api);
           // 列的默认排序
           if (sortColumn && sortOrder) {
             params.api.applyColumnState({
