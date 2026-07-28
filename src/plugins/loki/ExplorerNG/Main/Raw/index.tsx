@@ -140,7 +140,7 @@ export default function Raw(props: Props) {
 
   const service = () => {
     const latestQueryValues = form.getFieldValue('query');
-    if (refreshFlag && datasourceValue && latestQueryValues?.range) {
+    if (refreshFlag && datasourceValue && latestQueryValues?.range && _.trim(latestQueryValues?.query)) {
       const parsedRange = parseRange(latestQueryValues.range);
       let timeParams = {
         from: moment(parsedRange.start).valueOf(),
@@ -209,7 +209,7 @@ export default function Raw(props: Props) {
 
   const histogramService = () => {
     const latestQueryValues = form.getFieldValue('query');
-    if (refreshFlag && datasourceValue && latestQueryValues?.range) {
+    if (refreshFlag && datasourceValue && latestQueryValues?.range && _.trim(latestQueryValues?.query)) {
       const range = parseRange(latestQueryValues.range);
       return getHistogram({
         cate: DatasourceCateEnum.loki,

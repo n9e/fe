@@ -6,12 +6,45 @@ interface RenderLogQLOptions {
   multiline?: boolean;
 }
 
+const RANGE_AGGREGATION_PATTERN =
+  /\b(count_over_time|rate|bytes_rate|bytes_over_time|absent_over_time|sum_over_time|avg_over_time|min_over_time|max_over_time|quantile_over_time)\s*\(/i;
+
 const METRIC_PATTERNS = [
-  /\b(count_over_time|rate|bytes_rate|bytes_over_time|absent_over_time)\s*\(/i,
-  /\b(sum_over_time|avg_over_time|min_over_time|max_over_time|quantile_over_time)\s*\(/i,
+  RANGE_AGGREGATION_PATTERN,
   /\b(sum|avg|min|max|count)\s+(by|without)\s*\(/i,
   /\b(topk|bottomk)\s*\(/i,
 ];
+
+function stripQuotedStrings(query: string) {
+  let result = '';
+  let quote: '"' | "'" | '`' | undefined;
+  let escaped = false;
+
+  _.forEach(query, (char) => {
+    if (quote) {
+      result += ' ';
+      if (escaped) {
+        escaped = false;
+      } else if (char === '\\') {
+        escaped = true;
+      } else if (char === quote) {
+        quote = undefined;
+      }
+      return;
+    }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char;
+      result += ' ';
+      return;
+    }
+    result += char;
+  });
+  return result;
+}
+
+export function hasRangeAggregation(userQL?: string) {
+  return RANGE_AGGREGATION_PATTERN.test(stripQuotedStrings(_.trim(userQL || '')));
+}
 
 export function escapeString(value?: string | number) {
   return _.replace(_.toString(value ?? ''), /\\/g, '\\\\').replace(/"/g, '\\"');

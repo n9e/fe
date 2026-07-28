@@ -22,6 +22,12 @@ const zh_HK = {
     no_more_bottom: '沒有更新的日誌',
     query_failed: '上下文日誌載入失敗',
   },
+  mode_switch: {
+    confirm_title: '切換模式確認',
+    confirm_content: '當前統計圖表模式的查詢條件包含區間聚合方法，該方法在日誌原文模式下不可用。切換後將清空當前查詢條件，是否繼續？',
+    confirm_ok: '繼續切換',
+    confirm_cancel: '取消',
+  },
   query_placeholder: '輸入 LogQL 查詢',
   builder: {
     labels: '標籤',

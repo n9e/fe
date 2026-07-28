@@ -1,9 +1,36 @@
-import { classifyExplorerMode, renderMetricLogQL, renderRawLogQL } from './logsQL';
+import { classifyExplorerMode, hasRangeAggregation, renderMetricLogQL, renderRawLogQL } from './logsQL';
 
 describe('Loki ExplorerNG logsQL utils', () => {
   it('classifies raw and metric LogQL', () => {
     expect(classifyExplorerMode('{app="api"} |= "error"')).toBe('raw');
     expect(classifyExplorerMode('sum by (app) (count_over_time({app="api"}[5m]))')).toBe('metric');
+  });
+
+  it('detects all range aggregation functions outside quoted strings', () => {
+    [
+      'count_over_time({app="api"}[5m])',
+      'RATE ({app="api"}[5m])',
+      'bytes_rate ({app="api"}[5m])',
+      'bytes_over_time ({app="api"}[5m])',
+      'absent_over_time ({app="api"}[5m])',
+      'sum_over_time ({app="api"}[5m])',
+      'avg_over_time ({app="api"}[5m])',
+      'min_over_time ({app="api"}[5m])',
+      'max_over_time ({app="api"}[5m])',
+      'quantile_over_time (0.99, {app="api"}[5m])',
+      'sum by (app) (count_over_time({app="api"}[5m]))',
+    ].forEach((query) => {
+      expect(hasRangeAggregation(query)).toBe(true);
+    });
+
+    [
+      '{app="api"} |= "rate("',
+      '{method="count_over_time("}',
+      'sum by (app) ({app="api"})',
+      'topk(10, {app="api"})',
+    ].forEach((query) => {
+      expect(hasRangeAggregation(query)).toBe(false);
+    });
   });
 
   it('renders raw LogQL from builder state', () => {

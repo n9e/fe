@@ -22,6 +22,13 @@ const en_US = {
     no_more_bottom: 'No more newer logs',
     query_failed: 'Failed to load context logs',
   },
+  mode_switch: {
+    confirm_title: 'Switch Mode Confirmation',
+    confirm_content:
+      'The current query contains a range aggregation function, which is not supported in Raw Logs mode. Switching will clear the current query. Do you want to proceed?',
+    confirm_ok: 'Switch',
+    confirm_cancel: 'Cancel',
+  },
   query_placeholder: 'Enter a LogQL query',
   builder: {
     labels: 'Labels',
