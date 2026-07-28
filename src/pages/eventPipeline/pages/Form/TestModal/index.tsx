@@ -90,9 +90,10 @@ export default function TestModal(props: Props) {
       });
   };
 
-  // event 为空即表示事件在某个环节被丢弃 / 抑制
-  const dropped = view === 'result' && result && !result.event;
   const failed = result?.status === 'failed';
+  // 执行成功但没有 event，才说明事件在某个环节被丢弃 / 抑制。
+  // 执行失败时后端同样不会返回 event，不排掉 failed 会把「跑挂了」说成「被你的丢弃条件命中」
+  const dropped = view === 'result' && !!result && !result.event && !failed;
 
   return (
     <>

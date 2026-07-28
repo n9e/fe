@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Form, Input, Card, Space, Row, Col, Select, Switch, Button, Affix, Alert } from 'antd';
+import { Form, Input, Card, Space, Row, Col, Select, Switch, Button, Alert } from 'antd';
 import { PlusOutlined, HolderOutlined } from '@ant-design/icons';
 import { ListFilter, Workflow as WorkflowIcon, FileText } from 'lucide-react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { getTeamInfoList } from '@/services/manage';
 import { scrollToFirstError } from '@/utils';
 import { KVTags } from '@/components/KVTagSelect';
+import AffixWrapper from '@/components/AffixWrapper';
 import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
 
 import { Item } from '../../types';
@@ -272,8 +273,8 @@ export default function index(props: Props) {
       </div>
 
       {!disabled && (
-        <Affix offsetBottom={0}>
-          <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto mt-4'>
+        <AffixWrapper>
+          <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
             <Space>
               <Button
                 type='primary'
@@ -303,7 +304,7 @@ export default function index(props: Props) {
               )}
             </Space>
           </Card>
-        </Affix>
+        </AffixWrapper>
       )}
     </Form>
   );
