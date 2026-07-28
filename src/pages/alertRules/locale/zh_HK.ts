@@ -88,10 +88,12 @@ const zh_HK = {
   override_global_webhook: '覆蓋全局回調',
   enrich_queries: {
     title: '附加查詢',
-    tip: '告警觸發時會執行附加查詢，將查詢結果寫入事件的 extra_info（格式化字符串）和 extra_info_map（原始鍵值對）字段，可在通知模板中通過 {{ .ExtraInfo }} 或 {{ .ExtraInfoMap }}',
+    tip: '告警觸發時，實時執行這裡配置的查詢，把查到的現場數據（如命中的原始日誌樣本）附加到告警事件裡，讓接收人在通知中直接看到上下文。查詢條件支持引用事件變數（如 {{$labels.ident}}）；結果寫入事件的 extra_info（格式化文本）和 extra_info_map（原始鍵值對）字段，可在通知模板中通過 {{$event.ExtraInfo}} 或 {{$event.ExtraInfoMap}} 引用。與上方「附加資訊」的區別：附加資訊是預先寫好的靜態說明，附加查詢是告警時刻對數據源的實時查詢',
   },
   override_global_webhook_tip: '此開關開啟之後，告警事件只會發給本規則的回調地址，不會再發給全局的回調地址',
   annotations: '附加資訊',
+  annotations_tip:
+    '以 Key:Value 形式給本規則產生的告警事件附加補充說明，如預案連結（runbook_url）、儀表盤連結（dashboard_url）、摘要（summary）等。Value 支持模板變數（如 {{$labels.ident}}、{{$value}}），事件生成時渲染，展示在事件詳情頁，也可在通知模板中通過 {{$event.AnnotationsJSON.xxx}} 引用。與下方「附加查詢」的區別：附加資訊是預先寫好的靜態說明，不會查詢數據源',
   annotationsOptions: {
     plan_link: '預案連結',
     dashboard_link: '儀表盤連結',
