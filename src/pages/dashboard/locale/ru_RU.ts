@@ -21,10 +21,6 @@ const ru_RU = {
   clear_cache_btn_tip: 'Очистить кэш ширины столбцов таблицы, изменения вступят в силу после обновления страницы',
   inspect_btn: 'Проверить',
   table_upgrade: {
-    action: 'Обновить до TableNG',
-    confirm_title: 'Обновить до TableNG',
-    confirm_content: 'Текущая конфигурация панели и отображение старой таблицы будут перенесены.',
-    confirm_ok: 'Обновить',
     switch_title: 'Обновить до TableNG',
     switch_content: 'Автоматически перенести конфигурацию старой Table?',
     auto_upgrade: 'Автообновление',

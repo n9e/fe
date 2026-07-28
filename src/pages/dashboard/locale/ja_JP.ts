@@ -21,10 +21,6 @@ const ja_JP = {
   clear_cache_btn_tip: 'テーブルの列幅キャッシュをクリアします。ページをリフレッシュすると有効になります',
   inspect_btn: '調査',
   table_upgrade: {
-    action: 'TableNG にアップグレード',
-    confirm_title: 'TableNG にアップグレード',
-    confirm_content: '既存のパネル設定と旧テーブルの表示方法を移行します。',
-    confirm_ok: 'アップグレード',
     switch_title: 'TableNG にアップグレード',
     switch_content: '旧 Table の設定を自動移行しますか？',
     auto_upgrade: '自動アップグレード',

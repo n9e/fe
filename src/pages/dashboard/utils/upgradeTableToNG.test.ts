@@ -19,7 +19,13 @@ describe('upgradeTableToNG', () => {
         sortColumn: 'value',
         sortOrder: 'ascend',
         linkMode: 'appendLinkColumn',
-        links: [{ title: 'detail', url: '/x/$__field.labels.host/$__field.value', targetBlank: true }],
+        links: [
+          {
+            title: 'detail',
+            url: 'http://example.com?var=${var}&host=${__field.labels.host}&name=${__field.name}&value=${__field.value}&interval=${__interval}',
+            targetBlank: true,
+          },
+        ],
       },
     };
 
@@ -31,7 +37,7 @@ describe('upgradeTableToNG', () => {
       targets: [{ refId: 'A' }],
       custom: {
         showHeader: false,
-        sortColumn: 'Value',
+        sortColumn: 'value',
         sortOrder: 'ascend',
         cellOptions: { type: 'none' },
       },
@@ -40,12 +46,18 @@ describe('upgradeTableToNG', () => {
           id: 'organize',
           options: {
             fields: ['__time', 'cpu', 'host', '__value_#A'],
-            excludeByName: { __time: true, cpu: true, host: false, '__value_#A': false },
-            renameByName: { '__value_#A': 'Value' },
+            excludeByName: { __time: true, cpu: true },
+            renameByName: { '__value_#A': 'value' },
           },
         },
       ],
-      options: { links: [{ url: '/x/$__row.host/$__row.value' }] },
+      options: {
+        links: [
+          {
+            url: 'http://example.com?var=${var}&host=${__row.host}&name=${__row.__name__}&value=${__row.value}&interval=${__interval}',
+          },
+        ],
+      },
     });
     expect(result.targets).toEqual([{ refId: 'A', instant: true }]);
     expect(result.custom.links).toBeUndefined();
@@ -53,8 +65,17 @@ describe('upgradeTableToNG', () => {
   });
 
   it('maps series and grouped-dimension modes to existing transformations', () => {
-    expect(upgradeTableToNG({ type: 'table', custom: { displayMode: 'seriesToRows' } }).transformationsNG).toEqual([
-      { id: 'seriesToRows', options: { calc: 'lastNotNull' } },
+    expect(
+      upgradeTableToNG({ type: 'table', custom: { displayMode: 'seriesToRows' }, targets: [{ refId: 'A' }] }, ['__time', '__name__', 'ident', '__value_#A']).transformationsNG,
+    ).toEqual([
+      {
+        id: 'organize',
+        options: {
+          fields: ['__time', '__name__', 'ident', '__value_#A'],
+          excludeByName: { __time: true, ident: true },
+          renameByName: { __name__: 'name', '__value_#A': 'value' },
+        },
+      },
     ]);
     expect(
       upgradeTableToNG({
@@ -129,8 +150,63 @@ describe('upgradeTableToNG', () => {
       type: 'tableNG',
       targets: [],
       overrides: [],
-      options: { links: [] },
+      options: {},
     });
     expect(upgradeTableToNG(null)).toBeNull();
+  });
+
+  it('only records hidden organize fields and does not add empty links', () => {
+    const result = upgradeTableToNG(
+      {
+        type: 'table',
+        custom: { displayMode: 'labelsOfSeriesToRows', columns: ['ident', 'value'], sortColumn: 'value' },
+        options: { standardOptions: {} },
+        targets: [{ refId: 'A' }],
+      },
+      ['__time', '**name**', 'cpu', 'ident', '__value_#A'],
+    );
+
+    expect(result.transformationsNG[0].options).toEqual({
+      fields: ['__time', '**name**', 'cpu', 'ident', '__value_#A'],
+      excludeByName: { __time: true, '**name**': true, cpu: true },
+      renameByName: { '__value_#A': 'value' },
+    });
+    expect(result.custom.sortColumn).toBe('value');
+    expect(result.options).toEqual({ standardOptions: {} });
+  });
+
+  it('maps label-mode refId overrides to value and keeps target legend', () => {
+    const result = upgradeTableToNG({
+      type: 'table',
+      custom: { displayMode: 'labelsOfSeriesToRows', columns: ['ident', 'value'] },
+      targets: [{ refId: 'A', legend: 'custom legend' }],
+      overrides: [{ matcher: { id: 'byFrameRefID', value: 'A' }, properties: { standardOptions: { unit: 'percent' } } }],
+    });
+
+    expect(result.targets).toEqual([{ refId: 'A', legend: 'custom legend', instant: true }]);
+    expect(result.overrides[0]).toMatchObject({
+      matcher: { id: 'byName', value: 'value' },
+      properties: { standardOptions: { unit: 'percent' } },
+    });
+  });
+
+  it('maps field value links to the final transformed column name', () => {
+    const result = upgradeTableToNG({
+      type: 'table',
+      custom: {
+        displayMode: 'labelValuesToRows',
+        calc: 'lastNotNull',
+        aggrDimension: ['ident'],
+        links: [{ title: 'detail', url: 'http://example.com?value=${__field.value}' }],
+      },
+      targets: [{ refId: 'A', legend: 'cpu_usage_idle' }],
+    });
+
+    expect(result.options.links).toEqual([
+      {
+        title: 'detail',
+        url: 'http://example.com?value=${__row.cpu_usage_idle}',
+      },
+    ]);
   });
 });
