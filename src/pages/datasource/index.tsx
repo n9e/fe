@@ -13,14 +13,11 @@ import Form from './Form';
 import GrafanaImportModal from './components/GrafanaImportModal';
 import './locale';
 import { SearchOutlined } from '@ant-design/icons';
-// @ts-ignore
-import useIsPlus from 'plus:/components/useIsPlus';
 
 export { Form };
 
 export default function index() {
   const { t } = useTranslation('datasourceManage');
-  const isPlus = useIsPlus();
   const [pluginList, setPluginList] = useState<any[]>();
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailData, setDetailData] = useState();
@@ -81,7 +78,7 @@ export default function index() {
               >
                 {t('common:btn.add')}
               </Button>
-              {isPlus && <Button onClick={() => setGrafanaImportVisible(true)}>{t('import_grafana.entry')}</Button>}
+              <Button onClick={() => setGrafanaImportVisible(true)}>{t('import_grafana.entry')}</Button>
             </Space>
           </div>
           {pluginList && (
@@ -96,7 +93,7 @@ export default function index() {
               onAdd={() => {
                 setChooseDataSourceTypeModalVisible(true);
               }}
-              onImportGrafana={isPlus ? () => setGrafanaImportVisible(true) : undefined}
+              onImportGrafana={() => setGrafanaImportVisible(true)}
             />
           )}
           {detailVisible && (
