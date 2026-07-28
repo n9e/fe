@@ -90,6 +90,8 @@ const en_US = {
   override_global_webhook_tip:
     'After this switch is turned on, the alert event will only be sent to the callback address of this rule, and will not be sent to the global callback address',
   annotations: 'Annotations',
+  annotations_tip:
+    'Attach static Key:Value notes to every alert event produced by this rule, such as a runbook link (runbook_url), dashboard link (dashboard_url), or summary. Values support template variables (e.g. {{$labels.ident}}, {{$value}}), are rendered when the event is generated, shown on the event detail page, and can be referenced in notification templates via {{$event.AnnotationsJSON.xxx}}. Unlike "Enrich Queries" below, annotations are pre-written static notes and do not query any datasource',
   annotationsOptions: {
     plan_link: 'Plan link',
     dashboard_link: 'Dashboard link',
@@ -546,7 +548,7 @@ const en_US = {
 
   enrich_queries: {
     title: 'Enrich Queries',
-    tip: "When an alert is triggered, the enrich query will be executed and the results will be written to the event's extra_info (formatted string) and extra_info_map (raw key-value pairs) fields. You can reference them in notification templates using {{ .ExtraInfo }} or {{ .ExtraInfoMap }}",
+    tip: 'When an alert fires, the queries configured here are executed in real time and the fetched data (e.g. matching raw log samples) is attached to the alert event, so recipients see the context directly in the notification. Query conditions can reference event variables (e.g. {{$labels.ident}}); results are written to the event\'s extra_info (formatted text) and extra_info_map (raw key-value pairs) fields and can be referenced in notification templates via {{$event.ExtraInfo}} or {{$event.ExtraInfoMap}}. Unlike "Annotations" above, which are pre-written static notes, enrich queries fetch live data from the datasource at alert time',
   },
 };
 export default en_US;

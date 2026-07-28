@@ -15,6 +15,8 @@ import { normalizeTime } from '@/pages/alertRules/Form/utils';
 import { NS as EVENT_PIPELINE_NS } from '@/pages/eventPipeline/constants';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
+import { ANNOTATIONS_ENRICH_QUERIES_DOC_URL } from '@/pages/alertRules/constants';
+
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../constants';
 import GraphPreview from '../GraphPreview';
 
@@ -40,7 +42,7 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
             <div className='mb-2'>
               <Space>
                 {t('enrich_queries.title')}
-                <Tooltip title={t('alertRules:enrich_queries.tip')}>
+                <Tooltip title={t('alertRules:enrich_queries.tip')} overlayStyle={{ maxWidth: 400 }}>
                   <InfoCircleOutlined />
                 </Tooltip>
                 <PlusCircleOutlined
@@ -51,6 +53,19 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                     });
                   }}
                 />
+                <a
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language,
+                      darkMode,
+                      type: 'iframe',
+                      title: t('common:page_help'),
+                      documentPath: ANNOTATIONS_ENRICH_QUERIES_DOC_URL,
+                    });
+                  }}
+                >
+                  {t('common:page_help')}
+                </a>
               </Space>
             </div>
             <div className='mb-4'>
