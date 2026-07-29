@@ -1,16 +1,15 @@
 import React from 'react';
-import { Spin, Descriptions, Tag, Card, Steps, Space } from 'antd';
-import { LoadingOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Spin, Descriptions, Tag, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
 import moment from 'moment';
-import _ from 'lodash';
 
 import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
 
 import { NS } from '../../constants';
 import { getExecutionById } from '../../services';
 import formatMsToHuman from '../../utils/formatMsToHuman';
+import NodeResultsSteps from '../../components/NodeResultsSteps';
 
 interface Props {
   id: string;
@@ -36,11 +35,6 @@ export default function ItemDetaildrawer(props: Props) {
     running: <Tag color='purple'>{t('executions.status.running')}</Tag>,
     success: <Tag color='green'>{t('executions.status.success')}</Tag>,
     failed: <Tag color='red'>{t('executions.status.failed')}</Tag>,
-  };
-  const iconMap = {
-    running: <LoadingOutlined />,
-    success: <CheckCircleOutlined className='text-success' />,
-    failed: <CloseCircleOutlined className='text-error' />,
   };
 
   return (
@@ -68,59 +62,24 @@ export default function ItemDetaildrawer(props: Props) {
         <Descriptions.Item label={t('executions.status.label')}>{data?.status ? statusMap[data?.status] : '-'}</Descriptions.Item>
         <Descriptions.Item label={t('executions.created_at')}>{data?.created_at ? moment.unix(data?.created_at).format(format) : '-'}</Descriptions.Item>
         <Descriptions.Item label={t('executions.finished_at')}>{data?.finished_at ? moment.unix(data?.finished_at).format(format) : '-'}</Descriptions.Item>
-        <Descriptions.Item label={t('executions.duration_ms')}>{data?.duration_ms ? formatMsToHuman(data?.duration_ms) : '-'}</Descriptions.Item>
+        {/* duration_ms=0 是有效耗时（亚毫秒），不能被真值判断吃成「-」 */}
+        <Descriptions.Item label={t('executions.duration_ms')}>{data?.duration_ms == null ? '-' : formatMsToHuman(data.duration_ms)}</Descriptions.Item>
         <Descriptions.Item label={t('executions.trigger_by')}>{data?.trigger_by}</Descriptions.Item>
+        {data?.error_node && <Descriptions.Item label={t('executions.error_node')}>{data?.error_node}</Descriptions.Item>}
         {data?.error_message && (
-          <Descriptions.Item label={t('executions.error_message')} span={2}>
-            <div className='text-error'>{data?.error_message}</div>
+          // 同列表页：error_message 里也可能是成功终止的说明，只有 failed 才按错误呈现
+          <Descriptions.Item label={t(data?.status === 'failed' ? 'executions.error_message' : 'executions.message')} span={2}>
+            <div className={data?.status === 'failed' ? 'text-error' : undefined}>{data?.error_message}</div>
+          </Descriptions.Item>
+        )}
+        {data?.inputs_snapshot && (
+          <Descriptions.Item label={t('executions.inputs_snapshot')} span={2}>
+            <pre className='whitespace-pre-wrap mb-0'>{data.inputs_snapshot}</pre>
           </Descriptions.Item>
         )}
       </Descriptions>
       <Card title={t('executions.node_results_parsed_title')}>
-        <Steps direction='vertical' size='small' current={1}>
-          {_.map(data?.node_results_parsed, (node) => {
-            return (
-              <Steps.Step
-                status='finish'
-                key={node.node_id}
-                icon={iconMap[node.status]}
-                title={
-                  <Space>
-                    <strong>{node.node_name}</strong>
-                    <div className='children:mr-0'>
-                      <Tag>{node.node_type}</Tag>
-                    </div>
-                    {node.status ? statusMap[node.status] : '-'}
-                    {node.duration_ms ? <span>{formatMsToHuman(node.duration_ms)}</span> : '-'}
-                  </Space>
-                }
-                description={
-                  <div className='mt-4'>
-                    <div>
-                      {node.error && (
-                        <div className='mb-2 text-error '>
-                          <pre className='whitespace-pre-wrap'>{node.error}</pre>
-                        </div>
-                      )}
-                      {node.message && (
-                        <div className='mb-2 text-main'>
-                          <pre className='whitespace-pre-wrap'>{node.message}</pre>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <Space className='text-soft'>
-                        {moment.unix(node.started_at).format('HH:mm:ss')}
-                        <span>-</span>
-                        <span>{node.finished_at ? moment.unix(node.finished_at).format('HH:mm:ss') : 'N/A'}</span>
-                      </Space>
-                    </div>
-                  </div>
-                }
-              />
-            );
-          })}
-        </Steps>
+        <NodeResultsSteps data={data?.node_results_parsed} />
       </Card>
     </Spin>
   );

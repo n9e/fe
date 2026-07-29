@@ -10,7 +10,7 @@ import Markdown from '@/components/Markdown';
 import { getList as getLLMConfigList } from '@/pages/aiConfig/llmConfigs/services';
 import { LLMConfig } from '@/pages/aiConfig/llmConfigs/types';
 
-import { NS } from '../../../constants';
+import { NS, AI_SUMMARY_DEFAULT_TIMEOUT, AI_SUMMARY_PROMPT_TEMPLATE_KEY, AI_SUMMARY_PROMPT_TEMPLATE_OPTIONS } from '../../../constants';
 
 interface Props {
   field: FormListFieldData;
@@ -124,7 +124,8 @@ export default function AISummary(props: Props) {
         }}
         name={[...namePath, 'prompt_template']}
         rules={[{ required: true, message: t('ai_summary.prompt_template_required') }]}
-        initialValue={t('ai_summary.prompt_template_placeholder', { interpolation: { skipOnVariables: true } })}
+        // 取值方式必须与 getDefaultProcessorConfig('ai_summary') 完全一致，否则切换类型会误报
+        initialValue={t(AI_SUMMARY_PROMPT_TEMPLATE_KEY, AI_SUMMARY_PROMPT_TEMPLATE_OPTIONS)}
       >
         <CodeMirror
           height='200px'
@@ -267,7 +268,7 @@ export default function AISummary(props: Props) {
                       {...resetField}
                       label='Timeout'
                       name={[...namePath, 'timeout']}
-                      initialValue={30000}
+                      initialValue={AI_SUMMARY_DEFAULT_TIMEOUT}
                       rules={[{ required: true, message: t('ai_summary.timeout_required') }]}
                     >
                       <InputNumber min={0} style={{ width: '100%' }} addonAfter='ms' placeholder={t('ai_summary.timeout_placeholder')} />

@@ -12,7 +12,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 // @ts-ignore
 import PlusProcessor, { options as PlusOptions } from 'plus:/parcels/eventPipeline';
 
-import { NS, DEFAULT_PROCESSOR_CONFIG_MAP, documentPathMap } from '@/pages/eventPipeline/constants';
+import { NS, getDefaultProcessorConfig, documentPathMap } from '@/pages/eventPipeline/constants';
 import TestModal from '@/pages/eventPipeline/pages/Form/TestModal';
 import Relabel from '@/pages/eventPipeline/pages/Form/Processor/Relabel';
 import Callback from '@/pages/eventPipeline/pages/Form/Processor/Callback';
@@ -117,7 +117,7 @@ export default function Processor(props: Props) {
             };
           })}
           onChange={(newTyp) => {
-            const newConfig = _.cloneDeep(DEFAULT_PROCESSOR_CONFIG_MAP[newTyp]);
+            const newConfig = getDefaultProcessorConfig(newTyp, t);
             const formValues = _.cloneDeep(form.getFieldsValue());
             const newFormValues = _.set(formValues, [...prefixNamePath, ...namePath, 'config'], newConfig);
 
@@ -131,7 +131,7 @@ export default function Processor(props: Props) {
       {processorType === 'relabel' && <Relabel field={field} namePath={[...namePath, 'config']} prefixNamePath={prefixNamePath} />}
       {processorType === 'callback' && <Callback field={field} namePath={[...namePath, 'config']} />}
       {processorType === 'event_update' && <Callback field={field} namePath={[...namePath, 'config']} />}
-      {processorType === 'event_drop' && <EventDrop field={field} namePath={[...namePath, 'config']} />}
+      {processorType === 'event_drop' && <EventDrop field={field} namePath={[...namePath, 'config']} prefixNamePath={prefixNamePath} />}
       {processorType === 'ai_summary' && <AISummary field={field} namePath={[...namePath, 'config']} />}
       <PlusProcessor processorType={processorType} field={field} prefixNamePath={prefixNamePath} />
     </Card>
