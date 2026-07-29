@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { Space, Button, Input, Modal, Drawer, Select, Switch, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import { Info } from 'lucide-react';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
@@ -236,7 +237,10 @@ export default function List() {
                       <>
                         <div className='mb-1'>{t('scenario_tips.title')}</div>
                         <ScenarioList />
-                        <div className='mt-2 text-warning'>{t('empty_guide.mount_hint')}</div>
+                        <div className='mt-3 flex items-start gap-2 rounded-md bg-fc-100 px-3 py-2 text-left text-soft'>
+                          <Info size={14} className='mt-[4px] shrink-0 text-primary' />
+                          <span>{t('empty_guide.mount_hint')}</span>
+                        </div>
                       </>
                     }
                     actions={
