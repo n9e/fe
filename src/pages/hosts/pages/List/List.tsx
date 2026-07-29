@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
-import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined, AppstoreAddOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import semver from 'semver';
 import { useAntdTable } from 'ahooks';
@@ -34,6 +34,7 @@ import { Item, OperateType } from '../../types';
 import { getList, getCategrafInstallMeta, CategrafInstallMeta } from '../../services';
 import InstallCategraf from './InstallCategraf';
 import { normalizeServerAddr } from './InstallCategraf/buildCommand';
+import CollectSetup from './CollectSetup';
 import getAuthLevelDisplayMap from '../../utils/getAuthLevelDisplayMap';
 import VersionIcon from './VersionIcon';
 import Tags from './Tags';
@@ -135,6 +136,7 @@ export default function List(props: Props) {
   // null 表示后端不支持一键安装（老版本 / 企业版），此时不展示入口，避免死按钮
   const [installMeta, setInstallMeta] = useState<CategrafInstallMeta | null>(null);
   const [installVisible, setInstallVisible] = useState(false);
+  const [collectVisible, setCollectVisible] = useState(false);
 
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
@@ -252,6 +254,11 @@ export default function List(props: Props) {
           {!aiTaskMode && installMeta && (
             <Button type='primary' ghost icon={<DownloadOutlined />} onClick={() => setInstallVisible(true)}>
               {t('install.entry')}
+            </Button>
+          )}
+          {!aiTaskMode && installMeta?.collect && (
+            <Button type='primary' ghost icon={<AppstoreAddOutlined />} onClick={() => setCollectVisible(true)}>
+              {t('collect.entry')}
             </Button>
           )}
           <Input
@@ -983,8 +990,25 @@ export default function List(props: Props) {
             // 只有确实检测到新机器才刷新，避免随手打开又关闭时无谓地重拉列表
             if (detected) setRefreshFlag(_.uniqueId('refreshFlag_'));
           }}
+          detectedExtra={
+            installMeta.collect ? (
+              <Button
+                size='small'
+                type='primary'
+                onClick={() => {
+                  // 承接安装引导：机器上报后顺手进入采集配置，安装弹窗关闭时正常走刷新逻辑
+                  setInstallVisible(false);
+                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                  setCollectVisible(true);
+                }}
+              >
+                {t('collect.next_entry')}
+              </Button>
+            ) : undefined
+          }
         />
       )}
+      {collectVisible && installMeta?.collect && <CollectSetup meta={installMeta} defaultIdents={selectedIdents} onClose={() => setCollectVisible(false)} />}
       {upgradeTargetIdent && (
         <UpgradeAgent
           selectedIdents={[upgradeTargetIdent]}

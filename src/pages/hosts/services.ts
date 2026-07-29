@@ -55,6 +55,8 @@ export interface CategrafInstallMeta {
   /** 服务端按本次请求推导出的自身地址 */
   base_url: string;
   script_url: string;
+  /** 服务端是否支持采集配置脚本（collect.sh），决定「配置采集」入口是否出现 */
+  collect: boolean;
 }
 
 // 一个 SPA 会话内只探测一次，确定性结果（含「不支持」的 null）复用到底；
@@ -96,6 +98,7 @@ export function getCategrafInstallMeta(): Promise<CategrafInstallMeta | null> {
           basic_auth: !!dat.basic_auth,
           base_url: dat.base_url || '',
           script_url: dat.script_url || '',
+          collect: !!dat.collect,
         } as CategrafInstallMeta;
       })
       .catch((err) => {

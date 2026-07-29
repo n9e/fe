@@ -1,14 +1,14 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Button, Alert, Space, Tag, Collapse, Form, Tooltip } from 'antd';
-import { CopyOutlined, LoadingOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { Modal, Input, Button, Alert, Space, Tag, Collapse, Form } from 'antd';
+import { LoadingOutlined, CheckCircleFilled } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
-import { copy2ClipBoard } from '@/utils';
 
 import { NS } from '../../../constants';
 import { CategrafInstallMeta } from '../../../services';
+import CommandBlock from '../components/CommandBlock';
 import { buildInstallCommand, buildManualCommand, isValidServerAddr, normalizeServerAddr } from './buildCommand';
 import useTargetArrival from './useTargetArrival';
 
@@ -16,22 +16,12 @@ interface Props {
   meta: CategrafInstallMeta;
   /** detected 表示期间确实有新机器上报，父级据此决定是否刷新列表 */
   onClose: (detected: boolean) => void;
-}
-
-function CommandBlock({ command }: { command: string }) {
-  const { t } = useTranslation(NS);
-  return (
-    <div className='relative bg-fc-100 fc-border rounded-lg p-3 pr-10'>
-      <pre className='m-0 whitespace-pre-wrap break-all text-[12px] leading-5'>{command}</pre>
-      <Tooltip title={t('install.copy')}>
-        <Button size='small' type='text' icon={<CopyOutlined />} className='absolute right-1 top-1' onClick={() => copy2ClipBoard(command)} />
-      </Tooltip>
-    </div>
-  );
+  /** 检测到新机器后展示的追加动作（如「下一步：配置采集」CTA） */
+  detectedExtra?: React.ReactNode;
 }
 
 export default function InstallCategraf(props: Props) {
-  const { meta, onClose } = props;
+  const { meta, onClose, detectedExtra } = props;
   const { t } = useTranslation(NS);
   const { siteInfo } = useContext(CommonStateContext);
 
@@ -116,7 +106,12 @@ export default function InstallCategraf(props: Props) {
                   ? t('install.detected_generic')
                   : t('install.detected', { count: newIdents.length, idents: _.join(_.take(newIdents, 3), ', ') })
               }
-              description={t('install.detected_next')}
+              description={
+                <>
+                  <div>{t('install.detected_next')}</div>
+                  {detectedExtra ? <div className='mt-2'>{detectedExtra}</div> : null}
+                </>
+              }
             />
           ) : status === 'timeout' ? (
             <Alert
