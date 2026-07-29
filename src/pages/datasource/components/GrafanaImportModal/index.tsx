@@ -86,7 +86,13 @@ export default function GrafanaImportModal(props: Props) {
         password: values.password,
         skip_tls_verify: !!values.skip_tls_verify,
       });
-      const list: PreviewItem[] = (res?.items || []).map((it: any, idx: number) => ({
+      // 显式判定结构而非 `|| []` 兜底：ClustersFromAPIs 模式下后端返回裸数组（无 items 字段）
+      // 表示「拒绝执行」，假值兜底会把它渲染成「没有数据源」，把用户引向排查 Token 权限。
+      if (!Array.isArray(res?.items)) {
+        message.error(t('import_grafana.fetch_failed'));
+        return;
+      }
+      const list: PreviewItem[] = res.items.map((it: any, idx: number) => ({
         key: idx,
         grafana_type: it.grafana_type,
         grafana_name: it.grafana_name,
@@ -113,14 +119,19 @@ export default function GrafanaImportModal(props: Props) {
     setImporting(true);
     try {
       const res = await importGrafanaDatasources(selected.map((it) => it.datasource));
-      const resultItems: ImportResult[] = res?.items || [];
+      // 同 handleFetch：没有 items 字段说明服务端没执行，不能当成「导入了 0 条」渲染成绿色成功。
+      if (!Array.isArray(res?.items)) {
+        message.error(t('import_grafana.import_failed'));
+        return;
+      }
+      const resultItems: ImportResult[] = res.items;
       setResults(resultItems);
       // 导入成功即刻独立触发父列表刷新，不依赖关闭瞬间捕获的状态。
       if (resultItems.some((r) => r.status === 'imported' || r.status === 'pending_auth')) {
         onImported?.();
       }
     } catch (err: any) {
-      message.error(err?.message || t('import_grafana.fetch_failed'));
+      message.error(err?.message || t('import_grafana.import_failed'));
     } finally {
       setImporting(false);
     }
@@ -211,7 +222,7 @@ export default function GrafanaImportModal(props: Props) {
         <Button key='close' disabled={loading} onClick={handleClose}>
           {t('common:btn.cancel')}
         </Button>,
-        <Button key='import' type='primary' loading={importing} disabled={selectedKeys.length === 0} onClick={handleImport}>
+        <Button key='import' type='primary' loading={importing} disabled={loading || selectedKeys.length === 0} onClick={handleImport}>
           {t('import_grafana.import_btn')}
         </Button>,
       ]}
@@ -250,7 +261,9 @@ export default function GrafanaImportModal(props: Props) {
         <Form.Item name='skip_tls_verify' valuePropName='checked'>
           <Checkbox>{t('import_grafana.skip_tls')}</Checkbox>
         </Form.Item>
-        <Button type='primary' loading={fetching} onClick={handleFetch}>
+        {/* disabled 用 loading(=fetching||importing)：导入进行中若还能点拉取，
+            旧批次的导入响应会回填到新批次的 items 上，汇总出跨批次的错误统计。 */}
+        <Button type='primary' loading={fetching} disabled={loading} onClick={handleFetch}>
           {t('import_grafana.fetch_btn')}
         </Button>
       </Form>
