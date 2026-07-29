@@ -21,8 +21,6 @@ import i18next from 'i18next';
 import { JSEncrypt } from 'js-encrypt';
 import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -265,6 +263,9 @@ interface IData {
 
 export async function downloadExcel(fileName: string = 'download.xlsx', data: IData[]) {
   try {
+    // Loaded on demand: exceljs (~940 kB min) must stay out of the initial bundle.
+    const { default: ExcelJS } = await import('exceljs');
+    const { saveAs } = await import('file-saver');
     const workbook = new ExcelJS.Workbook();
     for (let i = 0; i < data.length; i++) {
       const el = data[i];
