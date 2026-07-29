@@ -18,7 +18,7 @@ const en_US = {
     fetch_btn: 'Fetch',
     import_btn: 'Import',
     fetch_failed: 'Failed to fetch Grafana data sources',
-    empty: 'No data sources fetched',
+    empty: 'No data sources fetched (if using an API Token, check its org and datasources:read permission; an admin account sees its current org)',
     col_grafana_type: 'Grafana type',
     col_grafana_name: 'Name',
     col_type: 'Mapped type',
@@ -36,6 +36,9 @@ const en_US = {
     result_pending_auth: 'Pending credential',
     result_skipped: 'Skipped',
     result_failed: 'Failed',
+    reason_duplicate: 'Name already exists',
+    pending_auth_badge: 'Credential required',
+    pending_auth_tip: 'Imported from Grafana without secrets; fill in credentials to enable',
   },
   empty_guide: {
     title: 'No data source yet',

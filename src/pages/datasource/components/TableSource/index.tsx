@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { message, Modal, Button, Space, Switch, Tooltip } from 'antd';
+import { message, Modal, Button, Space, Switch, Tooltip, Tag } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
@@ -47,7 +47,9 @@ const TableSource = (props: IPropsType) => {
   const isPlus = useIsPlus();
   const { nameClick, pluginList, debouncedSearchValue, onAdd, onImportGrafana } = props;
   const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
-  const { reloadDatasourceList } = useContext(CommonStateContext);
+  const { reloadDatasourceList, profile } = useContext(CommonStateContext);
+  // 数据源增删改为 admin 操作(后端 rt.admin())，非 admin 隐藏行内管理控件。
+  const isAdmin = !!profile.roles?.includes('Admin');
   const [tableData, setTableData] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -111,32 +113,41 @@ const TableSource = (props: IPropsType) => {
       sorter: (a, b) => localeCompare(a.name, b.name),
       render: (text, record) => {
         return (
-          <Rename
-            values={record}
-            text={text}
-            callback={() => {
-              setRefresh((oldVal) => !oldVal);
-            }}
-          >
-            <a
-              onClick={() => {
-                nameClick(record);
+          <>
+            <Rename
+              values={record}
+              text={text}
+              callback={() => {
+                setRefresh((oldVal) => !oldVal);
               }}
             >
-              {text}
-              {record?.is_default && (
-                <Tooltip placement='top' title={t('default_msg')}>
-                  <CheckCircleFilled
-                    style={{
-                      visibility: 'visible',
-                      marginLeft: 5,
-                      marginRight: 5,
-                    }}
-                  />
-                </Tooltip>
-              )}
-            </a>
-          </Rename>
+              <a
+                onClick={() => {
+                  nameClick(record);
+                }}
+              >
+                {text}
+                {record?.is_default && (
+                  <Tooltip placement='top' title={t('default_msg')}>
+                    <CheckCircleFilled
+                      style={{
+                        visibility: 'visible',
+                        marginLeft: 5,
+                        marginRight: 5,
+                      }}
+                    />
+                  </Tooltip>
+                )}
+              </a>
+            </Rename>
+            {record?.status === 'disabled' && (
+              <Tooltip title={t('import_grafana.pending_auth_tip')}>
+                <Tag color='orange' style={{ marginLeft: 6 }}>
+                  {t('import_grafana.pending_auth_badge')}
+                </Tag>
+              </Tooltip>
+            )}
+          </>
         );
       },
     },
@@ -173,6 +184,7 @@ const TableSource = (props: IPropsType) => {
         <Switch
           checked={text === 'enabled'}
           size='small'
+          disabled={!isAdmin}
           onChange={(checked) => {
             updateDataSourceStatus({
               id: record.id,
@@ -227,25 +239,27 @@ const TableSource = (props: IPropsType) => {
         pagination={pagination}
         rowActions={(record) => ({
           inline: _.compact([
-            {
-              key: 'delete',
-              icon: 'delete',
-              text: t('common:btn.delete'),
-              danger: true,
-              disabled: record.status === 'enabled',
-              tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
-              onClick: () => {
-                Modal.confirm({
-                  title: t('common:confirm.delete'),
-                  onOk() {
-                    return deleteDataSourceById(record.id).then(() => {
-                      message.success(t('common:success.delete'));
-                      setRefresh((oldVal) => !oldVal);
+            isAdmin
+              ? {
+                  key: 'delete',
+                  icon: 'delete',
+                  text: t('common:btn.delete'),
+                  danger: true,
+                  disabled: record.status === 'enabled',
+                  tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
+                  onClick: () => {
+                    Modal.confirm({
+                      title: t('common:confirm.delete'),
+                      onOk() {
+                        return deleteDataSourceById(record.id).then(() => {
+                          message.success(t('common:success.delete'));
+                          setRefresh((oldVal) => !oldVal);
+                        });
+                      },
                     });
                   },
-                });
-              },
-            },
+                }
+              : undefined,
             record.plugin_type === 'cloudwatch' ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> } : undefined,
           ]) as any,
         })}
