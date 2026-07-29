@@ -17,7 +17,7 @@ import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, 
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
+import { updateByColumn, updateAtColumn } from '@/components/EnhancedTable/columns';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
@@ -254,7 +254,7 @@ export default function AlertRules(props: Props) {
           );
         },
       },
-      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+      updateAtColumn({ title: t('common:table.update_at') }),
       updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     ],
     readonly

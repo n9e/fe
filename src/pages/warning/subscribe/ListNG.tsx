@@ -18,7 +18,7 @@ import EmptyGuide from '@/components/EmptyGuide';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
+import { updateByColumn, updateAtColumn } from '@/components/EnhancedTable/columns';
 import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import usePagination from '@/components/usePagination';
 import { NS as notificationRulesNS, PERM as notificationRulesPerm } from '@/pages/notificationRules/constants';
@@ -234,7 +234,7 @@ const Subscribe = (props: Props) => {
           return '-';
         },
       },
-      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+      updateAtColumn({ title: t('common:table.update_at') }),
       updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     ],
     readonly
