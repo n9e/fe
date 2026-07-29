@@ -28,6 +28,7 @@ const en_US = {
   },
   processors_col: 'Processors',
   clone_suffix: '-copy',
+  unsaved_confirm: 'You have unsaved changes. Close anyway?',
   search_placeholder: 'Search name, note or processor type',
   empty_guide: {
     title: 'No workflows yet',
@@ -47,6 +48,7 @@ const en_US = {
     api: 'API Trigger',
   },
   disabled: {
+    filter_placeholder: 'Status',
     form_label: 'Enable',
     label: 'Enable',
     false: 'Enabled',
@@ -93,13 +95,13 @@ const en_US = {
     trigger_by_alert_rule: 'Alert rule #{{id}}',
     trigger_by_notify_rule: 'Notification rule #{{id}}',
     empty_guide: {
-      title: 'No executions yet',
-      desc: 'Once the workflow is triggered by an alert or notification rule, each run is recorded here.',
+      title: 'No executions in this time range',
+      desc: 'Every run is recorded here once a workflow is triggered by an alert rule or a notification rule. Try widening the time range above, or relaxing the filters.',
     },
   },
   test_modal: {
     title: {
-      settings: 'Select event',
+      settings: 'Select a test event',
       result: 'Test result',
     },
     result_success: 'Succeeded',
@@ -108,7 +110,22 @@ const en_US = {
     steps_title: 'Per-node results',
     event_preview_title: 'Processed event',
     back_btn: 'Pick another event',
+    back_btn_mock: 'Reconfigure mock event',
     fidelity_note: 'A test run uses the API-trigger path and skips some live steps (such as filter matching), so the result may not exactly match a real alert. Verify with a real event.',
+    fidelity_note_mock: 'A test run uses the API-trigger path and skips some live steps (such as filter matching). This run used a mock event rather than a real alert, so verify with a real event before going live.',
+    mode: {
+      history: 'History event',
+      mock: 'Mock event',
+    },
+    mock: {
+      desc: 'The mock event is synthesized by the server and never persisted, so you can validate processors even with no alert history. Severity and recovery state are adjustable to exercise processors that branch on them.',
+      preview_title: 'Mock event',
+      severity: 'Severity',
+      is_recovered: 'Recovered',
+      tags: 'Tags',
+      empty_alert: 'No alert events in this time range',
+      switch_btn: 'Use a mock event instead',
+    },
   },
   batch: {
     not_select: 'Please select workflows to operate',
@@ -116,10 +133,30 @@ const en_US = {
       title: 'Batch Export',
     },
     delete: 'Batch Delete',
+    enable: 'Batch enable',
+    disable: 'Batch disable',
+    already_enabled: 'All selected workflows are already enabled',
+    already_disabled: 'All selected workflows are already disabled',
+    enable_confirm: 'Enable the {{count}} selected workflows?',
+    disable_confirm: 'Disable the {{count}} selected workflows?',
+    delete_enabled_confirm: '{{count}} of them are still enabled and will be disabled before deletion. Continue?',
     delete_confirm: 'Delete the {{count}} selected workflow(s)? Alert / notification rules referencing them will stop working.',
-    delete_enabled_tip: 'The following workflows are still enabled. Disable them before deleting: {{names}}',
   },
 
+  relabel_fields: {
+    action: 'Action',
+    target_label: 'Target label',
+    replacement: 'Value',
+    source_labels: 'Source labels',
+    separator: 'Separator',
+    regex: 'Regex',
+    replace_hint: 'replace: takes the value of the source labels, extracts it with the regex, and writes it into the target label. Filling only target label and value tags the event with a fixed label. Leaving the target label empty makes this processor do nothing.',
+  },
+  processor_message: {
+    drop_hit: 'Condition matched — the event was dropped',
+    drop_miss: 'Condition not matched — the event continues downstream',
+    no_change: 'no change',
+  },
   processor: {
     title: 'Processor',
     add_btn: 'Add processor',
@@ -235,6 +272,15 @@ const en_US = {
     basic_auth_pass_placeholder: 'Please enter the authorization password',
   },
   event_drop: {
+    hint: 'The event is dropped when the template outputs true; any other output lets it through. Available variables: $event.Severity (1/2/3), $event.IsRecovered, $event.RuleName, $event.TagsMap.<label>',
+    snippets_label: 'Insert example',
+    snippets: {
+      severity: 'Drop S3 (Info) alerts',
+      recovered: 'Drop recovery notifications',
+      tag: 'Drop by label',
+      rule_name: 'Drop by rule name',
+    },
+    replace_confirm: 'This will replace the current condition. Continue?',
     content: 'Judgment logic',
     content_placeholder: 'Use go template syntax. If the final result is true, the event will be dropped at this stage.',
   },

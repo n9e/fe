@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Export } from '@/components/ExportImport';
 
 import { NS } from '../../constants';
-import { Item, deleteItems } from '../../services';
+import { Item, deleteItems, putItemsDisabled } from '../../services';
 
 interface MoreOperationsProps {
   selectedRows: Item[];
@@ -34,35 +34,68 @@ export default function MoreOperations(props: MoreOperationsProps) {
     });
   };
 
+  // 批量启停走只写 disabled 的窄接口，不回传整条记录，因此不会覆盖别人并发改过的配置
+  const handleToggleDisabled = (disabled: boolean) => {
+    if (!hasSelected) {
+      message.warning(t('batch.not_select'));
+      return;
+    }
+    // 只对状态确实要变的那些下手，避免把已经是目标状态的工作流也刷一遍 update_at
+    const targets = _.filter(selectedRows, (item) => item.disabled !== disabled);
+    if (_.isEmpty(targets)) {
+      message.info(t(disabled ? 'batch.already_disabled' : 'batch.already_enabled'));
+      return;
+    }
+    Modal.confirm({
+      title: t(disabled ? 'batch.disable_confirm' : 'batch.enable_confirm', { count: targets.length }),
+      onOk: () =>
+        putItemsDisabled(_.map(targets, 'id'), disabled)
+          .then(() => {
+            message.success(t('common:success.modify'));
+            onFinished?.();
+          })
+          .catch((err) => {
+            console.error(err);
+          }),
+    });
+  };
+
   const handleDelete = () => {
     if (!hasSelected) {
       message.warning(t('batch.not_select'));
       return;
     }
-    // 与单行删除的「先停用再删除」保持一致：启用中的工作流可能仍被告警 / 通知规则引用
+    const ids = _.map(selectedRows, 'id');
+    // 与单行删除一致：启用中的工作流可能仍被告警 / 通知规则引用，必须先停用。
+    // 以前这里直接 message.warning 拒绝，用户还得回去一个个关开关；
+    // 有了批量接口就能在同一个确认里「先停用再删除」，一次点完。
     const enabled = _.filter(selectedRows, (item) => item.disabled === false);
-    if (enabled.length) {
-      message.warning(t('batch.delete_enabled_tip', { names: _.map(enabled, 'name').join(', ') }));
-      return;
-    }
+    const doDelete = () =>
+      deleteItems(ids)
+        .then(() => {
+          message.success(t('common:success.delete'));
+          onFinished?.();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+
     Modal.confirm({
-      title: t('batch.delete_confirm', { count: selectedRows.length }),
+      title: enabled.length ? t('batch.delete_enabled_confirm', { count: enabled.length }) : t('batch.delete_confirm', { count: selectedRows.length }),
       okButtonProps: { danger: true },
-      onOk: () => {
-        return deleteItems(_.map(selectedRows, 'id'))
-          .then(() => {
-            message.success(t('common:success.delete'));
-            onFinished?.();
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      },
+      onOk: () => (enabled.length ? putItemsDisabled(_.map(enabled, 'id'), true).then(doDelete) : doDelete()),
     });
   };
 
   const overlay = (
     <Menu>
+      <Menu.Item key='enable' onClick={() => handleToggleDisabled(false)}>
+        {t('batch.enable')}
+      </Menu.Item>
+      <Menu.Item key='disable' onClick={() => handleToggleDisabled(true)}>
+        {t('batch.disable')}
+      </Menu.Item>
+      <Menu.Divider />
       <Menu.Item key='export' onClick={handleExport}>
         {t('batch.export.title')}
       </Menu.Item>

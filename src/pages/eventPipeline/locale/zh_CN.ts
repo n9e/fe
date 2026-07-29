@@ -27,6 +27,7 @@ const zh_CN = {
   },
   processors_col: '处理器',
   clone_suffix: '-副本',
+  unsaved_confirm: '有未保存的修改，确认关闭？',
   search_placeholder: '搜索名称、备注、处理器类型',
   empty_guide: {
     title: '还没有工作流',
@@ -46,6 +47,7 @@ const zh_CN = {
     api: 'API 触发',
   },
   disabled: {
+    filter_placeholder: '启用状态',
     form_label: '启用',
     label: '启用',
     false: '启用',
@@ -92,13 +94,13 @@ const zh_CN = {
     trigger_by_alert_rule: '告警规则 #{{id}}',
     trigger_by_notify_rule: '通知规则 #{{id}}',
     empty_guide: {
-      title: '还没有执行记录',
-      desc: '工作流被告警规则或通知规则触发后，这里会记录每一次执行',
+      title: '这段时间没有执行记录',
+      desc: '工作流被告警规则或通知规则触发后，这里会记录每一次执行。可以扩大上方的时间范围，或放宽筛选条件再看看。',
     },
   },
   test_modal: {
     title: {
-      settings: '选择告警事件',
+      settings: '选择测试事件',
       result: '试跑结果',
     },
     result_success: '执行成功',
@@ -107,7 +109,22 @@ const zh_CN = {
     steps_title: '逐节点执行结果',
     event_preview_title: '处理后的事件',
     back_btn: '重新选择事件',
+    back_btn_mock: '重新配置样例事件',
     fidelity_note: '试跑走的是 API 触发路径，会跳过线上的部分流程（如过滤条件判定），结果可能与真实告警不完全一致，请以真实事件为准。',
+    fidelity_note_mock: '试跑走的是 API 触发路径，会跳过线上的部分流程（如过滤条件判定）；本次用的是样例事件而非真实告警，上线前请再用真实事件验证一次。',
+    mode: {
+      history: '历史事件',
+      mock: '样例事件',
+    },
+    mock: {
+      desc: '样例事件由系统合成、不会入库，新环境没有历史告警时也能验证处理器配置。级别与恢复态可调，用来覆盖按级别 / 恢复态分支的处理器。',
+      preview_title: '样例事件',
+      severity: '告警级别',
+      is_recovered: '恢复事件',
+      tags: '事件标签',
+      empty_alert: '这段时间没有历史告警事件',
+      switch_btn: '改用样例事件试跑',
+    },
   },
   batch: {
     not_select: '请先选择要操作的工作流',
@@ -115,10 +132,30 @@ const zh_CN = {
       title: '批量导出',
     },
     delete: '批量删除',
+    enable: '批量启用',
+    disable: '批量停用',
+    already_enabled: '选中的工作流都已启用',
+    already_disabled: '选中的工作流都已停用',
+    enable_confirm: '确认启用选中的 {{count}} 条工作流？',
+    disable_confirm: '确认停用选中的 {{count}} 条工作流？',
+    delete_enabled_confirm: '其中 {{count}} 条仍处于启用状态，将先停用再删除，确认继续？',
     delete_confirm: '确认删除选中的 {{count}} 条工作流？引用它们的告警 / 通知规则将失效。',
-    delete_enabled_tip: '以下工作流仍处于启用状态，请先停用再删除：{{names}}',
   },
 
+  relabel_fields: {
+    action: '动作',
+    target_label: '目标标签',
+    replacement: '标签值',
+    source_labels: '源标签',
+    separator: '连接符',
+    regex: '正则',
+    replace_hint: 'replace：把「源标签」的值按「正则」提取后写入「目标标签」；只填目标标签和标签值，就是给事件打一个固定标签。目标标签留空时这个处理器不会产生任何效果。',
+  },
+  processor_message: {
+    drop_hit: '命中丢弃条件，事件已被丢弃',
+    drop_miss: '未命中丢弃条件，事件继续往下走',
+    no_change: '无变更',
+  },
   processor: {
     title: '处理器',
     add_btn: '添加处理器',
@@ -234,6 +271,15 @@ const zh_CN = {
     basic_auth_pass_placeholder: '请输入授权密码',
   },
   event_drop: {
+    hint: '模板最终输出 true 时丢弃该事件；输出其它任何内容都会放行。可用变量：$event.Severity（1/2/3）、$event.IsRecovered、$event.RuleName、$event.TagsMap.标签名',
+    snippets_label: '插入示例',
+    snippets: {
+      severity: '丢弃 S3 提示级告警',
+      recovered: '丢弃恢复通知',
+      tag: '按标签丢弃',
+      rule_name: '按规则名丢弃',
+    },
+    replace_confirm: '当前判断逻辑会被示例替换，确认继续？',
     content: '判断逻辑',
     content_placeholder: '使用 go template 语法，如果最后显示为 true，将会将 event 在此环节丢弃',
   },

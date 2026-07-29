@@ -290,7 +290,6 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
                   config={{
                     processors,
                   }}
-                  namePath={[...prefixNamePath, ...namePath, 'processors']}
                 />
               </Col>
               <Col flex='auto'>

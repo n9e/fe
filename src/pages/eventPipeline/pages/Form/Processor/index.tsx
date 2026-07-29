@@ -12,7 +12,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 // @ts-ignore
 import PlusProcessor, { options as PlusOptions } from 'plus:/parcels/eventPipeline';
 
-import { NS, DEFAULT_PROCESSOR_CONFIG_MAP, documentPathMap } from '../../../constants';
+import { NS, getDefaultProcessorConfig, documentPathMap } from '../../../constants';
 import { getProcessorSummary } from '../../../components/getProcessorSummary';
 import TestModal from '../TestModal';
 import Relabel from './Relabel';
@@ -31,10 +31,14 @@ interface Props {
   dragHandle?: React.ReactNode;
   /** 父级校验失败后要求展开的处理器下标；tick 变化即为一次新的展开请求 */
   expandSignal?: { indexes: number[]; tick: number };
+  /** 由父级注入的带作用域校验，本卡片只对自己子树里的错误负责 */
+  validateForTest?: (prefix?: (string | number)[]) => Promise<unknown>;
 }
 
-// 处理器分类，用于类型选择器分组
-const CATEGORY_ORDER = ['rewrite', 'denoise', 'enrich', 'dispatch', 'other'] as const;
+// 处理器分类，用于类型选择器分组。
+// 顺序刻意与新建页顶部场景卡的 SCENARIO_KEYS（降噪 / 富化 / 外呼）对齐——用户刚读完那三条，
+// 打开下拉就该看到同样的顺序。「改写事件」排最后：relabel 是门槛最高的一类，不该占首位。
+const CATEGORY_ORDER = ['denoise', 'enrich', 'dispatch', 'rewrite', 'other'] as const;
 const TYPE_CATEGORY: Record<string, string> = {
   relabel: 'rewrite',
   event_update: 'rewrite',
@@ -53,7 +57,7 @@ const TYPE_CATEGORY: Record<string, string> = {
 export default function NotifyConfig(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { darkMode } = useContext(CommonStateContext);
-  const { disabled, fields, field, add, remove, move, dragHandle, expandSignal } = props;
+  const { disabled, fields, field, add, remove, move, dragHandle, expandSignal, validateForTest } = props;
   const [collapsed, setCollapsed] = useState(false);
 
   // 折叠时卡片内容是 display:none，里面的必填错误既看不见也无法被 scrollToFirstError 定位，
@@ -85,8 +89,10 @@ export default function NotifyConfig(props: Props) {
     // Form.Item 先把新 typ 写进表单才调用这里，Form.useWatch 的值仍是切换前的那次渲染结果，正好当快照
     const snapshot = _.cloneDeep(processorConfig);
     const currentConfig = snapshot?.config;
-    const touched = !_.isEmpty(currentConfig) && !_.isEqual(currentConfig, DEFAULT_PROCESSOR_CONFIG_MAP[snapshot?.typ]);
-    const applyType = () => replaceProcessor({ ...snapshot, typ: newTyp, config: _.cloneDeep(DEFAULT_PROCESSOR_CONFIG_MAP[newTyp]) });
+    // 与「该类型的默认配置」比对来判断用户改没改过。默认值只能取自 getDefaultProcessorConfig，
+    // 编辑器里的 initialValue 也引用同一份常量，否则这里会恒为 touched、每次切换都弹确认
+    const touched = !_.isEmpty(currentConfig) && !_.isEqual(currentConfig, getDefaultProcessorConfig(snapshot?.typ, t));
+    const applyType = () => replaceProcessor({ ...snapshot, typ: newTyp, config: getDefaultProcessorConfig(newTyp, t) });
 
     if (!touched) {
       applyType();
@@ -126,6 +132,8 @@ export default function NotifyConfig(props: Props) {
     <Card
       key={field.key}
       size='small'
+      // 供 scrollToFirstError 按作用域定位到「这张卡片内的」第一个错误项
+      data-processor-index={field.name}
       title={title}
       extra={
         !disabled && (
@@ -203,7 +211,7 @@ export default function NotifyConfig(props: Props) {
         {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
         <PlusProcessor processorType={processorType} field={field} />
 
-        <TestModal type='processor' config={processorConfig} />
+        <TestModal type='processor' config={processorConfig} onBeforeOpen={validateForTest ? () => validateForTest(['processors', field.name]) : undefined} />
       </div>
     </Card>
   );

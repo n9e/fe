@@ -14,9 +14,10 @@ interface Props {
   onSaved?: () => void;
   onOk: () => void;
   onCancel: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
-export default function Add({ initialValues, onSaved, onOk, onCancel }: Props) {
+export default function Add({ initialValues, onSaved, onOk, onCancel, onDirtyChange }: Props) {
   const { t } = useTranslation(NS);
   const [saved, setSaved] = useState(false);
 
@@ -29,9 +30,12 @@ export default function Add({ initialValues, onSaved, onOk, onCancel }: Props) {
     <Form
       initialValues={initialValues}
       showScenarioTips={!initialValues}
+      onDirtyChange={onDirtyChange}
       onOk={(values) => {
         postItem(normalizeFormValues(values)).then(() => {
           message.success(t('common:success.add'));
+          // 保存成功后表单不再算「有未保存的修改」，否则接力面板上点关闭还会被拦一次
+          onDirtyChange?.(false);
           // 列表刷新不能只挂在接力面板的「完成」上：用户可能直接关掉抽屉，那样列表会看不到刚建的工作流
           onSaved?.();
           setSaved(true);

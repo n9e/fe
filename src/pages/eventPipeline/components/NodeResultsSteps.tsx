@@ -7,6 +7,7 @@ import moment from 'moment';
 
 import { NS } from '../constants';
 import formatMsToHuman from '../utils/formatMsToHuman';
+import humanizeProcessorMessage from '../utils/humanizeProcessorMessage';
 
 export interface NodeResult {
   node_id: string;
@@ -70,7 +71,8 @@ export default function NodeResultsSteps({ data }: Props) {
                   <Tag>{node.node_type}</Tag>
                 </div>
                 {node.status ? statusMap[node.status] : '-'}
-                {node.duration_ms ? <span>{formatMsToHuman(node.duration_ms)}</span> : null}
+                {/* 0ms 的节点同样要显示耗时，否则一排步骤里只有它没有时间，看起来像没跑 */}
+                {node.duration_ms == null ? null : <span>{formatMsToHuman(node.duration_ms)}</span>}
               </Space>
             }
             description={
@@ -83,7 +85,9 @@ export default function NodeResultsSteps({ data }: Props) {
                   )}
                   {node.message && (
                     <div className='mb-2 text-main'>
-                      <pre className='whitespace-pre-wrap'>{node.message}</pre>
+                      {/* 后端的 "drop event failed | no-change" 之类原文要先翻成人话，
+                          否则「条件没命中」这个最常见的正常结果会被读成「出错了」 */}
+                      <pre className='whitespace-pre-wrap'>{humanizeProcessorMessage(node.message, t)}</pre>
                     </div>
                   )}
                 </div>

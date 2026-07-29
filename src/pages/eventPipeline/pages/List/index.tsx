@@ -15,8 +15,7 @@ import EmptyGuide from '@/components/EmptyGuide';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY, MAX_NAME_LENGTH } from '../../constants';
-import { Item, getList, getItem, putItem, deleteItems } from '../../services';
-import { omitDerivedFields } from '../../utils/normalizeValues';
+import { Item, getList, putItemsDisabled, deleteItems } from '../../services';
 import { truncateName } from '../../components/buildWorkflowName';
 import ScenarioList from '../../components/ScenarioList';
 import Add from '../Add';
@@ -59,7 +58,7 @@ export default function List() {
   // 存 record 引用的话，行内启停或列表刷新后拿到的仍是勾选那一刻的旧对象，
   // 批量删除的「启用中不可删」校验会读到过期的 disabled 值而被绕过。
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  // 切换中的行：一次切换要先 GET 再 PUT，期间必须挡住重复点击，否则两次请求的落库顺序不保证
+  // 切换中的行：请求返回前必须挡住重复点击，否则两次请求的落库顺序不保证
   const [togglingIds, setTogglingIds] = useState<number[]>([]);
 
   const pagination = usePagination({ PAGESIZE_KEY: 'event-pipelines-pagesize' });
@@ -95,11 +94,29 @@ export default function List() {
     action: 'add',
   });
 
+  // 抽屉里的表单是否有未保存的改动。用 ref 而不是 state：它只在关闭那一刻被读一次，
+  // 放进 state 会让每次输入都重渲染整个列表页
+  const formDirtyRef = React.useRef(false);
+
   const resetEventPipelineDrawerState = () => {
+    formDirtyRef.current = false;
     setEventPipelineDrawerState({
       visible: false,
       action: 'add',
       id: undefined,
+    });
+  };
+
+  // 关闭抽屉：配置表单填一屏要好几分钟，误关的代价很大，所以改动过就先问一句
+  const closeEventPipelineDrawer = () => {
+    if (!formDirtyRef.current) {
+      resetEventPipelineDrawerState();
+      return;
+    }
+    Modal.confirm({
+      title: t('unsaved_confirm'),
+      okButtonProps: { danger: true },
+      onOk: resetEventPipelineDrawerState,
     });
   };
 
@@ -128,18 +145,16 @@ export default function List() {
   // 若从未筛选的 data.list 派生，批量删除会删掉页面上一个勾选都看不到的行。
   const selectedRows = useMemo(() => _.filter(filteredData, (item) => _.includes(selectedRowKeys, item.id)), [filteredData, selectedRowKeys]);
 
-  // 行内切换启用/停用。后端 PUT 是全字段覆盖，而列表里的 record 是页面加载时的快照，
-  // 期间别人可能已经改过这条工作流的 processors / 过滤条件——直接回传旧快照会静默回退对方的改动。
-  // 所以先取一次最新详情，只在它之上改 disabled；再剔除后端派生的 nodes / connections。
+  // 行内切换启用/停用：走只写 disabled 的窄接口，不再「先 GET 详情再整条 PUT 回去」。
+  // 整条回写会用页面加载时的旧快照覆盖别人并发改过的 processors / 过滤条件；
+  // 先 GET 只是把窗口缩小，并没有根治，窄接口才是。
   const toggleDisabled = (record: Item, checked: boolean) => {
     if (_.includes(togglingIds, record.id)) return;
     setTogglingIds((prev) => [...prev, record.id]);
-    getItem(record.id)
-      .then((latest) => putItem({ ...omitDerivedFields(latest), disabled: !checked }))
+    putItemsDisabled([record.id], !checked)
       .then(() => {
         message.success(t('common:success.modify'));
-        // 重新拉列表而不是本地打补丁：详情接口不返回 update_by_nickname，
-        // 拿它的返回值回填会把「更新人」列刷成空
+        // 重新拉列表而不是本地打补丁：还要刷新「更新时间 / 更新人」两列
         featchData();
       })
       .catch((err) => {
@@ -174,7 +189,9 @@ export default function List() {
           />
           <Select
             allowClear
-            placeholder={t('disabled.label')}
+            // 不能用 disabled.label：它就是「启用」，和下面的选项同字，空筛选看起来像已经筛成了启用
+            placeholder={t('disabled.filter_placeholder')}
+            style={{ width: 120 }}
             options={[
               { label: t('disabled.false'), value: false },
               { label: t('disabled.true'), value: true },
@@ -366,45 +383,44 @@ export default function List() {
       <Drawer
         title={t(`${NS}:title_${eventPipelineDrawerState.action}`)}
         visible={eventPipelineDrawerState.visible}
-        onClose={resetEventPipelineDrawerState}
+        onClose={closeEventPipelineDrawer}
         width='80%'
+        // 点一下遮罩就丢掉整张表单的代价太大，只保留 × 与「取消」两个明确入口
+        maskClosable={false}
         destroyOnClose
       >
         {eventPipelineDrawerState.action === 'add' && (
           <Add
             onSaved={featchData}
+            onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
             onOk={() => {
               resetEventPipelineDrawerState();
               featchData();
             }}
-            onCancel={() => {
-              resetEventPipelineDrawerState();
-            }}
+            onCancel={closeEventPipelineDrawer}
           />
         )}
         {eventPipelineDrawerState.action === 'edit' && eventPipelineDrawerState?.id && (
           <Edit
             id={eventPipelineDrawerState.id}
+            onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
             onOk={() => {
               resetEventPipelineDrawerState();
               featchData();
             }}
-            onCancel={() => {
-              resetEventPipelineDrawerState();
-            }}
+            onCancel={closeEventPipelineDrawer}
           />
         )}
         {eventPipelineDrawerState.action === 'clone' && eventPipelineDrawerState?.data && (
           <Add
             initialValues={eventPipelineDrawerState.data}
             onSaved={featchData}
+            onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
             onOk={() => {
               resetEventPipelineDrawerState();
               featchData();
             }}
-            onCancel={() => {
-              resetEventPipelineDrawerState();
-            }}
+            onCancel={closeEventPipelineDrawer}
           />
         )}
       </Drawer>

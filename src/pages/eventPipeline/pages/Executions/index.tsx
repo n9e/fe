@@ -9,6 +9,7 @@ import queryString from 'query-string';
 
 import PageLayout from '@/components/pageLayout';
 import AutoRefresh from '@/components/TimeRangePicker/AutoRefresh';
+import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import EnhancedTable from '@/components/EnhancedTable';
 import EmptyGuide from '@/components/EmptyGuide';
 
@@ -19,7 +20,9 @@ import formatMsToHuman from '../../utils/formatMsToHuman';
 import ItemDetailDrawer from './ItemDetailDrawer';
 
 const format = 'YYYY-MM-DD HH:mm:ss';
-const defaultPageSize = 10;
+// 执行记录量很大（一条工作流每分钟就可能产生一条），10 条一页翻起来太碎
+const defaultPageSize = 30;
+const DEFAULT_RANGE: IRawTimeRange = { start: 'now-6h', end: 'now' };
 
 const TRIGGER_BY_RE = /^(alert_rule|notify_rule)_(\d+)$/;
 
@@ -34,10 +37,15 @@ export default function index() {
     mode?: string;
     status?: string;
   }>({});
+  const [range, setRange] = useState<IRawTimeRange>(DEFAULT_RANGE);
 
   const service = ({ current, pageSize }) => {
+    const parsed = parseRange(range);
     return getExecutions({
       ...filters,
+      // 后端按 created_at 过滤，秒级时间戳
+      stime: moment(parsed.start).unix(),
+      etime: moment(parsed.end).unix(),
       p: current,
       limit: pageSize,
       pipeline_id: pipelineId !== undefined && !_.isNaN(pipelineId) ? pipelineId : undefined,
@@ -45,7 +53,9 @@ export default function index() {
   };
 
   const { tableProps, run, params, error } = useAntdTable(service, {
-    refreshDeps: [JSON.stringify(filters), pipelineId],
+    // range 是相对时间（now-6h），每次重算都会得到新时间戳，
+    // 所以只能把用户选的原始值放进依赖，否则会无限刷新
+    refreshDeps: [JSON.stringify(filters), JSON.stringify(range), pipelineId],
     defaultPageSize,
   });
 
@@ -64,7 +74,6 @@ export default function index() {
   });
 
   const dataSource = (tableProps.dataSource ?? []) as ExecutionItem[];
-  const hasFilters = !!(filters.pipeline_name || filters.mode || filters.status);
   // 从列表数据里取当前 pipeline 的名字，用于顶部筛选 chip
   const pipelineName = pipelineId !== undefined ? _.get(dataSource, [0, 'pipeline_name']) || pipelineId : undefined;
 
@@ -92,6 +101,7 @@ export default function index() {
                   });
                 }}
               />
+              <TimeRangePicker value={range} onChange={setRange} dateFormat={format} />
               <Input.Search placeholder={t('executions.search_placeholder')} onSearch={(val) => setFilters((prev) => ({ ...prev, pipeline_name: val }))} allowClear />
               <Select
                 allowClear
@@ -130,8 +140,10 @@ export default function index() {
             rowKey='id'
             scroll={{ x: 'max-content' }}
             locale={
-              // 请求失败时 dataSource 同样为空，不能把接口故障说成「还没有执行记录」
-              !hasFilters && pipelineId === undefined && !tableProps.loading && !error && dataSource.length === 0
+              // 请求失败时 dataSource 同样为空，不能把接口故障说成「没有执行记录」。
+              // 现在始终带时间范围查询，空结果只能证明「这段时间没有」，证明不了「从来没有」，
+              // 所以文案按时间窗口来写，筛选到 0 条时也用同一套引导（提示扩大范围 / 放宽筛选）
+              !tableProps.loading && !error && dataSource.length === 0
                 ? { emptyText: <EmptyGuide title={t('executions.empty_guide.title')} description={t('executions.empty_guide.desc')} /> }
                 : undefined
             }
@@ -177,7 +189,9 @@ export default function index() {
                 title: t('executions.duration_ms'),
                 dataIndex: 'duration_ms',
                 width: 100,
-                render: (value) => (value ? formatMsToHuman(value) : '-'),
+                // 亚毫秒的执行会返回 duration_ms=0，用真值判断会把它显示成「-」，
+                // 和「没这个字段」长得一样；0 是有效耗时，要照常渲染
+                render: (value) => (value == null ? '-' : formatMsToHuman(value)),
               },
               {
                 // 后端把执行结果 message 也写进 error_message（engine.go saveExecutionRecord：ErrorMessage: result.Message），

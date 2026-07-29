@@ -62,7 +62,8 @@ export default function ItemDetaildrawer(props: Props) {
         <Descriptions.Item label={t('executions.status.label')}>{data?.status ? statusMap[data?.status] : '-'}</Descriptions.Item>
         <Descriptions.Item label={t('executions.created_at')}>{data?.created_at ? moment.unix(data?.created_at).format(format) : '-'}</Descriptions.Item>
         <Descriptions.Item label={t('executions.finished_at')}>{data?.finished_at ? moment.unix(data?.finished_at).format(format) : '-'}</Descriptions.Item>
-        <Descriptions.Item label={t('executions.duration_ms')}>{data?.duration_ms ? formatMsToHuman(data?.duration_ms) : '-'}</Descriptions.Item>
+        {/* duration_ms=0 是有效耗时（亚毫秒），不能被真值判断吃成「-」 */}
+        <Descriptions.Item label={t('executions.duration_ms')}>{data?.duration_ms == null ? '-' : formatMsToHuman(data.duration_ms)}</Descriptions.Item>
         <Descriptions.Item label={t('executions.trigger_by')}>{data?.trigger_by}</Descriptions.Item>
         {data?.error_node && <Descriptions.Item label={t('executions.error_node')}>{data?.error_node}</Descriptions.Item>}
         {data?.error_message && (

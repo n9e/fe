@@ -28,6 +28,8 @@ interface Props {
   showScenarioTips?: boolean;
   onOk?: (values: Item) => void;
   onCancel?: () => void;
+  /** 表单相对初始值是否有改动，供抽屉在关闭前提示「有未保存的修改」 */
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 // 校验失败时把出错字段映射到所在分区，展开后错误项才可见、才能被滚动定位
@@ -50,7 +52,7 @@ const hasKey = (items?: { key?: string }[]) => _.filter(items, (i) => !!i?.key).
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NS);
-  const { disabled, initialValues, showScenarioTips, onOk, onCancel } = props;
+  const { disabled, initialValues, showScenarioTips, onOk, onCancel, onDirtyChange } = props;
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const formValues = Form.useWatch([], form);
@@ -68,9 +70,22 @@ export default function index(props: Props) {
   // tick 用于让同一批下标能重复触发（连续两次点保存都错在同一张卡片）。
   const [expandProcessorSignal, setExpandProcessorSignal] = useState<{ indexes: number[]; tick: number }>();
 
+  // 初始值快照，用来判断「用户改过没有」。
+  // 不能用 form.isFieldsTouched()：自动命名会在用户没输入的情况下写 name，
+  // 那会被算成「碰过」，于是永远返回 true，未保存提示就成了每次关闭都弹。
+  const initialSnapshotRef = useRef<Record<string, any>>();
+
   useEffect(() => {
     form.setFieldsValue(initialValues ?? DEFAULT_VALUES);
+    // 子组件的 Form.Item initialValue 在它们挂载时就已写入，父级 effect 晚于子级执行，
+    // 所以这里取到的是「刚打开时表单的完整样子」
+    initialSnapshotRef.current = _.cloneDeep(form.getFieldsValue());
   }, []);
+
+  useEffect(() => {
+    if (!onDirtyChange || !initialSnapshotRef.current) return;
+    onDirtyChange(!_.isEqual(form.getFieldsValue(), initialSnapshotRef.current));
+  }, [formValues]);
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
@@ -153,6 +168,28 @@ export default function index(props: Props) {
     }
   };
 
+  /**
+   * 「测试」用的校验：与「保存」同一套反馈（展开出错分区 + 滚动定位），差别只在作用域。
+   * prefix 为空 = 对整表负责；传 ['processors', idx] = 只对这张处理器卡片内的错误负责——
+   * 用户正在调某个处理器时，不该被另一个分区的必填拦住。
+   * antd 4.21 的 validateFields(nameList) 不能按前缀递归，所以仍然整表校验、
+   * 只是按作用域决定拦不拦；校验不过时 reject，调用方据此决定开不开弹窗。
+   */
+  const validateForTest = (prefix?: (string | number)[]) =>
+    form.validateFields().catch((err) => {
+      // 校验失败的 err 带 errorFields；其它同步异常没有，不能跟着一起静默掉
+      if (!err?.errorFields) {
+        console.error(err);
+        throw err;
+      }
+      const inScope = prefix ? _.filter(err.errorFields, ({ name }) => _.isEqual(_.take(name, prefix.length), prefix)) : err.errorFields;
+      // 作用域外的错误只按常规标红，不阻断本次测试
+      if (_.isEmpty(inScope)) return;
+      expandErrorSections(inScope);
+      scrollToFirstError(prefix ? `[data-processor-index="${prefix[1]}"]` : undefined);
+      throw err;
+    });
+
   return (
     <Form form={form} layout='vertical' disabled={disabled}>
       <Form.Item name='id' hidden>
@@ -215,6 +252,7 @@ export default function index(props: Props) {
                         move={move}
                         dragHandle={disabled ? undefined : <DragHandle />}
                         expandSignal={expandProcessorSignal}
+                        validateForTest={validateForTest}
                       />
                     </SortableItem>
                   ))}
@@ -294,7 +332,7 @@ export default function index(props: Props) {
               >
                 {t('common:btn.save')}
               </Button>
-              <TestModal type='pipeline' config={formValues} />
+              <TestModal type='pipeline' config={formValues} onBeforeOpen={() => validateForTest()} />
               {onCancel ? (
                 <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
               ) : (

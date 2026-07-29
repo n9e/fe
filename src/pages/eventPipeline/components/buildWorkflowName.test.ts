@@ -30,6 +30,17 @@ describe('buildWorkflowName', () => {
     expect(buildWorkflowName({ processorLabels: ['事件丢弃'] }, texts)).toBe('全部告警-事件丢弃');
   });
 
+  // 新建页默认给一张未选类型的空处理器卡（DEFAULT_VALUES.processors=[{}]），
+  // 此时不能凭空造出名字，要让名称留空、由必填校验提示用户
+  it('处理器还没选类型时不生成名称', () => {
+    expect(buildWorkflowName({ processorLabels: [] }, texts)).toBe('');
+    expect(buildWorkflowName({ processorLabels: [undefined as unknown as string] }, texts)).toBe('');
+  });
+
+  it('只配了过滤条件、处理器未选类型时只用过滤条件命名', () => {
+    expect(buildWorkflowName({ labelFilters: [{ key: 'service', value: 'mon' }], processorLabels: [] }, texts)).toBe('service=mon');
+  });
+
   it('数组值取第一个，多个处理器用箭头连接且最多取 3 个', () => {
     expect(
       buildWorkflowName(

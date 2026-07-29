@@ -28,6 +28,7 @@ const ja_JP = {
   },
   processors_col: 'プロセッサ',
   clone_suffix: '-コピー',
+  unsaved_confirm: '保存されていない変更があります。閉じますか？',
   search_placeholder: '名前・備考・プロセッサ種別で検索',
   empty_guide: {
     title: 'ワークフローがまだありません',
@@ -47,6 +48,7 @@ const ja_JP = {
     api: 'APIトリガー',
   },
   disabled: {
+    filter_placeholder: '有効状態',
     form_label: '有効化',
     label: '有効',
     false: '有効',
@@ -93,13 +95,13 @@ const ja_JP = {
     trigger_by_alert_rule: 'アラートルール #{{id}}',
     trigger_by_notify_rule: '通知ルール #{{id}}',
     empty_guide: {
-      title: '実行記録がまだありません',
-      desc: 'ワークフローがアラート／通知ルールにトリガーされると、各実行がここに記録されます。',
+      title: 'この期間の実行記録はありません',
+      desc: 'ワークフローがアラートルールまたは通知ルールによって起動されると、ここに毎回の実行が記録されます。上の時間範囲を広げるか、絞り込み条件を緩めてみてください。',
     },
   },
   test_modal: {
     title: {
-      settings: 'アラームイベントを選択',
+      settings: 'テストイベントを選択',
       result: 'テスト結果',
     },
     result_success: '成功',
@@ -108,7 +110,22 @@ const ja_JP = {
     steps_title: 'ノードごとの実行結果',
     event_preview_title: '処理後のイベント',
     back_btn: '別のイベントを選ぶ',
+    back_btn_mock: 'モックイベントを再設定',
     fidelity_note: 'テスト実行はAPIトリガー経路を使い、フィルタ判定など一部のライブ処理をスキップします。結果は実際のアラートと完全には一致しない場合があります。実イベントで確認してください。',
+    fidelity_note_mock: 'テスト実行はAPIトリガー経路を使い、フィルタ判定など一部のライブ処理をスキップします。今回はモックイベントを使用しているため、本番投入前に実イベントで再度確認してください。',
+    mode: {
+      history: '履歴イベント',
+      mock: 'モックイベント',
+    },
+    mock: {
+      desc: 'モックイベントはサーバーが生成し保存されません。アラート履歴がない環境でもプロセッサ設定を検証できます。深刻度と復旧状態は変更でき、それらで分岐するプロセッサも確認できます。',
+      preview_title: 'モックイベント',
+      severity: '深刻度',
+      is_recovered: '復旧イベント',
+      tags: 'タグ',
+      empty_alert: 'この期間にアラートイベントはありません',
+      switch_btn: 'モックイベントに切り替える',
+    },
   },
   batch: {
     not_select: '操作するワークフローを選択してください',
@@ -116,10 +133,30 @@ const ja_JP = {
       title: '一括エクスポート',
     },
     delete: '一括削除',
+    enable: '一括有効化',
+    disable: '一括無効化',
+    already_enabled: '選択したワークフローはすべて有効です',
+    already_disabled: '選択したワークフローはすべて無効です',
+    enable_confirm: '選択した {{count}} 件のワークフローを有効にしますか？',
+    disable_confirm: '選択した {{count}} 件のワークフローを無効にしますか？',
+    delete_enabled_confirm: 'うち {{count}} 件はまだ有効です。無効化してから削除します。続行しますか？',
     delete_confirm: '選択した {{count}} 件のワークフローを削除しますか？参照しているアラート/通知ルールが動作しなくなります。',
-    delete_enabled_tip: '次のワークフローは有効なままです。削除する前に無効化してください：{{names}}',
   },
 
+  relabel_fields: {
+    action: 'アクション',
+    target_label: '対象ラベル',
+    replacement: 'ラベル値',
+    source_labels: '元ラベル',
+    separator: '区切り文字',
+    regex: '正規表現',
+    replace_hint: 'replace：「元ラベル」の値を「正規表現」で抽出し「対象ラベル」に書き込みます。対象ラベルと値だけを入力すれば、イベントに固定ラベルを付与できます。対象ラベルが空の場合、このプロセッサは何も行いません。',
+  },
+  processor_message: {
+    drop_hit: '条件に一致し、イベントは破棄されました',
+    drop_miss: '条件に一致せず、イベントはそのまま次へ進みます',
+    no_change: '変更なし',
+  },
   processor: {
     title: 'プロセッサー',
     add_btn: 'プロセッサーを追加',
@@ -235,6 +272,15 @@ const ja_JP = {
     basic_auth_pass_placeholder: 'パスワードを入力してください',
   },
   event_drop: {
+    hint: 'テンプレートの出力が true のときイベントを破棄します。それ以外の出力では通過します。利用可能な変数：$event.Severity（1/2/3）、$event.IsRecovered、$event.RuleName、$event.TagsMap.ラベル名',
+    snippets_label: 'サンプルを挿入',
+    snippets: {
+      severity: 'S3（Info）アラートを破棄',
+      recovered: '復旧通知を破棄',
+      tag: 'ラベルで破棄',
+      rule_name: 'ルール名で破棄',
+    },
+    replace_confirm: '現在の判定ロジックがサンプルで置き換えられます。続行しますか？',
     content: '判定ロジック',
     content_placeholder: '使用 go template 構文，如果最後表示為 true，將會將 event 在此環節丟棄',
   },
