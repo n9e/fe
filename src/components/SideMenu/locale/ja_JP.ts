@@ -36,7 +36,7 @@ const ja_JP = {
     alert_subscribes: 'サブスクリプションルール',
     job: 'アラート自動修復',
     job_tpls: '自動修復スクリプト',
-    job_tasks: '履歴タスク',
+    job_tasks: '実行履歴',
     events: 'アラートイベント',
     cur_events: 'アクティブアラート',
     his_events: '履歴アラート',

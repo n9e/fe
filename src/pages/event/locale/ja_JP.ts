@@ -92,7 +92,7 @@ const ja_JP = {
       alert_aggr_events_link: '集約イベント',
     },
     task_tpls: {
-      label: '自動回復テンプレート',
+      label: '自己治癒スクリプト',
     },
     step_tip: 'グラフの時間間隔、単位は秒',
     query_label: 'クエリ条件',

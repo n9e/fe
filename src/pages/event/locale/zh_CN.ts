@@ -94,7 +94,7 @@ const zh_CN = {
       alert_aggr_events_link: '聚合事件',
     },
     task_tpls: {
-      label: '自愈模板',
+      label: '自愈脚本',
     },
     step_tip: '曲线时间间隔，单位秒',
     query_label: '查询条件',

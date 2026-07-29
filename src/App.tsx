@@ -48,8 +48,6 @@ import './global.variable.less';
 
 // 顶层路由组件懒加载：SharedDetail 会连带引入事件详情 + 全部数据源插件注册表（近千个模块），
 // 只在 /share/alert-his-events 路由用到，改为懒加载后登录页等页面不再 eager 拉起这些依赖。
-const TaskOutput = React.lazy(() => import('@/pages/taskOutput'));
-const TaskHostOutput = React.lazy(() => import('@/pages/taskOutput/host'));
 const SharedDetail = React.lazy(() => import('@/pages/event/DetailNG/SharedDetail'));
 
 interface IProfile {
@@ -350,8 +348,6 @@ function App() {
             >
               <React.Suspense fallback={<Spin spinning style={{ width: '100%', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }} />}>
                 <Switch>
-                  <Route exact path='/job-task/:busiId/output/:taskId/:outputType' component={TaskOutput} />
-                  <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
                   <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
                   <>
                     {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}

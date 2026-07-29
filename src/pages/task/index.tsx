@@ -30,6 +30,7 @@ import api from '@/utils/api';
 import { RequestMethod } from '@/store/common';
 import PageLayout from '@/components/pageLayout';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
+import EmptyGuide from '@/components/EmptyGuide';
 import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -79,6 +80,7 @@ function getTableData(options: any, gids: string | undefined, query: string, min
 const index = (_props: any) => {
   const history = useHistory();
   const { t } = useTranslation('common');
+  const { t: tsh } = useTranslation('alertSelfHealing');
   const defaultFilter = getDefaultFilter();
   const [query, setQuery] = useState(defaultFilter.query || '');
   const [mine, setMine] = useState(defaultFilter.mine !== undefined ? defaultFilter.mine : true);
@@ -91,6 +93,7 @@ const index = (_props: any) => {
   const [metaDrawerData, setMetaDrawerData] = useState<any>({});
   const [metaDrawerHosts, setMetaDrawerHosts] = useState<any[]>([]);
   const [metaDrawerTaskId, setMetaDrawerTaskId] = useState<string>('');
+  const [metaDrawerBusiId, setMetaDrawerBusiId] = useState<number>();
   const pagination = usePagination({ PAGESIZE_KEY: 'job-tasks-pagesize' });
 
   useEffect(() => {
@@ -106,11 +109,13 @@ const index = (_props: any) => {
 
   const handleOpenMetaDrawer = (record: any) => {
     setMetaDrawerTaskId(String(record.id));
+    setMetaDrawerBusiId(record.group_id);
     setMetaDrawerData({});
     setMetaDrawerHosts([]);
     setMetaDrawerLoading(true);
     setMetaDrawerVisible(true);
-    request(`${api.task(businessGroup.id!)}/${record.id}`)
+    // 用行自身的 group_id，避免「全部任务」(-2) 视图下 busiId 取到当前选中组而定位错误
+    request(`${api.task(record.group_id)}/${record.id}`)
       .then((data) => {
         setMetaDrawerData({
           ...data.dat.meta,
@@ -134,7 +139,7 @@ const index = (_props: any) => {
           const groupName = _.find(busiGroups, { id: record.group_id })?.name;
           return (
             <div className='flex flex-col gap-0.5'>
-              <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>
+              <Link to={{ pathname: `/job-tasks/${record.id}/result`, search: `gid=${record.group_id}` }}>{text}</Link>
               <span className='text-soft text-xs inline-flex items-center gap-2'>
                 <span>ID: {record.id}</span>
                 {showBusinessGroup && groupName && <span>{groupName}</span>}
@@ -145,7 +150,19 @@ const index = (_props: any) => {
       },
     ] as any,
     [
-      dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true, sortable: true }),
+      {
+        // 触发来源：event_id 非 0 即由告警自动触发，可跳到对应事件
+        title: tsh('source.title'),
+        dataIndex: 'event_id',
+        width: 110,
+        render: (eventId: number) =>
+          eventId ? (
+            <Link to={{ pathname: `/alert-his-events/${eventId}` }}>{tsh('source.alert')}</Link>
+          ) : (
+            <span className='text-soft'>{tsh('source.manual')}</span>
+          ),
+      },
+      dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true }),
       updateByColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
     ] as any,
   );
@@ -222,13 +239,35 @@ const index = (_props: any) => {
                     key: 'clone',
                     icon: 'copy',
                     text: t('task.clone'),
-                    onClick: () => history.push({ pathname: '/job-tasks/add', search: `task=${record.id}` }),
+                    onClick: () => history.push({ pathname: '/job-tasks/add', search: `task=${record.id}&gid=${record.group_id}` }),
                   },
                   { key: 'meta', icon: 'view', text: t('task.meta'), onClick: () => handleOpenMetaDrawer(record) },
                 ],
               })}
               actionColumn={{ title: t('table.operations'), width: 64 }}
               {...(tableProps as any)}
+              locale={{
+                // 区分「筛选没命中」与「真的没有」：默认只看自己 / 近 7 天常导致新用户看到空列表
+                emptyText: _.isEmpty(tableProps.dataSource) ? (
+                  <EmptyGuide
+                    title={mine || query || days < 90 ? tsh('task_empty.filtered_title') : tsh('task_empty.title')}
+                    description={mine || query || days < 90 ? tsh('task_empty.filtered_desc') : undefined}
+                    actions={
+                      mine || query || days < 90 ? (
+                        <Button
+                          onClick={() => {
+                            setMine(false);
+                            setQuery('');
+                            setDays(90);
+                          }}
+                        >
+                          {tsh('task_empty.reset_btn')}
+                        </Button>
+                      ) : undefined
+                    }
+                  />
+                ) : undefined,
+              }}
               pagination={{
                 ...pagination,
                 ...tableProps.pagination,
@@ -246,6 +285,7 @@ const index = (_props: any) => {
         data={metaDrawerData}
         hosts={metaDrawerHosts}
         taskId={metaDrawerTaskId}
+        busiId={metaDrawerBusiId}
       />
     </PageLayout>
   );

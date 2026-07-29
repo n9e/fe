@@ -300,12 +300,12 @@ const zh_HK = {
     },
   },
   task_tpls: {
-    title: '自愈模板',
-    add_btn: '創建自愈模板',
-    tpl_id: '自愈模板',
-    tpl_id_msg: '自愈模板不能為空',
+    title: '告警自愈',
+    add_btn: '創建自愈腳本',
+    tpl_id: '自愈腳本',
+    tpl_id_msg: '自愈腳本不能為空',
     host: '機器',
-    host_placeholder: '預設可留空，會從事件中的 ident 標籤取得要執行的機器',
+    host_placeholder: '預設可留空，會從事件的 ident 標籤取得要執行的機器；若事件沒有 ident（如部分查詢類告警），將靜默不執行',
   },
   trigger: {
     title: '閾值判斷',

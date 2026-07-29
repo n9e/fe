@@ -31,7 +31,7 @@ const UnBindTags = (props) => {
   const handleOk = () => {
     const { selectedIds } = props;
     form.validateFields().then((values: any) => {
-      request(`${api.tasktpl(props.busiId)}s/tags`, {
+      request(`${api.tasktpls(props.busiId)}/tags`, {
         method: 'DELETE',
         body: JSON.stringify({
           tags: values.tags,

@@ -301,11 +301,11 @@ const zh_CN = {
   },
   task_tpls: {
     title: '告警自愈',
-    add_btn: '创建自愈模板',
-    tpl_id: '自愈模板',
-    tpl_id_msg: '自愈模板不能为空',
+    add_btn: '创建自愈脚本',
+    tpl_id: '自愈脚本',
+    tpl_id_msg: '自愈脚本不能为空',
     host: '执行机器',
-    host_placeholder: '默认可留空，会从事件中的 ident 标签获取要执行的机器',
+    host_placeholder: '默认可留空，会从事件的 ident 标签获取要执行的机器；若事件没有 ident（如部分查询类告警），将静默不执行',
   },
   trigger: {
     title: '阈值判断',

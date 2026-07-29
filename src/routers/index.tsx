@@ -69,7 +69,6 @@ const TaskTplClone = React.lazy(() => import('@/pages/taskTpl/clone'));
 const Task = React.lazy(() => import('@/pages/task'));
 const TaskAdd = React.lazy(() => import('@/pages/task/add'));
 const TaskResult = React.lazy(() => import('@/pages/task/result'));
-const TaskDetail = React.lazy(() => import('@/pages/task/detail'));
 const Version = React.lazy(() => import('@/pages/help/version'));
 const Servers = React.lazy(() => import('@/pages/help/servers'));
 const Datasource = React.lazy(() => import('@/pages/datasource'));
@@ -230,7 +229,6 @@ export default function Content() {
           <Route exact path='/job-tasks' component={Task} />
           <Route exact path='/job-tasks/add' component={TaskAdd} />
           <Route exact path='/job-tasks/:id/result' component={TaskResult} />
-          <Route exact path='/job-tasks/:id/detail' component={TaskDetail} />
 
           <Route exact path='/system/version' component={Version} />
           <Route exact path='/system/alerting-engines' component={Servers} />

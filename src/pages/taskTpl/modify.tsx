@@ -39,7 +39,6 @@ const Modify = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>({});
   const handleSubmit = (values: any) => {
-    values.pause = _.join(values.pause, ',');
     request(`${api.tasktpl(curBusiId)}/${id}`, {
       method: 'PUT',
       body: JSON.stringify(values),

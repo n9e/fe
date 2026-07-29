@@ -94,7 +94,7 @@ const en_US = {
       alert_aggr_events_link: 'Aggregated events',
     },
     task_tpls: {
-      label: 'Self-healing template',
+      label: 'Self-healing script',
     },
     step_tip: 'Time interval of the curve, in seconds',
     query_label: 'Query',

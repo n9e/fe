@@ -302,12 +302,12 @@ const en_US = {
     },
   },
   task_tpls: {
-    title: 'Self-healing template',
+    title: 'Self-healing',
     add_btn: 'Create',
-    tpl_id: 'Template',
-    tpl_id_msg: 'Template is required',
+    tpl_id: 'Self-healing script',
+    tpl_id_msg: 'Self-healing script is required',
     host: 'Host',
-    host_placeholder: 'Optional, the host to be executed will be obtained from the ident tag in the event',
+    host_placeholder: 'Optional; the host is taken from the event\'s ident tag. If the event has no ident (e.g. some query-type alerts), it will silently not run',
   },
   trigger: {
     title: 'Threshold Judgment',
