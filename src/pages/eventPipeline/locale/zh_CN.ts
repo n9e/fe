@@ -160,6 +160,7 @@ const zh_CN = {
     title: '处理器',
     add_btn: '添加处理器',
     typ: '类型',
+    typ_required: '请选择处理器类型，没选类型的处理器对每个事件都会执行失败',
     help_btn: '使用说明',
     options: {
       relabel: '事件标签重写',
@@ -235,8 +236,7 @@ const zh_CN = {
   },
   saved_guide: {
     title: '工作流已保存',
-    hint: '它还不会生效——需要在告警规则或通知规则里引用这条工作流，事件才会流经它。',
-    to_alert_rule: '去告警规则挂载',
+    hint: '它还不会生效——需要在通知规则里引用这条工作流，事件才会流经它。',
     to_notify_rule: '去通知规则挂载',
     done: '完成',
   },

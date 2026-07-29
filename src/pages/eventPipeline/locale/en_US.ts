@@ -161,6 +161,7 @@ const en_US = {
     title: 'Processor',
     add_btn: 'Add processor',
     typ: 'Type',
+    typ_required: 'Pick a processor type — a processor without one fails on every event',
     help_btn: 'Help',
     options: {
       relabel: 'Event label',
@@ -236,8 +237,7 @@ const en_US = {
   },
   saved_guide: {
     title: 'Workflow saved',
-    hint: 'It is not active yet — reference this workflow from an alert rule or a notification rule so events flow through it.',
-    to_alert_rule: 'Go to alert rules',
+    hint: 'It is not active yet — reference this workflow from a notification rule so events flow through it.',
     to_notify_rule: 'Go to notification rules',
     done: 'Done',
   },

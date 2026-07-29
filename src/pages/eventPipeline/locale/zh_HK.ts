@@ -160,6 +160,7 @@ const zh_HK = {
     title: '處理器',
     add_btn: '添加處理器',
     typ: '類型',
+    typ_required: '請選擇處理器類型，沒選類型的處理器對每個事件都會執行失敗',
     help_btn: '使用說明',
     options: {
       relabel: '事件標籤重寫',
@@ -235,8 +236,7 @@ const zh_HK = {
   },
   saved_guide: {
     title: '工作流已保存',
-    hint: '它還不會生效——需要在告警規則或通知規則裡引用這條工作流，事件才會流經它。',
-    to_alert_rule: '去告警規則掛載',
+    hint: '它還不會生效——需要在通知規則裡引用這條工作流，事件才會流經它。',
     to_notify_rule: '去通知規則掛載',
     done: '完成',
   },

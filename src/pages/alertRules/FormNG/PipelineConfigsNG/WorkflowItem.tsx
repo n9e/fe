@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { SIZE } from '@/utils/constant';
 import { postItem as postWorkflow, putItem as putWorkflow } from '@/pages/eventPipeline/services';
 import { DEFAULT_VALUES, NS as EVENTPIPELINE_NS } from '@/pages/eventPipeline/constants';
+import { hasRunnableProcessors } from '@/pages/eventPipeline/utils/processors';
 import TestModal from '@/pages/eventPipeline/pages/Form/TestModal';
 
 import { useFormNGData } from '../context';
@@ -130,6 +131,12 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
     const name = saveWorkflowName.trim();
     if (!name) {
       message.error(t('pipeline_configuration_ng.workflow_name_required'));
+      return;
+    }
+    // 这里不走告警规则表单的 validateFields，typ 的必填校验拦不到，必须自己挡一次：
+    // 类型为空或一个处理器都没有时落库，工作流执行时必然失败
+    if (!hasRunnableProcessors(processors)) {
+      message.error(t(`${EVENTPIPELINE_NS}:processor.typ_required`));
       return;
     }
 

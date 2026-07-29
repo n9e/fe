@@ -152,9 +152,13 @@ export default function NotifyConfig(props: Props) {
                 <DownCircleOutlined onClick={() => move(field.name, field.name + 1)} />
               </Tooltip>
             )}
-            <Tooltip title={t('common:btn.delete')}>
-              <MinusCircleOutlined onClick={handleDelete} />
-            </Tooltip>
+            {/* 最后一张卡不给删：删光后 processors 为 []，后端 Verify() 允许空数组，
+                保存出来是一条什么都不做的工作流。要换处理器直接改上面的类型即可。 */}
+            {fields.length > 1 && (
+              <Tooltip title={t('common:btn.delete')}>
+                <MinusCircleOutlined onClick={handleDelete} />
+              </Tooltip>
+            )}
           </Space>
         )
       }
@@ -163,6 +167,9 @@ export default function NotifyConfig(props: Props) {
         <Form.Item
           {...resetField}
           name={[field.name, 'typ']}
+          // 必填：新建页的初始卡片不预选类型，没有这条校验就能保存出一条
+          // 执行时 GetProcessorByType("") 必然失败的工作流
+          rules={[{ required: true, message: t('processor.typ_required') }]}
           label={
             <Space>
               {t('processor.typ')}
