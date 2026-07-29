@@ -149,13 +149,27 @@ export default function GrafanaImportModal(props: Props) {
     },
   ];
 
+  // 把后端返回的英文 reason 归一成可读文案，未知的原样展示。
+  const reasonText = (reason?: string) => {
+    if (!reason) return '';
+    if (reason === 'unsupported type') return t('import_grafana.reason_unsupported');
+    if (reason === 'name already exists') return t('import_grafana.reason_duplicate');
+    if (reason === 'credential required') return t('import_grafana.reason_credential');
+    return reason;
+  };
+
   const renderResult = () => {
     if (!results) return null;
-    const count = (s: ImportResult['status']) => results.filter((r) => r.status === s).length;
+    // 预览中「不支持」的项前端不会提交(勾选框禁用)，这里按跳过计入并给出原因，保证汇总口径完整。
+    const unsupported = items
+      .filter((it) => !it.supported)
+      .map((it): ImportResult => ({ name: it.grafana_name, status: 'skipped', reason: it.reason || 'unsupported type' }));
+    const all = [...results, ...unsupported];
+    const count = (s: ImportResult['status']) => all.filter((r) => r.status === s).length;
     const summary = `${t('import_grafana.result_imported')} ${count('imported')} / ${t('import_grafana.result_pending_auth')} ${count(
       'pending_auth',
     )} / ${t('import_grafana.result_skipped')} ${count('skipped')} / ${t('import_grafana.result_failed')} ${count('failed')}`;
-    const failed = results.filter((r) => r.status === 'failed');
+    const detailed = all.filter((r) => r.status === 'skipped' || r.status === 'failed');
     return (
       <Alert
         style={{ marginTop: 12 }}
@@ -163,11 +177,11 @@ export default function GrafanaImportModal(props: Props) {
         type={count('failed') > 0 ? 'warning' : 'success'}
         message={`${t('import_grafana.import_done')}: ${summary}`}
         description={
-          failed.length > 0 ? (
+          detailed.length > 0 ? (
             <div>
-              {failed.map((r) => (
+              {detailed.map((r) => (
                 <div key={r.name}>
-                  {r.name}: {r.reason}
+                  {r.name}: {t(`import_grafana.result_${r.status}`)} — {reasonText(r.reason)}
                 </div>
               ))}
             </div>

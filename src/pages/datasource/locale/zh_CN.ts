@@ -18,7 +18,7 @@ const zh_CN = {
     fetch_btn: '拉取',
     import_btn: '导入',
     fetch_failed: '拉取 Grafana 数据源失败',
-    empty: '未拉取到数据源',
+    empty: '未拉取到数据源(若用 API Token，请确认其所属 org 及数据源读取权限；管理员账号看到的是当前 org)',
     col_grafana_type: 'Grafana 类型',
     col_grafana_name: '名称',
     col_type: '映射类型',
@@ -36,6 +36,9 @@ const zh_CN = {
     result_pending_auth: '待补充鉴权',
     result_skipped: '跳过',
     result_failed: '失败',
+    reason_duplicate: '与已有数据源重名',
+    pending_auth_badge: '待补充鉴权',
+    pending_auth_tip: '该数据源从 Grafana 导入但缺少密钥，补填鉴权信息后可启用',
   },
   empty_guide: {
     title: '还没有数据源',

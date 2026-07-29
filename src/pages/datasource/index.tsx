@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Input, Button, Modal, Space } from 'antd';
 import { useDebounce } from 'ahooks';
 import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import { getCateByValue } from '@/components/AdvancedWrap/utils';
 import { getDataSourcePluginList } from './services';
@@ -18,6 +19,9 @@ export { Form };
 
 export default function index() {
   const { t } = useTranslation('datasourceManage');
+  const { profile } = useContext(CommonStateContext);
+  // 数据源的新增/导入/管理均为 admin 操作(后端 upsert/import 走 rt.admin())，非 admin 隐藏入口。
+  const isAdmin = !!profile.roles?.includes('Admin');
   const [pluginList, setPluginList] = useState<any[]>();
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailData, setDetailData] = useState();
@@ -70,15 +74,17 @@ export default function index() {
               }}
             />
             <Space>
-              <Button
-                type='primary'
-                onClick={() => {
-                  setChooseDataSourceTypeModalVisible(true);
-                }}
-              >
-                {t('common:btn.add')}
-              </Button>
-              <Button onClick={() => setGrafanaImportVisible(true)}>{t('import_grafana.entry')}</Button>
+              {isAdmin && (
+                <Button
+                  type='primary'
+                  onClick={() => {
+                    setChooseDataSourceTypeModalVisible(true);
+                  }}
+                >
+                  {t('common:btn.add')}
+                </Button>
+              )}
+              {isAdmin && <Button onClick={() => setGrafanaImportVisible(true)}>{t('import_grafana.entry')}</Button>}
             </Space>
           </div>
           {pluginList && (
@@ -90,10 +96,8 @@ export default function index() {
                 setDetailVisible(true);
                 setDetailData(record);
               }}
-              onAdd={() => {
-                setChooseDataSourceTypeModalVisible(true);
-              }}
-              onImportGrafana={() => setGrafanaImportVisible(true)}
+              onAdd={isAdmin ? () => setChooseDataSourceTypeModalVisible(true) : undefined}
+              onImportGrafana={isAdmin ? () => setGrafanaImportVisible(true) : undefined}
             />
           )}
           {detailVisible && (
