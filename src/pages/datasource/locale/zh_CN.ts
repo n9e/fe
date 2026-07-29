@@ -3,7 +3,7 @@ const zh_CN = {
   search_placeholder: '请输入搜索关键字',
   chooseDataSourceType: '选择数据源类型',
   import_grafana: {
-    entry: '导入 Grafana',
+    entry: '从 Grafana 导入',
     modal_title: '从 Grafana 导入数据源',
     url: 'Grafana 地址',
     url_placeholder: 'http://localhost:3000',
