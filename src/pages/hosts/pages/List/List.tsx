@@ -43,6 +43,16 @@ import AuthLevelDropdown from './AuthLevelDropdown';
 
 const downtimeOptions = [1, 2, 3, 5, 10, 30];
 /** 老后端拿不到 installMeta 时文档里手动安装的兜底版本，随 categraf release 更新（2026-07 时为最新版） */
+/**
+ * 工具栏单行放不下时，先把右侧动作按钮的文案收起来只留图标（Tooltip 兜住语义），
+ * 这比整组换行更省空间也更稳。阈值按视口宽度算，没算可折叠的业务组侧栏，
+ * 实际观感偏早或偏晚就调这一处断点。
+ *
+ * 用 inline-block 而非 inline 复原，是为了跟 antd 的 `.ant-btn > span` 保持一致
+ * （那条规则特异性 (0,1,1) 高于 `.hidden`，靠仓库全局 important: true 才压得住）。
+ */
+const ACTION_LABEL_CLASS = 'hidden 2xl:inline-block';
+
 const FALLBACK_CATEGRAF_VERSION = 'v0.5.15';
 const AI_TASK_AGENT_MIN_VERSION = '0.5.27';
 const AI_TASK_WINDOWS_AGENT_MIN_VERSION = '0.5.30';
@@ -238,12 +248,13 @@ export default function List(props: Props) {
 
   return (
     <>
+      {/* flex-wrap + Space wrap：窄屏时右侧动作组整体换行，而不是被挤出可视区裁掉 */}
       <div
-        className={classNames('flex-shrink-0 flex justify-between', {
+        className={classNames('flex-shrink-0 flex flex-wrap justify-between gap-y-2', {
           'bg-fc-100 fc-border rounded-lg p-4': !aiTaskMode,
         })}
       >
-        <Space>
+        <Space wrap>
           {allCollapseNode}
           <Button
             icon={<ReloadOutlined />}
@@ -251,18 +262,9 @@ export default function List(props: Props) {
               setRefreshFlag(_.uniqueId('refreshFlag_'));
             }}
           />
-          {!aiTaskMode && installMeta && (
-            <Button type='primary' ghost icon={<DownloadOutlined />} onClick={() => setInstallVisible(true)}>
-              {t('install.entry')}
-            </Button>
-          )}
-          {!aiTaskMode && installMeta?.collect && (
-            <Button type='primary' ghost icon={<AppstoreAddOutlined />} onClick={() => setCollectVisible(true)}>
-              {t('collect.entry')}
-            </Button>
-          )}
           <Input
-            style={{ width: 300 }}
+            // 窄屏收窄，把宽度让给右侧动作区，推迟整行换行的临界点
+            className='w-[180px] xl:w-[300px]'
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             allowClear
@@ -339,7 +341,22 @@ export default function List(props: Props) {
             />
           )}
         </Space>
-        <Space>
+        <Space wrap>
+          {/* 接入类动作与「批量操作」同属操作区，放右侧，左侧留给筛选控件 */}
+          {!aiTaskMode && installMeta && (
+            <Tooltip title={t('install.entry')}>
+              <Button type='primary' ghost icon={<DownloadOutlined />} onClick={() => setInstallVisible(true)}>
+                <span className={ACTION_LABEL_CLASS}>{t('install.entry')}</span>
+              </Button>
+            </Tooltip>
+          )}
+          {!aiTaskMode && installMeta?.collect && (
+            <Tooltip title={t('collect.entry')}>
+              <Button type='primary' ghost icon={<AppstoreAddOutlined />} onClick={() => setCollectVisible(true)}>
+                <span className={ACTION_LABEL_CLASS}>{t('collect.entry')}</span>
+              </Button>
+            </Tooltip>
+          )}
           {editable && aiTaskMode === false && (
             <Dropdown
               trigger={['click']}
