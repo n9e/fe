@@ -88,10 +88,12 @@ const zh_CN = {
   override_global_webhook: '覆盖全局回调',
   enrich_queries: {
     title: '附加查询',
-    tip: '告警触发时会执行附加查询，将查询结果写入事件的 extra_info（格式化字符串）和 extra_info_map（原始键值对）字段，可在通知模板中通过 {{ .ExtraInfo }} 或 {{ .ExtraInfoMap }}',
+    tip: '告警触发时，实时执行这里配置的查询，把查到的现场数据（如命中的原始日志样本）附加到告警事件里，让接收人在通知中直接看到上下文。查询条件支持引用事件变量（如 {{$labels.ident}}）；结果写入事件的 extra_info（格式化文本）和 extra_info_map（原始键值对）字段，可在通知模板中通过 {{$event.ExtraInfo}} 或 {{$event.ExtraInfoMap}} 引用。与上方「附加信息」的区别：附加信息是预先写好的静态说明，附加查询是告警时刻对数据源的实时查询',
   },
   override_global_webhook_tip: '此开关开启之后，告警事件只会发给本规则的回调地址，不会再发给全局的回调地址',
   annotations: '附加信息',
+  annotations_tip:
+    '以 Key:Value 形式给本规则产生的告警事件附加补充说明，如预案链接（runbook_url）、仪表盘链接（dashboard_url）、摘要（summary）等。Value 支持模板变量（如 {{$labels.ident}}、{{$value}}），事件生成时渲染，展示在事件详情页，也可在通知模板中通过 {{$event.AnnotationsJSON.xxx}} 引用。与下方「附加查询」的区别：附加信息是预先写好的静态说明，不会查询数据源',
   annotationsOptions: {
     plan_link: '预案链接',
     dashboard_link: '仪表盘链接',

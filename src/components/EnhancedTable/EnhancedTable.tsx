@@ -8,10 +8,13 @@ import { RowActionCell, splitRowActions } from './RowActionCell';
 import type { EnhancedTableProps } from './types';
 import './style.less';
 import { defaultComparator } from './sorter';
+import { isServerPaginated, withUpdateTimeDefaultSort } from './defaultSort';
 
 /**
  * Thin pass-through wrapper over antd Table.
  * Forwards all TableProps; pass `rowActions` to auto-render the action column.
+ * Tables with a locally sortable update-time column open sorted newest first; declare
+ * `defaultSortOrder` / `sortOrder` on any column to keep a different order.
  * Visual baseline (sort/filter icons, fixed-column bg, …) lives in global theme/table.less.
  *
  * NOTE: keep this file exporting ONLY the component, otherwise React Fast Refresh
@@ -27,6 +30,8 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
   const rowActionsRef = useRef(rowActions);
   rowActionsRef.current = rowActions;
   const hasRowActions = !!rowActions;
+  // primitive, so an inline `pagination` object does not churn the columns memo
+  const serverPaginated = isServerPaginated(pagination);
 
   const enhancedColumns: ColumnsType<RecordType> = useMemo(() => {
     let finalColumns: ColumnsType<RecordType> | undefined = injectColumnFilters(columns, Array.isArray(dataSource) ? dataSource : undefined);
@@ -47,6 +52,8 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
       }
       return next;
     });
+
+    const sortedColumns = withUpdateTimeDefaultSort(allColumns, serverPaginated);
 
     if (hasRowActions) {
       // Auto-widen the action column so expanded icon rows never overflow legacy
@@ -80,11 +87,11 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
       if (typeof opColumn.width === 'number' && contentWidth > opColumn.width) {
         opColumn.width = contentWidth;
       }
-      allColumns.push(opColumn);
+      sortedColumns.push(opColumn);
     }
 
-    return allColumns;
-  }, [columns, actionColumn, hasRowActions, autoSortColumns, actionMaxIcons, dataSource]);
+    return sortedColumns;
+  }, [columns, actionColumn, hasRowActions, autoSortColumns, actionMaxIcons, dataSource, serverPaginated]);
 
   return (
     <Table<RecordType>

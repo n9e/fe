@@ -1,9 +1,9 @@
 import React from 'react';
 import { Form } from 'antd';
-import _ from 'lodash';
 
 import ESEnrichQueries from '@/plugins/elasticsearch/AlertRule/EnrichQueries';
 import DorisEnrichQueries from '@/plugins/doris/AlertRule/EnrichQueries';
+import { IS_PLUS } from '@/utils/constant';
 
 // @ts-ignore
 import SLSEnrichQueries from 'plus:/datasource/aliyunSLS/AlertRule/EnrichQueries';
@@ -15,7 +15,7 @@ const ENABLED_DATASOURCE_CATES = ['elasticsearch', 'aliyun-sls', 'tencent-cls', 
 export default function EnrichQueries() {
   const datasourceCate = Form.useWatch(['cate']);
 
-  if (!_.includes(ENABLED_DATASOURCE_CATES, datasourceCate)) return null;
+  if (!IS_PLUS || !ENABLED_DATASOURCE_CATES.includes(datasourceCate)) return null;
 
   return (
     <>
