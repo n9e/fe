@@ -8,13 +8,10 @@ import { RowActionCell } from './RowActionCell';
 import type { EnhancedTableProps } from './types';
 import './style.less';
 import { defaultComparator } from './sorter';
-import { withUpdateTimeDefaultSort } from './defaultSort';
 
 /**
  * Thin pass-through wrapper over antd Table.
  * Forwards all TableProps; pass `rowActions` to auto-render the action column.
- * Columns built with `updateAtColumn` make the table open sorted newest first; declare
- * `defaultSortOrder` / `sortOrder` on any column to keep a different order.
  * Visual baseline (sort/filter icons, fixed-column bg, …) lives in global theme/table.less.
  *
  * NOTE: keep this file exporting ONLY the component, otherwise React Fast Refresh
@@ -51,8 +48,6 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
       return next;
     });
 
-    const sortedColumns = withUpdateTimeDefaultSort(allColumns);
-
     if (hasRowActions) {
       const opColumn: ColumnType<RecordType> = {
         title: '操作',
@@ -65,10 +60,10 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
           return cfg ? <RowActionCell actions={cfg} /> : null;
         },
       };
-      sortedColumns.push(opColumn);
+      allColumns.push(opColumn);
     }
 
-    return sortedColumns;
+    return allColumns;
   }, [columns, actionColumn, hasRowActions, autoSortColumns, dataSource]);
 
   return (
