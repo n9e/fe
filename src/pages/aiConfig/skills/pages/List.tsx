@@ -168,7 +168,10 @@ export default function List() {
     await run();
   }
 
-  async function handleImport(file: File, auth: SkillAuthValues) {
+  async function handleImport(file: File | undefined, auth: SkillAuthValues) {
+    if (!file) {
+      return;
+    }
     try {
       await importItem(file, auth);
       await run();
@@ -179,13 +182,23 @@ export default function List() {
     }
   }
 
-  async function handleUpdateImport(skillId: number, file: File, auth: SkillAuthValues) {
+  async function handleUpdateImport(skillId: number, file: File | undefined, auth: SkillAuthValues) {
     try {
-      await importItemToUpdate(skillId, file, auth);
+      if (file) {
+        await importItemToUpdate(skillId, file, auth);
+      } else {
+        const currentSkill = await getItem(skillId);
+        await putItem(skillId, {
+          ..._.pick(currentSkill, ['name', 'description', 'instructions', 'license', 'compatibility', 'allowed_tools', 'metadata']),
+          enabled: currentSkill.enabled,
+          user_group_ids: auth.user_group_ids ?? currentSkill.user_group_ids,
+          private: auth.private ?? currentSkill.private ?? 1,
+        });
+      }
       await refreshSkill(skillId);
-      message.success(t('upload_file_success'));
+      message.success(file ? t('upload_file_success') : t('common:success.modify'));
     } catch (_error) {
-      message.error(t('upload_file_error'));
+      message.error(file ? t('upload_file_error') : t('modify_error'));
       throw _error;
     }
   }
