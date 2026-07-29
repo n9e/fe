@@ -169,7 +169,9 @@ export default function GrafanaImportModal(props: Props) {
     const summary = `${t('import_grafana.result_imported')} ${count('imported')} / ${t('import_grafana.result_pending_auth')} ${count(
       'pending_auth',
     )} / ${t('import_grafana.result_skipped')} ${count('skipped')} / ${t('import_grafana.result_failed')} ${count('failed')}`;
-    const detailed = all.filter((r) => r.status === 'skipped' || r.status === 'failed');
+    // pending_auth 也逐条列名：这些源已入库但停用，用户必须知道是哪几个才能去补密钥。
+    // 关掉弹窗后列表页不再区分「导入待补密钥」与「手动停用」，所以结果区必须自足。
+    const detailed = all.filter((r) => r.status === 'pending_auth' || r.status === 'skipped' || r.status === 'failed');
     return (
       <Alert
         style={{ marginTop: 12 }}
@@ -179,11 +181,15 @@ export default function GrafanaImportModal(props: Props) {
         description={
           detailed.length > 0 ? (
             <div>
-              {detailed.map((r) => (
-                <div key={r.name}>
-                  {r.name}: {t(`import_grafana.result_${r.status}`)} — {reasonText(r.reason)}
-                </div>
-              ))}
+              {detailed.map((r) => {
+                const reason = reasonText(r.reason);
+                return (
+                  <div key={`${r.status}-${r.name}`}>
+                    {r.name}: {t(`import_grafana.result_${r.status}`)}
+                    {reason ? ` — ${reason}` : ''}
+                  </div>
+                );
+              })}
             </div>
           ) : undefined
         }

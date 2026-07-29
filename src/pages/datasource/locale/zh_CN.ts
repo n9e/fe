@@ -37,8 +37,6 @@ const zh_CN = {
     result_skipped: '跳过',
     result_failed: '失败',
     reason_duplicate: '与已有数据源重名',
-    pending_auth_badge: '待补充鉴权',
-    pending_auth_tip: '该数据源从 Grafana 导入但缺少密钥，补填鉴权信息后可启用',
   },
   empty_guide: {
     title: '还没有数据源',

@@ -37,8 +37,6 @@ const ja_JP = {
     result_skipped: 'Skipped',
     result_failed: 'Failed',
     reason_duplicate: 'Name already exists',
-    pending_auth_badge: 'Credential required',
-    pending_auth_tip: 'Imported from Grafana without secrets; fill in credentials to enable',
   },
   empty_guide: {
     title: 'まだデータソースがありません',

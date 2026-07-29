@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { message, Modal, Button, Space, Switch, Tooltip, Tag } from 'antd';
+import { message, Modal, Button, Space, Switch, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
@@ -113,41 +113,32 @@ const TableSource = (props: IPropsType) => {
       sorter: (a, b) => localeCompare(a.name, b.name),
       render: (text, record) => {
         return (
-          <>
-            <Rename
-              values={record}
-              text={text}
-              callback={() => {
-                setRefresh((oldVal) => !oldVal);
+          <Rename
+            values={record}
+            text={text}
+            callback={() => {
+              setRefresh((oldVal) => !oldVal);
+            }}
+          >
+            <a
+              onClick={() => {
+                nameClick(record);
               }}
             >
-              <a
-                onClick={() => {
-                  nameClick(record);
-                }}
-              >
-                {text}
-                {record?.is_default && (
-                  <Tooltip placement='top' title={t('default_msg')}>
-                    <CheckCircleFilled
-                      style={{
-                        visibility: 'visible',
-                        marginLeft: 5,
-                        marginRight: 5,
-                      }}
-                    />
-                  </Tooltip>
-                )}
-              </a>
-            </Rename>
-            {record?.status === 'disabled' && (
-              <Tooltip title={t('import_grafana.pending_auth_tip')}>
-                <Tag color='orange' style={{ marginLeft: 6 }}>
-                  {t('import_grafana.pending_auth_badge')}
-                </Tag>
-              </Tooltip>
-            )}
-          </>
+              {text}
+              {record?.is_default && (
+                <Tooltip placement='top' title={t('default_msg')}>
+                  <CheckCircleFilled
+                    style={{
+                      visibility: 'visible',
+                      marginLeft: 5,
+                      marginRight: 5,
+                    }}
+                  />
+                </Tooltip>
+              )}
+            </a>
+          </Rename>
         );
       },
     },

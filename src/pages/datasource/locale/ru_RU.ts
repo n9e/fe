@@ -36,6 +36,7 @@ const ru_RU = {
     result_pending_auth: 'Pending credential',
     result_skipped: 'Skipped',
     result_failed: 'Failed',
+    reason_duplicate: 'Name already exists',
   },
   empty_guide: {
     title: 'Источников данных пока нет',
