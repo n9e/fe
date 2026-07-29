@@ -28,6 +28,9 @@ interface Props {
   onClose: () => void;
 }
 
+/** 数据源列表未加载时的稳定空引用，避免每次渲染都让下游 useMemo 失效 */
+const EMPTY_DATASOURCES: { id: number; name: string; is_default?: boolean }[] = [];
+
 /** 以 field.default 初始化一个新实例的取值 */
 function newInstance(component: CollectComponent): Record<string, unknown> {
   const instance: Record<string, unknown> = {};
@@ -112,28 +115,37 @@ export default function CollectSetup(props: Props) {
   const metricPrefix = component ? (component.metricPrefix === undefined ? component.name : component.metricPrefix) : null;
 
   // 用户声明将在哪些机器上执行命令（可选，机器列表勾选行时自动带入）。
-  // 系统无法感知命令实际在哪台机器执行，这份声明用于：1）按机器的 engine_name
-  // 精确定位数据源；2）验证从"出现新 ident"升级为"所选机器逐台确认"。
+  // 系统无法感知命令实际在哪台机器执行，这份声明把验证从"出现新 ident"升级为
+  // "所选机器逐台确认"（含检测前就已在上报的，见 useMetricArrival 的 preexisting）。
   const [targetIdents, setTargetIdents] = useState<string[]>(props.defaultIdents ?? []);
-  const [targetList, setTargetList] = useState<{ ident: string; engine_name?: string }[]>([]);
+  const [targetList, setTargetList] = useState<string[]>([]);
   useEffect(() => {
     probeTargets({ limit: 500 }).then((res) => {
-      setTargetList(_.map(res?.list, (item) => ({ ident: item.ident, engine_name: item.engine_name })));
+      setTargetList(_.map(res?.list, 'ident'));
     });
   }, []);
 
-  // 机器数据落在哪个数据源：机器心跳会带回 engine_name（告警引擎集群），
-  // 数据源的 cluster_name 标识它由哪个引擎消费——host 告警正是靠这条链路路由查询的。
-  // 选了目标机器则只取它们的 engine；匹配不到（单机部署未配 cluster_name、老
-  // categraf 无 engine 字段）则退化为并行探测全部 prometheus 数据源。
-  const arrivalDatasources = useMemo(() => {
-    const engineByIdent = _.fromPairs(_.map(targetList, (item) => [item.ident, item.engine_name]));
-    const scope = targetIdents.length > 0 ? _.map(targetIdents, (ident) => engineByIdent[ident]) : _.map(targetList, 'engine_name');
-    const engineNames = _.uniq(_.compact(scope));
-    const prometheusList = groupedDatasourceList.prometheus || [];
-    const matched = _.filter(prometheusList, (ds) => !!ds.cluster_name && _.includes(engineNames, ds.cluster_name));
-    return _.map(matched.length > 0 ? matched : prometheusList, (ds) => ({ id: ds.id, name: ds.name }));
-  }, [groupedDatasourceList, targetList, targetIdents]);
+  const prometheusList = groupedDatasourceList.prometheus || EMPTY_DATASOURCES;
+
+  // 机器指标落在哪个数据源，由服务端按 pushgw 的 writer 配置匹配后随 meta 下发 ——
+  // 写入路径才是直接答案。但 URL 匹配天然有 miss（writer 用容器内地址、数据源用
+  // 外部域名等），所以这里只当默认值：先按权限过滤掉当前用户查不了的，匹配不上
+  // 就退到单个数据源（默认数据源优先，否则第一个），猜错由用户在验证步骤切换。
+  const defaultDatasourceIds = useMemo(() => {
+    const fromMeta = _.filter(meta.metric_datasource_ids, (id) => _.some(prometheusList, (ds) => ds.id === id));
+    if (fromMeta.length > 0) return fromMeta;
+    const preferred = _.find(prometheusList, 'is_default') ?? prometheusList[0];
+    return preferred ? [preferred.id] : [];
+  }, [meta.metric_datasource_ids, prometheusList]);
+
+  // undefined = 跟随后端默认值；用户一旦手动选过就以其选择为准，不再被异步加载的
+  // 数据源列表覆盖回去（这也是后端匹配不准时的兜底出口）
+  const [pickedDatasourceIds, setPickedDatasourceIds] = useState<number[]>();
+  const datasourceIds = pickedDatasourceIds ?? defaultDatasourceIds;
+  const arrivalDatasources = useMemo(
+    () => _.map(_.filter(prometheusList, (ds) => _.includes(datasourceIds, ds.id)), (ds) => ({ id: ds.id, name: ds.name })),
+    [prometheusList, datasourceIds],
+  );
 
   // 展示与查询用的验证指标：有代表性精确指标（如 mysql_up）优先，否则前缀通配
   const displayMetric = component?.verifyMetric ?? (metricPrefix ? `${metricPrefix}_*` : '');
@@ -431,7 +443,7 @@ export default function CollectSetup(props: Props) {
                 </a>
               }
             />
-          ) : arrivalDatasources.length === 0 ? (
+          ) : prometheusList.length === 0 ? (
             <Alert
               type='info'
               showIcon
@@ -445,19 +457,34 @@ export default function CollectSetup(props: Props) {
           ) : (
             <>
               <Form layout='vertical'>
-                <Form.Item label={t('collect.verify.targets_label')} extra={t('collect.verify.targets_tip')} className='mb-3'>
-                  <Select
-                    mode='multiple'
-                    showSearch
-                    allowClear
-                    value={targetIdents}
-                    onChange={(value) => setTargetIdents(value)}
-                    placeholder={t('collect.verify.targets_placeholder')}
-                    options={_.map(targetList, (item) => ({ label: item.ident, value: item.ident }))}
-                  />
-                </Form.Item>
+                <div className='grid grid-cols-2 gap-x-4'>
+                  <Form.Item label={t('collect.verify.datasource_label')} extra={t('collect.verify.datasource_tip')} className='mb-3'>
+                    <Select
+                      mode='multiple'
+                      showSearch
+                      optionFilterProp='label'
+                      value={datasourceIds}
+                      onChange={(value) => setPickedDatasourceIds(value)}
+                      placeholder={t('collect.verify.datasource_placeholder')}
+                      options={_.map(prometheusList, (ds) => ({ label: ds.name, value: ds.id }))}
+                    />
+                  </Form.Item>
+                  <Form.Item label={t('collect.verify.targets_label')} extra={t('collect.verify.targets_tip')} className='mb-3'>
+                    <Select
+                      mode='multiple'
+                      showSearch
+                      allowClear
+                      value={targetIdents}
+                      onChange={(value) => setTargetIdents(value)}
+                      placeholder={t('collect.verify.targets_placeholder')}
+                      options={_.map(targetList, (ident) => ({ label: ident, value: ident }))}
+                    />
+                  </Form.Item>
+                </div>
               </Form>
-              {arrival.status === 'detected' ? (
+              {arrivalDatasources.length === 0 ? (
+                <Alert type='warning' showIcon message={t('collect.verify.datasource_required')} />
+              ) : arrival.status === 'detected' ? (
                 <Alert
                   type='success'
                   showIcon

@@ -70,8 +70,6 @@ interface Datasource {
   plugin_type: string;
   is_default: boolean;
   identifier?: string;
-  /** 告警引擎集群名：与 target.engine_name 对应，标识该数据源由哪个引擎集群消费 */
-  cluster_name?: string;
 }
 
 export interface ICommonState {

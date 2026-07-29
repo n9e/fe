@@ -20,7 +20,7 @@ const POLL_TIMEOUT = 5 * 60 * 1000;
 interface Options {
   /** 进入验证步骤才开始轮询 */
   active: boolean;
-  /** 候选数据源集合（engine_name 匹配出的精确集，或全部 prometheus 数据源兜底） */
+  /** 待探测的数据源集合（服务端下发的默认值，或用户在验证步骤手动切换后的选择） */
   datasources: ArrivalDatasource[];
   /** 指标名前缀，如 mysql；调用方保证非空 */
   metricPrefix: string;
@@ -63,11 +63,13 @@ export default function useMetricArrival(options: Options) {
   identsRef.current = idents;
   const identsKey = useMemo(() => _.join(idents ?? [], ','), [idents]);
 
-  const stoppedRef = useRef(false);
-
   useEffect(() => {
     if (!active || datasourcesRef.current.length === 0) return;
-    stoppedRef.current = false;
+    // 停止标志必须是 effect 内的局部变量：用 ref 的话，cleanup 置 true 后新一轮
+    // effect 又会把它置回 false，旧一轮飞行中的 Promise.all 落地时就会被"复活"，
+    // 用旧 promql 的结果改状态并另起一条 setTimeout 链，形成并行失控的双轮询。
+    // 用户切换数据源 / 目标机器 / 点重试都会让 effect 重跑，触发面并不窄。
+    let stopped = false;
     // 基线按数据源 id 分别维护
     const baselines = new Map<number, Set<string>>();
     setStatus('baselining');
@@ -99,7 +101,7 @@ export default function useMetricArrival(options: Options) {
     const tick = async () => {
       const list = datasourcesRef.current;
       const results = await Promise.all(_.map(list, (ds) => queryIdents(ds.id)));
-      if (stoppedRef.current) return;
+      if (stopped) return;
 
       const allIdents = new Set<string>();
       const freshIdents = new Set<string>();
@@ -156,7 +158,7 @@ export default function useMetricArrival(options: Options) {
     tick();
 
     return () => {
-      stoppedRef.current = true;
+      stopped = true;
       clearTimeout(timer);
     };
   }, [active, datasourceKey, identsKey, metricPrefix, metric, round]);

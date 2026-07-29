@@ -57,6 +57,14 @@ export interface CategrafInstallMeta {
   script_url: string;
   /** 服务端是否支持采集配置脚本（collect.sh），决定「配置采集」入口是否出现 */
   collect: boolean;
+  /**
+   * 机器指标最终落到哪些数据源：服务端拿 pushgw 的 writer 地址与数据源配置做匹配得出。
+   * 写入路径才是「数据在哪」的直接答案，比前端拿 engine_name/cluster_name 反推可靠。
+   * 但 URL 匹配本身是模糊的（writer 带 /api/v1/write、容器内外域名不同），所以它只是
+   * 默认值而非唯一真相 —— 验证步骤会把数据源选择器暴露给用户，猜错也能一键切换。
+   * 老服务端不返回该字段，取空数组由调用方降级。
+   */
+  metric_datasource_ids: number[];
 }
 
 // 一个 SPA 会话内只探测一次，确定性结果（含「不支持」的 null）复用到底；
@@ -99,6 +107,8 @@ export function getCategrafInstallMeta(): Promise<CategrafInstallMeta | null> {
           base_url: dat.base_url || '',
           script_url: dat.script_url || '',
           collect: !!dat.collect,
+          // 老服务端没有该字段；数组元素也逐个过一遍类型，避免脏数据混进数据源 id
+          metric_datasource_ids: Array.isArray(dat.metric_datasource_ids) ? dat.metric_datasource_ids.filter((id) => typeof id === 'number') : [],
         } as CategrafInstallMeta;
       })
       .catch((err) => {

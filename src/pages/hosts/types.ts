@@ -14,8 +14,6 @@ export interface Item {
   host_ip: string;
   remote_addr: string;
   agent_version: string;
-  /** 机器心跳落到的告警引擎集群，可反查数据源（datasource.cluster_name） */
-  engine_name?: string;
   new_version: string;
   apps: string;
   arch: string;
