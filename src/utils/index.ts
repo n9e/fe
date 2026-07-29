@@ -21,8 +21,6 @@ import i18next from 'i18next';
 import { JSEncrypt } from 'js-encrypt';
 import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -202,9 +200,14 @@ export function warning(message: string) {
   }
 }
 
-export const scrollToFirstError = () => {
+/**
+ * 滚动到第一个校验失败的表单项。
+ * rootSelector 可选：只在某个容器内找（如某张处理器卡片），避免定位到与本次操作无关的错误项。
+ */
+export const scrollToFirstError = (rootSelector?: string) => {
   setTimeout(() => {
-    document.querySelector('.ant-form-item-has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const root = (rootSelector ? document.querySelector(rootSelector) : null) ?? document;
+    root.querySelector('.ant-form-item-has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 200);
 };
 
@@ -265,6 +268,9 @@ interface IData {
 
 export async function downloadExcel(fileName: string = 'download.xlsx', data: IData[]) {
   try {
+    // Loaded on demand: exceljs (~940 kB min) must stay out of the initial bundle.
+    const { default: ExcelJS } = await import('exceljs');
+    const { saveAs } = await import('file-saver');
     const workbook = new ExcelJS.Workbook();
     for (let i = 0; i < data.length; i++) {
       const el = data[i];
