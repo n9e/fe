@@ -98,6 +98,9 @@ export default function Processor(props: Props) {
       <Form.Item
         {...resetField}
         name={[...namePath, 'typ']}
+        // 必填：新增处理器用的默认值不预选类型，没有这条校验就能把一条
+        // 执行时必然失败的处理器随告警规则一起保存
+        rules={[{ required: true, message: t('processor.typ_required') }]}
         label={
           <Space>
             {t('processor.typ')}
