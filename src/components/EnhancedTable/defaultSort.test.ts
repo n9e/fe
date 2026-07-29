@@ -1,100 +1,79 @@
+jest.mock('@/utils', () => ({ copy2ClipBoard: jest.fn() }));
+jest.mock('@/components/TableTags/Tags', () => ({ default: () => null }));
+
 import type { ColumnType } from 'antd/lib/table';
 
-import { hasExplicitSortOrder, isServerPaginated, withUpdateTimeDefaultSort } from './defaultSort';
-
-const comparator = (a: any, b: any) => a.update_at - b.update_at;
+import { dateColumn, updateAtColumn } from './columns';
+import { hasExplicitSortOrder, withUpdateTimeDefaultSort } from './defaultSort';
 
 function orderOf(columns: ColumnType<any>[], dataIndex: string) {
   return columns.find((column) => column.dataIndex === dataIndex)?.defaultSortOrder;
 }
 
-describe('isServerPaginated', () => {
-  it('is false when pagination is omitted, disabled, or has no total', () => {
-    expect(isServerPaginated(undefined)).toBe(false);
-    expect(isServerPaginated(false)).toBe(false);
-    expect(isServerPaginated({ pageSize: 15, current: 1 })).toBe(false);
+describe('updateAtColumn', () => {
+  it('defaults to the update_at field, unix timestamps and a local sorter', () => {
+    const column = updateAtColumn({ title: '更新时间' });
+    expect(column.dataIndex).toBe('update_at');
+    expect(typeof column.sorter).toBe('function');
   });
 
-  it('is true when the caller supplies a total', () => {
-    expect(isServerPaginated({ pageSize: 15, current: 1, total: 120 })).toBe(true);
-    expect(isServerPaginated({ total: 0 })).toBe(true);
+  it('lets the caller override the field it reads', () => {
+    expect(updateAtColumn({ title: '更新时间', dataIndex: 'mtime' }).dataIndex).toBe('mtime');
   });
 });
 
 describe('hasExplicitSortOrder', () => {
   it('is false when no column declares an order', () => {
-    expect(hasExplicitSortOrder([{ dataIndex: 'name' }, { dataIndex: 'update_at', sorter: comparator }])).toBe(false);
+    expect(hasExplicitSortOrder([{ dataIndex: 'name' }, updateAtColumn({ title: '更新时间' })])).toBe(false);
   });
 
   it('finds an order declared on a nested child column', () => {
-    expect(hasExplicitSortOrder([{ title: 'group', children: [{ dataIndex: 'name', sorter: comparator, defaultSortOrder: 'ascend' }] }])).toBe(true);
+    expect(hasExplicitSortOrder([{ title: 'group', children: [{ dataIndex: 'name', defaultSortOrder: 'ascend' }] }])).toBe(true);
   });
 });
 
 describe('withUpdateTimeDefaultSort', () => {
-  it('sorts the update-time column descending', () => {
-    const columns = [{ dataIndex: 'name' }, { dataIndex: 'update_at', sorter: comparator }] satisfies ColumnType<any>[];
-    const next = withUpdateTimeDefaultSort(columns, false);
+  it('sorts the marked column descending', () => {
+    const columns = [{ dataIndex: 'name' }, updateAtColumn({ title: '更新时间' })];
+    const next = withUpdateTimeDefaultSort(columns);
     expect(orderOf(next, 'update_at')).toBe('descend');
     expect(orderOf(next, 'name')).toBeUndefined();
   });
 
+  it('follows the marker to whatever field the column reads', () => {
+    const columns = [updateAtColumn({ title: '更新时间', dataIndex: 'mtime' })];
+    expect(orderOf(withUpdateTimeDefaultSort(columns), 'mtime')).toBe('descend');
+  });
+
   it('does not mutate the columns it was given', () => {
-    const columns = [{ dataIndex: 'update_at', sorter: comparator }] satisfies ColumnType<any>[];
-    withUpdateTimeDefaultSort(columns, false);
+    const columns = [updateAtColumn({ title: '更新时间' })];
+    withUpdateTimeDefaultSort(columns);
     expect(columns[0].defaultSortOrder).toBeUndefined();
   });
 
-  it('accepts a sorter declared in object form', () => {
-    const columns = [{ dataIndex: 'update_at', sorter: { compare: comparator, multiple: 1 } }] satisfies ColumnType<any>[];
-    expect(orderOf(withUpdateTimeDefaultSort(columns, false), 'update_at')).toBe('descend');
+  it('leaves an unmarked date column alone, which is how server-paginated tables keep backend order', () => {
+    const columns = [dateColumn({ title: '更新时间', dataIndex: 'update_at', unix: true, sortable: true })];
+    expect(withUpdateTimeDefaultSort(columns)).toBe(columns);
   });
 
-  it('matches the leaf key of a path dataIndex', () => {
-    const columns = [{ dataIndex: ['meta', 'update_at'], sorter: comparator }] satisfies ColumnType<any>[];
-    expect(withUpdateTimeDefaultSort(columns, false)[0].defaultSortOrder).toBe('descend');
+  it('never sorts on a field name alone', () => {
+    const columns = [{ dataIndex: 'update_at', sorter: (a: any, b: any) => a.update_at - b.update_at }];
+    expect(withUpdateTimeDefaultSort(columns)).toBe(columns);
   });
 
-  it('skips server-paginated tables, whose rows are only one page', () => {
-    const columns = [{ dataIndex: 'update_at', sorter: comparator }] satisfies ColumnType<any>[];
-    expect(withUpdateTimeDefaultSort(columns, true)).toBe(columns);
-  });
-
-  it('skips columns that defer sorting to the server', () => {
-    const columns = [{ dataIndex: 'update_at', sorter: true }] satisfies ColumnType<any>[];
-    expect(withUpdateTimeDefaultSort(columns, false)).toBe(columns);
-  });
-
-  it('skips columns with no sorter at all', () => {
-    const columns = [{ dataIndex: 'update_at' }] satisfies ColumnType<any>[];
-    expect(withUpdateTimeDefaultSort(columns, false)).toBe(columns);
+  it('skips a marked column whose sorting was handed to the server', () => {
+    const columns = [updateAtColumn({ title: '更新时间', sorter: true })];
+    expect(withUpdateTimeDefaultSort(columns)).toBe(columns);
   });
 
   it('leaves a table alone when another column already declares an order', () => {
-    const columns = [
-      { dataIndex: 'name', sorter: comparator, defaultSortOrder: 'ascend' },
-      { dataIndex: 'update_at', sorter: comparator },
-    ] satisfies ColumnType<any>[];
-    expect(withUpdateTimeDefaultSort(columns, false)).toBe(columns);
+    const columns = [{ dataIndex: 'name', sorter: () => 0, defaultSortOrder: 'ascend' as const }, updateAtColumn({ title: '更新时间' })];
+    expect(withUpdateTimeDefaultSort(columns)).toBe(columns);
   });
 
-  it('ignores create_at and other date columns', () => {
-    const columns = [{ dataIndex: 'create_at', sorter: comparator }] satisfies ColumnType<any>[];
-    expect(withUpdateTimeDefaultSort(columns, false)).toBe(columns);
-  });
-
-  it('prefers update_at over the other recognised spellings', () => {
-    const columns = [
-      { dataIndex: 'update_time', sorter: comparator },
-      { dataIndex: 'update_at', sorter: comparator },
-    ] satisfies ColumnType<any>[];
-    const next = withUpdateTimeDefaultSort(columns, false);
-    expect(orderOf(next, 'update_at')).toBe('descend');
-    expect(orderOf(next, 'update_time')).toBeUndefined();
-  });
-
-  it('falls back to an alternative spelling when update_at is absent', () => {
-    const columns = [{ dataIndex: 'updated_at', sorter: comparator }] satisfies ColumnType<any>[];
-    expect(orderOf(withUpdateTimeDefaultSort(columns, false), 'updated_at')).toBe('descend');
+  it('respects an order declared on the update-time column itself', () => {
+    const columns = [updateAtColumn({ title: '更新时间', defaultSortOrder: 'ascend' })];
+    expect(withUpdateTimeDefaultSort(columns)).toBe(columns);
+    expect(orderOf(columns, 'update_at')).toBe('ascend');
   });
 });
