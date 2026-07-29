@@ -13,7 +13,7 @@ import { deleteRecordingRule } from '@/services/recording';
 import { CommonStateContext } from '@/App';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
-import { tagsColumn, updateByColumn, updateAtColumn } from '@/components/EnhancedTable/columns';
+import { tagsColumn, dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import usePagination from '@/components/usePagination';
 import EditModal from './components/editModal';
@@ -171,7 +171,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       dataIndex: 'cron_pattern',
     },
     tagsColumn({ title: t('append_tags'), dataIndex: 'append_tags', maxWidth: 180 }),
-    updateAtColumn<strategyItem>({ title: t('common:table.update_at') }),
+    dateColumn<strategyItem>({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }),
     updateByColumn<strategyItem>({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     {
       ...getEnabledStatusColumn({

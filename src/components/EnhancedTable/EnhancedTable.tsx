@@ -8,13 +8,10 @@ import { RowActionCell, splitRowActions } from './RowActionCell';
 import type { EnhancedTableProps } from './types';
 import './style.less';
 import { defaultComparator } from './sorter';
-import { withUpdateTimeDefaultSort } from './defaultSort';
 
 /**
  * Thin pass-through wrapper over antd Table.
  * Forwards all TableProps; pass `rowActions` to auto-render the action column.
- * Columns built with `updateAtColumn` make the table open sorted newest first; declare
- * `defaultSortOrder` / `sortOrder` on any column to keep a different order.
  * Visual baseline (sort/filter icons, fixed-column bg, …) lives in global theme/table.less.
  *
  * NOTE: keep this file exporting ONLY the component, otherwise React Fast Refresh
@@ -51,8 +48,6 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
       return next;
     });
 
-    const sortedColumns = withUpdateTimeDefaultSort(allColumns);
-
     if (hasRowActions) {
       // Auto-widen the action column so expanded icon rows never overflow legacy
       // kebab-era widths: scan the rows for the widest icon layout (cheap builder
@@ -85,10 +80,10 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
       if (typeof opColumn.width === 'number' && contentWidth > opColumn.width) {
         opColumn.width = contentWidth;
       }
-      sortedColumns.push(opColumn);
+      allColumns.push(opColumn);
     }
 
-    return sortedColumns;
+    return allColumns;
   }, [columns, actionColumn, hasRowActions, autoSortColumns, actionMaxIcons, dataSource]);
 
   return (

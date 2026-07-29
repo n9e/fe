@@ -196,34 +196,6 @@ export function dateColumn<T = any>(
   };
 }
 
-export const UPDATE_AT_COLUMN_META = '__fcUpdateAtColumnMeta__';
-
-export type UpdateAtColumnOptions<T = any> = {
-  title: React.ReactNode;
-  /** defaults to 'update_at' */
-  dataIndex?: ColumnType<T>['dataIndex'];
-  /** defaults to true, matching the unix timestamps the list APIs return */
-  unix?: boolean;
-} & Partial<ColumnType<T>>;
-
-export type UpdateAtColumnType<T = any> = ColumnType<T> & {
-  [UPDATE_AT_COLUMN_META]?: { defaultOrder: 'descend' };
-};
-
-// Update-time column: a date column that also carries the "newest first" default sort.
-// EnhancedTable acts on this marker rather than recognising field names, so the generic
-// table never has to know what the backend calls its update timestamp.
-//
-// For server-paginated tables keep using `dateColumn`: the rows are one page, so the order is
-// the backend's to decide and a local default sort would only reorder what is on screen.
-export function updateAtColumn<T = any>(opts: UpdateAtColumnOptions<T>): UpdateAtColumnType<T> {
-  const { dataIndex = 'update_at', unix = true, ...rest } = opts;
-  return {
-    ...dateColumn<T>({ dataIndex, unix, sortable: true, ...rest }),
-    [UPDATE_AT_COLUMN_META]: { defaultOrder: 'descend' },
-  };
-}
-
 type EnabledStatusFilterValue = boolean | number | string;
 type EnabledStatusValue = EnabledStatusFilterValue | null | undefined;
 
