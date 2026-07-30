@@ -329,7 +329,20 @@ export default function Raw(props: Props) {
                 <Space>
                   {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
                   {toggleNode}
-                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }} />}
+                  {IS_PLUS && (
+                    <DownloadModal
+                      marginLeft={0}
+                      queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }}
+                      effectiveRange={
+                        snapRangeRef.current?.from && snapRangeRef.current?.to
+                          ? {
+                              start: moment(snapRangeRef.current.from),
+                              end: moment(snapRangeRef.current.to),
+                            }
+                          : undefined
+                      }
+                    />
+                  )}
                 </Space>
               );
             }
