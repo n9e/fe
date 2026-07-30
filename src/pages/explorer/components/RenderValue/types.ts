@@ -17,6 +17,7 @@ export interface Resource {
   es_resource?: EsResource;
   sls_resource?: SlsResource;
   doris_resource?: DorisResource;
+  bls_resource?: BlsResource;
 }
 
 export interface EsResource {
@@ -31,4 +32,10 @@ export interface SlsResource {
 export interface DorisResource {
   database: string;
   table: string;
+}
+
+export interface BlsResource {
+  project: string;
+  logstore: string;
+  logstream: string;
 }
