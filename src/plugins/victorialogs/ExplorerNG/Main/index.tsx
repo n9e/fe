@@ -7,12 +7,14 @@ import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 
 import { NAME_SPACE } from '../../constants';
 import { BUILDER_PINNED_CACHE_KEY, METRIC_DEFAULT_QUERY, RAW_DEFAULT_QUERY } from '../constants';
 import { Field } from '../types';
 import Builder from '../Builder';
 import { inferMetricTimeseriesKeys } from '../utils/logsQL';
+import appendFieldFilter from '../utils/appendFieldFilter';
 import MainMoreOperations from '../components/MainMoreOperations';
 import Metric from './Metric';
 import QueryInput, { QueryInputHandle } from './QueryInput';
@@ -55,6 +57,16 @@ export default function Main(props: Props) {
     queryInputRef.current?.commit();
     resetSnapRange();
     setIsContentChangedDotVisible(false);
+    executeQuery();
+  };
+
+  const handleValueFilter = (params: OnValueFilterParams) => {
+    const currentQuery = form.getFieldValue('query') || {};
+    const nextQuery = appendFieldFilter(currentQuery, params);
+    if (!nextQuery) return;
+
+    form.setFieldsValue({ query: nextQuery });
+    resetSnapRange();
     executeQuery();
   };
 
@@ -223,6 +235,7 @@ export default function Main(props: Props) {
             indexData={indexData}
             setExecuteLoading={setExecuteLoading}
             executeQuery={executeCommittedQuery}
+            onValueFilter={handleValueFilter}
             snapRangeResetKey={snapRangeResetKey}
           />
         )}

@@ -10,6 +10,7 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
+import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 
 import { NAME_SPACE } from '../../../constants';
@@ -34,6 +35,7 @@ interface Props {
   indexData: Field[];
   setExecuteLoading: (loading: boolean) => void;
   executeQuery: () => void;
+  onValueFilter: (params: OnValueFilterParams) => void;
   snapRangeResetKey?: string;
 }
 
@@ -74,7 +76,7 @@ function isNoDataError(error: any) {
 
 export default function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { tableSelector, indexData, setExecuteLoading, executeQuery, snapRangeResetKey } = props;
+  const { tableSelector, indexData, setExecuteLoading, executeQuery, onValueFilter, snapRangeResetKey } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -341,6 +343,7 @@ export default function Raw(props: Props) {
           organizeFields={organizeFields}
           setOrganizeFields={setOrganizeFields}
           filterFields={(fieldKeys) => filteredFields(fieldKeys, organizeFields)}
+          onAddToQuery={onValueFilter}
           logViewerFilterFields={(log) => filteredFields(_.keys(log), organizeFields)}
           logViewerRenderCustomTagsArea={renderBuiltinFields}
           customLogFieldRender={renderLogViewerFieldValueWithoutFilters}
