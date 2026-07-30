@@ -45,7 +45,18 @@ export default function useFieldConfig(search: IFieldSearch, dep: any): FieldCon
       const isCKAvailable = search.cate === 'ck' && search.resource;
       const isCLSAvailable = search.cate === 'tencent-cls' && search.resource;
       const isLTSAvailable = search.cate === 'huawei-lts' && search.resource;
-      if (isESAvailable || isLokiAvailable || isSLSAvailable || isDorisAvailable || isVictoriaLogsAvailable || isCKAvailable || isCLSAvailable || isLTSAvailable) {
+      const isBLSAvailable = search.cate === 'bce-bls' && search.resource;
+      if (
+        isESAvailable ||
+        isLokiAvailable ||
+        isSLSAvailable ||
+        isDorisAvailable ||
+        isVictoriaLogsAvailable ||
+        isCKAvailable ||
+        isCLSAvailable ||
+        isLTSAvailable ||
+        isBLSAvailable
+      ) {
         searchDrilldown(search).then((res) => {
           if (cancelled) return;
           if (res.length > 0) {

@@ -22,6 +22,7 @@ export interface Resource {
   clickhouse_resource?: ClickHouseResource;
   cls_resource?: ClsResource;
   lts_resource?: LtsResource;
+  bls_resource?: BlsResource;
 }
 
 export interface EsResource {
@@ -63,4 +64,10 @@ export interface LtsResource {
   stream_id: string;
   group_name?: string;
   stream_name?: string;
+}
+
+export interface BlsResource {
+  project: string;
+  logstore: string;
+  logstream: string;
 }
