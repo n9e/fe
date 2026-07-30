@@ -17,6 +17,7 @@ const zh_CN = {
     skip_tls: '跳过 TLS 证书校验',
     fetch_btn: '拉取',
     import_btn: '导入',
+    done_btn: '完成',
     fetch_failed: '拉取 Grafana 数据源失败',
     import_failed: '导入 Grafana 数据源失败',
     empty: '未拉取到数据源(若用 API Token，请确认其所属 org 及数据源读取权限；管理员账号看到的是当前 org)',
