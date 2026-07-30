@@ -17,6 +17,7 @@ const ru_RU = {
     skip_tls: 'Skip TLS verification',
     fetch_btn: 'Fetch',
     import_btn: 'Import',
+    done_btn: 'Done',
     fetch_failed: 'Failed to fetch Grafana data sources',
     import_failed: 'Failed to import Grafana data sources',
     empty: 'No data sources fetched (if using an API Token, check its org and datasources:read permission; an admin account sees its current org)',

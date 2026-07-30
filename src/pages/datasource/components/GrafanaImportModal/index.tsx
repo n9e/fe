@@ -59,6 +59,8 @@ export default function GrafanaImportModal(props: Props) {
   const pagination = usePagination({ pageSizeLocalstorageKey: 'grafana_import_pagesize', defaultPageSize: 10 });
 
   const loading = fetching || importing;
+  // 导入已执行完（results 非 null，含"0 条成功"的情况）——此时底部只保留「完成」。
+  const finished = results !== null && !importing;
 
   const reset = () => {
     form.resetFields();
@@ -293,24 +295,36 @@ export default function GrafanaImportModal(props: Props) {
     );
   };
 
+  // maskClosable 放开：点遮罩即关闭。拉取/导入进行中仍不允许（与 keyboard/closable 一致，
+  // 避免竞态与陈旧回填）；关闭本就会 reset 掉表单，「取消」按钮也是同样效果，点遮罩不会多丢什么。
   return (
     <Modal
       title={t('import_grafana.modal_title')}
       visible={visible}
       destroyOnClose
       width={960}
-      maskClosable={false}
+      maskClosable={!loading}
       keyboard={!loading}
       closable={!loading}
       onCancel={handleClose}
-      footer={[
-        <Button key='close' disabled={loading} onClick={handleClose}>
-          {t('common:btn.cancel')}
-        </Button>,
-        <Button key='import' type='primary' loading={importing} disabled={loading || selectedKeys.length === 0} onClick={handleImport}>
-          {t('import_grafana.import_btn')}
-        </Button>,
-      ]}
+      footer={
+        // 导入完成后只剩「关闭」这一个动作：再点「导入」只会把同一批重导一遍（后端全判重名跳过），
+        // 而「取消」在已经落库之后语义是错的。所以收敛成单个「完成」按钮。
+        finished
+          ? [
+              <Button key='done' type='primary' onClick={handleClose}>
+                {t('import_grafana.done_btn')}
+              </Button>,
+            ]
+          : [
+              <Button key='close' disabled={loading} onClick={handleClose}>
+                {t('common:btn.cancel')}
+              </Button>,
+              <Button key='import' type='primary' loading={importing} disabled={loading || selectedKeys.length === 0} onClick={handleImport}>
+                {t('import_grafana.import_btn')}
+              </Button>,
+            ]
+      }
     >
       <Form
         form={form}
