@@ -324,6 +324,11 @@ export default function Raw(props: Props) {
           id_key='__n9e_id_n9e__'
           raw_key='__n9e_raw_n9e__'
           timeField={DEFAULT_TIME_FIELD}
+          drilldownContext={{
+            cate: DatasourceCateEnum.victorialogs,
+            datasource_id: datasourceValue,
+            query: queryValues?.query,
+          }}
           histogramLoading={histogramLoading}
           histogram={histogramData?.data || []}
           histogramHash={histogramData?.hash}
