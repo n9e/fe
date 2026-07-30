@@ -8,7 +8,7 @@ jest.mock('lodash', () => {
 });
 
 import _ from 'lodash';
-import { normalizeFormValues, normalizeInitialValues } from './normalizeValues';
+import { normalizeFormValues, normalizeInitialValues, omitDerivedFields } from './normalizeValues';
 
 // ---------- normalizeFormValues 回归测试 ----------
 
@@ -170,5 +170,58 @@ describe('normalizeInitialValues (工作流/事件流)', () => {
 
     const result = normalizeInitialValues(input as any);
     expect((result as any).processors[0].config.header).toEqual([{ key: 'Content-Type', value: 'application/json' }]);
+  });
+});
+
+// ---------- omitDerivedFields ----------
+
+describe('omitDerivedFields', () => {
+  it('应剔除后端派生的 nodes / connections', () => {
+    const input = {
+      id: 1,
+      name: 'wf',
+      processors: [{ typ: 'relabel', config: {} }],
+      nodes: [{ id: 'node_0', name: 'relabel', type: 'relabel', config: {} }],
+      connections: { node_0: { main: [] } },
+    } as const;
+
+    const result = omitDerivedFields(input);
+
+    expect(result).not.toHaveProperty('nodes');
+    expect(result).not.toHaveProperty('connections');
+  });
+
+  it('应保留表单未托管但需要回传的字段', () => {
+    const input = {
+      id: 1,
+      group_id: 7,
+      use_case: 'event_pipeline',
+      trigger_mode: 'event',
+      inputs: [{ key: 'k', value: 'v' }],
+      nodes: [{ id: 'node_0' }],
+    } as const;
+
+    expect(omitDerivedFields(input)).toEqual({
+      id: 1,
+      group_id: 7,
+      use_case: 'event_pipeline',
+      trigger_mode: 'event',
+      inputs: [{ key: 'k', value: 'v' }],
+    });
+  });
+
+  it('不应修改原始输入对象（non-mutation）', () => {
+    const input = { id: 1, nodes: [{ id: 'node_0' }] } as const;
+    const inputClone = _.cloneDeep(input);
+
+    omitDerivedFields(input);
+
+    expect(input).toEqual(inputClone);
+  });
+
+  it('入参没有派生字段时应原样返回', () => {
+    const input = { id: 1, name: 'wf' } as const;
+
+    expect(omitDerivedFields(input)).toEqual({ id: 1, name: 'wf' });
   });
 });

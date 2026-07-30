@@ -200,9 +200,14 @@ export function warning(message: string) {
   }
 }
 
-export const scrollToFirstError = () => {
+/**
+ * 滚动到第一个校验失败的表单项。
+ * rootSelector 可选：只在某个容器内找（如某张处理器卡片），避免定位到与本次操作无关的错误项。
+ */
+export const scrollToFirstError = (rootSelector?: string) => {
   setTimeout(() => {
-    document.querySelector('.ant-form-item-has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const root = (rootSelector ? document.querySelector(rootSelector) : null) ?? document;
+    root.querySelector('.ant-form-item-has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 200);
 };
 

@@ -63,8 +63,10 @@ export default function formatMsToHuman(
     }
   }
 
-  // 处理空结果边界情况（输入为0且不强制显示单位）
+  // 处理空结果边界情况（输入为 0 且不强制显示单位）。
+  // 紧凑模式要跟其它取值（5ms / 1h2m）保持同一种写法，不能突然吐出一句英文长句
   if (timeParts.length === 0) {
+    if (compact) return showMs ? '0ms' : '0s';
     return showMs ? '0 milliseconds' : '0 seconds';
   }
 

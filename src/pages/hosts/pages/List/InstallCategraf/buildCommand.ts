@@ -23,8 +23,8 @@ export function isValidServerAddr(input?: string): boolean {
   }
 }
 
-/** 单引号强引用，防止地址或密码里的特殊字符破坏命令 */
-function shellQuote(value: string): string {
+/** 单引号强引用，防止地址或密码里的特殊字符破坏命令（CollectSetup 复用） */
+export function shellQuote(value: string): string {
   return `'${value.replace(/'/g, `'\\''`)}'`;
 }
 

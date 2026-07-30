@@ -1,0 +1,59 @@
+# # collect interval
+# interval = 15
+
+# [[instances]]
+## In the process searching section, search_user is always in effect.
+## Other "search_" configurations are enabled based on the first item in the list.
+## config list: search_exec_substring, search_cmdline_substring, search_win_service, search_exec_regexp, search_cmdline_regexp
+
+# # executable name (ie, pgrep <search_exec_substring>)
+# search_exec_substring = "nginx"
+
+# # pattern as argument for pgrep (ie, pgrep -f <search_cmdline_substring>)
+# search_cmdline_substring = "n9e server"
+
+# # windows service name
+# search_win_service = ""
+
+# # search_exec_regexp: Use a regular expression to match the executable path
+# # executable name filter to regexp (like "ps -e | grep -E <search_exec_regexp>" but using re2 regexp )
+# search_exec_regexp = ""
+
+# # search_cmdline_regexp: Use a regular expression to match the command line
+# # executable name filter to regexp (like "ps -ef | grep -E <search_cmdline_regexp>" but using re2 regexp )
+# search_cmdline_regexp = ""
+
+# # [option] search process with specific user
+# search_user = ""
+
+# # append some labels for series
+# labels = { region="cloud", product="n9e" }
+
+# # interval = global.interval * interval_times
+# interval_times = 1
+
+# # mode to use when calculating CPU usage. can be one of 'solaris' or 'irix'
+# mode = "irix"
+
+# sum of threads/fd/io/cpu/mem, min of uptime/limit
+gather_total = true
+
+# will append pid as tag
+gather_per_pid = false
+
+#  gather jvm metrics only when jstat is ready
+# gather_more_metrics = [
+#     "threads",
+#     "fd",
+#     "io",
+#     "uptime",
+#     "cpu",
+#     "mem",
+#     "limit",
+#     "jvm"
+# ]
+
+# # gather more labels from cmdline using regexp named group
+# # https://pkg.go.dev/regexp#Regexp.SubexpNames
+# # warning: reggroup not support gather_total, "*_total" metrics will count all matches process, not include reggroup labels
+# labels_from_cmdline_reggroup = "java -jar (?P<jarName>.*\\.jar).*--server-name (?P<serverName>\\w*)"

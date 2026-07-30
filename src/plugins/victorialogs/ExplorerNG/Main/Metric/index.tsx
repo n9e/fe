@@ -449,6 +449,11 @@ export default function Metric(props: Props) {
         raw_key='___raw___'
         hideHistogram
         hideTypeIcon
+        drilldownContext={{
+          cate: DatasourceCateEnum.victorialogs,
+          datasource_id: datasourceValue,
+          query: queryValues?.query,
+        }}
         loading={tableLoading}
         logs={tableLogs}
         logsHash={`${tableData?.hash}_${serviceParams.current}_${serviceParams.pageSize}`}
