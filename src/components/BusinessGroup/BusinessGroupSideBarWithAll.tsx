@@ -25,7 +25,13 @@ export function getDefaultGids(localeKey: string, businessGroup: any, queryParam
   if (queryParamsIds && typeof queryParamsIds === 'string') {
     return queryParamsIds;
   }
-  return localStorage.getItem(localeKey) || businessGroup.ids || '-2';
+  // 全局业务组优先：跨页面切换时继承其它页面选择的具体业务组 / “全部”。
+  // 其它页面专属的预置值（-1 公开、0 未分组）对本页无效，回退到本页 localStorage 记忆或“全部”。
+  const globalIds = businessGroup.ids;
+  if (globalIds && globalIds !== '-1' && globalIds !== '0') {
+    return globalIds;
+  }
+  return localStorage.getItem(localeKey) || '-2';
 }
 
 export function getDefaultGidsInDashboard(queryParams: any, localeKey: string, businessGroup: any) {
