@@ -63,3 +63,21 @@ export function hasEnabledHostRule(rules?: { cate?: string; disabled?: number }[
   if (!Array.isArray(rules)) return false;
   return rules.some((rule) => rule?.cate === 'host' && rule?.disabled === 0);
 }
+
+/**
+ * 已启用的主机类告警规则里，是否至少有一条真的绑定了通知规则。
+ *
+ * 基础包允许 notify_rule_ids 留空导入，此时规则会产生事件但不通知任何人 ——
+ * 「绑定通知」这一步不能只看通知规则存在与否，还要看主机告警确实挂上了它。
+ * 旧通知模型（notify_version !== 1）的通知配置内嵌在规则自身（notify_groups 等），
+ * 不是本引导的产物，一律视为已绑定，避免把老部署的完成态翻回未完成。
+ * 后端 `notify_version`/`notify_rule_ids` 均无 omitempty，列表响应恒有值。
+ */
+export function hasNotifyBoundHostRule(rules?: { cate?: string; disabled?: number; notify_version?: number; notify_rule_ids?: number[] }[] | null): boolean {
+  if (!Array.isArray(rules)) return false;
+  return rules.some((rule) => {
+    if (rule?.cate !== 'host' || rule?.disabled !== 0) return false;
+    if (rule.notify_version !== 1) return true;
+    return (rule.notify_rule_ids?.length ?? 0) > 0;
+  });
+}

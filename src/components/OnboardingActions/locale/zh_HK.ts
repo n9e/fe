@@ -40,6 +40,9 @@ const zh_HK = {
     bad_template: '內置模板解析失敗',
     unknown_error: '未知錯誤',
   },
+  notify: {
+    bind_hint: '通知規則已創建，但已啟用的主機告警還沒有綁定它，真實告警仍不會通知任何人',
+  },
   test: {
     title: '發送測試告警',
     rule_label: '用哪條通知規則發送',

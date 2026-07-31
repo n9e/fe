@@ -10,7 +10,7 @@ import { getItems as getNotifyRules } from '@/pages/notificationRules/services';
 import { getList as getLlmConfigs } from '@/pages/aiConfig/llmConfigs/services';
 import { getNotifyUsed } from '@/pages/event/EventNotifyRecords/services';
 
-import { hasEnabledHostRule, isHostBoard, readOnboardingMarker } from './detect';
+import { hasEnabledHostRule, hasNotifyBoundHostRule, isHostBoard, readOnboardingMarker } from './detect';
 
 /** 计入进度分母的步骤 */
 export type OnboardingStepKey = 'machine' | 'hostDashboard' | 'hostAlert' | 'testDelivered' | 'datasource' | 'dashboard' | 'alert' | 'notification' | 'llm';
@@ -23,6 +23,13 @@ export type OnboardingStepKey = 'machine' | 'hostDashboard' | 'hostAlert' | 'tes
 export type OnboardingOptionalStepKey = 'collectVerified';
 
 export type OnboardingDisplayKey = OnboardingStepKey | OnboardingOptionalStepKey;
+
+/**
+ * 只用于派生判定、不单独成步骤展示的键。
+ * hostNotifyBound：已启用的主机告警是否至少有一条绑定了通知规则 ——
+ * NextStepsCard 的「绑定通知」完成态需要它兜住「基础包留空导入、告警实际无人收到」的缺口。
+ */
+export type OnboardingDerivedKey = 'hostNotifyBound';
 
 export const ONBOARDING_STEP_KEYS: OnboardingStepKey[] = [
   'machine',
@@ -47,6 +54,8 @@ interface DetectState {
   alert: boolean;
   // 是否存在启用中的主机类告警规则（cate=host，与「任意告警规则」alert 区分开）
   hostAlert: boolean;
+  // 启用中的主机告警是否至少有一条绑定了通知规则（判定见 detect.hasNotifyBoundHostRule）
+  hostNotifyBound: boolean;
   // 是否已配置通知规则（告警能否真正发出来）
   notification: boolean;
   // 是否已接入大模型（解锁 AI 助手与智能分析）
@@ -64,7 +73,7 @@ export interface OnboardingProgress {
   loaded: boolean;
   total: number;
   doneCount: number;
-  doneMap: Record<OnboardingDisplayKey, boolean>;
+  doneMap: Record<OnboardingDisplayKey | OnboardingDerivedKey, boolean>;
 }
 
 // 全部完成后写入会话级标记，已上手的用户后续直接短路、不再探测，避免每次加载都拉全量大盘 / 告警。
@@ -76,6 +85,7 @@ const DONE_DETECT: DetectState = {
   hostDashboard: true,
   alert: true,
   hostAlert: true,
+  hostNotifyBound: true,
   notification: true,
   llm: true,
   notifyUsed: true,
@@ -92,6 +102,7 @@ let lastDetect: DetectState = {
   hostDashboard: false,
   alert: false,
   hostAlert: false,
+  hostNotifyBound: false,
   notification: false,
   llm: false,
   notifyUsed: false,
@@ -137,18 +148,22 @@ function probeOnboarding(): Promise<DetectState> {
           },
           () => ({ any: known.dashboard, host: known.hostDashboard }),
         );
-  // 同上，alert（任意告警规则）与 hostAlert（主机类告警）复用同一次请求。
-  // 判断条件必须是两者都已知为真：只看 known.alert 会在「有告警规则但还没有主机告警」时永远跳过探测，
-  // hostAlert 便再也没有机会点亮。
-  const alertP: Promise<{ any: boolean; host: boolean }> =
-    known.alert && known.hostAlert
-      ? Promise.resolve({ any: true, host: true })
+  // 同上，alert（任意告警规则）/ hostAlert（主机类告警）/ hostNotifyBound（主机告警已绑通知）
+  // 复用同一次请求。判断条件必须是三者都已知为真：少看任何一个，都会在「前者已完成、后者未完成」
+  // 的组合下永远跳过探测，后者便再也没有机会点亮。
+  const alertP: Promise<{ any: boolean; host: boolean; bound: boolean }> =
+    known.alert && known.hostAlert && known.hostNotifyBound
+      ? Promise.resolve({ any: true, host: true, bound: true })
       : getBusiGroupsAlertRules(undefined).then(
           (res) => {
-            const list = (res?.dat as { cate?: string; disabled?: number }[]) ?? [];
-            return { any: known.alert || list.length > 0, host: known.hostAlert || hasEnabledHostRule(list) };
+            const list = (res?.dat as { cate?: string; disabled?: number; notify_version?: number; notify_rule_ids?: number[] }[]) ?? [];
+            return {
+              any: known.alert || list.length > 0,
+              host: known.hostAlert || hasEnabledHostRule(list),
+              bound: known.hostNotifyBound || hasNotifyBoundHostRule(list),
+            };
           },
-          () => ({ any: known.alert, host: known.hostAlert }),
+          () => ({ any: known.alert, host: known.hostAlert, bound: known.hostNotifyBound }),
         );
   // 通知规则（全局，不分业务组）：决定告警能否真正发出来
   const notificationP = known.notification
@@ -186,6 +201,7 @@ function probeOnboarding(): Promise<DetectState> {
     hostDashboard: dashboard.host,
     alert: alert.any,
     hostAlert: alert.host,
+    hostNotifyBound: alert.bound,
     notification,
     llm,
     notifyUsed,
@@ -260,13 +276,14 @@ export default function useOnboardingProgress(): OnboardingProgress {
     probeOnboardingShared().catch(() => undefined);
   }, [pathname]);
 
-  const doneMap = useMemo<Record<OnboardingDisplayKey, boolean>>(
+  const doneMap = useMemo<Record<OnboardingDisplayKey | OnboardingDerivedKey, boolean>>(
     () => ({
       machine: detect.machine,
       // 没有机器上报就不可能套用主机大盘、跑主机告警或验证采集，这几步统一 gate 在 machine 上，
       // 避免"未部署采集器却显示主机大盘已完成"的矛盾态
       hostDashboard: detect.machine && detect.hostDashboard,
       hostAlert: detect.machine && detect.hostAlert,
+      hostNotifyBound: detect.hostNotifyBound,
       collectVerified: detect.machine && detect.collectVerified,
       // 通知都没配就谈不上"发过测试告警"
       testDelivered: detect.notification && (detect.testDeliveredLocal || detect.notifyUsed),

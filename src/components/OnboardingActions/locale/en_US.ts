@@ -40,6 +40,9 @@ const en_US = {
     bad_template: 'Failed to parse the built-in template',
     unknown_error: 'Unknown error',
   },
+  notify: {
+    bind_hint: 'Notification rule created, but your enabled host alert rules are not bound to it yet — real alerts still reach nobody',
+  },
   test: {
     title: 'Send a test alert',
     rule_label: 'Which notification rule to send with',

@@ -40,6 +40,9 @@ const zh_CN = {
     bad_template: '内置模板解析失败',
     unknown_error: '未知错误',
   },
+  notify: {
+    bind_hint: '通知规则已创建，但已启用的主机告警还没有绑定它，真实告警仍不会通知任何人',
+  },
   test: {
     title: '发送测试告警',
     rule_label: '用哪条通知规则发送',

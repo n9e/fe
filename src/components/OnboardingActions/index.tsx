@@ -1,11 +1,15 @@
 import React from 'react';
+import { notification } from 'antd';
+import { useTranslation } from 'react-i18next';
 
+import { basePrefix } from '@/App';
 import { IS_PLUS } from '@/utils/constant';
 import QuickCreateModal from '@/pages/notificationRules/components/RuleDropdownSelect/QuickCreateModal';
-import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
+import useOnboardingProgress, { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
 
 import SendTestAlertModal from './SendTestAlert';
 import HostMonitorPackModal from './HostMonitorPack';
+import { NS } from './constants';
 import { OnboardingActionKey, OnboardingActionPayload, OnboardingActionState } from './types';
 
 interface OnboardingActionsContextValue {
@@ -68,7 +72,9 @@ export function OnboardingActionsProvider({ children }: { children: React.ReactN
 
 /** 动作弹窗的唯一挂载点，与 Provider 一起放在 App 层 */
 export function OnboardingActionModals() {
+  const { t } = useTranslation(NS);
   const { current, openAction, closeAction } = useOnboardingActions();
+  const { doneMap } = useOnboardingProgress();
 
   return (
     <>
@@ -80,6 +86,20 @@ export function OnboardingActionModals() {
         onCancel={() => closeAction('notify')}
         onSuccess={(ruleId) => {
           refreshOnboardingProgress(['notification']);
+          // 快捷创建不会把新规则回填到已导入的主机告警上。存在未绑定的启用主机告警时提醒一句，
+          // 否则「绑定通知」这一步会一直不亮，用户也不知道差在哪。用探测态判断（可能略滞后），
+          // 提示只是指路，完成态本身由探测兜底，不会因此误标。
+          if (doneMap.hostAlert && !doneMap.hostNotifyBound) {
+            notification.info({
+              message: t('notify.bind_hint'),
+              // notification 渲染在 Router 之外，不能用 <Link>；basePrefix 要自己拼
+              description: (
+                <a href={`${basePrefix}/alert-rules`} target='_blank' rel='noreferrer'>
+                  {t('pack.go_bind_notify')}
+                </a>
+              ),
+            });
+          }
           // 接力到「发送测试告警」：刚配好通知，用户最想确认的就是"真出事了我能收到吗"
           openAction('test', { notifyRuleId: ruleId });
         }}

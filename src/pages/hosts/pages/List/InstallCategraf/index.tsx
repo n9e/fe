@@ -1,10 +1,11 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Button, Alert, Space, Tag, Collapse, Form } from 'antd';
 import { LoadingOutlined, CheckCircleFilled } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
+import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
 
 import { localizeDocUrl } from '@/utils/docUrl';
 
@@ -35,6 +36,15 @@ export default function InstallCategraf(props: Props) {
 
   const { status, newIdents, restart } = useTargetArrival();
   const detected = status === 'detected';
+
+  // 检测到机器上报就立刻刷新引导进度：machine 只随路由变化重探，首台机器装完若不主动刷一次，
+  // 列表页工具栏的 inline 引导条要等用户切一次页面才会出现。ref 保证整个弹窗生命周期只触发一次
+  const machineRefreshedRef = useRef(false);
+  useEffect(() => {
+    if (!detected || machineRefreshedRef.current) return;
+    machineRefreshedRef.current = true;
+    refreshOnboardingProgress(['machine']);
+  }, [detected]);
 
   const addrValid = isValidServerAddr(addr);
   const authFilled = !!_.trim(authUser);

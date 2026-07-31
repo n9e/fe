@@ -74,7 +74,10 @@ export default function NextStepsCard({ variant = 'compact', onCollect, onBefore
     },
     {
       key: 'notify' as RowKey,
-      done: doneMap.notification,
+      // 只看「存在通知规则」不够：基础包允许 notify_rule_ids 留空导入，主机告警可能一条都没绑
+      // 通知，真告警仍无人收到。已有启用中的主机告警时，额外要求至少一条真的绑定了通知；
+      // 主机告警还没导入时「绑定」无从谈起，维持「有通知规则即完成」的原口径。
+      done: doneMap.notification && (!doneMap.hostAlert || doneMap.hostNotifyBound),
       onClick: () => openAction('notify'),
     },
     {

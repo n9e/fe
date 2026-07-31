@@ -1,4 +1,4 @@
-import { HOST_PACK_TAG, hasEnabledHostRule, isHostBoard, readOnboardingMarker, writeOnboardingMarker } from './detect';
+import { HOST_PACK_TAG, hasEnabledHostRule, hasNotifyBoundHostRule, isHostBoard, readOnboardingMarker, writeOnboardingMarker } from './detect';
 
 describe('isHostBoard', () => {
   it('recognizes a board stamped by the host monitor pack regardless of its name', () => {
@@ -46,6 +46,37 @@ describe('hasEnabledHostRule', () => {
     expect(hasEnabledHostRule([])).toBe(false);
     expect(hasEnabledHostRule(undefined)).toBe(false);
     expect(hasEnabledHostRule(null)).toBe(false);
+  });
+});
+
+describe('hasNotifyBoundHostRule', () => {
+  it('is true when an enabled host rule is bound to a notification rule', () => {
+    expect(hasNotifyBoundHostRule([{ cate: 'host', disabled: 0, notify_version: 1, notify_rule_ids: [5] }])).toBe(true);
+  });
+
+  it('is false when pack-imported host rules were left unbound', () => {
+    // 基础包允许 notify_rule_ids 留空导入，这正是「引导全绿但真告警无人收到」的缺口
+    expect(hasNotifyBoundHostRule([{ cate: 'host', disabled: 0, notify_version: 1, notify_rule_ids: [] }])).toBe(false);
+  });
+
+  it('ignores bound rules that are disabled or not host-category', () => {
+    expect(
+      hasNotifyBoundHostRule([
+        { cate: 'host', disabled: 1, notify_version: 1, notify_rule_ids: [5] },
+        { cate: 'prometheus', disabled: 0, notify_version: 1, notify_rule_ids: [5] },
+      ]),
+    ).toBe(false);
+  });
+
+  it('treats legacy-notify (notify_version 0) host rules as bound', () => {
+    // 旧模型的通知配置内嵌在规则自身（notify_groups 等），不能把老部署的完成态翻回未完成
+    expect(hasNotifyBoundHostRule([{ cate: 'host', disabled: 0, notify_version: 0, notify_rule_ids: [] }])).toBe(true);
+  });
+
+  it('tolerates empty and nullish input', () => {
+    expect(hasNotifyBoundHostRule([])).toBe(false);
+    expect(hasNotifyBoundHostRule(undefined)).toBe(false);
+    expect(hasNotifyBoundHostRule(null)).toBe(false);
   });
 });
 
