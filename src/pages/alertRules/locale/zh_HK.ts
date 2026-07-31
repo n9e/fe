@@ -356,6 +356,12 @@ const zh_HK = {
     algorithm: '算法',
     algorithm_required: '算法不能為空',
   },
+  filter_trigger_type: {
+    placeholder: '告警條件類型',
+    threshold: '閾值告警',
+    nodata: '無數據告警',
+    anomaly: '智能告警',
+  },
   filter_disabled: {
     placeholder: '啟用狀態',
     0: '啟用',

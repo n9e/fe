@@ -356,6 +356,12 @@ const ja_JP = {
     algorithm: 'アルゴリズム',
     algorithm_required: 'アルゴリズムは空にできません',
   },
+  filter_trigger_type: {
+    placeholder: 'アラート条件タイプ',
+    threshold: '閾値アラート',
+    nodata: 'データなしアラート',
+    anomaly: 'スマートアラート',
+  },
   filter_disabled: {
     placeholder: 'フィルターを選択',
     0: '有効',

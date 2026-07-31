@@ -31,11 +31,11 @@ export default function index() {
   }, []);
 
   const datasourceManagePath = IS_ENT ? '/settings/source/log' : '/datasources';
-  const enabledDatasourceTypes = ENABLED_VIEW_CATES.join(', ');
+  // 仅展示当前版本实际支持的数据源类型（graphPro 类型在开源版下过滤掉）
+  const enabledDatasourceTypes = ENABLED_VIEW_CATES.filter((cate) => isLogExplorerDatasourceCateSupported(cate)).join(', ');
 
   const paramDatasourceCate = params['data_source_name'] || undefined;
-  const useParamDatasource =
-    paramDatasourceCate && isLogExplorerDatasourceCateSupported(paramDatasourceCate) && _.find(datasourceList, { plugin_type: paramDatasourceCate });
+  const useParamDatasource = paramDatasourceCate && isLogExplorerDatasourceCateSupported(paramDatasourceCate) && _.find(datasourceList, { plugin_type: paramDatasourceCate });
   const defaultDatasourceCate = useParamDatasource ? paramDatasourceCate : getDefaultDatasourceCate(datasourceList, DEFAULT_DATASOURCE_CATE);
 
   // 如果没有可用的数据源类型，直接提示错误
