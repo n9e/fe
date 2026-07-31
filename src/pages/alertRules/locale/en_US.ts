@@ -358,6 +358,12 @@ const en_US = {
     algorithm: 'Algorithm',
     algorithm_required: 'Algorithm is required',
   },
+  filter_trigger_type: {
+    placeholder: 'Alert condition type',
+    threshold: 'Threshold alert',
+    nodata: 'No data alert',
+    anomaly: 'Anomaly detection',
+  },
   filter_disabled: {
     placeholder: 'Enabled status',
     0: 'Enabled',
