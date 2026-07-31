@@ -54,10 +54,12 @@ function persistDismissed() {
  */
 export default function NextStepsCard({ variant = 'compact', onCollect, onBeforeAction }: Props) {
   const { t } = useTranslation(NS);
-  const { openAction, enabled } = useOnboardingActions();
+  const { openAction, enabled, permittedActions } = useOnboardingActions();
   const { loaded, doneMap } = useOnboardingProgress();
   const [dismissed, setDismissed] = React.useState(readDismissed);
 
+  // 无权限的动作行整行不展示：弹窗开了也只会在提交时 403。只读用户全部隐藏后
+  // hasActionableRows 为 false，卡片整体消失 —— 这些事本来就轮不到他做
   const rows: { key: RowKey; done: boolean; optional?: boolean; onClick: () => void }[] = _.compact([
     onCollect && {
       key: 'collect' as RowKey,
@@ -66,13 +68,13 @@ export default function NextStepsCard({ variant = 'compact', onCollect, onBefore
       done: doneMap.collectVerified,
       onClick: onCollect,
     },
-    {
+    permittedActions.pack && {
       key: 'pack' as RowKey,
       // 一键启用同时导大盘和告警规则，所以两者都完成才算这一行完成
       done: doneMap.hostDashboard && doneMap.hostAlert,
       onClick: () => openAction('pack'),
     },
-    {
+    permittedActions.notify && {
       key: 'notify' as RowKey,
       // 只看「存在通知规则」不够：基础包允许 notify_rule_ids 留空导入，主机告警可能一条都没绑
       // 通知，真告警仍无人收到。已有启用中的主机告警时，额外要求至少一条真的绑定了通知；
@@ -80,15 +82,17 @@ export default function NextStepsCard({ variant = 'compact', onCollect, onBefore
       done: doneMap.notification && (!doneMap.hostAlert || doneMap.hostNotifyBound),
       onClick: () => openAction('notify'),
     },
-    {
+    permittedActions.test && {
       key: 'test' as RowKey,
       done: doneMap.testDelivered,
       onClick: () => openAction('test'),
     },
   ]);
 
-  // 商业版走自己的接入体系；探测还没回来时先不闪一屏未完成；两种形态的收起规则见 visibility.ts
-  if (IS_PLUS || !enabled || !loaded || !hasActionableRows(variant, rows)) {
+  // 商业版走自己的接入体系；探测还没回来时先不闪一屏未完成；两种形态的收起规则见 visibility.ts。
+  // inline 常驻条额外要求已有机器：一台都没有时该做的是先装采集器，由列表空态的部署引导承接，
+  // 此时摆一张「配置采集 / 套用大盘」的清单只会让人无从下手
+  if (IS_PLUS || !enabled || !loaded || (variant === 'inline' && !doneMap.machine) || !hasActionableRows(variant, rows)) {
     return null;
   }
 

@@ -1,15 +1,17 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { basePrefix } from '@/App';
+import { basePrefix, isAnonymousPath } from '@/App';
 import { IS_PLUS } from '@/utils/constant';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import QuickCreateModal from '@/pages/notificationRules/components/RuleDropdownSelect/QuickCreateModal';
 import useOnboardingProgress, { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
 
 import SendTestAlertModal from './SendTestAlert';
 import HostMonitorPackModal from './HostMonitorPack';
-import { NS } from './constants';
+import { ACTION_PERMS, NS } from './constants';
 import { OnboardingActionKey, OnboardingActionPayload, OnboardingActionState } from './types';
 
 interface OnboardingActionsContextValue {
@@ -23,15 +25,24 @@ interface OnboardingActionsContextValue {
   closeAction: (key?: OnboardingActionKey) => void;
   /** 动作层是否可用。商业版走自己的接入体系，这里整体关闭，调用方回退到跳转 */
   enabled: boolean;
+  /**
+   * 当前用户是否有权执行各动作（按 ACTION_PERMS 与后端 rt.perm 对齐）。
+   * 无权限的动作 openAction 会拒绝打开 —— 弹窗开了也只会在提交时收 403；
+   * 调用方应据此隐藏对应 CTA 或回退到 step.to 跳转，别让用户点了没反应。
+   */
+  permittedActions: Record<OnboardingActionKey, boolean>;
 }
 
 const noop = () => undefined;
+
+const NO_PERMITTED_ACTIONS: Record<OnboardingActionKey, boolean> = { pack: false, notify: false, test: false };
 
 const OnboardingActionsContext = React.createContext<OnboardingActionsContextValue>({
   current: undefined,
   openAction: noop,
   closeAction: noop,
   enabled: false,
+  permittedActions: NO_PERMITTED_ACTIONS,
 });
 
 export function useOnboardingActions() {
@@ -52,12 +63,20 @@ export function OnboardingActionsProvider({ children }: { children: React.ReactN
   const [current, setCurrent] = React.useState<OnboardingActionState | undefined>(undefined);
   const enabled = !IS_PLUS;
 
+  const packPermitted = useIsAuthorized(ACTION_PERMS.pack);
+  const notifyPermitted = useIsAuthorized(ACTION_PERMS.notify);
+  const testPermitted = useIsAuthorized(ACTION_PERMS.test);
+  const permittedActions = React.useMemo(
+    () => ({ pack: packPermitted, notify: notifyPermitted, test: testPermitted }),
+    [packPermitted, notifyPermitted, testPermitted],
+  );
+
   const openAction = React.useCallback(
     (key: OnboardingActionKey, payload?: OnboardingActionPayload) => {
-      if (!enabled) return;
+      if (!enabled || !permittedActions[key]) return;
       setCurrent({ key, payload });
     },
-    [enabled],
+    [enabled, permittedActions],
   );
 
   // 用函数式更新读 prev：同一批 setState 里先 open 后 close 时，闭包里的 current 已是旧值
@@ -65,15 +84,37 @@ export function OnboardingActionsProvider({ children }: { children: React.ReactN
     setCurrent((prev) => (key && prev?.key !== key ? prev : undefined));
   }, []);
 
-  const value = React.useMemo(() => ({ current, openAction, closeAction, enabled }), [current, openAction, closeAction, enabled]);
+  const value = React.useMemo(
+    () => ({ current, openAction, closeAction, enabled, permittedActions }),
+    [current, openAction, closeAction, enabled, permittedActions],
+  );
 
   return <OnboardingActionsContext.Provider value={value}>{children}</OnboardingActionsContext.Provider>;
 }
 
-/** 动作弹窗的唯一挂载点，与 Provider 一起放在 App 层 */
+/**
+ * 动作弹窗的唯一挂载点，与 Provider 一起放在 App 层。
+ *
+ * 挂载 gate 收在这一层而不是 App.tsx：这里在 Router 之内，useLocation 能随 SPA 路由变化重新判定，
+ * 而 App.tsx 顶部的 anonymous 是模块级常量、页内跳转不会更新。两个条件都不能少：
+ * - 匿名路由（登录页、分享大盘/图表等）：内层 useOnboardingProgress 会发一组鉴权探测请求，
+ *   401 后 request.tsx 会把无 token 的匿名访客直接踢到登录页，分享链路就断了；
+ * - 商业版（enabled=false）：openAction 是 no-op、弹窗永远开不起来，探测请求纯属浪费。
+ */
 export function OnboardingActionModals() {
+  const { enabled } = useOnboardingActions();
+  const { pathname } = useLocation();
+
+  if (!enabled || isAnonymousPath(pathname)) {
+    return null;
+  }
+  return <ActionModals />;
+}
+
+/** 真正持有 useOnboardingProgress（会发探测请求）的内层，只在上面的 gate 放行后挂载 */
+function ActionModals() {
   const { t } = useTranslation(NS);
-  const { current, openAction, closeAction } = useOnboardingActions();
+  const { current, openAction, closeAction, permittedActions } = useOnboardingActions();
   const { doneMap } = useOnboardingProgress();
 
   return (
@@ -106,7 +147,10 @@ export function OnboardingActionModals() {
       />
       {/* 自己写的两个弹窗都做了取消守卫，用条件挂载，卸载即清干净本地状态 */}
       {current?.key === 'test' && <SendTestAlertModal notifyRuleId={current.payload?.notifyRuleId} onCancel={() => closeAction('test')} />}
-      {current?.key === 'pack' && <HostMonitorPackModal onCancel={() => closeAction('pack')} onRequestTestAlert={() => openAction('test')} />}
+      {/* 无 test 权限时不传 onRequestTestAlert：openAction 会拒绝打开，留个点了没反应的按钮更糟 */}
+      {current?.key === 'pack' && (
+        <HostMonitorPackModal onCancel={() => closeAction('pack')} onRequestTestAlert={permittedActions.test ? () => openAction('test') : undefined} />
+      )}
     </>
   );
 }

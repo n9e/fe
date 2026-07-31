@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 import { CommonStateContext, basePrefix } from '@/App';
+import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { getComponents, getPayloads, Payload } from '@/pages/builtInComponents/services';
 import { TypeEnum } from '@/pages/builtInComponents/types';
 import { createDashboard } from '@/pages/builtInComponents/Dashboards/services';
@@ -16,7 +17,7 @@ import { getDashboards } from '@/services/dashboardV2';
 import { getStrategyGroupSubList } from '@/services/warning';
 import { refreshOnboardingProgress, OnboardingDisplayKey } from '@/components/OnboardingProgress/useOnboardingProgress';
 
-import { LINUX_COMPONENT_IDENT, NS, PACK_ALERT_CATE } from '../constants';
+import { ACTION_PERMS, LINUX_COMPONENT_IDENT, NS, PACK_ALERT_CATE } from '../constants';
 import { resolvePack, ResolvedPack } from './resolvePack';
 import { buildAlertRuleImportBody, buildBoardImportBody } from './transform';
 import { importAlertRules } from './services';
@@ -71,6 +72,7 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
     loading: false,
   });
   const [notifyRules, setNotifyRules] = React.useState<RuleItem[]>([]);
+  const canQuickCreateNotify = useIsAuthorized(ACTION_PERMS.notify);
   const [quickCreateVisible, setQuickCreateVisible] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [results, setResults] = React.useState<{ boards: ImportItemResult[]; rules: ImportItemResult[]; notifyBound: boolean }>();
@@ -367,10 +369,13 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
               label={
                 <Space size={4}>
                   {t('pack.notify_rules')}
-                  <a onClick={() => setQuickCreateVisible(true)}>
-                    <ThunderboltOutlined className='mr-1' />
-                    {t('pack.quick_create')}
-                  </a>
+                  {/* 快捷创建走 POST /notify-rules，无 add 权限时隐藏入口，点开填完才 403 更糟 */}
+                  {canQuickCreateNotify && (
+                    <a onClick={() => setQuickCreateVisible(true)}>
+                      <ThunderboltOutlined className='mr-1' />
+                      {t('pack.quick_create')}
+                    </a>
+                  )}
                 </Space>
               }
               name='notify_rule_ids'

@@ -1,5 +1,21 @@
+// 只取类型：constants 被 resolvePack 等纯逻辑模块引用，不能经 tracks 拖进 lucide-react 这类运行时依赖
+import type { OnboardingActionKey } from '@/components/OnboardingProgress/tracks';
+
 /** i18n namespace，与 locale/index.ts 的 key 保持一致 */
 export const NS = 'n9e-onboarding';
+
+/**
+ * 各动作放行所需的权限点，与后端路由的 rt.perm 对齐（center/router/router.go）：
+ * - pack：POST /busi-group/:id/boards 要 /dashboards/add，POST …/alert-rules/import 要 /alert-rules/add
+ * - notify：POST /notify-rules 要 /notification-rules/add
+ * - test：GET /notify-rules 与 POST /notify-rule/test 都挂在 /notification-rules 查看权限下
+ * 业务组级写权限（bgrw）无法在打开弹窗前判定，仍由后端把关、在弹窗内逐条展示失败。
+ */
+export const ACTION_PERMS: Record<OnboardingActionKey, string[]> = {
+  pack: ['/dashboards/add', '/alert-rules/add'],
+  notify: ['/notification-rules/add'],
+  test: ['/notification-rules'],
+};
 
 /** 内置 Linux 集成的 component ident，基础包的模板都取自它 */
 export const LINUX_COMPONENT_IDENT = 'Linux';

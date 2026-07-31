@@ -18,7 +18,6 @@ import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import EmptyGuide from '@/components/EmptyGuide';
 import NextStepsCard from '@/components/OnboardingActions/NextStepsCard';
-import useOnboardingProgress from '@/components/OnboardingProgress/useOnboardingProgress';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
 import Explorer from '@/pages/targets/components/Explorer';
 import EditBusinessGroups from '@/pages/targets/components/EditBusinessGroups';
@@ -153,9 +152,6 @@ export default function List(props: Props) {
   const [installVisible, setInstallVisible] = useState(false);
   const [collectVisible, setCollectVisible] = useState(false);
 
-  // 只用来 gate 引导条「至少有一台机器」这个前提，具体展示哪几步由 NextStepsCard 自己判断
-  const { doneMap: onboardingDoneMap } = useOnboardingProgress();
-
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
     limit: number;
@@ -282,9 +278,10 @@ export default function List(props: Props) {
         {/* 引导条：把「装完机器之后」的接力常驻在机器列表页，用户关掉安装弹窗后还能接着走。
             寄居在工具栏这个盒子里而不是自成一块 —— 表格之上已经有统计卡片和工具栏两层边框加内边距，
             再叠一个独立容器，光 chrome 就要吃掉 40px 而不承载任何信息。
-            必做项全完成后 NextStepsCard 自己返回 null。额外要求已有机器：一台都没有时该做的是先装采集器，
-            那由表格空态的部署引导承接，此时再摆一张「配置采集 / 套用大盘」的清单只会让人无从下手。 */}
-        {!aiTaskMode && !IS_PLUS && onboardingDoneMap.machine && <NextStepsCard variant='inline' onCollect={installMeta?.collect ? () => setCollectVisible(true) : undefined} />}
+            必做项全完成、或还没有任何机器（该先装采集器，由表格空态的部署引导承接）时
+            NextStepsCard 自己返回 null。aiTaskMode/商业版必须在这里就不挂载 ——
+            NextStepsCard 内部的进度探测 hook 在组件挂载时就会发请求，返回 null 拦不住它。 */}
+        {!aiTaskMode && !IS_PLUS && <NextStepsCard variant='inline' onCollect={installMeta?.collect ? () => setCollectVisible(true) : undefined} />}
         {/*
           左侧筛选区 flex-1 可伸缩、右侧动作区保持自然宽度：空间不够时先由搜索框让宽、再让筛选控件之间内部换行，
           而不是把整个动作组顶到第二行（原先两组都是刚性宽度，1280px 以下就会整组换行）。

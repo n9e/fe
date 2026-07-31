@@ -137,8 +137,13 @@ export const basePrefix = import.meta.env.VITE_PREFIX || '';
 // 可以匿名访问的路由 TODO: job-task output 应该也可以匿名访问
 const anonymousRoutes = [`${basePrefix}/login`, `${basePrefix}/callback`, `${basePrefix}/share/alert-his-events/`];
 const anonymousRoutesNeedDataSource = [`${basePrefix}/chart`, `${basePrefix}/dashboards/share/`];
-// 判断是否是匿名访问的路由
-const anonymous = _.some(anonymousRoutes.concat(anonymousRoutesNeedDataSource), (route) => location.pathname.startsWith(route));
+// 判断是否是匿名访问的路由。既接受带 basePrefix 的完整路径（window.location.pathname），
+// 也接受 Router 内 useLocation 给出的去掉 basename 的路径
+export const isAnonymousPath = (pathname: string) => {
+  const full = pathname.startsWith(basePrefix) ? pathname : `${basePrefix}${pathname}`;
+  return _.some(anonymousRoutes.concat(anonymousRoutesNeedDataSource), (route) => full.startsWith(route));
+};
+const anonymous = isAnonymousPath(location.pathname);
 // 初始化数据 context
 export const CommonStateContext = createContext({} as ICommonState);
 
