@@ -44,6 +44,8 @@ import EmptyGuide from '@/components/EmptyGuide';
 
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from './constants';
 import Header from './Header';
+import GuideLandingBanner from '@/pages/datasource/components/GuideLandingBanner';
+
 import FormModal from './FormModal';
 import Export from './Export';
 import Import, { ModalType } from './Import';
@@ -138,6 +140,8 @@ export default function index() {
           allOptionTooltip={t('default_filter.all_tip')}
         />
         <div className='fc-border rounded-lg dashboards-v2'>
+          {/* 从数据源引导「去创建仪表盘」跳过来时接住上下文，无该标记时不渲染 */}
+          <GuideLandingBanner target='dashboard' />
           <Header
             gids={gids}
             selectRowKeys={selectRowKeys}

@@ -16,6 +16,7 @@ import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 
 import { queryStringOptions } from '../constants';
+import ProbeBanner from '../components/ProbeBanner';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
 
 const LOCAL_KEY = 'n9e-query-promql-history';
@@ -70,6 +71,8 @@ export default function Prometheus(props: IProps) {
   const defaultPromQL = promQL ? promQL : typeof query.prom_ql === 'string' ? query.prom_ql : '';
   const [defaultTimeState, setDefaultTimeState] = useState<undefined | IRawTimeRange>();
   const [promql, setPromql] = useState<string>(defaultPromQL);
+  // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
+  const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
 
   useEffect(() => {
     if (query.__event_id) {
@@ -129,6 +132,8 @@ export default function Prometheus(props: IProps) {
         globalOperates={{ enabled: true }}
         headerExtra={headerExtra}
         executeQuery={() => {
+          // 用户主动点「查询」= 已接管，体检横幅让位
+          setProbeBannerVisible(false);
           form.validateFields();
         }}
         showBuiltinMetrics={showBuiltinMetrics}
@@ -137,7 +142,21 @@ export default function Prometheus(props: IProps) {
         defaultUnit={defaultUnit}
         showGlobalMetrics={showGlobalMetrics}
         showBuilder={showBuilder}
+        noticeBanner={
+          probeBannerVisible ? (
+            <ProbeBanner
+              datasourceId={datasourceValue}
+              onClose={() => {
+                setProbeBannerVisible(false);
+              }}
+            />
+          ) : undefined
+        }
         onChange={(newPromQL) => {
+          if (newPromQL && newPromQL !== defaultPromQL) {
+            // 用户改了查询 = 已接管，体检横幅让位
+            setProbeBannerVisible(false);
+          }
           if (newPromQL) {
             setLocalQueryHistory(`${LOCAL_KEY}-${datasourceValue}`, newPromQL);
           }

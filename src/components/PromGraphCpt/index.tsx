@@ -65,6 +65,7 @@ interface IProps {
   extra?: React.ReactElement;
   showExportButton?: boolean; // 是否显示导出按钮
   refetchOnZoom?: boolean;
+  noticeBanner?: React.ReactNode; // 查询框与结果区之间的提示横幅（如数据源体检结论），由调用方控制显隐
 }
 
 const TabPane = Tabs.TabPane;
@@ -100,6 +101,7 @@ export default function index(props: IProps) {
     defaultRange,
     showExportButton,
     refetchOnZoom = false,
+    noticeBanner,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
@@ -247,6 +249,7 @@ export default function index(props: IProps) {
           type='info'
         />
       )}
+      {noticeBanner}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
         <Tabs

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Input, Button, Modal } from 'antd';
 import { useDebounce } from 'ahooks';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
 import { getCateByValue } from '@/components/AdvancedWrap/utils';
@@ -17,12 +18,21 @@ export { Form };
 
 export default function index() {
   const { t } = useTranslation('datasourceManage');
+  const history = useHistory();
+  const location = useLocation<{ openAddModal?: boolean } | undefined>();
   const [pluginList, setPluginList] = useState<any[]>();
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailData, setDetailData] = useState();
   const [searchVal, setSearchVal] = useState<string>('');
   const debouncedSearchValue = useDebounce(searchVal, { wait: 500 });
-  const [chooseDataSourceTypeModalVisible, setChooseDataSourceTypeModalVisible] = useState(false);
+  const [chooseDataSourceTypeModalVisible, setChooseDataSourceTypeModalVisible] = useState(!!location.state?.openAddModal);
+
+  // 保存结果弹窗的「继续添加数据源」带着意图回来；消费掉即清，避免刷新后又弹一次
+  useEffect(() => {
+    if (location.state?.openAddModal) {
+      history.replace({ pathname: location.pathname, state: undefined });
+    }
+  }, []);
 
   useEffect(() => {
     getDataSourcePluginList().then((res) => {

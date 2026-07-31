@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { CommonStateContext } from '@/App';
@@ -30,9 +30,12 @@ export interface OnboardingProgress {
   total: number;
   doneCount: number;
   doneMap: Record<OnboardingStepKey, boolean>;
+  /** 用户显式关闭引导（「不再显示」）：立即隐藏并持久化，与全完成短路取或 */
+  dismiss: () => void;
 }
 
-// 全部完成后写入会话级标记，已上手的用户后续直接短路、不再探测，避免每次加载都拉全量大盘 / 告警
+// 全部完成或用户显式关闭后写入持久化标记，后续直接短路、不再探测，避免每次加载都拉全量大盘 / 告警。
+// 从 sessionStorage 改为 localStorage：老手关闭一次即永久生效，不随会话结束复活（产品方案 B1）。
 const ONBOARDING_DONE_KEY = 'n9e_onboarding_done';
 const DONE_DETECT: DetectState = { machine: true, dashboard: true, hostDashboard: true, alert: true, notification: true, llm: true, loaded: true };
 
@@ -105,7 +108,7 @@ export default function useOnboardingProgress(): OnboardingProgress {
   const [detect, setDetect] = useState<DetectState>(lastDetect);
 
   useEffect(() => {
-    if (sessionStorage.getItem(ONBOARDING_DONE_KEY)) {
+    if (localStorage.getItem(ONBOARDING_DONE_KEY)) {
       setDetect(DONE_DETECT);
       return;
     }
@@ -117,6 +120,15 @@ export default function useOnboardingProgress(): OnboardingProgress {
       cancelled = true;
     };
   }, [pathname]);
+
+  const dismiss = useCallback(() => {
+    try {
+      localStorage.setItem(ONBOARDING_DONE_KEY, '1');
+    } catch (e) {
+      // localStorage 不可用时仅本次会话隐藏
+    }
+    setDetect(DONE_DETECT);
+  }, []);
 
   const doneMap = useMemo<Record<OnboardingStepKey, boolean>>(
     () => ({
@@ -137,9 +149,13 @@ export default function useOnboardingProgress(): OnboardingProgress {
 
   useEffect(() => {
     if (detect.loaded && doneCount === total) {
-      sessionStorage.setItem(ONBOARDING_DONE_KEY, '1');
+      try {
+        localStorage.setItem(ONBOARDING_DONE_KEY, '1');
+      } catch (e) {
+        // localStorage 不可用时降级为本次会话短路
+      }
     }
   }, [detect.loaded, doneCount, total]);
 
-  return { loaded: detect.loaded, total, doneCount, doneMap };
+  return { loaded: detect.loaded, total, doneCount, doneMap, dismiss };
 }

@@ -7,6 +7,7 @@ import { Space, Button } from 'antd';
 import { CommonStateContext } from '@/App';
 import { getBusiGroupsAlertRules } from '@/services/warning';
 import EmptyGuide from '@/components/EmptyGuide';
+import GuideLandingBanner from '@/pages/datasource/components/GuideLandingBanner';
 
 import { AlertRuleType } from '../types';
 import MoreOperations from './MoreOperations';
@@ -101,6 +102,8 @@ export default function List(props: ListProps) {
 
   return (
     <div className='fc-border rounded-lg alert-rules-list-container' style={{ height: '100%', overflowY: 'auto' }}>
+      {/* 从数据源引导「去创建告警规则」跳过来时接住上下文，无该标记时不渲染 */}
+      <GuideLandingBanner target='alert' />
       <ListNG
         hideBusinessGroupColumn={businessGroup.isLeaf && gids !== '-2'}
         showRowSelection

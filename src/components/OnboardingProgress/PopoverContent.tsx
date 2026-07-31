@@ -10,10 +10,12 @@ interface Props {
   total: number;
   /** 点击某步 / 底部链接时跳转，并由调用方关闭弹窗 */
   onNavigate: (to: string) => void;
+  /** 「不再显示」：老手显式退出引导，持久化不复现 */
+  onDismiss?: () => void;
 }
 
 /** 侧栏徽标点击后弹出的紧凑版引导清单（窄版竖排，复用同一进度数据） */
-export default function OnboardingPopoverContent({ doneMap, doneCount, total, onNavigate }: Props) {
+export default function OnboardingPopoverContent({ doneMap, doneCount, total, onNavigate, onDismiss }: Props) {
   const { t } = useTranslation('n9e-landing');
   const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
 
@@ -50,6 +52,13 @@ export default function OnboardingPopoverContent({ doneMap, doneCount, total, on
           }}
         />
       </div>
+      {onDismiss && (
+        <div className='text-right mt-1'>
+          <a className='text-[var(--fc-text-4)] text-xs' onClick={onDismiss}>
+            {t('onboarding.dismiss')}
+          </a>
+        </div>
+      )}
     </div>
   );
 }

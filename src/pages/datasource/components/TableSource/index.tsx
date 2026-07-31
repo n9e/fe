@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 import { message, Modal, Button, Space, Switch, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { CheckCircleFilled, MinusCircleFilled, WarningOutlined } from '@ant-design/icons';
@@ -13,6 +14,7 @@ import EmptyGuide from '@/components/EmptyGuide';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
 import Rename from '../Rename';
+import NextStepModal from '../NextStepModal';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus, getServerClusters } from '../../services';
 // @ts-ignore
 import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
@@ -44,6 +46,7 @@ export interface IKeyValue {
 const TableSource = (props: IPropsType) => {
   const { t } = useTranslation('datasourceManage');
   const isPlus = useIsPlus();
+  const history = useHistory();
   const { nameClick, pluginList, debouncedSearchValue, onAdd } = props;
   const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
   const { reloadDatasourceList } = useContext(CommonStateContext);
@@ -53,6 +56,8 @@ const TableSource = (props: IPropsType) => {
   const pagination = usePagination({ PAGESIZE_KEY: 'datasource' });
   const [searchVal, setSearchVal] = useState<string | undefined>(debouncedSearchValue);
   const [clusterList, setClusterList] = useState<string[]>([]);
+  // 当前打开引导弹窗的行
+  const [guideRecord, setGuideRecord] = useState<any>();
 
   useEffect(() => {
     setSearchVal(debouncedSearchValue);
@@ -173,12 +178,22 @@ const TableSource = (props: IPropsType) => {
           checked={text === 'enabled'}
           size='small'
           onChange={(checked) => {
-            updateDataSourceStatus({
-              id: record.id,
-              status: checked ? 'enabled' : 'disabled',
-            }).then(() => {
-              message.success(checked ? t('success.enable') : t('success.disable'));
-              setRefresh((oldVal) => !oldVal);
+            const doUpdate = () =>
+              updateDataSourceStatus({
+                id: record.id,
+                status: checked ? 'enabled' : 'disabled',
+              }).then(() => {
+                message.success(checked ? t('success.enable') : t('success.disable'));
+                setRefresh((oldVal) => !oldVal);
+              });
+            if (checked) {
+              doUpdate();
+              return;
+            }
+            // 停用会让引用它的告警规则停止评估，二次确认一下，避免误碰开关
+            Modal.confirm({
+              title: t('confirm.disable'),
+              onOk: doUpdate,
             });
           }}
         />
@@ -224,30 +239,50 @@ const TableSource = (props: IPropsType) => {
         columns={defaultColumns}
         loading={loading}
         pagination={pagination}
-        rowActions={(record) => ({
-          inline: _.compact([
-            {
-              key: 'delete',
-              icon: 'delete',
-              text: t('common:btn.delete'),
-              danger: true,
-              disabled: record.status === 'enabled',
-              tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
-              onClick: () => {
-                Modal.confirm({
-                  title: t('common:confirm.delete'),
-                  onOk() {
-                    return deleteDataSourceById(record.id).then(() => {
-                      message.success(t('common:success.delete'));
-                      setRefresh((oldVal) => !oldVal);
-                    });
-                  },
-                });
+        rowActions={(record) => {
+          // SRE 高频动作前置：体检引导 / 编辑直达，不再只有删除
+          return {
+            inline: _.compact([
+              {
+                key: 'guide',
+                icon: 'view',
+                text: t('row_actions.guide'),
+                // 不直接跳探索器：先在弹窗里给出体检结论，探索/建盘/建告警由用户挑
+                onClick: () => {
+                  setGuideRecord(record);
+                },
               },
-            },
-            record.plugin_type === 'cloudwatch' ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> } : undefined,
-          ]) as any,
-        })}
+              {
+                key: 'edit',
+                icon: 'edit',
+                text: t('common:btn.edit'),
+                onClick: () => {
+                  history.push(`/datasources/edit/${record.plugin_type}/${record.id}`);
+                },
+              },
+              {
+                key: 'delete',
+                icon: 'delete',
+                text: t('common:btn.delete'),
+                danger: true,
+                disabled: record.status === 'enabled',
+                tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
+                onClick: () => {
+                  Modal.confirm({
+                    title: t('common:confirm.delete'),
+                    onOk() {
+                      return deleteDataSourceById(record.id).then(() => {
+                        message.success(t('common:success.delete'));
+                        setRefresh((oldVal) => !oldVal);
+                      });
+                    },
+                  });
+                },
+              },
+              record.plugin_type === 'cloudwatch' ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> } : undefined,
+            ]) as any,
+          };
+        }}
         actionColumn={{ title: t('common:table.operations'), width: 64 }}
         locale={{
           emptyText: (
@@ -274,6 +309,22 @@ const TableSource = (props: IPropsType) => {
           name={auth.name}
           type={auth.type}
           dataSourceId={auth.dataSourceId}
+        />
+      )}
+      {guideRecord && (
+        <NextStepModal
+          datasourceId={guideRecord.id}
+          pluginType={guideRecord.plugin_type}
+          name={guideRecord.name}
+          mode='inspect'
+          disabled={guideRecord.status !== 'enabled'}
+          onClose={() => {
+            setGuideRecord(undefined);
+          }}
+          onEdit={() => {
+            setGuideRecord(undefined);
+            history.push(`/datasources/edit/${guideRecord.plugin_type}/${guideRecord.id}`);
+          }}
         />
       )}
     </>
