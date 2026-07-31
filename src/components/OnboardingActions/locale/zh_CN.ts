@@ -22,6 +22,7 @@ const zh_CN = {
     preview: '预览并挑选',
     existing: '（已存在）',
     existing_skipped: '目标业务组已有同名大盘，本次跳过',
+    rule_existing_skipped: '目标业务组已有同名告警规则，本次跳过，不覆盖已有配置',
     already_imported: '选中的大盘在该业务组都已存在，本次只会补齐告警规则',
     boards_incomplete: '未匹配到内置主机大盘模板，请展开「预览并挑选」手工勾选',
     notify_rules: '通知规则',

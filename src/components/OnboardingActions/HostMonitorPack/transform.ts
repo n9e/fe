@@ -43,6 +43,16 @@ export interface AlertRuleImportOptions {
   notifyRuleIds?: number[];
 }
 
+/** 模板字段整体透传 + 本次改写的字段；name 是后端落库与导入响应 map 的 key */
+export interface AlertRuleImportBody extends Record<string, unknown> {
+  name?: string;
+  cate: string;
+  datasource_queries: unknown[];
+  disabled: number;
+  notify_version: number;
+  notify_rule_ids: number[];
+}
+
 /**
  * 内置告警规则 payload 的 content → POST /busi-group/:id/alert-rules/import 的单项 body。
  *
@@ -52,7 +62,7 @@ export interface AlertRuleImportOptions {
  * 2. host 类规则的 datasource_queries 传空数组 —— 机器失联这类规则不依赖数据源，
  *    后端会自动填 DataSourceQueryAll。
  */
-export function buildAlertRuleImportBody(content: string, options: AlertRuleImportOptions) {
+export function buildAlertRuleImportBody(content: string, options: AlertRuleImportOptions): AlertRuleImportBody {
   const parsed = JSON.parse(content);
   const rule = _.isArray(parsed) ? parsed[0] : parsed;
   const record = _.omit(rule, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);

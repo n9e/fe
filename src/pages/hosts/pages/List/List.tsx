@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
@@ -217,16 +217,15 @@ export default function List(props: Props) {
   }, []);
 
   // 引导清单里的「接入机器 / 配置采集」两步跳到这里唤起对应向导。消费后立刻清掉 query，
-  // 否则刷新或后退会再弹一次；ref 保证同一次进入只处理一次。
-  const onboardingParamHandledRef = useRef(false);
+  // 否则刷新或后退会再弹一次。防重复靠清参本身：处理后 search 已空，effect 重跑会在参数判定处
+  // 退出，不需要一次性标记 —— 一次性标记会把同一次挂载内的第二次深链（用户再点一次引导步骤）吞掉。
   useEffect(() => {
-    if (aiTaskMode || onboardingParamHandledRef.current) return;
+    if (aiTaskMode) return;
     const onboarding = new URLSearchParams(location.search).get('onboarding');
     if (onboarding !== 'install' && onboarding !== 'collect') return;
     // installMeta 还没回来时先等下一轮：两个向导都依赖它。老后端/商业版下它恒为 null，
-    // 此时什么都不做（query 留着无害），所以标记位要放在真正处理之后再置。
+    // 此时什么都不做（query 留着无害）。
     if (!installMeta) return;
-    onboardingParamHandledRef.current = true;
     if (onboarding === 'install') {
       setInstallVisible(true);
     } else if (installMeta.collect) {

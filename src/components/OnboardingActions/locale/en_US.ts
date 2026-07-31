@@ -22,6 +22,7 @@ const en_US = {
     preview: 'Preview and choose',
     existing: '(already exists)',
     existing_skipped: 'A dashboard with the same name already exists in the target business group, skipped',
+    rule_existing_skipped: 'An alert rule with the same name already exists in the target business group, skipped without overwriting it',
     already_imported: 'All selected dashboards already exist in this business group; only the alert rules will be added',
     boards_incomplete: 'No built-in host dashboard template matched. Expand "Preview and choose" to pick manually',
     notify_rules: 'Notification rules',

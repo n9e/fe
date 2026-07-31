@@ -13,6 +13,7 @@ import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/Datasour
 import QuickCreateModal from '@/pages/notificationRules/components/RuleDropdownSelect/QuickCreateModal';
 import { getItems as getNotifyRules, RuleItem } from '@/pages/notificationRules/services';
 import { getDashboards } from '@/services/dashboardV2';
+import { getStrategyGroupSubList } from '@/services/warning';
 import { refreshOnboardingProgress, OnboardingDisplayKey } from '@/components/OnboardingProgress/useOnboardingProgress';
 
 import { LINUX_COMPONENT_IDENT, NS, PACK_ALERT_CATE } from '../constants';
@@ -60,7 +61,15 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
   const [boardIds, setBoardIds] = React.useState<number[]>([]);
   const [ruleIds, setRuleIds] = React.useState<number[]>([]);
   const [previewOpen, setPreviewOpen] = React.useState(false);
-  const [existingBoardNames, setExistingBoardNames] = React.useState<Record<string, number>>({});
+  /**
+   * 目标业务组已有的大盘 / 告警规则名（预查结果）。带上归属 bgid 与 loading：切组瞬间旧数据
+   * 还是上一组的，此时提交会用错重名表 —— 提交按钮在预查完成且归属当前业务组之前保持禁用。
+   */
+  const [existing, setExisting] = React.useState<{ bgid?: number; boards: Record<string, number>; rules: Record<string, boolean>; loading: boolean }>({
+    boards: {},
+    rules: {},
+    loading: false,
+  });
   const [notifyRules, setNotifyRules] = React.useState<RuleItem[]>([]);
   const [quickCreateVisible, setQuickCreateVisible] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
@@ -115,18 +124,26 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
     };
   }, []);
 
-  // 预查目标业务组已有的大盘：后端没有 board upsert，重名会硬失败，所以重名的直接跳过
+  // 预查目标业务组已有的大盘与告警规则：后端没有 board upsert，重名会硬失败；告警规则有意
+  // 不走 force 覆盖（见 services.ts），重名同样跳过。查询失败按「没有重名」处理即可 ——
+  // 此时重名由后端拒绝并逐条展示为失败，不会覆盖任何既有配置。
   React.useEffect(() => {
     if (!bgid) return;
     let cancelled = false;
-    getDashboards(bgid).then(
-      (list) => {
-        if (!cancelled) setExistingBoardNames(_.fromPairs(_.map(list ?? [], (board: { name: string; id: number }) => [board.name, board.id])));
-      },
-      () => {
-        if (!cancelled) setExistingBoardNames({});
-      },
-    );
+    // 切组立即清空旧结果并进入 loading，防止提交用上一组的重名表做跳过判定
+    setExisting({ bgid, boards: {}, rules: {}, loading: true });
+    Promise.all([
+      getDashboards(bgid).then(
+        (list) => _.fromPairs(_.map(list ?? [], (board: { name: string; id: number }) => [board.name, board.id])) as Record<string, number>,
+        () => ({} as Record<string, number>),
+      ),
+      getStrategyGroupSubList({ id: bgid }).then(
+        (res) => _.fromPairs(_.map(res?.dat ?? [], (rule: { name: string }) => [rule.name, true])) as Record<string, boolean>,
+        () => ({} as Record<string, boolean>),
+      ),
+    ]).then(([boards, rules]) => {
+      if (!cancelled) setExisting({ bgid, boards, rules, loading: false });
+    });
     return () => {
       cancelled = true;
     };
@@ -134,7 +151,7 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
 
   const selectedBoards = React.useMemo(() => _.filter(resolved?.boards, (item) => _.includes(boardIds, item.id)), [resolved, boardIds]);
   const selectedRules = React.useMemo(() => _.filter(resolved?.rules, (item) => _.includes(ruleIds, item.id)), [resolved, ruleIds]);
-  const alreadyImported = !_.isEmpty(selectedBoards) && _.every(selectedBoards, (item) => existingBoardNames[item.name] !== undefined);
+  const alreadyImported = !_.isEmpty(selectedBoards) && _.every(selectedBoards, (item) => existing.boards[item.name] !== undefined);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
@@ -143,8 +160,8 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
       const notifyRuleIds: number[] = values.notify_rule_ids ?? [];
 
       const boardTasks = _.map(selectedBoards, (payload) => {
-        if (existingBoardNames[payload.name] !== undefined) {
-          return Promise.resolve<ImportItemResult>({ name: payload.name, status: 'skipped', boardId: existingBoardNames[payload.name] });
+        if (existing.boards[payload.name] !== undefined) {
+          return Promise.resolve<ImportItemResult>({ name: payload.name, status: 'skipped', boardId: existing.boards[payload.name] });
         }
         let body: ReturnType<typeof buildBoardImportBody>;
         try {
@@ -161,27 +178,34 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
       const ruleBodies = _.compact(
         _.map(selectedRules, (payload) => {
           try {
-            return { name: payload.name, body: buildAlertRuleImportBody(payload.content, { datasourceQueries: values.datasource_queries, notifyRuleIds }) };
+            const body = buildAlertRuleImportBody(payload.content, { datasourceQueries: values.datasource_queries, notifyRuleIds });
+            // bodyName 才是后端落库与响应 map 的 key（payload.name 只是列表展示名，两者通常一致）
+            return { name: payload.name, bodyName: body.name ?? payload.name, body };
           } catch (e) {
             return null;
           }
         }),
       );
-      const ruleTask: Promise<ImportItemResult[]> = _.isEmpty(ruleBodies)
-        ? Promise.resolve([])
-        : importAlertRules(targetBgid, _.map(ruleBodies, 'body')).then(
+      // 与大盘同一口径：重名跳过、不覆盖。不能走后端 force 导入 —— 那是按 (group_id, name)
+      // 的整行覆盖，会把用户改过阈值 / 主动停用 / 换过通知绑定的同名规则静默还原（见 services.ts）
+      const [existedRules, rulesToImport] = _.partition(ruleBodies, (item) => existing.rules[item.bodyName]);
+      const skippedResults = _.map(existedRules, (item) => ({ name: item.name, status: 'skipped' } as ImportItemResult));
+      const ruleTask: Promise<ImportItemResult[]> = _.isEmpty(rulesToImport)
+        ? Promise.resolve(skippedResults)
+        : importAlertRules(targetBgid, _.map(rulesToImport, 'body')).then(
             // 响应是 name → 错误信息，空字符串表示成功
-            (res) => _.map(ruleBodies, (item) => ({ name: item.name, status: res?.[item.name] ? 'failed' : 'ok', detail: res?.[item.name] } as ImportItemResult)),
-            (err) => _.map(ruleBodies, (item) => ({ name: item.name, status: 'failed', detail: err?.message || t('pack.unknown_error') } as ImportItemResult)),
+            (res) => [..._.map(rulesToImport, (item) => ({ name: item.name, status: res?.[item.bodyName] ? 'failed' : 'ok', detail: res?.[item.bodyName] } as ImportItemResult)), ...skippedResults],
+            (err) => [..._.map(rulesToImport, (item) => ({ name: item.name, status: 'failed', detail: err?.message || t('pack.unknown_error') } as ImportItemResult)), ...skippedResults],
           );
 
       Promise.all([Promise.all(boardTasks), ruleTask])
         .then(([boards, rules]) => {
           setResults({ boards, rules, notifyBound: !_.isEmpty(notifyRuleIds) });
-          // 只把确实生效的步骤标记为完成；「已存在」也算生效，用户确实已经有这个大盘了
+          // 只对确实有变化 / 确认存在的步骤触发重探测；「已存在」也算 —— refresh 只是发起
+          // 一次真实探测，被跳过的规则启用与否由探测按现状判定，不会被误标完成
           const keys: OnboardingDisplayKey[] = [];
           if (_.some(boards, (item) => item.status !== 'failed')) keys.push('dashboard', 'hostDashboard');
-          if (_.some(rules, { status: 'ok' })) keys.push('alert', 'hostAlert');
+          if (_.some(rules, (item) => item.status !== 'failed')) keys.push('alert', 'hostAlert');
           if (!_.isEmpty(keys)) refreshOnboardingProgress(keys);
         })
         .finally(() => {
@@ -196,12 +220,15 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
   const renderPreviewList = (payloads: Payload[], checked: number[], onChange: (next: number[]) => void) => (
     <div className='mt-1 max-h-[168px] overflow-y-auto fc-border rounded p-2'>
       <Checkbox.Group value={checked} onChange={(next) => onChange(next as number[])} className='flex flex-col gap-1'>
-        {_.map(payloads, (payload) => (
-          <Checkbox key={payload.id} value={payload.id}>
-            {payload.name}
-            {existingBoardNames[payload.name] !== undefined && payload.type === TypeEnum.dashboard && <span className='ml-1 text-soft'>{t('pack.existing')}</span>}
-          </Checkbox>
-        ))}
+        {_.map(payloads, (payload) => {
+          const isExisting = payload.type === TypeEnum.dashboard ? existing.boards[payload.name] !== undefined : !!existing.rules[payload.name];
+          return (
+            <Checkbox key={payload.id} value={payload.id}>
+              {payload.name}
+              {isExisting && <span className='ml-1 text-soft'>{t('pack.existing')}</span>}
+            </Checkbox>
+          );
+        })}
       </Checkbox.Group>
     </div>
   );
@@ -233,7 +260,13 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
         ) : (
           <Space>
             <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
-            <Button type='primary' loading={submitting} disabled={loading || !!loadError || (_.isEmpty(selectedBoards) && _.isEmpty(selectedRules))} onClick={handleSubmit}>
+            <Button
+              type='primary'
+              loading={submitting}
+              // existing 预查未完成或还挂在上一个业务组时不许提交：跳过判定必须基于当前组的重名表
+              disabled={loading || !!loadError || existing.loading || existing.bgid !== bgid || (_.isEmpty(selectedBoards) && _.isEmpty(selectedRules))}
+              onClick={handleSubmit}
+            >
               {t('pack.submit')}
             </Button>
           </Space>
@@ -277,6 +310,7 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
                     <StatusIcon status={item.status} />
                     <div className='min-w-0 flex-1'>
                       <div>{item.name}</div>
+                      {item.status === 'skipped' && <div className='text-soft'>{t('pack.rule_existing_skipped')}</div>}
                       {item.status === 'failed' && <div className='break-all text-error'>{item.detail}</div>}
                     </div>
                   </div>

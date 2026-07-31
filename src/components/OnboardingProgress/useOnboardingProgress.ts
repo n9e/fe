@@ -166,14 +166,19 @@ function probeOnboarding(): Promise<DetectState> {
       );
   // 没有通知规则就不可能送达过，与 doneMap 里 testDelivered 的 gate 保持一致；
   // 也避免全新部署（正是新手引导的目标用户）每次路由变化都白跑一次这个查询。
+  // gate 必须挂在本轮 notificationP 的结果上：若读上一轮的 known.notification（新会话初值恒为
+  // false），首轮探测会永远跳过送达查询，已正常收过通知的老部署要等一次路由切换才能点亮。
   // 老后端没有该路由时请求会失败，按未送达处理，此时仅靠本地标记。
-  const deliveredP =
-    known.delivered || !known.notification
-      ? Promise.resolve(known.delivered)
-      : getNotifyDelivered().then(
-          (res) => !!res?.delivered,
-          () => false,
-        );
+  const deliveredP: Promise<boolean> = known.delivered
+    ? Promise.resolve(true)
+    : notificationP.then((notification) =>
+        notification
+          ? getNotifyDelivered().then(
+              (res) => !!res?.delivered,
+              () => false,
+            )
+          : false,
+      );
 
   return Promise.all([machineP, dashboardP, alertP, notificationP, llmP, deliveredP]).then(([machine, dashboard, alert, notification, llm, delivered]) => ({
     machine,

@@ -22,6 +22,7 @@ const zh_HK = {
     preview: '預覽並挑選',
     existing: '（已存在）',
     existing_skipped: '目標業務組已有同名大盤，本次跳過',
+    rule_existing_skipped: '目標業務組已有同名告警規則，本次跳過，不覆蓋已有配置',
     already_imported: '選中的大盤在該業務組都已存在，本次只會補齊告警規則',
     boards_incomplete: '未匹配到內置主機大盤模板，請展開「預覽並挑選」手工勾選',
     notify_rules: '通知規則',
