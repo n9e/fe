@@ -8,7 +8,7 @@ import { getBusiGroupsDashboards } from '@/services/dashboardV2';
 import { getBusiGroupsAlertRules } from '@/services/warning';
 import { getItems as getNotifyRules } from '@/pages/notificationRules/services';
 import { getList as getLlmConfigs } from '@/pages/aiConfig/llmConfigs/services';
-import { getNotifyDelivered } from '@/pages/event/EventNotifyRecords/services';
+import { getNotifyUsed } from '@/pages/event/EventNotifyRecords/services';
 
 import { hasEnabledHostRule, isHostBoard, readOnboardingMarker } from './detect';
 
@@ -51,11 +51,11 @@ interface DetectState {
   notification: boolean;
   // 是否已接入大模型（解锁 AI 助手与智能分析）
   llm: boolean;
-  // 服务端探测：这套部署是否曾成功发出过通知。让已在正常使用的老用户自动点亮「发送测试告警」
-  delivered: boolean;
+  // 服务端探测：这套部署是否产生过通知记录（无论成败）。让已在正常使用的老用户自动点亮「发送测试告警」
+  notifyUsed: boolean;
   // 采集向导验证通过的本地标记（不计入分母）
   collectVerified: boolean;
-  // 测试告警发送成功的本地标记，与 delivered 取或：点完立刻点亮，换浏览器由 delivered 兜住
+  // 测试告警发送成功的本地标记，与 notifyUsed 取或：点完立刻点亮，换浏览器由 notifyUsed 兜住
   testDeliveredLocal: boolean;
   loaded: boolean;
 }
@@ -78,7 +78,7 @@ const DONE_DETECT: DetectState = {
   hostAlert: true,
   notification: true,
   llm: true,
-  delivered: true,
+  notifyUsed: true,
   collectVerified: true,
   testDeliveredLocal: true,
   loaded: true,
@@ -94,7 +94,7 @@ let lastDetect: DetectState = {
   hostAlert: false,
   notification: false,
   llm: false,
-  delivered: false,
+  notifyUsed: false,
   collectVerified: false,
   testDeliveredLocal: false,
   loaded: false,
@@ -164,23 +164,23 @@ function probeOnboarding(): Promise<DetectState> {
         (res) => (res?.length ?? 0) > 0,
         () => false,
       );
-  // 没有通知规则就不可能送达过，与 doneMap 里 testDelivered 的 gate 保持一致；
+  // 没有通知规则就不可能产生过通知记录，与 doneMap 里 testDelivered 的 gate 保持一致；
   // 也避免全新部署（正是新手引导的目标用户）每次路由变化都白跑一次这个查询。
   // gate 必须挂在本轮 notificationP 的结果上：若读上一轮的 known.notification（新会话初值恒为
-  // false），首轮探测会永远跳过送达查询，已正常收过通知的老部署要等一次路由切换才能点亮。
-  // 老后端没有该路由时请求会失败，按未送达处理，此时仅靠本地标记。
-  const deliveredP: Promise<boolean> = known.delivered
+  // false），首轮探测会永远跳过这个查询，已正常收过通知的老部署要等一次路由切换才能点亮。
+  // 老后端没有该路由时请求会失败，按未使用处理，此时仅靠本地标记。
+  const notifyUsedP: Promise<boolean> = known.notifyUsed
     ? Promise.resolve(true)
     : notificationP.then((notification) =>
         notification
-          ? getNotifyDelivered().then(
-              (res) => !!res?.delivered,
+          ? getNotifyUsed().then(
+              (res) => !!res?.used,
               () => false,
             )
           : false,
       );
 
-  return Promise.all([machineP, dashboardP, alertP, notificationP, llmP, deliveredP]).then(([machine, dashboard, alert, notification, llm, delivered]) => ({
+  return Promise.all([machineP, dashboardP, alertP, notificationP, llmP, notifyUsedP]).then(([machine, dashboard, alert, notification, llm, notifyUsed]) => ({
     machine,
     dashboard: dashboard.any,
     hostDashboard: dashboard.host,
@@ -188,7 +188,7 @@ function probeOnboarding(): Promise<DetectState> {
     hostAlert: alert.host,
     notification,
     llm,
-    delivered,
+    notifyUsed,
     ...readMarkers(known),
     loaded: true,
   }));
@@ -228,7 +228,7 @@ export function refreshOnboardingProgress(keys?: OnboardingDisplayKey[]) {
 }
 
 /**
- * 新手引导进度检测：数据源读 CommonStateContext，机器 / 大盘 / 告警 / 通知 / 大模型 / 送达各拉一次轻量接口。
+ * 新手引导进度检测：数据源读 CommonStateContext，机器 / 大盘 / 告警 / 通知 / 大模型 / 通知记录各拉一次轻量接口。
  * 供着陆页清单、侧栏进度徽标、机器列表横幅与各成功态卡片共用，保证多处口径一致；
  * 随路由变化重新探测，也可由 refreshOnboardingProgress 就地刷新。
  */
@@ -268,8 +268,8 @@ export default function useOnboardingProgress(): OnboardingProgress {
       hostDashboard: detect.machine && detect.hostDashboard,
       hostAlert: detect.machine && detect.hostAlert,
       collectVerified: detect.machine && detect.collectVerified,
-      // 通知都没配就谈不上"收到过测试告警"
-      testDelivered: detect.notification && (detect.testDeliveredLocal || detect.delivered),
+      // 通知都没配就谈不上"发过测试告警"
+      testDelivered: detect.notification && (detect.testDeliveredLocal || detect.notifyUsed),
       datasource: !!datasourceList?.length,
       dashboard: detect.dashboard,
       alert: detect.alert,
