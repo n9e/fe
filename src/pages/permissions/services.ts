@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import { N9E_PATHNAME } from '@/utils/constant';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { RoleType, RolePostType, OperationType } from './types';
@@ -45,13 +46,13 @@ export const deleteRoles = function (id: number) {
 };
 
 export const getOperations = function (): Promise<OperationType[]> {
-  return request('/api/n9e/operation', {
+  return request(`/api/${N9E_PATHNAME}/operation`, {
     method: RequestMethod.Get,
   }).then((res) => res.dat);
 };
 
 export const getOperationsByRole = function (roleId: number): Promise<string[]> {
-  return request(`/api/n9e/role/${roleId}/ops`, {
+  return request(`/api/${N9E_PATHNAME}/role/${roleId}/ops`, {
     method: RequestMethod.Get,
   }).then((res) => res.dat);
 };
