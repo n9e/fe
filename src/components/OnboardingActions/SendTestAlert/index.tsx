@@ -12,6 +12,7 @@ import { writeOnboardingMarker } from '@/components/OnboardingProgress/detect';
 import { localizeDocUrl } from '@/utils/docUrl';
 
 import { NOTIFY_CHANNEL_DOC, NS } from '../constants';
+import { interpretTestSendResponse } from './interpretResponse';
 
 const channelTypes = getNotificationChannelTypes() as Record<string, unknown>;
 
@@ -96,7 +97,8 @@ export default function SendTestAlertModal({ notifyRuleId, onCancel }: Props) {
           return Promise.resolve<SendResult>({ index, label, ok: false, detail: t('test.no_channel') });
         }
         return notifyRuleTest({ use_mock_event: true, notify_config: config }, { silence: true }).then(
-          (res) => ({ index, label, ok: true, detail: _.isString(res?.dat) ? res.dat : undefined } as SendResult),
+          // resolve ≠ 送达：后端对 HTTP 200 不解析响应体，钉钉/企微的业务失败要靠 interpretResponse 识别
+          (res) => ({ index, label, ...interpretTestSendResponse(res?.dat) } as SendResult),
           (err) => ({ index, label, ok: false, detail: err?.message || t('test.unknown_error') } as SendResult),
         );
       }),
@@ -157,7 +159,9 @@ export default function SendTestAlertModal({ notifyRuleId, onCancel }: Props) {
                       {result.ok ? <CheckCircleFilled className='mt-0.5 text-success' /> : <CloseCircleFilled className='mt-0.5 text-error' />}
                       <div className='min-w-0 flex-1'>
                         <div className='font-bold'>{result.label}</div>
-                        <div className='break-all text-soft'>{result.ok ? t('test.delivered') : result.detail}</div>
+                        <div className='break-all text-soft'>{result.ok ? t('test.sent') : result.detail}</div>
+                        {/* 成功态也原样展示 provider 响应：HTTP 200 不代表业务成功，errcode/errmsg 是用户仅有的排错线索 */}
+                        {result.ok && result.detail && <div className='break-all text-soft'>{result.detail}</div>}
                         {!result.ok && (
                           <Space>
                             <Link to='/notification-channels' target='_blank'>
@@ -172,7 +176,7 @@ export default function SendTestAlertModal({ notifyRuleId, onCancel }: Props) {
                     </div>
                   ))}
                 </div>
-                {_.some(results, { ok: true }) && <div className='mt-2 text-soft'>{t('test.delivered_hint')}</div>}
+                {_.some(results, { ok: true }) && <div className='mt-2 text-soft'>{t('test.sent_hint')}</div>}
               </div>
             )}
           </>
