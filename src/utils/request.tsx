@@ -129,6 +129,18 @@ request.interceptors.response.use(
       return response
         .clone()
         .json()
+        .catch((err) => {
+          // 200 但响应体不是 JSON，最常见的是接口路由不存在、被 SPA 的 index.html 兜底。
+          // 这里要把调用方的 silence 补上：parse 失败抛的是原生 SyntaxError，本身不带 silence 标记，
+          // 声明了 silence 的请求仍会被全局 errorHandler 弹一条红色通知。
+          throw {
+            name: err?.message,
+            message: err?.message,
+            silence: options.silence,
+            response,
+            status,
+          };
+        })
         .then((data) => {
           const { url } = response;
           // TODO: 糟糕的逻辑，后端返回的数据结构不统一，需要兼容

@@ -2,18 +2,19 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OnboardingTracks from './OnboardingTracks';
-import { OnboardingStepKey } from './useOnboardingProgress';
+import { OnboardingStep } from './tracks';
+import { OnboardingDisplayKey } from './useOnboardingProgress';
 
 interface Props {
-  doneMap: Record<OnboardingStepKey, boolean>;
+  doneMap: Record<OnboardingDisplayKey, boolean>;
   doneCount: number;
   total: number;
-  /** 点击某步 / 底部链接时跳转，并由调用方关闭弹窗 */
-  onNavigate: (to: string) => void;
+  /** 点击某步时开弹窗或跳转，并由调用方先关闭本 popover */
+  onStepClick: (step: OnboardingStep) => void;
 }
 
 /** 侧栏徽标点击后弹出的紧凑版引导清单（窄版竖排，复用同一进度数据） */
-export default function OnboardingPopoverContent({ doneMap, doneCount, total, onNavigate }: Props) {
+export default function OnboardingPopoverContent({ doneMap, doneCount, total, onStepClick }: Props) {
   const { t } = useTranslation('n9e-landing');
   const pct = total > 0 ? Math.round((doneCount / total) * 100) : 0;
 
@@ -29,7 +30,7 @@ export default function OnboardingPopoverContent({ doneMap, doneCount, total, on
       <div className='n9e-onboarding-pop-tracks'>
         <OnboardingTracks
           doneMap={doneMap}
-          onStepClick={onNavigate}
+          onStepClick={onStepClick}
           checkStrokeWidth={2.6}
           arrowProps={{ size: 15, strokeWidth: 1.9 }}
           classes={{

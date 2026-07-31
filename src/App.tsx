@@ -34,6 +34,7 @@ import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 import { getAntdLocale } from '@/utils/antdLocale';
 import { AiChatProvider, AiChatContainer } from '@/components/AiChatNG';
+import { OnboardingActionsProvider, OnboardingActionModals } from '@/components/OnboardingActions';
 import HocRenderer from './components/HocRenderer';
 import HeaderMenu from './components/SideMenu';
 import Content from './routers';
@@ -354,9 +355,13 @@ function App() {
                   <Route exact path='/job-task/:busiId/output/:taskId/:host/:outputType' component={TaskHostOutput} />
                   <Route exact path='/share/alert-his-events/:eventId' component={SharedDetail} />
                   <>
-                    {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
-                    <Content />
-                    <HocRenderer></HocRenderer>
+                    <OnboardingActionsProvider>
+                      {location.pathname !== `${basePrefix}/out-of-service` && <HeaderMenu />}
+                      <Content />
+                      <HocRenderer></HocRenderer>
+                      {/* 新手引导动作弹窗的唯一挂载点：侧栏引导徽标在任意路由都可能唤起它们 */}
+                      <OnboardingActionModals />
+                    </OnboardingActionsProvider>
                   </>
                 </Switch>
               </React.Suspense>

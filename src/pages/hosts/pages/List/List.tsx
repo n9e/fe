@@ -1,7 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
-import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import {
+  ReloadOutlined,
+  SearchOutlined,
+  DownOutlined,
+  QuestionCircleOutlined,
+  CopyOutlined,
+  ApartmentOutlined,
+  DownloadOutlined,
+  AppstoreAddOutlined,
+  DashboardOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import semver from 'semver';
 import { useAntdTable } from 'ahooks';
@@ -16,6 +27,9 @@ import getTextWidth from '@/utils/getTextWidth';
 import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import EmptyGuide from '@/components/EmptyGuide';
+import NextStepsCard from '@/components/OnboardingActions/NextStepsCard';
+import { useOnboardingActions } from '@/components/OnboardingActions';
+import useOnboardingProgress from '@/components/OnboardingProgress/useOnboardingProgress';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
 import Explorer from '@/pages/targets/components/Explorer';
 import EditBusinessGroups from '@/pages/targets/components/EditBusinessGroups';
@@ -133,6 +147,8 @@ export default function List(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { t: tTargets } = useTranslation('targets');
   const { darkMode, siteInfo } = useContext(CommonStateContext);
+  const history = useHistory();
+  const location = useLocation();
   const pagination = usePagination({ PAGESIZE_KEY: 'hosts-ng' });
 
   const { allCollapseNode, editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType, aiTaskMode = false } = props;
@@ -147,6 +163,11 @@ export default function List(props: Props) {
   const [installMeta, setInstallMeta] = useState<CategrafInstallMeta | null>(null);
   const [installVisible, setInstallVisible] = useState(false);
   const [collectVisible, setCollectVisible] = useState(false);
+
+  const { openAction, enabled: onboardingEnabled } = useOnboardingActions();
+  const { doneMap: onboardingDoneMap } = useOnboardingProgress();
+  // 内置主机大盘与主机告警都齐了就不再引导，工具栏入口与顶部横幅一起消失
+  const hostPackReady = onboardingDoneMap.hostDashboard && onboardingDoneMap.hostAlert;
 
   const [searchValue, setSearchValue] = useState('');
   const [params, setParams] = useState<{
@@ -208,6 +229,25 @@ export default function List(props: Props) {
     getCategrafInstallMeta().then(setInstallMeta);
   }, []);
 
+  // 引导清单里的「接入机器 / 配置采集」两步跳到这里唤起对应向导。消费后立刻清掉 query，
+  // 否则刷新或后退会再弹一次；ref 保证同一次进入只处理一次。
+  const onboardingParamHandledRef = useRef(false);
+  useEffect(() => {
+    if (aiTaskMode || onboardingParamHandledRef.current) return;
+    const onboarding = new URLSearchParams(location.search).get('onboarding');
+    if (onboarding !== 'install' && onboarding !== 'collect') return;
+    // installMeta 还没回来时先等下一轮：两个向导都依赖它。老后端/商业版下它恒为 null，
+    // 此时什么都不做（query 留着无害），所以标记位要放在真正处理之后再置。
+    if (!installMeta) return;
+    onboardingParamHandledRef.current = true;
+    if (onboarding === 'install') {
+      setInstallVisible(true);
+    } else if (installMeta.collect) {
+      setCollectVisible(true);
+    }
+    history.replace({ pathname: location.pathname, search: '' });
+  }, [aiTaskMode, installMeta, location.search]);
+
   const openCategrafDoc = () => {
     DocumentDrawer({
       language: i18n.language,
@@ -248,13 +288,23 @@ export default function List(props: Props) {
 
   return (
     <>
-      {/* flex-wrap + Space wrap：窄屏时右侧动作组整体换行，而不是被挤出可视区裁掉 */}
+      {/* 引导横幅：把「装完机器之后」的接力常驻在机器列表页，用户关掉安装弹窗后还能接着走。
+          必做项全完成后 NextStepsCard 自己返回 null。额外要求已有机器：一台都没有时该做的是先装采集器，
+          那由表格空态的部署引导承接，此时再摆一张「配置采集 / 套用大盘」的清单只会让人无从下手。 */}
+      {!aiTaskMode && !IS_PLUS && onboardingDoneMap.machine && (
+        <NextStepsCard variant='banner' onCollect={installMeta?.collect ? () => setCollectVisible(true) : undefined} />
+      )}
+      {/*
+        左侧筛选区 flex-1 可伸缩、右侧动作区保持自然宽度：空间不够时先由搜索框让宽、再让筛选控件之间内部换行，
+        而不是把整个动作组顶到第二行（原先两组都是刚性宽度，1280px 以下就会整组换行）。
+        动作组的 ml-auto 保证万一真的换行了也贴右对齐，读起来仍像"操作区"而不是散落的按钮。
+      */}
       <div
-        className={classNames('flex-shrink-0 flex flex-wrap justify-between gap-y-2', {
+        className={classNames('flex-shrink-0 flex flex-wrap items-start justify-between gap-2', {
           'bg-fc-100 fc-border rounded-lg p-4': !aiTaskMode,
         })}
       >
-        <Space wrap>
+        <div className='flex min-w-0 flex-1 flex-wrap items-center gap-2'>
           {allCollapseNode}
           <Button
             icon={<ReloadOutlined />}
@@ -263,8 +313,8 @@ export default function List(props: Props) {
             }}
           />
           <Input
-            // 窄屏收窄，把宽度让给右侧动作区，推迟整行换行的临界点
-            className='w-[180px] xl:w-[300px]'
+            // 唯一可伸缩的控件：宽屏顶到 300px，窄屏最多收到 140px，把余量让给筛选控件和右侧动作区
+            className='min-w-[140px] max-w-[300px] flex-1'
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
             allowClear
@@ -340,8 +390,8 @@ export default function List(props: Props) {
               }}
             />
           )}
-        </Space>
-        <Space wrap>
+        </div>
+        <Space wrap className='ml-auto'>
           {/* 接入类动作与「批量操作」同属操作区，放右侧，左侧留给筛选控件 */}
           {!aiTaskMode && installMeta && (
             <Tooltip title={t('install.entry')}>
@@ -354,6 +404,16 @@ export default function List(props: Props) {
             <Tooltip title={t('collect.entry')}>
               <Button type='primary' ghost icon={<AppstoreAddOutlined />} onClick={() => setCollectVisible(true)}>
                 <span className={ACTION_LABEL_CLASS}>{t('collect.entry')}</span>
+              </Button>
+            </Tooltip>
+          )}
+          {/* 有机器、但还没套上内置主机大盘/告警时才出现：一台机器都没有时该做的是先装采集器，
+              此时导入大盘只会得到一屏没数据的图；套完之后按钮消失，不长期占着工具栏宽度。
+              onboardingEnabled 即「非商业版」，动作层不可用时点了也没反应，所以直接用它兜住 */}
+          {!aiTaskMode && onboardingEnabled && onboardingDoneMap.machine && !hostPackReady && (
+            <Tooltip title={t('host_pack.entry')}>
+              <Button type='primary' ghost icon={<DashboardOutlined />} onClick={() => openAction('pack')}>
+                <span className={ACTION_LABEL_CLASS}>{t('host_pack.entry')}</span>
               </Button>
             </Tooltip>
           )}
@@ -1008,24 +1068,27 @@ export default function List(props: Props) {
             if (detected) setRefreshFlag(_.uniqueId('refreshFlag_'));
           }}
           detectedExtra={
-            installMeta.collect ? (
-              <Button
-                size='small'
-                type='primary'
-                onClick={() => {
-                  // 承接安装引导：机器上报后顺手进入采集配置，安装弹窗关闭时正常走刷新逻辑
-                  setInstallVisible(false);
-                  setRefreshFlag(_.uniqueId('refreshFlag_'));
-                  setCollectVisible(true);
-                }}
-              >
-                {t('collect.next_entry')}
-              </Button>
-            ) : undefined
+            // 机器刚上报是用户动机最高的时刻，这里接力到「套大盘 → 开告警 → 配通知 → 验证送达」，
+            // 而不是只给一个「配置采集」入口
+            <NextStepsCard
+              onCollect={installMeta.collect ? () => setCollectVisible(true) : undefined}
+              onBeforeAction={() => {
+                // 先关掉安装弹窗再开动作弹窗：否则 useTargetArrival 会在遮罩下继续轮询
+                setInstallVisible(false);
+                setRefreshFlag(_.uniqueId('refreshFlag_'));
+              }}
+            />
           }
         />
       )}
-      {collectVisible && installMeta?.collect && <CollectSetup meta={installMeta} defaultIdents={selectedIdents} onClose={() => setCollectVisible(false)} />}
+      {collectVisible && installMeta?.collect && (
+        <CollectSetup
+          meta={installMeta}
+          defaultIdents={selectedIdents}
+          onClose={() => setCollectVisible(false)}
+          verifiedExtra={<NextStepsCard onBeforeAction={() => setCollectVisible(false)} />}
+        />
+      )}
       {upgradeTargetIdent && (
         <UpgradeAgent
           selectedIdents={[upgradeTargetIdent]}

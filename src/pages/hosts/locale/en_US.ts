@@ -135,6 +135,9 @@ const en_US = {
   meta_no_data: 'No data',
   all_no_data: 'No collector deployed? See <a>Installation Guide</a> for setup',
   categraf_doc: 'Categraf Docs',
+  host_pack: {
+    entry: 'Enable host monitoring',
+  },
   empty_guide: {
     title: 'No machines are reporting yet',
     desc: 'Deploy the Categraf collector on your hosts and they will show up here automatically.',
@@ -166,11 +169,11 @@ const en_US = {
     timeout: 'Timed out waiting for a host to report',
     timeout_tip: 'Check that: 1) the host can reach the address above; 2) categraf is running (systemctl status categraf).',
     retry: 'Check again',
+    troubleshoot_doc: 'Troubleshooting docs',
     done: 'Done',
   },
   collect: {
     entry: 'Set up collection',
-    next_entry: 'Next: set up collection',
     title: 'Set up collection',
     steps: {
       pick: 'Pick component',
@@ -278,6 +281,7 @@ const en_US = {
       datasource_label: 'Datasource',
       datasource_tip:
         'Defaults to the datasource the server matched from the pushgw write config; if nothing shows up here, switch to the datasource that actually stores your host metrics',
+      datasource_remembered: 'Defaults to the data source that was verified last time; you can switch it',
       datasource_placeholder: 'Select Prometheus datasources',
       datasource_required: 'Select at least one datasource, otherwise metric arrival cannot be checked',
       targets_label: 'Target hosts (optional)',

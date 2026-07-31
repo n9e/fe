@@ -136,6 +136,9 @@ const zh_CN = {
   meta_no_data: '暂无数据',
   all_no_data: '没有部署采集器？可参考 <a>安装手册</a> 安装部署',
   categraf_doc: 'categraf 文档',
+  host_pack: {
+    entry: '启用主机监控',
+  },
   empty_guide: {
     title: '还没有机器上报',
     desc: '在主机上部署 Categraf 采集器后，机器会自动出现在这里。',
@@ -167,11 +170,11 @@ const zh_CN = {
     timeout: '等待超时，仍未检测到新机器上报',
     timeout_tip: '请检查：1）目标机器能否访问上述服务端地址；2）categraf 是否已启动（systemctl status categraf）。',
     retry: '重新检测',
+    troubleshoot_doc: '查看排查文档',
     done: '完成',
   },
   collect: {
     entry: '配置采集',
-    next_entry: '下一步：配置采集',
     title: '配置采集',
     steps: {
       pick: '选择组件',
@@ -277,6 +280,7 @@ const zh_CN = {
       probing: '探测数据源：{{names}}',
       datasource_label: '数据源',
       datasource_tip: '默认取服务端按 pushgw 写入配置匹配出的数据源；若这里查不到数据，可手动切换到实际存储机器指标的数据源',
+      datasource_remembered: '默认沿用上次验证通过的数据源，可手动切换',
       datasource_placeholder: '选择 Prometheus 数据源',
       datasource_required: '请至少选择一个数据源，否则无法检测指标是否上报',
       targets_label: '目标机器（可选）',

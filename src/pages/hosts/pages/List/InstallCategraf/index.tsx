@@ -6,7 +6,9 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 
-import { NS } from '../../../constants';
+import { localizeDocUrl } from '@/utils/docUrl';
+
+import { CATEGRAF_TROUBLESHOOT_DOC, NS } from '../../../constants';
 import { CategrafInstallMeta } from '../../../services';
 import CommandBlock from '../components/CommandBlock';
 import { buildInstallCommand, buildManualCommand, isValidServerAddr, normalizeServerAddr } from './buildCommand';
@@ -22,7 +24,7 @@ interface Props {
 
 export default function InstallCategraf(props: Props) {
   const { meta, onClose, detectedExtra } = props;
-  const { t } = useTranslation(NS);
+  const { t, i18n } = useTranslation(NS);
   const { siteInfo } = useContext(CommonStateContext);
 
   // 输入框存原始字符串，只在拼命令与校验时 normalize，
@@ -121,9 +123,14 @@ export default function InstallCategraf(props: Props) {
               description={
                 <>
                   <div>{t('install.timeout_tip')}</div>
-                  <Button size='small' className='mt-2' onClick={restart}>
-                    {t('install.retry')}
-                  </Button>
+                  <Space className='mt-2'>
+                    <Button size='small' onClick={restart}>
+                      {t('install.retry')}
+                    </Button>
+                    <a href={localizeDocUrl(CATEGRAF_TROUBLESHOOT_DOC, i18n.language)} target='_blank' rel='noreferrer'>
+                      {t('install.troubleshoot_doc')}
+                    </a>
+                  </Space>
                 </>
               }
             />

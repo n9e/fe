@@ -135,6 +135,9 @@ const ja_JP = {
   meta_no_data: 'データなし',
   all_no_data: 'コレクターが未配備ですか？ <a>インストールガイド</a> を参照してください',
   categraf_doc: 'Categraf ドキュメント',
+  host_pack: {
+    entry: 'ホスト監視を有効化',
+  },
   empty_guide: {
     title: 'まだマシンからの報告がありません',
     desc: 'ホストに Categraf コレクタをデプロイすると、マシンが自動的にここに表示されます。',
@@ -166,11 +169,11 @@ const ja_JP = {
     timeout: 'タイムアウトしました。新しいホストは検出されていません',
     timeout_tip: '確認してください：1）対象ホストが上記アドレスに到達できるか；2）categraf が起動しているか（systemctl status categraf）。',
     retry: '再検出',
+    troubleshoot_doc: 'トラブルシューティング資料',
     done: '完了',
   },
   collect: {
     entry: '収集設定',
-    next_entry: '次へ：収集設定',
     title: '収集設定',
     steps: {
       pick: 'コンポーネント選択',
@@ -278,6 +281,7 @@ const ja_JP = {
       datasource_label: 'データソース',
       datasource_tip:
         '既定ではサーバーが pushgw の書き込み設定から特定したデータソースを使用します。ここでデータが見つからない場合は、実際にホスト指標を保存しているデータソースに切り替えてください',
+      datasource_remembered: '前回検証に成功したデータソースを既定で使用します（変更可能）',
       datasource_placeholder: 'Prometheus データソースを選択',
       datasource_required: 'データソースを 1 つ以上選択してください。選択しないと指標の到着を検出できません',
       targets_label: '対象マシン（任意）',
