@@ -4,6 +4,7 @@ const zh_HK = {
     title: '接下來',
     later: '也可以稍後在機器列表隨時繼續',
     optional: '可選',
+    dismiss: '不再提示',
     rows: {
       collect: { title: '配置採集', desc: 'OS 基礎指標已自動採集，資料庫 / 中間件按需配置', action: '去配置' },
       pack: { title: '套用主機大盤並啟用主機告警', desc: '一鍵導入內置大盤與告警規則', action: '一鍵啟用' },

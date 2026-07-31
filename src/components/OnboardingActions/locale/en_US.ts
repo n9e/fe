@@ -4,6 +4,7 @@ const en_US = {
     title: 'Next up',
     later: 'You can pick this up again anytime from the host list',
     optional: 'optional',
+    dismiss: 'Do not show again',
     rows: {
       collect: { title: 'Configure collection', desc: 'OS metrics are already collected; add databases / middleware as needed', action: 'Configure' },
       pack: { title: 'Apply host dashboards and enable host alerting', desc: 'Import the built-in dashboards and alert rules in one click', action: 'Enable' },

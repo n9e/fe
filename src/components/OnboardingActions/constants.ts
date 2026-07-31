@@ -28,8 +28,14 @@ export const PACK_BOARD_UUIDS = [
   '1717556327742611000', // categraf-overview.json —— 机器台账表格视图
 ];
 
-/** 机器列表页顶部引导横幅的折叠状态，镜像 hosts 页 STATS_COLLAPSED_KEY 的做法 */
-export const NEXT_STEPS_COLLAPSED_KEY = 'n9e_onboarding_next_steps_collapsed';
+/**
+ * 机器列表页工具栏内那条引导的「不再提示」标记。
+ *
+ * 只剩一行之后「折叠」已无意义（折起来也还是一行），改成彻底关掉；沿用旧的 collapsed key 会让
+ * 之前折叠过的用户直接看不到这条引导，所以换新 key 重新开始。
+ * 关掉之后仍可从侧栏引导徽标进入同样的动作，不是死路。
+ */
+export const NEXT_STEPS_DISMISSED_KEY = 'n9e_onboarding_next_steps_dismissed';
 
 /** 通知媒介配置文档：测试告警发不出去时多半是 token / SMTP 没配好。用站内已在用的地址，避免死链 */
 export const NOTIFY_CHANNEL_DOC = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/';

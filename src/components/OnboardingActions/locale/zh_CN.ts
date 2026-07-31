@@ -4,6 +4,7 @@ const zh_CN = {
     title: '接下来',
     later: '也可以稍后在机器列表随时继续',
     optional: '可选',
+    dismiss: '不再提示',
     rows: {
       collect: { title: '配置采集', desc: 'OS 基础指标已自动采集，数据库 / 中间件按需配置', action: '去配置' },
       pack: { title: '套用主机大盘并启用主机告警', desc: '一键导入内置大盘与告警规则', action: '一键启用' },

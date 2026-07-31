@@ -4,6 +4,7 @@ const ja_JP = {
     title: '次のステップ',
     later: 'ホスト一覧からいつでも続けられます',
     optional: '任意',
+    dismiss: '今後表示しない',
     rows: {
       collect: { title: '収集を設定', desc: 'OS メトリクスは自動収集済み。DB / ミドルウェアは必要に応じて追加', action: '設定する' },
       pack: { title: 'ホストダッシュボードとホストアラートを有効化', desc: '組み込みのダッシュボードとアラートルールをワンクリックで取り込み', action: '有効化' },

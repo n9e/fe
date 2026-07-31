@@ -135,9 +135,6 @@ const en_US = {
   meta_no_data: 'No data',
   all_no_data: 'No collector deployed? See <a>Installation Guide</a> for setup',
   categraf_doc: 'Categraf Docs',
-  host_pack: {
-    entry: 'Enable host monitoring',
-  },
   empty_guide: {
     title: 'No machines are reporting yet',
     desc: 'Deploy the Categraf collector on your hosts and they will show up here automatically.',
