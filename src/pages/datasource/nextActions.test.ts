@@ -95,6 +95,20 @@ describe('getNextActions', () => {
     expect(plus.explore_log.enabled).toBe(true);
   });
 
+  it('ck 开源版：建盘同样被 graphPro 拦截，不能把用户引到选不到该数据源的面板', () => {
+    // 面板的数据源选择器过滤条件是 dashboard === true && (graphPro ? IS_PLUS : true)
+    const oss = actionMap(ck, false);
+    expect(oss.create_dashboard.enabled).toBe(false);
+    expect(oss.create_dashboard.disabledReason).toBe('pro_only');
+    expect(oss.create_dashboard.url).toBeUndefined();
+    // alertPro 为 false，建告警不受影响
+    expect(oss.create_alert.enabled).toBe(true);
+
+    const plus = actionMap(ck, true);
+    expect(plus.create_dashboard.enabled).toBe(true);
+    expect(plus.create_dashboard.url).toBe('/dashboards?__from=ds_guide&data_source_id=42');
+  });
+
   it('jaeger：全部动作不可用', () => {
     const m = actionMap(jaeger, false);
     expect(m.explore_metric).toBeUndefined();

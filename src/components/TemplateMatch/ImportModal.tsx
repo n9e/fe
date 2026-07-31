@@ -60,7 +60,10 @@ export default function ImportModal(props: Props) {
   const [importing, setImporting] = useState(false);
 
   const defaultTab = show === 'alerts' || (show === 'both' && _.isEmpty(dashboards)) ? 'alerts' : 'dashboards';
-  const selectableDashboards = _.reject(dashboards, (d) => _.includes(dashImported, d.uuid));
+  // uuid 在 match 接口里是 number、在 payload 接口里可能是 string，一律按字符串比对，
+  // 否则「已导入」置灰会因类型不同而失效
+  const isDashImported = (uuid: number | string) => _.includes(_.map(dashImported, String), String(uuid));
+  const selectableDashboards = _.reject(dashboards, (d) => isDashImported(d.uuid));
 
   const activeGroup = _.find(alertGroups, { cate: activeCate });
   const activeRules = activeGroup?.rules || [];
@@ -122,36 +125,46 @@ export default function ImportModal(props: Props) {
       .then((payloads) => {
         const selected = _.filter(payloads, (p) => _.includes(_.map(dashChecked, String), String(p.uuid)));
         if (_.isEmpty(selected)) return undefined;
+        // 逐份记账而非全有全无：createDashboard 把单份失败 catch 成 { err }，成功的那几份此刻已经真实落库。
+        // 出错就整体早返回的话，成功项既不置灰、勾选也不清空，而后端 Board.Add 有 name+group_id 唯一校验，
+        // 用户重试时它们必然回 "Name duplicate"，真正失败的那几份就永远导不进来了。
         return Promise.all(
           _.map(selected, (p) => {
             const board = JSON.parse(p.content);
-            return createDashboard(bgid, { ...board, configs: JSON.stringify(board.configs) });
+            return createDashboard(bgid, { ...board, configs: JSON.stringify(board.configs) }).then((r) => ({ payload: p, err: _.get(r, 'err') as string | undefined }));
           }),
-        ).then((res) => {
-          const errs = _.compact(_.map(res, 'err'));
-          if (!_.isEmpty(errs)) {
+        ).then((results) => {
+          const succeeded = _.filter(results, (r) => !r.err);
+          const failed = _.filter(results, (r) => !!r.err);
+
+          if (!_.isEmpty(succeeded)) {
+            // 弹窗不关，用户可以接着导告警；已导入的置灰以免重复点出多份副本
+            const succeededUuids = _.map(succeeded, (r) => r.payload.uuid);
+            setDashImported((prev) => _.union(prev, succeededUuids));
+            setDashChecked((prev) => _.reject(prev, (uuid) => _.includes(_.map(succeededUuids, String), String(uuid))));
+            markDsJourney(datasourceId, 'dashboard_created_at');
+            onImported?.('dashboard');
+          }
+
+          if (!_.isEmpty(failed)) {
+            // 带上仪表盘名，用户才知道该重试哪几份
             Modal.error({
               title: t('tpl_match.import_failed'),
               content: (
                 <div>
-                  {_.map(_.uniq(errs), (e) => (
-                    <div key={e}>{e}</div>
+                  {_.map(failed, (r) => (
+                    <div key={r.payload.uuid}>
+                      {_.get(
+                        _.find(dashboards, (d) => String(d.uuid) === String(r.payload.uuid)),
+                        'name',
+                      ) || r.payload.uuid}
+                      : {r.err}
+                    </div>
                   ))}
                 </div>
               ),
             });
-            return undefined;
           }
-          // 弹窗不关，用户可以接着导告警；已导入的置灰以免重复点出多份副本
-          setDashImported((prev) =>
-            _.union(
-              prev,
-              _.map(selected, (p) => p.uuid),
-            ),
-          );
-          setDashChecked([]);
-          markDsJourney(datasourceId, 'dashboard_created_at');
-          onImported?.('dashboard');
           return undefined;
         });
       })
@@ -220,7 +233,7 @@ export default function ImportModal(props: Props) {
                   setDashChecked(vals as (number | string)[]);
                 }}
                 options={_.map(dashboards, (d) => {
-                  const imported = _.includes(dashImported, d.uuid);
+                  const imported = isDashImported(d.uuid);
                   return { label: imported ? t('tpl_match.already_imported', { name: d.name }) : d.name, value: d.uuid, disabled: imported };
                 })}
               />

@@ -62,11 +62,15 @@ export function getNextActions(cate: Cate | undefined, datasourceId: number, isP
     });
   }
 
+  // graphPro 同样卡建盘：仪表盘面板的数据源选择器过滤条件是
+  // `dashboard === true && (graphPro ? IS_PLUS : true)`（dashboard/Editor/QueryEditor/components/DatasourceSelect），
+  // 开源版放行 mysql/pgsql/ck 这类数据源只会把用户引到一个选不到该数据源的面板里
+  const dashboardEnabled = cate.dashboard && !proBlocked;
   actions.push({
     key: 'create_dashboard',
-    enabled: cate.dashboard,
-    disabledReason: cate.dashboard ? undefined : 'type_unsupported',
-    url: cate.dashboard ? withGuideContext('/dashboards', datasourceId) : undefined,
+    enabled: dashboardEnabled,
+    disabledReason: !cate.dashboard ? 'type_unsupported' : proBlocked ? 'pro_only' : undefined,
+    url: dashboardEnabled ? withGuideContext('/dashboards', datasourceId) : undefined,
   });
 
   actions.push({

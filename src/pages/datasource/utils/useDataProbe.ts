@@ -15,6 +15,7 @@ export type ProbeState = 'probing' | 'hasData' | 'staleData' | 'noData' | 'unrea
 
 export interface ProbeResult {
   state: ProbeState;
+  /** 探测窗口内有数据的指标名数量（hasData 时为近 5 分钟，staleData 时为近 24 小时） */
   metricCount?: number;
   sampleMetric?: string;
   /** 最新样本的 unix 秒（来自 timestamp()，不是求值时刻） */
@@ -26,12 +27,25 @@ export interface ProbeResult {
 /** 体检结论经 sessionStorage 传给探索器横幅（ProbeBanner），URL 只带触发位不带大对象 */
 export const PROBE_STORAGE_PREFIX = 'n9e_ds_probe_';
 
+/** 「有新数据」的窗口，与 Prometheus 默认 lookback delta 对齐 */
+const FRESH_WINDOW_SECONDS = 5 * 60;
+/** 「有过数据」的窗口，用于区分「断流」与「从未有过」 */
+const SEEN_WINDOW_SECONDS = 24 * 60 * 60;
+
 const SAMPLE_SKIP_PREFIXES = ['go_', 'process_', 'promhttp_', 'scrape_', 'net_conntrack_'];
+
+/** 实测最新样本时间时并发探测的候选指标个数；取多个是为了不让个别僵尸指标否掉整个数据源 */
+const SAMPLE_CANDIDATE_LIMIT = 3;
+
+/** 挑若干示例指标：优先业务指标，全是自监控指标时退回原列表 */
+export function pickSampleMetrics(metrics: string[], limit = SAMPLE_CANDIDATE_LIMIT): string[] {
+  const preferred = _.filter(metrics, (m) => m !== 'up' && !_.some(SAMPLE_SKIP_PREFIXES, (p) => _.startsWith(m, p)));
+  return _.take(_.isEmpty(preferred) ? metrics : preferred, limit);
+}
 
 /** 挑示例指标：跳过运行时自监控指标，选第一个业务指标 */
 export function pickSampleMetric(metrics: string[]): string | undefined {
-  const preferred = _.find(metrics, (m) => m !== 'up' && !_.some(SAMPLE_SKIP_PREFIXES, (p) => _.startsWith(m, p)));
-  return preferred ?? metrics[0];
+  return pickSampleMetrics(metrics, 1)[0];
 }
 
 /**
@@ -44,42 +58,93 @@ export function metricSelector(metric: string): string {
   return `{__name__=${JSON.stringify(metric)}}`;
 }
 
-async function probePrometheus(datasourceId: number): Promise<ProbeResult> {
+/**
+ * 拉取某个时间窗内「有数据」的指标名。
+ * 必须带 start/end：label values 接口不带时间范围时返回的是整个 retention 期内出现过的全部指标名，
+ * 拿它做新鲜度判断会把早已下线的僵尸指标一并算进来（仓库其余三处调用同样传时间窗）。
+ */
+async function getMetricsInWindow(datasourceId: number, windowSeconds: number): Promise<string[]> {
+  const end = Math.floor(Date.now() / 1000);
+  const res = await getMetric({ start: end - windowSeconds, end }, datasourceId);
+  return (_.get(res, 'data') as string[]) || [];
+}
+
+/**
+ * 并发实测若干候选指标的最新样本时间，取其中最大值。
+ * 取多个而非一个：个别指标来自已下线的采集目标是常态，不能让它否掉整个数据源的结论。
+ * 全部请求都失败时 allFailed 为真，调用方按「元数据可读但查询失败」处理。
+ */
+async function queryLastDataTs(datasourceId: number, candidates: string[]): Promise<{ ts?: number; sampleMetric?: string; allFailed: boolean; errorMessage?: string }> {
+  // instant query 返回的样本时间戳是求值时刻，须用 timestamp() 才能得到「最近数据 X 前」
+  const settled = await Promise.all(
+    _.map(candidates, (metric) =>
+      getQueryResult({ query: `topk(1, timestamp(${metricSelector(metric)}))` }, datasourceId)
+        .then((res) => {
+          const value = _.get(res, 'data.result[0].value[1]');
+          return { metric, ts: value == null ? undefined : _.toNumber(value), errorMessage: undefined as string | undefined };
+        })
+        .catch((e) => ({ metric, ts: undefined, errorMessage: _.get(e, 'message') || String(e) })),
+    ),
+  );
+
+  const failed = _.filter(settled, (r) => r.errorMessage !== undefined);
+  if (!_.isEmpty(candidates) && failed.length === settled.length) {
+    return { allFailed: true, errorMessage: failed[0].errorMessage };
+  }
+
+  const newest = _.maxBy(
+    _.filter(settled, (r) => r.ts !== undefined),
+    'ts',
+  );
+  return { ts: newest?.ts, sampleMetric: newest?.metric, allFailed: false };
+}
+
+export async function probePrometheus(datasourceId: number): Promise<ProbeResult> {
   const t0 = Date.now();
-  let metrics: string[] = [];
+
+  let freshMetrics: string[] = [];
   try {
-    const res = await getMetric({}, datasourceId);
-    metrics = (_.get(res, 'data') as string[]) || [];
+    freshMetrics = await getMetricsInWindow(datasourceId, FRESH_WINDOW_SECONDS);
   } catch (e) {
     return { state: 'unreachable', errorMessage: _.get(e, 'message') || String(e), latencyMs: Date.now() - t0 };
   }
-  if (_.isEmpty(metrics)) {
-    return { state: 'noData', metricCount: 0, latencyMs: Date.now() - t0 };
+
+  if (_.isEmpty(freshMetrics)) {
+    // 近 5 分钟窗口内一个指标名都没有 → 放宽到 24h，区分「断流」与「从未有过」
+    let seenMetrics: string[] = [];
+    try {
+      seenMetrics = await getMetricsInWindow(datasourceId, SEEN_WINDOW_SECONDS);
+    } catch (e) {
+      return { state: 'unreachable', errorMessage: _.get(e, 'message') || String(e), latencyMs: Date.now() - t0 };
+    }
+    return {
+      state: _.isEmpty(seenMetrics) ? 'noData' : 'staleData',
+      metricCount: seenMetrics.length,
+      sampleMetric: pickSampleMetric(seenMetrics),
+      latencyMs: Date.now() - t0,
+    };
   }
 
-  const sampleMetric = pickSampleMetric(metrics)!;
-  const selector = metricSelector(sampleMetric);
-  try {
-    // instant query 返回的样本时间戳是求值时刻，须用 timestamp() 才能得到「最近数据 X 前」
-    const recent = await getQueryResult({ query: `topk(1, timestamp(${selector}))` }, datasourceId);
-    const value = _.get(recent, 'data.result[0].value[1]');
-    if (value != null) {
-      return {
-        state: 'hasData',
-        metricCount: metrics.length,
-        sampleMetric,
-        lastDataTs: _.toNumber(value),
-        latencyMs: Date.now() - t0,
-      };
-    }
-    // 5min lookback 内无样本 → 放宽到 24h，区分「断流」与「从未有过」
-    const seen = await getQueryResult({ query: `present_over_time(${selector}[24h])` }, datasourceId);
-    const stale = !_.isEmpty(_.get(seen, 'data.result'));
-    return { state: stale ? 'staleData' : 'noData', metricCount: metrics.length, sampleMetric, latencyMs: Date.now() - t0 };
-  } catch (e) {
+  // label values 接口的 start/end 会被 Prometheus 对齐到 block 边界（head block 常跨数小时），
+  // 所以「窗口内出现过的指标名」只够说明近期有过数据，不足以断言此刻还在写。
+  // 用多个候选指标实测一次最新样本时间来定这一刀。
+  const probed = await queryLastDataTs(datasourceId, pickSampleMetrics(freshMetrics));
+  if (probed.allFailed) {
     // 元数据可读但查询失败：按不可达处理并透出错误
-    return { state: 'unreachable', metricCount: metrics.length, errorMessage: _.get(e, 'message') || String(e), latencyMs: Date.now() - t0 };
+    return { state: 'unreachable', metricCount: freshMetrics.length, errorMessage: probed.errorMessage, latencyMs: Date.now() - t0 };
   }
+  if (probed.ts === undefined) {
+    // 候选指标全都没有近期样本 → 已断流；指标名还在说明 24h 内有过数据，不必再查一次
+    return { state: 'staleData', metricCount: freshMetrics.length, sampleMetric: pickSampleMetric(freshMetrics), latencyMs: Date.now() - t0 };
+  }
+  // hasData 必然带得出 lastDataTs，文案里不会出现「最近数据 -」
+  return {
+    state: 'hasData',
+    metricCount: freshMetrics.length,
+    sampleMetric: probed.sampleMetric,
+    lastDataTs: probed.ts,
+    latencyMs: Date.now() - t0,
+  };
 }
 
 export default function useDataProbe(datasourceId: number | undefined, pluginType: string | undefined) {
