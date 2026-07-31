@@ -27,7 +27,16 @@ interface Props {
   defaultFormValuesControl?: DefaultFormValuesControl;
 }
 
-export default function Explorer(props: Props) {
+function areExplorerPropsEqual(prev: Props, next: Props) {
+  return (
+    prev.active === next.active &&
+    prev.tabKey === next.tabKey &&
+    prev.defaultFormValuesControl?.isInited === next.defaultFormValuesControl?.isInited &&
+    _.isEqual(prev.defaultFormValuesControl?.defaultFormValues, next.defaultFormValuesControl?.defaultFormValues)
+  );
+}
+
+function Explorer(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
   const location = useLocation();
@@ -259,3 +268,5 @@ export default function Explorer(props: Props) {
     </div>
   );
 }
+
+export default React.memo(Explorer, areExplorerPropsEqual);
