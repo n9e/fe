@@ -38,6 +38,19 @@ interface Props {
   onRequestTestAlert?: () => void;
 }
 
+/**
+ * 只接受真实业务组 id，预置筛选值一律当没有。
+ *
+ * 业务组树的预置筛选不是业务组：机器列表的「全部机器」是 -2、「未分组机器」是 0，仪表盘页的
+ * 「公开仪表盘」是 -1（见 BusinessGroup/presetFilters.ts）。用户点过之后 businessGroup.id 就是
+ * 这些值，还会经 localStorage businessGroupKey 长期生效（getDefaultBusiness 对预置值刻意跳过了
+ * 存在性校验）。直接拿来当导入目标：0 会让「预查完成且归属当前业务组」的提交门永远合不上，
+ * -2/-1 则会真的把大盘和告警规则提交到 /busi-group/-2/… 上去，整批失败。
+ */
+function toRealBgid(id?: number): number | undefined {
+  return id && id > 0 ? id : undefined;
+}
+
 function StatusIcon({ status }: { status: ItemStatus }) {
   if (status === 'ok') return <CheckCircleFilled className='mt-0.5 text-success' />;
   if (status === 'skipped') return <MinusCircleFilled className='mt-0.5 text-soft' />;
@@ -77,7 +90,8 @@ export default function HostMonitorPackModal({ onCancel, onRequestTestAlert }: P
   const [submitting, setSubmitting] = React.useState(false);
   const [results, setResults] = React.useState<{ boards: ImportItemResult[]; rules: ImportItemResult[]; notifyBound: boolean }>();
 
-  const defaultBgid = businessGroup?.id ?? (curBusiId > 0 ? curBusiId : undefined) ?? busiGroups?.[0]?.id;
+  // 三个来源统一过一遍正数校验，把业务组树的预置筛选值挡掉（见 toRealBgid）
+  const defaultBgid = toRealBgid(businessGroup?.id) ?? toRealBgid(curBusiId) ?? toRealBgid(busiGroups?.[0]?.id);
   const bgid = Form.useWatch('bgid', form) ?? defaultBgid;
 
   React.useEffect(() => {
