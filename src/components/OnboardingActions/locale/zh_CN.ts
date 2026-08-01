@@ -48,7 +48,7 @@ const zh_CN = {
     rule_label: '用哪条通知规则发送',
     send: '发送测试告警',
     result_title: '发送结果',
-    sent: '请求已发出',
+    sent: '已调用通知媒介，接口返回如下',
     sent_hint: '去群里 / 邮箱确认收到了这条测试消息 —— 收到才说明通知链路真的通了',
     no_rule: '还没有配置通知规则',
     go_create_rule: '去创建通知规则',

@@ -1,38 +1,37 @@
-import { interpretTestSendResponse } from './interpretResponse';
+import { formatTestSendResponse } from './interpretResponse';
 
-describe('interpretTestSendResponse', () => {
-  it('treats the bare "success" (empty provider body, e.g. smtp) as sent without detail', () => {
-    expect(interpretTestSendResponse('success')).toEqual({ ok: true });
-    expect(interpretTestSendResponse('')).toEqual({ ok: true });
-    expect(interpretTestSendResponse(undefined)).toEqual({ ok: true });
+describe('formatTestSendResponse', () => {
+  it('returns nothing to show when the provider had no response body (e.g. smtp)', () => {
+    expect(formatTestSendResponse('success')).toBeUndefined();
+    expect(formatTestSendResponse('')).toBeUndefined();
+    expect(formatTestSendResponse(undefined)).toBeUndefined();
   });
 
-  it('flags a dingtalk/wecom business failure hidden behind HTTP 200', () => {
+  it('pretty-prints the provider body so a dingtalk/wecom errcode is visible at a glance', () => {
     // 钉钉安全关键词不匹配的真实形态：HTTP 层成功、errcode 非零
     const dat = 'status_code:200, response:{"errcode":310000,"errmsg":"keywords not in content"}';
-    expect(interpretTestSendResponse(dat)).toEqual({ ok: false, detail: dat });
+    expect(formatTestSendResponse(dat)).toBe(JSON.stringify({ errcode: 310000, errmsg: 'keywords not in content' }, null, 2));
   });
 
-  it('keeps errcode 0 as sent and carries the raw response for the user to see', () => {
+  it('pretty-prints a feishu/lark StatusCode the same way — no per-channel dialect table', () => {
+    // 飞书机器人 token 失效：同样是 HTTP 200，业务码字段却叫 StatusCode
+    const dat = 'status_code:200, response:{"StatusCode":19024,"StatusMessage":"token invalid"}';
+    expect(formatTestSendResponse(dat)).toBe(JSON.stringify({ StatusCode: 19024, StatusMessage: 'token invalid' }, null, 2));
+  });
+
+  it('does not judge success or failure — a zero errcode gets the same treatment', () => {
     const dat = 'status_code:200, response:{"errcode":0,"errmsg":"ok"}';
-    expect(interpretTestSendResponse(dat)).toEqual({ ok: true, detail: dat });
-  });
-
-  it('stays conservative on non-errcode conventions — a custom webhook may use code:200 for success', () => {
-    const dat = 'status_code:200, response:{"code":2,"msg":"invalid token"}';
-    // 宁可少报失败也不误杀：这类响应按已发出处理，原文展示给用户自行判断
-    expect(interpretTestSendResponse(dat)).toEqual({ ok: true, detail: dat });
+    expect(formatTestSendResponse(dat)).toBe(JSON.stringify({ errcode: 0, errmsg: 'ok' }, null, 2));
   });
 
   it('tolerates a non-JSON provider body', () => {
     const dat = 'status_code:200, response:ok';
-    expect(interpretTestSendResponse(dat)).toEqual({ ok: true, detail: dat });
+    expect(formatTestSendResponse(dat)).toBe(dat);
   });
 
   it('parses a body that is itself the whole dat when the backend format ever changes', () => {
-    expect(interpretTestSendResponse('{"errcode":93000,"errmsg":"invalid webhook url"}')).toEqual({
-      ok: false,
-      detail: '{"errcode":93000,"errmsg":"invalid webhook url"}',
-    });
+    expect(formatTestSendResponse('{"errcode":93000,"errmsg":"invalid webhook url"}')).toBe(
+      JSON.stringify({ errcode: 93000, errmsg: 'invalid webhook url' }, null, 2),
+    );
   });
 });

@@ -48,7 +48,7 @@ const zh_HK = {
     rule_label: '用哪條通知規則發送',
     send: '發送測試告警',
     result_title: '發送結果',
-    sent: '請求已發出',
+    sent: '已呼叫通知媒介，介面回應如下',
     sent_hint: '去群裡 / 郵箱確認收到了這條測試消息 —— 收到才說明通知鏈路真的通了',
     no_rule: '還沒有配置通知規則',
     go_create_rule: '去創建通知規則',

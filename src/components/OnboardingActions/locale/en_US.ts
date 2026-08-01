@@ -48,7 +48,7 @@ const en_US = {
     rule_label: 'Which notification rule to send with',
     send: 'Send test alert',
     result_title: 'Send result',
-    sent: 'Request sent',
+    sent: 'Notification channel called, provider responded with',
     sent_hint: 'Check your chat group / mailbox for this test message — only its arrival proves the notification path works',
     no_rule: 'No notification rule configured yet',
     go_create_rule: 'Create a notification rule',

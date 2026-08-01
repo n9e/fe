@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Button, Modal, Select, Space, Spin } from 'antd';
-import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { CloseCircleFilled, SendOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import _ from 'lodash';
@@ -12,7 +12,7 @@ import { writeOnboardingMarker } from '@/components/OnboardingProgress/detect';
 import { localizeDocUrl } from '@/utils/docUrl';
 
 import { NOTIFY_CHANNEL_DOC, NS } from '../constants';
-import { interpretTestSendResponse } from './interpretResponse';
+import { formatTestSendResponse } from './interpretResponse';
 
 const channelTypes = getNotificationChannelTypes() as Record<string, unknown>;
 
@@ -20,7 +20,13 @@ interface SendResult {
   /** notify_configs 下标，作为列表 key —— 同一条规则可能配了两个同类型渠道 */
   index: number;
   label: string;
-  ok: boolean;
+  /**
+   * 请求是否成功发出（HTTP 层 + 后端 err 为空）。**不代表送达** —— 各家 IM 的业务失败都藏在
+   * HTTP 200 里，前端不去猜（见 interpretResponse.ts），送没送到以 detail 里的 provider 原文
+   * 与用户自己的聊天群/邮箱为准。
+   */
+  called: boolean;
+  /** provider 原始响应（已格式化）或失败原因，始终展示给用户自行判断 */
   detail?: string;
 }
 
@@ -94,19 +100,22 @@ export default function SendTestAlertModal({ notifyRuleId, onCancel }: Props) {
         const label = getConfigLabel(config, index);
         if (!config?.channel_id || config.channel_id <= 0) {
           // 后端对 channel_id <= 0 直接 400，先在前端说清楚是"没选通知媒介"
-          return Promise.resolve<SendResult>({ index, label, ok: false, detail: t('test.no_channel') });
+          return Promise.resolve<SendResult>({ index, label, called: false, detail: t('test.no_channel') });
         }
         return notifyRuleTest({ use_mock_event: true, notify_config: config }, { silence: true }).then(
-          // resolve ≠ 送达：后端对 HTTP 200 不解析响应体，钉钉/企微的业务失败要靠 interpretResponse 识别
-          (res) => ({ index, label, ...interpretTestSendResponse(res?.dat) } as SendResult),
-          (err) => ({ index, label, ok: false, detail: err?.message || t('test.unknown_error') } as SendResult),
+          // resolve 只说明请求发出去了：后端对 HTTP 200 不解析响应体，各家 IM 的业务失败也藏在 200 里，
+          // 所以这里不下"已送达"的结论，只把 provider 原文整理好摆给用户
+          (res) => ({ index, label, called: true, detail: formatTestSendResponse(res?.dat) } as SendResult),
+          (err) => ({ index, label, called: false, detail: err?.message || t('test.unknown_error') } as SendResult),
         );
       }),
     )
       .then((list) => {
         setResults(list);
-        if (_.some(list, { ok: true })) {
-          // 本地标记让这一步立刻点亮；换浏览器/其他用户由服务端送达探测兜住
+        if (_.some(list, { called: true })) {
+          // 标记的语义是「你执行过发送测试告警这个动作」，与步骤名一致，不隐含"已送达"——
+          // 送达与否前端无从判断（见 interpretResponse.ts）。这一步也只能靠本地标记：
+          // /notify-rule/test 不写 notification_record，服务端的 used 探针永远探不到它。
           writeOnboardingMarker('testDelivered');
           refreshOnboardingProgress(['testDelivered']);
         }
@@ -115,6 +124,19 @@ export default function SendTestAlertModal({ notifyRuleId, onCancel }: Props) {
         setSending(false);
       });
   };
+
+  // 排障入口：请求根本没发出去（硬失败）时挂在那一行下面；发出去了但用户没收到时挂在底部提示旁边。
+  // 后者同样需要它 —— 业务码失败正藏在 HTTP 200 里，而我们不再替用户判断成败。
+  const troubleshootLinks = (
+    <Space>
+      <Link to='/notification-channels' target='_blank'>
+        {t('test.go_check_channel')}
+      </Link>
+      <a href={localizeDocUrl(NOTIFY_CHANNEL_DOC, i18n.language)} target='_blank' rel='noreferrer'>
+        {t('test.channel_doc')}
+      </a>
+    </Space>
+  );
 
   return (
     <Modal visible title={t('test.title')} width={620} onCancel={onCancel} footer={<Button onClick={onCancel}>{t('close')}</Button>}>
@@ -156,27 +178,26 @@ export default function SendTestAlertModal({ notifyRuleId, onCancel }: Props) {
                 <div className='fc-border rounded'>
                   {_.map(results, (result) => (
                     <div key={result.index} className='flex items-start gap-2 px-3 py-2'>
-                      {result.ok ? <CheckCircleFilled className='mt-0.5 text-success' /> : <CloseCircleFilled className='mt-0.5 text-error' />}
+                      {/* 发出去了只用中性图标，不打绿勾：HTTP 200 不代表业务成功，这里不替用户下结论 */}
+                      {result.called ? <SendOutlined className='mt-1 text-soft' /> : <CloseCircleFilled className='mt-0.5 text-error' />}
                       <div className='min-w-0 flex-1'>
                         <div className='font-bold'>{result.label}</div>
-                        <div className='break-all text-soft'>{result.ok ? t('test.sent') : result.detail}</div>
-                        {/* 成功态也原样展示 provider 响应：HTTP 200 不代表业务成功，errcode/errmsg 是用户仅有的排错线索 */}
-                        {result.ok && result.detail && <div className='break-all text-soft'>{result.detail}</div>}
-                        {!result.ok && (
-                          <Space>
-                            <Link to='/notification-channels' target='_blank'>
-                              {t('test.go_check_channel')}
-                            </Link>
-                            <a href={localizeDocUrl(NOTIFY_CHANNEL_DOC, i18n.language)} target='_blank' rel='noreferrer'>
-                              {t('test.channel_doc')}
-                            </a>
-                          </Space>
+                        <div className='break-all text-soft'>{result.called ? t('test.sent') : result.detail}</div>
+                        {/* provider 响应原样摆出来：errcode / StatusCode / code 各家叫法不同，交给用户判断 */}
+                        {result.called && result.detail && (
+                          <pre className='mt-1 max-h-[160px] overflow-auto whitespace-pre-wrap break-all rounded bg-fc-100 p-2 text-soft'>{result.detail}</pre>
                         )}
+                        {!result.called && troubleshootLinks}
                       </div>
                     </div>
                   ))}
                 </div>
-                {_.some(results, { ok: true }) && <div className='mt-2 text-soft'>{t('test.sent_hint')}</div>}
+                {_.some(results, { called: true }) && (
+                  <div className='mt-2'>
+                    <div className='text-soft'>{t('test.sent_hint')}</div>
+                    <div className='mt-1'>{troubleshootLinks}</div>
+                  </div>
+                )}
               </div>
             )}
           </>
