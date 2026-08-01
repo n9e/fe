@@ -8,25 +8,42 @@ import type { RowAction, RowActions } from './types';
 
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
 
-export const DEFAULT_ACTION_MAX_ICONS = 4;
+export const DEFAULT_ACTION_MAX_ICONS = 3;
+// Once a kebab exists, cap surfaced icons at 2 so heavy rows stay compact.
+const MAX_SURFACED_ICONS = 2;
 
 /**
  * Split a row's actions into surfaced icon buttons and kebab leftovers.
- * Kebab actions expand into icon buttons when the whole row fits within `maxIcons`
- * (danger items last); `node` and `collapsed: true` items always stay in the kebab.
- * Rows exceeding the limit keep today's layout: inline icons + full kebab.
+ * A row with no `node`/`collapsed: true` items and at most `maxIcons` actions
+ * expands entirely into icon buttons (danger items last), with no kebab.
+ * Any other row gets a kebab: `inline` items stay surfaced, non-danger menu
+ * items are promoted until 2 icons show, and everything else — including all
+ * danger items — goes into the kebab (menu order preserved).
+ * `forceKebab` puts a row in kebab layout even when it would fit expanded:
+ * EnhancedTable sets it when any row of the table needs a kebab, so all rows
+ * of one table share the same layout (light rows may then hold a single
+ * kebab item — the accepted price of column-aligned consistency).
  */
-export function splitRowActions(actions: RowActions, maxIcons = DEFAULT_ACTION_MAX_ICONS) {
+export function splitRowActions(actions: RowActions, forceKebab = false, maxIcons = DEFAULT_ACTION_MAX_ICONS) {
   const inline = visibleOnly(actions.inline);
   const menu = visibleOnly(actions.menu);
   const pinned = menu.filter((a) => a.node || a.collapsed);
   const expandable = menu.filter((a) => !a.node && !a.collapsed);
-  if (inline.length + expandable.length > maxIcons) {
-    return { icons: inline, kebab: menu };
+  if (!forceKebab && !pinned.length && inline.length + expandable.length <= maxIcons) {
+    return {
+      icons: [...inline, ...expandable.filter((a) => !a.danger), ...expandable.filter((a) => a.danger)],
+      kebab: [] as RowAction[],
+    };
+  }
+  const promoted: RowAction[] = [];
+  for (const action of expandable) {
+    if (inline.length + promoted.length >= MAX_SURFACED_ICONS) break;
+    if (action.danger) continue;
+    promoted.push(action);
   }
   return {
-    icons: [...inline, ...expandable.filter((a) => !a.danger), ...expandable.filter((a) => a.danger)],
-    kebab: pinned,
+    icons: [...inline, ...promoted],
+    kebab: menu.filter((a) => !promoted.includes(a)),
   };
 }
 
@@ -120,9 +137,9 @@ function renderMenuItem(action: RowAction, key: string, onAction: () => void) {
   );
 }
 
-export function RowActionCell({ actions, maxIcons }: { actions: RowActions; maxIcons?: number }) {
+export function RowActionCell({ actions, forceKebab }: { actions: RowActions; forceKebab?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { icons, kebab } = splitRowActions(actions, maxIcons);
+  const { icons, kebab } = splitRowActions(actions, forceKebab);
   if (!icons.length && !kebab.length) return null;
 
   const normal = kebab.filter((a) => !a.danger);

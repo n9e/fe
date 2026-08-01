@@ -25,47 +25,80 @@ describe('splitRowActions', () => {
   const act = (key: string, extra: Partial<RowAction> = {}): RowAction => ({ key, ...extra });
   const keys = (list: RowAction[]) => list.map((a) => a.key);
 
-  it('expands kebab actions into icons when the row fits the limit, danger last', () => {
+  it('expands a row within the limit entirely into icons, danger last, no kebab', () => {
     const actions: RowActions = {
       inline: [act('run')],
-      menu: [act('delete', { danger: true }), act('edit'), act('copy')],
+      menu: [act('delete', { danger: true }), act('edit')],
     };
     const { icons, kebab } = splitRowActions(actions);
-    expect(keys(icons)).toEqual(['run', 'edit', 'copy', 'delete']);
+    expect(keys(icons)).toEqual(['run', 'edit', 'delete']);
     expect(kebab).toEqual([]);
   });
 
-  it('keeps the full kebab when the row exceeds the limit', () => {
+  it('surfaces at most 2 icons and collapses the rest when the row exceeds the limit', () => {
     const actions: RowActions = {
       inline: [act('run')],
-      menu: [act('edit'), act('copy'), act('export'), act('delete', { danger: true })],
+      menu: [act('history'), act('edit'), act('copy'), act('delete', { danger: true })],
     };
     const { icons, kebab } = splitRowActions(actions);
-    expect(keys(icons)).toEqual(['run']);
-    expect(keys(kebab)).toEqual(['edit', 'copy', 'export', 'delete']);
+    expect(keys(icons)).toEqual(['run', 'history']);
+    expect(keys(kebab)).toEqual(['edit', 'copy', 'delete']);
+  });
+
+  it('sinks danger items into the kebab instead of promoting them', () => {
+    const actions: RowActions = {
+      menu: [act('delete', { danger: true }), act('edit'), act('copy'), act('export')],
+    };
+    const { icons, kebab } = splitRowActions(actions);
+    expect(keys(icons)).toEqual(['edit', 'copy']);
+    expect(keys(kebab)).toEqual(['delete', 'export']);
+  });
+
+  it('skips collapsed items during promotion so pinned low-frequency actions stay inside', () => {
+    const actions: RowActions = {
+      inline: [act('run')],
+      menu: [act('history', { collapsed: true }), act('edit'), act('copy'), act('export', { collapsed: true }), act('delete', { danger: true })],
+    };
+    const { icons, kebab } = splitRowActions(actions);
+    expect(keys(icons)).toEqual(['run', 'edit']);
+    expect(keys(kebab)).toEqual(['history', 'copy', 'export', 'delete']);
+  });
+
+  it('forces a kebab when a node item exists, even within the limit', () => {
+    const actions: RowActions = {
+      menu: [act('edit'), act('bespoke', { node: 'x' }), act('copy'), act('delete', { danger: true })],
+    };
+    const { icons, kebab } = splitRowActions(actions);
+    expect(keys(icons)).toEqual(['edit', 'copy']);
+    expect(keys(kebab)).toEqual(['bespoke', 'delete']);
+  });
+
+  it('forceKebab collapses a row that would otherwise fit, keeping table layouts uniform', () => {
+    const actions: RowActions = {
+      menu: [act('edit'), act('copy'), act('delete', { danger: true })],
+    };
+    const fits = splitRowActions(actions);
+    expect(keys(fits.icons)).toEqual(['edit', 'copy', 'delete']);
+    expect(fits.kebab).toEqual([]);
+
+    const forced = splitRowActions(actions, true);
+    expect(keys(forced.icons)).toEqual(['edit', 'copy']);
+    expect(keys(forced.kebab)).toEqual(['delete']);
   });
 
   it('honors a custom limit', () => {
-    const actions: RowActions = { menu: [act('edit'), act('copy'), act('export'), act('offline'), act('delete')] };
-    expect(keys(splitRowActions(actions, 5).icons)).toEqual(['edit', 'copy', 'export', 'offline', 'delete']);
-    expect(keys(splitRowActions(actions, 2).kebab)).toEqual(['edit', 'copy', 'export', 'offline', 'delete']);
-  });
-
-  it('pins node and collapsed items in the kebab while the rest expand', () => {
-    const actions: RowActions = {
-      menu: [act('edit'), act('bespoke', { node: 'x' }), act('reset', { collapsed: true }), act('delete', { danger: true })],
-    };
-    const { icons, kebab } = splitRowActions(actions);
-    expect(keys(icons)).toEqual(['edit', 'delete']);
-    expect(keys(kebab)).toEqual(['bespoke', 'reset']);
+    const actions: RowActions = { menu: [act('edit'), act('copy'), act('export'), act('offline')] };
+    expect(keys(splitRowActions(actions, false, 4).icons)).toEqual(['edit', 'copy', 'export', 'offline']);
+    expect(keys(splitRowActions(actions, false, 2).icons)).toEqual(['edit', 'copy']);
+    expect(keys(splitRowActions(actions, false, 2).kebab)).toEqual(['export', 'offline']);
   });
 
   it('ignores hidden actions when counting against the limit', () => {
     const actions: RowActions = {
-      menu: [act('edit'), act('copy'), act('export', { visible: false }), act('offline'), act('delete', { danger: true })],
+      menu: [act('edit'), act('copy', { visible: false }), act('offline'), act('delete', { danger: true })],
     };
     const { icons, kebab } = splitRowActions(actions);
-    expect(keys(icons)).toEqual(['edit', 'copy', 'offline', 'delete']);
+    expect(keys(icons)).toEqual(['edit', 'offline', 'delete']);
     expect(kebab).toEqual([]);
   });
 });

@@ -18,7 +18,7 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, actionMaxIcons, pagination, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, pagination, ...rest } = props;
 
   // Every paginated table gets the quick jumper, regardless of whether the caller spreads
   // usePagination. `pagination={false}` stays off, and an explicit caller value still wins.
@@ -49,16 +49,21 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     });
 
     if (hasRowActions) {
-      // Auto-widen the action column so expanded icon rows never overflow legacy
-      // kebab-era widths: scan the rows for the widest icon layout (cheap builder
-      // calls; capped to bound client-side-paginated datasets). An explicit
-      // `actionColumn.width` still wins when it is larger.
+      // Scan the rows (cheap builder calls; capped to bound client-side-paginated
+      // datasets) to keep the whole table on one layout and one width:
+      // - kebabMode: if any row needs a kebab, every row renders in kebab layout,
+      //   so icons align vertically and the kebab sits in a fixed position.
+      // - contentWidth: auto-widen the action column so expanded icon rows never
+      //   overflow legacy kebab-era widths; explicit `actionColumn.width` still
+      //   wins when it is larger.
       let contentWidth = 0;
+      let kebabMode = false;
       if (Array.isArray(dataSource)) {
-        dataSource.slice(0, 200).forEach((record, index) => {
-          const cfg = rowActionsRef.current?.(record, index);
+        const rowCfgs = dataSource.slice(0, 200).map((record, index) => rowActionsRef.current?.(record, index));
+        kebabMode = rowCfgs.some((cfg) => cfg && splitRowActions(cfg).kebab.length > 0);
+        rowCfgs.forEach((cfg) => {
           if (!cfg) return;
-          const { icons, kebab } = splitRowActions(cfg, actionMaxIcons);
+          const { icons, kebab } = splitRowActions(cfg, kebabMode);
           const items = icons.length + (kebab.length ? 1 : 0);
           if (!items) return;
           // cell padding 16 + 24px per icon + 28px kebab trigger + 4px gaps
@@ -74,7 +79,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
         ...actionColumn,
         render: (_value: unknown, record: RecordType, index: number) => {
           const cfg = rowActionsRef.current?.(record, index);
-          return cfg ? <RowActionCell actions={cfg} maxIcons={actionMaxIcons} /> : null;
+          return cfg ? <RowActionCell actions={cfg} forceKebab={kebabMode} /> : null;
         },
       };
       if (typeof opColumn.width === 'number' && contentWidth > opColumn.width) {
@@ -84,7 +89,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
     }
 
     return allColumns;
-  }, [columns, actionColumn, hasRowActions, autoSortColumns, actionMaxIcons, dataSource]);
+  }, [columns, actionColumn, hasRowActions, autoSortColumns, dataSource]);
 
   return (
     <Table<RecordType>
