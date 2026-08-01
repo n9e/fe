@@ -2,11 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { message, Space } from 'antd';
+import { ApiOutlined } from '@ant-design/icons';
 import queryString from 'query-string';
 
 import PageLayout from '@/components/pageLayout';
 
-import { NS, getNotificationChannelTypes, DEFAULT_VALUES } from '../constants';
+import { NS, getNotificationChannelTypes, getChannelTypeMeta, DEFAULT_VALUES } from '../constants';
 import { postItems } from '../services';
 import { ChannelItem } from '../types';
 import { normalizeFormValues, normalizeInitialValues } from '../utils/normalizeValues';
@@ -18,14 +19,17 @@ export default function Add() {
   const query = queryString.parse(useLocation().search);
   const ident = (query.ident as string) || 'callback';
   const channelTypes = getNotificationChannelTypes();
+  // 默认值仍回落到 callback（未知 ident 只可能来自手敲 URL，给一份通用 HTTP 默认值是合理的），
+  // 但页面标题必须如实展示，不能顶着 Callback 的图标冒充已知类型
   const identConfig = channelTypes[ident] ? channelTypes[ident] : channelTypes['callback'];
+  const typeMeta = getChannelTypeMeta(ident);
 
   return (
     <PageLayout
       title={
         <Space className='ml-2'>
-          <img src={identConfig.logo} alt={ident} height={18} />
-          {t(`types.${ident}`)}
+          {typeMeta.logo ? <img src={typeMeta.logo} alt={ident} height={18} /> : <ApiOutlined />}
+          {typeMeta.label}
         </Space>
       }
       showBack

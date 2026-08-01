@@ -169,5 +169,25 @@ const zh_CN = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
+  test: {
+    btn: '测试',
+    run: '发送测试',
+    back: '返回修改',
+    desc: '会按当前表单里的配置真实发送一条消息，无需先保存。用于验证地址、密钥与网络是否可用。',
+    script_blocked: '脚本类媒介需要先保存再测试',
+    params_title: '媒介参数',
+    receivers_title: '接收人',
+    user_ids: '选择用户',
+    user_group_ids: '选择团队',
+    mode: {
+      history: '历史事件',
+      mock: '模拟事件',
+    },
+    empty_alert: '当前环境还没有历史告警事件',
+    switch_btn: '改用模拟事件测试',
+    result_success: '发送成功',
+    result_success_desc: '请到对应的群/邮箱确认是否收到消息',
+    result_failed: '发送失败',
+  },
 };
 export default zh_CN;

@@ -171,6 +171,26 @@ const ja_JP = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
+  test: {
+    btn: 'テスト',
+    run: 'テスト送信',
+    back: '編集に戻る',
+    desc: '保存せずに、現在のフォームの設定で実際にメッセージを送信します。アドレス・認証情報・ネットワークの確認に使えます。',
+    script_blocked: 'スクリプト種別のメディアは保存してからテストしてください',
+    params_title: 'メディアパラメータ',
+    receivers_title: '受信者',
+    user_ids: 'ユーザーを選択',
+    user_group_ids: 'チームを選択',
+    mode: {
+      history: '履歴イベント',
+      mock: 'モックイベント',
+    },
+    empty_alert: 'この環境にはまだ履歴アラートイベントがありません',
+    switch_btn: 'モックイベントでテスト',
+    result_success: '送信成功',
+    result_success_desc: '対象のグループまたはメールボックスで受信を確認してください',
+    result_failed: '送信失敗',
+  },
 };
 
 export default ja_JP;
