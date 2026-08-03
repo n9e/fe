@@ -281,14 +281,16 @@ export default function OperationModal(props: OperateionModalProps) {
           form.resetFields();
         }}
       >
-        {/* 基础展示表单项 */}
-        <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-          <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
-            <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t('targets_placeholder')} onBlur={formatValue} />
-          </Form.Item>
-          {isFormItem && render()}
-        </Form>
-        {!isFormItem && render()}
+        <>
+          {/* 基础展示表单项 */}
+          <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+            <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
+              <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t('targets_placeholder')} onBlur={formatValue} />
+            </Form.Item>
+            {isFormItem ? render() ?? null : null}
+          </Form>
+          {!isFormItem ? render() ?? null : null}
+        </>
       </Modal>
       <Modal
         visible={errorModal.visible}

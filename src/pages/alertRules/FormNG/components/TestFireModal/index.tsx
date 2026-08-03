@@ -185,7 +185,7 @@ export default function TestFireModal(props: Props) {
 
   const renderStageDescription = (stage: TestFireStage) => {
     const data = stage.data || {};
-    const tf = (key: string, options?: any) => t(`form_ng.test_fire.${key}`, options);
+    const tf = (key: string, options?: any): string => t(`form_ng.test_fire.${key}`, options) as string;
 
     if (data.reason === 'event_dropped') {
       return tf('desc.event_dropped');

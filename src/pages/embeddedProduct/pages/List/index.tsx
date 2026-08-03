@@ -22,7 +22,7 @@ import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 
 import './style.less';
 
-const DragHandle = SortableHandle((props: { disabled?: boolean }) => {
+const DragHandle = SortableHandle<{ disabled?: boolean }>((props) => {
   return <Button type='text' size='small' icon={<MenuOutlined />} className='embedded-product-row-drag-handle' disabled={props.disabled} />;
 });
 
