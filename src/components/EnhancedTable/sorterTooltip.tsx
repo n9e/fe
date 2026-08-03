@@ -19,6 +19,20 @@ function hasClassName(node: React.ReactNode, className: string): node is Element
  * any table/column-level showSorterTooltip props.
  */
 export function moveSorterTooltipToIcon(node: React.ReactNode): React.ReactNode {
+  // rc-table renders custom cells with two children arguments:
+  // React.createElement(Cell, props, appendNode, mergedChildNode). Even when
+  // appendNode is undefined, React exposes the cell's children as an array.
+  if (Array.isArray(node)) {
+    let childChanged = false;
+    const nextChildren = node.map((currentChild) => {
+      const nextChild = moveSorterTooltipToIcon(currentChild);
+      childChanged ||= nextChild !== currentChild;
+      return nextChild;
+    });
+
+    return childChanged ? nextChildren : node;
+  }
+
   if (!React.isValidElement(node)) return node;
 
   const element = node as ElementWithChildren;
