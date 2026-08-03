@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { PromQLMonacoEditor } from '@fc-components/monaco-editor';
-import type * as monacoTypes from 'monaco-editor/esm/vs/editor/editor.api';
 import _ from 'lodash';
 import { useGetState } from 'ahooks';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +14,10 @@ import { interpolateString, instantInterpolateString, includesVariables, getReal
 
 import './style.less';
 
-export type { monacoTypes };
+// editor 类型与 @fc-components/monaco-editor 同源，避免与其内部 monaco-editor 副本（版本不同）产生类型冲突
+type PromQLEditorProps = React.ComponentProps<typeof PromQLMonacoEditor>;
+type MonacoEditor = Parameters<NonNullable<PromQLEditorProps['editorDidMount']>>[0];
+
 export { interpolateString, instantInterpolateString, includesVariables, getRealStep };
 
 interface MonacoEditorPromQLProps {
@@ -35,7 +37,7 @@ interface MonacoEditorPromQLProps {
   onChange?: (value?: string) => void;
   onEnter?: (value?: string) => void;
   onBlur?: (value?: string) => void;
-  onEditorDidMount?: (editor: monacoTypes.editor.IStandaloneCodeEditor) => void;
+  onEditorDidMount?: (editor: MonacoEditor) => void;
   onMetricUnitChange?: (unit: string) => void; // 用于内置指标启用时选择指标获取对应的 unit
 }
 
@@ -66,7 +68,7 @@ export default function index(props: MonacoEditorPromQLProps) {
     onMetricUnitChange,
   } = props;
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
-  const editorRef = React.useRef<monacoTypes.editor.IStandaloneCodeEditor | null>(null);
+  const editorRef = React.useRef<MonacoEditor | null>(null);
   const [value, setValue, getValue] = useGetState<string | undefined>(props.value);
 
   useEffect(() => {
