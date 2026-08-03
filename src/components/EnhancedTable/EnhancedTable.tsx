@@ -8,6 +8,19 @@ import { RowActionCell } from './RowActionCell';
 import type { EnhancedTableProps } from './types';
 import './style.less';
 import { defaultComparator } from './sorter';
+import { moveSorterTooltipToIcon } from './sorterTooltip';
+
+type HeaderCellProps = React.HTMLAttributes<HTMLElement> & {
+  children?: React.ReactNode;
+};
+
+function createHeaderCellWithSorterTooltip(OriginHeaderCell: React.ElementType = 'th') {
+  const HeaderCell = React.forwardRef<HTMLElement, HeaderCellProps>(({ children, ...cellProps }, ref) =>
+    React.createElement(OriginHeaderCell, { ...cellProps, ref }, moveSorterTooltipToIcon(children)),
+  );
+  HeaderCell.displayName = 'EnhancedTableHeaderCell';
+  return HeaderCell;
+}
 
 /**
  * Thin pass-through wrapper over antd Table.
@@ -18,11 +31,24 @@ import { defaultComparator } from './sorter';
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, dataSource, compactHeader, autoSortColumns, pagination, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, components, dataSource, compactHeader, autoSortColumns, pagination, ...rest } = props;
 
   // Every paginated table gets the quick jumper, regardless of whether the caller spreads
   // usePagination. `pagination={false}` stays off, and an explicit caller value still wins.
   const mergedPagination = useMemo(() => (pagination === false ? (false as const) : { showQuickJumper: true, ...pagination }), [pagination]);
+
+  const originalHeaderCell = components?.header?.cell as React.ElementType | undefined;
+  const enhancedHeaderCell = useMemo(() => createHeaderCellWithSorterTooltip(originalHeaderCell), [originalHeaderCell]);
+  const enhancedComponents = useMemo(
+    () => ({
+      ...components,
+      header: {
+        ...components?.header,
+        cell: enhancedHeaderCell,
+      },
+    }),
+    [components, enhancedHeaderCell],
+  );
 
   const rowActionsRef = useRef(rowActions);
   rowActionsRef.current = rowActions;
@@ -69,6 +95,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
   return (
     <Table<RecordType>
       {...rest}
+      components={enhancedComponents}
       pagination={mergedPagination}
       dataSource={dataSource}
       columns={enhancedColumns}
