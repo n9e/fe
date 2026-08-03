@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Drawer, Steps, Form, Input, InputNumber, Checkbox, Button, Select, Alert, Space, Collapse, Radio, message } from 'antd';
 import { LoadingOutlined, CheckCircleFilled, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
@@ -10,8 +10,12 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { getComponents } from '@/pages/builtInComponents/services';
+import { writeOnboardingMarker } from '@/components/OnboardingProgress/detect';
+import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
 
-import { NS } from '../../../constants';
+import { localizeDocUrl } from '@/utils/docUrl';
+
+import { CATEGRAF_TROUBLESHOOT_DOC, NS, VERIFIED_DATASOURCE_IDS_KEY } from '../../../constants';
 import { CategrafInstallMeta, probeTargets } from '../../../services';
 import CommandBlock from '../components/CommandBlock';
 import { isValidServerAddr, normalizeServerAddr } from '../InstallCategraf/buildCommand';
@@ -26,10 +30,30 @@ interface Props {
   /** 机器列表已勾选的机器，作为验证步骤"目标机器"的默认值 */
   defaultIdents?: string[];
   onClose: () => void;
+  /** 指标到达验证通过后追加展示的内容，用于接力到下一步（套大盘 / 开告警 / 配通知） */
+  verifiedExtra?: React.ReactNode;
 }
 
 /** 数据源列表未加载时的稳定空引用，避免每次渲染都让下游 useMemo 失效 */
 const EMPTY_DATASOURCES: { id: number; name: string; is_default?: boolean }[] = [];
+
+function readVerifiedDatasourceIds(): number[] {
+  try {
+    const raw = localStorage.getItem(VERIFIED_DATASOURCE_IDS_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) ? _.filter(parsed, (id) => typeof id === 'number') : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function writeVerifiedDatasourceIds(ids: number[]) {
+  try {
+    localStorage.setItem(VERIFIED_DATASOURCE_IDS_KEY, JSON.stringify(ids));
+  } catch (e) {
+    // 记不住只是下次要重新选，不值得打断验证流程
+  }
+}
 
 /** 以 field.default 初始化一个新实例的取值 */
 function newInstance(component: CollectComponent): Record<string, unknown> {
@@ -85,8 +109,8 @@ function FieldInput(props: { field: CollectField; namePrefix: (string | number)[
 }
 
 export default function CollectSetup(props: Props) {
-  const { meta, onClose } = props;
-  const { t } = useTranslation(NS);
+  const { meta, onClose, verifiedExtra } = props;
+  const { t, i18n } = useTranslation(NS);
   const { siteInfo, darkMode, groupedDatasourceList } = useContext(CommonStateContext);
   const [form] = Form.useForm<CollectFormValues>();
 
@@ -131,12 +155,21 @@ export default function CollectSetup(props: Props) {
   // 写入路径才是直接答案。但 URL 匹配天然有 miss（writer 用容器内地址、数据源用
   // 外部域名等），所以这里只当默认值：先按权限过滤掉当前用户查不了的，匹配不上
   // 就退到单个数据源（默认数据源优先，否则第一个），猜错由用户在验证步骤切换。
+  // 上次验证通过的数据源：writer URL 匹配天然会 miss，而「上次真的查到了指标」是经验证过的更强信号，
+  // 所以优先级放在 meta 之前。只在 id 仍然可见时采纳，数据源被删/权限变更后自动退回后面的策略。
+  const rememberedDatasourceIds = useRef(readVerifiedDatasourceIds()).current;
+  const defaultFromRemembered = useMemo(
+    () => _.filter(rememberedDatasourceIds, (id) => _.some(prometheusList, (ds) => ds.id === id)),
+    [rememberedDatasourceIds, prometheusList],
+  );
+
   const defaultDatasourceIds = useMemo(() => {
+    if (defaultFromRemembered.length > 0) return defaultFromRemembered;
     const fromMeta = _.filter(meta.metric_datasource_ids, (id) => _.some(prometheusList, (ds) => ds.id === id));
     if (fromMeta.length > 0) return fromMeta;
     const preferred = _.find(prometheusList, 'is_default') ?? prometheusList[0];
     return preferred ? [preferred.id] : [];
-  }, [meta.metric_datasource_ids, prometheusList]);
+  }, [defaultFromRemembered, meta.metric_datasource_ids, prometheusList]);
 
   // undefined = 跟随后端默认值；用户一旦手动选过就以其选择为准，不再被异步加载的
   // 数据源列表覆盖回去（这也是后端匹配不准时的兜底出口）
@@ -156,6 +189,22 @@ export default function CollectSetup(props: Props) {
     metric: component?.verifyMetric,
     idents: targetIdents,
   });
+
+  // 指标确认到达即视为"采集已验证"，写本地标记点亮引导清单里那一步。
+  // useMetricArrival 每 5 秒轮询，detected 会持续为真，用 ref 保证只写一次。
+  const verifiedMarkedRef = useRef(false);
+  useEffect(() => {
+    if (arrival.status !== 'detected' || verifiedMarkedRef.current) return;
+    verifiedMarkedRef.current = true;
+    writeOnboardingMarker('collectVerified');
+    refreshOnboardingProgress(['collectVerified']);
+    // 只记真正命中的数据源：用户可能勾了 3 个而只有 1 个有数据，下次默认就该是那 1 个
+    const hitIds = _.map(
+      _.filter(arrivalDatasources, (ds) => _.includes(arrival.hitDatasourceNames, ds.name)),
+      'id',
+    );
+    writeVerifiedDatasourceIds(hitIds.length > 0 ? hitIds : datasourceIds);
+  }, [arrival.status]);
 
   const loadTemplate = (name: string) => {
     setTemplateState('loading');
@@ -458,7 +507,12 @@ export default function CollectSetup(props: Props) {
             <>
               <Form layout='vertical'>
                 <div className='grid grid-cols-2 gap-x-4'>
-                  <Form.Item label={t('collect.verify.datasource_label')} extra={t('collect.verify.datasource_tip')} className='mb-3'>
+                  <Form.Item
+                    label={t('collect.verify.datasource_label')}
+                    // 默认值来自上次验证通过时，标注出来降低"是不是选错了"的焦虑
+                    extra={!pickedDatasourceIds && defaultFromRemembered.length > 0 ? t('collect.verify.datasource_remembered') : t('collect.verify.datasource_tip')}
+                    className='mb-3'
+                  >
                     <Select
                       mode='multiple'
                       showSearch
@@ -512,6 +566,7 @@ export default function CollectSetup(props: Props) {
                       <a href='/metric/explorer' target='_blank'>
                         {t('collect.verify.explore')}
                       </a>
+                      {verifiedExtra ? <div className='mt-2'>{verifiedExtra}</div> : null}
                     </>
                   }
                 />
@@ -527,9 +582,14 @@ export default function CollectSetup(props: Props) {
                   description={
                     <>
                       <div>{t('collect.verify.timeout_tip', { prefix: `${metricPrefix}_` })}</div>
-                      <Button size='small' className='mt-2' onClick={arrival.restart}>
-                        {t('install.retry')}
-                      </Button>
+                      <Space className='mt-2'>
+                        <Button size='small' onClick={arrival.restart}>
+                          {t('install.retry')}
+                        </Button>
+                        <a href={localizeDocUrl(CATEGRAF_TROUBLESHOOT_DOC, i18n.language)} target='_blank' rel='noreferrer'>
+                          {t('install.troubleshoot_doc')}
+                        </a>
+                      </Space>
                     </>
                   }
                 />

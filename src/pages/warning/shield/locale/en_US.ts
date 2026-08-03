@@ -41,6 +41,10 @@ const en_US = {
     periodic_tip: 'A periodic mute never expires, alerts matched in the time ranges above are muted every week. Same start and end time means the whole day',
   },
   mute_method: {
+    hint_title: 'Which mute method should I pick?',
+    hint_notify_only: 'Mute notifications only: events are still created and recorded, just not sent — good for restarts and maintenance, so you can still review what happened.',
+    hint_all: 'Mute events and notifications: no event is created at all — good for noise you have already decided to ignore.',
+    hint_dismiss: 'Do not show again',
     label: 'Mute method',
     0: 'Mute events and notifications',
     '0_desc': '(no event, no notification)',

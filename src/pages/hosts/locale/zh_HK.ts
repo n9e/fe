@@ -167,11 +167,11 @@ const zh_HK = {
     timeout: '等待逾時，仍未檢測到新機器上報',
     timeout_tip: '請檢查：1）目標機器能否訪問上述服務端地址；2）categraf 是否已啟動（systemctl status categraf）。',
     retry: '重新檢測',
+    troubleshoot_doc: '查看排查文檔',
     done: '完成',
   },
   collect: {
     entry: '配置採集',
-    next_entry: '下一步：配置採集',
     title: '配置採集',
     steps: {
       pick: '選擇組件',
@@ -277,6 +277,7 @@ const zh_HK = {
       probing: '探測數據源：{{names}}',
       datasource_label: '數據源',
       datasource_tip: '預設取服務端按 pushgw 寫入配置匹配出的數據源；若這裡查不到數據，可手動切換到實際儲存機器指標的數據源',
+      datasource_remembered: '預設沿用上次驗證通過的數據源，可手動切換',
       datasource_placeholder: '選擇 Prometheus 數據源',
       datasource_required: '請至少選擇一個數據源，否則無法檢測指標是否上報',
       targets_label: '目標機器（可選）',

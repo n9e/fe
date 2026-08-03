@@ -1,16 +1,16 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 
 import useOnboardingProgress from '@/components/OnboardingProgress/useOnboardingProgress';
 import OnboardingTracks from '@/components/OnboardingProgress/OnboardingTracks';
+import useOnboardingStepClick from '@/components/OnboardingActions/useOnboardingStepClick';
 
 export default function OnboardingChecklist() {
   const { t } = useTranslation('n9e-landing');
-  const history = useHistory();
+  const onStepClick = useOnboardingStepClick();
   const { loaded, doneCount, total, doneMap } = useOnboardingProgress();
 
-  // 加载中、或已全部完成（5/5）时不展示；完成前一直显示，引导用户跑通监控
+  // 加载中、或已全部完成时不展示；完成前一直显示，引导用户跑通监控
   if (!loaded || doneCount === total) {
     return null;
   }
@@ -30,7 +30,7 @@ export default function OnboardingChecklist() {
         <div className='n9e-landing-onboarding-tracks'>
           <OnboardingTracks
             doneMap={doneMap}
-            onStepClick={(to) => history.push(to)}
+            onStepClick={onStepClick}
             trackIconExtra={(key) => `n9e-landing-onboarding-tag-icon-${key}`}
             classes={{
               track: 'n9e-landing-onboarding-panel',

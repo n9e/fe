@@ -55,6 +55,25 @@ const parseDuration = (val: string) => {
   return { unit, num };
 };
 
+// 「屏蔽方式」首次使用说明的关闭标记：两种方式的差别最容易配错，但只需要讲一次
+const MUTE_METHOD_HINT_KEY = 'n9e_mute_method_hint_dismissed';
+
+function isMuteMethodHintDismissed(): boolean {
+  try {
+    return !!localStorage.getItem(MUTE_METHOD_HINT_KEY);
+  } catch (e) {
+    return false;
+  }
+}
+
+function dismissMuteMethodHint() {
+  try {
+    localStorage.setItem(MUTE_METHOD_HINT_KEY, '1');
+  } catch (e) {
+    // 记不住只是下次还会提示一遍
+  }
+}
+
 interface Props {
   detail?: shieldItem;
   type?: number; // 1:编辑; 2:克隆 3:新增
@@ -74,6 +93,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
   const tags = Form.useWatch('tags', form);
   const muteTimeType = Form.useWatch('mute_time_type', form);
   const muteType = Form.useWatch('mute_type', form);
+  const [showMuteMethodHint, setShowMuteMethodHint] = useState(() => !isMuteMethodHintDismissed());
   const btime = Form.useWatch('btime', form);
   const etime = Form.useWatch('etime', form);
   const periodicMutes = Form.useWatch('periodic_mutes', form);
@@ -363,6 +383,27 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
             setCollapsed={(collapsed) => setSectionCollapsed((prev) => ({ ...prev, mute: collapsed }))}
             summary={muteSummary}
           >
+            {/* 首次使用时讲清两种方式的取舍：机器重启/变更维护该选「只屏蔽通知」，事件留着好复盘 */}
+            {showMuteMethodHint && (
+              <Alert
+                className='mb-3'
+                type='info'
+                showIcon
+                closable
+                closeText={t('mute_method.hint_dismiss')}
+                onClose={() => {
+                  setShowMuteMethodHint(false);
+                  dismissMuteMethodHint();
+                }}
+                message={t('mute_method.hint_title')}
+                description={
+                  <>
+                    <div>{t('mute_method.hint_notify_only')}</div>
+                    <div>{t('mute_method.hint_all')}</div>
+                  </>
+                }
+              />
+            )}
             <Form.Item label={t('mute_method.label')} name='mute_type' tooltip={t('mute_method.tip')}>
               <Radio.Group>
                 <Radio value={0}>
