@@ -11,6 +11,7 @@ import { getList as getLlmConfigs } from '@/pages/aiConfig/llmConfigs/services';
 import { getNotifyUsed } from '@/pages/event/EventNotifyRecords/services';
 
 import { hasEnabledHostRule, hasNotifyBoundHostRule, isHostBoard, readOnboardingMarker } from './detect';
+import { CACHEABLE_KEYS, DetectCache, isProbeThrottled, readDetectCache, writeDetectCache } from './detectCache';
 
 /** 计入进度分母的步骤 */
 export type OnboardingStepKey = 'machine' | 'hostDashboard' | 'hostAlert' | 'testDelivered' | 'datasource' | 'dashboard' | 'alert' | 'notification' | 'llm';
@@ -94,9 +95,7 @@ const DONE_DETECT: DetectState = {
   loaded: true,
 };
 
-// 跨实例（侧栏徽标 + 着陆页清单 + 机器列表横幅 + 各成功态卡片）与多次挂载共享的最近一次探测结果：
-// 既作初始值避免重复请求与闪烁，也用于跳过已完成步骤的探测（大盘 / 告警接口偏重，置真后不再重复拉取）。
-let lastDetect: DetectState = {
+const INITIAL_DETECT: DetectState = {
   machine: false,
   dashboard: false,
   hostDashboard: false,
@@ -110,6 +109,15 @@ let lastDetect: DetectState = {
   testDeliveredLocal: false,
   loaded: false,
 };
+
+// 跨实例（侧栏徽标 + 着陆页清单 + 机器列表横幅 + 各成功态卡片）与多次挂载共享的最近一次探测结果：
+// 既作初始值避免重复请求与闪烁，也用于跳过已完成步骤的探测（大盘 / 告警接口偏重，置真后不再重复拉取）。
+let lastDetect: DetectState = INITIAL_DETECT;
+
+// 当前用户 id：缓存读写都要按它隔离。由 hook 在拿到 profile 后写入，模块级函数据此存取缓存
+let detectCacheUid: number | undefined;
+// 已经并过缓存的用户 id：每个用户只并一次，重复并没有意义还会多广播一轮
+let hydratedUid: number | undefined;
 
 // 挂载点从 2 处涨到 5 处，同一轮里并发挂载必须共用一次探测，否则大盘 / 告警列表会被拉 5 遍
 let pendingProbe: Promise<DetectState> | null = null;
@@ -127,6 +135,47 @@ function readMarkers(known: DetectState) {
     collectVerified: known.collectVerified || readOnboardingMarker('collectVerified'),
     testDeliveredLocal: known.testDeliveredLocal || readOnboardingMarker('testDelivered'),
   };
+}
+
+/** 把本轮探测结论里为真的项落盘。CACHEABLE_KEYS 与 DetectState 的字段名在这里由 tsc 兜住 */
+function persistDetect(state: DetectState) {
+  if (!detectCacheUid) return;
+  writeDetectCache(
+    detectCacheUid,
+    CACHEABLE_KEYS.filter((key) => state[key]),
+  );
+}
+
+/**
+ * 把缓存里的已完成项并回 lastDetect 并广播，返回缓存记录供调用方做探测节流。
+ * 与探测本身同一口径：只并 true、不回退。
+ */
+function hydrateDetectCache(uid: number): DetectCache | undefined {
+  const cache = readDetectCache(uid);
+  if (hydratedUid === uid) return cache;
+
+  // 同一次页面加载内换了登录用户：探测结论是「当前用户可见范围内是否存在」，一律归零重来，
+  // 不能继承前一个人的完成态
+  const switched = hydratedUid !== undefined;
+  hydratedUid = uid;
+  const base = switched ? INITIAL_DETECT : lastDetect;
+
+  if (!cache) {
+    // 换用户且新用户没缓存时也要广播一次归零，否则挂载中的实例还画着上一个人的完成态；
+    // 首次挂载 base 就是 lastDetect，广播没有意义、还会多一轮渲染
+    if (switched) publish(base);
+    return undefined;
+  }
+
+  // loaded 一并置真：缓存本身就来自一轮完整探测，先把清单画出来，不必等这次请求回来
+  const next: DetectState = { ...base, loaded: true };
+  CACHEABLE_KEYS.forEach((key) => {
+    if (_.includes(cache.done, key)) {
+      next[key] = true;
+    }
+  });
+  publish({ ...next, ...readMarkers(next) });
+  return cache;
 }
 
 function probeOnboarding(): Promise<DetectState> {
@@ -216,6 +265,8 @@ function probeOnboardingShared(): Promise<DetectState> {
     pendingProbe = probeOnboarding()
       .then((next) => {
         publish(next);
+        // 只有真实探测过才刷新缓存与节流时间戳；标记态的就地广播不该顺延下一次探测
+        persistDetect(next);
         return next;
       })
       .finally(() => {
@@ -246,10 +297,11 @@ export function refreshOnboardingProgress(keys?: OnboardingDisplayKey[]) {
 /**
  * 新手引导进度检测：数据源读 CommonStateContext，机器 / 大盘 / 告警 / 通知 / 大模型 / 通知记录各拉一次轻量接口。
  * 供着陆页清单、侧栏进度徽标、机器列表横幅与各成功态卡片共用，保证多处口径一致；
- * 随路由变化重新探测，也可由 refreshOnboardingProgress 就地刷新。
+ * 随路由变化重新探测（已完成项走本地缓存、未完成项受 PROBE_MIN_INTERVAL 节流），
+ * 也可由 refreshOnboardingProgress 就地刷新（不受节流限制）。
  */
 export default function useOnboardingProgress(): OnboardingProgress {
-  const { datasourceList } = useContext(CommonStateContext);
+  const { datasourceList, profile } = useContext(CommonStateContext);
   const { pathname } = useLocation();
   const [detect, setDetect] = useState<DetectState>(lastDetect);
 
@@ -273,8 +325,19 @@ export default function useOnboardingProgress(): OnboardingProgress {
       setDetect(DONE_DETECT);
       return;
     }
+    // 缓存按用户隔离，profile 由 App 初始化时拉取。理论上本 hook 的挂载点都在初始化之后，
+    // 拿不到 id 只可能是异常路径 —— 此时退回改动前的行为：照旧探测，只是不读写缓存
+    const uid = profile?.id;
+    if (!uid) {
+      probeOnboardingShared().catch(() => undefined);
+      return;
+    }
+    detectCacheUid = uid;
+    if (isProbeThrottled(hydrateDetectCache(uid))) {
+      return;
+    }
     probeOnboardingShared().catch(() => undefined);
-  }, [pathname]);
+  }, [pathname, profile?.id]);
 
   const doneMap = useMemo<Record<OnboardingDisplayKey | OnboardingDerivedKey, boolean>>(
     () => ({
