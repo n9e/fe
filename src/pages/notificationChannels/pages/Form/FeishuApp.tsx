@@ -29,7 +29,7 @@ export default function FeishuApp() {
       <ContactKeysSelect showSearch optionFilterProp='label' allowClear />
 
       <Collapse ghost className='n9e-collapse-advanced-settings'>
-        <Collapse.Panel key='advanced' header={t('advanced_settings')}>
+        <Collapse.Panel key='advanced' header={t('advanced_settings')} forceRender>
           <Form.Item label={t('http_request_config.proxy')} name={[...names, 'proxy']}>
             <Input />
           </Form.Item>
