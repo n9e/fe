@@ -37,6 +37,10 @@ src/
 
 - 异步请求须有错误处理（`try/catch`、`.catch`、`onError` 等，与现有模式一致）。
 
+## 折叠面板与表单
+
+- `antd` 的 `Collapse.Panel` 初始折叠时不会挂载内容。面板内包含需要参与校验、回填或提交的 `Form.Item` / `Form.List` 时，必须添加 `forceRender`，确保字段注册到 Form；仅用于展示的内容不需要添加。
+
 ## 样式与颜色
 
 - 颜色、主题相关值使用 `src/theme/variable.css`（及现有主题体系）中的变量，避免魔法色值。
