@@ -21,6 +21,7 @@ import Pagerduty from './Pagerduty';
 import DingtalkApp from './DingtalkApp';
 import WecomApp from './WecomApp';
 import FeishuApp from './FeishuApp';
+import Plivo from './Plivo';
 
 interface Props {
   initialValues?: ChannelItem;
@@ -155,6 +156,7 @@ export default function FormCpt(props: Props) {
                   <DingtalkApp />
                   <WecomApp />
                   <FeishuApp />
+                  <Plivo />
                 </div>
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>

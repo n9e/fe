@@ -61,6 +61,18 @@ interface PagerdutyRequestConfig {
   integration_keys: string[];
 }
 
+interface PlivoRequestConfig {
+  auth_id: string;
+  auth_token: string;
+  src_number: string;
+  answer_url: string;
+  answer_method: string;
+  proxy: string;
+  timeout: number;
+  retry_times: number;
+  retry_sleep: number;
+}
+
 interface DingtalkAppRequestConfig {
   app_key: string;
   app_secret: string;
@@ -97,13 +109,14 @@ export interface ChannelItem {
   description: string;
   enable: boolean;
   param_config: ParamConfig;
-  request_type: 'http' | 'smtp' | 'script' | 'flashduty' | 'pagerduty' | 'feishuapp' | 'dingtalkapp' | 'wecomapp' | 'feishu' | 'feishucard' | 'lark' | 'larkcard' | 'dingtalk';
+  request_type: 'http' | 'smtp' | 'script' | 'flashduty' | 'pagerduty' | 'plivo' | 'feishuapp' | 'dingtalkapp' | 'wecomapp' | 'feishu' | 'feishucard' | 'lark' | 'larkcard' | 'dingtalk';
   request_config: {
     http_request_config: HttpRequestConfig;
     smtp_request_config: SmtpRequestConfig;
     script_request_config: ScriptRequestConfig;
     flashduty_request_config: FlashdutyRequestConfig;
     pagerduty_request_config: PagerdutyRequestConfig;
+    plivo_request_config: PlivoRequestConfig;
     dingtalkapp_request_config: DingtalkAppRequestConfig;
     wecomapp_request_config: WecomAppRequestConfig;
     feishuapp_request_config: FeishuAppRequestConfig;

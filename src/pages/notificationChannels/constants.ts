@@ -649,6 +649,60 @@ export const getNotificationChannelTypes = () => {
         },
       },
     },
+    'plivo-voice': {
+      logo: '/image/logos/plivo.png',
+      type: 'plivo',
+      default_values: {
+        param_config: {
+          user_info: {
+            contact_key: 'phone',
+          },
+          custom: {
+            params: null,
+          },
+        },
+        request_type: 'plivo',
+        request_config: {
+          plivo_request_config: {
+            auth_id: '',
+            auth_token: '',
+            src_number: '',
+            answer_url: '',
+            answer_method: 'POST',
+            proxy: '',
+            timeout: 10000,
+            retry_times: 3,
+            retry_sleep: 0,
+          },
+        },
+      },
+    },
+    'plivo-sms': {
+      logo: '/image/logos/plivo.png',
+      type: 'plivo',
+      default_values: {
+        param_config: {
+          user_info: {
+            contact_key: 'phone',
+          },
+          custom: {
+            params: null,
+          },
+        },
+        request_type: 'plivo',
+        request_config: {
+          plivo_request_config: {
+            auth_id: '',
+            auth_token: '',
+            src_number: '',
+            proxy: '',
+            timeout: 10000,
+            retry_times: 3,
+            retry_sleep: 0,
+          },
+        },
+      },
+    },
     // slackbot: {
     //   logo: '/image/logos/slack.png',
     //   type: 'http',
