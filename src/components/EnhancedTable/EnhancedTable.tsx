@@ -15,9 +15,11 @@ type HeaderCellProps = React.HTMLAttributes<HTMLElement> & {
 };
 
 function createHeaderCellWithSorterTooltip(OriginHeaderCell: React.ElementType = 'th') {
-  const HeaderCell = React.forwardRef<HTMLElement, HeaderCellProps>(({ children, ...cellProps }, ref) =>
-    React.createElement(OriginHeaderCell, { ...cellProps, ref }, moveSorterTooltipToIcon(children)),
-  );
+  const HeaderCell = React.forwardRef<HTMLElement, HeaderCellProps>(({ children, ...cellProps }, ref) => {
+    const nextChildren = moveSorterTooltipToIcon(children);
+    const childArgs = Array.isArray(nextChildren) ? nextChildren : [nextChildren];
+    return React.createElement(OriginHeaderCell, { ...cellProps, ref }, ...childArgs);
+  });
   HeaderCell.displayName = 'EnhancedTableHeaderCell';
   return HeaderCell;
 }
