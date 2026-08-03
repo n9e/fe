@@ -5,6 +5,7 @@ import { useRequest } from 'ahooks';
 
 import { NS } from '../constants';
 import { getItem, putItem, testConnection } from '../services';
+import type { Item } from '../types';
 import FormCpt from './Form';
 import { adjustFormValues, adjustSubmitValues } from '../utils/adjustFormValues';
 
@@ -20,6 +21,8 @@ export default function EditDrawer(props: Props) {
   const { t } = useTranslation(NS);
   const { visible, onOk, onClose, id } = props;
   const [form] = Form.useForm();
+  const [item, setItem] = useState<Item>();
+  const isSystemConfig = item?.created_by === 'system';
 
   const { loading } = useRequest(
     () => {
@@ -32,6 +35,7 @@ export default function EditDrawer(props: Props) {
       refreshDeps: [id],
       onSuccess(data) {
         if (data) {
+          setItem(data);
           form.resetFields();
           form.setFieldsValue(adjustFormValues(data));
         }
@@ -45,6 +49,7 @@ export default function EditDrawer(props: Props) {
     if (!visible) {
       form.resetFields();
       setTestLoading(false);
+      setItem(undefined);
     }
   }, [visible, form]);
 
@@ -111,7 +116,7 @@ export default function EditDrawer(props: Props) {
       }
     >
       <Spin spinning={loading}>
-        <FormCpt form={form} />
+        <FormCpt form={form} isSystemConfig={isSystemConfig} />
       </Spin>
     </Drawer>
   );
