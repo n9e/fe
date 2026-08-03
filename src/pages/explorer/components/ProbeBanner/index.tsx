@@ -12,9 +12,12 @@ import '@/pages/datasource/locale';
 
 /**
  * 探索器落地横幅（产品方案 A1.6 页面二）：
- * 仅当 URL 带 __from=ds_verify 且 sessionStorage 有该数据源的体检结论时出现；
+ * 仅当 URL 带 __from=ds_verify 且 localStorage 有该数据源的体检结论时出现；
  * 用户接管（改查询/点查询）或点 × 后收起，刷新即消失，不常驻、不入库。
  * 显隐由调用方（Prometheus explorer）控制，本组件只负责渲染。
+ *
+ * 存储用 localStorage 而非 sessionStorage 的原因见 useDataProbe 的 PROBE_STORAGE_PREFIX 注释：
+ * 本组件跑在 target=_blank 开出的新标签页里，session storage 不会被复制过来。
  */
 
 interface Props {
@@ -25,7 +28,7 @@ interface Props {
 export function readProbeResult(datasourceId?: number): ProbeResult | undefined {
   if (!datasourceId) return undefined;
   try {
-    const raw = sessionStorage.getItem(`${PROBE_STORAGE_PREFIX}${datasourceId}`);
+    const raw = localStorage.getItem(`${PROBE_STORAGE_PREFIX}${datasourceId}`);
     return raw ? (JSON.parse(raw) as ProbeResult) : undefined;
   } catch (e) {
     return undefined;

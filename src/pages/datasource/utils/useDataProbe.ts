@@ -24,7 +24,17 @@ export interface ProbeResult {
   errorMessage?: string;
 }
 
-/** 体检结论经 sessionStorage 传给探索器横幅（ProbeBanner），URL 只带触发位不带大对象 */
+/**
+ * 体检结论经 localStorage 传给探索器横幅（ProbeBanner），URL 只带触发位不带大对象。
+ *
+ * 必须是 localStorage 不能是 sessionStorage：横幅在**新标签页**里渲染（NextStepModal 的
+ * 「探索这些数据」是 target=_blank），而 target=_blank 隐含 noopener，新顶层上下文没有
+ * creator，浏览器就不会把 session storage 复制过去 —— 用 sessionStorage 的话 ProbeBanner
+ * 永远读到空、静默渲染成 null。localStorage 同源共享，不受这套复制语义影响。
+ *
+ * 残留不需要清理：横幅的显隐门是 URL 上的 __from=ds_verify（见 explorer/Prometheus），
+ * 而那个标记只由 NextStepModal 在刚跑完体检后产生，读到的必然是本次写入的值。
+ */
 export const PROBE_STORAGE_PREFIX = 'n9e_ds_probe_';
 
 /** 「有新数据」的窗口，与 Prometheus 默认 lookback delta 对齐 */
@@ -182,10 +192,14 @@ export default function useDataProbe(datasourceId: number | undefined, pluginTyp
         if (r.state === 'hasData') {
           markDsJourney(datasourceId, 'verified_at');
         }
-        try {
-          sessionStorage.setItem(`${PROBE_STORAGE_PREFIX}${datasourceId}`, JSON.stringify(r));
-        } catch (e) {
-          // sessionStorage 不可用时静默降级，仅影响探索器横幅
+        // 只落 hasData：读取端也只认这一种状态，而 unreachable 的 errorMessage 可能带着
+        // 数据源地址与错误详情，没必要长期留在 localStorage 里
+        if (r.state === 'hasData') {
+          try {
+            localStorage.setItem(`${PROBE_STORAGE_PREFIX}${datasourceId}`, JSON.stringify(r));
+          } catch (e) {
+            // localStorage 不可用时静默降级，仅影响探索器横幅
+          }
         }
       });
   }, [datasourceId, pluginType]);
