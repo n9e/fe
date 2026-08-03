@@ -9,6 +9,7 @@ const zh_CN = {
   enabled: '启用',
   disabled: '停用',
   is_default: '默认',
+  builtin: '内置',
   is_default_tip: '打开之后，如果 agent 没有配置 LLM 模型，将使用此模型',
   add_btn: '新建 LLM 配置',
   cannot_delete_when_enabled: '启用状态的 LLM 配置无法删除',

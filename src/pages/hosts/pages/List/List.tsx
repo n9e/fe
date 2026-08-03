@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
 import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined, AppstoreAddOutlined } from '@ant-design/icons';
@@ -16,6 +17,7 @@ import getTextWidth from '@/utils/getTextWidth';
 import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import EmptyGuide from '@/components/EmptyGuide';
+import NextStepsCard from '@/components/OnboardingActions/NextStepsCard';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
 import Explorer from '@/pages/targets/components/Explorer';
 import EditBusinessGroups from '@/pages/targets/components/EditBusinessGroups';
@@ -133,6 +135,8 @@ export default function List(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { t: tTargets } = useTranslation('targets');
   const { darkMode, siteInfo } = useContext(CommonStateContext);
+  const history = useHistory();
+  const location = useLocation();
   const pagination = usePagination({ PAGESIZE_KEY: 'hosts-ng' });
 
   const { allCollapseNode, editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType, aiTaskMode = false } = props;
@@ -208,6 +212,24 @@ export default function List(props: Props) {
     getCategrafInstallMeta().then(setInstallMeta);
   }, []);
 
+  // 引导清单里的「接入机器 / 配置采集」两步跳到这里唤起对应向导。消费后立刻清掉 query，
+  // 否则刷新或后退会再弹一次。防重复靠清参本身：处理后 search 已空，effect 重跑会在参数判定处
+  // 退出，不需要一次性标记 —— 一次性标记会把同一次挂载内的第二次深链（用户再点一次引导步骤）吞掉。
+  useEffect(() => {
+    if (aiTaskMode) return;
+    const onboarding = new URLSearchParams(location.search).get('onboarding');
+    if (onboarding !== 'install' && onboarding !== 'collect') return;
+    // installMeta 还没回来时先等下一轮：两个向导都依赖它。老后端/商业版下它恒为 null，
+    // 此时什么都不做（query 留着无害）。
+    if (!installMeta) return;
+    if (onboarding === 'install') {
+      setInstallVisible(true);
+    } else if (installMeta.collect) {
+      setCollectVisible(true);
+    }
+    history.replace({ pathname: location.pathname, search: '' });
+  }, [aiTaskMode, installMeta, location.search]);
+
   const openCategrafDoc = () => {
     DocumentDrawer({
       language: i18n.language,
@@ -248,175 +270,190 @@ export default function List(props: Props) {
 
   return (
     <>
-      {/* flex-wrap + Space wrap：窄屏时右侧动作组整体换行，而不是被挤出可视区裁掉 */}
       <div
-        className={classNames('flex-shrink-0 flex flex-wrap justify-between gap-y-2', {
+        className={classNames('flex-shrink-0', {
           'bg-fc-100 fc-border rounded-lg p-4': !aiTaskMode,
         })}
       >
-        <Space wrap>
-          {allCollapseNode}
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => {
-              setRefreshFlag(_.uniqueId('refreshFlag_'));
-            }}
-          />
-          <Input
-            // 窄屏收窄，把宽度让给右侧动作区，推迟整行换行的临界点
-            className='w-[180px] xl:w-[300px]'
-            prefix={<SearchOutlined />}
-            placeholder={t('search_placeholder')}
-            allowClear
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onPressEnter={() => {
-              setParams((p) => ({ ...p, query: searchValue }));
-            }}
-            onBlur={() => {
-              setParams((p) => ({ ...p, query: searchValue }));
-            }}
-          />
-          {!aiTaskMode && (
-            <HostsSelect
-              value={params.hosts}
-              onChange={(newHosts) => {
-                setParams((p) => ({ ...p, hosts: newHosts }));
+        {/* 引导条：把「装完机器之后」的接力常驻在机器列表页，用户关掉安装弹窗后还能接着走。
+            寄居在工具栏这个盒子里而不是自成一块 —— 表格之上已经有统计卡片和工具栏两层边框加内边距，
+            再叠一个独立容器，光 chrome 就要吃掉 40px 而不承载任何信息。
+            必做项全完成、或还没有任何机器（该先装采集器，由表格空态的部署引导承接）时
+            NextStepsCard 自己返回 null。aiTaskMode/商业版必须在这里就不挂载 ——
+            NextStepsCard 内部的进度探测 hook 在组件挂载时就会发请求，返回 null 拦不住它。 */}
+        {!aiTaskMode && !IS_PLUS && <NextStepsCard variant='inline' onCollect={installMeta?.collect ? () => setCollectVisible(true) : undefined} />}
+        {/*
+          左侧筛选区 flex-1 可伸缩、右侧动作区保持自然宽度：空间不够时先由搜索框让宽、再让筛选控件之间内部换行，
+          而不是把整个动作组顶到第二行（原先两组都是刚性宽度，1280px 以下就会整组换行）。
+          动作组的 ml-auto 保证万一真的换行了也贴右对齐，读起来仍像"操作区"而不是散落的按钮。
+        */}
+        <div className='flex flex-wrap items-start justify-between gap-2'>
+          <div className='flex min-w-0 flex-1 flex-wrap items-center gap-2'>
+            {allCollapseNode}
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                setRefreshFlag(_.uniqueId('refreshFlag_'));
               }}
             />
-          )}
-          <Select
-            allowClear
-            placeholder={t('filterDowntime')}
-            style={{ minWidth: 120 }}
-            dropdownMatchSelectWidth={false}
-            options={[
-              {
-                label: t('filterDowntimeNegative'),
-                options: _.map(downtimeOptions, (item) => {
-                  return {
-                    label: t('filterDowntimeNegativeMin', { count: item }),
-                    value: -(item * 60),
-                  };
-                }),
-              },
-              {
-                label: t('filterDowntimePositive'),
-                options: _.map(downtimeOptions, (item) => {
-                  return {
-                    label: t('filterDowntimePositiveMin', { count: item }),
-                    value: item * 60,
-                  };
-                }),
-              },
-            ]}
-            value={params.downtime}
-            onChange={(val) => {
-              setParams((p) => ({ ...p, downtime: val }));
-            }}
-          />
-          <VersionSelect
-            value={params.agent_versions}
-            onChange={(val) => {
-              setParams((p) => ({ ...p, agent_versions: val }));
-            }}
-          />
-          {aiTaskMode && (
-            <Select
-              style={{ minWidth: 120 }}
+            <Input
+              // 唯一可伸缩的控件：宽屏顶到 300px，窄屏最多收到 140px，把余量让给筛选控件和右侧动作区
+              className='min-w-[140px] max-w-[300px] flex-1'
+              prefix={<SearchOutlined />}
+              placeholder={t('search_placeholder')}
               allowClear
-              showArrow
-              mode='multiple'
-              placeholder={t('auth_level')}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onPressEnter={() => {
+                setParams((p) => ({ ...p, query: searchValue }));
+              }}
+              onBlur={() => {
+                setParams((p) => ({ ...p, query: searchValue }));
+              }}
+            />
+            {!aiTaskMode && (
+              <HostsSelect
+                value={params.hosts}
+                onChange={(newHosts) => {
+                  setParams((p) => ({ ...p, hosts: newHosts }));
+                }}
+              />
+            )}
+            <Select
+              allowClear
+              placeholder={t('filterDowntime')}
+              style={{ minWidth: 120 }}
               dropdownMatchSelectWidth={false}
               options={[
-                { label: t('auth_level_1'), value: 1 },
-                { label: t('auth_level_2'), value: 2 },
-                { label: t('auth_level_3'), value: 3 },
+                {
+                  label: t('filterDowntimeNegative'),
+                  options: _.map(downtimeOptions, (item) => {
+                    return {
+                      label: t('filterDowntimeNegativeMin', { count: item }),
+                      value: -(item * 60),
+                    };
+                  }),
+                },
+                {
+                  label: t('filterDowntimePositive'),
+                  options: _.map(downtimeOptions, (item) => {
+                    return {
+                      label: t('filterDowntimePositiveMin', { count: item }),
+                      value: item * 60,
+                    };
+                  }),
+                },
               ]}
-              value={params.auth_level ? params.auth_level.split(',').map(Number) : undefined}
-              onChange={(val: number[]) => {
-                setParams((p) => ({ ...p, auth_level: val.length > 0 ? val.join(',') : undefined }));
+              value={params.downtime}
+              onChange={(val) => {
+                setParams((p) => ({ ...p, downtime: val }));
               }}
             />
-          )}
-        </Space>
-        <Space wrap>
-          {/* 接入类动作与「批量操作」同属操作区，放右侧，左侧留给筛选控件 */}
-          {!aiTaskMode && installMeta && (
-            <Tooltip title={t('install.entry')}>
-              <Button type='primary' ghost icon={<DownloadOutlined />} onClick={() => setInstallVisible(true)}>
-                <span className={ACTION_LABEL_CLASS}>{t('install.entry')}</span>
-              </Button>
-            </Tooltip>
-          )}
-          {!aiTaskMode && installMeta?.collect && (
-            <Tooltip title={t('collect.entry')}>
-              <Button type='primary' ghost icon={<AppstoreAddOutlined />} onClick={() => setCollectVisible(true)}>
-                <span className={ACTION_LABEL_CLASS}>{t('collect.entry')}</span>
-              </Button>
-            </Tooltip>
-          )}
-          {editable && aiTaskMode === false && (
-            <Dropdown
-              trigger={['click']}
-              overlay={
-                <Menu
-                  onClick={({ key }) => {
-                    if (key && setOperateType) {
-                      setOperateType(key as OperateType);
-                    }
-                  }}
-                >
-                  <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
-                  <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
-                  <Menu.Item key='EditBusinessGroups'>
-                    <EditBusinessGroups
-                      gids={gids}
-                      idents={selectedIdents}
-                      selectedRows={selectedRows}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refreshFlag_'));
-                        setSelectedRows([]);
-                      }}
-                    />
-                  </Menu.Item>
-                  <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
-                  <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
-                  <Menu.Item key='UpgradeAgent'>
-                    <UpgradeAgent
-                      selectedIdents={selectedIdents}
-                      onOk={() => {
-                        setRefreshFlag(_.uniqueId('refreshFlag_'));
-                      }}
-                    />
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Button>
-                {t('common:btn.batch_operations')} <DownOutlined />
-              </Button>
-            </Dropdown>
-          )}
-          {IS_PLUS && aiTaskMode === true && (
-            <AuthLevelDropdown
-              selectedIdents={selectedIdents}
-              selectedRows={selectedRows}
-              onSuccess={() => {
-                setRefreshFlag(_.uniqueId('refreshFlag_'));
-                setSelectedRows([]);
+            <VersionSelect
+              value={params.agent_versions}
+              onChange={(val) => {
+                setParams((p) => ({ ...p, agent_versions: val }));
               }}
             />
-          )}
-          {explorable && (
-            <Tooltip title={t('explorer_selected_metrics_tip')}>
-              <span>
-                <Explorer selectedIdents={selectedIdents} />
-              </span>
-            </Tooltip>
-          )}
-        </Space>
+            {aiTaskMode && (
+              <Select
+                style={{ minWidth: 120 }}
+                allowClear
+                showArrow
+                mode='multiple'
+                placeholder={t('auth_level')}
+                dropdownMatchSelectWidth={false}
+                options={[
+                  { label: t('auth_level_1'), value: 1 },
+                  { label: t('auth_level_2'), value: 2 },
+                  { label: t('auth_level_3'), value: 3 },
+                ]}
+                value={params.auth_level ? params.auth_level.split(',').map(Number) : undefined}
+                onChange={(val: number[]) => {
+                  setParams((p) => ({ ...p, auth_level: val.length > 0 ? val.join(',') : undefined }));
+                }}
+              />
+            )}
+          </div>
+          <Space wrap className='ml-auto'>
+            {/* 接入类动作与「批量操作」同属操作区，放右侧，左侧留给筛选控件 */}
+            {!aiTaskMode && installMeta && (
+              <Tooltip title={t('install.entry')}>
+                <Button type='primary' ghost icon={<DownloadOutlined />} onClick={() => setInstallVisible(true)}>
+                  <span className={ACTION_LABEL_CLASS}>{t('install.entry')}</span>
+                </Button>
+              </Tooltip>
+            )}
+            {!aiTaskMode && installMeta?.collect && (
+              <Tooltip title={t('collect.entry')}>
+                <Button type='primary' ghost icon={<AppstoreAddOutlined />} onClick={() => setCollectVisible(true)}>
+                  <span className={ACTION_LABEL_CLASS}>{t('collect.entry')}</span>
+                </Button>
+              </Tooltip>
+            )}
+            {/* 这里原本还有一个「启用主机监控」按钮，与上方引导条的主按钮是同一个动作、同一套 gate 条件，
+              两者同时在屏上是重复的；引导条本身在套完大盘与告警后就整体消失，不长期占位 */}
+            {editable && aiTaskMode === false && (
+              <Dropdown
+                trigger={['click']}
+                overlay={
+                  <Menu
+                    onClick={({ key }) => {
+                      if (key && setOperateType) {
+                        setOperateType(key as OperateType);
+                      }
+                    }}
+                  >
+                    <Menu.Item key={OperateType.BindTag}>{t('bind_tag.title')}</Menu.Item>
+                    <Menu.Item key={OperateType.UnbindTag}>{t('unbind_tag.title')}</Menu.Item>
+                    <Menu.Item key='EditBusinessGroups'>
+                      <EditBusinessGroups
+                        gids={gids}
+                        idents={selectedIdents}
+                        selectedRows={selectedRows}
+                        onOk={() => {
+                          setRefreshFlag(_.uniqueId('refreshFlag_'));
+                          setSelectedRows([]);
+                        }}
+                      />
+                    </Menu.Item>
+                    <Menu.Item key={OperateType.UpdateNote}>{t('update_note.title')}</Menu.Item>
+                    <Menu.Item key={OperateType.Delete}>{t('batch_delete.title')}</Menu.Item>
+                    <Menu.Item key='UpgradeAgent'>
+                      <UpgradeAgent
+                        selectedIdents={selectedIdents}
+                        onOk={() => {
+                          setRefreshFlag(_.uniqueId('refreshFlag_'));
+                        }}
+                      />
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Button>
+                  {t('common:btn.batch_operations')} <DownOutlined />
+                </Button>
+              </Dropdown>
+            )}
+            {IS_PLUS && aiTaskMode === true && (
+              <AuthLevelDropdown
+                selectedIdents={selectedIdents}
+                selectedRows={selectedRows}
+                onSuccess={() => {
+                  setRefreshFlag(_.uniqueId('refreshFlag_'));
+                  setSelectedRows([]);
+                }}
+              />
+            )}
+            {explorable && (
+              <Tooltip title={t('explorer_selected_metrics_tip')}>
+                <span>
+                  <Explorer selectedIdents={selectedIdents} />
+                </span>
+              </Tooltip>
+            )}
+          </Space>
+        </div>
       </div>
       <div className={classNames('n9e-hosts-ng-table mt-4', { 'n9e-antd-table-height-full': !aiTaskMode })}>
         <Table
@@ -1008,24 +1045,27 @@ export default function List(props: Props) {
             if (detected) setRefreshFlag(_.uniqueId('refreshFlag_'));
           }}
           detectedExtra={
-            installMeta.collect ? (
-              <Button
-                size='small'
-                type='primary'
-                onClick={() => {
-                  // 承接安装引导：机器上报后顺手进入采集配置，安装弹窗关闭时正常走刷新逻辑
-                  setInstallVisible(false);
-                  setRefreshFlag(_.uniqueId('refreshFlag_'));
-                  setCollectVisible(true);
-                }}
-              >
-                {t('collect.next_entry')}
-              </Button>
-            ) : undefined
+            // 机器刚上报是用户动机最高的时刻，这里接力到「套大盘 → 开告警 → 配通知 → 验证送达」，
+            // 而不是只给一个「配置采集」入口
+            <NextStepsCard
+              onCollect={installMeta.collect ? () => setCollectVisible(true) : undefined}
+              onBeforeAction={() => {
+                // 先关掉安装弹窗再开动作弹窗：否则 useTargetArrival 会在遮罩下继续轮询
+                setInstallVisible(false);
+                setRefreshFlag(_.uniqueId('refreshFlag_'));
+              }}
+            />
           }
         />
       )}
-      {collectVisible && installMeta?.collect && <CollectSetup meta={installMeta} defaultIdents={selectedIdents} onClose={() => setCollectVisible(false)} />}
+      {collectVisible && installMeta?.collect && (
+        <CollectSetup
+          meta={installMeta}
+          defaultIdents={selectedIdents}
+          onClose={() => setCollectVisible(false)}
+          verifiedExtra={<NextStepsCard onBeforeAction={() => setCollectVisible(false)} />}
+        />
+      )}
       {upgradeTargetIdent && (
         <UpgradeAgent
           selectedIdents={[upgradeTargetIdent]}

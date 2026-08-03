@@ -72,10 +72,15 @@ export function getPagedutyIntegrationKey(id: number, svc_id: string, integ_id: 
   });
 }
 
-export function notifyRuleTest(data: { event_ids?: number[]; use_mock_event?: boolean; notify_config: any }) {
+/**
+ * 用真实通知媒介发一条测试消息。后端同步发送并返回 provider 响应，失败时响应体带 err。
+ * options.silence: 由调用方自行渲染失败原因时传 true，避免 request 再弹一个全局红色 toast。
+ */
+export function notifyRuleTest(data: { event_ids?: number[]; use_mock_event?: boolean; notify_config: any }, options?: { silence?: boolean }) {
   return request('/api/n9e/notify-rule/test', {
     method: RequestMethod.Post,
     data,
+    silence: options?.silence,
   });
 }
 

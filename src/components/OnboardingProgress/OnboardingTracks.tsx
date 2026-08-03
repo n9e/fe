@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Check, ArrowRight } from 'lucide-react';
 
-import { ONBOARDING_TRACKS } from './tracks';
-import { OnboardingStepKey } from './useOnboardingProgress';
+import { ONBOARDING_TRACKS, OnboardingStep } from './tracks';
+import { OnboardingDisplayKey } from './useOnboardingProgress';
 
 /** 着陆页整版清单与侧栏弹窗共用同一套「轨道 + 步骤」结构，仅类名与少量装饰参数不同，通过 classes 注入各自类名 */
 export interface OnboardingTracksClassNames {
@@ -25,9 +25,9 @@ export interface OnboardingTracksClassNames {
 }
 
 interface Props {
-  doneMap: Record<OnboardingStepKey, boolean>;
+  doneMap: Record<OnboardingDisplayKey, boolean>;
   classes: OnboardingTracksClassNames;
-  onStepClick: (to: string) => void;
+  onStepClick: (step: OnboardingStep) => void;
   /** 着陆页给图标按轨道追加区分类（host/data 不同底色），弹窗版不需要 */
   trackIconExtra?: (trackKey: string) => string | undefined;
   checkStrokeWidth?: number;
@@ -53,10 +53,13 @@ export default function OnboardingTracks({ doneMap, classes, onStepClick, trackI
               {track.steps.map((step) => {
                 const done = doneMap[step.key];
                 return (
-                  <button type='button' key={step.key} className={classes.step} onClick={() => onStepClick(step.to)}>
+                  <button type='button' key={step.key} className={classes.step} onClick={() => onStepClick(step)}>
                     <span className={classNames(classes.node, done ? classes.nodeDone : classes.nodeTodo)}>{done ? <Check strokeWidth={checkStrokeWidth} /> : null}</span>
                     <span className={classes.stepText}>
-                      <span className={classNames(classes.stepTitle, { [classes.stepTitleDone]: done })}>{t(`onboarding.steps.${step.key}.title`)}</span>
+                      <span className={classNames(classes.stepTitle, { [classes.stepTitleDone]: done })}>
+                        {t(`onboarding.steps.${step.key}.title`)}
+                        {step.optional && <span className='ml-1 shrink-0 text-[10px] font-normal text-soft'>{t('onboarding.optional')}</span>}
+                      </span>
                       <span className={classes.stepDesc}>{t(`onboarding.steps.${step.key}.desc`)}</span>
                     </span>
                     <ArrowRight className={classes.stepArrow} size={arrowProps?.size} strokeWidth={arrowProps?.strokeWidth} />
