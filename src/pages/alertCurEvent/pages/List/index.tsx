@@ -21,7 +21,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 // @ts-ignore
 import { getBrainLicense } from 'plus:/components/License/services';
 
-import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS } from '../../constants';
+import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS, REFRESH_INTERVAL_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
@@ -266,6 +266,7 @@ const AlertCurEvent: React.FC = () => {
                   onRefresh={() => {
                     setRefreshFlag(_.uniqueId('refresh_'));
                   }}
+                  refreshLocalKey={REFRESH_INTERVAL_CACHE_KEY}
                   dateFormat='YYYY-MM-DD HH:mm:ss'
                 />
               </div>
