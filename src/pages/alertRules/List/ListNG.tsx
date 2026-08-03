@@ -24,6 +24,7 @@ import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
 import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
+import EvalRecordsDrawer, { Props as EvalRecordsDrawerProps } from '@/pages/alertRules/List/EvalRecordsDrawer';
 import { matchTriggerType, TRIGGER_TYPE_OPTIONS, TriggerType } from '@/pages/alertRules/List/utils';
 
 interface Filter {
@@ -92,6 +93,15 @@ export default function AlertRules(props: Props) {
     },
   });
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
+  const [evalRecordsDrawerProps, setEvalRecordsDrawerProps] = useState<EvalRecordsDrawerProps>({
+    visible: false,
+    onClose: () => {
+      setEvalRecordsDrawerProps((prev) => ({
+        ...prev,
+        visible: false,
+      }));
+    },
+  });
   const columns: ColumnType<AlertRuleType<any>>[] = _.concat(
     [
       {
@@ -520,6 +530,19 @@ export default function AlertRules(props: Props) {
                         window.open(`/alert-rules/edit/${record.id}?mode=clone`, '_blank');
                       },
                     },
+                    {
+                      key: 'eval_records',
+                      icon: 'view',
+                      text: t('eval_records.btn'),
+                      onClick: () => {
+                        setEvalRecordsDrawerProps((prev) => ({
+                          ...prev,
+                          visible: true,
+                          title: record.name,
+                          rid: record.id,
+                        }));
+                      },
+                    },
                     record.cate === 'prometheus' && anomalyEnabled === true
                       ? {
                           key: 'brain',
@@ -557,6 +580,7 @@ export default function AlertRules(props: Props) {
         actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
       <EventsDrawer {...eventsDrawerProps} />
+      <EvalRecordsDrawer {...evalRecordsDrawerProps} />
     </>
   );
 }

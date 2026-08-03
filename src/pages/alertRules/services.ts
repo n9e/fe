@@ -65,3 +65,73 @@ export const getTimezones = (): Promise<string[]> => {
     method: RequestMethod.Get,
   }).then((res) => res.dat);
 };
+
+export interface EvalSeriesSample {
+  labels: Record<string, string>;
+  points: [number, number][]; // [ts(秒), value]
+}
+
+export interface EvalQueryRecord {
+  ref: string;
+  query: string;
+  duration_ms: number;
+  error?: string;
+  warnings?: string[];
+  series_total: number;
+  series?: EvalSeriesSample[];
+  var_query?: boolean;
+}
+
+export interface EvalAnomalyBrief {
+  key: string;
+  value: number;
+  severity: number;
+  trigger_type?: string;
+  recover?: boolean;
+}
+
+// 事件在一个裁决点的结论；同一 hash 同周期可能有多条，按顺序构成处理轨迹
+export interface EvalEventTrail {
+  hash: string;
+  tags?: string;
+  severity?: number;
+  stage: string; // drop_by_pipeline/muted/muted_notify_only/muted_by_hook/pending/inhibited/fired/stalled/notify_muted/recovered/push_queue_failed
+  detail?: string;
+}
+
+export interface EvalRecord {
+  ts: number; // 毫秒
+  rule_id: number;
+  datasource_id: number;
+  duration_ms: number;
+  error?: string;
+  queries?: EvalQueryRecord[];
+  anomalies?: EvalAnomalyBrief[];
+  events?: EvalEventTrail[];
+  anomaly_total: number;
+  recover_total: number;
+  fired: number;
+  muted: number;
+  drop_by_pipeline: number;
+  pending: number;
+  inhibited: number;
+  truncated?: boolean;
+}
+
+// 单个引擎节点查询失败信息（如 edge 节点不可达），可登录该节点本机访问 /v1/n9e/eval-records 查看
+export interface EvalRecordsNodeErr {
+  instance: string;
+  datasource_id: number;
+  error: string;
+}
+
+// 查询告警规则的评估执行记录（存储于告警引擎本地磁盘，默认保留 8 天）
+export const getAlertRuleEvalRecords = (
+  id: number,
+  params: { from?: number; to?: number; before?: number; limit?: number; datasource_id?: number },
+): Promise<{ list: EvalRecord[]; instances?: string[]; errors?: EvalRecordsNodeErr[] }> => {
+  return request(`/api/n9e/alert-rule/${id}/eval-records`, {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => res.dat);
+};
