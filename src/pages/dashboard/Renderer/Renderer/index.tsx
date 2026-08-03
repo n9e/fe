@@ -27,7 +27,7 @@ import { CommonStateContext } from '@/App';
 import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import useQuery from '../datasource/useQuery';
-import { IPanel } from '../../types';
+import { IOverride, IPanel } from '../../types';
 import Main from './Main';
 
 import './style.less';
@@ -51,6 +51,7 @@ export interface IProps {
   onDeleteClick?: () => void;
   onCopyClick?: () => void | Promise<void>;
   setAnnotationsRefreshFlag?: (flag: string) => void;
+  onOverridesChange?: (overrides: IOverride[]) => void;
 }
 
 function index(props: IProps) {

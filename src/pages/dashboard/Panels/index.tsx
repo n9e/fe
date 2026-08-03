@@ -281,6 +281,34 @@ function index(props: IProps) {
                       setTimezone={setTimezone}
                       values={item}
                       annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
+                      onOverridesChange={
+                        isAuthorized && editable
+                          ? (overrides) => {
+                              const sourcePanelId = item.repeatPanelId || item.id;
+                              setPanels((currentPanels) => {
+                                const newPanels = _.map(currentPanels, (panel) => {
+                                  if (panel.id === sourcePanelId || panel.repeatPanelId === sourcePanelId) {
+                                    return {
+                                      ...panel,
+                                      overrides,
+                                    };
+                                  }
+                                  return panel;
+                                });
+                                updateDashboardConfigs(dashboard.id, {
+                                  configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                                })
+                                  .then((res) => {
+                                    onUpdated(res);
+                                  })
+                                  .catch(() => {
+                                    // 手动保存模式下配置已进入 dashboard 草稿；接口失败沿用现有静默处理。
+                                  });
+                                return newPanels;
+                              });
+                            }
+                          : undefined
+                      }
                       onCloneClick={() => {
                         setPanels((panels) => {
                           return updatePanelsInsertNewPanel(panels, {

@@ -75,6 +75,7 @@ function index(
     onEditClick,
     onDeleteClick,
     onCopyClick,
+    onOverridesChange,
     // from index.tsx
     controllersVisible,
     queryResult,
@@ -110,6 +111,7 @@ function index(
     id,
     values,
     series,
+    onOverridesChange,
   };
 
   const RendererCptMap = {
