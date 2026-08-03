@@ -73,7 +73,7 @@ export default function FormCpt(props: Props) {
         <Input.Password />
       </Form.Item>
       <Collapse ghost className='llmconfig-form-collapse'>
-        <Collapse.Panel key='advanced' header={t('form.advanced_settings')}>
+        <Collapse.Panel key='advanced' header={t('form.advanced_settings')} forceRender>
           <Row gutter={SIZE}>
             <Col flex='auto'>
               <Form.Item label={t('form.timeout_seconds')} tooltip={t('form.timeout_seconds_tip')} name={['extra_config', 'timeout_seconds']}>
