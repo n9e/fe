@@ -44,6 +44,7 @@ src/
 
 - 弹窗、抽屉等临时容器组件在卸载时，必须显式清理表单数据和本地状态（如 `form.resetFields()`、loading、临时选择值），避免再次打开时回显旧数据。
 - 注意 `form.setFieldsValue` 是增量更新：未传入的字段会保留原值。需要全量覆盖场景时，先重置表单（如 `form.resetFields()`）再设置新值。
+- `antd` 的 `Collapse.Panel` 初始折叠时不会挂载内容。若面板内的 `Form.Item` / `Form.List` 需要参与校验、回填或提交，必须添加 `forceRender`，确保字段注册到 Form；纯展示内容无需添加。
 
 ## 样式与颜色
 
