@@ -2,7 +2,7 @@ const en_US = {
   title: 'Subscriptions',
   search_placeholder: 'Search by name, subscribed rules, subscribed tags, and receiving groups',
   rule_name: 'Subscription rules',
-  sub_rule_name: 'Subscribe alert rule',
+  sub_rule_name: 'Subscribed alert rules',
   sub_rule_selected: 'Selected rules',
   tags: 'Tags',
   user_groups: 'Receiving group',
@@ -10,7 +10,7 @@ const en_US = {
   tag: {
     key: {
       label: 'Subscribed event tag key',
-      tip: 'The tag is the tag of the alert event, and the alert event is filtered by the following tag matching rules',
+      tip: 'These are the tags of alert events; events are filtered by the following tag matching rules',
       required: 'Tag key is required',
       placeholder: 'Please enter tag key',
     },
@@ -20,8 +20,8 @@ const en_US = {
     value: {
       label: 'Value',
       equal_placeholder: 'Please enter value',
-      include_placeholder: 'Multiple values can be entered, separated by carriage return',
-      regex_placeholder: 'Please enter a regular expression match',
+      include_placeholder: 'Press Enter to separate multiple values',
+      regex_placeholder: 'Please enter a regular expression',
       required: 'Tag value is required',
     },
   },
@@ -44,7 +44,7 @@ const en_US = {
   user_group_ids: 'Receiving group',
   for_duration: 'Duration (seconds)',
   for_duration_tip:
-    'For example: If 300 is configured, the same alarm event will not match the subscription when it is subscribed for the first time. When it is subscribed again later, the trigger time of the current event and the time when this event was subscribed for the first time will be calculated. The difference in trigger time. If the obtained value exceeds 300 seconds, it will meet the subscription conditions and the relevant notification logic will be used. If it is less than 300 seconds, the subscription will not be matched. This function can be used as an alarm upgrade. The person in charge of the team can configure a subscription with a duration of more than 1 hour (3600s), and the recipient is configured as himself. As the person in charge, it is guaranteed that someone will follow up on the alarm.',
+    'For example, with 300 configured: the first time an alert event matches this subscription it is not notified yet. On later matches, the difference between the current trigger time and the time the event first matched is calculated; only when it exceeds 300 seconds does the event meet the subscription conditions and go through the notification logic. This can be used for alert escalation: a team lead can configure a subscription with a duration of more than 1 hour (3600s) and set themselves as the recipient, ensuring someone follows up on alerts that stay unresolved.',
   webhooks: 'New webhooks',
   webhooks_msg: 'Webhook is required',
   prod: 'Type',
@@ -52,7 +52,7 @@ const en_US = {
   basic_configs: 'Basic settings',
   severities: 'Severity',
   severities_msg: 'Severity is required',
-  tags_groups_require: 'Tags and receiving groups must fill in at least one item',
+  tags_groups_require: 'Fill in at least one of tags or receiving groups',
   note: 'Name',
   filter_configs: 'Filter settings',
   notify_configs: 'Notification settings',

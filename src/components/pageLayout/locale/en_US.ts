@@ -9,10 +9,10 @@ const en_US = {
   submit_issue: 'Submit issue',
   book_meeting: 'Book a meeting',
   theme: {
-    title: 'Theme Setting',
+    title: 'Theme settings',
     title_help: 'Setting only for current user',
-    sideMenu: 'Side Menu',
-    sideMenu_help: 'Only work in light mode',
+    sideMenu: 'Side menu',
+    sideMenu_help: 'Only works in light mode',
   },
 };
 export default en_US;

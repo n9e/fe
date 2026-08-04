@@ -1,6 +1,6 @@
 const en_US = {
-  type: 'Datasource type',
-  id: 'Datasource',
+  type: 'Data source type',
+  id: 'Data source',
   allCates: 'All types',
 };
 export default en_US;
