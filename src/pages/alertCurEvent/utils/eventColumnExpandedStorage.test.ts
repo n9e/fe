@@ -121,6 +121,7 @@ describe('alert event pages tag display controls', () => {
     expect(source).toContain("writeAlertCurEventSidebarFilterExpanded('severity', expanded)");
     expect(source).toContain("writeAlertCurEventSidebarFilterExpanded('datasource', expanded)");
     expect(source).toContain("activeKey={datasourceFilterExpanded ? ['datasource'] : []}");
+    expect(source).toContain('useState<IRawTimeRange | undefined>(() => getDefaultValue(TIME_RANGE_CACHE_KEY))');
   });
 
   it('renders all, compact, and hidden tag modes without fixed table columns', () => {

@@ -15,7 +15,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IS_PLUS } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
-import { parseRange } from '@/components/TimeRangePicker';
+import { getDefaultValue, parseRange } from '@/components/TimeRangePicker';
 import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 
 // @ts-ignore
@@ -44,7 +44,7 @@ const AlertCurEvent: React.FC = () => {
   const query = queryString.parse(location.search);
   const [, setParamsAiAction] = useParamsAiAction();
 
-  const [range, setRange] = useState<IRawTimeRange>();
+  const [range, setRange] = useState<IRawTimeRange | undefined>(() => getDefaultValue(TIME_RANGE_CACHE_KEY));
   const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>();
   const rangeRef = useRef<IRawTimeRange | undefined>(range);
   const aggrRuleCardEventIdsRef = useRef<number[] | undefined>(aggrRuleCardEventIds);
