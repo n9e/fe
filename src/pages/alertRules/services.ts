@@ -129,7 +129,9 @@ export interface EvalRecordsNodeErr {
 export const getAlertRuleEvalRecords = (
   id: number,
   params: { from?: number; to?: number; before?: number; limit?: number; datasource_id?: number },
-): Promise<{ list: EvalRecord[]; instances?: string[]; errors?: EvalRecordsNodeErr[] }> => {
+  // disabled_instances：未开启 evallog 的引擎节点，后端同时会在 errors 里给出可读原因，
+  // 便于区分「该节点没开这个功能」与「该时间段确实没有记录」
+): Promise<{ list: EvalRecord[]; instances?: string[]; errors?: EvalRecordsNodeErr[]; disabled_instances?: string[] }> => {
   return request(`/api/n9e/alert-rule/${id}/eval-records`, {
     method: RequestMethod.Get,
     params,

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { Drawer, Table, Tag, Space, Tooltip, Empty, Button, message, Alert, Typography } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import type { ColumnsType } from 'antd/lib/table';
 
-import { CommonStateContext } from '@/App';
+import { CommonStateContext, basePrefix } from '@/App';
 import TimeRangePicker, { parseRange, IRawTimeRange } from '@/components/TimeRangePicker';
 import RefreshIcon from '@/components/RefreshIcon';
 import { getAlertRuleEvalRecords, EvalRecord, EvalQueryRecord, EvalRecordsNodeErr } from '@/pages/alertRules/services';
@@ -38,6 +38,12 @@ const STAGE_COLOR: Record<string, string | undefined> = {
   drop_by_pipeline: undefined,
   inhibited: undefined,
 };
+
+// 这些阶段的事件确定已落库到 alert_his_event，/event-detail 才查得到。
+// 其余阶段（pending / muted / drop_by_pipeline / inhibited / push_queue_failed 等）
+// 事件从未入队持久化，点进去后端会以 no such alert event 返回 500，
+// 所以只展示 hash 文本，不给链接。
+const PERSISTED_STAGES = ['fired', 'recovered', 'stalled', 'notify_muted'];
 
 function formatValue(v: number) {
   if (!_.isFinite(v)) return String(v);
@@ -169,13 +175,17 @@ function RecordDetail({ record, t }: { record: EvalRecord; t: TFunction }) {
                 title: t('eval_records.event_hash'),
                 dataIndex: 'hash',
                 width: 130,
-                render: (hash: string) => (
+                render: (hash: string, r: any) => (
                   <Space size={4}>
-                    <Tooltip title={t('eval_records.event_hash_tip')}>
-                      <a href={`/api/n9e/event-detail/${hash}`} target='_blank' rel='noreferrer' className='eval-records-hash'>
-                        {_.truncate(hash, { length: 10, omission: '…' })}
-                      </a>
-                    </Tooltip>
+                    {_.includes(PERSISTED_STAGES, r.stage) ? (
+                      <Tooltip title={t('eval_records.event_hash_tip')}>
+                        <a href={`${basePrefix}/api/n9e/event-detail/${encodeURIComponent(hash)}`} target='_blank' rel='noreferrer' className='eval-records-hash'>
+                          {_.truncate(hash, { length: 10, omission: '…' })}
+                        </a>
+                      </Tooltip>
+                    ) : (
+                      <span className='eval-records-hash'>{_.truncate(hash, { length: 10, omission: '…' })}</span>
+                    )}
                     <Typography.Text copyable={{ text: hash }} />
                   </Space>
                 ),
@@ -224,12 +234,25 @@ export default function EvalRecordsDrawer(props: Props) {
   const [hasMore, setHasMore] = useState(false);
   const [nodeErrs, setNodeErrs] = useState<EvalRecordsNodeErr[]>([]);
   const [queriedRange, setQueriedRange] = useState<{ from: number; to: number }>();
+  // 请求代次：抽屉常驻挂载，切换规则/时间范围/关闭都可能留下在途请求，
+  // 慢节点（后端对 edge 节点有 5s 超时）的旧响应回来晚了会覆盖新结果
+  const reqIdRef = useRef(0);
+
+  const resetState = () => {
+    setRecords([]);
+    setNodeErrs([]);
+    setHasMore(false);
+    setQueriedRange(undefined);
+  };
 
   const fetchData = (before?: number) => {
     if (!rid) return;
     const parsedRange = parseRange(range);
     const from = moment(parsedRange.start).unix();
     const to = moment(parsedRange.end).unix();
+    const reqId = ++reqIdRef.current;
+    // 首屏请求先清空上一次的结果，避免请求返回前回显上一条规则的数据
+    if (!before) resetState();
     setLoading(true);
     getAlertRuleEvalRecords(rid, {
       from,
@@ -238,16 +261,21 @@ export default function EvalRecordsDrawer(props: Props) {
       before,
     })
       .then((dat) => {
+        if (reqId !== reqIdRef.current) return;
         const list = dat?.list || [];
-        setRecords((prev) => (before ? _.concat(prev, list) : list));
+        // 后端游标语义是 ts < before，翻页时传的是 last.ts + 1，因此本页会与上页
+        // 边界记录重叠，这里按 rowKey 同款的组合键去重
+        setRecords((prev) => (before ? _.uniqBy(_.concat(prev, list), (r) => `${r.datasource_id}_${r.ts}`) : list));
         setHasMore(list.length >= FETCH_LIMIT);
         setNodeErrs(dat?.errors || []);
         setQueriedRange({ from, to });
       })
       .catch(() => {
-        if (!before) setRecords([]);
+        if (reqId !== reqIdRef.current) return;
+        if (!before) resetState();
       })
       .finally(() => {
+        if (reqId !== reqIdRef.current) return;
         setLoading(false);
       });
   };
@@ -255,6 +283,11 @@ export default function EvalRecordsDrawer(props: Props) {
   useEffect(() => {
     if (visible) {
       fetchData();
+    } else {
+      // 关闭时让在途请求失效并清理本地状态，避免下次打开先闪一下上一条规则的记录与节点错误
+      reqIdRef.current += 1;
+      resetState();
+      setLoading(false);
     }
   }, [rid, visible, JSON.stringify(range), refreshFlag]);
 
@@ -427,7 +460,9 @@ export default function EvalRecordsDrawer(props: Props) {
             onClick={() => {
               const last = _.last(records);
               if (last) {
-                fetchData(last.ts);
+                // 传 last.ts + 1 而不是 last.ts：后端是严格 ts < before，多数据源同刻触发
+                // 撞到同一毫秒时，那一组记录会被整组跳过。宁可与上页重叠，由上面去重兜住
+                fetchData(last.ts + 1);
               } else {
                 message.warning(t('eval_records.empty'));
               }
