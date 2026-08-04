@@ -49,6 +49,7 @@ const zh_CN = {
     save: '保存',
     ok: '确定',
     cancel: '取消',
+    close: '关闭',
     view: '查看',
     more: '更多操作',
     back: '返回',

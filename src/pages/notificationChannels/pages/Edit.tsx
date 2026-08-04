@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Spin, Space, message } from 'antd';
+import { ApiOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import PageLayout from '@/components/pageLayout';
 
-import { NS, getNotificationChannelTypes } from '../constants';
+import { NS, getChannelTypeMeta } from '../constants';
 import { getItem, putItem, postItems } from '../services';
 import { ChannelItem } from '../types';
 import { normalizeInitialValues, normalizeFormValues } from '../utils/normalizeValues';
@@ -21,8 +22,7 @@ export default function Add() {
   const { mode } = queryString.parse(search);
   const [data, setData] = useState<ChannelItem>();
   const ident = (data?.ident as string) || 'callback';
-  const channelTypes = getNotificationChannelTypes();
-  const identConfig = channelTypes[ident] ? channelTypes[ident] : channelTypes['callback'];
+  const typeMeta = getChannelTypeMeta(ident);
 
   useEffect(() => {
     if (id) {
@@ -40,8 +40,8 @@ export default function Add() {
     <PageLayout
       title={
         <Space className='ml-2'>
-          <img src={identConfig.logo} alt={ident} height={18} />
-          {t(`types.${ident}`)}
+          {typeMeta.logo ? <img src={typeMeta.logo} alt={ident} height={18} /> : <ApiOutlined />}
+          {typeMeta.label}
         </Space>
       }
       showBack

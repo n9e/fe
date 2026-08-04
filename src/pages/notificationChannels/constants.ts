@@ -38,6 +38,22 @@ export const DEFAULT_VALUES = {
   },
 };
 
+/**
+ * 历史数据与自建的 script 媒介会带上不在类型表里的 ident（如 feishuapp、dchat）。
+ * 此前这类 ident 会 fallback 到 callback 的配置，页面顶部因此顶着一个 Callback 的图标，
+ * 看上去像是「这条是 Callback 媒介」——直接误导。
+ *
+ * known 为 false 时调用方应展示原始 ident 与中性图标，不要冒充任何已知类型。
+ */
+export function getChannelTypeMeta(ident?: string): { logo?: string; label: string; known: boolean } {
+  const types = getNotificationChannelTypes();
+  const config = ident ? types[ident] : undefined;
+  if (!config) {
+    return { label: ident ?? '-', known: false };
+  }
+  return { logo: config.logo, label: i18next.t(`${NS}:types.${ident}`), known: true };
+}
+
 export const getNotificationChannelTypes = () => {
   const dt = (key: string) => i18next.t(`${NS}:default_values.${key}`);
   return {
