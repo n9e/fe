@@ -10,9 +10,10 @@ import BreadCrumb from '@/components/BreadCrumb';
 import { CommonStateContext } from '@/App';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 
-import { getDataSourceDetailById, submitRequest } from './services';
+import { getDataSourceDetailById, getDataSourceList, submitRequest } from './services';
 import Form from './Datasources/Form';
 import { helpLinkMap } from './config';
+import NextStepModal, { Verification } from './components/NextStepModal';
 import './index.less';
 
 export const { useGlobalState } = createGlobalState<{
@@ -21,9 +22,16 @@ export const { useGlobalState } = createGlobalState<{
   saveMode: 'saveAndTest',
 });
 
+/** 保存成功后引导弹窗要展示的最小信息集 */
+interface SaveResult {
+  id: number;
+  name: string;
+  verification?: Verification;
+}
+
 export default function FormCpt() {
   const { t, i18n } = useTranslation('datasourceManage');
-  const { isPlus } = useContext(CommonStateContext);
+  const { isPlus, reloadDatasourceList } = useContext(CommonStateContext);
   const history = useHistory();
   const params = useParams<{ action: string; type: string; id: string }>();
   const { action } = params;
@@ -32,6 +40,7 @@ export default function FormCpt() {
   const [data, setData] = useState<any>();
   const [submitLoading, setSubmitLoading] = useState(false);
   const [saveMode] = useGlobalState('saveMode');
+  const [result, setResult] = useState<SaveResult>();
   const onFinish = async (values: any) => {
     setSubmitLoading(true);
     // 转换 headers 格式
@@ -65,14 +74,28 @@ export default function FormCpt() {
       plugin_type: type,
       id: data?.id,
       is_enable: data ? undefined : true,
-      is_test: true,
       force_save: saveMode === 'save',
     })
-      .then(() => {
+      .then(async (dat) => {
+        // 新数据源要立刻进全局列表，否则弹窗里点「探索这些数据」跳过去认不出这个 id
+        reloadDatasourceList();
+
+        let resolvedId = _.get(dat, 'id') || data?.id;
+        if (!resolvedId) {
+          // 旧后端 upsert 不回 id：按 name 回捞（后端强制 name 唯一）
+          try {
+            resolvedId = _.get(_.find(await getDataSourceList(), { name: values.name }), 'id');
+          } catch (e) {
+            // 回捞失败不阻断保存结果，降级为提示 + 回列表
+          }
+        }
+
+        if (resolvedId) {
+          setResult({ id: resolvedId, name: values.name, verification: _.get(dat, 'verification') });
+          return;
+        }
         message.success(action === 'add' ? t('common:success.add') : t('common:success.modify'));
-        history.push({
-          pathname: '/datasources',
-        });
+        history.push({ pathname: '/datasources' });
       })
       .finally(() => {
         setSubmitLoading(false);
@@ -92,7 +115,10 @@ export default function FormCpt() {
         setType(plugin_type);
       });
     }
-  }, []);
+    // 依赖 action/id：新增保存成功后弹窗里点「编辑此配置」会 replace 到编辑地址，
+    // 但两条路由渲染的是同一个组件、react-router 不会重新挂载，靠这里的依赖变化补上这次拉取。
+    // 少了它 data 恒为 undefined，页面会卡在 action==='edit' 的 Spin 分支上出不来。
+  }, [action, id]);
 
   return (
     <PageLayout
@@ -150,6 +176,33 @@ export default function FormCpt() {
           />
         )}
       </div>
+      {result && (
+        <NextStepModal
+          datasourceId={result.id}
+          pluginType={type}
+          name={result.name}
+          mode={action === 'edit' ? 'updated' : 'saved'}
+          verification={result.verification}
+          onClose={() => {
+            setResult(undefined);
+            history.push({ pathname: '/datasources' });
+          }}
+          onContinueAdd={
+            action === 'edit'
+              ? undefined
+              : () => {
+                  setResult(undefined);
+                  // 带着「打开类型选择」的意图回列表，省掉再点一次「添加」
+                  history.push({ pathname: '/datasources', state: { openAddModal: true } });
+                }
+          }
+          onEdit={() => {
+            setResult(undefined);
+            // 新增页此时已经存过一次，留在原地再提交会撞 name 冲突，必须换成编辑态
+            history.replace({ pathname: `/datasources/edit/${type}/${result.id}` });
+          }}
+        />
+      )}
     </PageLayout>
   );
 }

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Input, Button, Modal, Space } from 'antd';
 import { useDebounce } from 'ahooks';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
@@ -19,6 +20,8 @@ export { Form };
 
 export default function index() {
   const { t } = useTranslation('datasourceManage');
+  const history = useHistory();
+  const location = useLocation<{ openAddModal?: boolean } | undefined>();
   const { profile } = useContext(CommonStateContext);
   // 数据源的新增/导入/管理均为 admin 操作(后端 upsert/import 走 rt.admin())，非 admin 隐藏入口。
   const isAdmin = !!profile.roles?.includes('Admin');
@@ -27,9 +30,17 @@ export default function index() {
   const [detailData, setDetailData] = useState();
   const [searchVal, setSearchVal] = useState<string>('');
   const debouncedSearchValue = useDebounce(searchVal, { wait: 500 });
-  const [chooseDataSourceTypeModalVisible, setChooseDataSourceTypeModalVisible] = useState(false);
+  // 新增入口本身是 admin 专属，带回来的意图也只对 admin 生效
+  const [chooseDataSourceTypeModalVisible, setChooseDataSourceTypeModalVisible] = useState(isAdmin && !!location.state?.openAddModal);
   const [grafanaImportVisible, setGrafanaImportVisible] = useState(false);
   const [listRefreshKey, setListRefreshKey] = useState(0);
+
+  // 保存结果弹窗的「继续添加数据源」带着意图回来；消费掉即清，避免刷新后又弹一次
+  useEffect(() => {
+    if (location.state?.openAddModal) {
+      history.replace({ pathname: location.pathname, state: undefined });
+    }
+  }, []);
 
   useEffect(() => {
     getDataSourcePluginList().then((res) => {

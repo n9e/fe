@@ -1,6 +1,7 @@
 const en_US = {
   pageTitle: 'Welcome to Nightingale',
   onboarding: {
+    dismiss: "Don't show again",
     title: 'Getting started',
     subtitle: 'A few steps to get your monitoring up and running',
     progress: '{{done}}/{{total}} completed',
