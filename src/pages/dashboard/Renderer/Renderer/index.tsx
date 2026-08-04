@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
 import { useInViewport } from 'ahooks';
@@ -23,8 +23,6 @@ import { Modal, Space, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
-import { CommonStateContext } from '@/App';
-import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import useQuery from '../datasource/useQuery';
 import { IPanel } from '../../types';
@@ -56,20 +54,12 @@ export interface IProps {
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { panelWidth, datasourceValue, id, time, setRange, timezone, setTimezone, isPreview } = props;
-  const { datasourceList } = useContext(CommonStateContext);
   const values = _.cloneDeep(props.values);
   const containerEleRef = useRef<HTMLDivElement>(null);
   const [inViewPort] = useInViewport(containerEleRef);
   const [inspect, setInspect] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const viewModalContainerRef = useRef<HTMLDivElement>(null);
-
-  let currentDatasourceValue = values.datasourceValue || datasourceValue;
-  currentDatasourceValue = currentDatasourceValue
-    ? replaceDatasourceVariables(currentDatasourceValue, {
-        datasourceList,
-      })
-    : currentDatasourceValue;
 
   const queryResult = useQuery({
     panelWidth,
@@ -78,7 +68,7 @@ function index(props: IProps) {
     targets: values.targets,
     inViewPort: isPreview || inViewPort,
     datasourceCate: values.datasourceCate || 'prometheus',
-    datasourceValue: currentDatasourceValue,
+    datasourceValue: values.datasourceValue || datasourceValue,
     spanNulls: values.custom?.spanNulls,
     scopedVars: values.scopedVars,
     inspect,

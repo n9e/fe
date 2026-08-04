@@ -9,7 +9,6 @@ import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
 import { IS_PLUS } from '@/utils/constant';
 import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import KQLInput from '@/components/KQLInput';
 import LegendInput from '@/pages/dashboard/Components/LegendInput';
 import { getESIndexPatterns } from '@/pages/log/IndexPatterns/services';
 
@@ -34,13 +33,11 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
   const { t } = useTranslation('dashboard');
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const prefixName = ['targets', field.name];
-  const chartForm = Form.useFormInstance();
   const datasourceCate = Form.useWatch('datasourceCate');
-  const targets = Form.useWatch('targets');
   const refId = Form.useWatch([...prefixName, 'refId']) || generateQueryNameByIndex(index);
   const indexType = Form.useWatch([...prefixName, 'query', 'index_type']);
   const indexValue = Form.useWatch([...prefixName, 'query', 'index']);
-  const syntax = Form.useWatch([...prefixName, 'query', 'syntax']);
+  const filterLanguage = Form.useWatch([...prefixName, 'query', 'filter_language']) ?? 'lucene';
   const dateField = Form.useWatch([...prefixName, 'query', 'date_field']);
   const indexPatternId = Form.useWatch([...prefixName, 'query', 'index_pattern']);
   const curIndexValues = useMemo(() => {
@@ -54,9 +51,10 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
       index: _.find(indexPatterns, { id: indexPatternId })?.name,
       date_field: _.find(indexPatterns, { id: indexPatternId })?.time_field,
     };
-  }, [indexType, indexValue, indexPatternId, JSON.stringify(indexPatterns)]);
+  }, [indexType, indexValue, indexPatternId, indexPatterns, dateField]);
   const targetQueryValues = Form.useWatch([...prefixName, 'query', 'values']);
   const isRawData = _.get(targetQueryValues, [0, 'func']) === 'rawData';
+  const { key: fieldKey, ...restField } = field;
 
   useEffect(() => {
     if (datasourceValue) {
@@ -69,7 +67,7 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
   return (
     <Panel
       header={refId}
-      key={field.key}
+      key={fieldKey}
       extra={
         <Space>
           <QueryExtraActions field={field} add={add} />
@@ -83,8 +81,8 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
         </Space>
       }
     >
-      <Form.Item noStyle {...field} name={[field.name, 'refId']} hidden />
-      <Form.Item {...field} name={[field.name, 'query', 'index_type']} initialValue='index'>
+      <Form.Item noStyle {...restField} name={[field.name, 'refId']} hidden />
+      <Form.Item {...restField} name={[field.name, 'query', 'index_type']} initialValue='index'>
         <Radio.Group>
           <Radio value='index'>{t('datasource:es.index')}</Radio>
           <Radio value='index_pattern'>{t('datasource:es.indexPatterns')}</Radio>
@@ -94,27 +92,24 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
       {indexType === 'index_pattern' && <IndexPatternSelect field={field} name={['query']} indexPatterns={indexPatterns} />}
       <Form.Item
         label={
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Space>
-              {t('datasource:es.filter')}
-              <a
-                href={
-                  syntax === 'lucene'
-                    ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
-                    : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
-                }
-                target='_blank'
-              >
-                <QuestionCircleOutlined />
-              </a>
-            </Space>
-            <Form.Item {...field} name={[field.name, 'query', 'syntax']} noStyle initialValue='lucene' hidden={IS_PLUS}>
+          <Space>
+            {t('datasource:es.filter')}
+            <a
+              href={
+                filterLanguage === 'lucene'
+                  ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
+                  : 'https://www.elastic.co/docs/reference/query-languages/kql'
+              }
+              target='_blank'
+            >
+              <QuestionCircleOutlined />
+            </a>
+          </Space>
+        }
+      >
+        <InputGroupWithFormItem
+          label={
+            <Form.Item {...restField} name={[field.name, 'query', 'filter_language']} noStyle initialValue='lucene'>
               <Select
                 bordered={false}
                 options={[
@@ -124,39 +119,18 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
                   },
                   {
                     label: 'KQL',
-                    value: 'kuery',
+                    value: 'kql',
                   },
                 ]}
                 dropdownMatchSelectWidth={false}
-                onChange={(val) => {
-                  const newTargets = _.cloneDeep(targets);
-                  newTargets[field.name].query.filter = '';
-                  newTargets[field.name].query.syntax = val;
-                  chartForm.setFieldsValue({
-                    targets: newTargets,
-                  });
-                }}
               />
             </Form.Item>
-          </div>
-        }
-      >
-        {syntax === 'lucene' ? (
-          <Form.Item {...field} name={[field.name, 'query', 'filter']}>
+          }
+        >
+          <Form.Item {...restField} name={[field.name, 'query', 'filter']} noStyle>
             <Input />
           </Form.Item>
-        ) : (
-          <Form.Item {...field} name={[field.name, 'query', 'filter']}>
-            <KQLInput
-              datasourceValue={datasourceValue}
-              query={{
-                index: curIndexValues.index,
-                date_field: curIndexValues.date_field,
-              }}
-              historicalRecords={[]}
-            />
-          </Form.Item>
-        )}
+        </InputGroupWithFormItem>
       </Form.Item>
       <Values
         prefixField={field}
@@ -190,14 +164,14 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
                 </Space>
               }
             >
-              <Form.Item {...field} name={[field.name, 'query', 'date_format']}>
+              <Form.Item {...restField} name={[field.name, 'query', 'date_format']}>
                 <Input />
               </Form.Item>
             </InputGroupWithFormItem>
           </Col>
           <Col span={8}>
             <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
-              <Form.Item {...field} name={[field.name, 'query', 'limit']}>
+              <Form.Item {...restField} name={[field.name, 'query', 'limit']}>
                 <InputNumber style={{ width: '100%' }} />
               </Form.Item>
             </InputGroupWithFormItem>
@@ -209,7 +183,7 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
       {IS_PLUS && (
         <Form.Item
           label='Legend'
-          {...field}
+          {...restField}
           name={[field.name, 'legend']}
           tooltip={{
             getPopupContainer: () => document.body,

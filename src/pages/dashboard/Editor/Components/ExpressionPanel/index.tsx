@@ -12,14 +12,15 @@ export default function index({ fields, remove, field }) {
   const targets = Form.useWatch('targets');
   const target = targets?.[field.name] || {};
   const name = target?.refId || generateQueryNameByIndex(field.name);
+  const { key: fieldKey, ...restField } = field;
 
   return (
     <Panel
       header={name}
-      key={field.key}
+      key={fieldKey}
       extra={
         <Space>
-          <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+          <Form.Item noStyle {...restField} name={[field.name, 'hide']}>
             <HideButton />
           </Form.Item>
           {fields.length > 1 ? (
@@ -34,8 +35,8 @@ export default function index({ fields, remove, field }) {
     >
       <Form.Item
         label='Expression'
-        {...field}
-        name={[field.name, 'expr']}
+        {...restField}
+        name={[field.name, 'expression']}
         rules={[
           {
             required: true,
@@ -47,7 +48,7 @@ export default function index({ fields, remove, field }) {
       </Form.Item>
       <Form.Item
         label='Legend'
-        {...field}
+        {...restField}
         name={[field.name, 'legend']}
         tooltip={{
           getPopupContainer: () => document.body,

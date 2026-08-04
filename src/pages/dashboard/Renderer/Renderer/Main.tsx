@@ -52,6 +52,8 @@ function index(
       loading: boolean;
       loaded: boolean;
       range: IRawTimeRange;
+      revision: number;
+      errorsByRef: Record<string, any>;
     };
     containerEleRef: React.RefObject<HTMLDivElement>;
     time: IRawTimeRange;
@@ -90,7 +92,7 @@ function index(
   const tableRef = useRef<any>(null);
   const tableNGRef = useRef<any>(null);
   const bodyWrapRef = useRef<HTMLDivElement>(null);
-  const { query, series, error, loading, loaded, range } = queryResult;
+  const { query, series, error, loading, loaded, range, revision } = queryResult;
   const name = replaceTemplateVariables(values.name, {
     scopedVars: values.scopedVars,
     range: time,
@@ -110,6 +112,7 @@ function index(
     id,
     values,
     series,
+    dataRevision: revision,
   };
 
   const RendererCptMap = {

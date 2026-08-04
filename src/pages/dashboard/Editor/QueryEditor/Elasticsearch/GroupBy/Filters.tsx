@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Select, Row, Col, Input, Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { groupByCates } from './configs';
 
@@ -22,17 +23,18 @@ export default function Filters({ prefixField }) {
           return (
             <div>
               {fields.map((field, index) => {
+                const restField = _.omit(field, 'key');
                 return (
                   <Row gutter={16} key={field.key} style={{ marginBottom: index < fields.length - 1 ? 16 : 0 }}>
                     <Col flex='auto'>
                       <Row gutter={16}>
                         <Col flex={12}>
-                          <Form.Item {...field} name={[field.name, 'query']} noStyle>
+                          <Form.Item {...restField} name={[field.name, 'query']} noStyle>
                             <Input addonBefore='Query' />
                           </Form.Item>
                         </Col>
                         <Col flex={12}>
-                          <Form.Item {...field} name={[field.name, 'alias']} noStyle>
+                          <Form.Item {...restField} name={[field.name, 'alias']} noStyle>
                             <Input addonBefore='Alias' />
                           </Form.Item>
                         </Col>

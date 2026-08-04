@@ -1,6 +1,71 @@
 import _ from 'lodash';
 import semver from 'semver';
 
+import { getTargetRefId, inferTargetResultType, isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target';
+
+const migratePanelToV4 = (panel: any): any => {
+  const panelCopy = _.cloneDeep(panel);
+  if (Array.isArray(panelCopy.panels)) {
+    panelCopy.panels = panelCopy.panels.map(migratePanelToV4);
+  }
+
+  // 即使面板版本已是 v4，也要继续规范化遗留的表达式标识，避免编辑器同时处理两套数据结构。
+  const needsTargetMigration = _.some(panelCopy.targets, (target: any) => !target.kind || (isExpressionTarget(target) && target.kind !== 'expression') || target.__mode__ === '__expr__');
+  const isMixedDatasource = panelCopy.datasourceCate === 'mixed' || panelCopy.datasourceValue === 'mixed';
+  // mixed 是 v4 编辑器的展示哨兵值，真实数据源仍位于 targets[].datasource，不能按旧面板级数据源迁移。
+  const hasLegacyDatasource = !isMixedDatasource && (panelCopy.datasourceCate !== undefined || panelCopy.datasourceValue !== undefined);
+  const hasTargetDatasource = _.some(panelCopy.targets, (target: any) => !isExpressionTarget(target) && target.datasource);
+  if (semver.gte(semver.coerce(panelCopy.version) || '0.0.0', '4.0.0') && !needsTargetMigration && !hasLegacyDatasource && !hasTargetDatasource) {
+    return panelCopy;
+  }
+
+  panelCopy.targets = _.map(panelCopy.targets, (target: any, index: number) => {
+    const targetCopy = _.cloneDeep(target);
+    targetCopy.refId = targetCopy.refId || getTargetRefId(index);
+    if (isExpressionTarget(targetCopy)) {
+      targetCopy.kind = 'expression';
+      targetCopy.expression = targetCopy.expression ?? targetCopy.expr ?? '';
+      delete targetCopy.expr;
+    } else {
+      targetCopy.kind = 'query';
+      if (!hasLegacyDatasource) {
+        targetCopy.datasource = targetCopy.datasource ?? {
+          cate: 'prometheus',
+          id: undefined,
+        };
+      }
+      const datasourceCate = targetCopy.datasource?.cate ?? panelCopy.datasourceCate;
+      if (_.includes(['elasticsearch', 'opensearch'], datasourceCate) && targetCopy.query) {
+        targetCopy.query.filter_language =
+          targetCopy.query.filter_language ?? (targetCopy.query.syntax === 'kuery' || targetCopy.query.syntax === 'kql' ? 'kql' : 'lucene');
+        delete targetCopy.query.syntax;
+      }
+      targetCopy.resultType = inferTargetResultType(targetCopy);
+    }
+    delete targetCopy.__mode__;
+    return targetCopy;
+  });
+
+  const datasourceTargets = _.filter(panelCopy.targets, (target: any) => target.kind === 'query' && target.datasource);
+  const datasourceKeys = _.uniq(_.map(datasourceTargets, (target: any) => `${target.datasource.cate}:${target.datasource.id}`));
+  if (isMixedDatasource) {
+    // mixed 是面板级哨兵值。即使只有一个普通查询（其余 target 都是表达式），
+    // 真实数据源也必须继续保留在 target 上，不能再上提并删除。
+    panelCopy.datasourceCate = 'mixed';
+    panelCopy.datasourceValue = 'mixed';
+  } else if (hasLegacyDatasource || datasourceKeys.length <= 1) {
+    const datasource = datasourceTargets[0]?.datasource;
+    panelCopy.datasourceCate = panelCopy.datasourceCate ?? datasource?.cate ?? 'prometheus';
+    panelCopy.datasourceValue = panelCopy.datasourceValue ?? datasource?.id;
+    _.forEach(datasourceTargets, (target: any) => delete target.datasource);
+  } else {
+    panelCopy.datasourceCate = 'mixed';
+    panelCopy.datasourceValue = 'mixed';
+  }
+  panelCopy.version = '4.0.0';
+  return panelCopy;
+};
+
 export default function dashboardMigrator(data: any) {
   const panels = _.map(data.panels, (panel: any) => {
     const panelCopy = _.cloneDeep(panel);
@@ -106,11 +171,12 @@ export default function dashboardMigrator(data: any) {
       }
       panelCopy.version = '3.4.0';
     }
-    return panelCopy;
+    return migratePanelToV4(panelCopy);
   });
 
   return {
     ...data,
+    version: '4.0.0',
     panels,
   };
 }

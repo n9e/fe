@@ -38,6 +38,7 @@ import valueFormatter from '../../utils/valueFormatter';
 import getSerieName from '../../utils/getSerieName';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 import './style.less';
 
 interface ColData {
@@ -72,6 +73,7 @@ interface IProps {
   isPreview?: boolean;
   colors?: string[];
   legendTableMaxHeight?: number | string;
+  dataRevision?: number;
 }
 
 function getStartAndEndByTargets(targets: any[]) {
@@ -157,10 +159,14 @@ export default function index(props: IProps) {
   const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const { t } = useTranslation('dashboard');
   const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview, colors, legendTableMaxHeight } = props;
+  const dataDependency = props.dataRevision ?? series;
   const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
   const history = useHistory();
   const location = useLocation();
   const { custom, options = {}, targets, overrides } = values;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
+  const stableOverrides = useStableValue(overrides);
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution, showPoints, pointSize } = custom;
   const [seriesData, setSeriesData] = useState<any[]>([]);
   const activeLegend = useRef<string>();
@@ -252,7 +258,7 @@ export default function index(props: IProps) {
         };
       }),
     );
-  }, [JSON.stringify(series)]);
+  }, [dataDependency]);
 
   useEffect(() => {
     let xAxisDamin = {};
@@ -411,19 +417,19 @@ export default function index(props: IProps) {
     } else {
       setLegendData([]);
     }
-  }, [JSON.stringify(seriesData), JSON.stringify(custom), JSON.stringify(options), themeMode, JSON.stringify(overrides)]);
+  }, [seriesData, stableCustom, stableOptions, themeMode, stableOverrides]);
 
   useEffect(() => {
     // promql 改变时清除筛选状态
     setSeriesFilterText('');
-  }, [JSON.stringify(series)]);
+  }, [dataDependency]);
 
   useEffect(() => {
     // TODO: 这里布局变化了，但是 fc-plot 没有自动 resize，所以这里需要手动 resize
     if (chartRef.current) {
       chartRef.current.handleResize();
     }
-  }, [placement, JSON.stringify(legendEleSize), heightInPercentage]);
+  }, [placement, legendEleSize?.width, legendEleSize?.height, heightInPercentage]);
 
   const filteredLegendData = useMemo(() => {
     if (!seriesFilterText) return legendData;

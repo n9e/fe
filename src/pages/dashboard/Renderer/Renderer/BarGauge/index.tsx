@@ -24,6 +24,7 @@ import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
 import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import useStableValue from '../../../hooks/useStableValue';
 
 import { getColumnsKeys } from './utils';
 import BasicDisplayMode from './BasicDisplayMode';
@@ -35,27 +36,35 @@ interface IProps {
   series: any[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 const NAME_VALUE_SPACE = 10;
 
 export default function BarGauge(props: IProps) {
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom, options } = values;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
   const { displayMode = 'basic', calc, sortOrder = 'desc', valueField = 'Value', topn, combine_other, otherPosition = 'none' } = custom;
   const containerRef = useRef(null);
   const containerSize = useSize(containerRef);
   const [statFields, setStatFields] = useGlobalState('statFields');
-  let calculatedValues = getCalculatedValuesBySeries(
-    series,
-    calc,
-    {
-      unit: options?.standardOptions?.unit,
-      decimals: options?.standardOptions?.decimals,
-      dateFormat: options?.standardOptions?.dateFormat,
-    },
-    options?.valueMappings,
-    options?.thresholds,
+  let calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc,
+        {
+          unit: options?.standardOptions?.unit,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+        options?.thresholds,
+      ),
+    [dataDependency, stableCustom, stableOptions],
   );
   if (valueField !== 'Value') {
     calculatedValues = _.map(calculatedValues, (item) => {
@@ -143,13 +152,13 @@ export default function BarGauge(props: IProps) {
       return max;
     }
     return 0;
-  }, [calculatedValues, containerSize]);
+  }, [dataDependency, stableCustom, stableOptions, containerSize]);
 
   useEffect(() => {
     if (isPreview) {
       setStatFields(getColumnsKeys(calculatedValues));
     }
-  }, [isPreview, JSON.stringify(calculatedValues)]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   return (
     <div className='renderer-bar-gauge-container-wrapper'>

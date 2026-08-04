@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Input, Row, Col, Button, Space, Form, Empty, Alert } from 'antd';
 import { MenuOutlined, EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined, BugOutlined, DeleteOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
@@ -6,6 +6,7 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useDeepCompareEffect } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -48,11 +49,11 @@ export default function OrganizeFields(props: IProps) {
   const { name, key, ...resetField } = field;
   const { columns, error } = useColumns({ fieldName: field.name });
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (value) {
       onChange && onChange({ ...value, fields: columns });
     }
-  }, [JSON.stringify(columns)]);
+  }, [columns]);
 
   return (
     <Collapse>

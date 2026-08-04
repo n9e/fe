@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, forwardRef, useContext } from 'react';
+import React, { useImperativeHandle, forwardRef, useContext, useLayoutEffect, useRef } from 'react';
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -45,6 +45,13 @@ function FormCpt(props: IProps, ref) {
     }
   });
 
+  const formInitialValuesRef = useRef(_.merge({}, defaultValues, initialValues));
+  useLayoutEffect(() => {
+    // Form.Item / Form.List 中保留各数据源自己的默认值；已保存的面板配置在字段注册后统一覆盖默认值。
+    // 不使用 Form.initialValues，避免同一路径同时存在 Item.initialValue 时触发 antd 警告。
+    chartForm.setFieldsValue(formInitialValuesRef.current);
+  }, [chartForm]);
+
   useImperativeHandle(ref, () => ({
     getFormInstance: () => {
       return chartForm;
@@ -52,7 +59,7 @@ function FormCpt(props: IProps, ref) {
   }));
 
   return (
-    <Form layout='vertical' preserve={true} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
+    <Form layout='vertical' preserve={true} form={chartForm}>
       <Form.Item name='type' hidden>
         <div />
       </Form.Item>

@@ -25,10 +25,11 @@ interface Props {
   ajustDatasourceList?: (list: DatasourceItem[]) => DatasourceItem[];
   onChange?: (value: string | number, datasourceCate: string) => void;
   onClear?: () => void;
+  additionalOptions?: SelectProps['options'];
 }
 
 export default function index(props: SelectProps & Props) {
-  const { type, datasourceCateList, ajustDatasourceList, onChange, onClear } = props;
+  const { type, datasourceCateList, ajustDatasourceList, onChange, onClear, additionalOptions } = props;
   const { i18n } = useTranslation();
   const { datasourceList } = useContext(CommonStateContext);
   const currentDatasourceList = ajustDatasourceList ? ajustDatasourceList(datasourceList) : datasourceList;
@@ -38,7 +39,7 @@ export default function index(props: SelectProps & Props) {
       <Select
         className='n9e-datasource-select-v3'
         dropdownMatchSelectWidth={false}
-        {..._.omit(props, ['type', 'datasourceCateList', 'ajustDatasourceList'])}
+        {..._.omit(props, ['type', 'datasourceCateList', 'ajustDatasourceList', 'additionalOptions'])}
         showSearch
         optionLabelProp='optionLabel'
         filterOption={(inputValue, option) => {
@@ -46,7 +47,7 @@ export default function index(props: SelectProps & Props) {
           const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw) as string[];
           return _.every(keywords, (kw) => _.includes(_.toLower(option?.filter), _.toLower(kw)));
         }}
-        options={_.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
+        options={[...(additionalOptions ?? []), ..._.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
           const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
           const displayLabel = getCateDisplayLabel(datasourceCate, i18n.language);
           return {
@@ -78,14 +79,11 @@ export default function index(props: SelectProps & Props) {
             ),
             value: item.id,
           };
-        })}
+        })]}
         onChange={(value) => {
           if (onChange) {
             const curCate = _.find(currentDatasourceList, { id: value })?.plugin_type;
-            if (!curCate) {
-              return;
-            }
-            onChange(value, curCate);
+            onChange(value, curCate ?? (value === 'mixed' ? 'mixed' : ''));
           }
         }}
         onClear={onClear}

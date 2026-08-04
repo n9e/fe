@@ -19,7 +19,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
 import { useTranslation } from 'react-i18next';
-import { useInterval } from 'ahooks';
+import { useDeepCompareEffect, useInterval } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useBeforeunload } from 'react-beforeunload';
@@ -84,6 +84,22 @@ const fetchDashboard = ({ id, builtinParams }) => {
 };
 const builtinParamsToID = (builtinParams) => {
   return `${builtinParams['__uuid__']}`;
+};
+
+const replaceTargetQueryVariables = (value: unknown, range: IRawTimeRange, scopedVars?: any): unknown => {
+  if (typeof value === 'string') {
+    return replaceTemplateVariables(value, { range, scopedVars });
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => replaceTargetQueryVariables(item, range, scopedVars));
+  }
+  if (value && typeof value === 'object') {
+    return Object.keys(value).reduce<Record<string, unknown>>((result, key) => {
+      result[key] = replaceTargetQueryVariables((value as Record<string, unknown>)[key], range, scopedVars);
+      return result;
+    }, {});
+  }
+  return value;
 };
 
 export default function DetailV2(props: IProps) {
@@ -250,7 +266,7 @@ export default function DetailV2(props: IProps) {
   };
 
   // 监听变量初始化完成和变量值变化，重新处理 repeat panels
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     // 只有在变量初始化完成后才处理 panels
     if (!variablesInitialized || !dashboard.configs?.panels) return;
 
@@ -260,10 +276,10 @@ export default function DetailV2(props: IProps) {
   }, [
     variablesInitialized,
     // 监听变量的 name 和 value，不监听 options（避免 options 更新时重复处理）
-    JSON.stringify(_.map(variablesWithOptions, (v) => ({ name: v.name, value: v.value }))),
+    _.map(variablesWithOptions, (v) => ({ name: v.name, value: v.value })),
   ]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     setGlobalRange(range);
   }, [range, setGlobalRange]);
 
@@ -309,9 +325,9 @@ export default function DetailV2(props: IProps) {
         setAnnotations(res);
       });
     }
-  }, [dashboard.id, JSON.stringify(range), annotationsRefreshFlag]);
+  }, [dashboard.id, range, annotationsRefreshFlag]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     // 更新全局状态
     const obj = {};
     _.forEach(variablesWithOptions, (item) => {
@@ -327,7 +343,7 @@ export default function DetailV2(props: IProps) {
         var: obj,
       },
     });
-  }, [JSON.stringify(_.map(variablesWithOptions, (item) => _.pick(item, ['name', 'value']))), JSON.stringify(range)]);
+  }, [_.map(variablesWithOptions, (item) => _.pick(item, ['name', 'value'])), range]);
 
   return (
     <PageLayout customArea={<div />}>
@@ -444,22 +460,41 @@ export default function DetailV2(props: IProps) {
                   window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
                 }}
                 onShareClick={(panel) => {
-                  const curDatasourceValue = replaceDatasourceVariables(panel.datasourceValue, {
-                    datasourceList,
+                  const resolvedTargets = _.map(panel.targets, (target) => {
+                    if (target.kind === 'expression' || target.__mode__ === '__expr__') {
+                      return target;
+                    }
+                    return {
+                      ...target,
+                      datasource: target.datasource
+                        ? {
+                            ...target.datasource,
+                            id: replaceDatasourceVariables(target.datasource.id, {
+                              datasourceList,
+                            }),
+                          }
+                        : target.datasource,
+                      expr: replaceTemplateVariables(target.expr, {
+                        range,
+                        scopedVars: panel.scopedVars,
+                      }),
+                      query: replaceTargetQueryVariables(target.query, range, panel.scopedVars),
+                      queries: replaceTargetQueryVariables(target.queries, range, panel.scopedVars),
+                    };
                   });
+                  const resolvedDatasources = _.compact(
+                    _.map(resolvedTargets, (target) => {
+                      if (!target.datasource || typeof target.datasource.id !== 'number') return undefined;
+                      return _.find(datasourceList, { id: target.datasource.id });
+                    }),
+                  );
+                  const datasourceCates = _.uniq(_.map(resolvedDatasources, 'plugin_type'));
                   const serielData = {
                     dataProps: {
                       ...panel,
-                      datasourceValue: curDatasourceValue,
-                      // @ts-ignore
-                      datasourceName: _.find(datasourceList, { id: curDatasourceValue })?.name,
-                      targets: _.map(panel.targets, (target) => {
-                        const realExpr = replaceTemplateVariables(target.expr);
-                        return {
-                          ...target,
-                          expr: realExpr,
-                        };
-                      }),
+                      targets: resolvedTargets,
+                      datasourceCate: datasourceCates.length === 1 ? datasourceCates[0] : 'mixed',
+                      datasourceName: _.join(_.uniq(_.map(resolvedDatasources, 'name')), ', '),
                       range,
                     },
                   };

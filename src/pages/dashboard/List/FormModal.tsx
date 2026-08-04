@@ -14,10 +14,11 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, Form, Input, Select, Radio, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useDeepCompareEffect } from 'ahooks';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateDashboard, createDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
@@ -37,7 +38,7 @@ function index(props: Props & ModalWrapProps) {
   const { visible, destroy, busiId, action, initialValues, dashboardSaveMode, onOk } = props;
   const [form] = Form.useForm();
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (initialValues?.id) {
       getDashboard(initialValues.id).then((res) => {
         let configs = {} as IDashboardConfig;
@@ -56,7 +57,7 @@ function index(props: Props & ModalWrapProps) {
         });
       });
     }
-  }, [JSON.stringify(initialValues)]);
+  }, [initialValues]);
 
   return (
     <Modal

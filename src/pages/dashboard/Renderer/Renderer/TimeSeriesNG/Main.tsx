@@ -17,6 +17,7 @@ import { getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import secondYAxisBuilder from './utils/secondYAxisBuilder';
 import { defaultOptionsValues } from '../../../Editor/config';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import drawThresholds from './utils/drawThresholds';
@@ -48,6 +49,7 @@ interface Props {
   hideResetBtn?: boolean;
   onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
+  dataRevision?: number;
 }
 
 export default function index(props: Props) {
@@ -76,6 +78,12 @@ export default function index(props: Props) {
   } = props;
   const id = isPreview ? `${props.id}__view` : props.id;
   const { custom, options = {}, targets, overrides, queryOptionsTime } = panel;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
+  const stableRange = useStableValue(range);
+  const stableAnnotations = useStableValue(annotations);
+  const stableOverrides = useStableValue(overrides);
+  const stableQueryOptionsTime = useStableValue(queryOptionsTime);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const uplotRef = useRef<any>();
   // 保存 x 和 y 轴初始缩放范围
@@ -85,7 +93,7 @@ export default function index(props: Props) {
   const [annotationSettingUp, setAnnotationSettingUp] = useState(false);
   const xMinMax = useMemo(() => {
     return getScalesXMinMax({ range, queryOptionsTime });
-  }, [range, JSON.stringify(queryOptionsTime)]);
+  }, [stableRange, stableQueryOptionsTime]);
 
   // 当 Y 轴为 log 刻度时，将 ≤ 0 的数据值转为 null，避免 uPlot 内部 log 计算产生 -Infinity/NaN 导致崩溃
   const processedFrames = useMemo(() => {
@@ -306,14 +314,14 @@ export default function index(props: Props) {
     colors,
     dashboardMeta.graphTooltip,
     dashboardMeta.graphZoom,
-    JSON.stringify(custom),
-    JSON.stringify(options),
-    JSON.stringify(range),
-    JSON.stringify(baseSeries),
-    JSON.stringify(xMinMax),
+    stableCustom,
+    stableOptions,
+    stableRange,
+    baseSeries,
+    xMinMax,
     annotationSettingUp,
-    JSON.stringify(annotations),
-    JSON.stringify(overrides),
+    stableAnnotations,
+    stableOverrides,
     timezone,
   ]);
   let data = processedFrames;
@@ -339,7 +347,7 @@ export default function index(props: Props) {
   useEffect(() => {
     // 重置缩放按钮状态
     setShowResetZoomBtn(false);
-  }, [JSON.stringify(xMinMax)]);
+  }, [xMinMax]);
 
   return (
     <>

@@ -26,20 +26,24 @@ export interface IGridPos {
 // query interface
 export interface ITarget {
   refId: string;
-  __mode__: '__expr__' | '__query__';
-  expr: string; // promQL
-  legendFormat: string;
+  kind?: 'query' | 'expression';
+  /**
+   * @deprecated 仅用于迁移 4.0.0 之前的面板配置。
+   */
+  __mode__?: '__expr__' | '__query__';
+  datasource?: {
+    cate: string;
+    id: number | string;
+  };
+  resultType?: 'time_series' | 'logs';
+  expression?: string;
+  expr?: string; // PromQL；表达式配置迁移后使用 expression
+  legendFormat?: string;
   time?: IRawTimeRange; // 固定时间范围，2025-10-20 废弃
   step?: number; // 2024-01-24 从固定 step 改成 min step (v7)
   maxDataPoints?: number; // 2024-01-24 新增 maxDataPoints 用于计算默认的 step (v7)，2025-10-20 废弃
-  query?: {
-    index: string;
-    index_type: 'index' | 'index_pattern';
-    filters: string;
-    values: {
-      func: string;
-    }[];
-  };
+  query?: any;
+  queries?: any[];
   legend?: string;
   instant?: boolean;
   hide?: boolean;
@@ -250,8 +254,14 @@ export interface IPanel {
   links?: ILink[];
   description: string;
   layout: IGridPos;
-  datasourceCate?: string; // 5.11.0 新增支持配置数据源类型，默认是 prometheus
-  datasourceValue?: number; // 6.x 开始 datasourceName 已经废弃，datasourceValue 即 datasourceId
+  /**
+   * @deprecated 仅用于迁移 4.0.0 之前的面板配置，新的数据源配置位于 targets[].datasource。
+   */
+  datasourceCate?: string;
+  /**
+   * @deprecated 仅用于迁移 4.0.0 之前的面板配置，新的数据源配置位于 targets[].datasource。
+   */
+  datasourceValue?: number | string;
   targets: ITarget[];
   type: IType;
   options: IOptions;

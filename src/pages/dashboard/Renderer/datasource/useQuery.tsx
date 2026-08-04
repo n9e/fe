@@ -12,32 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-import React, { useState, useEffect, useRef } from 'react';
-import _ from 'lodash';
-import { Form } from 'antd';
-import { useDebounceFn } from 'ahooks';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDebounceFn, useDeepCompareEffect } from 'ahooks';
 
+import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import { datasource as iotdbQuery } from '@/plugins/iotdb';
-import { datasource as tdengineQuery } from '@/plugins/TDengine';
-import { datasource as ckQuery } from '@/plugins/clickHouse';
-import flatten from '@/utils/flatten';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import { N9E_PATHNAME } from '@/utils/constant';
 
-import { ITarget } from '../../types';
-import prometheusQuery from './prometheus';
-import elasticsearchQuery from './elasticsearch';
-
-// @ts-ignore
-import plusDatasource from 'plus:/parcels/Dashboard/datasource';
+import type { ITarget } from '../../types';
+import { buildDashboardQueryRequest, normalizeDashboardQueryResponse } from './contract';
+import { fetchDashboardQuery } from './service';
+import type { DashboardQueryState } from './types';
+import { acceptDashboardQueryState, DashboardRequestSequence } from './requestState';
 
 interface IProps {
   panelWidth?: number;
   id?: string;
-  datasourceCate: string;
-  datasourceValue?: number;
+  datasourceCate?: string;
+  datasourceValue?: number | string;
   time: IRawTimeRange;
   targets: ITarget[];
   inViewPort?: boolean;
@@ -50,93 +44,185 @@ interface IProps {
   queryOptionsTime?: IRawTimeRange;
 }
 
+const getErrorMessage = (error: any) => error?.message || error?.name || String(error);
+
 export default function useQuery(props: IProps) {
-  const { datasourceCate, time, targets, inViewPort, spanNulls, datasourceValue, maxDataPoints, queryOptionsTime } = props;
-  const form = Form.useFormInstance();
+  const { time, targets, inViewPort, datasourceCate, datasourceValue, maxDataPoints, queryOptionsTime } = props;
+  const { datasourceList } = React.useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
-  // beta.5 新增 range 状态，用于 uplot 图表更新时 time 和 data 同时更新
-  // 解决之前 time 先更新后面 data 再更新导致 x 轴时间范围会变成 data 的时间范围
-  const [range, setRange] = useState<IRawTimeRange>(time);
-  const [series, setSeries] = useState<any[]>([]);
-  const [query, setQuery] = useState<any[]>([]);
-  const [error, setError] = useState('');
-  const [loaded, setLoaded] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [state, setState] = useState<DashboardQueryState>({
+    query: [],
+    series: [],
+    errorsByRef: {},
+    error: '',
+    loading: false,
+    loaded: false,
+    range: time,
+    revision: 0,
+  });
 
-  const flag = useRef(false);
+  const hasRequestedRef = useRef(false);
+  const requestSequenceRef = useRef(new DashboardRequestSequence());
+  const controllerRef = useRef<AbortController>();
+  const mountedRef = useRef(true);
 
-  const fetchQueryProps = {
-    ...props,
-    variablesWithOptions,
-  };
-  const fetchQueryMap = {
-    prometheus: prometheusQuery,
-    elasticsearch: elasticsearchQuery,
-    iotdb: iotdbQuery,
-    tdengine: tdengineQuery,
-    ck: ckQuery,
-    ...plusDatasource,
-  };
-  const { run: fetchData } = useDebounceFn(
+  const { run: fetchData, cancel: cancelDebounce } = useDebounceFn(
     async () => {
-      if (!datasourceCate) return;
-      // 如果在编辑状态，需要校验表单
-      if (form && typeof form.validateFields === 'function') {
-        try {
-          // 2024-07-16 暂时关闭表单校验，因为会导致一些表单项无法获取标签数据
-          // await form.validateFields();
-        } catch (e) {
+      if (!targets?.length) return;
+
+      const sequence = requestSequenceRef.current.begin();
+      controllerRef.current?.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
+
+      setState((previous) => ({
+        ...previous,
+        loading: true,
+      }));
+
+      try {
+        const requestData = buildDashboardQueryRequest({
+          time,
+          queryOptionsTime,
+          targets,
+          datasourceList,
+          panelWidth: props.panelWidth,
+          maxDataPoints,
+          scopedVars: props.scopedVars,
+          legacyDatasource: {
+            cate: datasourceCate,
+            id: datasourceValue,
+          },
+        });
+        if (!requestData.queries.length) {
+          if (!mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
+          setState((previous) => ({
+            ...previous,
+            query: [],
+            series: [],
+            errorsByRef: {},
+            error: '',
+            loading: false,
+            loaded: false,
+            range: time,
+          }));
           return;
         }
+        const response = await fetchDashboardQuery(requestData, controller.signal);
+        if (!mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
+        const normalized = normalizeDashboardQueryResponse(response, targets);
+        const error = Object.entries(normalized.errorsByRef)
+          .map(([refId, item]) => `${refId}: ${item.message}${item.dependency_ref_ids?.length ? ` (${item.dependency_ref_ids.join(', ')})` : ''}`)
+          .join('; ');
+        setState((previous) =>
+          acceptDashboardQueryState(previous, {
+            query: props.inspect
+              ? [
+                  {
+                    type: 'Dashboard Query',
+                    request: {
+                      url: `/api/${N9E_PATHNAME}/v2/query-batch`,
+                      method: 'POST',
+                      data: requestData,
+                    },
+                    response,
+                  },
+                ]
+              : [],
+            series: normalized.series,
+            errorsByRef: normalized.errorsByRef,
+            error,
+            loading: false,
+            loaded: true,
+            range: time,
+          }),
+        );
+      } catch (error) {
+        if (controller.signal.aborted || !mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
+        setState((previous) =>
+          acceptDashboardQueryState(previous, {
+            query: [],
+            series: [],
+            errorsByRef: {},
+            error: getErrorMessage(error),
+            loading: false,
+            loaded: true,
+            range: time,
+          }),
+        );
       }
-      setLoading(true);
-      fetchQueryMap[datasourceCate](fetchQueryProps)
-        .then(({ series, query }: { series: any[]; query: any[] }) => {
-          setSeries(
-            _.map(series, (item) => {
-              return {
-                ...item,
-                metric: flatten(item.metric), // 日志数据可能会有多层嵌套，这里统一展开
-              };
-            }),
-          );
-          setQuery(query);
-          setError('');
-        })
-        .catch((e) => {
-          setSeries([]);
-          setQuery([]);
-          setError(e.message);
-          console.error(e);
-        })
-        .finally(() => {
-          setRange(time);
-          setLoading(false);
-          setLoaded(true);
-        });
     },
     {
       wait: 500,
     },
   );
 
-  useEffect(() => {
-    // 配置变化时且图表在可视区域内重新请求数据，同时重置 flag
+  useDeepCompareEffect(() => {
+    if (!targets?.length) {
+      hasRequestedRef.current = false;
+      requestSequenceRef.current.invalidate();
+      cancelDebounce();
+      controllerRef.current?.abort();
+      setState((previous) => {
+        if (!previous.loading && previous.loaded && previous.series.length === 0 && previous.query.length === 0 && !previous.error) {
+          return previous;
+        }
+        return acceptDashboardQueryState(previous, {
+          query: [],
+          series: [],
+          errorsByRef: {},
+          error: '',
+          loading: false,
+          loaded: true,
+          range: time,
+        });
+      });
+      return;
+    }
     if (inViewPort) {
+      hasRequestedRef.current = true;
+      requestSequenceRef.current.invalidate();
+      cancelDebounce();
+      controllerRef.current?.abort();
       fetchData();
-    } else {
-      flag.current = false;
+      return;
     }
-    // TODO 这里 JSON.stringify(variablesWithOptions) 可能会有性能问题
-  }, [JSON.stringify(targets), JSON.stringify(time), JSON.stringify(variablesWithOptions), spanNulls, datasourceValue, maxDataPoints, JSON.stringify(queryOptionsTime)]);
+    hasRequestedRef.current = false;
+    requestSequenceRef.current.invalidate();
+    cancelDebounce();
+    controllerRef.current?.abort();
+  }, [
+    targets,
+    time,
+    variablesWithOptions,
+    datasourceList,
+    datasourceCate,
+    datasourceValue,
+    props.spanNulls,
+    props.scopedVars,
+    props.panelWidth,
+    props.inspect,
+    maxDataPoints,
+    queryOptionsTime,
+    inViewPort,
+  ]);
 
   useEffect(() => {
-    // 如果图表在可视区域内并且没有请求过数据，则请求数据
-    if (inViewPort && !flag.current) {
-      flag.current = true;
+    if (inViewPort && !hasRequestedRef.current) {
+      hasRequestedRef.current = true;
       fetchData();
     }
-  }, [inViewPort]);
+  }, [inViewPort, fetchData]);
 
-  return { query, series, error, loading, loaded, range };
+  useEffect(
+    () => () => {
+      mountedRef.current = false;
+      requestSequenceRef.current.invalidate();
+      cancelDebounce();
+      controllerRef.current?.abort();
+    },
+    [cancelDebounce],
+  );
+
+  return state;
 }

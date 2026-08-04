@@ -94,9 +94,10 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
           </Form.Item>
 
           {fields.map((field, index) => {
+            const restField = _.omit(field, 'key');
             return (
               <div key={field.key} style={{ marginBottom: 0 }}>
-                <Form.Item {...field} name={[field.name, 'ref']} hidden />
+                <Form.Item {...restField} name={[field.name, 'ref']} hidden />
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue, setFields }) => {
                     const func = getFieldValue([...prefixFields, ...prefixNameField, 'query', 'values', field.name, 'func']);
@@ -107,7 +108,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                             <Col span={func === 'count' ? 24 : 12}>
                               <Input.Group>
                                 {valueRefVisible && <span className='ant-input-group-addon'>{generateQueryNameByIndex(index)}</span>}
-                                <Form.Item {...field} name={[field.name, 'func']}>
+                                <Form.Item {...restField} name={[field.name, 'func']}>
                                   <Select
                                     style={{ width: '100%' }}
                                     onChange={(val) => {
@@ -141,7 +142,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                             {func !== 'count' && func !== 'rawData' && (
                               <Col span={12}>
                                 <InputGroupWithFormItem label='Field key' labelWidth={80}>
-                                  <Form.Item {...field} name={[field.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
+                                  <Form.Item {...restField} name={[field.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
                                     <AutoComplete
                                       options={_.filter(fieldsOptions, (item) => {
                                         if (search) {

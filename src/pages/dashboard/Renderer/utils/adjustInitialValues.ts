@@ -1,13 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 
-import { DatasourceCateEnum } from '@/utils/constant';
 import { IVariable } from '@/pages/dashboard/Variables/types';
 
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../../Editor/config';
-import { sortPanelsByGridLayout } from '../../Panels/utils';
-
 import getDefaultTargets from '../../utils/getDefaultTargets';
+import { sortPanelsByGridLayout } from '../../Panels/utils';
 
 const getDefaultDatasourceValue = (datasourceCate, variableConfig, groupedDatasourceList) => {
   const datasourceVars = _.filter(variableConfig, { type: 'datasource' });
@@ -22,9 +20,17 @@ const adjustInitialValues = (type: string, groupedDatasourceList: any, panels: a
   const sortedPanels = sortPanelsByGridLayout(panels);
   const lastPanel = _.last(sortedPanels);
   let datasourceCate = 'prometheus';
+  let datasourceValue: number | string | undefined;
   if (lastPanel) {
-    if (lastPanel.datasourceCate) {
+    if (lastPanel.datasourceCate && lastPanel.datasourceCate !== 'mixed') {
       datasourceCate = lastPanel.datasourceCate;
+      datasourceValue = lastPanel.datasourceValue;
+    } else {
+      const lastQueryTarget = _.findLast(lastPanel.targets, (target: any) => target.kind !== 'expression' && target.__mode__ !== '__expr__');
+      if (lastQueryTarget?.datasource) {
+        datasourceCate = lastQueryTarget.datasource.cate;
+        datasourceValue = lastQueryTarget.datasource.id;
+      }
     }
   } else {
     const datasourceVar = _.find(variables, { type: 'datasource' });
@@ -32,6 +38,7 @@ const adjustInitialValues = (type: string, groupedDatasourceList: any, panels: a
       datasourceCate = datasourceVar.definition;
     }
   }
+  datasourceValue = datasourceValue ?? getDefaultDatasourceValue(datasourceCate, variables, groupedDatasourceList);
 
   return {
     visible: true,
@@ -40,8 +47,8 @@ const adjustInitialValues = (type: string, groupedDatasourceList: any, panels: a
       name: 'Panel Title',
       type,
       datasourceCate,
-      datasourceValue: getDefaultDatasourceValue(datasourceCate, variables, groupedDatasourceList),
-      targets: getDefaultTargets(datasourceCate as DatasourceCateEnum),
+      datasourceValue,
+      targets: getDefaultTargets(datasourceCate as any),
       custom: defaultCustomValuesMap[type],
       options: defaultOptionsValuesMap[type],
     },

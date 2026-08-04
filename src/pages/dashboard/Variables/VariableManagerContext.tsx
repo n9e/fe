@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useCallback } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
@@ -148,7 +149,9 @@ export const VariableManagerProvider = ({
   const pendingInitialExecution = useRef<Set<string>>(new Set());
   // 追踪正在重新执行的变量，防止并发竞争
   const reExecutingVariables = useRef<Set<string>>(new Set());
-  const rangeSignature = React.useMemo(() => JSON.stringify(range), [range]);
+  const rangeStart = moment.isMoment(range.start) ? range.start.valueOf() : range.start;
+  const rangeEnd = moment.isMoment(range.end) ? range.end.valueOf() : range.end;
+  const rangeSignature = `${rangeStart}\u0000${rangeEnd}\u0000${range.refreshFlag || ''}`;
   const previousRangeSignature = useRef<string>(rangeSignature);
   const pendingRangeRefreshSignature = useRef<string | null>(null);
 

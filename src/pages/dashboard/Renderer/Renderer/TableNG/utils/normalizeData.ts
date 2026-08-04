@@ -47,6 +47,25 @@ export default function normalizeData(
   } else {
     const dataGrouped = _.groupBy(series, (item) => item.refId);
     data = _.map(dataGrouped, (subSeries, refId) => {
+      const isRawData = _.every(subSeries, (item) => item.mode === 'raw');
+      if (isRawData) {
+        const rows = _.map(subSeries, (item) => item.metric);
+        const columns = _.uniq(_.flatMap(rows, (item) => _.keys(item)));
+
+        return {
+          id: `#${refId}`,
+          refId,
+          fields: _.map(columns, (column) => {
+            return {
+              name: column,
+              type: 'string',
+              values: _.map(rows, (row) => row[column] ?? null),
+              state: {},
+            };
+          }),
+        };
+      }
+
       const columns = _.union(['__time'], _.uniq(_.flatMap(subSeries, (item) => _.keys(item.metric))), [`__value_#${refId}`]);
       const rows: { [key: string]: any }[] = [];
       _.forEach(subSeries, (item) => {

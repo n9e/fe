@@ -10,6 +10,7 @@ import { CommonStateContext } from '@/App';
 import getFontFamily from '@/utils/getFontFamily';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import useStableValue from '@/pages/dashboard/hooks/useStableValue';
 
 import { IPanel } from '../../../types';
 import { downloadCsv } from '../Table/utils';
@@ -48,6 +49,7 @@ interface Props {
   headerHeight?: number;
   rowHeight?: number;
   showUnderline?: boolean;
+  dataRevision?: number;
   onCellClick?: (
     cellEvent: CellClickedEvent<
       {
@@ -81,6 +83,7 @@ function index(props: Props, ref: React.Ref<any>) {
     onCellClick,
     domLayout,
   } = props;
+  const dataDependency = props.dataRevision ?? series;
 
   // 列宽缓存 key：dashboardID + panelID
   const cacheKey = dashboardId && values?.id ? `tableNG_colWidths_${dashboardId}_${values.id}` : null;
@@ -105,6 +108,11 @@ function index(props: Props, ref: React.Ref<any>) {
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
   const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder } = custom || {};
+  const stableTransformations = useStableValue(transformations);
+  const stableCellOptions = useStableValue(cellOptions);
+  const stableOptions = useStableValue(options);
+  const stableOverrides = useStableValue(overrides);
+  const stableThemes = useStableValue(themes);
   const linksRef = React.useRef<any>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [, setSeries] = useGlobalState('series');
@@ -123,7 +131,7 @@ function index(props: Props, ref: React.Ref<any>) {
       columns: activeData?.columns || [],
       formattedData,
     };
-  }, [activeIndex, JSON.stringify(_.map(series, 'id')), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
+  }, [activeIndex, dataDependency, stableTransformations, stableCellOptions, stableOptions, stableOverrides]);
 
   useImperativeHandle(
     ref,
@@ -147,13 +155,13 @@ function index(props: Props, ref: React.Ref<any>) {
       ...LIGHT_PARAMS,
       ...themes.light,
     });
-  }, [themeMode, JSON.stringify(themes)]);
+  }, [themeMode, stableThemes]);
 
   useEffect(() => {
     if (isPreview) {
       setSeries(series);
     }
-  }, [JSON.stringify(_.map(series, 'id'))]);
+  }, [dataDependency]);
 
   return (
     <div className={`n9e-dashboard-panel-table-ng ${showHeader ? '' : 'n9e-dashboard-panel-table-ng-hide-header'} p-2 h-full w-full flex flex-col gap-2`}>

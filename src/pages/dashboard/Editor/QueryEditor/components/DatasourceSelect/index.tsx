@@ -11,9 +11,9 @@ import { IS_PLUS } from '@/utils/constant';
 
 import DatasourceSelectExtra from './DatasourceSelectExtra';
 
-export default function index({ datasourceValue, variablesWithOptions }) {
+export default function index({ datasourceCate, datasourceValue, variablesWithOptions }) {
   const { t } = useTranslation('dashboard');
-  const { datasourceCateOptions, datasourceList } = useContext(CommonStateContext);
+  const { datasourceCateOptions } = useContext(CommonStateContext);
   const datasourceVars = _.filter(variablesWithOptions, (item) => {
     return _.includes(['datasource', 'datasourceIdentifier'], item.type);
   });
@@ -57,28 +57,43 @@ export default function index({ datasourceValue, variablesWithOptions }) {
                 );
                 return data;
               }}
-              onChange={(val) => {
-                const preCate = chartForm.getFieldValue('datasourceCate');
-                const curCate = _.find(
-                  _.concat(
-                    _.map(datasourceVars, (item) => {
+              additionalOptions={[
+                {
+                  value: 'mixed',
+                  filter: 'mixed 混用数据源',
+                  optionLabel: t('query.mixed_datasource', '混用数据源'),
+                  label: t('query.mixed_datasource', '混用数据源'),
+                },
+              ]}
+              onChange={(val, cate) => {
+                if (cate === 'mixed') {
+                  const previousCate = datasourceCate || chartForm.getFieldValue('datasourceCate');
+                  const previousValue = datasourceValue ?? chartForm.getFieldValue('datasourceValue');
+                  const targets = chartForm.getFieldValue('targets') ?? [];
+                  const targetDatasource = _.find(targets, (target) => target.datasource)?.datasource;
+                  chartForm.setFieldsValue({
+                    datasourceCate: 'mixed',
+                    datasourceValue: 'mixed',
+                    targets: _.map(targets, (target) => {
+                      if (target.kind === 'expression' || target.__mode__ === '__expr__') return target;
                       return {
-                        id: `\${${item.name}}`,
-                        name: `\${${item.name}}`,
-                        plugin_type: item.definition,
+                        ...target,
+                        datasource: {
+                          cate: previousCate === 'mixed' ? targetDatasource?.cate ?? 'prometheus' : previousCate || targetDatasource?.cate || 'prometheus',
+                          id: previousValue === 'mixed' ? targetDatasource?.id : previousValue ?? targetDatasource?.id,
+                        },
                       };
                     }),
-                    datasourceList as any,
-                  ),
-                  { id: val },
-                )?.plugin_type;
-                // TODO: 调整数据源类型后需要重置配置
-                if (preCate !== curCate) {
-                  chartForm.setFieldsValue({
-                    datasourceCate: curCate,
-                    targets: getDefaultTargets(curCate),
                   });
+                  return;
                 }
+                if (!cate) return;
+                const previousCate = chartForm.getFieldValue('datasourceCate');
+                chartForm.setFieldsValue({
+                  datasourceCate: cate,
+                  datasourceValue: val,
+                  ...(previousCate !== cate ? { targets: getDefaultTargets(cate as any) } : {}),
+                });
               }}
             />
           </Form.Item>

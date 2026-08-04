@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
 import { corelib, extend, Runtime } from '@antv/g2';
@@ -22,6 +22,7 @@ import { corelib, extend, Runtime } from '@antv/g2';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 import './style.less';
 
 const Chart = extend(Runtime, corelib());
@@ -31,6 +32,7 @@ interface IProps {
   series: any[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 const getColumnsKeys = (data: any[]) => {
@@ -49,17 +51,24 @@ export default function Heatmap(props: IProps) {
   const containerSize = useSize(containerRef);
   const chartRef = useRef<any>();
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom, options } = values;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
   const { calc, xAxisField, yAxisField, valueField, scheme } = custom;
-  const calculatedValues = getCalculatedValuesBySeries(
-    series,
-    calc,
-    {
-      unit: options?.standardOptions?.unit,
-      decimals: options?.standardOptions?.decimals,
-      dateFormat: options?.standardOptions?.dateFormat,
-    },
-    options?.valueMappings,
+  const calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc,
+        {
+          unit: options?.standardOptions?.unit,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+      ),
+    [dataDependency, stableCustom, stableOptions],
   );
   const [statFields, setStatFields] = useGlobalState('statFields');
   const render = () => {
@@ -120,7 +129,7 @@ export default function Heatmap(props: IProps) {
     if (isPreview) {
       setStatFields(getColumnsKeys(calculatedValues));
     }
-  }, [isPreview, JSON.stringify(calculatedValues)]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   useEffect(() => {
     if (!containerRef.current || !containerSize || !containerSize?.height) return;
@@ -148,7 +157,7 @@ export default function Heatmap(props: IProps) {
     });
     chartRef.current = chart;
     render();
-  }, [themeMode, JSON.stringify(custom), JSON.stringify(_.map(calculatedValues, 'metric'))]);
+  }, [themeMode, dataDependency, stableCustom, stableOptions]);
 
   return <div className='renderer-heatmap-container' style={{ height: '100%' }} ref={containerRef} />;
 }

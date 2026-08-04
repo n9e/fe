@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +25,7 @@ import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../utils/valueFormatter';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 import './style.less';
 
 interface IProps {
@@ -32,6 +33,7 @@ interface IProps {
   series: any[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 const getColumnsKeys = (data: any[]) => {
@@ -49,7 +51,10 @@ export default function Pie(props: IProps) {
   const { t } = useTranslation('dashboard');
   const [, setStatFields] = useGlobalState('statFields');
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom, options } = values;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
   const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false, valueField = 'Value', countOfValueField = true } = custom;
   const dataFormatter = (text: number) => {
     const resFormatter = valueFormatter(
@@ -76,15 +81,19 @@ export default function Pie(props: IProps) {
     });
   };
 
-  const calculatedValues = getCalculatedValuesBySeries(
-    series,
-    calc,
-    {
-      unit: options?.standardOptions?.unit,
-      decimals: options?.standardOptions?.decimals,
-      dateFormat: options?.standardOptions?.dateFormat,
-    },
-    options?.valueMappings,
+  const calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc,
+        {
+          unit: options?.standardOptions?.unit,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+      ),
+    [dataDependency, stableCustom, stableOptions],
   );
 
   let data: any[] = [];
@@ -140,7 +149,7 @@ export default function Pie(props: IProps) {
     if (isPreview) {
       setStatFields(getColumnsKeys(calculatedValues));
     }
-  }, [isPreview, JSON.stringify(calculatedValues)]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   return (
     <div className='renderer-pie-container'>

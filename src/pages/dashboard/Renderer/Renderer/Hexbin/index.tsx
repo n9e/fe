@@ -29,6 +29,7 @@ import { IPanel, IHexbinStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 
 import './style.less';
 
@@ -37,6 +38,7 @@ interface HoneyCombProps {
   series: any[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 const getColumnsKeys = (data: any[]) => {
@@ -52,7 +54,9 @@ const getColumnsKeys = (data: any[]) => {
 
 const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom = {}, options } = values;
+  const stableOptions = useStableValue(options);
   const {
     calc,
     colorRange = [],
@@ -126,19 +130,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         renderFn(data, renderProps, detailFormatter);
       }
     }
-  }, [
-    isPreview,
-    JSON.stringify(series),
-    JSON.stringify(options),
-    svgSize?.width,
-    svgSize?.height,
-    calc,
-    colorRange,
-    reverseColorOrder,
-    colorDomainAuto,
-    colorDomain,
-    fontBackground,
-  ]);
+  }, [isPreview, dataDependency, stableOptions, svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain, fontBackground]);
 
   return (
     <div ref={svgEl} style={{ width: '100%', height: '100%' }}>

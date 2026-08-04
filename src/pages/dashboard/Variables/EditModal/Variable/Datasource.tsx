@@ -39,7 +39,7 @@ export default function Datasource(props: Props) {
       return { label: ds.name, value: ds.id }; // TODO value 实际是 number 类型
     });
     setOptions(itemOptions);
-  }, [JSON.stringify(definition), regex]);
+  }, [definition, regex, groupedDatasourceList]);
 
   return (
     <>

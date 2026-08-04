@@ -24,6 +24,7 @@ import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
 import Edit from './Edit';
 import { ILink } from '../types';
+import useStableValue from '../hooks/useStableValue';
 import './style.less';
 
 interface IProps {
@@ -36,6 +37,7 @@ export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { editable = true, value } = props;
   const indexPatternsAuthorized = useIsAuthorized(['/dashboards/put']);
+  const stableValue = useStableValue(value);
   const links = useMemo(() => {
     const data: {
       id: string;
@@ -44,7 +46,7 @@ export default function index(props: IProps) {
       url: string;
       targetBlank?: boolean;
     }[] = [];
-    _.forEach(value, (item) => {
+    _.forEach(stableValue, (item) => {
       if (item.type === 'dashboards') {
         _.forEach(item.dashboards, (dashboard) => {
           data.push({
@@ -63,7 +65,7 @@ export default function index(props: IProps) {
       }
     });
     return data;
-  }, [JSON.stringify(value)]);
+  }, [stableValue]);
 
   // 如果没有编辑权限并且没有配置链接，则不渲染
   if (!indexPatternsAuthorized && _.isEmpty(value)) return null;

@@ -28,6 +28,7 @@ import { useGlobalState } from '../../../globalState';
 import { getMinFontSizeByList, IGrid } from './utils';
 import StatItemByColSpan from './StatItemByColSpan';
 import StatItem from './StatItem';
+import useStableValue from '../../../hooks/useStableValue';
 import './style.less';
 
 interface IProps {
@@ -38,6 +39,7 @@ interface IProps {
   };
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 const ITEM_SPACIING = 2;
@@ -55,19 +57,26 @@ const getColumnsKeys = (data: any[]) => {
 
 export default function Stat(props: IProps) {
   const { values, series, bodyWrapRef, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom, options, overrides } = values;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
   const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode, orientation } = custom;
-  const calculatedValues = getCalculatedValuesBySeries(
-    series,
-    calc,
-    {
-      unit: options?.standardOptions?.unit,
-      decimals: options?.standardOptions?.decimals,
-      dateFormat: options?.standardOptions?.dateFormat,
-      valueField,
-    },
-    options?.valueMappings,
-    options?.thresholds,
+  const calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc,
+        {
+          unit: options?.standardOptions?.unit,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+          valueField,
+        },
+        options?.valueMappings,
+        options?.thresholds,
+      ),
+    [dataDependency, stableCustom, stableOptions],
   );
   const [isFullSizeBackground, setIsFullSizeBackground] = useState(false);
   const [statFields, setStatFields] = useGlobalState('statFields');
@@ -114,7 +123,7 @@ export default function Stat(props: IProps) {
         setIsFullSizeBackground(false);
       }
     }
-  }, [isPreview, JSON.stringify(calculatedValues), colorMode]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions, colorMode]);
 
   useEffect(() => {
     if (eleSize?.width && colSpan === 0 && orientation === 'auto') {

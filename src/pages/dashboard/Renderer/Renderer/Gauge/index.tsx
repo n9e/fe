@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import _ from 'lodash';
 import { Tooltip } from 'antd';
 import { useSize } from 'ahooks';
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 import Gauge from './Gauge';
 import { calculateGridDimensions } from '../../utils/squares';
 import './style.less';
@@ -30,6 +31,7 @@ interface IProps {
   series: any[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 interface IGrid {
@@ -139,18 +141,25 @@ const getColumnsKeys = (data: any[]) => {
 
 export default function Index(props: IProps) {
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom, options } = values;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
   const { calc, textMode, valueField = 'Value' } = custom;
-  const calculatedValues = getCalculatedValuesBySeries(
-    series,
-    calc,
-    {
-      unit: options?.standardOptions?.unit,
-      decimals: options?.standardOptions?.decimals,
-      dateFormat: options?.standardOptions?.dateFormat,
-    },
-    options?.valueMappings,
-    options?.thresholds,
+  const calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc,
+        {
+          unit: options?.standardOptions?.unit,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+        options?.thresholds,
+      ),
+    [dataDependency, stableCustom, stableOptions],
   );
   const [statFields, setStatFields] = useGlobalState('statFields');
   const ele = useRef(null);
@@ -167,7 +176,7 @@ export default function Index(props: IProps) {
       const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
       setGrid(grid);
     }
-  }, [isPreview, JSON.stringify(calculatedValues), eleSize?.width]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions, eleSize?.width]);
 
   return (
     <div className='renderer-gauge-container'>

@@ -43,7 +43,7 @@ export default function DatasourceIdentifier(props: Props) {
       return { label: ds.name, value: ds.identifier };
     });
     setOptions(itemOptions);
-  }, [JSON.stringify(definition), regex]);
+  }, [definition, regex, groupedDatasourceList]);
 
   return (
     <>

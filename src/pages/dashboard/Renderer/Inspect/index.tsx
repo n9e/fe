@@ -22,7 +22,7 @@ export default function index(props: Props) {
 
   useEffect(() => {
     setQueryType(query?.[0]?.type);
-  }, [JSON.stringify(query)]);
+  }, [query]);
 
   return (
     <Tabs className='dashboard-detail-inspect'>

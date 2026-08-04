@@ -24,7 +24,7 @@ export default function index({ add, addQuery }) {
       {IS_PLUS && (
         <Button
           onClick={() => {
-            add({ expr: '', __mode__: '__expr__', refId: newRefId });
+            add({ kind: 'expression', expression: '', refId: newRefId });
           }}
         >
           + {t('query.add_expression_btn')}
