@@ -97,7 +97,9 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
             const restField = _.omit(field, 'key');
             return (
               <div key={field.key} style={{ marginBottom: 0 }}>
-                <Form.Item {...restField} name={[field.name, 'ref']} hidden />
+                <Form.Item {...restField} name={[field.name, 'ref']} hidden>
+                  <input type='hidden' />
+                </Form.Item>
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue, setFields }) => {
                     const func = getFieldValue([...prefixFields, ...prefixNameField, 'query', 'values', field.name, 'func']);

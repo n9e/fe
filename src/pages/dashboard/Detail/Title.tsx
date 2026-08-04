@@ -232,27 +232,20 @@ export default function Title(props: IProps) {
                       setDashboardListDropdownSearch(e.target.value);
                     }}
                   />
-                  <Menu>
-                    {_.map(
-                      _.filter(dashboardList, (item) => {
-                        return _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch));
+                  <Menu
+                    items={_.map(
+                      _.filter(dashboardList, (item) => _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch))),
+                      (item) => ({
+                        key: item.id,
+                        label: item.name,
+                        onClick: () => {
+                          history.push(`/dashboards/${item.ident || item.id}`);
+                          setDashboardListDropdownVisible(false);
+                          setDashboardListDropdownSearch('');
+                        },
                       }),
-                      (item) => {
-                        return (
-                          <Menu.Item
-                            key={item.id}
-                            onClick={() => {
-                              history.push(`/dashboards/${item.ident || item.id}`);
-                              setDashboardListDropdownVisible(false);
-                              setDashboardListDropdownSearch('');
-                            }}
-                          >
-                            {item.name}
-                          </Menu.Item>
-                        );
-                      },
                     )}
-                  </Menu>
+                  />
                 </div>
               }
             >
@@ -316,27 +309,24 @@ export default function Title(props: IProps) {
                   <Dropdown
                     trigger={['click']}
                     overlay={
-                      <Menu>
-                        {_.map(_.concat([{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => {
-                          return (
-                            <Menu.Item
-                              key={item.type}
-                              onClick={() => {
-                                if (item.type === 'importPanel') {
-                                  void openImportPanelModal();
-                                } else {
-                                  onAddPanel(item.type);
-                                }
-                              }}
-                            >
-                              <Space align='center' style={{ lineHeight: 1 }}>
-                                {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
-                                {t(`visualizations.${item.type}`)}
-                              </Space>
-                            </Menu.Item>
-                          );
-                        })}
-                      </Menu>
+                      <Menu
+                        items={_.map(_.concat([{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => ({
+                          key: item.type,
+                          label: (
+                            <Space align='center' style={{ lineHeight: 1 }}>
+                              {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
+                              {t(`visualizations.${item.type}`)}
+                            </Space>
+                          ),
+                          onClick: () => {
+                            if (item.type === 'importPanel') {
+                              void openImportPanelModal();
+                            } else {
+                              onAddPanel(item.type);
+                            }
+                          },
+                        }))}
+                      />
                     }
                   >
                     <Button type='primary' ghost icon={<AddPanelIcon />}>

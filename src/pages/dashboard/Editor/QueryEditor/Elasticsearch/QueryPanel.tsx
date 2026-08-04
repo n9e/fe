@@ -81,7 +81,9 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
         </Space>
       }
     >
-      <Form.Item noStyle {...restField} name={[field.name, 'refId']} hidden />
+      <Form.Item noStyle {...restField} name={[field.name, 'refId']} hidden>
+        <input type='hidden' />
+      </Form.Item>
       <Form.Item {...restField} name={[field.name, 'query', 'index_type']} initialValue='index'>
         <Radio.Group>
           <Radio value='index'>{t('datasource:es.index')}</Radio>

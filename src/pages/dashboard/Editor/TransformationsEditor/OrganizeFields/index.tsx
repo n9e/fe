@@ -20,7 +20,9 @@ export default function index() {
             {_.map(fields, ({ name, key, ...resetField }) => {
               return (
                 <div key={key}>
-                  <Form.Item {...resetField} name={[name, 'id']} hidden />
+                  <Form.Item {...resetField} name={[name, 'id']} hidden>
+                    <input type='hidden' />
+                  </Form.Item>
                   <Form.Item {...resetField} name={[name, 'options']}>
                     <OrganizeFields />
                   </Form.Item>

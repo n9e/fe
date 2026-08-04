@@ -75,38 +75,37 @@ export default function index(props: IProps) {
       <Space align='baseline'>
         <Dropdown
           overlay={
-            <Menu>
-              {editable && (
-                <Menu.Item
-                  key='edit_links'
-                  onClick={() => {
-                    Edit({
-                      initialValues: value,
-                      onOk: (newValue) => {
-                        props.onChange(newValue);
+            <Menu
+              items={[
+                ...(editable
+                  ? [
+                      {
+                        key: 'edit_links',
+                        label: (
+                          <Space>
+                            <EditOutlined />
+                            {t('common:btn.edit')}
+                          </Space>
+                        ),
+                        onClick: () => {
+                          Edit({ initialValues: value, onOk: props.onChange });
+                        },
                       },
-                    });
-                  }}
-                >
-                  <Space>
-                    <EditOutlined />
-                    {t('common:btn.edit')}
-                  </Space>
-                </Menu.Item>
-              )}
-              {_.map(links, (item) => {
-                return (
-                  <Menu.Item key={item.id}>
+                    ]
+                  : []),
+                ..._.map(links, (item) => ({
+                  key: item.id,
+                  label: (
                     <a href={item.url} target={item.targetBlank ? '_blank' : '_self'}>
                       <Space>
                         {item.type === 'dashboards' ? <DashboardOutlined /> : <LinkOutlined />}
                         {item.title}
                       </Space>
                     </a>
-                  </Menu.Item>
-                );
-              })}
-            </Menu>
+                  ),
+                })),
+              ]}
+            />
           }
         >
           <Button icon={<LinkOutlined />} />

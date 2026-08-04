@@ -120,7 +120,6 @@ function index(props: Props, ref: React.Ref<any>) {
   const { data, rowData, columns, formattedData } = useMemo(() => {
     const data = normalizeData(series, transformations);
     const columns = _.uniq(_.flatMap(data, 'columns'));
-    setTableFields(columns);
 
     const activeData = data[activeIndex];
     const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides, rangeMode });
@@ -132,6 +131,10 @@ function index(props: Props, ref: React.Ref<any>) {
       formattedData,
     };
   }, [activeIndex, dataDependency, stableTransformations, stableCellOptions, stableOptions, stableOverrides]);
+
+  useEffect(() => {
+    setTableFields(columns);
+  }, [columns, setTableFields]);
 
   useImperativeHandle(
     ref,
