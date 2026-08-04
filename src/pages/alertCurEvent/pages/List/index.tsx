@@ -1,5 +1,5 @@
 import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Input, Checkbox, Collapse, Segmented, Button, Space, Row, Col } from 'antd';
+import { Input, Checkbox, Collapse, Segmented, Button, Space } from 'antd';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -16,6 +16,7 @@ import { IS_PLUS } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { parseRange } from '@/components/TimeRangePicker';
+import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 
 // @ts-ignore
 import { getBrainLicense } from 'plus:/components/License/services';
@@ -34,7 +35,6 @@ import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard, { isEqualEventIds } from './AlertCard';
 import AlertTable from './AlertTable';
-import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation(NS);
@@ -42,7 +42,7 @@ const AlertCurEvent: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const query = queryString.parse(location.search);
-  const [paramsAiAction, setParamsAiAction] = useParamsAiAction();
+  const [, setParamsAiAction] = useParamsAiAction();
 
   const [range, setRange] = useState<IRawTimeRange>();
   const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>();
