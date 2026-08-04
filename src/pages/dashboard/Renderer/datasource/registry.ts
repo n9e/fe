@@ -122,7 +122,28 @@ const DEFAULT_TARGETS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number
   },
 };
 
+const hasQueryText = (target: ITarget, key: 'query' | 'sql' = 'query') => typeof target.query?.[key] === 'string' && target.query[key].trim().length > 0;
+
+// 沿用旧版各数据源查询函数的静默短路条件：未就绪的 target 不进入 query-batch，且不触发表单校验提示。
 const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number], (target: ITarget) => boolean>> = {
+  elasticsearch: (target) => {
+    const query = target.query ?? {};
+    return query.index_type === 'index_pattern' ? Boolean(query.index_pattern) : Boolean(query.index && query.date_field);
+  },
+  opensearch: (target) => {
+    const query = target.query ?? {};
+    return query.index_type === 'index_pattern' ? Boolean(query.index_pattern) : Boolean(query.index && query.date_field);
+  },
+  iotdb: (target) => hasQueryText(target),
+  tdengine: (target) => hasQueryText(target),
+  ck: (target) => hasQueryText(target),
+  mysql: (target) => hasQueryText(target),
+  pgsql: (target) => hasQueryText(target, 'sql'),
+  oracle: (target) => hasQueryText(target, 'sql'),
+  sqlserver: (target) => hasQueryText(target, 'sql'),
+  redshift: (target) => hasQueryText(target, 'sql'),
+  influxdb: (target) => hasQueryText(target, 'sql'),
+  cloudwatchlogs: (target) => Boolean(target.query?.region && target.query?.log_group_names && target.query?.query_string),
   'aliyun-sls': (target) => Boolean(target.query?.project && target.query?.logstore && target.query?.mode),
 };
 

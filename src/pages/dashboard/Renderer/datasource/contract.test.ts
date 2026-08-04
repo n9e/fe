@@ -125,6 +125,63 @@ describe('dashboard unified query contract', () => {
       },
     });
     expect((request.queries[0] as any).query).not.toHaveProperty('syntax');
+    expect((request.queries[0] as any).query).toMatchObject({ value: { func: 'rawData' } });
+    expect((request.queries[0] as any).query).not.toHaveProperty('values');
+  });
+
+  it('expands Elasticsearch values into backend-compatible single-value queries', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: {
+            index: 'application-*',
+            date_field: '@timestamp',
+            values: [{ func: 'count' }, { func: 'avg', field: 'duration' }],
+          },
+        },
+      ],
+      datasourceList: [],
+    });
+
+    expect(request.queries).toMatchObject([
+      { ref_id: 'A', query: { value: { func: 'count' } } },
+      { ref_id: 'A__value_1', query: { value: { func: 'avg', field: 'duration' } } },
+    ]);
+    expect(JSON.stringify(request)).not.toContain('"values"');
+  });
+
+  it('silently skips targets that do not meet legacy datasource query prerequisites', () => {
+    const build = (cate: string, query: Record<string, unknown>) =>
+      buildDashboardQueryRequest({
+        time: {
+          start: moment('2026-07-24T00:00:00.000Z'),
+          end: moment('2026-07-24T01:00:00.000Z'),
+        },
+        targets: [
+          {
+            refId: 'A',
+            kind: 'query',
+            datasource: { cate, id: 1 },
+            query,
+          },
+        ],
+        datasourceList: [],
+      });
+
+    expect(build('elasticsearch', { index: 'application-*' }).queries).toEqual([]);
+    expect(build('elasticsearch', { index_type: 'index_pattern' }).queries).toEqual([]);
+    expect(build('elasticsearch', { index: 'application-*', date_field: '@timestamp' }).queries).toHaveLength(1);
+    expect(build('mysql', { query: '   ' }).queries).toEqual([]);
+    expect(build('mysql', { query: 'SELECT 1' }).queries).toHaveLength(1);
+    expect(build('cloudwatchlogs', { region: 'us-east-1', log_group_names: 'app' }).queries).toEqual([]);
+    expect(build('cloudwatchlogs', { region: 'us-east-1', log_group_names: 'app', query_string: 'fields @message' }).queries).toHaveLength(1);
   });
 
   it('serializes every datasource keys field as a string for query-batch v2', () => {
@@ -197,6 +254,7 @@ describe('dashboard unified query contract', () => {
         resultType: 'logs',
         query: {
           index: 'application-*',
+          date_field: '@timestamp',
           values: [{ func: 'rawData' }],
         },
       },
@@ -240,8 +298,9 @@ describe('dashboard unified query contract', () => {
           result_type: 'logs',
           query: {
             index: 'application-*',
+            date_field: '@timestamp',
             filter_language: 'lucene',
-            values: [{ func: 'rawData' }],
+            value: { func: 'rawData' },
           },
         },
         {
@@ -341,6 +400,62 @@ describe('dashboard unified query contract', () => {
       code: 'DEPENDENCY_FAILED',
       dependency_ref_ids: ['A'],
     });
+  });
+
+  it('associates expanded Elasticsearch value queries with their original target', () => {
+    const target: ITarget = {
+      refId: 'A',
+      kind: 'query',
+      datasource: { cate: 'elasticsearch', id: 2 },
+      query: { values: [{ func: 'count' }, { func: 'avg', field: 'duration' }] },
+    };
+    const normalized = normalizeDashboardQueryResponse(
+      {
+        results: [
+          {
+            ref_id: 'A__value_1',
+            status: 'success',
+            result_type: 'time_series',
+            series: [{ labels: { field: 'duration' }, samples: [[1, 42]] }],
+          },
+        ],
+      },
+      [target],
+    );
+
+    expect(normalized.series[0]).toMatchObject({
+      refId: 'A__value_1',
+      target,
+      metric: { field: 'duration' },
+    });
+  });
+
+  it('prefers an exact target RefID over an Elasticsearch value-query prefix match', () => {
+    const parentTarget: ITarget = {
+      refId: 'A',
+      kind: 'query',
+      datasource: { cate: 'elasticsearch', id: 2 },
+    };
+    const exactTarget: ITarget = {
+      refId: 'A__value_1',
+      kind: 'query',
+      datasource: { cate: 'prometheus', id: 1 },
+    };
+    const normalized = normalizeDashboardQueryResponse(
+      {
+        results: [
+          {
+            ref_id: 'A__value_1',
+            status: 'success',
+            result_type: 'time_series',
+            series: [{ labels: {}, samples: [[1, 42]] }],
+          },
+        ],
+      },
+      [parentTarget, exactTarget],
+    );
+
+    expect(normalized.series[0].target).toBe(exactTarget);
   });
 
   it('treats an empty result as a successful empty dataset', () => {
