@@ -1,12 +1,9 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
-import { DatasourceCateEnum } from '@/utils/constant';
 import { BaseParams } from './types';
 
-const getDatasourceCate = (cate?: string) => encodeURIComponent(cate || DatasourceCateEnum.iotdb);
-
 export function getDatabases(data: BaseParams): Promise<string[]> {
-  return request(`/api/n9e/${getDatasourceCate(data.cate)}-databases`, {
+  return request('/api/n9e/db-databases', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -16,10 +13,10 @@ export function getDatabases(data: BaseParams): Promise<string[]> {
 
 export function getTables(
   data: BaseParams & {
-    db: string;
+    query: string[];
   },
 ): Promise<string[]> {
-  return request(`/api/n9e/${getDatasourceCate(data.cate)}-tables`, {
+  return request('/api/n9e/db-tables', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
@@ -29,17 +26,18 @@ export function getTables(
 
 export function getColumns(
   data: BaseParams & {
-    db: string;
-    table: string;
+    query: {
+      database: string;
+      table: string;
+    }[];
   },
 ): Promise<
   {
-    name: string;
+    field: string;
     type: string;
-    size: number;
   }[]
 > {
-  return request(`/api/n9e/${getDatasourceCate(data.cate)}-columns`, {
+  return request('/api/n9e/db-desc-table', {
     method: RequestMethod.Post,
     data,
   }).then((res) => {
