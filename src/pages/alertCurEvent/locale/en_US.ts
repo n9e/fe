@@ -34,6 +34,8 @@ const en_US = {
   isPublic: 'Is public',
   prod: 'Type',
   duration: 'Duration',
+  trigger_value: 'Trigger value',
+  show_trigger_value: 'Show trigger value',
   status: 'Status',
   status_1: 'Claimed',
   status_0: 'Unclaimed',

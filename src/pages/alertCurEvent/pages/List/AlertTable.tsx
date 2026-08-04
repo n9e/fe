@@ -32,6 +32,7 @@ interface IProps {
   setRefreshFlag: (refreshFlag: string) => void;
   eventColumnExpanded: boolean;
   alertEscalationEnable: boolean;
+  showTriggerValue?: boolean;
 }
 
 function formatDuration(ms: number) {
@@ -58,7 +59,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, eventColumnExpanded, alertEscalationEnable } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, eventColumnExpanded, alertEscalationEnable, showTriggerValue } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
@@ -201,6 +202,25 @@ export default function AlertTable(props: IProps) {
       },
     },
   ];
+
+  if (showTriggerValue) {
+    columns.splice(1, 0, {
+      title: t('trigger_value'),
+      dataIndex: 'trigger_value',
+      fixed: 'right' as const,
+      render(value) {
+        return (
+          <div
+            style={{
+              minWidth: getTextWidth(t('trigger_value')),
+            }}
+          >
+            {value}
+          </div>
+        );
+      },
+    } as any);
+  }
 
   if (import.meta.env.VITE_IS_PRO === 'true') {
     columns.splice(3, 0, {

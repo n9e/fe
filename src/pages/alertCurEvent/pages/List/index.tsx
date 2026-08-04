@@ -1,5 +1,5 @@
 import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Input, Checkbox, Collapse, Segmented, Button, Space, Row, Col, Tooltip } from 'antd';
+import { Input, Checkbox, Collapse, Segmented, Button, Space, Row, Col, Tooltip, Switch } from 'antd';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
 import { ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +21,7 @@ import { parseRange } from '@/components/TimeRangePicker';
 // @ts-ignore
 import { getBrainLicense } from 'plus:/components/License/services';
 
-import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS, TIME_RANGE_CACHE_KEY } from '../../constants';
+import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS, SHOW_TRIGGER_VALUE_CACHE_KEY, TIME_RANGE_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
@@ -123,6 +123,7 @@ const AlertCurEvent: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [alertEscalationEnable, setAlertEscalationEnable] = useState(false);
   const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY));
+  const [showTriggerValue, setShowTriggerValue] = useState(() => localStorage.getItem(SHOW_TRIGGER_VALUE_CACHE_KEY) === 'true');
   const params = getRequestParamsByFilter(filter);
 
   useEffect(() => {
@@ -346,21 +347,32 @@ const AlertCurEvent: React.FC = () => {
                     <div className='p-2'>
                       <div className='alert-event-summary-toolbar'>
                         <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
-                        <Tooltip title={eventColumnExpanded ? t('common:btn.collapse') : t('common:btn.expand')}>
-                          <Button
-                            type='text'
+                        <Space>
+                          <span className='text-sm text-fc-text-3'>{t('show_trigger_value')}</span>
+                          <Switch
                             size='small'
-                            className='alert-event-expand-btn'
-                            icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
-                            onClick={() => {
-                              setEventColumnExpanded((expanded) => {
-                                const next = !expanded;
-                                writeAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
-                                return next;
-                              });
+                            checked={showTriggerValue}
+                            onChange={(checked) => {
+                              localStorage.setItem(SHOW_TRIGGER_VALUE_CACHE_KEY, String(checked));
+                              setShowTriggerValue(checked);
                             }}
                           />
-                        </Tooltip>
+                          <Tooltip title={eventColumnExpanded ? t('common:btn.collapse') : t('common:btn.expand')}>
+                            <Button
+                              type='text'
+                              size='small'
+                              className='alert-event-expand-btn'
+                              icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
+                              onClick={() => {
+                                setEventColumnExpanded((expanded) => {
+                                  const next = !expanded;
+                                  writeAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
+                                  return next;
+                                });
+                              }}
+                            />
+                          </Tooltip>
+                        </Space>
                       </div>
                       <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
                     </div>
@@ -421,6 +433,7 @@ const AlertCurEvent: React.FC = () => {
                       setRefreshFlag={setRefreshFlag}
                       eventColumnExpanded={eventColumnExpanded}
                       alertEscalationEnable={alertEscalationEnable}
+                      showTriggerValue={showTriggerValue}
                     />
                   </div>
                 </div>
