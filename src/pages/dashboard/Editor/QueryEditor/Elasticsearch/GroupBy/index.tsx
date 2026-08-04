@@ -21,6 +21,7 @@ interface IProps {
 export default function index({ prefixField = {}, prefixFieldNames = [], parentNames = [], datasourceValue, index, disabled }: IProps) {
   const { t } = useTranslation('alertRules');
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
+  const restPrefixField = _.omit(prefixField, 'key');
   const { run } = useDebounceFn(
     () => {
       getFullFields(datasourceValue, index, {
@@ -47,7 +48,7 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
   }, [datasourceValue, index]);
 
   return (
-    <Form.List {...prefixField} name={[...prefixFieldNames, 'group_by']}>
+    <Form.List {...restPrefixField} name={[...prefixFieldNames, 'group_by']}>
       {(fields, { add, remove }) => (
         <div>
           <div style={{ marginBottom: 8 }}>

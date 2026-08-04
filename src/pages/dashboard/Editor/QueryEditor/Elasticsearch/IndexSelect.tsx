@@ -16,6 +16,7 @@ export default function IndexSelect({ prefixField = {}, prefixName = [], cate, d
   const [options, setOptions] = useState<any[]>([]);
   const [search, setSearch] = useState('');
   const { t } = useTranslation('datasource');
+  const restPrefixField = _.omit(prefixField, 'key');
 
   useEffect(() => {
     if (datasourceValue) {
@@ -35,7 +36,7 @@ export default function IndexSelect({ prefixField = {}, prefixName = [], cate, d
     <Form.Item
       label={t('datasource:es.index')}
       tooltip={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}
-      {...prefixField}
+      {...restPrefixField}
       name={name || [...prefixName, 'query', 'index']}
       rules={[
         {

@@ -7,9 +7,10 @@ import { groupByCates } from './configs';
 
 export default function Filters({ prefixField }) {
   const { t } = useTranslation('alertRules');
+  const restPrefixField = _.omit(prefixField, 'key');
   return (
     <>
-      <Form.Item {...prefixField} name={[prefixField.name, 'cate']}>
+      <Form.Item {...restPrefixField} name={[prefixField.name, 'cate']}>
         <Select style={{ width: '100%' }} optionLabelProp='value'>
           {groupByCates.map((func) => (
             <Select.Option key={func} value={func}>
@@ -18,7 +19,7 @@ export default function Filters({ prefixField }) {
           ))}
         </Select>
       </Form.Item>
-      <Form.List {...prefixField} name={[prefixField.name, 'params']}>
+      <Form.List {...restPrefixField} name={[prefixField.name, 'params']}>
         {(fields, { add, remove }) => {
           return (
             <div>

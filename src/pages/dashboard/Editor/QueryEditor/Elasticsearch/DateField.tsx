@@ -17,6 +17,7 @@ interface IProps {
 export default function DateField(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { datasourceValue, index, prefixField = {}, prefixNames = [prefixField.name], disabled } = props;
+  const restPrefixField = _.omit(prefixField, 'key');
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
   const { run } = useDebounceFn(
     () => {
@@ -44,7 +45,7 @@ export default function DateField(props: IProps) {
   return (
     <InputGroupWithFormItem label={t('datasource:es.date_field')} labelWidth={80}>
       <Form.Item
-        {...prefixField}
+        {...restPrefixField}
         name={[...prefixNames, 'date_field']}
         rules={[
           {

@@ -15,7 +15,7 @@ export default function IndexPatternSelect(props: Props) {
 
   return (
     <Form.Item
-      {...field}
+      {..._.omit(field, 'key')}
       label={t('datasource:es.indexPatterns')}
       name={[field.name, ...name, 'index_pattern']}
       rules={[

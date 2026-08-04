@@ -34,6 +34,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
   const { t } = useTranslation('datasource');
   const [search, setSearch] = useState('');
   const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
+  const restPrefixField = _.omit(prefixField, 'key');
   const { run } = useDebounceFn(
     () => {
       getFields(datasourceValue, index, 'number').then((res) => {
@@ -58,7 +59,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
   }, [datasourceValue, index]);
 
   return (
-    <Form.List {...prefixField} name={[...prefixNameField, 'query', 'values']} initialValue={[{ func: 'count' }]}>
+    <Form.List {...restPrefixField} name={[...prefixNameField, 'query', 'values']} initialValue={[{ func: 'count' }]}>
       {(fields, { add, remove }) => (
         <div>
           <Form.Item
