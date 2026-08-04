@@ -42,11 +42,14 @@ const en_US = {
     temperature: 'Temperature',
     temperature_tip: 'Controls output randomness. Higher values are more diverse; lower values are more deterministic',
     temperature_placeholder: 'e.g. 0.7',
-    max_tokens: 'Max Tokens',
-    max_tokens_tip: 'Maximum number of tokens for a single model response',
-    max_tokens_placeholder: 'e.g. 4096',
+    max_tokens: 'Max Output Tokens',
+    max_tokens_tip:
+      'Maximum number of tokens for a single model response. Raise this when answers get cut off ("the output hit the length limit"). Leave empty to derive it from the model.',
+    max_tokens_placeholder: 'auto if empty, e.g. 8192',
+    max_tokens_auto: 'auto',
     context_length: 'Context Length',
-    context_length_tip: 'Maximum context window size supported by the model (in tokens)',
+    context_length_tip:
+      'Maximum context window supported by the model (in tokens); controls how much conversation history is carried. It does NOT affect the length of a single answer — raise "Max Output Tokens" for that.',
     context_length_placeholder: 'e.g. 128000',
     custom_headers: 'Custom Headers',
     custom_headers_key: 'Header Name',

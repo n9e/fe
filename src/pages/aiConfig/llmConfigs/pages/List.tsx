@@ -156,6 +156,14 @@ export default function List() {
                     },
                   },
                   {
+                    // 与上下文长度并列展示：回答被截断时要调的是这一列，不是上下文长度。
+                    // 只展示上下文长度会让用户以为那才是控制回答长度的旋钮。
+                    dataIndex: ['extra_config', 'max_tokens'],
+                    title: t('form.max_tokens'),
+                    width: 110,
+                    render: (val) => (val ? formatContextLength(val).compact : <span className='text-soft'>{t('form.max_tokens_auto')}</span>),
+                  },
+                  {
                     ...getEnabledStatusColumn({
                       title: t('enabled'),
                       dataIndex: 'enabled',
