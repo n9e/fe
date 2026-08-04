@@ -4,4 +4,4 @@ export const SEVERITY_COLORS = ['red', 'orange', 'yellow', 'green'];
 export const EVENTS_TABLE_PAGESIZE_CACHE_KEY = 'alert_active_events_table_pagesize';
 export const MY_GRPUPS_CACHE_KEY = 'alert_cur_events_my_groups';
 export const AGGR_RULE_ID_CACHE_KEY = 'alert_cur_events_aggr_rule_id';
-export const REFRESH_INTERVAL_CACHE_KEY = 'alert_cur_events_refresh_interval';
+export const TIME_RANGE_CACHE_KEY = 'alert_cur_events_time_range';

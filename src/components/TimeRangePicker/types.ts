@@ -88,6 +88,4 @@ export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps 
   intervalSeconds?: number;
   onIntervalSecondsChange?: (value: number) => void;
   onRefresh?: () => void;
-  // 单独指定自动刷新间隔的 localStorage key；不传则回退到 ${localKey}_refresh
-  refreshLocalKey?: string;
 }
