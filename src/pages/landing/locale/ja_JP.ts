@@ -1,6 +1,7 @@
 const ja_JP = {
   pageTitle: 'Nightingale へようこそ',
   onboarding: {
+    dismiss: '今後表示しない',
     title: 'はじめに',
     subtitle: '数ステップで監視を立ち上げましょう',
     progress: '{{done}}/{{total}} 完了',

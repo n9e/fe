@@ -1,6 +1,7 @@
 const ru_RU = {
   pageTitle: 'Добро пожаловать в Nightingale',
   onboarding: {
+    dismiss: 'Больше не показывать',
     title: 'Начало работы',
     subtitle: 'Несколько шагов, чтобы запустить мониторинг',
     progress: 'Выполнено {{done}}/{{total}}',

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import _ from 'lodash';
 
@@ -67,6 +67,9 @@ interface DetectState {
   collectVerified: boolean;
   // 测试告警发送成功的本地标记，与 notifyUsed 取或：点完立刻点亮，换浏览器由 notifyUsed 兜住
   testDeliveredLocal: boolean;
+  // 短路标记在场（全部完成 / 用户「不再显示」）。datasource 步骤不由探测决定，读的是
+  // CommonStateContext 里的数据源列表，光把探测项置真凑不满进度，得靠这个显式标记收口
+  dismissed: boolean;
   loaded: boolean;
 }
 
@@ -75,9 +78,12 @@ export interface OnboardingProgress {
   total: number;
   doneCount: number;
   doneMap: Record<OnboardingDisplayKey | OnboardingDerivedKey, boolean>;
+  /** 用户显式关闭引导（「不再显示」）：立即隐藏并持久化，与全完成短路取或 */
+  dismiss: () => void;
 }
 
-// 全部完成后写入会话级标记，已上手的用户后续直接短路、不再探测，避免每次加载都拉全量大盘 / 告警。
+// 全部完成或用户显式关闭后写入持久化标记，后续直接短路、不再探测，避免每次加载都拉全量大盘 / 告警。
+// 用 localStorage 而非 sessionStorage：老手关闭一次即永久生效，不随会话结束复活。
 // key 带版本号：步骤集合变化后 total 也变了，沿用旧 key 会把老用户永久钉在「已完成」、再也看不到新步骤。
 const ONBOARDING_DONE_KEY = 'n9e_onboarding_done_v2';
 const DONE_DETECT: DetectState = {
@@ -92,6 +98,7 @@ const DONE_DETECT: DetectState = {
   notifyUsed: true,
   collectVerified: true,
   testDeliveredLocal: true,
+  dismissed: true,
   loaded: true,
 };
 
@@ -107,6 +114,7 @@ const INITIAL_DETECT: DetectState = {
   notifyUsed: false,
   collectVerified: false,
   testDeliveredLocal: false,
+  dismissed: false,
   loaded: false,
 };
 
@@ -255,6 +263,8 @@ function probeOnboarding(): Promise<DetectState> {
     llm,
     notifyUsed,
     ...readMarkers(known),
+    // 探测结论不该把「已关闭引导」冲掉
+    dismissed: known.dismissed,
     loaded: true,
   }));
 }
@@ -320,7 +330,7 @@ export default function useOnboardingProgress(): OnboardingProgress {
   }, []);
 
   useEffect(() => {
-    if (sessionStorage.getItem(ONBOARDING_DONE_KEY)) {
+    if (localStorage.getItem(ONBOARDING_DONE_KEY)) {
       lastDetect = DONE_DETECT;
       setDetect(DONE_DETECT);
       return;
@@ -339,7 +349,18 @@ export default function useOnboardingProgress(): OnboardingProgress {
     probeOnboardingShared().catch(() => undefined);
   }, [pathname, profile?.id]);
 
+  const dismiss = useCallback(() => {
+    try {
+      localStorage.setItem(ONBOARDING_DONE_KEY, '1');
+    } catch (e) {
+      // localStorage 不可用时仅本次会话隐藏
+    }
+    // 走广播而不是只 setDetect：侧栏徽标、着陆页清单等多个挂载点要一起收起
+    publish(DONE_DETECT);
+  }, []);
+
   const doneMap = useMemo<Record<OnboardingDisplayKey | OnboardingDerivedKey, boolean>>(
+
     () => ({
       machine: detect.machine,
       // 没有机器上报就不可能套用主机大盘、跑主机告警或验证采集，这几步统一 gate 在 machine 上，
@@ -350,7 +371,7 @@ export default function useOnboardingProgress(): OnboardingProgress {
       collectVerified: detect.machine && detect.collectVerified,
       // 通知都没配就谈不上"发过测试告警"
       testDelivered: detect.notification && (detect.testDeliveredLocal || detect.notifyUsed),
-      datasource: !!datasourceList?.length,
+      datasource: detect.dismissed || !!datasourceList?.length,
       dashboard: detect.dashboard,
       alert: detect.alert,
       notification: detect.notification,
@@ -364,9 +385,13 @@ export default function useOnboardingProgress(): OnboardingProgress {
 
   useEffect(() => {
     if (detect.loaded && doneCount === total) {
-      sessionStorage.setItem(ONBOARDING_DONE_KEY, '1');
+      try {
+        localStorage.setItem(ONBOARDING_DONE_KEY, '1');
+      } catch (e) {
+        // localStorage 不可用时降级为本次会话短路
+      }
     }
   }, [detect.loaded, doneCount, total]);
 
-  return { loaded: detect.loaded, total, doneCount, doneMap };
+  return { loaded: detect.loaded, total, doneCount, doneMap, dismiss };
 }
