@@ -250,7 +250,7 @@ const Panel = (props: IProps) => {
                     }
                     if (panelIdx === 0) {
                       history.replace({
-                        search: `?data_source_name=${filterValues.datasourceCate ?? defaultDatasourceCate}&${filterValues.datasourceValue ?? defaultDatasourceValue}`,
+                        search: `?data_source_name=${filterValues.datasourceCate ?? defaultDatasourceCate}&data_source_id=${filterValues.datasourceValue ?? defaultDatasourceValue}`,
                       });
                     }
                   }}

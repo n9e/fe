@@ -1,6 +1,7 @@
 const zh_CN = {
   pageTitle: '欢迎使用 Nightingale',
   onboarding: {
+    dismiss: '不再显示',
     title: '新手引导',
     subtitle: '跟着做完这几步，几分钟把监控跑起来',
     progress: '已完成 {{done}}/{{total}}',

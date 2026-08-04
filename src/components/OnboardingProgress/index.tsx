@@ -50,7 +50,7 @@ interface Props {
 export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props) {
   const { t } = useTranslation('n9e-landing');
   const onStepClick = useOnboardingStepClick();
-  const { loaded, doneCount, total, doneMap } = useOnboardingProgress();
+  const { loaded, doneCount, total, doneMap, dismiss } = useOnboardingProgress();
   const [open, setOpen] = useState(false);
 
   // 加载中、或已全部完成时不展示
@@ -91,7 +91,18 @@ export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props
         placement='rightTop'
         align={{ offset: [8, -8] }}
         overlayClassName='n9e-onboarding-pop-overlay'
-        content={<OnboardingPopoverContent doneMap={doneMap} doneCount={doneCount} total={total} onStepClick={handleStepClick} />}
+        content={
+          <OnboardingPopoverContent
+            doneMap={doneMap}
+            doneCount={doneCount}
+            total={total}
+            onStepClick={handleStepClick}
+            onDismiss={() => {
+              setOpen(false);
+              dismiss();
+            }}
+          />
+        }
       >
         {trigger}
       </Popover>

@@ -24,11 +24,12 @@ import { createDashboard } from './services';
 interface IProps {
   data: any;
   busiGroups: any;
+  onSuccess?: () => void; // 导入成功回调（如保存结果页的旅途记录），可选、不影响既有调用
 }
 
 function Import(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('builtInComponents');
-  const { visible, destroy, data, busiGroups } = props;
+  const { visible, destroy, data, busiGroups, onSuccess } = props;
 
   return (
     <Modal
@@ -82,6 +83,7 @@ function Import(props: IProps & ModalWrapProps) {
               return;
             } else {
               message.success(t('common:success.clone'));
+              onSuccess?.();
               destroy();
             }
           });
