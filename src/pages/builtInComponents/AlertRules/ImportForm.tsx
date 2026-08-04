@@ -70,7 +70,7 @@ export interface ImportFormProps {
 function parseCate(data: string): { derivedCate?: string; multiCate: boolean } {
   try {
     const parsed = JSON.parse(data);
-    const dataList = _.isArray(parsed) ? parsed : [parsed];
+    const dataList = Array.isArray(parsed) ? parsed : [parsed];
     const cates = _.union(
       _.map(
         _.filter(dataList, (item) => item.cate !== 'host'),
@@ -154,7 +154,7 @@ export default function ImportForm(props: ImportFormProps) {
           let list: any[] = [];
           try {
             list = JSON.parse(raw);
-            if (!_.isArray(list)) {
+            if (!Array.isArray(list)) {
               list = [list];
             }
             list = _.map(list, (item) => {
