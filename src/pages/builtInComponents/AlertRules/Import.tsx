@@ -49,4 +49,6 @@ function Import(props: ImportFormProps & ModalWrapProps) {
   );
 }
 
-export default ModalHOC(Import);
+// 显式给出泛型参数：T 处在 `T & ModalWrapProps` 交叉位置，裸写 ModalHOC(Import) 时 TS 推不出来，
+// 调用方入参等于不做检查（notificationRulesAuthorized 漏传就是这么溜进去的）
+export default ModalHOC<ImportFormProps>(Import);

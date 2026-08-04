@@ -49,10 +49,11 @@ export interface ImportFormProps {
   /** 预填业务组：只有一个可选时不必让用户点一次没得选的下拉 */
   initialBgid?: number;
   /**
-   * 是否有通知规则管理权限。弹窗宿主经 ModalHOC 渲染在游离节点上，拿不到 CommonStateContext，
+   * 是否有通知规则查看权限。弹窗宿主经 ModalHOC 渲染在游离节点上，拿不到 CommonStateContext，
    * useIsAuthorized 在那里恒为 false，只能由调用方算好传入。
+   * 必填而非可选：漏传会让无权限用户白吃一个 403，交给类型检查兜底。
    */
-  notificationRulesAuthorized?: boolean;
+  notificationRulesAuthorized: boolean;
   /** 提交按钮文案；内联时通常带上条数 */
   submitText?: React.ReactNode;
   submitDisabled?: boolean;
@@ -110,6 +111,13 @@ export default function ImportForm(props: ImportFormProps) {
   const [notificationRules, setNotificationRules] = useState<RuleItemData[]>([]);
   const [notificationRulesLoading, setNotificationRulesLoading] = useState(false);
   const fetchNotificationRules = () => {
+    // 后端 GET /notify-rules 挂了 /notification-rules 权限点，而 getItems 没设 silence，
+    // 无权限时会弹一条全局错误。门控放在函数内部：它还作为 refresh 传给 RuleDropdownSelect，
+    // 只拦 useEffect 的话点刷新按钮照样会打出 403。与 alertRules/FormNG/context.tsx 的 ready 一致。
+    if (!notificationRulesAuthorized) {
+      setNotificationRules([]);
+      return;
+    }
     setNotificationRulesLoading(true);
     getNotificationRules()
       .then((res) => {

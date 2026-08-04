@@ -13,6 +13,7 @@ import { HelpLink } from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
 import { tagsColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
+import { PERM as notificationRulesPerm } from '@/pages/notificationRules/constants';
 import { RuleType } from './types';
 import Import from './Import';
 import { getPayloads, deletePayloads, getCates } from '../services';
@@ -31,6 +32,8 @@ export default function index(props: Props) {
   const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
   const canPut = useIsAuthorized(['/components/put']);
   const canDel = useIsAuthorized(['/components/del']);
+  // 导入弹窗经 ModalHOC 渲染在游离节点上，读不到 CommonStateContext，只能在这里算好传进去
+  const notificationRulesAuthorized = useIsAuthorized([notificationRulesPerm]);
   const [filter, setFilter] = useState<{
     cate?: string;
     query?: string;
@@ -152,6 +155,7 @@ export default function index(props: Props) {
                 groupedDatasourceList,
                 reloadGroupedDatasourceList,
                 datasourceCateOptions,
+                notificationRulesAuthorized,
               });
             }}
           >
@@ -252,6 +256,7 @@ export default function index(props: Props) {
                     groupedDatasourceList,
                     reloadGroupedDatasourceList,
                     datasourceCateOptions,
+                    notificationRulesAuthorized,
                   });
                 },
               },
