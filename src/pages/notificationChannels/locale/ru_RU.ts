@@ -181,6 +181,9 @@ const ru_RU = {
     script_blocked: 'Медиа типа «скрипт» нужно сохранить перед тестированием',
     params_title: 'Параметры медиа',
     receivers_title: 'Получатели',
+    pagerduty_keys_title: 'Integration key',
+    pagerduty_keys_tip: 'PagerDuty доставляет по integration key. После сохранения его можно выбрать по сервису/интеграции в правиле уведомлений; здесь введите вручную. Можно указать несколько.',
+    pagerduty_keys_placeholder: 'Введите integration key и нажмите Enter',
     user_ids: 'Выбрать пользователей',
     user_group_ids: 'Выбрать команды',
     mode: {

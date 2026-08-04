@@ -36,6 +36,12 @@ export default function TestModal(props: Props) {
   const [historyTotal, setHistoryTotal] = useState<number>();
   const [selectedEventIds, setSelectedEventIds] = useState<number[]>();
   const [params, setParams] = useState<Record<string, string>>({});
+  // PagerDuty 的 routing key 不在媒介配置里，而是通知规则那层按「服务/集成」选出来的；
+  // 那份下拉依赖已保存的 channel id（/pagerduty-integration-key/:id/...），未保存时取不到，
+  // 所以这里让用户直接填。不填的话后端 PagerDutyProvider 会以
+  // "pagerduty requires at least one routing key in sendtos" 必然失败——
+  // 报错还指向一个用户在本页面看不到的概念。
+  const [pagerdutyKeys, setPagerdutyKeys] = useState<string[]>([]);
   const [userIds, setUserIds] = useState<number[]>([]);
   const [userGroupIds, setUserGroupIds] = useState<number[]>([]);
   const [userOptions, setUserOptions] = useState<{ label: string; value: number }[]>([]);
@@ -52,6 +58,7 @@ export default function TestModal(props: Props) {
   // 脚本媒介的内联测试被后端拒绝：未保存的脚本会被写盘 chmod 0777 后执行，
   // 等于从请求体直取任意代码执行，必须先保存（保存动作有权限门与 create_by 审计）
   const scriptBlocked = requestType === 'script';
+  const isPagerduty = requestType === 'pagerduty';
 
   const starterTexts: StarterTexts = {
     ruleName: tt('starter.rule_name'),
@@ -95,6 +102,7 @@ export default function TestModal(props: Props) {
     setHistoryTotal(undefined);
     setSelectedEventIds([]);
     setParams({});
+    setPagerdutyKeys([]);
     setUserIds([]);
     setUserGroupIds([]);
     setResult(undefined);
@@ -116,6 +124,9 @@ export default function TestModal(props: Props) {
           ...params,
           ...(userIds.length ? { user_ids: userIds } : {}),
           ...(userGroupIds.length ? { user_group_ids: userGroupIds } : {}),
+          // 后端按 []string 反序列化（GetNotifyConfigParams 的 pagerduty_integration_keys 分支），
+          // 传裸字符串会反序列化失败并静默退化成「没有 routing key」
+          ...(isPagerduty && pagerdutyKeys.length ? { pagerduty_integration_keys: pagerdutyKeys } : {}),
         },
         severities: [mockEvent.severity],
       },
@@ -133,7 +144,9 @@ export default function TestModal(props: Props) {
       });
   };
 
-  const testDisabled = mode === 'history' && _.isEmpty(selectedEventIds);
+  // PagerDuty 没有 routing key 就一定失败，与其发一个必败请求再展示一句用户看不懂的
+  // 英文报错，不如先把按钮拦住
+  const testDisabled = (mode === 'history' && _.isEmpty(selectedEventIds)) || (isPagerduty && _.isEmpty(pagerdutyKeys));
 
   return (
     <>
@@ -206,6 +219,26 @@ export default function TestModal(props: Props) {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+            {isPagerduty && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.pagerduty_keys_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.pagerduty_keys_tip')}</div>
+                {/* mode='tags' 直接产出 string[]，与后端 pagerduty_integration_keys 的 []string 对齐；
+                    保存之后在通知规则里是按「服务/集成」下拉选的，那份下拉要已保存的 channel id 才能拉到 */}
+                <Select
+                  mode='tags'
+                  allowClear
+                  // 没有候选项可选，开着下拉只会挡住下面的内容；与 KVTagSelect 等既有用法一致
+                  open={false}
+                  // 逗号/空格也能分隔：整段粘贴多个 key 时不必逐个回车
+                  tokenSeparators={[',', ' ']}
+                  className='w-full'
+                  placeholder={t('test.pagerduty_keys_placeholder')}
+                  value={pagerdutyKeys}
+                  onChange={setPagerdutyKeys}
+                />
               </div>
             )}
             {contactKey && (

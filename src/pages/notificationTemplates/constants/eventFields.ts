@@ -30,7 +30,9 @@ export const EVENT_FIELD_GROUPS: EventFieldGroup[] = [
       { ref: '{{$event}}', key: 'event', type: 'object' },
       { ref: '{{$labels}}', key: 'labels', type: 'map[string]string' },
       { ref: '{{$value}}', key: 'value', type: 'string' },
-      { ref: '{{$domain}}', key: 'domain', type: 'string' },
+      // 站点地址是渲染数据里的键而非模板变量，所以是 $. 开头而不是 $event./$labels 那种变量引用。
+      // 不用 {{.domain}}：dot 在 range/with 内部会被改写，而面板里的表达式是拿去任意位置粘贴的。
+      { ref: '{{$.domain}}', key: 'domain', type: 'string' },
       { ref: '{{timestamp}}', key: 'timestamp', type: 'string' },
       { ref: '{{timeformat $event.LastEvalTime}}', key: 'timeformat', type: 'func' },
     ],

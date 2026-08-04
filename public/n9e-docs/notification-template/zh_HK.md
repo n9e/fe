@@ -21,9 +21,10 @@
 {{if $event.IsRecovered}}恢復時間：{{timeformat $event.LastEvalTime}}{{else}}觸發時間: {{timeformat $event.TriggerTime}}
 觸發時值: {{$event.TriggerValue}}{{end}}
 發送時間: {{timestamp}}
-{{$domain := "http://n9e-domain" }}   
-事件詳情: {{$domain}}/alert-his-events/{{$event.Id}}
+事件詳情: {{$.domain}}/alert-his-events/{{$event.Id}}
 ```
+> `{{$.domain}}` 是站點地址，由系統按「站點設置」自動填充，不需要自己聲明。
+> 注意要寫 `{{$.domain}}` 而不是 `{{.domain}}`：`$` 恆指向根數據，放在 `range` / `with` 內部同樣成立。
 
 
 ## 模板示例
@@ -36,9 +37,8 @@
 {{if $event.IsRecovered}}恢復時間：{{timeformat $event.LastEvalTime}}{{else}}觸發時間: {{timeformat $event.TriggerTime}}
 觸發時值: {{$event.TriggerValue}}{{end}}
 發送時間: {{timestamp}}
-{{$domain := "http://請聯繫管理員修改通知模板將域名替換為實際的域名" }}   
-事件詳情: {{$domain}}/alert-his-events/{{$event.Id}}
-屏蔽1小時: {{$domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
+事件詳情: {{$.domain}}/alert-his-events/{{$event.Id}}
+屏蔽1小時: {{$.domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
 ```
 
 ## 模板常用語法介紹

@@ -177,6 +177,9 @@ const zh_CN = {
     script_blocked: '脚本类媒介需要先保存再测试',
     params_title: '媒介参数',
     receivers_title: '接收人',
+    pagerduty_keys_title: 'Integration Key',
+    pagerduty_keys_tip: 'PagerDuty 按 Integration Key 投递。保存后可在通知规则里按「服务/集成」选择，这里请先手动填入，可填多个。',
+    pagerduty_keys_placeholder: '输入 Integration Key 后回车',
     user_ids: '选择用户',
     user_group_ids: '选择团队',
     mode: {

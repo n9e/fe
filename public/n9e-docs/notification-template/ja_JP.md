@@ -21,8 +21,10 @@ DingTalk通知チャネルでは、参照方法は `{{$tpl.title}}` と `{{$tpl.
 {{if $event.IsRecovered}}復旧時間：{{timeformat $event.LastEvalTime}}{{else}}トリガー時間: {{timeformat $event.TriggerTime}}
 トリガー値: {{$event.TriggerValue}}{{end}}
 送信時間: {{timestamp}}
-{{$domain := "http://n9e-domain" }}   
-イベント詳細: {{$domain}}/alert-his-events/{{$event.Id}}
+イベント詳細: {{$.domain}}/alert-his-events/{{$event.Id}}
+```
+> `{{$.domain}}` はサイト URL で、システムが「サイト設定」から自動的に埋め込みます。自分で宣言する必要はありません。
+> `{{.domain}}` ではなく `{{$.domain}}` と書いてください。`$` は常にルートデータを指すため、`range` / `with` の内部でも同様に使えます。
 
 ## テンプレート例
 ### 基本テンプレート例
@@ -34,9 +36,8 @@ DingTalk通知チャネルでは、参照方法は `{{$tpl.title}}` と `{{$tpl.
 {{if $event.IsRecovered}}復旧時間：{{timeformat $event.LastEvalTime}}{{else}}トリガー時間: {{timeformat $event.TriggerTime}}
 トリガー値: {{$event.TriggerValue}}{{end}}
 送信時間: {{timestamp}}
-{{$domain := "http://管理者に連絡してテンプレートの通知ドメインを実際のドメインに変更してください" }}   
-イベント詳細: {{$domain}}/alert-his-events/{{$event.Id}}
-1時間ミュート: {{$domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
+イベント詳細: {{$.domain}}/alert-his-events/{{$event.Id}}
+1時間ミュート: {{$.domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
 ```
 
 ## テンプレートの一般的な構文紹介

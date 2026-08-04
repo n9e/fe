@@ -176,6 +176,9 @@ const zh_HK = {
     script_blocked: '腳本類媒介需要先保存再測試',
     params_title: '媒介參數',
     receivers_title: '接收人',
+    pagerduty_keys_title: 'Integration Key',
+    pagerduty_keys_tip: 'PagerDuty 按 Integration Key 投遞。儲存後可在通知規則裡按「服務/整合」選擇，這裡請先手動填入，可填多個。',
+    pagerduty_keys_placeholder: '輸入 Integration Key 後按 Enter',
     user_ids: '選擇用戶',
     user_group_ids: '選擇團隊',
     mode: {

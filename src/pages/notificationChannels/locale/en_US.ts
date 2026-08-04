@@ -180,6 +180,9 @@ const en_US = {
     script_blocked: 'Script media types must be saved before testing',
     params_title: 'Media parameters',
     receivers_title: 'Recipients',
+    pagerduty_keys_title: 'Integration key',
+    pagerduty_keys_tip: 'PagerDuty routes by integration key. After saving you can pick one by service/integration in a notification rule; enter it manually here. Multiple keys are allowed.',
+    pagerduty_keys_placeholder: 'Type an integration key and press Enter',
     user_ids: 'Select users',
     user_group_ids: 'Select teams',
     mode: {

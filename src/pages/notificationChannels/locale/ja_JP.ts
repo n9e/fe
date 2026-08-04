@@ -179,6 +179,9 @@ const ja_JP = {
     script_blocked: 'スクリプト種別のメディアは保存してからテストしてください',
     params_title: 'メディアパラメータ',
     receivers_title: '受信者',
+    pagerduty_keys_title: 'Integration Key',
+    pagerduty_keys_tip: 'PagerDuty は Integration Key 単位で配信します。保存後は通知ルールでサービス/インテグレーションから選べます。ここでは手動で入力してください（複数可）。',
+    pagerduty_keys_placeholder: 'Integration Key を入力して Enter',
     user_ids: 'ユーザーを選択',
     user_group_ids: 'チームを選択',
     mode: {

@@ -21,9 +21,10 @@
 {{if $event.IsRecovered}}恢复时间：{{timeformat $event.LastEvalTime}}{{else}}触发时间: {{timeformat $event.TriggerTime}}
 触发时值: {{$event.TriggerValue}}{{end}}
 发送时间: {{timestamp}}
-{{$domain := "http://n9e-domain" }}   
-事件详情: {{$domain}}/alert-his-events/{{$event.Id}}
+事件详情: {{$.domain}}/alert-his-events/{{$event.Id}}
 ```
+> `{{$.domain}}` 是站点地址，由系统按「站点设置」自动填充，不需要自己声明。
+> 注意要写 `{{$.domain}}` 而不是 `{{.domain}}`：`$` 恒指向根数据，放在 `range` / `with` 内部同样成立。
 
 ## 模板常用语法介绍
 

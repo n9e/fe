@@ -21,9 +21,10 @@ Metrics: {{$event.TagsJSON}}
 {{if $event.IsRecovered}}Recovery Time: {{timeformat $event.LastEvalTime}}{{else}}Trigger Time: {{timeformat $event.TriggerTime}}
 Trigger Value: {{$event.TriggerValue}}{{end}}
 Send Time: {{timestamp}}
-{{$domain := "http://n9e-domain" }}   
-Event Details: {{$domain}}/alert-his-events/{{$event.Id}}
+Event Details: {{$.domain}}/alert-his-events/{{$event.Id}}
 ```
+> `{{$.domain}}` is the site URL. It is filled in automatically from the site settings, so you do not need to declare it yourself.
+> Write `{{$.domain}}` rather than `{{.domain}}`: `$` always refers to the root data, so it also works inside `range` / `with`.
 
 ## Template Examples
 ### Basic Template Example
@@ -35,9 +36,8 @@ Metrics: {{$event.TagsJSON}}
 {{if $event.IsRecovered}}Recovery Time: {{timeformat $event.LastEvalTime}}{{else}}Trigger Time: {{timeformat $event.TriggerTime}}
 Trigger Value: {{$event.TriggerValue}}{{end}}
 Send Time: {{timestamp}}
-{{$domain := "http://Please contact the administrator to modify the notification template and replace the domain with the actual domain" }}   
-Event Details: {{$domain}}/alert-his-events/{{$event.Id}}
-Silence for 1 hour: {{$domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
+Event Details: {{$.domain}}/alert-his-events/{{$event.Id}}
+Silence for 1 hour: {{$.domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
 ```
 
 ## Common Template Syntax Introduction

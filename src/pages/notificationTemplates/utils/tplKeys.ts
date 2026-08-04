@@ -135,7 +135,9 @@ function buildBody(texts: StarterTexts): string {
     `${texts.tags}: {{$event.TagsJSON}}`,
     `${texts.triggerValue}: {{$event.TriggerValue}}`,
     `${texts.time}: {{timestamp}}`,
-    `${texts.detail}: {{$domain}}/alert-his-events/{{$event.Id}}`,
+    // 站点地址取的是渲染数据里的 domain 键（后端 RenderEvent 填的），不是模板变量。
+    // 用 {{$.domain}} 而不是 {{.domain}}：$ 恒为根数据，放进 range/with 里也成立。
+    `${texts.detail}: {{$.domain}}/alert-his-events/{{$event.Id}}`,
   ].join('\n');
 }
 
