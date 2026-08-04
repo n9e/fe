@@ -61,7 +61,7 @@ function LogContext(props: IProps & ModalWrapProps) {
       const res2 = await getLogsQuery(datasourceValue, twoHoursLaterQueryParams);
       setData(_.concat(parseResponse(res2.result || []).dataRows, parseResponse(res1.result || []).dataRows));
     } catch (err) {
-      message.error(err);
+      message.error(err as string);
     } finally {
       setLoading(false);
     }

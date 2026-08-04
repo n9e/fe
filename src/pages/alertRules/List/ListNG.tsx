@@ -24,6 +24,7 @@ import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
 import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
+import { matchTriggerType, TRIGGER_TYPE_OPTIONS, TriggerType } from '@/pages/alertRules/List/utils';
 
 interface Filter {
   cate?: string;
@@ -32,6 +33,7 @@ interface Filter {
   prod?: string;
   severities?: number[];
   disabled?: 0 | 1;
+  triggerType?: TriggerType;
 }
 
 const FILTER_SESSION_STORAGE_KEY = 'alert-rules-filter';
@@ -57,7 +59,7 @@ interface Props {
 
 export default function AlertRules(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
-  const { busiGroups, datasourceList } = useContext(CommonStateContext);
+  const { busiGroups, datasourceList, feats } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide } = props;
   let defaultFilter = {} as Filter;
   let defaultPage = 1;
@@ -254,7 +256,7 @@ export default function AlertRules(props: Props) {
           );
         },
       },
-      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }),
       updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     ],
     readonly
@@ -323,7 +325,7 @@ export default function AlertRules(props: Props) {
   );
   const filterData = () => {
     return _.filter(data, (item) => {
-      const { datasourceIds, search, prod, severities } = filter;
+      const { datasourceIds, search, prod, severities, triggerType } = filter;
       const datasourceIdsWithoutHost = _.filter(datasourceIds, (id) => id !== -999);
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
@@ -344,7 +346,8 @@ export default function AlertRules(props: Props) {
           !datasourceIds ||
           // 如果数据源值包含 host (-999) 则以 prod 判断
           (_.includes(datasourceIds, -999) && item.prod === 'host')) &&
-        (filter.disabled === undefined || item.disabled === filter.disabled)
+        (filter.disabled === undefined || item.disabled === filter.disabled) &&
+        matchTriggerType(item, triggerType)
       );
     });
   };
@@ -429,6 +432,23 @@ export default function AlertRules(props: Props) {
               const newFilter = {
                 ...filter,
                 disabled: val,
+              };
+              handleFilterChange(newFilter);
+            }}
+          />
+          <Select
+            allowClear
+            placeholder={t('filter_trigger_type.placeholder')}
+            style={{ minWidth: 130 }}
+            options={TRIGGER_TYPE_OPTIONS.filter((opt) => opt.value !== 'anomaly' || feats?.fcBrain === true).map((opt) => ({
+              label: t(`filter_trigger_type.${opt.value}`),
+              value: opt.value,
+            }))}
+            value={filter.triggerType}
+            onChange={(val) => {
+              const newFilter = {
+                ...filter,
+                triggerType: val,
               };
               handleFilterChange(newFilter);
             }}

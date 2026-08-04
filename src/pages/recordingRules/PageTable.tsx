@@ -171,7 +171,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       dataIndex: 'cron_pattern',
     },
     tagsColumn({ title: t('append_tags'), dataIndex: 'append_tags', maxWidth: 180 }),
-    dateColumn<strategyItem>({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+    dateColumn<strategyItem>({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }),
     updateByColumn<strategyItem>({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
     {
       ...getEnabledStatusColumn({

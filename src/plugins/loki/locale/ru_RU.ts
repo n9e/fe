@@ -22,6 +22,13 @@ const ru_RU = {
     no_more_bottom: 'No more newer logs',
     query_failed: 'Failed to load context logs',
   },
+  mode_switch: {
+    confirm_title: 'Подтверждение смены режима',
+    confirm_content:
+      'Текущий запрос содержит функцию агрегации диапазона, которая не поддерживается в режиме исходных логов. При переключении текущий запрос будет очищен. Продолжить?',
+    confirm_ok: 'Переключить',
+    confirm_cancel: 'Отмена',
+  },
   query_placeholder: 'Введите LogQL запрос',
   builder: {
     labels: 'Labels',

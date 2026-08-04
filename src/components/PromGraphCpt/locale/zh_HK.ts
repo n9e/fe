@@ -21,6 +21,10 @@ const zh_HK = {
   tooltip_sort_asc: '升序',
   show_legend: '顯示圖例',
   value_format: '數值格式',
+  series: '序列 ({{count}})',
+  series_filter: '搜尋序列名稱',
+  filtered: '已篩選',
+  value: '值',
 };
 
 export default zh_HK;

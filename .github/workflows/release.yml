@@ -1,0 +1,52 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.15.0
+          cache: npm
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Get version from package.json
+        id: pkg_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Package files to tar.gz
+        run: tar -C pub -czf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz .
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-output-tar-gz
+          path: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
+          if-no-files-found: error
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARCHIVE: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$ARCHIVE" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$ARCHIVE" --title "$GITHUB_REF_NAME" --generate-notes
+          fi

@@ -1,15 +1,20 @@
 const en_US = {
   pageTitle: 'Welcome to Nightingale',
   onboarding: {
+    dismiss: "Don't show again",
     title: 'Getting started',
     subtitle: 'A few steps to get your monitoring up and running',
     progress: '{{done}}/{{total}} completed',
     hostTrack: 'Host monitoring',
     dataTrack: 'Data integration',
     aiTrack: 'AI assistant',
+    optional: 'optional',
     steps: {
       machine: { title: 'Deploy the collector', desc: 'Deploy Categraf on a host and it shows up in the host list' },
-      hostDashboard: { title: 'Apply a host dashboard', desc: 'Import a built-in host dashboard from the template center' },
+      collectVerified: { title: 'Configure collection and verify data', desc: 'Generate a Categraf config per component and confirm metrics arrive' },
+      hostDashboard: { title: 'Apply a host dashboard', desc: 'Import the built-in host dashboards in one click and see your data' },
+      hostAlert: { title: 'Enable host alerting', desc: 'Import and enable the built-in host alert rules in one click' },
+      testDelivered: { title: 'Send a test alert', desc: 'Use a mock event to confirm notifications really reach you' },
       datasource: { title: 'Configure a data source', desc: 'Connect Prometheus / VictoriaMetrics and more' },
       dashboard: { title: 'Create a dashboard', desc: 'Visualize the metrics you care about' },
       alert: { title: 'Configure an alert rule', desc: 'Set up your first alert rule for key metrics' },

@@ -7,10 +7,11 @@ interface Props {
   getUplot: () => uplot;
   xScaleInitMinMax?: [number, number];
   yScaleInitMinMax?: [number, number];
+  onReset: () => void;
 }
 
 export default function ResetZoomButton(props: Props) {
-  const { showResetZoomBtn, getUplot, xScaleInitMinMax, yScaleInitMinMax } = props;
+  const { showResetZoomBtn, getUplot, xScaleInitMinMax, yScaleInitMinMax, onReset } = props;
 
   return (
     <Button
@@ -23,6 +24,7 @@ export default function ResetZoomButton(props: Props) {
         if (uplot && xScaleInitMinMax && yScaleInitMinMax) {
           uplot.setScale('x', { min: xScaleInitMinMax[0], max: xScaleInitMinMax[1] });
           uplot.setScale('y', { min: yScaleInitMinMax[0], max: yScaleInitMinMax[1] });
+          onReset();
         }
       }}
     >

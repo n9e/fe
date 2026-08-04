@@ -50,7 +50,22 @@ export default function GraphStyles() {
             </Form.Item>
           </Col> */}
         </Row>
-        <CellOptions namePath={['custom', 'cellOptions']} />
+        <CellOptions
+          namePath={['custom', 'cellOptions']}
+          wrapTextExtra={
+            <Col span={12}>
+              <Form.Item
+                label={t('panel.custom.tableNG.enableRowDetail')}
+                tooltip={t('panel.custom.tableNG.enableRowDetail_tip')}
+                name={['custom', 'enableRowDetail']}
+                valuePropName='checked'
+                initialValue={false}
+              >
+                <Switch />
+              </Form.Item>
+            </Col>
+          }
+        />
       </>
     </Panel>
   );

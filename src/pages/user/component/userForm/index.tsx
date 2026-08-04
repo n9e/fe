@@ -26,7 +26,7 @@ import ContactDrawer from '@/components/Contacts';
 import { CommonStateContext } from '@/App';
 
 const { Option } = Select;
-const UserForm = React.forwardRef<ReactNode, UserAndPasswordFormProps>((props, ref) => {
+const UserForm = React.forwardRef<any, UserAndPasswordFormProps>((props, ref) => {
   const { t } = useTranslation();
   const { profile } = useContext(CommonStateContext);
   const { userId } = props;

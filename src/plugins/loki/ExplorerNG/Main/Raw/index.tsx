@@ -140,7 +140,7 @@ export default function Raw(props: Props) {
 
   const service = () => {
     const latestQueryValues = form.getFieldValue('query');
-    if (refreshFlag && datasourceValue && latestQueryValues?.range) {
+    if (refreshFlag && datasourceValue && latestQueryValues?.range && _.trim(latestQueryValues?.query)) {
       const parsedRange = parseRange(latestQueryValues.range);
       let timeParams = {
         from: moment(parsedRange.start).valueOf(),
@@ -209,7 +209,7 @@ export default function Raw(props: Props) {
 
   const histogramService = () => {
     const latestQueryValues = form.getFieldValue('query');
-    if (refreshFlag && datasourceValue && latestQueryValues?.range) {
+    if (refreshFlag && datasourceValue && latestQueryValues?.range && _.trim(latestQueryValues?.query)) {
       const range = parseRange(latestQueryValues.range);
       return getHistogram({
         cate: DatasourceCateEnum.loki,
@@ -329,7 +329,20 @@ export default function Raw(props: Props) {
                 <Space>
                   {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
                   {toggleNode}
-                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }} />}
+                  {IS_PLUS && (
+                    <DownloadModal
+                      marginLeft={0}
+                      queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }}
+                      effectiveRange={
+                        snapRangeRef.current?.from && snapRangeRef.current?.to
+                          ? {
+                              start: moment(snapRangeRef.current.from),
+                              end: moment(snapRangeRef.current.to),
+                            }
+                          : undefined
+                      }
+                    />
+                  )}
                 </Space>
               );
             }

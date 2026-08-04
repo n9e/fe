@@ -74,6 +74,9 @@ interface IProps {
   colors?: string[];
   legendTableMaxHeight?: number | string;
   dataRevision?: number;
+  legendSeriesFilterText?: string;
+  onLegendSeriesFilterTextChange?: (value: string) => void;
+  legendFilteredText?: string;
 }
 
 function getStartAndEndByTargets(targets: any[]) {
@@ -186,7 +189,14 @@ export default function index(props: IProps) {
   const hasLegend = displayMode !== 'hidden';
   const [legendData, setLegendData] = useState<any[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [seriesFilterText, setSeriesFilterText] = useState<string>('');
+  const [internalSeriesFilterText, setInternalSeriesFilterText] = useState<string>('');
+  const seriesFilterText = props.legendSeriesFilterText ?? internalSeriesFilterText;
+  const setSeriesFilterText = (value: string) => {
+    props.onLegendSeriesFilterTextChange?.(value);
+    if (props.legendSeriesFilterText === undefined) {
+      setInternalSeriesFilterText(value);
+    }
+  };
   const [popoverVisible, setPopoverVisible] = useState(false);
   let _chartHeight = hasLegend ? `calc(100% - ${legendEleSize?.height! + 16}px)` : '100%';
   let minChartHeight = hasLegend ? `${100 - heightInPercentage}%` : '100%';
@@ -420,8 +430,10 @@ export default function index(props: IProps) {
   }, [seriesData, stableCustom, stableOptions, themeMode, stableOverrides]);
 
   useEffect(() => {
-    // promql 改变时清除筛选状态
-    setSeriesFilterText('');
+    // 非受控场景下，promql 改变时清除筛选状态
+    if (props.legendSeriesFilterText === undefined) {
+      setInternalSeriesFilterText('');
+    }
   }, [dataDependency]);
 
   useEffect(() => {
@@ -462,6 +474,7 @@ export default function index(props: IProps) {
               {t('panel.options.legend.series')} ({filteredLegendData.length})
             </span>
             <SearchOutlined className='cursor-pointer' style={{ color: seriesFilterText ? 'var(--fc-primary-color)' : undefined }} title={t('panel.options.legend.seriesFilter')} />
+            {seriesFilterText && props.legendFilteredText && <span className='text-soft'>({props.legendFilteredText})</span>}
           </Space>
         </Popover>
       ),

@@ -25,6 +25,19 @@ interface AlertSubscribesRecord {
   notifies: AlertRulesRecords;
 }
 
+/**
+ * 探测这套部署是否产生过通知记录（无论成败），用于新手引导判定「发送测试告警」是否完成。
+ * 只回布尔与时间戳，不含渠道/接收人/内容。老后端没有该路由时会 404，调用方按未使用处理。
+ */
+export function getNotifyUsed(): Promise<{ used: boolean; last_at: number }> {
+  return request('/api/n9e/notification-records/used', {
+    method: RequestMethod.Get,
+    silence: true,
+  }).then((res) => {
+    return res.dat || { used: false, last_at: 0 };
+  });
+}
+
 export function getEventNotifyRecords(eventId): Promise<{
   sub_rules: AlertSubscribesRecord[];
   notifies: AlertRulesRecords;

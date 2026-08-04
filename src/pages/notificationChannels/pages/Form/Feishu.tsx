@@ -20,7 +20,7 @@ export default function Feishu(props: Props) {
 
   return (
     <Collapse ghost className='n9e-collapse-advanced-settings'>
-      <Collapse.Panel key='advanced' header={t('advanced_settings')}>
+      <Collapse.Panel key='advanced' header={t('advanced_settings')} forceRender>
         <Form.Item label={t('feishuapp_request_config.app_id')} tooltip={alert_shot_tip} name={[...names, 'app_id']}>
           <Input />
         </Form.Item>

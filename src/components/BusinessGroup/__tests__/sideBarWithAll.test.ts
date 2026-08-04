@@ -44,6 +44,7 @@ jest.mock('@/components/BusinessGroup/style.less', () => ({}), { virtual: true }
 jest.mock('@/components/BusinessGroup', () => ({ getCleanBusinessGroupIds: (ids: any) => ids?.replace(/^group,/, '') }), { virtual: true });
 
 import { getDefaultGids, getDefaultGidsInDashboard } from '../BusinessGroupSideBarWithAll';
+import { getDashboardCompatibleGids, getTargetsCompatibleGids } from '../presetFilters';
 
 const localeKey = 'N9E_TEST_KEY';
 const businessGroup = { ids: '1,2', id: 1, key: 'group,1,2', isLeaf: false };
@@ -58,10 +59,10 @@ describe('getDefaultGids', () => {
     expect(result).toBe('42');
   });
 
-  it('URL 无参数时读取 localStorage', () => {
+  it('无 URL 参数时优先继承当前业务组，而非 localStorage 记忆的“全部”', () => {
     localStorage.setItem(localeKey, '-2');
     const result = getDefaultGids(localeKey, businessGroup);
-    expect(result).toBe('-2');
+    expect(result).toBe('1,2');
   });
 
   it('URL 和 localStorage 都无值时回退到 businessGroup.ids', () => {
@@ -74,10 +75,33 @@ describe('getDefaultGids', () => {
     expect(result).toBe('-2');
   });
 
-  it('localStorage 优先级高于 businessGroup.ids', () => {
+  it('当前业务组优先级高于 localStorage', () => {
     localStorage.setItem(localeKey, '0');
     const result = getDefaultGids(localeKey, businessGroup);
-    expect(result).toBe('0');
+    expect(result).toBe('1,2');
+  });
+
+  it('当前业务组为“全部”(-2)时继承 -2', () => {
+    localStorage.setItem(localeKey, '-2');
+    const result = getDefaultGids(localeKey, { ids: '-2' });
+    expect(result).toBe('-2');
+  });
+
+  it('当前业务组为其它页面专属值 -1（公开）时回退 localStorage', () => {
+    localStorage.setItem(localeKey, '-2');
+    const result = getDefaultGids(localeKey, { ids: '-1' });
+    expect(result).toBe('-2');
+  });
+
+  it('当前业务组为其它页面专属值 0（未分组）时回退 localStorage', () => {
+    localStorage.setItem(localeKey, '-2');
+    const result = getDefaultGids(localeKey, { ids: '0' });
+    expect(result).toBe('-2');
+  });
+
+  it('当前业务组为其它页面专属值且无 localStorage 时回退“全部”', () => {
+    const result = getDefaultGids(localeKey, { ids: '-1' });
+    expect(result).toBe('-2');
   });
 
   it('URL 有预置筛选 ids=-2 时返回 -2', () => {
@@ -90,16 +114,16 @@ describe('getDefaultGids', () => {
     expect(result).toBe('0');
   });
 
-  it('URL 有 ids 时优先于 localStorage', () => {
+  it('URL 有 ids 时优先于 localStorage 和当前业务组', () => {
     localStorage.setItem(localeKey, '-2');
     const result = getDefaultGids(localeKey, businessGroup, '123');
     expect(result).toBe('123');
   });
 
-  it('localStorage 有值且 URL 无 ids 时使用 localStorage', () => {
+  it('URL 无 ids 时当前业务组优先于 localStorage', () => {
     localStorage.setItem(localeKey, '0');
     const result = getDefaultGids(localeKey, businessGroup, undefined);
-    expect(result).toBe('0');
+    expect(result).toBe('1,2');
   });
 });
 
@@ -108,20 +132,27 @@ describe('getDefaultGidsInDashboard', () => {
     localStorage.clear();
   });
 
+  it('URL 的 ids 参数优先于其他筛选来源', () => {
+    localStorage.setItem(localeKey, '-1');
+    const result = getDefaultGidsInDashboard({ ids: '0', 'preset-filter': 'public' }, localeKey, businessGroup);
+    expect(result).toBe('0');
+  });
+
   it('preset-filter=public 时返回 -1', () => {
     const result = getDefaultGidsInDashboard({ 'preset-filter': 'public' }, localeKey, businessGroup);
     expect(result).toBe('-1');
   });
 
-  it('无 preset-filter 时读取 localStorage', () => {
+  it('无 URL 筛选时优先读取当前业务组', () => {
     localStorage.setItem(localeKey, '-2');
     const result = getDefaultGidsInDashboard({}, localeKey, businessGroup);
-    expect(result).toBe('-2');
+    expect(result).toBe('1,2');
   });
 
-  it('无缓存时回退到 businessGroup.ids', () => {
-    const result = getDefaultGidsInDashboard({}, localeKey, businessGroup);
-    expect(result).toBe('1,2');
+  it('当前业务组为空时回退到 localStorage', () => {
+    localStorage.setItem(localeKey, '-2');
+    const result = getDefaultGidsInDashboard({}, localeKey, {});
+    expect(result).toBe('-2');
   });
 
   it('全部回退都无值时返回 -1', () => {
@@ -133,5 +164,22 @@ describe('getDefaultGidsInDashboard', () => {
     localStorage.setItem(localeKey, '-2');
     const result = getDefaultGidsInDashboard({ 'preset-filter': 'public' }, localeKey, businessGroup);
     expect(result).toBe('-1');
+  });
+});
+
+describe('页面间预置筛选兼容', () => {
+  it('仪表盘不支持机器列表的未分组值 0', () => {
+    expect(getDashboardCompatibleGids('0')).toBe('-2');
+  });
+
+  it('机器列表不支持仪表盘的公开值 -1', () => {
+    expect(getTargetsCompatibleGids('-1')).toBe('-2');
+  });
+
+  it('普通业务组和共同的全部值保持不变', () => {
+    expect(getDashboardCompatibleGids('1,2')).toBe('1,2');
+    expect(getDashboardCompatibleGids('-2')).toBe('-2');
+    expect(getTargetsCompatibleGids('1,2')).toBe('1,2');
+    expect(getTargetsCompatibleGids('-2')).toBe('-2');
   });
 });

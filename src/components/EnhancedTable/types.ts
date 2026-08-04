@@ -1,6 +1,6 @@
 import type { MouseEvent, ReactNode } from 'react';
 import type { ColumnType, TableProps } from 'antd/lib/table';
-
+import type { TooltipPlacement } from 'antd/lib/tooltip';
 import type { ActionIconName } from './icons';
 
 export interface RowAction {
@@ -16,6 +16,8 @@ export interface RowAction {
   visible?: boolean;
   /** hover hint; shown even when the item is disabled (e.g. why delete is blocked) */
   tooltip?: ReactNode;
+  /** placement of the hover hint; useful for actions close to a viewport edge */
+  tooltipPlacement?: TooltipPlacement;
   /** render a custom node instead of the default button (for bespoke menu items) */
   node?: ReactNode;
 }

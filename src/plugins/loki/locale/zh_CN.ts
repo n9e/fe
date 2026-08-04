@@ -22,6 +22,12 @@ const zh_CN = {
     no_more_bottom: '没有更新的日志',
     query_failed: '上下文日志加载失败',
   },
+  mode_switch: {
+    confirm_title: '切换模式确认',
+    confirm_content: '当前统计图表模式的查询条件包含区间聚合方法，该方法在日志原文模式下不可用。切换后将清空当前查询条件，是否继续？',
+    confirm_ok: '继续切换',
+    confirm_cancel: '取消',
+  },
   query_placeholder: '输入 LogQL 查询',
   builder: {
     labels: '标签',

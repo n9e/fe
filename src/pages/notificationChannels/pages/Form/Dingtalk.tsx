@@ -10,7 +10,7 @@ export default function Dingtalk() {
 
   return (
     <Collapse ghost className='n9e-collapse-advanced-settings'>
-      <Collapse.Panel key='advanced' header={t('advanced_settings')}>
+      <Collapse.Panel key='advanced' header={t('advanced_settings')} forceRender>
         <Form.Item label={t('dingtalkapp_request_config.app_key')} tooltip={t('dingtalkapp_request_config.alert_shot_tip')} name={[...names, 'app_key']}>
           <Input />
         </Form.Item>

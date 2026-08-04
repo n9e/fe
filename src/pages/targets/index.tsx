@@ -26,6 +26,7 @@ import { CommonStateContext } from '@/App';
 import List, { ITargetProps } from './List';
 import BusinessGroup from './BusinessGroup';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
+import { getTargetsCompatibleGids } from '@/components/BusinessGroup/presetFilters';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 import './locale';
 import './index.less';
@@ -313,14 +314,16 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
         form.resetFields();
       }}
     >
-      {/* 基础展示表单项 */}
-      <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-        <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
-          <TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t('targets_placeholder')} onBlur={formatValue} />
-        </Form.Item>
-        {isFormItem && render()}
-      </Form>
-      {!isFormItem && render()}
+      <>
+        {/* 基础展示表单项 */}
+        <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+          <Form.Item label={t('targets')} name='idents' rules={[{ required: true }]}>
+            <TextArea autoSize={{ minRows: 3, maxRows: 10 }} placeholder={t('targets_placeholder')} onBlur={formatValue} />
+          </Form.Item>
+          {isFormItem ? render() ?? null : null}
+        </Form>
+        {!isFormItem ? render() ?? null : null}
+      </>
     </Modal>
   );
 };
@@ -328,19 +331,22 @@ const OperationModal: React.FC<OperateionModalProps> = ({ operateType, setOperat
 const Targets: React.FC = () => {
   const { t } = useTranslation('targets');
   const { businessGroup } = useContext(CommonStateContext);
-  const [gids, setGids] = useState<string | undefined>(businessGroup.ids);
+  const [gids, setGids] = useState<string | undefined>(() => getTargetsCompatibleGids(businessGroup.ids));
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRows, setSelectedRows] = useState<ITargetProps[]>([]);
   const [refreshFlag, setRefreshFlag] = useState(_.uniqueId('refreshFlag_'));
 
   useEffect(() => {
-    setGids(businessGroup.ids);
+    setGids(getTargetsCompatibleGids(businessGroup.ids));
   }, [businessGroup.ids]);
 
   return (
     <PageLayout icon={<DatabaseOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/infrastructure/server-list/'>
       <div className='object-manage-page-content'>
         <BusinessGroup2
+          // 「公开仪表盘」不是机器列表的有效筛选，转换为「全部机器」后，
+          // 也要覆盖左侧组件从全局业务组状态读取的 group,-1，保证 URL 为 ids=-2。
+          selected={businessGroup.ids === '-1' ? 'group,-2' : undefined}
           presetFilterTitle={t('default_filter')}
           presetFilters={[
             { value: '0', label: t('ungrouped_targets') },

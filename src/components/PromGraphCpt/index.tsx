@@ -17,7 +17,7 @@
 /**
  * 类似 prometheus graph 的组件
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Tabs, Button, Alert, Checkbox } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
@@ -65,6 +65,7 @@ interface IProps {
   extra?: React.ReactElement;
   showExportButton?: boolean; // 是否显示导出按钮
   refetchOnZoom?: boolean;
+  noticeBanner?: React.ReactNode; // 查询框与结果区之间的提示横幅（如数据源体检结论），由调用方控制显隐
 }
 
 const TabPane = Tabs.TabPane;
@@ -100,6 +101,7 @@ export default function index(props: IProps) {
     defaultRange,
     showExportButton,
     refetchOnZoom = false,
+    noticeBanner,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
@@ -113,6 +115,15 @@ export default function index(props: IProps) {
   const [completeEnabled, setCompleteEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
+  const [seriesFilterText, setSeriesFilterText] = useState('');
+  const preserveSeriesFilterRef = useRef(false);
+  const handleQueryRequest = useCallback(() => {
+    if (preserveSeriesFilterRef.current) {
+      preserveSeriesFilterRef.current = false;
+      return;
+    }
+    setSeriesFilterText('');
+  }, []);
 
   useEffect(() => {
     if (typeof defaultTime === 'number') {
@@ -134,6 +145,9 @@ export default function index(props: IProps) {
 
   useEffect(() => {
     if (type) {
+      if (type !== tabActiveKey && value && datasourceValue) {
+        preserveSeriesFilterRef.current = true;
+      }
       setTabActiveKey(type);
     }
   }, [type]);
@@ -235,6 +249,7 @@ export default function index(props: IProps) {
           type='info'
         />
       )}
+      {noticeBanner}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
         <Tabs
@@ -242,6 +257,9 @@ export default function index(props: IProps) {
           tabBarGutter={0}
           activeKey={tabActiveKey}
           onChange={(key: 'table' | 'graph') => {
+            if (key !== tabActiveKey && value && datasourceValue) {
+              preserveSeriesFilterRef.current = true;
+            }
             setTabActiveKey(key);
             onTypeChange && onTypeChange(key);
             setErrorContent('');
@@ -259,14 +277,15 @@ export default function index(props: IProps) {
               setQueryStats={setQueryStats}
               setErrorContent={setErrorContent}
               timestamp={timestamp}
-              setTimestamp={(val) => {
-                setTimestamp(val);
-              }}
+              setTimestamp={setTimestamp}
               refreshFlag={refreshFlag}
               loading={loading}
               setLoading={setLoading}
               defaultUnit={defaultUnit}
               showExportButton={showExportButton}
+              seriesFilterText={seriesFilterText}
+              onSeriesFilterTextChange={setSeriesFilterText}
+              onQueryRequest={handleQueryRequest}
             />
           </TabPane>
           <TabPane tab={t('tab_graph')} key='graph'>
@@ -295,6 +314,9 @@ export default function index(props: IProps) {
                 graphStandardOptionsPlacement={graphStandardOptionsPlacement}
                 defaultUnit={defaultUnit}
                 refetchOnZoom={refetchOnZoom}
+                seriesFilterText={seriesFilterText}
+                onSeriesFilterTextChange={setSeriesFilterText}
+                onQueryRequest={handleQueryRequest}
               />
             </Panel>
           </TabPane>

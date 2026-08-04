@@ -17,7 +17,7 @@ interface Props {
   onSelectNode: (node: SkillTreeNode) => void;
   onExpand: (expandedKeys: string[], node: SkillTreeNode, expanded: boolean) => void;
   onCreate: () => void;
-  onImport: (file: File, auth: SkillAuthValues) => void;
+  onImport: (file: File | undefined, auth: SkillAuthValues) => void;
   onGitInstall: () => void;
 }
 

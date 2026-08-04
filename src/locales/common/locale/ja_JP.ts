@@ -50,6 +50,7 @@ const ja_JP = {
     save: '保存',
     ok: '確定',
     cancel: 'キャンセル',
+    close: '閉じる',
     view: '表示',
     more: 'その他の操作',
     back: '戻る',

@@ -78,6 +78,7 @@ function index(
     onEditClick,
     onDeleteClick,
     onCopyClick,
+    onOverridesChange,
     // from index.tsx
     controllersVisible,
     queryResult,
@@ -114,6 +115,7 @@ function index(
     values,
     series,
     dataRevision: revision,
+    onOverridesChange,
   };
   const menuItems: MenuProps['items'] = [
     {

@@ -21,89 +21,10 @@ Metrics: {{$event.TagsJSON}}
 {{if $event.IsRecovered}}Recovery Time: {{timeformat $event.LastEvalTime}}{{else}}Trigger Time: {{timeformat $event.TriggerTime}}
 Trigger Value: {{$event.TriggerValue}}{{end}}
 Send Time: {{timestamp}}
-{{$domain := "http://n9e-domain" }}   
-Event Details: {{$domain}}/alert-his-events/{{$event.Id}}
+Event Details: {{$.domain}}/alert-his-events/{{$event.Id}}
 ```
-
-## Available Field Descriptions
-
-Below are the main fields of AlertCurEvent that can be used in templates:
-
-Basic Information Fields
-
-| Field Name      | Type   | Description                      | Template Reference Method   |
-| --------------- | ------ | -------------------------------- | --------------------------- |
-| Id              | int64  | Alert event ID                   | {{$event.Id}}              |
-| Cate            | string | Alert category, e.g. "prometheus"| {{$event.Cate}}            |
-| Cluster         | string | Data source name                 | {{$event.Cluster}}         |
-| DatasourceId    | int64  | Data source ID                   | {{$event.DatasourceId}}    |
-| GroupId         | int64  | Business group ID                | {{$event.GroupId}}         |
-| GroupName       | string | Business group name              | {{$event.GroupName}}       |
-| Hash            | string | Alert event hash                 | {{$event.Hash}}            |
-| RuleId          | int64  | Rule ID                          | {{$event.RuleId}}          |
-| RuleName        | string | Rule name                        | {{$event.RuleName}}        |
-| RuleNote        | string | Rule note                        | {{$event.RuleNote}}        |
-| Severity        | int    | Alert level (1-3)                | {{$event.Severity}}        |
-| PromQl          | string | Alert query statement            | {{$event.PromQl}}          |
-| PromForDuration | int    | Duration (seconds)               | {{$event.PromForDuration}} |
-| PromEvalInterval| int    | Evaluation interval (seconds)    | {{$event.PromEvalInterval}}|
-| Status          | int    | Alert status                     | {{$event.Status}}          |
-| SubRuleId       | int64  | Subscription rule ID             | {{$event.SubRuleId}}       |
-| NotifyRuleIDs   | []int64| Notification rule ID list        | {{$event.NotifyRuleIDs}}   |
-| RuleHash        | string | Rule hash value                  | {{$event.RuleHash}}        |
-
-Trigger-related Fields
-
-| Field Name       | Type   | Description              | Template Reference Method     |
-| ---------------- | ------ | ------------------------ | ----------------------------- |
-| TriggerTime      | int64  | Trigger timestamp        | {{$event.TriggerTime}}       |
-| TriggerValue     | string | Trigger value            | {{$event.TriggerValue}}      |
-| FirstTriggerTime | int64  | First trigger time       | {{$event.FirstTriggerTime}}  |
-| NotifyCurNumber  | int    | Current notification count| {{$event.NotifyCurNumber}}  |
-| LastEvalTime     | int64  | Last evaluation time     | {{$event.LastEvalTime}}      |
-| LastSentTime     | int64  | Last sent time           | {{$event.LastSentTime}}      |
-
-Tags and Annotations
-
-| Field Name      | Type              | Description           | Template Reference Method    |
-| --------------- | ----------------- | --------------------- | ---------------------------- |
-| TagsJSON        | []string          | Tag array             | {{$event.TagsJSON}}         |
-| TagsMap         | map[string]string | Tag key-value mapping | {{$event.TagsMap}}          |
-| AnnotationsJSON | map[string]string | Annotation key-value mapping | {{$event.AnnotationsJSON}} |
-
-If you want to reference the `instance` tag, you can use `{{$event.TagsMap.instance}}`, and if you want to reference the `summary` annotation, you can use `{{$event.AnnotationsJSON.summary}}`.
-
-Machine-related Field Information
-
-| Field Name   | Type   | Description      | Template Reference Method    |   
-| ------------ | ------ | ---------------- | ---------------------------- |
-| TargetIdent  | string | Target identifier| {{$event.TargetIdent}}      |
-| TargetNote   | string | Target note      | {{$event.TargetNote}}       |
-
-Notification-related Fields
-
-| Field Name         | Type     | Description                | Template Reference Method      |
-| ------------------ | -------- | -------------------------- | ------------------------------ |
-| NotifyRecovered    | int      | Whether to notify recovery | {{$event.NotifyRecovered}}    |
-| NotifyChannelsJSON | []string | Notification channel list  | {{$event.NotifyChannelsJSON}} |
-| NotifyGroupsJSON   | []string | Notification group list    | {{$event.NotifyGroupsJSON}}   |
-| NotifyRuleIDs      | []int64  | Notification rule ID list  | {{$event.NotifyRuleIDs}}      |
-
-Callback and Extension Information
-
-| Field Name      | Type                | Description              | Template Reference Method    |
-| --------------- | ------------------- | ------------------------ | ---------------------------- |
-| CallbacksJSON   | []string            | Callback URL list        | {{$event.CallbacksJSON}}    |
-| ExtraConfig     | interface{}         | Additional configuration | {{$event.ExtraConfig}}      |
-| ExtraInfo       | []string            | Additional info list     | {{$event.ExtraInfo}}        |
-| ExtraInfoMap    | []map[string]string | Additional info mapping  | {{$event.ExtraInfoMap}}     |
-
-Trigger Value Related
-
-| Field Name     | Type   | Description                | Template Reference Method     |
-| -------------- | ------ | -------------------------- | ----------------------------- |
-| TriggerValues  | string | Trigger value (raw format) | {{$event.TriggerValues}}     |
-| IsRecovered    | bool   | Whether recovered          | {{$event.IsRecovered}}       |
+> `{{$.domain}}` is the site URL. It is filled in automatically from the site settings, so you do not need to declare it yourself.
+> Write `{{$.domain}}` rather than `{{.domain}}`: `$` always refers to the root data, so it also works inside `range` / `with`.
 
 ## Template Examples
 ### Basic Template Example
@@ -115,9 +36,8 @@ Metrics: {{$event.TagsJSON}}
 {{if $event.IsRecovered}}Recovery Time: {{timeformat $event.LastEvalTime}}{{else}}Trigger Time: {{timeformat $event.TriggerTime}}
 Trigger Value: {{$event.TriggerValue}}{{end}}
 Send Time: {{timestamp}}
-{{$domain := "http://Please contact the administrator to modify the notification template and replace the domain with the actual domain" }}   
-Event Details: {{$domain}}/alert-his-events/{{$event.Id}}
-Silence for 1 hour: {{$domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
+Event Details: {{$.domain}}/alert-his-events/{{$event.Id}}
+Silence for 1 hour: {{$.domain}}/alert-mutes/add?busiGroup={{$event.GroupId}}&cate={{$event.Cate}}&datasource_ids={{$event.DatasourceId}}&prod={{$event.RuleProd}}{{range $key, $value := $event.TagsMap}}&tags={{$key}}%3D{{$value}}{{end}}`
 ```
 
 ## Common Template Syntax Introduction

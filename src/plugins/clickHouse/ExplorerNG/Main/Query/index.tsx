@@ -325,6 +325,18 @@ export default function index(props: Props) {
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
               timeField={queryValues?.time_field}
+              drilldownContext={{
+                cate: DatasourceCateEnum.ck,
+                datasource_id: datasourceValue,
+                resource: {
+                  clickhouse_resource: {
+                    database: queryValues?.database,
+                    table: queryValues?.table,
+                    time_field: queryValues?.time_field,
+                  },
+                },
+                query: queryValues?.query,
+              }}
               histogramLoading={histogramLoading}
               histogram={histogramData?.data || []}
               histogramHash={histogramData?.hash}
@@ -383,7 +395,20 @@ export default function index(props: Props) {
                         </>
                       )}
                       {toggleNode}
-                      {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'query', total: data?.total }} />}
+                      {IS_PLUS && (
+                        <DownloadModal
+                          marginLeft={0}
+                          queryData={{ ...form.getFieldsValue(), mode: 'query', total: data?.total }}
+                          effectiveRange={
+                            snapRangeRef.current?.from && snapRangeRef.current?.to
+                              ? {
+                                  start: moment.unix(snapRangeRef.current.from),
+                                  end: moment.unix(snapRangeRef.current.to),
+                                }
+                              : undefined
+                          }
+                        />
+                      )}
                     </Space>
                   );
                 }

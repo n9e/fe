@@ -6,6 +6,7 @@ export interface ConditionSummaryItem {
   key: string;
   title: string;
   meta: string[];
+  severity?: number;
   queryText?: string;
   queryFullText?: string;
   queryPreviewType?: QueryPreviewType;
@@ -189,6 +190,7 @@ function createQueryItem(
   queryText?: unknown,
   previewType?: QueryPreviewType,
   previewVendor?: LogQLVendor,
+  severity?: number,
 ): ConditionSummaryItem {
   const details = stringifyDetails(query);
   const queryFullText = queryText === undefined || queryText === null ? '' : String(queryText).trim();
@@ -196,6 +198,7 @@ function createQueryItem(
     key: `query-${index}`,
     title: compactList([getQueryRef(query, index), ...titleParts]).join(' · '),
     meta: compactList(meta).slice(0, MAX_META_ITEMS),
+    severity,
     queryText: normalizeSummaryText(queryText),
     queryFullText,
     queryPreviewType: previewType,
@@ -260,15 +263,7 @@ function buildLogServiceQuery(index: number, query: any, labels: ConditionSummar
     'bce-bls': [query?.project, query?.logstore, query?.logstream],
     'huawei-lts': [query?.group || query?.group_id, query?.stream || query?.stream_id],
   };
-  return createQueryItem(
-    index,
-    query,
-    getTitleParts(query, labels),
-    cate ? metaMap[cate] : [],
-    query?.query,
-    'logql',
-    cate ? vendorMap[cate] : undefined,
-  );
+  return createQueryItem(index, query, getTitleParts(query, labels), cate ? metaMap[cate] : [], query?.query, 'logql', cate ? vendorMap[cate] : undefined);
 }
 
 function buildGenericQuery(index: number, query: any, labels: ConditionSummaryLabels, cate?: string): ConditionSummaryItem {
@@ -279,14 +274,21 @@ function buildGenericQuery(index: number, query: any, labels: ConditionSummaryLa
 }
 
 function buildLokiQuery(index: number, query: any, labels: ConditionSummaryLabels): ConditionSummaryItem {
-  const severityText = query?.severity !== undefined ? `P${query.severity}` : undefined;
-  return createQueryItem(index, query, [severityText], [], query?.prom_ql, 'loki');
+  return createQueryItem(index, query, [], [], query?.prom_ql, 'loki', undefined, query?.severity);
 }
 
 function buildPrometheusQuery(index: number, query: any, version: string | undefined, labels: ConditionSummaryLabels): ConditionSummaryItem {
   const versionText = version === 'v2' ? labels.advancedMode : labels.normalMode;
-  const severityText = version !== 'v2' && query?.severity !== undefined ? `P${query.severity}` : undefined;
-  return createQueryItem(index, query, [versionText, severityText, ...getTitleParts(query, labels)], [], version === 'v2' ? query?.query : query?.prom_ql, 'promql');
+  return createQueryItem(
+    index,
+    query,
+    [versionText, ...getTitleParts(query, labels)],
+    [],
+    version === 'v2' ? query?.query : query?.prom_ql,
+    'promql',
+    undefined,
+    version !== 'v2' ? query?.severity : undefined,
+  );
 }
 
 export function stringifyExpressions(expressions: any[]): string {
@@ -307,8 +309,9 @@ function buildTrigger(index: number, trigger: any, labels: ConditionSummaryLabel
   const exp = normalizeSummaryText(trigger?.exp) || stringifyExpressions(trigger?.expressions);
   return {
     key: `trigger-${index}`,
-    title: `#${index + 1} · P${trigger?.severity ?? '-'}`,
+    title: `#${index + 1}`,
     meta: [],
+    severity: trigger?.severity,
     valueTags: exp ? [exp] : [],
     details: stringifyDetails(trigger),
   };
@@ -318,12 +321,13 @@ function buildNodataTrigger(nodataTrigger: any, labels: ConditionSummaryLabels):
   if (nodataTrigger?.enable !== true) return undefined;
   return {
     key: 'nodata-trigger',
-    title: `${labels.nodata} · P${nodataTrigger?.severity ?? '-'}`,
+    title: labels.nodata,
     meta: [
       nodataTrigger?.resolve_after_enable === true && nodataTrigger?.resolve_after !== undefined
         ? `${labels.autoRecoverAfter} ${nodataTrigger.resolve_after}${labels.seconds}`
         : undefined,
     ].filter(Boolean) as string[],
+    severity: nodataTrigger?.severity,
     valueTags: [],
     details: stringifyDetails(nodataTrigger),
   };
@@ -338,8 +342,9 @@ function buildHostTrigger(index: number, trigger: any, labels: ConditionSummaryL
   }
   return {
     key: `host-trigger-${index}`,
-    title: `${labels.hostTriggerNames[type] || type || `#${index + 1}`} · P${trigger?.severity ?? '-'}`,
+    title: labels.hostTriggerNames[type] || type || `#${index + 1}`,
     meta: [],
+    severity: trigger?.severity,
     valueTags,
     details: stringifyDetails(trigger),
   };

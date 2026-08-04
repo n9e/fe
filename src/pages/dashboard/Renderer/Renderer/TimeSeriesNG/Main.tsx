@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot, Root } from 'react-dom/client';
 import { AlignedData, Options } from 'uplot';
 import _ from 'lodash';
 import moment from 'moment';
@@ -91,6 +91,7 @@ export default function index(props: Props) {
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const [annotationSettingUp, setAnnotationSettingUp] = useState(false);
+  const rootRefs = useRef<Map<HTMLElement, Root>>(new Map());
   const xMinMax = useMemo(() => {
     return getScalesXMinMax({ range, queryOptionsTime });
   }, [stableRange, stableQueryOptionsTime]);
@@ -130,7 +131,12 @@ export default function index(props: Props) {
           graphTooltip: dashboardMeta.graphTooltip as any,
           timeZone: timezone,
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
-            ReactDOM.render(
+            let root = rootRefs.current.get(domNode);
+            if (!root) {
+              root = createRoot(domNode);
+              rootRefs.current.set(domNode, root);
+            }
+            root.render(
               <AddAnnotationButton
                 panelID={id}
                 timeZone={timezone}
@@ -143,7 +149,6 @@ export default function index(props: Props) {
                   }
                 }}
               />,
-              domNode,
             );
           },
           pointNameformatter: (val, point) => {
@@ -182,7 +187,12 @@ export default function index(props: Props) {
         annotationsPlugin({
           annotations,
           renderMarkers: (xAxisEle) => {
-            ReactDOM.render(
+            let root = rootRefs.current.get(xAxisEle);
+            if (!root) {
+              root = createRoot(xAxisEle);
+              rootRefs.current.set(xAxisEle, root);
+            }
+            root.render(
               <AddAnnotatsMarkers
                 annotations={annotations}
                 uplotRef={uplotRef}
@@ -198,7 +208,6 @@ export default function index(props: Props) {
                   }
                 }}
               />,
-              xAxisEle,
             );
           },
         }),
@@ -359,9 +368,13 @@ export default function index(props: Props) {
           onCreate={(id, uplot) => {
             uplotRef.current = uplot;
             uplotsMap.set(id, uplot);
+            // 配置变更会重建图表并将坐标范围恢复为初始值，此时同步清除旧实例的缩放状态
+            setShowResetZoomBtn(false);
           }}
           onDelete={(id) => {
             uplotsMap.delete(id);
+            rootRefs.current.forEach((r) => r.unmount());
+            rootRefs.current.clear();
           }}
         />
         {!hideResetBtn && (
@@ -372,6 +385,9 @@ export default function index(props: Props) {
             }}
             xScaleInitMinMax={xScaleInitMinMaxRef.current}
             yScaleInitMinMax={yScaleInitMinMaxRef.current}
+            onReset={() => {
+              setShowResetZoomBtn(false);
+            }}
           />
         )}
       </div>

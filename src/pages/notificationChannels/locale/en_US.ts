@@ -172,5 +172,28 @@ const en_US = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
+  test: {
+    btn: 'Test',
+    run: 'Send test',
+    back: 'Back to edit',
+    desc: 'Sends a real message using the config in this form, without saving first. Use it to verify the address, credentials and network.',
+    script_blocked: 'Script media types must be saved before testing',
+    params_title: 'Media parameters',
+    receivers_title: 'Recipients',
+    pagerduty_keys_title: 'Integration key',
+    pagerduty_keys_tip: 'PagerDuty routes by integration key. After saving you can pick one by service/integration in a notification rule; enter it manually here. Multiple keys are allowed.',
+    pagerduty_keys_placeholder: 'Type an integration key and press Enter',
+    user_ids: 'Select users',
+    user_group_ids: 'Select teams',
+    mode: {
+      history: 'Historical event',
+      mock: 'Mock event',
+    },
+    empty_alert: 'There are no historical alert events in this environment yet',
+    switch_btn: 'Test with a mock event',
+    result_success: 'Sent successfully',
+    result_success_desc: 'Check the target chat or mailbox to confirm the message arrived',
+    result_failed: 'Send failed',
+  },
 };
 export default en_US;

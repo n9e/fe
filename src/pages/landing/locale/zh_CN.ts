@@ -1,15 +1,20 @@
 const zh_CN = {
   pageTitle: '欢迎使用 Nightingale',
   onboarding: {
+    dismiss: '不再显示',
     title: '新手引导',
     subtitle: '跟着做完这几步，几分钟把监控跑起来',
     progress: '已完成 {{done}}/{{total}}',
     hostTrack: '主机监控线',
     dataTrack: '数据接入线',
     aiTrack: '智能化',
+    optional: '可选',
     steps: {
       machine: { title: '部署采集器，接入主机', desc: '在主机部署 Categraf，机器会自动出现在设备列表' },
-      hostDashboard: { title: '套用主机监控大盘', desc: '从模板中心一键导入内置主机大盘' },
+      collectVerified: { title: '配置采集并验证数据', desc: '按组件生成 Categraf 配置，确认指标已上报' },
+      hostDashboard: { title: '套用主机监控大盘', desc: '一键导入内置主机大盘，立刻看到机器数据' },
+      hostAlert: { title: '启用主机告警', desc: '一键导入内置主机告警规则并启用' },
+      testDelivered: { title: '发送测试告警', desc: '用模拟事件确认通知能真正送到你手上' },
       datasource: { title: '配置数据源', desc: '接入 Prometheus / VictoriaMetrics 等数据源' },
       dashboard: { title: '创建仪表盘', desc: '把关心的指标可视化成大盘' },
       alert: { title: '配置告警规则', desc: '为关键指标设置第一条告警规则' },

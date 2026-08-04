@@ -34,7 +34,7 @@ import EditField from './EditField';
 import { useQuery } from '@/utils';
 import './style.less';
 
-const DragHandle = SortableHandle((props: { disabled?: boolean }) => {
+const DragHandle = SortableHandle<{ disabled?: boolean }>((props) => {
   return <Button type='text' size='small' icon={<MenuOutlined />} className='index-pattern-row-drag-handle' disabled={props.disabled} />;
 });
 

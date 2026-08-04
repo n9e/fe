@@ -20,6 +20,12 @@ const ru_RU = {
   clear_cache_btn: 'Очистить кэш',
   clear_cache_btn_tip: 'Очистить кэш ширины столбцов таблицы, изменения вступят в силу после обновления страницы',
   inspect_btn: 'Проверить',
+  table_upgrade: {
+    switch_title: 'Обновить до TableNG',
+    switch_content: 'Автоматически перенести конфигурацию старой Table?',
+    auto_upgrade: 'Автообновление',
+    switch_only: 'Только сменить тип',
+  },
   public: {
     name: 'Доступ',
     unpublic: 'Закрытый доступ',
@@ -312,6 +318,7 @@ const ru_RU = {
       displayName_tip: 'Пользовательское название серии',
     },
     overrides: {
+      columnWidth: 'Ширина столбца',
       matcher: {
         id: 'Тип сопоставления',
         byFrameRefID: {
@@ -414,6 +421,20 @@ const ru_RU = {
         filterable: 'Включить фильтр по столбцам',
         sortColumn: 'Сортировать по столбцу',
         sortOrder: 'Сортировка по умолчанию',
+        enableRowDetail: 'Включить сведения о строке',
+        enableRowDetail_tip:
+          'После включения в первом столбце появится значок сведений. Нажмите его, чтобы посмотреть все поля и значения строки и скопировать строку или отдельное поле.',
+        rowDetail: {
+          triggerTip: 'Посмотреть сведения о строке',
+          title: 'Сведения',
+          tableTab: 'Таблица',
+          jsonTab: 'JSON',
+          field: 'Поле',
+          value: 'Значение',
+          copyRow: 'Копировать строку',
+          copyFieldAndValue: 'Копировать поле и значение',
+          copyFieldValue: 'Копировать значение поля',
+        },
         cellOptions: {
           type: {
             label: 'Тип ячейки',

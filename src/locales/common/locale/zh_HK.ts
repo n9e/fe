@@ -49,6 +49,7 @@ const zh_HK = {
     save: '儲存',
     ok: '確定',
     cancel: '取消',
+    close: '關閉',
     view: '檢視',
     more: '更多操作',
     back: '返回',

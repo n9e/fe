@@ -478,7 +478,20 @@ export default function index(props: Props) {
                         </Popover>
                       )}
                       {toggleNode}
-                      {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), total: data?.total }} />}
+                      {IS_PLUS && (
+                        <DownloadModal
+                          marginLeft={0}
+                          queryData={{ ...form.getFieldsValue(), total: data?.total }}
+                          effectiveRange={
+                            snapRangeRef.current?.from && snapRangeRef.current?.to
+                              ? {
+                                  start: moment(snapRangeRef.current.from),
+                                  end: moment(snapRangeRef.current.to),
+                                }
+                              : undefined
+                          }
+                        />
+                      )}
                     </Space>
                   );
                 }

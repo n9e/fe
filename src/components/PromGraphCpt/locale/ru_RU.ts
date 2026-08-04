@@ -21,6 +21,10 @@ const ru_RU = {
   tooltip_sort_asc: 'По возрастанию',
   show_legend: 'Показать легенду',
   value_format: 'Формат значения',
+  series: 'Серии ({{count}})',
+  series_filter: 'Поиск по названию серии',
+  filtered: 'Отфильтровано',
+  value: 'Значение',
 };
 
 export default ru_RU;

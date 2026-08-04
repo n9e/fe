@@ -168,6 +168,29 @@ const zh_HK = {
     pagerduty: 'PagerDuty',
     script: 'Script',
   },
+  test: {
+    btn: '測試',
+    run: '發送測試',
+    back: '返回修改',
+    desc: '會按當前表單裡的配置真實發送一條消息，無需先保存。用於驗證地址、密鑰與網絡是否可用。',
+    script_blocked: '腳本類媒介需要先保存再測試',
+    params_title: '媒介參數',
+    receivers_title: '接收人',
+    pagerduty_keys_title: 'Integration Key',
+    pagerduty_keys_tip: 'PagerDuty 按 Integration Key 投遞。儲存後可在通知規則裡按「服務/整合」選擇，這裡請先手動填入，可填多個。',
+    pagerduty_keys_placeholder: '輸入 Integration Key 後按 Enter',
+    user_ids: '選擇用戶',
+    user_group_ids: '選擇團隊',
+    mode: {
+      history: '歷史事件',
+      mock: '模擬事件',
+    },
+    empty_alert: '當前環境還沒有歷史告警事件',
+    switch_btn: '改用模擬事件測試',
+    result_success: '發送成功',
+    result_success_desc: '請到對應的群/郵箱確認是否收到消息',
+    result_failed: '發送失敗',
+  },
 };
 
 export default zh_HK;

@@ -25,7 +25,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import useQuery from '../datasource/useQuery';
-import { IPanel } from '../../types';
+import { IOverride, IPanel } from '../../types';
 import Main from './Main';
 
 import './style.less';
@@ -49,6 +49,7 @@ export interface IProps {
   onDeleteClick?: () => void;
   onCopyClick?: () => void | Promise<void>;
   setAnnotationsRefreshFlag?: (flag: string) => void;
+  onOverridesChange?: (overrides: IOverride[]) => void;
 }
 
 function index(props: IProps) {
