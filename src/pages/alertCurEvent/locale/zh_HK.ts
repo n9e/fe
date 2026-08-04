@@ -51,6 +51,10 @@ const zh_HK = {
   my_groups: '我的業務組',
   all_groups: '全部業務組',
   datasources: '數據源',
+  tag_display: '標籤顯示',
+  tag_display_all: '所有',
+  tag_display_compact: '精簡',
+  tag_display_off: '關閉',
   detail_title: '告警詳情',
 };
 

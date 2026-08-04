@@ -21,6 +21,7 @@ import { FilterType } from '../../types';
 import EventDetailDrawer from './EventDetailDrawer';
 import EnhancedTable from '@/components/EnhancedTable';
 import Tags from '@/components/TableTags/Tags';
+import type { AlertEventTagsDisplayMode } from '../../utils/eventColumnExpandedStorage';
 
 interface IProps {
   filter: FilterType;
@@ -30,7 +31,7 @@ interface IProps {
   selectedRowKeys: number[];
   setSelectedRowKeys: (selectedRowKeys: number[]) => void;
   setRefreshFlag: (refreshFlag: string) => void;
-  eventColumnExpanded: boolean;
+  tagDisplayMode: AlertEventTagsDisplayMode;
   alertEscalationEnable: boolean;
 }
 
@@ -58,7 +59,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, eventColumnExpanded, alertEscalationEnable } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, tagDisplayMode, alertEscalationEnable } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
@@ -135,8 +136,8 @@ export default function AlertTable(props: IProps) {
                 </a>
               </Space>
             </div>
-            {eventColumnExpanded ? (
-              // 展开态：全部标签内联铺开（双击加入筛选）
+            {tagDisplayMode === 'all' ? (
+              // 所有：全部标签内联铺开（双击加入筛选）
               <div className='alert-event-tags is-expanded'>
                 {_.map(tags, (item) => (
                   <Tag key={item} style={{ maxWidth: '100%' }} onDoubleClick={() => addTagToFilter(item)}>
@@ -144,10 +145,10 @@ export default function AlertTable(props: IProps) {
                   </Tag>
                 ))}
               </div>
-            ) : (
-              // 收起态：公共 Tags 组件，固定展示前 3 个（对齐原逻辑）+ N 悬浮弹层展示全部标签 + 复制（单击标签加入筛选）
+            ) : tagDisplayMode === 'compact' ? (
+              // 精简：固定展示前 3 个，+N 悬浮弹层展示全部标签（单击标签加入筛选）
               <Tags data={tags} type='outline' maxCount={3} onTagClick={(item) => addTagToFilter(item as string)} />
-            )}
+            ) : null}
           </div>
         );
       },
@@ -155,7 +156,6 @@ export default function AlertTable(props: IProps) {
     {
       title: t('trigger_time'),
       dataIndex: 'trigger_time',
-      fixed: 'right' as const,
       render(value) {
         return (
           <div
@@ -171,7 +171,6 @@ export default function AlertTable(props: IProps) {
     {
       title: t('duration'),
       dataIndex: 'duration',
-      fixed: 'right' as const,
       render(_, record) {
         const duration = moment().diff(moment(record.first_trigger_time * 1000));
         const maxGrids = 12;
@@ -206,7 +205,6 @@ export default function AlertTable(props: IProps) {
     columns.splice(3, 0, {
       title: t('claimant'),
       dataIndex: 'claimant',
-      fixed: 'right',
       render: (value, record) => {
         return (
           <div

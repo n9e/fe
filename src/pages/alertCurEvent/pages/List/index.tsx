@@ -1,7 +1,6 @@
 import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Input, Checkbox, Collapse, Segmented, Button, Space, Row, Col, Tooltip } from 'antd';
+import { Input, Checkbox, Collapse, Segmented, Button, Space } from 'antd';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
-import { ListChevronsDownUp, ListChevronsUpDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -17,23 +16,25 @@ import { IS_PLUS } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { parseRange } from '@/components/TimeRangePicker';
+import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 
 // @ts-ignore
 import { getBrainLicense } from 'plus:/components/License/services';
 
-import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS } from '../../constants';
+import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS, TIME_RANGE_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
-import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsExpanded, writeAlertEventTagsExpanded } from '../../utils/eventColumnExpandedStorage';
+import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsDisplayMode, writeAlertEventTagsDisplayMode } from '../../utils/eventColumnExpandedStorage';
+import type { AlertEventTagsDisplayMode } from '../../utils/eventColumnExpandedStorage';
 import getProdOptions from '../../utils/getProdOptions';
 import getRequestParamsByFilter from '../../utils/getRequestParamsByFilter';
+import { readAlertCurEventSidebarFilterExpanded, writeAlertCurEventSidebarFilterExpanded } from '../../utils/sidebarFilterExpandedStorage';
 import { ackEvents } from '../../services';
 import { FilterType } from '../../types';
 import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard, { isEqualEventIds } from './AlertCard';
 import AlertTable from './AlertTable';
-import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation(NS);
@@ -41,7 +42,7 @@ const AlertCurEvent: React.FC = () => {
   const location = useLocation();
   const history = useHistory();
   const query = queryString.parse(location.search);
-  const [paramsAiAction, setParamsAiAction] = useParamsAiAction();
+  const [, setParamsAiAction] = useParamsAiAction();
 
   const [range, setRange] = useState<IRawTimeRange>();
   const [aggrRuleCardEventIds, setAggrRuleCardEventIds] = useState<number[] | undefined>();
@@ -122,7 +123,10 @@ const AlertCurEvent: React.FC = () => {
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [alertEscalationEnable, setAlertEscalationEnable] = useState(false);
-  const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY));
+  const [tagDisplayMode, setTagDisplayMode] = useState(() => readAlertEventTagsDisplayMode(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY));
+  const [prodFilterExpanded, setProdFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('prod', true));
+  const [severityFilterExpanded, setSeverityFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('severity', true));
+  const [datasourceFilterExpanded, setDatasourceFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('datasource', false));
   const params = getRequestParamsByFilter(filter);
 
   useEffect(() => {
@@ -257,23 +261,50 @@ const AlertCurEvent: React.FC = () => {
                     }}
                   />
                 </Space>
-                <TimeRangePickerWithRefresh
-                  allowClear={true}
-                  value={filter.range}
-                  onChange={(val) => {
-                    setFilterPatch({ range: val });
-                  }}
-                  onRefresh={() => {
-                    setRefreshFlag(_.uniqueId('refresh_'));
-                  }}
-                  dateFormat='YYYY-MM-DD HH:mm:ss'
-                />
+                <Space>
+                  <span className='whitespace-nowrap'>{t('tag_display')}: </span>
+                  <Segmented
+                    value={tagDisplayMode}
+                    options={[
+                      { label: t('tag_display_all'), value: 'all' },
+                      { label: t('tag_display_compact'), value: 'compact' },
+                      { label: t('tag_display_off'), value: 'off' },
+                    ]}
+                    onChange={(value) => {
+                      const next = value as AlertEventTagsDisplayMode;
+                      setTagDisplayMode(next);
+                      writeAlertEventTagsDisplayMode(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
+                    }}
+                  />
+                  <TimeRangePickerWithRefresh
+                    allowClear={true}
+                    value={filter.range}
+                    onChange={(val) => {
+                      setFilterPatch({ range: val });
+                    }}
+                    onRefresh={() => {
+                      setRefreshFlag(_.uniqueId('refresh_'));
+                    }}
+                    localKey={TIME_RANGE_CACHE_KEY}
+                    dateFormat='YYYY-MM-DD HH:mm:ss'
+                  />
+                </Space>
               </div>
               <div className='h-full min-h-0 flex'>
                 {/* 左侧筛选区 */}
                 <div className='w-[190px] mr-[8px] overflow-hidden h-full shrink-0 flex flex-col gap-2 n9e-antd-collapse-height-full'>
                   <div className='flex-shrink-0'>
-                    <Collapse className='w-full' bordered={false} defaultActiveKey={['prod']} expandIconPosition='start'>
+                    <Collapse
+                      className='w-full'
+                      bordered={false}
+                      expandIconPosition='start'
+                      activeKey={prodFilterExpanded ? ['prod'] : []}
+                      onChange={(keys) => {
+                        const expanded = (Array.isArray(keys) ? keys : [keys]).includes('prod');
+                        setProdFilterExpanded(expanded);
+                        writeAlertCurEventSidebarFilterExpanded('prod', expanded);
+                      }}
+                    >
                       <Collapse.Panel header={t('prod')} key='prod'>
                         <Checkbox.Group
                           value={filter.rule_prods}
@@ -294,7 +325,17 @@ const AlertCurEvent: React.FC = () => {
                     </Collapse>
                   </div>
                   <div className='flex-shrink-0'>
-                    <Collapse className='w-full' bordered={false} defaultActiveKey={['severity']} expandIconPosition='start'>
+                    <Collapse
+                      className='w-full'
+                      bordered={false}
+                      expandIconPosition='start'
+                      activeKey={severityFilterExpanded ? ['severity'] : []}
+                      onChange={(keys) => {
+                        const expanded = (Array.isArray(keys) ? keys : [keys]).includes('severity');
+                        setSeverityFilterExpanded(expanded);
+                        writeAlertCurEventSidebarFilterExpanded('severity', expanded);
+                      }}
+                    >
                       <Collapse.Panel header={t('severity')} key='severity'>
                         <Checkbox.Group
                           value={filter.severity}
@@ -322,7 +363,17 @@ const AlertCurEvent: React.FC = () => {
                     </Collapse>
                   </div>
                   <div className='flex-1 h-full min-h-0'>
-                    <Collapse className='w-full' bordered={false} defaultActiveKey={['datasource']} expandIconPosition='start'>
+                    <Collapse
+                      className='w-full'
+                      bordered={false}
+                      expandIconPosition='start'
+                      activeKey={datasourceFilterExpanded ? ['datasource'] : []}
+                      onChange={(keys) => {
+                        const expanded = (Array.isArray(keys) ? keys : [keys]).includes('datasource');
+                        setDatasourceFilterExpanded(expanded);
+                        writeAlertCurEventSidebarFilterExpanded('datasource', expanded);
+                      }}
+                    >
                       <Collapse.Panel header={t('datasources')} key='datasource'>
                         <DatasourceCheckbox
                           value={filter.datasource_ids}
@@ -345,21 +396,6 @@ const AlertCurEvent: React.FC = () => {
                     <div className='p-2'>
                       <div className='alert-event-summary-toolbar'>
                         <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
-                        <Tooltip title={eventColumnExpanded ? t('common:btn.collapse') : t('common:btn.expand')}>
-                          <Button
-                            type='text'
-                            size='small'
-                            className='alert-event-expand-btn'
-                            icon={eventColumnExpanded ? <ListChevronsDownUp size={14} /> : <ListChevronsUpDown size={14} />}
-                            onClick={() => {
-                              setEventColumnExpanded((expanded) => {
-                                const next = !expanded;
-                                writeAlertEventTagsExpanded(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
-                                return next;
-                              });
-                            }}
-                          />
-                        </Tooltip>
                       </div>
                       <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
                     </div>
@@ -418,7 +454,7 @@ const AlertCurEvent: React.FC = () => {
                       setSelectedRowKeys={setSelectedRowKeys}
                       params={params}
                       setRefreshFlag={setRefreshFlag}
-                      eventColumnExpanded={eventColumnExpanded}
+                      tagDisplayMode={tagDisplayMode}
                       alertEscalationEnable={alertEscalationEnable}
                     />
                   </div>
