@@ -4,10 +4,10 @@
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
-    "build": "tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build",
-    "build:advanced": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=4096 tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build --mode advanced",
-    "build:prefix": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 VITE_PREFIX=/flashcat vite build --mode advanced",
-    "build:prefix_advanced": "node comb_feats ${npm_config_custom_options} && tsc && cross-env NODE_OPTIONS=--max-old-space-size=6096 VITE_PREFIX=/flashcat vite build --mode advanced",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "build:advanced": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build --mode advanced",
+    "build:prefix": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 VITE_PREFIX=/flashcat vite build --mode advanced",
+    "build:prefix_advanced": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 VITE_PREFIX=/flashcat vite build --mode advanced",
     "serve": "vite preview",
     "test": "jest",
     "e2e-test": "playwright test e2e/"
@@ -37,7 +37,7 @@
     "@dnd-kit/sortable": "7.0.2",
     "@fc-components/codemirror-promql": "^0.19.13",
     "@fc-components/es-query": "^0.0.3",
-    "@fc-components/monaco-editor": "^0.5.5",
+    "@fc-components/monaco-editor": "^0.5.10",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
     "@fc-plot/ts-graph": "^0.27.2",
     "@microsoft/fetch-event-source": "^2.0.1",
@@ -49,7 +49,7 @@
     "ag-grid-react": "^34.0.2",
     "ahooks": "^3.5.0",
     "ansi_up": "^6.0.2",
-    "ansi-to-react": "^6.1.6",
+    "ansi-to-react": "^6.2.6",
     "antd": "4.21.0",
     "array-move": "^4.0.0",
     "classnames": "^2.3.1",
@@ -78,20 +78,21 @@
     "lucide-react": "^1.8.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.46",
+    "monaco-editor": "^0.55.1",
     "numeral": "^2.0.6",
     "pinyin-pro": "^3.20.4",
     "query-string": "^7.0.1",
     "re-resizable": "^6.9.9",
-    "react": "^17.0.0",
+    "react": "^18.3.1",
     "react-ace": "^10.1.0",
     "react-beforeunload": "^2.6.0",
     "react-color": "^2.19.3",
     "react-data-grid": "7.0.0-beta.16",
-    "react-dom": "^17.0.0",
+    "react-dom": "^18.3.1",
     "react-draggable": "^4.4.5",
     "react-fast-compare": "^3.2.0",
     "react-grid-layout": "^1.2.5",
-    "react-highlight-words": "^0.17.0",
+    "react-highlight-words": "^0.21.0",
     "react-hooks-global-state": "^2.0.0",
     "react-i18next": "^14.0.0",
     "react-infinite-scroll-component": "^6.1.0",
@@ -123,8 +124,8 @@
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.19.100",
-    "@types/react": "^17.0.14",
-    "@types/react-dom": "^17.0.9",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "@types/react-router-dom": "^5.1.7",
     "@types/spark-md5": "^3.0.5",
     "@vitejs/plugin-react": "^4.4.1",
@@ -148,7 +149,10 @@
     "vite-plugin-svgr": "^4.3.0"
   },
   "overrides": {
-    "@types/react": "^17.0.14",
-    "@types/d3-dispatch": "3.0.6"
+    "@types/d3-dispatch": "3.0.6",
+    "react-sortable-hoc": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   }
 }

@@ -105,27 +105,19 @@ export default function getColumnsFromFields(params: {
           fieldValue = JSON.stringify(fieldValue);
         }
 
-        // 无 onValueFilter 兜底路径需用字符串；boolean/null 直接渲染会变空
-        const displayString = typeof fieldValue === 'string' ? fieldValue : String(fieldValue);
-
         return (
           <div className='max-h-[140px]'>
-            {onValueFilter ? (
-              <LogFieldValue
-                enableTooltip
-                name={item}
-                value={fieldValue}
-                onTokenClick={onValueFilter}
-                rawValue={record}
-                highlight={highlight}
-                adjustFieldValue={adjustFieldValue}
-                showExistsAction={showExistsAction}
-              />
-            ) : (
-              <Tooltip placement='topLeft' overlayClassName='ant-tooltip-max-width-600' title={displayString}>
-                {displayString}
-              </Tooltip>
-            )}
+            {/* 即使当前数据源不支持添加筛选条件，也需保留字段值组件提供的下钻链接和操作菜单。 */}
+            <LogFieldValue
+              enableTooltip
+              name={item}
+              value={fieldValue}
+              onTokenClick={onValueFilter}
+              rawValue={record}
+              highlight={highlight}
+              adjustFieldValue={adjustFieldValue}
+              showExistsAction={showExistsAction}
+            />
           </div>
         );
       },

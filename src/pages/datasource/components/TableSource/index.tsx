@@ -37,6 +37,7 @@ export interface IPropsType {
   }[];
   nameClick: (val) => void;
   onAdd?: () => void;
+  onImportGrafana?: () => void;
 }
 
 export interface IKeyValue {
@@ -47,9 +48,11 @@ const TableSource = (props: IPropsType) => {
   const { t } = useTranslation('datasourceManage');
   const isPlus = useIsPlus();
   const history = useHistory();
-  const { nameClick, pluginList, debouncedSearchValue, onAdd } = props;
+  const { nameClick, pluginList, debouncedSearchValue, onAdd, onImportGrafana } = props;
   const [auth, setAuth] = useState<{ visible: boolean; name: string; type: AutoDatasourcetypeValue; dataSourceId: number }>();
-  const { reloadDatasourceList } = useContext(CommonStateContext);
+  const { reloadDatasourceList, profile } = useContext(CommonStateContext);
+  // 数据源增删改为 admin 操作(后端 rt.admin())，非 admin 隐藏行内管理控件。
+  const isAdmin = !!profile.roles?.includes('Admin');
   const [tableData, setTableData] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -177,6 +180,7 @@ const TableSource = (props: IPropsType) => {
         <Switch
           checked={text === 'enabled'}
           size='small'
+          disabled={!isAdmin}
           onChange={(checked) => {
             const doUpdate = () =>
               updateDataSourceStatus({
@@ -241,6 +245,7 @@ const TableSource = (props: IPropsType) => {
         pagination={pagination}
         rowActions={(record) => {
           // SRE 高频动作前置：体检引导 / 编辑直达，不再只有删除
+          // 体检是只读的，人人可看；编辑 / 删除是 admin 操作(后端 rt.admin())，非 admin 隐藏
           return {
             inline: _.compact([
               {
@@ -252,33 +257,37 @@ const TableSource = (props: IPropsType) => {
                   setGuideRecord(record);
                 },
               },
-              {
-                key: 'edit',
-                icon: 'edit',
-                text: t('common:btn.edit'),
-                onClick: () => {
-                  history.push(`/datasources/edit/${record.plugin_type}/${record.id}`);
-                },
-              },
-              {
-                key: 'delete',
-                icon: 'delete',
-                text: t('common:btn.delete'),
-                danger: true,
-                disabled: record.status === 'enabled',
-                tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
-                onClick: () => {
-                  Modal.confirm({
-                    title: t('common:confirm.delete'),
-                    onOk() {
-                      return deleteDataSourceById(record.id).then(() => {
-                        message.success(t('common:success.delete'));
-                        setRefresh((oldVal) => !oldVal);
+              isAdmin
+                ? {
+                    key: 'edit',
+                    icon: 'edit',
+                    text: t('common:btn.edit'),
+                    onClick: () => {
+                      history.push(`/datasources/edit/${record.plugin_type}/${record.id}`);
+                    },
+                  }
+                : undefined,
+              isAdmin
+                ? {
+                    key: 'delete',
+                    icon: 'delete',
+                    text: t('common:btn.delete'),
+                    danger: true,
+                    disabled: record.status === 'enabled',
+                    tooltip: record.status === 'enabled' ? t('common:delete_disable_first') : undefined,
+                    onClick: () => {
+                      Modal.confirm({
+                        title: t('common:confirm.delete'),
+                        onOk() {
+                          return deleteDataSourceById(record.id).then(() => {
+                            message.success(t('common:success.delete'));
+                            setRefresh((oldVal) => !oldVal);
+                          });
+                        },
                       });
                     },
-                  });
-                },
-              },
+                  }
+                : undefined,
               record.plugin_type === 'cloudwatch' ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> } : undefined,
             ]) as any,
           };
@@ -291,9 +300,12 @@ const TableSource = (props: IPropsType) => {
               description={t('empty_guide.desc')}
               actions={
                 onAdd ? (
-                  <Button type='primary' onClick={onAdd}>
-                    {t('common:btn.add')}
-                  </Button>
+                  <Space>
+                    <Button type='primary' onClick={onAdd}>
+                      {t('common:btn.add')}
+                    </Button>
+                    {onImportGrafana && <Button onClick={onImportGrafana}>{t('import_grafana.entry')}</Button>}
+                  </Space>
                 ) : undefined
               }
             />

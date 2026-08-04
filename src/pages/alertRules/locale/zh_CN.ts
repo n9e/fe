@@ -356,6 +356,12 @@ const zh_CN = {
     algorithm: '算法',
     algorithm_required: '算法不能为空',
   },
+  filter_trigger_type: {
+    placeholder: '告警条件类型',
+    threshold: '阈值告警',
+    nodata: '无数据告警',
+    anomaly: '智能告警',
+  },
   filter_disabled: {
     placeholder: '启用状态',
     0: '启用',

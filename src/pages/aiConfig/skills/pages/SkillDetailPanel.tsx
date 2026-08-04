@@ -9,6 +9,7 @@ import { saveAs } from 'file-saver';
 import moment from 'moment';
 
 import { CommonStateContext } from '@/App';
+import { getTeamInfoList } from '@/services/manage';
 
 import { NS } from '../constants';
 import { getFile, getItem } from '../services';
@@ -20,7 +21,7 @@ import UploadSkillModal from './UploadSkillModal';
 interface Props {
   item: Item;
   onToggleEnabled: () => void;
-  onImport: (file: File, auth: SkillAuthValues) => void;
+  onImport: (file: File | undefined, auth: SkillAuthValues) => void;
   onDelete: () => void;
   onGitUpdate?: () => void;
   onGitReplaceConfig?: () => void;
@@ -50,6 +51,7 @@ export default function SkillDetailPanel(props: Props) {
 
   const [previewMode, setPreviewMode] = React.useState<'formatted' | 'code'>('formatted');
   const [uploadModalVisible, setUploadModalVisible] = React.useState(false);
+  const [userGroups, setUserGroups] = React.useState<{ id: number; name: string }[]>([]);
 
   const isGit = item.source_type === 'git';
   const isBuiltin = item.builtin === true;
@@ -58,6 +60,20 @@ export default function SkillDetailPanel(props: Props) {
   const canModify = !isBuiltin && canModifySkill(item, profile);
   // 替换本地 skill 时回填当前授权范围与团队（内置 skill 不套用授权，见 showAuthFields）。
   const replaceAuth = useMemo<SkillAuthValues>(() => ({ user_group_ids: item.user_group_ids, private: item.private }), [item.user_group_ids, item.private]);
+
+  React.useEffect(() => {
+    if (!item.user_group_ids) {
+      setUserGroups([]);
+      return;
+    }
+    getTeamInfoList()
+      .then((res) => {
+        setUserGroups(res.dat ?? []);
+      })
+      .catch(() => {
+        setUserGroups([]);
+      });
+  }, [item.user_group_ids]);
 
   const getSkillMdPath = (fileName?: string) => {
     const normalized = _.toLower(_.trim(fileName || ''));
@@ -122,8 +138,8 @@ export default function SkillDetailPanel(props: Props) {
       {((!isBuiltin && canModify) || (isBuiltin && !isGit && !!profile.admin)) && (
         <Menu.Item key={replaceMenuKey} onClick={handleReplaceClick}>
           <Space>
-            {isGit ? <EditOutlined /> : <UploadOutlined />}
-            {isGit ? t('upload_skill_modify') : t('upload_skill_update')}
+            {isGit || !isBuiltin ? <EditOutlined /> : <UploadOutlined />}
+            {isGit || !isBuiltin ? t('upload_skill_modify') : t('upload_skill_update')}
           </Space>
         </Menu.Item>
       )}
@@ -157,6 +173,30 @@ export default function SkillDetailPanel(props: Props) {
   );
 
   const updatedAtText = item.updated_at ? moment.unix(item.updated_at).format('YYYY-MM-DD HH:mm:ss') : '-';
+  const visibilityText = item.private === 0 ? t('form.scope_public') : t('form.scope_private');
+  const managementTeamText = _.map(item.user_group_ids, (id) => _.find(userGroups, { id })?.name || String(id)).join('、') || '-';
+  const renderManagementTeamsMeta = () => {
+    if (!item.user_group_ids) {
+      return null;
+    }
+    return (
+      <div>
+        <div className='text-soft'>{t('form.user_group_ids')}</div>
+        <div>{managementTeamText}</div>
+      </div>
+    );
+  };
+  const renderVisibilityMeta = () => {
+    if (item.private == null) {
+      return null;
+    }
+    return (
+      <div>
+        <div className='text-soft'>{t('form.scope')}</div>
+        <div>{visibilityText}</div>
+      </div>
+    );
+  };
 
   const renderMetaSection = () => {
     if (isBuiltin && isGit) {
@@ -165,11 +205,13 @@ export default function SkillDetailPanel(props: Props) {
       }
       return (
         <div>
-          <Space size={32} align='start'>
+          <Space size={16} align='start' wrap>
             <div>
               <div className='text-soft'>{t('git.meta_update_at')}</div>
               <div>{updatedAtText}</div>
             </div>
+            {renderManagementTeamsMeta()}
+            {renderVisibilityMeta()}
             <div>
               <div className='text-soft'>Commit</div>
               <Tooltip title={gitInfo?.current_commit || ''}>
@@ -191,7 +233,7 @@ export default function SkillDetailPanel(props: Props) {
       const refTypeLabel = refType === 'tag' ? 'Tag' : refType === 'commit' ? 'Commit' : 'Branch';
       return (
         <div>
-          <Space size={32} align='start'>
+          <Space size={16} align='start' wrap>
             <div>
               <div className='text-soft'>{t('common:table.username')}</div>
               <div>{item.updated_by ?? '-'}</div>
@@ -200,6 +242,8 @@ export default function SkillDetailPanel(props: Props) {
               <div className='text-soft'>{t('git.meta_update_at')}</div>
               <div>{updatedAtText}</div>
             </div>
+            {renderManagementTeamsMeta()}
+            {renderVisibilityMeta()}
             <div>
               <div className='text-soft'>{t('git.meta_url')}</div>
               <div className='break-all font-mono'>{gitInfo?.url || '-'}</div>
@@ -229,7 +273,7 @@ export default function SkillDetailPanel(props: Props) {
 
     return (
       <div>
-        <Space size={16}>
+        <Space size={16} wrap>
           <div>
             <div className='text-soft'>{t('common:table.username')}</div>
             <div>{item.updated_by ?? '-'}</div>
@@ -238,6 +282,8 @@ export default function SkillDetailPanel(props: Props) {
             <div className='text-soft'>{t('common:table.update_at')}</div>
             <div>{updatedAtText}</div>
           </div>
+          {renderManagementTeamsMeta()}
+          {renderVisibilityMeta()}
         </Space>
         <div className='mt-2'>
           <div className='text-soft'>{t('description')}</div>
@@ -323,6 +369,7 @@ export default function SkillDetailPanel(props: Props) {
         title={t('upload_modal_title')}
         showSubtitle
         showAuthFields={!isBuiltin}
+        allowEmptyFileSubmit={!isBuiltin}
         defaultAuth={replaceAuth}
         visible={uploadModalVisible}
         onCancel={() => {

@@ -10,6 +10,7 @@ import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
+import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 
 import { NAME_SPACE } from '../../../constants';
@@ -34,6 +35,7 @@ interface Props {
   indexData: Field[];
   setExecuteLoading: (loading: boolean) => void;
   executeQuery: () => void;
+  onValueFilter: (params: OnValueFilterParams) => void;
   snapRangeResetKey?: string;
 }
 
@@ -74,7 +76,7 @@ function isNoDataError(error: any) {
 
 export default function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { tableSelector, indexData, setExecuteLoading, executeQuery, snapRangeResetKey } = props;
+  const { tableSelector, indexData, setExecuteLoading, executeQuery, onValueFilter, snapRangeResetKey } = props;
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -324,6 +326,11 @@ export default function Raw(props: Props) {
           id_key='__n9e_id_n9e__'
           raw_key='__n9e_raw_n9e__'
           timeField={DEFAULT_TIME_FIELD}
+          drilldownContext={{
+            cate: DatasourceCateEnum.victorialogs,
+            datasource_id: datasourceValue,
+            query: queryValues?.query,
+          }}
           histogramLoading={histogramLoading}
           histogram={histogramData?.data || []}
           histogramHash={histogramData?.hash}
@@ -336,6 +343,7 @@ export default function Raw(props: Props) {
           organizeFields={organizeFields}
           setOrganizeFields={setOrganizeFields}
           filterFields={(fieldKeys) => filteredFields(fieldKeys, organizeFields)}
+          onAddToQuery={onValueFilter}
           logViewerFilterFields={(log) => filteredFields(_.keys(log), organizeFields)}
           logViewerRenderCustomTagsArea={renderBuiltinFields}
           customLogFieldRender={renderLogViewerFieldValueWithoutFilters}
@@ -349,7 +357,20 @@ export default function Raw(props: Props) {
                     </>
                   )}
                   {toggleNode}
-                  {IS_PLUS && <DownloadModal marginLeft={0} queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }} />}
+                  {IS_PLUS && (
+                    <DownloadModal
+                      marginLeft={0}
+                      queryData={{ ...form.getFieldsValue(), mode: 'raw', total: data?.total }}
+                      effectiveRange={
+                        snapRangeRef.current?.from && snapRangeRef.current?.to
+                          ? {
+                              start: moment(snapRangeRef.current.from),
+                              end: moment(snapRangeRef.current.to),
+                            }
+                          : undefined
+                      }
+                    />
+                  )}
                 </Space>
               );
             }

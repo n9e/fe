@@ -59,18 +59,23 @@ export default function index(props: Props) {
     }, 0);
   };
   useEffect(() => {
-    if (defaultFormValuesControl?.isInited) {
-      const query = form.getFieldValue('query');
-      if (query?.builder || query?.builderStatus || query?.querySource) {
-        form.setFieldsValue({
-          query: {
-            ...query,
-            builder: undefined,
-            builderStatus: undefined,
-            querySource: undefined,
-          },
-        });
-      }
+    const query = form.getFieldValue('query');
+    const defaultQuery = defaultFormValuesControl?.defaultFormValues?.query;
+    // 仅清理标签初始化时持久化的旧 Builder 状态；视图选择恢复的 Builder 配置必须保留。
+    if (
+      defaultFormValuesControl?.isInited &&
+      defaultQuery &&
+      _.isEqual(query, defaultQuery) &&
+      (query?.builder || query?.builderStatus || query?.querySource)
+    ) {
+      form.setFieldsValue({
+        query: {
+          ...query,
+          builder: undefined,
+          builderStatus: undefined,
+          querySource: undefined,
+        },
+      });
     }
   }, [defaultFormValuesControl?.isInited]);
   return (

@@ -78,3 +78,20 @@ export const postDatasourceLabelMapping = (data) => {
     data,
   }).then((res) => res.dat);
 };
+
+// 拉取 Grafana 数据源预览（不写库）。返回 { items: [{ ...meta, duplicate, datasource }] }。
+// 走 center 的 /api/n9e 路由（社区版与 Plus 版共用，Plus 二进制也挂了 center router）。
+export const fetchGrafanaDatasources = (payload) => {
+  return request(`${apiPrefix}/grafana/fetch`, {
+    method: RequestMethod.Post,
+    data: payload,
+  }).then((res) => res.data);
+};
+
+// 批量导入选中的 Grafana 数据源。返回 { items: [{ name, status, reason }] }。
+export const importGrafanaDatasources = (body) => {
+  return request(`${apiPrefix}/grafana/import`, {
+    method: RequestMethod.Post,
+    data: body,
+  }).then((res) => res.data);
+};

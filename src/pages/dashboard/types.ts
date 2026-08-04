@@ -123,11 +123,13 @@ export interface IOptions {
 
 export interface IOverride {
   matcher: {
-    type: 'byName'; // 目前只支持 byName
+    id?: 'byFrameRefID' | 'byName';
+    type?: 'byFrameRefID' | 'byName'; // 兼容历史配置
     value: string;
   };
   properties: {
-    [key: string]: any; // standardOptions | valueMappings
+    width?: number;
+    [key: string]: any; // standardOptions | valueMappings | width
   };
 }
 

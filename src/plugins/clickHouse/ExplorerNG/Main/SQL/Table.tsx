@@ -180,6 +180,18 @@ export default function Table(props: IProps) {
           {!_.isEmpty(data?.list) ? (
             <LogsViewer
               timeField={queryValues?.time_field}
+              drilldownContext={{
+                cate: DatasourceCateEnum.ck,
+                datasource_id: datasourceValue,
+                resource: {
+                  clickhouse_resource: {
+                    database: queryValues?.database,
+                    table: queryValues?.table,
+                    time_field: queryValues?.time_field,
+                  },
+                },
+                query: queryValues?.sql,
+              }}
               hideHistogram
               hideTypeIcon
               loading={loading}

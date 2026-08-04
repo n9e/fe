@@ -15,6 +15,8 @@
  *
  */
 import _ from 'lodash';
+
+import { N9E_PATHNAME } from '@/utils/constant';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
@@ -55,7 +57,7 @@ export function getPerm(busiGroup: string, perm: 'ro' | 'rw') {
 }
 
 export function getMenuPerm() {
-  return request(`/api/n9e/self/perms`, {
+  return request(`/api/${N9E_PATHNAME}/self/perms`, {
     method: RequestMethod.Get,
   }).then((res) => {
     // TODO 这里是为了处理一些菜单地址不便设置为权限点，但是又希望走统一的权限控制逻辑

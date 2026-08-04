@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Popover } from 'antd';
 import classNames from 'classnames';
 
+import useOnboardingStepClick from '@/components/OnboardingActions/useOnboardingStepClick';
+
 import useOnboardingProgress from './useOnboardingProgress';
 import OnboardingPopoverContent from './PopoverContent';
+import { OnboardingStep } from './tracks';
 import './style.less';
 
 interface ProgressRingProps {
@@ -47,11 +49,11 @@ interface Props {
 
 export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props) {
   const { t } = useTranslation('n9e-landing');
-  const history = useHistory();
+  const onStepClick = useOnboardingStepClick();
   const { loaded, doneCount, total, doneMap, dismiss } = useOnboardingProgress();
   const [open, setOpen] = useState(false);
 
-  // 加载中、或已全部完成（5/5）时不展示
+  // 加载中、或已全部完成时不展示
   if (!loaded || doneCount === total) {
     return null;
   }
@@ -62,9 +64,10 @@ export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props
   const countText = `${doneCount}/${total}`;
   const ring = <ProgressRing done={doneCount} total={total} color={ringColor} trackColor={ringTrack} />;
 
-  const handleNavigate = (to: string) => {
+  // 先收起 popover 再执行动作：带 action 的步骤会开弹窗，popover 留着会盖在弹窗上
+  const handleStepClick = (step: OnboardingStep) => {
     setOpen(false);
-    history.push(to);
+    onStepClick(step);
   };
 
   const trigger = collapsed ? (
@@ -93,7 +96,7 @@ export default function OnboardingProgressBadge({ collapsed, isCustomBg }: Props
             doneMap={doneMap}
             doneCount={doneCount}
             total={total}
-            onNavigate={handleNavigate}
+            onStepClick={handleStepClick}
             onDismiss={() => {
               setOpen(false);
               dismiss();

@@ -357,6 +357,12 @@ const ru_RU = {
     algorithm: 'Алгоритм',
     algorithm_required: 'Алгоритм не может быть пустым',
   },
+  filter_trigger_type: {
+    placeholder: 'Тип условия аларма',
+    threshold: 'Пороговый аларм',
+    nodata: 'Аларм по отсутствию данных',
+    anomaly: 'Интеллектуальный аларм',
+  },
   filter_disabled: {
     '0': 'Активно',
     '1': 'Не активно',

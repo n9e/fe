@@ -16,8 +16,10 @@ interface Props {
   showAuthFields?: boolean;
   // 替换既有 skill 时用它回填当前可见范围与管理团队；新建上传时留空（团队必填、默认仅管理团队可见）。
   defaultAuth?: SkillAuthValues;
+  // 仅详情页的非内置 skill 替换允许不选文件，只保存管理团队与可见范围。
+  allowEmptyFileSubmit?: boolean;
   onCancel: () => void;
-  onSubmit: (file: File, auth: SkillAuthValues) => Promise<void> | void;
+  onSubmit: (file: File | undefined, auth: SkillAuthValues) => Promise<void> | void;
 }
 
 const ALLOWED_EXTENSIONS = ['.zip', '.tar.gz'];
@@ -29,8 +31,10 @@ function isAllowedFileType(file: File): boolean {
 
 export default function UploadSkillModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { title, visible, showSubtitle, showAuthFields = true, defaultAuth, onCancel, onSubmit } = props;
+  const { title, visible, showSubtitle, showAuthFields = true, defaultAuth, allowEmptyFileSubmit = false, onCancel, onSubmit } = props;
   const [submitting, setSubmitting] = React.useState(false);
+  const [selectedFile, setSelectedFile] = React.useState<File>();
+  const [fileError, setFileError] = React.useState<string>();
   const [form] = Form.useForm();
 
   React.useEffect(() => {
@@ -39,6 +43,8 @@ export default function UploadSkillModal(props: Props) {
       return;
     }
     form.resetFields();
+    setSelectedFile(undefined);
+    setFileError(undefined);
     if (defaultAuth) {
       form.setFieldsValue({
         user_group_ids: defaultAuth.user_group_ids,
@@ -46,6 +52,49 @@ export default function UploadSkillModal(props: Props) {
       });
     }
   }, [visible, showAuthFields, defaultAuth, form]);
+
+  async function submitFile(file: File | undefined, auth: SkillAuthValues) {
+    setSubmitting(true);
+    try {
+      await onSubmit(file, auth);
+      setSelectedFile(undefined);
+      setFileError(undefined);
+      onCancel();
+    } catch (_error) {
+      // Keep modal open so users can retry after a failed upload.
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function getAuth(): Promise<SkillAuthValues | undefined> {
+    if (!showAuthFields) {
+      return {};
+    }
+
+    try {
+      const values = await form.validateFields();
+      // 非 admin 未渲染 private 字段：替换既有 skill 时沿用 defaultAuth 里的当前值，
+      // 新建上传无 defaultAuth 则默认私有。
+      return { user_group_ids: values.user_group_ids, private: resolveSubmitPrivate(values.private, defaultAuth?.private) };
+    } catch (error) {
+      console.error(error);
+      return undefined;
+    }
+  }
+
+  async function handleConfirm() {
+    if (!selectedFile && !allowEmptyFileSubmit) {
+      setFileError(t('upload_modal_file_required'));
+      return;
+    }
+    setFileError(undefined);
+    const auth = await getAuth();
+    if (!auth) {
+      return;
+    }
+    await submitFile(selectedFile, auth);
+  }
 
   return (
     <Modal
@@ -60,59 +109,70 @@ export default function UploadSkillModal(props: Props) {
         if (submitting) {
           return;
         }
+        setSelectedFile(undefined);
+        setFileError(undefined);
         onCancel();
       }}
-      footer={null}
+      onOk={handleConfirm}
+      okText={t('common:btn.ok')}
+      cancelText={t('common:btn.cancel')}
+      confirmLoading={submitting}
+      footer={showAuthFields ? undefined : null}
       width={980}
       destroyOnClose
       maskClosable={!submitting}
       keyboard={!submitting}
     >
-      {showAuthFields && (
+      {showAuthFields ? (
         <Form form={form} layout='vertical'>
           <SkillAuthFields />
-        </Form>
-      )}
+          <Form.Item className='mb-0' validateStatus={fileError ? 'error' : undefined} help={fileError}>
+            <Upload.Dragger
+              showUploadList={false}
+              multiple={false}
+              disabled={submitting}
+              beforeUpload={async (file) => {
+                if (!isAllowedFileType(file)) {
+                  message.error(t('upload_modal_invalid_type'));
+                  return Upload.LIST_IGNORE;
+                }
 
-      <Upload.Dragger
-        showUploadList={false}
-        multiple={false}
-        disabled={submitting}
-        beforeUpload={async (file) => {
-          if (!isAllowedFileType(file)) {
-            message.error(t('upload_modal_invalid_type'));
-            return Upload.LIST_IGNORE;
-          }
-          // 先校验授权字段（团队必填），再上传，与在线创建/编辑口径一致。
-          let auth: SkillAuthValues = {};
-          if (showAuthFields) {
-            try {
-              const values = await form.validateFields();
-              // 非 admin 未渲染 private 字段：替换既有 skill 时沿用 defaultAuth 里的当前值，
-              // 新建上传无 defaultAuth 则默认私有。
-              auth = { user_group_ids: values.user_group_ids, private: resolveSubmitPrivate(values.private, defaultAuth?.private) };
-            } catch (error) {
-              console.error(error);
+                // 非内置 skill 先选择文件，待用户确认整个表单后再提交。
+                setSelectedFile(file as File);
+                setFileError(undefined);
+                return Upload.LIST_IGNORE;
+              }}
+            >
+              <p className='ant-upload-drag-icon'>
+                <InboxOutlined />
+              </p>
+              <p className='ant-upload-text'>{t('upload_modal_select_file')}</p>
+            </Upload.Dragger>
+          </Form.Item>
+          {selectedFile && <div className='mt-3 text-soft'>{selectedFile.name}</div>}
+        </Form>
+      ) : (
+        <Upload.Dragger
+          showUploadList={false}
+          multiple={false}
+          disabled={submitting}
+          beforeUpload={async (file) => {
+            if (!isAllowedFileType(file)) {
+              message.error(t('upload_modal_invalid_type'));
               return Upload.LIST_IGNORE;
             }
-          }
-          setSubmitting(true);
-          try {
-            await onSubmit(file as File, auth);
-            onCancel();
-          } catch (_error) {
-            // Keep modal open so users can retry after a failed upload.
-          } finally {
-            setSubmitting(false);
-          }
-          return Upload.LIST_IGNORE;
-        }}
-      >
-        <p className='ant-upload-drag-icon'>
-          <InboxOutlined />
-        </p>
-        <p className='ant-upload-text'>{t('upload_modal_dragger')}</p>
-      </Upload.Dragger>
+
+            // 内置 skill 沿用选择文件后立即上传的交互。
+            await submitFile(file as File, {});
+            return Upload.LIST_IGNORE;
+          }}
+        >
+          <p className='ant-upload-drag-icon'>
+            <InboxOutlined />
+          </p>
+          <p className='ant-upload-text'>{t('upload_modal_dragger')}</p>
+        </Upload.Dragger>
+      )}
 
       <div className='mt-6'>
         <div className='text-l1'>{t('upload_modal_requirements')}</div>

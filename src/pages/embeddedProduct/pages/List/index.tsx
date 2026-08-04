@@ -22,7 +22,7 @@ import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 
 import './style.less';
 
-const DragHandle = SortableHandle((props: { disabled?: boolean }) => {
+const DragHandle = SortableHandle<{ disabled?: boolean }>((props) => {
   return <Button type='text' size='small' icon={<MenuOutlined />} className='embedded-product-row-drag-handle' disabled={props.disabled} />;
 });
 
@@ -110,7 +110,7 @@ export default function Index() {
           );
         },
       },
-      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }) as any,
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }) as any,
       updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
     ];
   }, [t, userGroups, saving, hideSavingId]);

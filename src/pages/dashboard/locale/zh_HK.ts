@@ -20,6 +20,12 @@ const zh_HK = {
   clear_cache_btn: '清除缓存',
   clear_cache_btn_tip: '清除表格列寬缓存，刷新頁面後生效',
   inspect_btn: '排查',
+  table_upgrade: {
+    switch_title: '升級到 TableNG',
+    switch_content: '是否自動遷移舊版 Table 的設定？',
+    auto_upgrade: '自動升級',
+    switch_only: '僅切換類型',
+  },
   public: {
     name: '公開',
     unpublic: '未公開',
@@ -346,6 +352,7 @@ const zh_HK = {
       displayName_tip: '自定義顯示名稱',
     },
     overrides: {
+      columnWidth: '欄寬',
       matcher: {
         id: '匹配類型',
         byFrameRefID: {
@@ -447,6 +454,19 @@ const zh_HK = {
         filterable: '可篩選',
         sortColumn: '預設排序列',
         sortOrder: '預設排序',
+        enableRowDetail: '啟用行詳情',
+        enableRowDetail_tip: '開啟後，表格首列將顯示詳情圖標。點擊圖標可在右側抽屜中查看該行的完整字段和值，並支持整行或字段複製。',
+        rowDetail: {
+          triggerTip: '查看行詳情',
+          title: '詳情',
+          tableTab: '表格',
+          jsonTab: 'JSON',
+          field: '字段',
+          value: '值',
+          copyRow: '複製整行',
+          copyFieldAndValue: '複製字段和值',
+          copyFieldValue: '複製字段值',
+        },
         cellOptions: {
           type: {
             label: '單元格類型',

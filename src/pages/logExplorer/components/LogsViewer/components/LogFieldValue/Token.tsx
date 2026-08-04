@@ -135,7 +135,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   const getPopupContainer = useCallback((triggerNode?: HTMLElement) => {
     const host = triggerNode || hostRef.current;
-    return host?.closest(`.${LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS}`) || host?.closest('.ant-drawer-content') || document.body;
+    return (host?.closest(`.${LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS}`) || host?.closest('.ant-drawer-content') || document.body) as HTMLElement;
   }, []);
 
   const handleTextSelectMouseDownCapture = useCallback(() => {
