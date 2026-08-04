@@ -85,7 +85,7 @@ function renderInlineAction(action: RowAction, key: string) {
   }
   const btn = <ActionButton action={action} className='fc-table-action-inline-btn' withIcon iconOnly />;
   return (
-    <Tooltip key={key} title={getInlineTooltipTitle(action)}>
+    <Tooltip key={key} title={getInlineTooltipTitle(action)}  placement={action.tooltipPlacement}>
       <span className='fc-table-action-inline-btn-wrap'>{btn}</span>
     </Tooltip>
   );
@@ -107,7 +107,7 @@ function renderMenuItem(action: RowAction, key: string, onAction: () => void) {
   if (action.tooltip) {
     return (
       <Menu.Item key={key}>
-        <Tooltip title={action.tooltip}>
+        <Tooltip title={action.tooltip} placement={action.tooltipPlacement}>
           <span className='fc-table-action-menu-btn-wrap'>{btn}</span>
         </Tooltip>
       </Menu.Item>
