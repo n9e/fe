@@ -129,6 +129,10 @@ describe('alert event pages tag display controls', () => {
     expect(source).toContain("tagDisplayMode === 'all'");
     expect(source).toContain("tagDisplayMode === 'compact'");
     expect(source).not.toContain('fixed:');
+    expect(source).toContain('new ResizeObserver(measure)');
+    expect(source).toContain("container.querySelector('.ant-table-thead')");
+    expect(source).toContain('y: `calc(100% - ${tableHeaderHeight}px)`');
+    expect(source).not.toContain("y: 'calc(100% - 37px)'");
   });
 
   it('keeps the history alert page on the legacy expansion controls', () => {

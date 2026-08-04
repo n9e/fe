@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, Space } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -71,6 +71,8 @@ export default function AlertTable(props: IProps) {
     visible: false,
   });
   const lastInitiatedViewIdRef = useRef<number | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [tableHeaderHeight, setTableHeaderHeight] = useState<number>();
 
   useEffect(() => {
     const parsed = queryString.parse(location.search);
@@ -247,12 +249,32 @@ export default function AlertTable(props: IProps) {
 
   const pagination = usePagination({ PAGESIZE_KEY: EVENTS_TABLE_PAGESIZE_CACHE_KEY });
 
+  useLayoutEffect(() => {
+    const container = tableContainerRef.current;
+    if (!container) return;
+
+    const measure = () => {
+      const header = container.querySelector('.ant-table-thead') as HTMLElement | null;
+      if (!header) return;
+
+      const nextHeight = Math.ceil(header.getBoundingClientRect().height);
+      setTableHeaderHeight((currentHeight) => (currentHeight === nextHeight ? currentHeight : nextHeight));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    const header = container.querySelector('.ant-table-thead');
+    if (header) observer.observe(header);
+
+    return () => observer.disconnect();
+  }, [tableProps.dataSource]);
+
   return (
-    <div className='n9e-antd-table-height-full'>
+    <div ref={tableContainerRef} className='n9e-antd-table-height-full'>
       <EnhancedTable
         size='small'
         tableLayout='auto'
-        scroll={!_.isEmpty(tableProps.dataSource) ? { x: 'max-content', y: 'calc(100% - 37px)' } : undefined} // TODO: 临时解决空数据时会出现滚动条问题
+        scroll={!_.isEmpty(tableProps.dataSource) && tableHeaderHeight !== undefined ? { x: 'max-content', y: `calc(100% - ${tableHeaderHeight}px)` } : undefined}
         rowKey={(record) => record.id}
         columns={columns}
         {...tableProps}
