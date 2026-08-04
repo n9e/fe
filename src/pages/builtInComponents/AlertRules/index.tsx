@@ -29,10 +29,11 @@ interface Props {
 export default function index(props: Props) {
   const { component_id } = props;
   const { t } = useTranslation('builtInComponents');
-  const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = useContext(CommonStateContext);
+  const commonState = useContext(CommonStateContext);
+  const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = commonState;
   const canPut = useIsAuthorized(['/components/put']);
   const canDel = useIsAuthorized(['/components/del']);
-  // 导入弹窗经 ModalHOC 渲染在游离节点上，读不到 CommonStateContext，只能在这里算好传进去
+  // 导入弹窗的 ImportForm 把它当必填 prop（显式契约），在这里算好传进去
   const notificationRulesAuthorized = useIsAuthorized([notificationRulesPerm]);
   const [filter, setFilter] = useState<{
     cate?: string;
@@ -156,6 +157,8 @@ export default function index(props: Props) {
                 reloadGroupedDatasourceList,
                 datasourceCateOptions,
                 notificationRulesAuthorized,
+                // 弹窗里的「通知规则」选择器要就地建规则/建媒介，这些都要读 CommonStateContext
+                commonState,
               });
             }}
           >
@@ -257,6 +260,7 @@ export default function index(props: Props) {
                     reloadGroupedDatasourceList,
                     datasourceCateOptions,
                     notificationRulesAuthorized,
+                    commonState,
                   });
                 },
               },

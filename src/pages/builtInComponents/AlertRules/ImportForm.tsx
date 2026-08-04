@@ -49,9 +49,10 @@ export interface ImportFormProps {
   /** 预填业务组：只有一个可选时不必让用户点一次没得选的下拉 */
   initialBgid?: number;
   /**
-   * 是否有通知规则查看权限。弹窗宿主经 ModalHOC 渲染在游离节点上，拿不到 CommonStateContext，
-   * useIsAuthorized 在那里恒为 false，只能由调用方算好传入。
+   * 是否有通知规则查看权限，由调用方算好传入。
    * 必填而非可选：漏传会让无权限用户白吃一个 403，交给类型检查兜底。
+   * 注：ModalHOC 宿主那棵游离树里的 CommonStateContext 由调用方经 ModalHOC 的 commonState
+   * 补上（见 ModalHOC.tsx），本 prop 之外的深层子树（选/建通知规则那一坨）靠它才拿得到权限与业务组。
    */
   notificationRulesAuthorized: boolean;
   /** 提交按钮文案；内联时通常带上条数 */
