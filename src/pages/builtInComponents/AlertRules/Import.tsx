@@ -18,8 +18,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'antd';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import { ICommonState } from '@/App';
 
 import ImportForm, { ImportFormProps } from './ImportForm';
+
+/** ModalHOC 会消费此字段并为游离弹窗树补上 CommonStateContext。 */
+interface ImportModalProps extends ImportFormProps {
+  commonState?: ICommonState;
+}
 
 /**
  * 弹窗形态的导入入口（集成中心在用）。表单本体在 ImportForm，
@@ -51,4 +57,4 @@ function Import(props: ImportFormProps & ModalWrapProps) {
 
 // 显式给出泛型参数：T 处在 `T & ModalWrapProps` 交叉位置，裸写 ModalHOC(Import) 时 TS 推不出来，
 // 调用方入参等于不做检查（notificationRulesAuthorized 漏传就是这么溜进去的）
-export default ModalHOC<ImportFormProps>(Import);
+export default ModalHOC<ImportModalProps>(Import);
