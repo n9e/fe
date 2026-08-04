@@ -67,6 +67,9 @@ interface DetectState {
   collectVerified: boolean;
   // 测试告警发送成功的本地标记，与 notifyUsed 取或：点完立刻点亮，换浏览器由 notifyUsed 兜住
   testDeliveredLocal: boolean;
+  // 短路标记在场（全部完成 / 用户「不再显示」）。datasource 步骤不由探测决定，读的是
+  // CommonStateContext 里的数据源列表，光把探测项置真凑不满进度，得靠这个显式标记收口
+  dismissed: boolean;
   loaded: boolean;
 }
 
@@ -95,6 +98,7 @@ const DONE_DETECT: DetectState = {
   notifyUsed: true,
   collectVerified: true,
   testDeliveredLocal: true,
+  dismissed: true,
   loaded: true,
 };
 
@@ -110,6 +114,7 @@ const INITIAL_DETECT: DetectState = {
   notifyUsed: false,
   collectVerified: false,
   testDeliveredLocal: false,
+  dismissed: false,
   loaded: false,
 };
 
@@ -258,6 +263,8 @@ function probeOnboarding(): Promise<DetectState> {
     llm,
     notifyUsed,
     ...readMarkers(known),
+    // 探测结论不该把「已关闭引导」冲掉
+    dismissed: known.dismissed,
     loaded: true,
   }));
 }
@@ -364,7 +371,7 @@ export default function useOnboardingProgress(): OnboardingProgress {
       collectVerified: detect.machine && detect.collectVerified,
       // 通知都没配就谈不上"发过测试告警"
       testDelivered: detect.notification && (detect.testDeliveredLocal || detect.notifyUsed),
-      datasource: !!datasourceList?.length,
+      datasource: detect.dismissed || !!datasourceList?.length,
       dashboard: detect.dashboard,
       alert: detect.alert,
       notification: detect.notification,
