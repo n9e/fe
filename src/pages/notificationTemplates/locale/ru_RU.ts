@@ -89,7 +89,7 @@ const ru_RU = {
       NotifyRecovered: 'Уведомлять ли о восстановлении',
       NotifyChannelsJSON: 'Список каналов уведомления',
       NotifyGroupsJSON: 'Список групп уведомления',
-      NotifyRuleIDs: 'Список ID правил уведомления',
+      NotifyRuleIds: 'Список ID правил уведомления',
       CallbacksJSON: 'Список URL обратного вызова',
       ExtraConfig: 'Дополнительная конфигурация',
       ExtraInfo: 'Список дополнительной информации',

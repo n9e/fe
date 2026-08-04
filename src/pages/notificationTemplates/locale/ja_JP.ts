@@ -89,7 +89,7 @@ const ja_JP = {
       NotifyRecovered: '復旧通知するかどうか',
       NotifyChannelsJSON: '通知チャネルリスト',
       NotifyGroupsJSON: '通知グループリスト',
-      NotifyRuleIDs: '通知ルールIDリスト',
+      NotifyRuleIds: '通知ルールIDリスト',
       CallbacksJSON: 'コールバックURLリスト',
       ExtraConfig: '追加設定情報',
       ExtraInfo: '追加情報リスト',

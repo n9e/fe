@@ -95,7 +95,7 @@ export const EVENT_FIELD_GROUPS: EventFieldGroup[] = [
       { ref: '{{$event.NotifyRecovered}}', key: 'NotifyRecovered', type: 'int' },
       { ref: '{{$event.NotifyChannelsJSON}}', key: 'NotifyChannelsJSON', type: '[]string' },
       { ref: '{{$event.NotifyGroupsJSON}}', key: 'NotifyGroupsJSON', type: '[]string' },
-      { ref: '{{$event.NotifyRuleIDs}}', key: 'NotifyRuleIDs', type: '[]int64' },
+      { ref: '{{$event.NotifyRuleIds}}', key: 'NotifyRuleIds', type: '[]int64' },
     ],
   },
   {

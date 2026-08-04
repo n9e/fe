@@ -89,7 +89,7 @@ const zh_CN = {
       NotifyRecovered: '是否通知恢复',
       NotifyChannelsJSON: '通知渠道列表',
       NotifyGroupsJSON: '通知组列表',
-      NotifyRuleIDs: '通知规则ID列表',
+      NotifyRuleIds: '通知规则ID列表',
       CallbacksJSON: '回调URL列表',
       ExtraConfig: '额外配置信息',
       ExtraInfo: '额外信息列表',

@@ -89,7 +89,7 @@ const zh_HK = {
       NotifyRecovered: '是否通知恢復',
       NotifyChannelsJSON: '通知渠道列表',
       NotifyGroupsJSON: '通知組列表',
-      NotifyRuleIDs: '通知規則ID列表',
+      NotifyRuleIds: '通知規則ID列表',
       CallbacksJSON: '回調URL列表',
       ExtraConfig: '額外配置信息',
       ExtraInfo: '額外信息列表',

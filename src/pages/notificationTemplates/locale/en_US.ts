@@ -89,7 +89,7 @@ const en_US = {
       NotifyRecovered: 'Whether to notify recovery',
       NotifyChannelsJSON: 'Notification channel list',
       NotifyGroupsJSON: 'Notification group list',
-      NotifyRuleIDs: 'Notification rule ID list',
+      NotifyRuleIds: 'Notification rule ID list',
       CallbacksJSON: 'Callback URL list',
       ExtraConfig: 'Additional configuration',
       ExtraInfo: 'Additional info list',
