@@ -89,7 +89,7 @@ export default function List() {
                       icon: 'delete',
                       text: t('common:btn.delete'),
                       danger: true,
-                      disabled: record.enabled === true,
+                      disabled: record.enabled === true || record.created_by === 'system',
                       tooltip: record.enabled === true ? t('cannot_delete_when_enabled') : undefined,
                       onClick: () => {
                         Modal.confirm({
@@ -119,6 +119,11 @@ export default function List() {
                       <Space>
                         <span>{val}</span>
                         {record.is_default && <Tag color='purple'>{t('is_default')}</Tag>}
+                        {record.created_by === 'system' && (
+                          <Tag className='m-0' color='purple'>
+                            {t('builtin')}
+                          </Tag>
+                        )}
                       </Space>
                     ),
                   },
@@ -164,6 +169,7 @@ export default function List() {
                       <Switch
                         size='small'
                         checked={val}
+                        disabled={record.created_by === 'system'}
                         onChange={(checked) => {
                           putItem(record.id, {
                             ...record,

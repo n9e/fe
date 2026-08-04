@@ -52,6 +52,10 @@ const ja_JP = {
   my_groups: '私のビジネスグループ',
   all_groups: 'すべてのビジネスグループ',
   datasources: 'データソース',
+  tag_display: 'タグ表示',
+  tag_display_all: 'すべて',
+  tag_display_compact: '簡易',
+  tag_display_off: '非表示',
   detail_title: 'アラート詳細',
 };
 

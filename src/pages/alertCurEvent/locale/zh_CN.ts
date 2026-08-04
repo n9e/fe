@@ -51,6 +51,10 @@ const zh_CN = {
   my_groups: '我的业务组',
   all_groups: '全部业务组',
   datasources: '数据源',
+  tag_display: '标签显示',
+  tag_display_all: '所有',
+  tag_display_compact: '精简',
+  tag_display_off: '关闭',
   detail_title: '告警详情',
 };
 export default zh_CN;
