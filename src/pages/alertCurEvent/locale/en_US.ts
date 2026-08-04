@@ -52,6 +52,10 @@ const en_US = {
   my_groups: 'My business groups',
   all_groups: 'All business groups',
   datasources: 'Datasources',
+  tag_display: 'Tags',
+  tag_display_all: 'All',
+  tag_display_compact: 'Compact',
+  tag_display_off: 'Off',
   detail_title: 'Event detail',
 };
 export default en_US;
