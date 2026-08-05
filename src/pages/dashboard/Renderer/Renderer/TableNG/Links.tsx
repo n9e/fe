@@ -21,7 +21,7 @@ interface Props {
 }
 
 export function cellClickCallback(
-  cellEvent: { data?: Record<string, { value?: RowValue }>; event?: MouseEvent },
+  cellEvent: { data?: Record<string, { value?: RowValue }>; event?: Event | null },
   {
     links,
     linksRef,
@@ -66,9 +66,11 @@ function Links(props: Props, ref: React.ForwardedRef<LinksHandle>) {
         show: (item: RowData, { left, top }: { left: number; top: number }) => {
           setRowDataItem(item);
           setVisible(true);
-          const placement = (window as Window & {
-            placement?: (target: HTMLElement | null, position: { left: number; top: number }, side: string, align: string, options: { bound: HTMLElement }) => void;
-          }).placement;
+          const placement = (
+            window as Window & {
+              placement?: (target: HTMLElement | null, position: { left: number; top: number }, side: string, align: string, options: { bound: HTMLElement }) => void;
+            }
+          ).placement;
           placement?.(
             linksPopverRef.current,
             {

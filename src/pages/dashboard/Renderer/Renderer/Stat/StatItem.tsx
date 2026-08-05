@@ -116,6 +116,12 @@ export default function StatItem(props: Props) {
         },
       });
     }
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = null;
+      }
+    };
   }, [colorMode, graphMode]);
 
   return (

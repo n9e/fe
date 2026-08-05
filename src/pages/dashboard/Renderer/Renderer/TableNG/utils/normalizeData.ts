@@ -1,19 +1,15 @@
 import _ from 'lodash';
 
 import { isRegisteredTransformationId, TransformationPipeline, transformationsMap } from '@/pages/dashboard/transformations';
+import type { Transformation } from '@/pages/dashboard/transformations';
 import type { TableCellValue, TableData } from '@/pages/dashboard/transformations/types';
 import type { ITransformation } from '@/pages/dashboard/types';
 import { calculateVariance, calculateStdDev } from '@/pages/dashboard/Renderer/utils/calculateField';
 import { normalizeDataPointValue } from './parseNumericValue';
+import type { DashboardSeries } from '../../../datasource/types';
 
 export default function normalizeData(
-  series: {
-    id: string;
-    refId: string;
-    metric: { [key: string]: string };
-    data: [number, number][];
-    mode: 'timeSeries' | 'raw';
-  }[],
+  series: DashboardSeries[],
   transformations?: ITransformation[],
 ): (TableData & {
   id: string;
@@ -38,7 +34,7 @@ export default function normalizeData(
           return {
             name: column,
             type: 'string',
-            values: _.map(rows, (row) => row[column] ?? null),
+            values: _.map(rows, (row) => (row[column] ?? null) as TableCellValue),
             state: {},
           };
         }),
@@ -59,7 +55,7 @@ export default function normalizeData(
             return {
               name: column,
               type: 'string',
-              values: _.map(rows, (row) => row[column] ?? null),
+              values: _.map(rows, (row) => (row[column] ?? null) as TableCellValue),
               state: {},
             };
           }),
@@ -77,7 +73,8 @@ export default function normalizeData(
             } else if (column === `__value_#${item.refId}`) {
               row[column] = normalizeDataPointValue(dataPoint[1]);
             } else {
-              row[column] = item.metric[column] ?? null; // 默认值为 null
+              // metric 值来自 DashboardSeries，运行时为 string/number 等标量，这里收窄为 TableCellValue
+              row[column] = (item.metric[column] ?? null) as TableCellValue; // 默认值为 null
             }
           });
           rows.push(row);
@@ -136,12 +133,14 @@ export default function normalizeData(
     const pipeline = new TransformationPipeline();
     _.forEach(enabledTransformations, (transformationConfig) => {
       if (isRegisteredTransformationId(transformationConfig.id)) {
-        const transformationClass = transformationsMap[transformationConfig.id];
+        // transformationsMap 各构造器参数不统一（部分无参，运行时按 options 实例化），这里统一收窄为带 options 的构造器
+        const transformationClass = transformationsMap[transformationConfig.id] as unknown as new (options: ITransformation['options']) => Transformation;
         const transformation = new transformationClass(transformationConfig.options);
         pipeline.addTransformation(transformation);
       }
     });
-    data = pipeline.apply(data);
+    // 转换链对 TableData 结构做变换，运行时保留 id 字段，这里做类型收窄
+    data = pipeline.apply(data) as (TableData & { id: string })[];
   }
 
   return _.map(data, (item) => {
@@ -159,7 +158,7 @@ export default function normalizeData(
         const row: { [key: string]: string | number | null } = {};
         _.forEach(item.fields, (field) => {
           const name = field.state.displayName || field.name;
-          row[name] = field.values[index] ?? null;
+          row[name] = (field.values[index] ?? null) as string | number | null;
         });
         return row;
       }),

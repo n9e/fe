@@ -162,5 +162,15 @@ export default function Heatmap(props: IProps) {
     render();
   }, [themeMode, dataDependency, stableCustom, stableOptions]);
 
+  // 组件卸载时销毁图表实例，避免 G2 内部事件监听残留导致内存泄漏
+  useEffect(() => {
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = undefined;
+      }
+    };
+  }, []);
+
   return <div className='renderer-heatmap-container' style={{ height: '100%' }} ref={containerRef} />;
 }

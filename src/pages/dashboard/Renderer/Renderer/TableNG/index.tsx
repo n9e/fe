@@ -13,8 +13,8 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import useStableValue from '@/pages/dashboard/hooks/useStableValue';
 
-import { IOverride, IPanel } from '../../../types';
-import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
+import { IOverride, IPanel, CellOptions } from '../../../types';
+import type { DashboardSeries } from '../../datasource/types';
 import { downloadCsv } from '../Table/utils';
 import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
 import getFormattedRowData from './utils/getFormattedRowData';
@@ -57,7 +57,7 @@ interface Props {
   isPreview?: boolean;
   id?: string; // dashboardID
   values: IPanel;
-  series: CalculatedSeries[];
+  series: DashboardSeries[];
   rangeMode?: 'lcro' | 'lcrc';
   ajustColumns?: (columns: string[]) => string[];
   themes?: {
@@ -109,7 +109,9 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   const cacheKey = dashboardId && values?.id ? `tableNG_colWidths_${dashboardId}_${values.id}` : null;
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
-  const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder, enableRowDetail = false } = custom || {};
+  const { showHeader = true, filterable, sortColumn, sortOrder, enableRowDetail = false } = custom || {};
+  // custom.cellOptions 来自面板持久化配置（JsonValue），运行时为 CellOptions 结构，这里做类型收窄
+  const cellOptions = ((custom || {}).cellOptions ?? {}) as unknown as CellOptions;
   const stableTransformations = useStableValue(transformations);
   const stableCellOptions = useStableValue(cellOptions);
   const stableOptions = useStableValue(options);
@@ -118,7 +120,7 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   // useRef 不支持懒初始化，在渲染时直接同步读取初始值
   const cachedColWidthsRef = React.useRef<Record<string, number>>(readCachedColumnWidths(cacheKey));
   const appliedColWidthsRef = React.useRef<Record<string, number>>({});
-  const gridApiRef = React.useRef<GridApi<Record<string, TextObject>>>(null);
+  const gridApiRef = React.useRef<GridApi<Record<string, TextObject>> | null>(null);
   const persistedColumnWidths = getResolvedColumnWidths(cachedColWidthsRef.current, overrides);
   const linksRef = React.useRef<LinksHandle>(null);
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
@@ -346,6 +348,7 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
               },
               cellRenderer: (params: ICellRendererParams<TableGridRow, TextObject>) => {
                 const field = params.colDef?.field;
+                if (field === undefined) return '';
                 const fieldValue = params.data?.[field];
 
                 if (fieldValue === undefined) return '';
@@ -406,12 +409,16 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
             params.api.applyColumnState({
               state: [
                 {
-                  colId: sortColumn,
+                  colId: String(sortColumn),
                   sort: sortOrder === 'ascend' ? 'asc' : 'desc',
                 },
               ],
             });
           }
+        }}
+        onGridPreDestroyed={() => {
+          // 网格销毁前释放 api 引用，避免残留导致的内存无法回收
+          gridApiRef.current = null;
         }}
         onCellClicked={(cellEvent) => {
           if (cellEvent.column.getColId() === ROW_DETAIL_COLUMN_ID) {

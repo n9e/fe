@@ -275,7 +275,7 @@ export interface IRow {
 }
 
 export interface ITransformation {
-  id: 'string';
+  id: string;
   options: {
     [key: string]: JsonValue;
   };
