@@ -2,8 +2,8 @@ const en_US = {
   title: 'Alerting engines',
   instance: 'Instance',
   cluster: 'Cluster',
-  datasource: 'Datasource',
-  modify_datasource: 'Modify datasource',
+  datasource: 'Data source',
+  modify_datasource: 'Modify data source',
   clock: 'Last heartbeat',
   unauthorized: 'You are not authorized to view this page',
 };

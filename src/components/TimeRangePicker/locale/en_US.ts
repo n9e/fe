@@ -5,7 +5,7 @@ const en_US = {
   history: 'Recently used absolute ranges',
   quickSearchPlaceholder: 'Search quick options',
   ok: 'OK',
-  invalid: 'invalid date',
+  invalid: 'Invalid date',
   spans: {
     second: 'second',
     minute: 'minute',
@@ -52,6 +52,6 @@ const en_US = {
   next: 'Next',
   close: 'Close',
   exceed_hour_limit_tip: 'The time range cannot exceed {{hours}} hours',
-  start_gt_end_tip: 'Start time cannot be greater than end time',
+  start_gt_end_tip: 'Start time cannot be later than end time',
 };
 export default en_US;

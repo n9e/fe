@@ -17,10 +17,10 @@ const en_US = {
   },
   ident: 'Media type',
   ident_tip:
-    'The classification of the media type, for example, multiple DingTalk notification media types can be set to dingtalk. The type can be handwritten and is not limited to the options in the drop-down list. The notification media type and message template are associated through the type field',
-  note_tip: 'You can fill in supplementary explanations or usage scenarios for the media type to facilitate viewing during subsequent maintenance or collaboration',
-  enable_tip: 'Whether to enable the configuration of this media type. After closing, the configuration will be temporarily invalid and notifications will not be sent',
-  advanced_settings: 'Advanced configuration',
+    'The classification of the media type. For example, multiple DingTalk media types can all be set to dingtalk. The type can be typed manually and is not limited to the options in the drop-down list. Media types and message templates are associated through this type field',
+  note_tip: 'Supplementary notes or usage scenarios for this media type, useful for later maintenance and collaboration',
+  enable_tip: 'Whether to enable this media type. When disabled, the configuration is temporarily inactive and no notifications are sent',
+  advanced_settings: 'Advanced settings',
   variable_configuration: {
     title: 'Variable configuration',
     contact_key: 'Contact',
@@ -29,7 +29,7 @@ const en_US = {
     params: {
       title: 'Parameter configuration',
       title_tip:
-        'Set the custom parameters required by the media type (such as DingTalk robot Token, API Key, etc.). When setting the media type in the notification rule, you can set the values of related custom parameters at the same time',
+        'Set the custom parameters required by the media type (such as a DingTalk bot token or API key). When selecting the media type in a notification rule, you can set the values of these custom parameters at the same time',
       key: 'Parameter key',
       key_required: 'Key is required',
       cname: 'Parameter name',
@@ -53,16 +53,16 @@ const en_US = {
     url_tip: 'The target address to receive notification requests',
     method: 'Method',
     header: 'Header',
-    header_tip: 'Custom HTTP Headers that need to be included in the request, such as BasicAuth authentication information',
+    header_tip: 'Custom HTTP headers to include in the request, such as BasicAuth credentials',
     header_key: 'Key',
     header_value: 'Value',
     timeout: 'Timeout (unit: ms)',
     concurrency: 'Concurrency',
     concurrency_tip:
       'The maximum number of parallel requests initiated at the same time. Appropriately increasing it can improve sending efficiency, but pay attention to the processing capacity of the target service',
-    retry_times: 'Retry Times',
-    retry_interval: 'Retry Interval (unit: ms)',
-    insecure_skip_verify: 'Skip Verify',
+    retry_times: 'Retry times',
+    retry_interval: 'Retry interval (unit: ms)',
+    insecure_skip_verify: 'Skip TLS verify',
     proxy: 'Proxy',
     proxy_tip: 'HTTP PROXY address, used in scenarios that require a proxy',
     params: 'Params',
@@ -83,20 +83,20 @@ const en_US = {
     from: 'From',
     from_tip:
       'The sender name or email alias displayed in the email, which can help the recipient better identify the email source, format example: Flashcat <no-reply@notice.flashcat.cloud>',
-    insecure_skip_verify: 'Skip Verify',
+    insecure_skip_verify: 'Skip TLS verify',
     insecure_skip_verify_tip: 'If enabled, ignore the certificate verification of the SMTP server, which is mostly used for testing or self-signed certificate environments',
     batch: 'Batch',
-    batch_tip: 'How many times to send emails in a single SMTP connection',
+    batch_tip: 'How many emails to send over a single SMTP connection',
   },
   script_request_config: {
     title: 'Script',
     script: {
       option: 'Script',
-      label: 'Script Content',
+      label: 'Script content',
     },
     path: {
       option: 'Path',
-      label: 'File Path',
+      label: 'File path',
     },
     timeout: 'Timeout (unit: ms)',
   },
@@ -107,7 +107,7 @@ const en_US = {
     proxy: 'Proxy',
     proxy_tip: 'HTTP PROXY address, used in scenarios that require a proxy',
     timeout: 'Timeout (unit: ms)',
-    retry_times: 'Retry Times',
+    retry_times: 'Retry times',
   },
   pagerduty_request_config: {
     title: 'PagerDuty',
@@ -116,7 +116,7 @@ const en_US = {
     proxy: 'Proxy',
     proxy_tip: 'HTTP PROXY address, used in scenarios that require a proxy',
     timeout: 'Timeout (unit: ms)',
-    retry_times: 'Retry Times',
+    retry_times: 'Retry times',
   },
   dingtalkapp_request_config: {
     app_key: 'App Key',
@@ -131,7 +131,7 @@ const en_US = {
   feishuapp_request_config: {
     app_id: 'App ID',
     app_secret: 'App Secret',
-    receive_id_type: 'Receiver ID Type',
+    receive_id_type: 'Receiver ID type',
     alert_shot_tip: 'If you need to send images in alerts, please apply for a Feishu app according to the documentation and fill in the relevant information',
     lark_alert_shot_tip: 'If you need to send images in alerts, please apply for a Lark app according to the documentation and fill in the relevant information',
   },

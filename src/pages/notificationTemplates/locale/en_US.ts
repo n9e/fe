@@ -3,7 +3,7 @@ const en_US = {
   add_title: 'Add message template',
   edit_title: 'Edit message template',
   clone_title: 'Clone message template',
-  user_group_ids: 'Authorized Teams',
+  user_group_ids: 'Authorized teams',
   private: {
     title: 'Display mode',
     0: 'Public',
@@ -15,10 +15,10 @@ const en_US = {
     edit_title: 'Edit template field',
     preview: 'Preview template content',
     contentKey: 'Field identifier',
-    tip: 'Fields that can be used in the notification medium, referenced by $tpl.{{contentKey}}',
+    tip: 'Fields that can be used in the media type, referenced by $tpl.{{contentKey}}',
     prompt: 'The content has been modified. Do you want to discard the changes?',
     value_msg: 'Please enter the field content',
-    ai_generate: 'AI Generate',
+    ai_generate: 'Generate with AI',
   },
   preview: {
     mode: {
@@ -27,7 +27,7 @@ const en_US = {
     },
     empty_alert: 'There are no historical alert events in this environment yet',
     switch_btn: 'Preview with a mock event',
-    select_events: 'Select alarm events',
+    select_events: 'Select alert events',
     result: 'Preview result',
   },
   starter: {

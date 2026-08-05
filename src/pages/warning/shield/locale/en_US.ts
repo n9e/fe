@@ -1,9 +1,9 @@
 const en_US = {
-  title: 'Blackout',
+  title: 'Muting rules',
   edit_missing_params: 'Missing required parameters, unable to edit, please contact the administrator',
-  search_placeholder: 'Search by rule name, tag, or blackout reason',
-  datasource_type: 'Datasource type',
-  datasource_id: 'Datasource',
+  search_placeholder: 'Search by rule name, tag, or mute cause',
+  datasource_type: 'Data source type',
+  datasource_id: 'Data source',
   cause: 'Cause',
   cause_tip: 'Describe why the alerts are muted, so teammates know the background and when the mute can be released',
   cause_placeholder: 'e.g. Order service release, expected to finish within 1 hour',
@@ -23,7 +23,7 @@ const en_US = {
   severities: 'Severity',
   severities_tip: 'Only the checked severities are muted, the others still alert as usual',
   severities_msg: 'Severity is required',
-  scope_unlimited_tip: 'No datasource and no event tag is configured, this rule will mute all alert events of the selected business group, please confirm',
+  scope_unlimited_tip: 'No data source or event tag is configured; this rule will mute all alert events of the selected business group. Please confirm',
   mute_type: {
     label: 'Mute type',
     0: 'Fixed time',
@@ -79,11 +79,11 @@ const en_US = {
   basic_configs_desc: 'Rule name and mute cause, which make the rule easier to maintain and search',
   filter_configs: 'Filter conditions',
   filter_configs_desc:
-    'Decide which alert events are muted: business group, datasource, severity and event tags. Conditions are combined with AND, an empty one means no restriction',
+    'Decide which alert events are muted: business group, data source, severity and event tags. Conditions are combined with AND, an empty one means no restriction',
   mute_configs: 'Mute settings',
   mute_configs_desc: 'Decide when and how the alerts are muted: a fixed time range, or time ranges repeated every week',
   alert_content:
-    'In order to prevent the misalignment of the mute rule from muting all the alerts of the company, this mute rule will only take effect on the alerts of a specific business group',
+    'To prevent a misconfigured mute rule from muting all alerts across the company, a mute rule only takes effect on the alerts of a specific business group',
   preview_muted_title: 'Preview related events',
   preview_muted_desc:
     'The following existing alert events match the filter conditions. After saving, newly generated events will be muted, existing events will not disappear automatically, you can delete them here.',
@@ -96,14 +96,14 @@ const en_US = {
     select_busi_group: 'Pick a specific business group on the left to create a mute rule',
   },
   delete_mutes: {
-    title: 'Mute Rule Cleanup',
-    alert_message: 'Once deleted, data cannot be recovered. Please proceed with caution!',
-    timestamp: 'Time Filter',
+    title: 'Mute rule cleanup',
+    alert_message: 'Deleted data cannot be recovered. Please proceed with caution!',
+    timestamp: 'Time filter',
     timestamp_options: {
-      1: '1 month ago',
-      3: '3 months ago',
-      6: '6 months ago',
-      12: '1 year ago',
+      1: 'Older than 1 month',
+      3: 'Older than 3 months',
+      6: 'Older than 6 months',
+      12: 'Older than 1 year',
     },
   },
   filter_disabled: {

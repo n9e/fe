@@ -1,6 +1,6 @@
 const en_US = {
   title: 'Explorer',
-  log_title: 'Logs Explorer',
+  log_title: 'Logs explorer',
   add_btn: 'Add a query panel',
   query_btn: 'Execute',
   query_tab: 'Query',
@@ -17,7 +17,7 @@ const en_US = {
     hideChart: 'Hide chart',
     showChart: 'Show chart',
     fieldValues_topn: 'Top 5 values',
-    fieldValues_topnNoData: 'The field present in the mapping, but not in the 500 documents',
+    fieldValues_topnNoData: 'The field exists in the mapping, but not in the 500 sampled documents',
     copyToClipboard: 'Copy to clipboard',
     show_conext: 'Show context',
     context: 'Log context',
@@ -32,7 +32,7 @@ const en_US = {
     export: 'Download records',
     log_download: {
       title: 'Download',
-      download_title: 'Download Log Data',
+      download_title: 'Download log data',
       range: 'Time range',
       filter: 'Search query',
       query_condition: 'Query condition',
@@ -48,7 +48,7 @@ const en_US = {
       createSuccess: 'Task created successfully',
     },
     log_export: {
-      title: 'Export records (Online exported files will be retained for 3 days)',
+      title: 'Export records (exported files are retained for 3 days)',
       fileName: 'File name',
       create_time: 'Creation time',
       describe: 'File description',
@@ -60,14 +60,14 @@ const en_US = {
       delSuccess: 'Task deleted',
       del_btn_tips: 'Are you sure you want to delete?',
       del_btn: 'Delete',
-      emptyText: 'No export records yet, please click to query logs and then click download',
+      emptyText: 'No export records yet. Query logs first, then click download',
       size: 'File size',
       reload_btn_tip: 'Refresh',
     },
     field_actions: {
       and: 'Filter for value',
       not: 'Filter out value',
-      exists: 'Filter for field persent',
+      exists: 'Filter for field present',
     },
     field_values_topn: {
       title: 'Top {{n}} values',
@@ -83,7 +83,7 @@ const en_US = {
   },
   share_tip: 'Click to copy the share link',
   share_tip_2: 'Click to copy the share link, currently only supports sharing log text queries',
-  help: 'Show data source Help',
+  help: 'Show data source help',
   clear_tabs: 'Clear',
   clear_tabs_tip: 'Only keep the current tab',
   stats: {
@@ -106,7 +106,7 @@ const en_US = {
     filter_fields: 'Filter fields',
     settings: {
       mode: {
-        origin: 'Origin',
+        origin: 'Original',
         table: 'Table',
       },
       breakLine: 'Break line',
@@ -133,7 +133,7 @@ const en_US = {
         infiniteScroll: 'Infinite scroll',
       },
     },
-    tagsDetail: 'Tag detail',
+    tagsDetail: 'Tag details',
     expand: 'Expand',
     collapse: 'Collapse',
     fieldValues_topnNoData: 'No data',
@@ -144,7 +144,7 @@ const en_US = {
       sum: 'Sum',
       avg: 'Avg',
     },
-    fieldLabelTip: 'The field is not enabled for statistics, and statistical analysis cannot be performed',
+    fieldLabelTip: 'Statistics are not enabled for this field, so statistical analysis is not available',
     filterAnd: 'Add to this search',
     filterNot: 'Exclude from this search',
     total: 'Total',

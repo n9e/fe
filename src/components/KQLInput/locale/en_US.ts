@@ -1,9 +1,9 @@
 const en_US = {
-  fieldName: 'Field Name',
-  fieldValue: 'Field Value',
-  combiningKeyword: 'Combining Keyword',
-  matchOperator: 'Match Operator',
-  historicalRecords: 'Historical Records',
+  fieldName: 'Field name',
+  fieldValue: 'Field value',
+  combiningKeyword: 'Combining keyword',
+  matchOperator: 'Match operator',
+  historicalRecords: 'Historical records',
   search: 'Search',
 };
 export default en_US;

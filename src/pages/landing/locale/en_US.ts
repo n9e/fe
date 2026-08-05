@@ -65,7 +65,7 @@ const en_US = {
       logExplorer: 'Log Explorer',
       alertRules: 'Alert Rules',
       alertMutes: 'Alert Mutes',
-      alertSubscribes: 'Alert Subscribes',
+      alertSubscribes: 'Alert Subscriptions',
       objectExplorer: 'Object Explorer',
       recordingRules: 'Recording Rules',
     },
