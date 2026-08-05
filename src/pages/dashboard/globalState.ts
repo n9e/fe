@@ -16,7 +16,7 @@ export interface DashboardMeta {
   public_cate: 0 | 1 | 2; // 0: 匿名访问，1: 需要登录, 2: 授权访问
 }
 
-export const { useGlobalState, getGlobalState } = createGlobalState<{
+export const { useGlobalState, getGlobalState, setGlobalState } = createGlobalState<{
   dashboardMeta: DashboardMeta; // 仪表盘的一些配置信息
   variablesWithOptions: IVariable[]; // 变量数据
   range: IRawTimeRange; // 仪表盘的时间范围

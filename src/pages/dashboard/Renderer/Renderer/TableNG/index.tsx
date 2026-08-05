@@ -237,9 +237,11 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   }, [cacheKey]);
 
   // 编辑器表单或仪表盘状态更新 override 后，立即同步到当前网格。
+  // JSON.stringify 不直接放进依赖数组（见 dependencyPolicy），先 memo 成稳定 key。
+  const overridesKey = useMemo(() => JSON.stringify(overrides), [overrides]);
   useEffect(() => {
     applyPersistedColumnWidths();
-  }, [JSON.stringify(overrides)]);
+  }, [overridesKey]);
 
   return (
     <div
