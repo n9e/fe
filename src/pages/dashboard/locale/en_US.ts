@@ -28,7 +28,7 @@ const en_US = {
   },
   public: {
     name: 'Public',
-    unpublic: 'Unpublish',
+    unpublic: 'Not public',
     public_cate: 'Type',
     cate: {
       0: 'Anonymous access',
