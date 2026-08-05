@@ -21,6 +21,7 @@ const zh_CN = {
   shield: '屏蔽',
   prod: '监控类型',
   duration: '持续时长',
+  trigger_value: '触发时值',
   aggregate_rule: '聚合规则',
   aggregate_rule_mgs: '请选择聚合规则',
   aggregate_rule_tip: `根据事件的属性和标签对告警做聚合归类，方便查看，使用 Go Template 引用事件字段，举例：
