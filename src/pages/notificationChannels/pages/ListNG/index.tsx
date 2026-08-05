@@ -14,7 +14,7 @@ import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTabl
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 
 import { NS, getNotificationChannelTypes } from '../../constants';
-import { getItems, putItem, deleteItems, postItems } from '../../services';
+import { getItems, getItem, putItem, deleteItems, postItems } from '../../services';
 import { ChannelItem } from '../../types';
 
 interface Filter {
@@ -59,30 +59,23 @@ export default function index() {
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...newFilter, current: 1 }));
   };
   const [selectedRows, setSelectedRows] = useState<ChannelItem[]>([]);
+  const [togglingId, setTogglingId] = useState<number>();
+  // 三个筛选条件取交集。此前是 if/else 早返回，命中名称搜索后状态与类型筛选会被整段跳过，
+  // 表现为「选了类型却没生效」
   const filteredData = useMemo(() => {
     return filter(data, (item) => {
-      if (filters?.search) {
-        return includes(upperCase(item.name), upperCase(filters.search));
+      if (filters?.search && !includes(upperCase(item.name), upperCase(filters.search))) {
+        return false;
       }
-      if (filters?.enable !== undefined) {
-        return item.enable === filters.enable;
+      if (filters?.enable !== undefined && item.enable !== filters.enable) {
+        return false;
       }
-      if (filters?.idents && filters.idents.length > 0) {
-        return includes(filters.idents, item.ident);
+      if (filters?.idents && filters.idents.length > 0 && !includes(filters.idents, item.ident)) {
+        return false;
       }
       return true;
     });
-  }, [
-    JSON.stringify(
-      map(data, (item) => {
-        return {
-          id: item.id,
-          enabel: item.enable,
-        };
-      }),
-    ),
-    JSON.stringify(filters),
-  ]);
+  }, [data, filters]);
 
   return (
     <PageLayout
@@ -199,15 +192,21 @@ export default function index() {
                     Import({
                       title: t('common:btn.import'),
                       onOk: (data) => {
+                        let newData: ChannelItem[];
                         try {
-                          const newData = JSON.parse(data);
-                          postItems(newData).then(() => {
+                          newData = JSON.parse(data);
+                        } catch (e) {
+                          // JSON 解析失败是纯前端错误，不经过全局 errorHandler，需自行提示
+                          console.error(e);
+                          message.error(t('common:error.import'));
+                          return;
+                        }
+                        postItems(newData)
+                          .then(() => {
                             run();
                             message.success(t('common:success.import'));
-                          });
-                        } catch (e) {
-                          console.error(e);
-                        }
+                          })
+                          .catch(console.error);
                       },
                     });
                   }}
@@ -286,22 +285,31 @@ export default function index() {
                       <Switch
                         checked={val}
                         size='small'
+                        loading={togglingId === record.id}
                         onChange={(checked) => {
-                          putItem({
-                            ...record,
-                            enable: checked,
-                          }).then(() => {
-                            const newData = map(data, (item) => {
-                              if (item.id === record.id) {
-                                return {
-                                  ...item,
-                                  enable: checked,
-                                };
-                              }
-                              return item;
+                          // 整条 PUT 用列表加载时的快照会静默覆盖他人的并发编辑，
+                          // 先取一次最新记录再回写，把窗口缩到最小（根治要靠后端窄接口）
+                          setTogglingId(record.id);
+                          getItem(record.id)
+                            .then((latest) => putItem({ ...latest, enable: checked }))
+                            .then(() => {
+                              const newData = map(data, (item) => {
+                                if (item.id === record.id) {
+                                  return {
+                                    ...item,
+                                    enable: checked,
+                                  };
+                                }
+                                return item;
+                              });
+                              mutate(newData);
+                            })
+                            // 请求失败的提示由 request.tsx 的全局 errorHandler 统一弹出，
+                            // 这里只记录并复位，不重复 toast
+                            .catch(console.error)
+                            .finally(() => {
+                              setTogglingId(undefined);
                             });
-                            mutate(newData);
-                          });
                         }}
                       />
                     ),

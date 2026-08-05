@@ -13,7 +13,8 @@ import FormCpt from './Form';
 
 interface Props {
   id: number;
-  onChange: () => void;
+  /** 克隆会新建一条模板，回传其 ident 供列表页选中 */
+  onChange: (createdIdent?: string) => void;
   onDelete: () => void;
 }
 
@@ -127,11 +128,11 @@ export default forwardRef(function ItemDetail(props: Props, ref) {
         visible={formModalState.visible}
         mode={formModalState.mode}
         data={formModalState.data}
-        onOk={() => {
+        onOk={(createdIdent) => {
           if (formModalState.mode === 'edit') {
             fetchData();
           }
-          onChange();
+          onChange(createdIdent);
           setFormModalState({ ...formModalState, visible: false });
         }}
         onCancel={() => {

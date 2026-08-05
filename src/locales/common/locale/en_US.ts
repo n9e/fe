@@ -50,6 +50,7 @@ const en_US = {
     save: 'Save',
     ok: 'OK',
     cancel: 'Cancel',
+    close: 'Close',
     view: 'View',
     more: 'More',
     back: 'Back',

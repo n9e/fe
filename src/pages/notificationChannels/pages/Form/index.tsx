@@ -10,7 +10,7 @@ import { scrollToFirstError } from '@/utils';
 import { Document } from '@/components/DocumentDrawer';
 import Splitter from '@/components/Splitter';
 
-import { NS } from '../../constants';
+import { NS, getChannelTypeMeta } from '../../constants';
 import { ChannelItem } from '../../types';
 import ContactKeysSelect from './ContactKeysSelect';
 import HTTP from './HTTP';
@@ -21,6 +21,7 @@ import Pagerduty from './Pagerduty';
 import DingtalkApp from './DingtalkApp';
 import WecomApp from './WecomApp';
 import FeishuApp from './FeishuApp';
+import TestModal from './TestModal';
 
 interface Props {
   initialValues?: ChannelItem;
@@ -32,6 +33,7 @@ export default function FormCpt(props: Props) {
   const [form] = Form.useForm();
   const requestType = Form.useWatch('request_type', form);
   const ident = Form.useWatch('ident', form);
+  const isKnownType = getChannelTypeMeta(ident).known;
 
   useEffect(() => {
     form.setFieldsValue(props.initialValues);
@@ -168,13 +170,30 @@ export default function FormCpt(props: Props) {
                           props.onOk(values);
                         })
                         .catch((err) => {
-                          console.error(err);
+                          // 校验失败带 errorFields，由 antd 自行标红；其余异常才是真错误，
+                          // 一并 console.error 会让真异常淹没在日常的校验失败里
+                          if (!err?.errorFields) {
+                            console.error(err);
+                          }
                           scrollToFirstError();
                         });
                     }}
                   >
                     {t('common:btn.save')}
                   </Button>
+                  {/* 测试放在保存旁边：配完就能验证，不必先存下来再回来试 */}
+                  <TestModal
+                    form={form}
+                    onBeforeOpen={() =>
+                      form.validateFields().catch((err) => {
+                        if (!err?.errorFields) {
+                          console.error(err);
+                        }
+                        scrollToFirstError();
+                        throw err;
+                      })
+                    }
+                  />
                   <Link to={`/${NS}`}>
                     <Button>{t('common:btn.cancel')}</Button>
                   </Link>
@@ -184,9 +203,13 @@ export default function FormCpt(props: Props) {
           </Splitter.Panel>
           <Splitter.Panel>
             <div className='p-4 best-looking-scroll h-full'>
-              {requestType && (
+              {/* 未知 ident（历史数据、自建 script 媒介）在官网上没有对应文档页，
+                  直接拼 URL 会让整个右栏渲染一张带营销 banner 的 404 页。
+                  这类回落到仓库内按 request_type 组织的本地文档。 */}
+              {requestType && isKnownType && (
                 <Document type='iframe' documentPath={`https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/${ident}/`} />
               )}
+              {requestType && !isKnownType && <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />}
             </div>
           </Splitter.Panel>
         </Splitter>
