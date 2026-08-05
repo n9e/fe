@@ -42,4 +42,15 @@ describe('SideMenu hover panel styles', () => {
     expect(menuListContent).not.toContain('flattenMenuChildrenForHoverPanel');
     expect(menuListContent).toContain('const hoverChildren = visibleChildren;');
   });
+
+  // 收起的子菜单只被 height:0 + overflow-hidden 裁掉，子项仍留在 DOM 里。
+  // 若不同时屏蔽指针事件，这些看不见的菜单项仍可被命中，点击会落到被裁剪的位置上，
+  // 表现为「点通知规则被相邻菜单拦截」
+  it('makes the collapsed submenu inert instead of merely clipping it', () => {
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    expect(menuListContent).toMatch(/submenuOpen \? 'mt-0\.5' : 'mt-0 pointer-events-none'/);
+    expect(menuListContent).toContain('aria-hidden={!submenuOpen}');
+  });
 });

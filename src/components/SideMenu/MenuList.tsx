@@ -189,8 +189,12 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
           <RightIcon className={cn('shrink-0 transition', isExpand ? 'rotate-90' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')} style={{ fontSize: 24 }} />
         )}
       </div>
+      {/* 收起时子项并没有卸载，只是被 height:0 + overflow-hidden 裁掉：对人眼不可见，
+          但仍能接收点击、也仍留在无障碍树里。这种「看不见却可命中」的元素会让点击落到
+          被裁剪的位置上，表现为被相邻菜单项拦截，因此收起时一并屏蔽指针事件并标记 aria-hidden */}
       <div
-        className={cn(submenuOpen ? 'mt-0.5' : 'mt-0', 'overflow-hidden transition-height')}
+        className={cn(submenuOpen ? 'mt-0.5' : 'mt-0 pointer-events-none', 'overflow-hidden transition-height')}
+        aria-hidden={!submenuOpen}
         style={{
           height: !isExpand || collapsed ? 0 : visibleChildren.length * 30,
         }}
