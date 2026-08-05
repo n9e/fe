@@ -174,7 +174,7 @@ function index(props: IProps) {
     }
     if (!pasteRowId) return;
     setPanels((prev) => {
-      const newPanels = updatePanelsInsertNewPanelToRow(prev, pasteRowId, { ...parsed, id: uuidv4() } as IPanel, false);
+      const newPanels = updatePanelsInsertNewPanelToRow(prev, pasteRowId, { ...(parsed as object), id: uuidv4() } as IPanel, false);
       allowUpdateDashboardConfigs.current = true;
       updateDashboardConfigs(dashboard.id, {
         configs: panelsMergeToConfigs(dashboard.configs, newPanels),

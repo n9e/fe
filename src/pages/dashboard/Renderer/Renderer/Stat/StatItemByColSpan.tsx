@@ -21,6 +21,7 @@ interface StatItemData {
 }
 interface StatItemProps {
   item: StatItemData;
+  idx?: number;
   textMode: string;
   colorMode: string;
   textSize?: { title?: number; value?: number };
@@ -53,7 +54,7 @@ export default function StatItem(props: StatItemProps) {
         options?.valueMappings,
         options?.thresholds,
       );
-      item.value = result?.value;
+      item.value = result?.value as string | number | undefined;
       item.unit = result?.unit;
       item.color = result?.color;
     } else {
@@ -68,7 +69,7 @@ export default function StatItem(props: StatItemProps) {
   let valueAndUnitFontSize = textSize?.value ?? MIN_SIZE;
   if (eleSize) {
     if (!textSize?.title) {
-      headerFontSize = getMaxFontSize(item.name, (eleSize?.width - 20) * 0.8, eleSize?.height / 2 / 3);
+      headerFontSize = getMaxFontSize(item.name as string, (eleSize?.width - 20) * 0.8, eleSize?.height / 2 / 3);
     }
     if (!textSize?.value) {
       valueAndUnitFontSize = getMaxFontSize(valueAndUnit, (eleSize?.width - 20) * 0.8, (eleSize?.height / 2 / 3) * 2);

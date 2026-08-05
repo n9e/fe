@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 import type { IRawTimeRange } from '@/components/TimeRangePicker/types';
 import { parseRange } from '@/components/TimeRangePicker/utils';
-import type { ITarget, JsonObject } from '@/pages/dashboard/types';
+import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
 import flatten from '@/utils/flatten';
 import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
@@ -40,12 +40,7 @@ function interpolateQueryValue(value: unknown, range: IRawTimeRange, step: numbe
   return value;
 }
 
-function getDatasourceQueryPayload(
-  target: ITarget,
-  cate: string,
-  options: BuildDashboardQueryRequestOptions & { effectiveRange: IRawTimeRange },
-  value?: unknown,
-) {
+function getDatasourceQueryPayload(target: ITarget, cate: string, options: BuildDashboardQueryRequestOptions & { effectiveRange: IRawTimeRange }, value?: unknown) {
   const payload =
     getDashboardDatasourceDefinition(cate)?.serializeTarget(target) ??
     ({
@@ -60,12 +55,12 @@ function getDatasourceQueryPayload(
     minStep: target.step,
   });
   if (cate === 'prometheus') {
-    payload.expr = target.expr;
+    payload.expr = target.expr as JsonValue;
     payload.instant = !!target.instant;
     payload.step = step;
   }
   if (_.includes(['elasticsearch', 'opensearch'], cate) && value !== undefined) {
-    payload.value = value;
+    payload.value = value as JsonValue;
     delete payload.values;
   }
 

@@ -58,7 +58,7 @@ export default function Textbox(props: Props) {
     <div className={hide ? 'hidden' : ''}>
       <InputGroupWithFormItem label={label || name}>
         <Input
-          value={value}
+          value={value as string}
           onBlur={(e) => {
             let val = e.currentTarget.value;
             updateVariable(name, {

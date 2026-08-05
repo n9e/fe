@@ -33,7 +33,7 @@ interface Iprops {
   color?: string;
   bgColor?: string;
   value: number;
-  formatedValue?: string;
+  formatedValue?: string | number;
   valueUnit?: string;
   thresholds?: IFieldConfig;
 }

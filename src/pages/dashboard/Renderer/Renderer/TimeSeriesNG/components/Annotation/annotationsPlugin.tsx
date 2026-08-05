@@ -12,6 +12,7 @@ import { dateTimeFormat } from '@/utils/datetime/formatter';
 import type { DashboardAnnotation } from '@/pages/dashboard/types';
 
 import EditButton from './EditButton';
+import type { Values as AnnotationValues } from './FormModal';
 
 import './style.less';
 
@@ -25,7 +26,19 @@ interface MarkersProps {
   onDelete: () => void;
 }
 
-function Marker({ annotation, content, timeZone, onEdit, onDelete }: { annotation: DashboardAnnotation; content: React.ReactNode; timeZone?: string; onEdit: () => void; onDelete: () => void }) {
+function Marker({
+  annotation,
+  content,
+  timeZone,
+  onEdit,
+  onDelete,
+}: {
+  annotation: DashboardAnnotation;
+  content: React.ReactNode;
+  timeZone?: string;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const { t } = useTranslation('dashboard');
   const { time_start, time_end, description, tags } = annotation;
   const [popoverVisible, setPopoverVisible] = React.useState(false);
@@ -60,7 +73,7 @@ function Marker({ annotation, content, timeZone, onEdit, onDelete }: { annotatio
           )}
           <Space>
             <EditButton
-              initialValues={annotation}
+              initialValues={annotation as unknown as AnnotationValues}
               timeZone={timeZone}
               onOk={() => {
                 message.success(t('annotation.updated'));

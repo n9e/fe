@@ -58,12 +58,19 @@ export default function Heatmap(props: IProps) {
   const { custom, options } = values;
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
-  const { calc, xAxisField, yAxisField, valueField, scheme } = custom;
+  // custom 为 JsonObject（宽类型），按热力图面板实际使用的结构收窄
+  const { calc, xAxisField, yAxisField, valueField, scheme } = custom as {
+    calc?: string;
+    xAxisField?: string;
+    yAxisField?: string;
+    valueField?: string;
+    scheme?: string;
+  };
   const calculatedValues = useMemo(
     () =>
       getCalculatedValuesBySeries(
         series,
-        calc,
+        calc as string,
         {
           unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
@@ -84,7 +91,7 @@ export default function Heatmap(props: IProps) {
         return {
           ...item.metric,
           Value: item.stat,
-        };
+        } as ChartRow;
       });
     }
     chartRef.current
@@ -130,15 +137,14 @@ export default function Heatmap(props: IProps) {
 
   useEffect(() => {
     if (isPreview) {
-      setStatFields(getColumnsKeys(calculatedValues));
+      setStatFields(getColumnsKeys(calculatedValues as unknown as Array<{ metric: Record<string, string> }>));
     }
   }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   useEffect(() => {
     if (!containerRef.current || !containerSize || !containerSize?.height) return;
     if (chartRef.current) {
-      chartRef.current.width = containerSize.width;
-      chartRef.current.height = containerSize.height;
+      chartRef.current.changeSize(containerSize.width, containerSize.height);
       chartRef.current.render();
       return;
     }

@@ -12,12 +12,12 @@ export default function index({ datasourceValue }: { datasourceValue?: number | 
   const datasourceCate = Form.useWatch('datasourceCate');
 
   if (datasourceCate === DatasourceCateEnum.ck && datasourceValue !== undefined) {
-    return <CKMeta.MetaModal datasourceValue={datasourceValue} />;
+    return <CKMeta.MetaModal datasourceValue={datasourceValue as number} />;
   }
   if (datasourceCate === DatasourceCateEnum.mysql && datasourceValue !== undefined) {
-    return <MySQLMeta.MetaModal datasourceValue={datasourceValue} />;
+    return <MySQLMeta.MetaModal datasourceValue={datasourceValue as number} />;
   }
-  return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={datasourceValue} />;
+  return <DatasourceSelectExtra datasourceCate={datasourceCate} datasourceValue={datasourceValue as number} />;
 
   return null;
 }

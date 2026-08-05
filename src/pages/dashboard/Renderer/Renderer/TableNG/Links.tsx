@@ -7,7 +7,7 @@ import { LinkOutlined } from '@ant-design/icons';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { IOptions } from '../../../types';
+import { IOptions, ScopedVariables } from '../../../types';
 
 type RowValue = string | number | null;
 type RowData = Record<string, RowValue>;
@@ -34,18 +34,19 @@ export function cellClickCallback(
 
   const data: RowData = {};
   _.forEach(cellEvent.data, (valueState, key) => {
-    data[`__row.${key}`] = valueState.value;
+    data[`__row.${key}`] = valueState.value as RowValue;
   });
 
   if (links?.length === 1) {
     const link = links[0];
     const interpolatedUrl = replaceTemplateVariables(link.url, {
-      scopedVars: data,
+      // 运行时 scopedVars 为扁平字符串映射（非 { value } 结构），仅做类型收窄
+      scopedVars: data as unknown as ScopedVariables,
     });
     window.open(interpolatedUrl, link.targetBlank ? '_blank' : '_self');
   } else {
     const event = cellEvent.event;
-    const { x: left, y: top } = event || {};
+    const { x: left, y: top } = (event as { x?: number; y?: number } | null) || {};
     if (left !== undefined && top !== undefined) {
       linksRef.current?.show(data, { left, top });
     }
@@ -101,7 +102,8 @@ function Links(props: Props, ref: React.ForwardedRef<LinksHandle>) {
       <div>
         {_.map(links, (link, index) => {
           const interpolatedUrl = replaceTemplateVariables(link.url, {
-            scopedVars: rowDataItem,
+            // 运行时 scopedVars 为扁平字符串映射（非 { value } 结构），仅做类型收窄
+            scopedVars: rowDataItem as unknown as ScopedVariables,
           });
           return (
             <div key={index} className='py-1.5 px-2 n9e-dashboard-panel-table-ng-links-item'>

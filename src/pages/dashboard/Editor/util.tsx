@@ -23,6 +23,8 @@ export const normalizeInitialValues = (values: IPanel): IPanel => {
       ...normalizedValues.options,
       thresholds: {
         ...(normalizedValues.options?.thresholds || {}),
+        // IThresholds.mode 必填，缺失时按默认 absolute 补齐
+        mode: normalizedValues.options?.thresholds?.mode ?? 'absolute',
         steps: thresholdsSteps,
       },
     },

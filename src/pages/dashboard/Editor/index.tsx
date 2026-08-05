@@ -63,9 +63,9 @@ function index(props: IProps) {
     if (!formRef.current?.getFormInstance) return;
     const formInstance = formRef.current.getFormInstance();
     const values = {
-      ...formInstance.getFieldsValue(),
+      ...(formInstance.getFieldsValue() as Record<string, unknown>),
       targets: formInstance.getFieldValue('targets'),
-    };
+    } as IPanel;
     if (migrateLegacyTable) {
       const availableFields = _.uniq(_.flatMap(normalizeData(series || []), 'columns'));
       setInitialValues(upgradeTableToNG(values, availableFields));

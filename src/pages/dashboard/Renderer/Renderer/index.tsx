@@ -70,7 +70,7 @@ function index(props: IProps) {
     inViewPort: isPreview || inViewPort,
     datasourceCate: values.datasourceCate || 'prometheus',
     datasourceValue: values.datasourceValue || datasourceValue,
-    spanNulls: values.custom?.spanNulls,
+    spanNulls: values.custom?.spanNulls as boolean | undefined,
     scopedVars: values.scopedVars,
     inspect,
     type: values.type,

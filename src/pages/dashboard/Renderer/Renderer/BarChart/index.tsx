@@ -59,12 +59,19 @@ export default function Bar(props: IProps) {
   const { custom, options } = values;
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
-  const { calc, xAxisField, yAxisField, colorField, barMaxWidth } = custom;
+  // custom 为 JsonObject（宽类型），按 bar chart 面板实际使用的结构收窄
+  const { calc, xAxisField, yAxisField, colorField, barMaxWidth } = custom as {
+    calc?: string;
+    xAxisField?: string;
+    yAxisField?: string;
+    colorField?: string;
+    barMaxWidth?: number;
+  };
   const calculatedValues = useMemo(
     () =>
       getCalculatedValuesBySeries(
         series,
-        calc,
+        calc as string,
         {
           unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
@@ -83,27 +90,27 @@ export default function Bar(props: IProps) {
         ...item.metric,
         Value: item.stat,
         Name: item.name,
-      };
+      } as ChartRow;
     });
     data = _.map(
       _.groupBy(data, (item) => {
-        return item[xAxisField] + item[colorField];
+        return (item[xAxisField as string] as string) + (item[colorField as string] as string);
       }),
       (items) => {
         if (items.length === 1) {
           return items[0];
         } else {
           const yAxisFieldValues = _.map(items, (item) => {
-            const val = item[yAxisField];
+            const val = item[yAxisField as string];
             if (_.isString(val) && !_.isNaN(_.toNumber(val))) {
               return _.toNumber(val);
             }
-            return item[yAxisField];
+            return item[yAxisField as string];
           });
           const yAxisFieldValue = _.sum(yAxisFieldValues);
           return {
             ...(items[0] || {}),
-            [yAxisField]: yAxisFieldValue,
+            [yAxisField as string]: yAxisFieldValue,
           };
         }
       },
@@ -168,15 +175,14 @@ export default function Bar(props: IProps) {
 
   useEffect(() => {
     if (isPreview) {
-      setStatFields(getColumnsKeys(calculatedValues));
+      setStatFields(getColumnsKeys(calculatedValues as unknown as Array<{ metric: Record<string, string> }>));
     }
   }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   useEffect(() => {
     if (!containerRef.current || !containerSize || !containerSize?.height) return;
     if (chartRef.current) {
-      chartRef.current.width = containerSize.width;
-      chartRef.current.height = containerSize.height;
+      chartRef.current.changeSize(containerSize.width, containerSize.height);
       chartRef.current.render();
       return;
     }

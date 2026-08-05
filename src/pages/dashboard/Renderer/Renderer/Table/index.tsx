@@ -28,7 +28,7 @@ import moment from 'moment';
 
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { IPanel } from '../../../types';
+import { IPanel, IStandardOptions, IValueMapping, ILink } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 import localeCompare from '../../utils/localeCompare';
@@ -93,7 +93,30 @@ function TableCpt(props: IProps, ref: any) {
   const size = useSize(eleRef);
   const { values, themeMode, isPreview, series } = props;
   const { custom, options, overrides } = values;
-  const { showHeader, calc, aggrDimension, displayMode, columns, sortColumn, sortOrder, colorMode = 'value', tableLayout = 'fixed', pageLimit = 500 } = custom;
+  // custom 为 JsonObject（宽类型），按表格面板实际使用的结构收窄
+  const {
+    showHeader,
+    calc,
+    aggrDimension,
+    displayMode,
+    columns,
+    sortColumn,
+    sortOrder,
+    colorMode = 'value',
+    tableLayout = 'fixed',
+    pageLimit = 500,
+  } = custom as {
+    showHeader?: boolean;
+    calc?: string;
+    aggrDimension?: string | string[];
+    displayMode?: string;
+    columns?: string[];
+    sortColumn?: string;
+    sortOrder?: string;
+    colorMode?: string;
+    tableLayout?: string;
+    pageLimit?: number;
+  };
   const [calculatedValues, setCalculatedValues] = useState<any[]>([]);
   const [sortObj, setSortObj] = useState({
     sortColumn,
@@ -115,7 +138,7 @@ function TableCpt(props: IProps, ref: any) {
   useEffect(() => {
     const data = getCalculatedValuesBySeries(
       series,
-      calc,
+      calc as string,
       {
         unit: options?.standardOptions?.unit,
         decimals: options?.standardOptions?.decimals,
@@ -127,11 +150,11 @@ function TableCpt(props: IProps, ref: any) {
     if (displayMode === 'seriesToRows') {
       fields = ['name', 'value'];
     } else if (displayMode === 'labelsOfSeriesToRows') {
-      fields = !_.isEmpty(columns) ? columns : isRawData(series) ? getColumnsKeys(data) : [...getColumnsKeys(data), 'value'];
+      fields = !_.isEmpty(columns) ? (columns as string[]) : isRawData(series) ? getColumnsKeys(data) : [...getColumnsKeys(data), 'value'];
     } else if (displayMode === 'labelValuesToRows') {
-      fields = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+      fields = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension as string];
     }
-    const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+    const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension as string];
     const tableDataSource = formatToTable(data, aggrDimensions, 'refId');
     const groupNames = _.reduce(
       tableDataSource,
@@ -226,7 +249,7 @@ function TableCpt(props: IProps, ref: any) {
           };
           const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
           if (!_.isEmpty(overrideProps)) {
-            textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+            textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions as IStandardOptions | undefined, overrideProps?.valueMappings as IValueMapping[] | undefined);
           }
           const colorObj = getColor(textObj.color, colorMode, themeMode);
           return <Cell {...textObj} style={colorObj} panel={values} record={record} />;
@@ -255,7 +278,11 @@ function TableCpt(props: IProps, ref: any) {
     }
 
     if (displayMode === 'labelsOfSeriesToRows') {
-      const columnsKeys: any[] = _.isEmpty(columns) ? (isRawData(series) ? getColumnsKeys(calculatedValues) : _.concat(getColumnsKeys(calculatedValues), 'value')) : columns;
+      const columnsKeys: any[] = _.isEmpty(columns)
+        ? isRawData(series)
+          ? getColumnsKeys(calculatedValues)
+          : _.concat(getColumnsKeys(calculatedValues), 'value')
+        : (columns as string[]);
       tableColumns = _.map(columnsKeys, (key, idx) => {
         return {
           title: key,
@@ -279,7 +306,11 @@ function TableCpt(props: IProps, ref: any) {
               };
               const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', record.fields?.refId);
               if (!_.isEmpty(overrideProps)) {
-                textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+                textObj = getSerieTextObj(
+                  record?.stat,
+                  overrideProps?.standardOptions as IStandardOptions | undefined,
+                  overrideProps?.valueMappings as IValueMapping[] | undefined,
+                );
               }
               const colorObj = getColor(textObj.color, colorMode, themeMode);
               return <Cell {...textObj} style={colorObj} panel={values} record={record} />;
@@ -291,7 +322,14 @@ function TableCpt(props: IProps, ref: any) {
             let textObj = getMappedTextObj(text, options?.valueMappings);
             const overrideProps = getOverridePropertiesByName(overrides, 'byName', key);
             if (!_.isEmpty(overrideProps)) {
-              textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings, undefined, undefined, false);
+              textObj = getSerieTextObj(
+                textObj.text,
+                overrideProps?.standardOptions as IStandardOptions | undefined,
+                overrideProps?.valueMappings as IValueMapping[] | undefined,
+                undefined,
+                undefined,
+                false,
+              );
             }
             return <Cell {...textObj} panel={values} record={record} />;
           },
@@ -301,7 +339,7 @@ function TableCpt(props: IProps, ref: any) {
     }
 
     if (displayMode === 'labelValuesToRows' && aggrDimension) {
-      const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+      const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension as string];
       tableDataSource = formatToTable(calculatedValues, aggrDimensions, 'refId');
       const groupNames = _.reduce(
         tableDataSource,
@@ -317,7 +355,7 @@ function TableCpt(props: IProps, ref: any) {
           key: aggrDimension,
           width: tableLayout === 'fixed' ? size?.width! / (groupNames.length + aggrDimensions.length) - 14 : 150,
           sorter: (a, b) => {
-            return localeCompare(a[aggrDimension], b[aggrDimension]);
+            return localeCompare(a[aggrDimension as string], b[aggrDimension as string]);
           },
           sortOrder: getSortOrder(aggrDimension, sortObj),
           render: (text, record) => {
@@ -327,7 +365,7 @@ function TableCpt(props: IProps, ref: any) {
             const textObj = getMappedTextObj(text, options?.valueMappings);
             return <Cell {...textObj} panel={values} record={record} />;
           },
-          ...getColumnSearchProps([aggrDimension]),
+          ...getColumnSearchProps([aggrDimension as string]),
         };
       });
       _.map(groupNames, (name, idx) => {
@@ -352,7 +390,7 @@ function TableCpt(props: IProps, ref: any) {
             };
             const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', name);
             if (!_.isEmpty(overrideProps)) {
-              textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+              textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions as IStandardOptions | undefined, overrideProps?.valueMappings as IValueMapping[] | undefined);
             }
             const colorObj = getColor(textObj.color, colorMode, themeMode);
             return <Cell {...textObj} style={colorObj} panel={values} record={record} />;
@@ -368,7 +406,7 @@ function TableCpt(props: IProps, ref: any) {
         render: (_val, record) => {
           return (
             <Space>
-              {_.map(custom.links, (link, idx) => {
+              {_.map(custom.links as unknown as ILink[], (link, idx) => {
                 const data = {
                   name: record.name,
                   value: record.value,
@@ -440,7 +478,7 @@ function TableCpt(props: IProps, ref: any) {
           });
           data.unshift(['name', 'value']);
           if (displayMode === 'labelsOfSeriesToRows') {
-            const keys = _.isEmpty(columns) ? _.concat(getColumnsKeys(tableDataSource), 'value') : columns;
+            const keys = _.isEmpty(columns) ? _.concat(getColumnsKeys(tableDataSource), 'value') : (columns as string[]);
             data = _.map(tableDataSource, (item) => {
               return _.map(keys, (key) => {
                 if (key === 'value') {

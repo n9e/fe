@@ -43,7 +43,7 @@ export default class JoinByFieldTransformation implements Transformation {
         if (!timestampMap.has(timestamp)) {
           timestampMap.set(timestamp, {});
         }
-        timestampMap.get(timestamp)![`value${index}`] = dataPoint.value;
+        timestampMap.get(timestamp)![`value${index}`] = dataPoint.value as number;
       });
     });
 

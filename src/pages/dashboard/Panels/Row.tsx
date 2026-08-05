@@ -135,7 +135,7 @@ export default function Row(props: IProps) {
         onOk={() => {
           onEditClick({
             ...row,
-            name: newName,
+            name: newName as string,
           });
           setEditVisble(false);
         }}
@@ -152,7 +152,7 @@ export default function Row(props: IProps) {
             onPressEnter={() => {
               onEditClick({
                 ...row,
-                name: newName,
+                name: newName as string,
               });
               setEditVisble(false);
             }}

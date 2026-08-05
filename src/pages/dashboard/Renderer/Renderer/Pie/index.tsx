@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import G2PieChart from '@/components/G2PieChart';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { IPanel } from '../../../types';
+import { IPanel, ScopedVariables } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../utils/valueFormatter';
@@ -64,7 +64,30 @@ export default function Pie(props: IProps) {
   const { custom, options } = values;
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
-  const { calc, legengPosition, max, labelWithName, labelWithValue, detailUrl, detailName, donut = false, valueField = 'Value', countOfValueField = true } = custom;
+  // custom 为 JsonObject（宽类型），按 pie 面板实际使用的结构收窄
+  const {
+    calc,
+    legengPosition,
+    max,
+    labelWithName,
+    labelWithValue,
+    detailUrl,
+    detailName,
+    donut = false,
+    valueField = 'Value',
+    countOfValueField = true,
+  } = custom as {
+    calc?: string;
+    legengPosition?: 'right' | 'top' | 'left' | 'bottom' | 'hidden';
+    max?: number;
+    labelWithName?: boolean;
+    labelWithValue?: boolean;
+    detailUrl?: string;
+    detailName?: string;
+    donut?: boolean;
+    valueField?: string;
+    countOfValueField?: boolean;
+  };
   const dataFormatter = (text: number) => {
     const resFormatter = valueFormatter(
       {
@@ -85,8 +108,9 @@ export default function Pie(props: IProps) {
     _.forEach(data.metric, (value, key) => {
       scopedVars[`__field.labels.${key}`] = value;
     });
-    return replaceTemplateVariables(detailUrl, {
-      scopedVars,
+    return replaceTemplateVariables(detailUrl as string, {
+      // 运行时 scopedVars 为扁平字符串映射（非 { value } 结构），仅做类型收窄
+      scopedVars: scopedVars as unknown as ScopedVariables,
     });
   };
 
@@ -94,7 +118,7 @@ export default function Pie(props: IProps) {
     () =>
       getCalculatedValuesBySeries(
         series,
-        calc,
+        calc as string,
         {
           unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
@@ -112,8 +136,8 @@ export default function Pie(props: IProps) {
         _.groupBy(
           _.map(calculatedValues, (item) => {
             return {
-              name: custom.valueField,
-              value: _.toNumber(_.get(item, ['metric', custom.valueField])),
+              name: valueField,
+              value: _.toNumber(_.get(item, ['metric', valueField as string])),
             };
           }),
           'value',
@@ -123,7 +147,7 @@ export default function Pie(props: IProps) {
             name,
             value: _.size(vals),
             metric: {
-              [custom.valueField]: name,
+              [valueField]: name,
             },
           };
         },
@@ -132,7 +156,7 @@ export default function Pie(props: IProps) {
       data = _.map(calculatedValues, (item) => {
         return {
           name: item.name ?? '',
-          value: _.toNumber(_.get(item, ['metric', custom.valueField])),
+          value: _.toNumber(_.get(item, ['metric', valueField as string])),
           metric: item.metric,
         };
       });
@@ -142,14 +166,18 @@ export default function Pie(props: IProps) {
         ? data.slice(0, max).concat({ name: 'Other', value: data.slice(max).reduce((previousValue: number, currentValue) => currentValue.value + previousValue, 0), metric: {} })
         : data;
   } else {
-    const sortedValues = calculatedValues.sort((a, b) => b.stat - a.stat);
+    const sortedValues = calculatedValues.sort((a, b) => (b.stat as number) - (a.stat as number));
     data =
       max && sortedValues.length > max
         ? sortedValues
             .slice(0, max)
-            .map((i) => ({ name: i.name ?? '', value: i.stat, metric: i.metric }))
-            .concat({ name: 'Other', value: sortedValues.slice(max).reduce((previousValue: number, currentValue: (typeof sortedValues)[number]) => currentValue.stat + previousValue, 0), metric: {} })
-        : sortedValues.map((i) => ({ name: i.name ?? '', value: i.stat, metric: i.metric }));
+            .map((i) => ({ name: i.name ?? '', value: i.stat as number, metric: i.metric }))
+            .concat({
+              name: 'Other',
+              value: sortedValues.slice(max).reduce((previousValue: number, currentValue: (typeof sortedValues)[number]) => (currentValue.stat as number) + previousValue, 0),
+              metric: {},
+            })
+        : sortedValues.map((i) => ({ name: i.name ?? '', value: i.stat as number, metric: i.metric }));
   }
 
   // 只有单个序列值且是背景色模式，则填充整个卡片的背景色
@@ -165,10 +193,10 @@ export default function Pie(props: IProps) {
       <G2PieChart
         themeMode={themeMode}
         data={data}
-        positon={legengPosition !== 'hidden' ? legengPosition : undefined}
+        positon={legengPosition !== 'hidden' ? (legengPosition as 'right' | 'top' | 'left' | 'bottom') : undefined}
         hidden={legengPosition === 'hidden'}
-        labelWithName={labelWithName}
-        labelWithValue={labelWithValue}
+        labelWithName={labelWithName ?? false}
+        labelWithValue={labelWithValue ?? false}
         dataFormatter={dataFormatter}
         detailFormatter={detailFormatter}
         detailName={detailName || t('common:btn.detail')}

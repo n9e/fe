@@ -4,6 +4,8 @@ declare module 'semver' {
     gte(version: string, compareTo: string): boolean;
     lt(version: string, compareTo: string): boolean;
     valid(version: string | undefined): string | null;
+    gt(version: string, compareTo: string): boolean;
+    rcompare(v1: string, v2: string): number;
   }
 
   const semver: SemverModule;
@@ -18,6 +20,7 @@ declare module 'react-color' {
   import type { ComponentType } from 'react';
 
   export interface ColorResult {
+    hex: string;
     rgb: {
       r: number;
       g: number;

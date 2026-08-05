@@ -88,7 +88,12 @@ export default function index(props: IProps) {
                           </Space>
                         ),
                         onClick: () => {
-                          Edit({ initialValues: value, onOk: props.onChange });
+                          Edit({
+                            initialValues: value as ILink[],
+                            onOk: props.onChange as (value: unknown) => void,
+                            // 组件内部使用 destroy 关闭弹窗，onCancel 为类型所需
+                            onCancel: () => undefined,
+                          });
                         },
                       },
                     ]

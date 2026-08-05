@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import _ from 'lodash';
 import TsGraph from '@fc-plot/ts-graph';
-import { IOptions, IOverride } from '../../../types';
+import { IOptions, IOverride, IStandardOptions, IValueMapping, IThresholds } from '../../../types';
 import { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 
@@ -36,7 +36,8 @@ interface Props {
   serie: unknown;
   options: IOptions;
   style?: React.CSSProperties;
-  minFontSize?: StatFontSize;
+  // minFontSize 的键是 name/value（与 textSize 的 title/value 不同）
+  minFontSize?: { name?: number; value?: number };
   overrides: IOverride[];
 }
 
@@ -69,8 +70,13 @@ export default function StatItem(props: Props) {
 
   const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', item.fields?.refId);
   if (!_.isEmpty(overrideProps)) {
-    const textObj = getSerieTextObj(item?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings, overrideProps?.thresholds);
-    item.name = getMappedTextObj(item.name, overrideProps?.valueMappings)?.text;
+    const textObj = getSerieTextObj(
+      item?.stat,
+      overrideProps?.standardOptions as IStandardOptions | undefined,
+      overrideProps?.valueMappings as IValueMapping[] | undefined,
+      overrideProps?.thresholds as IThresholds | undefined,
+    );
+    item.name = getMappedTextObj(item.name as string, overrideProps?.valueMappings as IValueMapping[] | undefined)?.text;
     item.value = textObj.value;
     item.unit = textObj.unit;
     item.color = textObj.color;
@@ -78,8 +84,8 @@ export default function StatItem(props: Props) {
 
   const color = item.color;
   const backgroundColor = colorMode === 'background' ? color : 'transparent';
-  const headerFontSize = textSize?.title ?? minFontSize?.name;
-  const valueAndUnitFontSize = textSize?.value ?? minFontSize?.value;
+  const headerFontSize = textSize?.title ?? minFontSize?.name ?? 12;
+  const valueAndUnitFontSize = textSize?.value ?? minFontSize?.value ?? 12;
 
   useEffect(() => {
     if (chartEleRef.current) {

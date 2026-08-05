@@ -48,7 +48,7 @@ export default function LCDBar(props: Props) {
     cellStyles.height = `${CELL_HEIGHT}px`;
     cellStyles.marginRight = `${CELL_SPACING}px`;
 
-    if (currentValue <= item.stat) {
+    if (item.stat != null && currentValue <= item.stat) {
       cellStyles.backgroundColor = textObj.color;
     } else {
       let backgroundColor = 'unset';

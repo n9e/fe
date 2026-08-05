@@ -49,7 +49,7 @@ export default function index({ datasourceCate, datasourceValue, variablesWithOp
               ajustDatasourceList={(list) => {
                 const data = _.filter(
                   _.concat(
-                    _.map(datasourceVars, (item) => {
+                    _.map(datasourceVars, (item): { id: string | number; name: string; plugin_type: string; is_default: boolean; identifier?: string } => {
                       return {
                         id: `\${${item.name}}`,
                         name: `\${${item.name}}`,

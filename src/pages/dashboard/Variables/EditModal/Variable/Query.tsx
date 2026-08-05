@@ -32,6 +32,7 @@ interface DatasourceOption {
   id: number | string;
   name: string;
   plugin_type: string;
+  is_default: boolean;
 }
 
 export default function Query(props: Props) {
@@ -52,16 +53,14 @@ export default function Query(props: Props) {
 
   const service = () => {
     if (item) {
-      const builtInVariables = getBuiltInVariables({
-        range,
-      });
+      const builtInVariables = getBuiltInVariables(range);
       const data = adjustData(_.concat(variablesWithOptions, builtInVariables), {
         datasourceList: datasourceList,
         isPlaceholderQuoted: isPlaceholderQuoted(item.definition, item.name),
         isEscapeJsonString: true,
       });
-      const formatedDefinition = formatString(item.definition, data);
-      const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
+      const formatedDefinition = formatString(item.definition as string, data);
+      const formatedQuery = item.query?.query ? formatString(item.query.query as string, data) : undefined;
       const datasourceValue = formatDatasource(item.datasource.value, data);
 
       if (!item.datasource) {
@@ -106,6 +105,7 @@ export default function Query(props: Props) {
     id: `\${${variable.name}}`,
     name: `\${${variable.name}}`,
     plugin_type: variable.definition,
+    is_default: false,
   }));
   const selectableDatasourceList: DatasourceOption[] = datasourceList;
 
@@ -127,25 +127,13 @@ export default function Query(props: Props) {
         <DatasourceSelectV3
           datasourceCateList={datasourceCateOptions}
           ajustDatasourceList={(list) => {
-            return _.filter(
-              _.concat(
-                variableDatasourceOptions,
-                list,
-              ),
-              (item) => {
-                const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                return cateData?.dashboard === true && cateData.dashboardVariable === true && (cateData.graphPro ? IS_PLUS : true);
-              },
-            );
+            return _.filter(_.concat(variableDatasourceOptions, list), (item) => {
+              const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+              return cateData?.dashboard === true && cateData.dashboardVariable === true && (cateData.graphPro ? IS_PLUS : true);
+            });
           }}
           onChange={(val) => {
-            const cate = _.find(
-              _.concat(
-                variableDatasourceOptions,
-                selectableDatasourceList,
-              ),
-              { id: val },
-            )?.plugin_type;
+            const cate = _.find(_.concat(variableDatasourceOptions, selectableDatasourceList), { id: val })?.plugin_type;
             form.setFieldsValue({
               datasource: {
                 cate: cate,

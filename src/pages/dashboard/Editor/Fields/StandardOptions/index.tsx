@@ -20,6 +20,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { CustomUnitPicker } from '@/pages/dashboard/Components/UnitPicker';
+import type { UnitOption } from '@/pages/dashboard/Components/UnitPicker/utils';
 import { Panel } from '../../Components/Collapse';
 
 interface IProps {
@@ -93,7 +94,7 @@ export default function index(props: IProps) {
                             };
                           }
                           return item;
-                        });
+                        }) as UnitOption[];
                       }}
                     />
                   </Form.Item>

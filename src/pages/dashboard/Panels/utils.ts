@@ -39,13 +39,13 @@ export function sortPanelsByGridLayout(panels: IPanel[]) {
   });
 }
 
-export function updatePanelsLayout(panels: IPanel[], newLayout: IPanel) {
+export function updatePanelsLayout(panels: IPanel[], newLayout: Array<{ i: string; h: number; w: number; x: number; y: number }>) {
   return _.map(panels, (panel: IPanel) => {
     const newPanel = { ...panel };
     const findedLayout = _.find(newLayout, { i: newPanel.layout.i });
     if (findedLayout) {
       // newLayout 可能是 ReactGridLayout.onLayoutChange 中的参数，掺杂了其他属性
-      newPanel.layout = _.pick(findedLayout, ['h', 'w', 'x', 'y', 'i', 'isResizable']);
+      newPanel.layout = _.pick(findedLayout, ['h', 'w', 'x', 'y', 'i', 'isResizable']) as IPanel['layout'];
     }
     return newPanel;
   });
@@ -217,7 +217,7 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
     },
   };
   const newPanels = _.map(panels, (item, idx) => {
-    if (idx >= nextRowIdx) {
+    if (nextRowIdx !== undefined && idx >= nextRowIdx) {
       return {
         ...item,
         layout: {

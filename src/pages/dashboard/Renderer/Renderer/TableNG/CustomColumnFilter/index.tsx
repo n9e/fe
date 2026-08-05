@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import type { IAfterGuiAttachedParams } from 'ag-grid-community';
 import type { CustomFilterDisplayProps } from 'ag-grid-react';
 import { useGridFilterDisplay } from 'ag-grid-react';
-import type { IFilterPassParams } from 'ag-grid-community';
 
 import { SIZE } from '@/utils/constant';
 
@@ -77,7 +76,16 @@ const CustomColumnFilter = ({ state, onStateChange, onAction, api }: CustomFilte
 
 export default CustomColumnFilter;
 
-export function doesFilterPass(params: IFilterPassParams) {
+// ag-grid-react 的 useGridFilterDisplay 过滤传递参数，本地收窄声明（ag-grid-community 无 IFilterPassParams）
+interface FilterPassParams {
+  model: string | undefined;
+  handlerParams: {
+    getValue: (node: unknown) => { value?: unknown } | undefined;
+  };
+  node: unknown;
+}
+
+export function doesFilterPass(params: FilterPassParams) {
   const { model, handlerParams } = params;
   if (!model) return true; // 没有过滤器时显示所有数据
 

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import type { IPanel } from '../types';
+import type { IPanel, ITarget, IOverride, LinksItem } from '../types';
 
 const toRowVariable = (fieldName: string) => `\${__row.${fieldName}}`;
 
@@ -76,10 +76,11 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
         return { ...targetWithoutLegend, instant: true };
       }
       return { ...target, instant: true };
-    });
+    }) as ITarget[];
     result.overrides = asRecordArray(result.overrides).map((override) => {
-      if (override.matcher?.id !== 'byFrameRefID') return override;
-      const targetIndex = asRecordArray(result.targets).findIndex((target) => target.refId === override.matcher.value);
+      const matcher = isRecord(override.matcher) ? override.matcher : undefined;
+      if (matcher?.id !== 'byFrameRefID') return override;
+      const targetIndex = asRecordArray(result.targets).findIndex((target) => target.refId === matcher.value);
       let fieldName: string | undefined;
       if (targetIndex >= 0) {
         if (displayMode === 'labelValuesToRows') {
@@ -105,7 +106,7 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
           ...(isRecord(override.properties) ? override.properties : {}),
         },
       };
-    });
+    }) as unknown as IOverride[];
     if (displayMode === 'seriesToRows') {
       const fields = asStringArray(availableFields).length ? asStringArray(availableFields) : ['__name__', ...valueFieldNames];
       const nameField = fields.find((field) => field === '__name__') || fields.find((field) => field === 'name');
@@ -173,7 +174,7 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
     const optionLinks = [...existingOptionLinks, ...legacyLinks].map((link) => ({
       ...link,
       url: typeof link.url === 'string' ? replaceLegacyLinkVariables(link.url, valueFieldName) : link.url,
-    }));
+    })) as LinksItem[];
     if (optionLinks.length) result.options.links = optionLinks;
 
     return result;

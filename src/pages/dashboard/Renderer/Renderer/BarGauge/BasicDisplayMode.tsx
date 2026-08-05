@@ -6,7 +6,7 @@ import { useSize } from 'ahooks';
 
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { IOptions, IBarGaugeStyles } from '../../../types';
+import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../types';
 import { BarGaugeValue, calculatePercentage } from './utils';
 
 interface Props {
@@ -74,7 +74,7 @@ export default function BasicDisplayMode(props: Props) {
             <a
               target='_blank'
               href={replaceTemplateVariables(detailUrl, {
-                scopedVars,
+                scopedVars: scopedVars as unknown as ScopedVariables,
               })}
             >
               {name}

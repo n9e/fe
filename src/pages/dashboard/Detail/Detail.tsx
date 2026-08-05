@@ -41,7 +41,7 @@ import initializeVariablesValue from '@/pages/dashboard/Variables/utils/initiali
 import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import Variables, { IVariable } from '../Variables';
-import { ILink, IDashboardConfig, DashboardAnnotation, IPanel, JsonValue, ScopedVariables } from '../types';
+import { ILink, IDashboardConfig, DashboardAnnotation, IPanel, JsonObject, JsonValue, ScopedVariables } from '../types';
 import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
@@ -136,9 +136,9 @@ export default function DetailV2(props: IProps) {
   const [, setGlobalRange] = useGlobalState('range');
   const [, setParamsAiAction] = useParamsAiAction();
   let { id } = useParams<URLParam>();
-  const query = queryString.parse(location.search);
+  const query = queryString.parse(location.search) as Record<string, string | string[] | null | undefined>;
   if (isBuiltin) {
-    id = builtinParamsToID(query);
+    id = builtinParamsToID(query as Record<string, string | (string | null)[] | null>);
   }
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
@@ -146,9 +146,11 @@ export default function DetailV2(props: IProps) {
   const [annotations, setAnnotations] = useState<DashboardAnnotation[]>([]);
   const [annotationsRefreshFlag, setAnnotationsRefreshFlag] = useState<string>(_.uniqueId('annotationsRefreshFlag_'));
   const [loading, setLoading] = useState(false);
-  const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
-  const [timezone, setTimezone] = useState<string>(getDefaultTimezone(id, query));
-  const [intervalSeconds, setIntervalSeconds] = useState<number | undefined>(getDefaultIntervalSeconds(query));
+  const [range, setRange] = useState<IRawTimeRange>(
+    getDefaultTimeRange(id as string, query as Record<string, string | string[] | null | undefined>, dashboardDefaultRangeIndex as number | undefined),
+  );
+  const [timezone, setTimezone] = useState<string>(getDefaultTimezone(id as string, query as Record<string, string | string[] | null | undefined>) as string);
+  const [intervalSeconds, setIntervalSeconds] = useState<number | undefined>(getDefaultIntervalSeconds(query as Record<string, string | string[] | null | undefined>));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
     visible: false,
@@ -221,7 +223,7 @@ export default function DetailV2(props: IProps) {
           const normalizedVariables = initializeVariablesValue(currentVariables, query, {
             dashboardId,
           });
-          setVariablesWithOptions(normalizedVariables);
+          setVariablesWithOptions(normalizedVariables as unknown as IVariable<JsonObject>[]);
           // 暂时不处理 panels，等待变量初始化完成
           setVariablesInitialized(false);
           setDashboardLinks(configs.links);
@@ -399,7 +401,7 @@ export default function DetailV2(props: IProps) {
                 dashboard={dashboard}
                 dashboardLinks={dashboardLinks}
                 setDashboardLinks={setDashboardLinks}
-                handleUpdateDashboardConfigs={handleUpdateDashboardConfigs}
+                handleUpdateDashboardConfigs={handleUpdateDashboardConfigs as unknown as (id: number, params: Record<string, unknown>) => void}
                 range={range}
                 setRange={(v) => {
                   setRange(v);
@@ -420,7 +422,7 @@ export default function DetailV2(props: IProps) {
                         id: uuidv4(),
                         name: t('visualizations.row'),
                         collapsed: true,
-                      },
+                      } as IPanel,
                       'row',
                     );
                     setPanels(newPanels);
@@ -441,7 +443,7 @@ export default function DetailV2(props: IProps) {
                     configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                   });
                 }}
-                routerPromptRef={routerPromptRef}
+                routerPromptRef={routerPromptRef as unknown as React.MutableRefObject<{ showPrompt: () => void }>}
                 hideGoBack={hideGoBack}
                 hideGoList={hideGoList}
               />
@@ -497,12 +499,12 @@ export default function DetailV2(props: IProps) {
                             }),
                           }
                         : target.datasource,
-                      expr: replaceTemplateVariables(target.expr, {
+                      expr: replaceTemplateVariables(target.expr as string, {
                         range,
                         scopedVars: panel.scopedVars,
                       }),
-                      query: replaceTargetQueryVariables(target.query, range, panel.scopedVars),
-                      queries: replaceTargetQueryVariables(target.queries, range, panel.scopedVars),
+                      query: replaceTargetQueryVariables(target.query as unknown as JsonValue, range, panel.scopedVars),
+                      queries: replaceTargetQueryVariables(target.queries as unknown as JsonValue, range, panel.scopedVars),
                     };
                   });
                   const resolvedDatasources = _.compact(
@@ -526,12 +528,12 @@ export default function DetailV2(props: IProps) {
                       configs: JSON.stringify(serielData),
                     },
                   ]).then((res) => {
-                    const ids = res.dat;
+                    const ids = (res as { dat: string }).dat;
                     window.open(basePrefix + '/chart/' + ids);
                   });
                 }}
                 onUpdated={(res) => {
-                  updateAtRef.current = res.update_at;
+                  updateAtRef.current = (res as { update_at: number }).update_at;
                   refresh();
                 }}
                 setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}

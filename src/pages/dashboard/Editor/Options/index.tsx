@@ -52,5 +52,5 @@ export default function index({ type, targets }: OptionsProps) {
     heatmap: <Heatmap />,
     barchart: <BarChart />,
   };
-  return OptionsCptMap[type] || `${t('detail.invalidPanelType')} ${type}`;
+  return (OptionsCptMap[type] ?? <div>{`${t('detail.invalidPanelType')} ${type}`}</div>) as React.ReactElement;
 }

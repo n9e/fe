@@ -5,7 +5,7 @@ import Color from 'color';
 
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { IOptions, IBarGaugeStyles } from '../../../../types';
+import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../../types';
 import { getSerieTextObj } from '../../../utils/getCalculatedValuesBySeries';
 import type { BarGaugeValue } from '../utils';
 
@@ -92,7 +92,7 @@ export default function LCDBar(props: Props) {
             <a
               target='_blank'
               href={replaceTemplateVariables(detailUrl, {
-                scopedVars,
+                scopedVars: scopedVars as unknown as ScopedVariables,
               })}
             >
               {name}

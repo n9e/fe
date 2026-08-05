@@ -33,6 +33,7 @@ import { CommonStateContext } from '@/App';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel } from '../../../types';
+import type { IStandardOptions } from '@/pages/dashboard/types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
 import getSerieName from '../../utils/getSerieName';
@@ -314,19 +315,21 @@ export default function index(props: IProps) {
               name = options?.standardOptions?.displayName;
             }
             const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
-            if (override && override?.properties?.standardOptions?.displayName) {
-              name = override?.properties?.standardOptions?.displayName;
+            const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
+            if (override && overrideStandardOptions?.displayName) {
+              name = overrideStandardOptions?.displayName;
             }
             return getMappedTextObj(name, options?.valueMappings)?.text;
           },
           pointValueformatter: (val, nearestPoint) => {
             const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
             if (override) {
+              const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.unit,
-                  decimals: override?.properties?.standardOptions?.decimals,
-                  dateFormat: override?.properties?.standardOptions?.dateFormat,
+                  unit: overrideStandardOptions?.unit,
+                  decimals: overrideStandardOptions?.decimals,
+                  dateFormat: overrideStandardOptions?.dateFormat,
                 },
                 val,
               ).text;
@@ -381,15 +384,16 @@ export default function index(props: IProps) {
           ...chartRef.current.options.yAxis,
           visible: overrides?.[0]?.properties?.rightYAxisDisplay === 'normal',
           matchRefId: overrides?.[0]?.matcher?.value,
-          min: overrides?.[0]?.properties?.standardOptions?.min,
-          max: overrides?.[0]?.properties?.standardOptions?.max,
+          min: (overrides?.[0]?.properties?.standardOptions as IStandardOptions | undefined)?.min,
+          max: (overrides?.[0]?.properties?.standardOptions as IStandardOptions | undefined)?.max,
           backgroundColor: themeMode === 'dark' ? '#2A2D3C' : '#fff',
           tickValueFormatter: (val) => {
+            const overrideStandardOptions = overrides?.[0]?.properties?.standardOptions as IStandardOptions | undefined;
             return valueFormatter(
               {
-                unit: overrides?.[0]?.properties?.standardOptions?.unit,
-                decimals: overrides?.[0]?.properties?.standardOptions?.decimals,
-                dateFormat: overrides?.[0]?.properties?.standardOptions?.dateFormat,
+                unit: overrideStandardOptions?.unit,
+                decimals: overrideStandardOptions?.decimals,
+                dateFormat: overrideStandardOptions?.dateFormat,
               },
               val,
             ).text;

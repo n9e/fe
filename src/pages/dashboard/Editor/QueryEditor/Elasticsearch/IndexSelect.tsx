@@ -14,7 +14,7 @@ interface IProps {
   name?: string | string[]; // 可自定义 name 或者 [...prefixName, 'query', 'index']
 }
 
-export default function IndexSelect({ prefixField = {}, prefixName = [], cate, datasourceValue, name }: IProps) {
+export default function IndexSelect({ prefixField = {} as FormListFieldData, prefixName = [], cate, datasourceValue, name }: IProps) {
   const [options, setOptions] = useState<ElasticsearchSelectOption[]>([]);
   const [search, setSearch] = useState('');
   const { t } = useTranslation('datasource');

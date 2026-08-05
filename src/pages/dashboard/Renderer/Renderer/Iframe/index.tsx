@@ -14,7 +14,7 @@ interface IProps {
 export default function index(props: IProps) {
   const { values } = props;
   const { custom } = values;
-  const { src } = custom as IIframeStyles;
+  const { src } = custom as unknown as IIframeStyles;
   const content = replaceTemplateVariables(src);
 
   return (

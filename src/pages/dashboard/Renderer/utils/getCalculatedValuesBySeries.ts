@@ -35,6 +35,24 @@ export interface CalculatedSeries {
   visible?: boolean;
 }
 
+/**
+ * getCalculatedValuesBySeries 的返回结构：原始序列字段 + getSerieTextObj 格式化字段。
+ * 统一两个分支（origin / 聚合）的返回类型，避免下游消费方拿到联合类型。
+ */
+export interface CalculatedSeriesValue {
+  id: string;
+  name?: string;
+  __time__?: number;
+  target?: ITarget;
+  metric: Record<string, string | undefined>;
+  fields: Record<string, string | number | undefined>;
+  stat: SeriesValue;
+  value: string | number;
+  unit: string;
+  color: string;
+  text: string;
+}
+
 const getValueAndToNumber = (value?: SeriesPoint) => {
   return _.toNumber(value?.[1] ?? NaN);
 };
@@ -137,7 +155,7 @@ export const getSerieTextObj = (
 
 export const getMappedTextObj = (textValue: string, valueMappings?: IValueMapping[]) => {
   if (typeof textValue === 'string') {
-  const matchedValueMapping = _.find(valueMappings, (item) => {
+    const matchedValueMapping = _.find(valueMappings, (item) => {
       const { type, match } = item;
       if (type === 'textValue') {
         if (textValue === match?.textValue) return true;
@@ -177,7 +195,7 @@ const getCalculatedValuesBySeries = (
   },
   valueMappings?: IValueMapping[],
   thresholds?: IThresholds,
-) => {
+): CalculatedSeriesValue[] => {
   if (calc === 'origin') {
     let values: Array<{
       id: string;
@@ -191,7 +209,7 @@ const getCalculatedValuesBySeries = (
       _.forEach(serie.data, (item) => {
         values.push({
           id: `${serie.id}_${item[0]}`,
-          name: getMappedTextObj(serie.name, valueMappings)?.text,
+          name: getMappedTextObj(serie.name as string, valueMappings)?.text,
           __time__: item[0],
           metric: _.reduce(
             serie.metric,
@@ -215,10 +233,10 @@ const getCalculatedValuesBySeries = (
     values = _.map(values, (item) => {
       return {
         ...item,
-        ...getSerieTextObj(item.stat, { unit, decimals, dateFormat }, valueMappings, thresholds, [minValue, maxValue]),
+        ...getSerieTextObj(item.stat, { unit, decimals, dateFormat }, valueMappings, thresholds, [minValue as number, maxValue as number]),
       };
-    });
-    return values;
+    }) as typeof values;
+    return values as CalculatedSeriesValue[];
   }
   let values = _.map(series, (serie) => {
     const results = {
@@ -246,12 +264,12 @@ const getCalculatedValuesBySeries = (
     // 4. 最后把 name 通过 valueMappings 转换
     let name = serie.name;
     if (!name) {
-      name = getSerieName(serie.metric, { valueField, legend: serie.target?.legend, ref: serie.isExp ? serie.refId : undefined });
+      name = getSerieName(serie.metric, { valueField, legend: serie.target?.legend, ref: serie.isExp ? serie.refId : undefined }) as string;
     }
 
     return {
       id: serie.id,
-      name: getMappedTextObj(name, valueMappings)?.text,
+      name: getMappedTextObj(name as string, valueMappings)?.text,
       target: serie.target,
       metric: _.reduce(
         serie.metric,
@@ -273,22 +291,30 @@ const getCalculatedValuesBySeries = (
   values = _.map(values, (item) => {
     return {
       ...item,
-      ...getSerieTextObj(item.stat, { unit, decimals, dateFormat }, valueMappings, thresholds, [minValue, maxValue]),
+      ...getSerieTextObj(item.stat, { unit, decimals, dateFormat }, valueMappings, thresholds, [minValue as number, maxValue as number]),
     };
-  });
-  return values;
+  }) as typeof values;
+  return values as unknown as CalculatedSeriesValue[];
 };
 
-export const getLegendValues = (series: CalculatedSeries[], standardOptions: IStandardOptions | undefined, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
+export const getLegendValues = (
+  series: CalculatedSeries[],
+  standardOptions: IStandardOptions | undefined,
+  hexPalette: string[],
+  stack = false,
+  valueMappings?: IValueMapping[],
+  overrides?: IOverride[],
+) => {
   let { decimals, dateFormat } = standardOptions || {};
   let unit = standardOptions?.unit;
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
     const override = _.find(overrides, (item) => item.matcher?.value === serie.refId);
     if (override) {
-      unit = override?.properties?.standardOptions?.unit;
-      decimals = override?.properties?.standardOptions?.decimals;
-      dateFormat = override?.properties?.standardOptions?.dateFormat;
+      const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
+      unit = overrideStandardOptions?.unit;
+      decimals = overrideStandardOptions?.decimals;
+      dateFormat = overrideStandardOptions?.dateFormat;
     }
     const results = {
       max: getValueAndToNumber(_.maxBy(serie.data, (item) => _.toNumber(item[1]))),
@@ -299,7 +325,7 @@ export const getLegendValues = (series: CalculatedSeries[], standardOptions: ISt
     };
     return {
       id: serie.id,
-      name: getMappedTextObj(serie.name, valueMappings)?.text,
+      name: getMappedTextObj(serie.name as string, valueMappings)?.text,
       metric: _.reduce(
         serie.metric,
         (pre, curVal, curKey) => {

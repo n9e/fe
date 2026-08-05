@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { Form } from 'antd';
+import type { FormInstance } from 'antd';
 import { act, render, waitFor } from '@testing-library/react';
 
 import Organize from './index';
@@ -42,7 +43,7 @@ const logSeries: DashboardSeries[] = [
   { id: 'B-log-2', refId: 'B', metric: { host: 'web-02', message: 'request failed', status: '500' }, data: [], mode: 'raw' },
 ];
 
-function renderOrganize(options: Record<string, unknown>, onFormReady: (form: ReturnType<typeof Form.useForm>) => void) {
+function renderOrganize(options: Record<string, unknown>, onFormReady: (form: FormInstance) => void) {
   function Harness() {
     const [form] = Form.useForm();
     React.useEffect(() => {
@@ -79,7 +80,7 @@ describe('dashboard Organize 编辑器字段列表维护', () => {
   });
 
   it('options.fields 为空时初始化为当前数据列', async () => {
-    let form: ReturnType<typeof Form.useForm> | undefined;
+    let form: FormInstance | undefined;
     renderOrganize({}, (f) => {
       form = f;
     });
@@ -90,7 +91,7 @@ describe('dashboard Organize 编辑器字段列表维护', () => {
   });
 
   it('不覆盖用户已保存的字段顺序（仅追加新列）', async () => {
-    let form: ReturnType<typeof Form.useForm> | undefined;
+    let form: FormInstance | undefined;
     const savedOrder = ['status', 'host', 'message'];
     renderOrganize({ fields: savedOrder, indexByName: { status: 0, host: 1, message: 2 } }, (f) => {
       form = f;
@@ -103,7 +104,7 @@ describe('dashboard Organize 编辑器字段列表维护', () => {
   });
 
   it('数据源新增字段时追加到已保存字段之后', async () => {
-    let form: ReturnType<typeof Form.useForm> | undefined;
+    let form: FormInstance | undefined;
     renderOrganize({ fields: ['host', 'message'] }, (f) => {
       form = f;
     });
@@ -116,10 +117,10 @@ describe('dashboard Organize 编辑器字段列表维护', () => {
   it('多帧数据（columns 为空）时不清空已保存的 fields', async () => {
     // 多帧场景下 useColumns 返回 error、columns 为 undefined
     setGlobalState('series', [
-      { id: 'A-1', refId: 'A', metric: { a: '1' }, data: [[1710000000, 1]], mode: 'timeSeries' },
-      { id: 'B-1', refId: 'B', metric: { b: '2' }, data: [[1710000000, 2]], mode: 'timeSeries' },
+      { id: 'A-1', refId: 'A', metric: { a: '1' }, data: [[1710000000, 1]], mode: 'timeSeries', isExp: false },
+      { id: 'B-1', refId: 'B', metric: { b: '2' }, data: [[1710000000, 2]], mode: 'timeSeries', isExp: false },
     ]);
-    let form: ReturnType<typeof Form.useForm> | undefined;
+    let form: FormInstance | undefined;
     const savedFields = ['a', 'b'];
     renderOrganize({ fields: savedFields }, (f) => {
       form = f;

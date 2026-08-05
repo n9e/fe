@@ -15,8 +15,8 @@ interface IProps {
 export default function index(props: IProps) {
   const { values, themeMode } = props;
   const { custom } = values;
-  const { textColor, textDarkColor, bgColor, textSize, justifyContent, alignItems } = custom as ITextStyles;
-  const content = replaceTemplateVariables(custom.content);
+  const { textColor, textDarkColor, bgColor, textSize, justifyContent, alignItems } = custom as unknown as ITextStyles;
+  const content = replaceTemplateVariables(custom.content as string);
 
   return (
     <Markdown

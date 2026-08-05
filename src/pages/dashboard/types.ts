@@ -101,7 +101,8 @@ export interface IValueMapping {
 export interface IThresholds {
   steps: {
     color: string;
-    value: number;
+    // 基础阈值（base）没有具体的值，value 为 null；其余步骤为数值
+    value: number | null;
     type?: 'base';
   }[];
   mode: 'absolute' | 'percentage';

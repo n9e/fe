@@ -10,7 +10,7 @@ export function isExpressionTarget(target?: ITarget) {
 
 export function inferTargetResultType(target: ITarget): DashboardQueryResultType {
   const mode = String(target.query?.mode ?? '').toLowerCase();
-  const valueFunctions = _.map(target.query?.values, 'func');
+  const valueFunctions = _.map(target.query?.values as unknown[] | undefined, 'func');
   if (_.includes(['raw', 'logs'], mode) || _.includes(valueFunctions, 'rawData')) {
     return 'logs';
   }

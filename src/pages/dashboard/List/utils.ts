@@ -64,11 +64,11 @@ export function getImportDataVersionIsValid(data: any): string | undefined {
       return undefined;
     }
   }
-  return semver.valid(version);
+  return semver.valid(version) ?? undefined;
 }
 
 export function getValidImportData(dat: any) {
-  let data = JSONParse(dat);
+  let data: any = JSONParse(dat);
   data = _.isArray(data) ? _.head(data) : data;
   if (!getImportDataVersionIsValid(data)) {
     data = convertDashboardV1ToV2(data);

@@ -38,7 +38,7 @@ export const getLocalDatasourceValue = (search: string, groupedDatasourceList: G
 export const getDatasourceValue = (dashboardConfigs: LegacyDashboardDatasourceConfig, datasources: DashboardDatasource[]) => {
   if (dashboardConfigs.datasourceValue && dashboardConfigs.version === '2.0.0') {
     console.warn('v6 版本的监控仪表盘将不再支持 v5 版本的数据源');
-    dashboardConfigs.datasourceValue = _.find(datasources, { name: dashboardConfigs.datasourceValue })?.id;
+    dashboardConfigs.datasourceValue = _.find(datasources, (ds) => ds.name === dashboardConfigs.datasourceValue)?.id;
   }
   return dashboardConfigs.datasourceValue;
 };
@@ -106,14 +106,14 @@ message.config({
 });
 export const getDefaultTimeRange = (id: string | number, query: DashboardLocationQuery, dashboardDefaultRangeIndex?: number) => {
   const defaultRange =
-    dashboardDefaultRangeIndex !== undefined && dashboardDefaultRangeIndex !== ''
+    dashboardDefaultRangeIndex !== undefined && String(dashboardDefaultRangeIndex) !== ''
       ? rangeOptions[dashboardDefaultRangeIndex]
       : {
           start: 'now-1h',
           end: 'now',
         };
   if (query.__from && query.__to) {
-    if (isValid(query.__from) && isValid(query.__to)) {
+    if (isValid(query.__from as string) && isValid(query.__to as string)) {
       return {
         start: query.__from,
         end: query.__to,

@@ -20,7 +20,7 @@ interface IProps {
   disabled?: boolean;
 }
 
-export default function index({ prefixField = {}, prefixFieldNames = [], parentNames = [], datasourceValue, index, disabled }: IProps) {
+export default function index({ prefixField = {} as FormListFieldData, prefixFieldNames = [], parentNames = [], datasourceValue, index, disabled }: IProps) {
   const { t } = useTranslation('alertRules');
   const [fieldsOptions, setFieldsOptions] = useState<ElasticsearchSelectOption[]>([]);
   const restPrefixField = _.omit(prefixField, 'key');

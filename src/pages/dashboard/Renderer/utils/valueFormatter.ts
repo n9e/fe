@@ -72,11 +72,9 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
     };
   }
   if (decimals === null) decimals = 6;
-  let valNum = val;
-  if (typeof val !== 'number') {
-    valNum = _.toNumber(val);
-  }
-  const fn = getUnitFn(unit);
+  // val 可能是 number 或可转成数字的字符串，统一收窄为 number，供单位格式化使用
+  const valNum = typeof val === 'number' ? val : _.toNumber(val);
+  const fn = getUnitFn(unit as string);
   if (unit) {
     const utilValObj = utilValMap[unit];
     if (utilValObj) {
@@ -171,7 +169,7 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
       };
     }
     if (_.includes(['seconds', 'milliseconds', 'microseconds', 'nanoseconds'], unit)) {
-      return timeFormatter(valNum, unit, decimals);
+      return timeFormatter(valNum, unit as 'seconds' | 'milliseconds' | 'microseconds' | 'nanoseconds', decimals);
     }
     if (unit === 'datetimeSeconds') {
       return {

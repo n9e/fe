@@ -27,7 +27,7 @@ export function createMockCommonState(overrides: Partial<ICommonState> = {}): IC
     setBusiGroup: () => {},
     getVaildBusinessGroup: () => {},
     businessGroupOnChange: () => {},
-    profile: {},
+    profile: {} as ICommonState['profile'],
     setProfile: () => {},
     licenseExpired: false,
     versions: { version: '', github_verison: '', newVersion: false },

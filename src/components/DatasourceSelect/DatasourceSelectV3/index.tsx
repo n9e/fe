@@ -12,7 +12,7 @@ import EmptyDatasourcePopover from '../EmptyDatasourcePopover';
 import './style.less';
 
 interface DatasourceItem {
-  id: number;
+  id: number | string;
   name: string;
   plugin_type: string;
   is_default: boolean;
@@ -47,39 +47,42 @@ export default function index(props: SelectProps & Props) {
           const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw) as string[];
           return _.every(keywords, (kw) => _.includes(_.toLower(option?.filter), _.toLower(kw)));
         }}
-        options={[...(additionalOptions ?? []), ..._.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
-          const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
-          const displayLabel = getCateDisplayLabel(datasourceCate, i18n.language);
-          return {
-            filter: item.plugin_type + item.name,
-            originLabel: item.name,
-            optionLabel: (
-              <div>
-                <Space>
-                  <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
-                  {item.name}
-                </Space>
-              </div>
-            ),
-            label: (
-              <div className='flex items-center gap-2 justify-between'>
-                <Space>
-                  <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
-                  {item.name}
-                  {item.is_default && <Tag color='var(--fc-fill-primary)'>default</Tag>}
-                </Space>
-                <span
-                  style={{
-                    color: 'var(--fc-text-4)',
-                  }}
-                >
-                  {displayLabel}
-                </span>
-              </div>
-            ),
-            value: item.id,
-          };
-        })]}
+        options={[
+          ...(additionalOptions ?? []),
+          ..._.map(_.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']), (item) => {
+            const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
+            const displayLabel = getCateDisplayLabel(datasourceCate, i18n.language);
+            return {
+              filter: item.plugin_type + item.name,
+              originLabel: item.name,
+              optionLabel: (
+                <div>
+                  <Space>
+                    <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
+                    {item.name}
+                  </Space>
+                </div>
+              ),
+              label: (
+                <div className='flex items-center gap-2 justify-between'>
+                  <Space>
+                    <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
+                    {item.name}
+                    {item.is_default && <Tag color='var(--fc-fill-primary)'>default</Tag>}
+                  </Space>
+                  <span
+                    style={{
+                      color: 'var(--fc-text-4)',
+                    }}
+                  >
+                    {displayLabel}
+                  </span>
+                </div>
+              ),
+              value: item.id,
+            };
+          }),
+        ]}
         onChange={(value) => {
           if (onChange) {
             const curCate = _.find(currentDatasourceList, { id: value })?.plugin_type;

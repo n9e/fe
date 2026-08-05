@@ -62,12 +62,22 @@ export default function Stat(props: IProps) {
   const { custom, options, overrides } = values;
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
-  const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode, orientation } = custom;
+  // custom 为 JsonObject（宽类型），按 stat 面板实际使用的结构收窄
+  const { calc, textMode, colorMode, colSpan, textSize, valueField, graphMode, orientation } = custom as {
+    calc?: string;
+    textMode: string;
+    colorMode: string;
+    colSpan: number;
+    textSize?: { title?: number; value?: number };
+    valueField: string;
+    graphMode: string;
+    orientation: 'auto' | 'horizontal' | 'vertical';
+  };
   const calculatedValues = useMemo(
     () =>
       getCalculatedValuesBySeries(
         series,
-        calc,
+        calc as string,
         {
           unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
@@ -88,25 +98,25 @@ export default function Stat(props: IProps) {
   let yGrid = 0;
   const minFontSize = useMemo(() => {
     if (eleSize?.width && eleSize?.height) {
-      return getMinFontSizeByList(calculatedValues, {
+      return getMinFontSizeByList(calculatedValues as { name: string; value: string; unit: string }[], {
         width: eleSize?.width,
         height: eleSize?.height,
         grid,
-        orientation,
+        orientation: orientation as 'horizontal' | 'vertical',
         textMode,
         valueField,
       });
     }
     return {
       name: 12,
-      valueAndUnit: 12,
+      value: 12,
     };
   }, [calculatedValues, eleSize?.width, eleSize?.height, grid, orientation]);
 
   // 只有单个序列值且是背景色模式，则填充整个卡片的背景色
   useEffect(() => {
     if (isPreview) {
-      setStatFields(getColumnsKeys(calculatedValues));
+      setStatFields(getColumnsKeys(calculatedValues as unknown as CalculatedSeries[]));
     }
     if (bodyWrapRef.current) {
       if (calculatedValues.length === 1 && colorMode === 'background') {

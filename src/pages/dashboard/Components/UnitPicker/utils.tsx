@@ -18,16 +18,17 @@ import React from 'react';
 import _ from 'lodash';
 import i18next from 'i18next';
 
-import { binaryPrefix, SIPrefix } from '@/pages/dashboard/Renderer/utils/symbolFormatters';
+import { binaryPrefix, SIPrefix, ValueFormatter } from '@/pages/dashboard/Renderer/utils/symbolFormatters';
 import { toFixedUnit } from '@/pages/dashboard/Renderer/utils/valueFormats';
 
 export interface UnitOption {
   label: React.ReactNode;
   value?: string;
   symbol?: string;
-  fn?: (...args: never[]) => unknown;
+  fn?: ValueFormatter;
   options?: UnitOption[];
-  cleanLabel?: string;
+  // 运行时为 ReactNode（buildUnitOptions 中赋值 JSX/string），此处仅作类型收窄
+  cleanLabel?: React.ReactNode;
   cleanLabelLink?: React.ReactNode;
 }
 
@@ -396,7 +397,7 @@ export const units: UnitOption[] = [
   },
 ];
 
-export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter?: (units: UnitOption[]) => UnitOption[]) => {
+export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter?: (units: UnitOption[]) => UnitOption[]): UnitOption[] => {
   let unitsClone = _.cloneDeep(units);
   if (hideSIOption) {
     unitsClone = _.filter(unitsClone, (unit) => unit.value !== 'sishort');
@@ -440,7 +441,7 @@ export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter
 export const getUnitLabel = (value: string, withDesc: boolean, hideLabel = false) => {
   const unit = _.find(withDesc ? buildUnitOptions(hideLabel) : units, (item) => {
     if (item.options) {
-      return _.find(item.options, { value });
+      return !!_.find(item.options, { value });
     }
     return item.value === value;
   });
@@ -459,7 +460,7 @@ export const getUnitLabel = (value: string, withDesc: boolean, hideLabel = false
 export const getUnitSymbol = (value: string) => {
   const unit = _.find(units, (item) => {
     if (item.options) {
-      return _.find(item.options, { value });
+      return !!_.find(item.options, { value });
     }
     return item.value === value;
   });
@@ -478,7 +479,7 @@ export const getUnitSymbol = (value: string) => {
 export const getUnitFn = (value: string) => {
   const unit = _.find(units, (item) => {
     if (item.options) {
-      return _.find(item.options, { value });
+      return !!_.find(item.options, { value });
     }
     return item.value === value;
   });

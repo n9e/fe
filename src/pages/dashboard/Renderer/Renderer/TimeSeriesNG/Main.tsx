@@ -20,7 +20,7 @@ import secondYAxisBuilder from './utils/secondYAxisBuilder';
 import { defaultOptionsValues } from '../../../Editor/config';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
-import type { DashboardAnnotation } from '@/pages/dashboard/types';
+import type { DashboardAnnotation, IStandardOptions } from '@/pages/dashboard/types';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import drawThresholds from './utils/drawThresholds';
@@ -80,7 +80,20 @@ export default function index(props: Props) {
     onZoomWithoutDefult,
   } = props;
   const id = isPreview ? `${props.id}__view` : props.id;
-  const { custom, options = {}, targets, overrides, queryOptionsTime } = panel;
+  const { custom: rawCustom, options = {}, targets, overrides, queryOptionsTime } = panel;
+  // custom 为 JsonObject（宽类型），按折线图面板实际使用的结构收窄
+  const custom = rawCustom as {
+    scaleDistribution?: { type?: 'log'; log?: number };
+    lineWidth?: number;
+    drawStyle?: string;
+    lineInterpolation?: string;
+    fillOpacity?: number;
+    gradientMode?: string;
+    showPoints?: string;
+    pointSize?: number;
+    spanNulls?: boolean;
+    stack?: string;
+  };
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
   const stableRange = useStableValue(range);
@@ -160,22 +173,24 @@ export default function index(props: Props) {
               name = options?.standardOptions?.displayName;
             }
             const override = _.find(overrides, (item) => item.matcher.value === point?.n9e_internal?.refId);
-            if (override && override?.properties?.standardOptions?.displayName) {
-              name = override?.properties?.standardOptions?.displayName;
+            const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
+            if (override && overrideStandardOptions?.displayName) {
+              name = overrideStandardOptions?.displayName;
             }
-            return getMappedTextObj(name, options?.valueMappings)?.text;
+            return getMappedTextObj(name, options?.valueMappings)?.text as string;
           },
           pointValueformatter: (val, point) => {
             const override = _.find(overrides, (item) => item.matcher.value === point?.n9e_internal?.refId);
             if (override) {
+              const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.unit,
-                  decimals: override?.properties?.standardOptions?.decimals,
-                  dateFormat: override?.properties?.standardOptions?.dateFormat,
+                  unit: overrideStandardOptions?.unit,
+                  decimals: overrideStandardOptions?.decimals,
+                  dateFormat: overrideStandardOptions?.dateFormat,
                 },
                 val,
-              ).text;
+              ).text as string;
             }
             return valueFormatter(
               {
@@ -184,7 +199,7 @@ export default function index(props: Props) {
                 dateFormat: options?.standardOptions?.dateFormat,
               },
               val,
-            ).text;
+            ).text as string;
           },
         }),
         annotationsPlugin({
@@ -220,7 +235,7 @@ export default function index(props: Props) {
         xMinMax,
         yRange,
         yDistr: custom.scaleDistribution?.type === 'log' ? 3 : 1,
-        yLog: custom.scaleDistribution?.type === 'log' ? custom.scaleDistribution?.log : undefined,
+        yLog: custom.scaleDistribution?.type === 'log' ? (custom.scaleDistribution?.log as 2 | 10 | undefined) : undefined,
       }),
       series: seriesBuider({
         baseSeries,
@@ -228,7 +243,7 @@ export default function index(props: Props) {
         width: custom.lineWidth,
         pathsType: custom.drawStyle === 'bars' ? 'bars' : custom.lineInterpolation === 'smooth' ? 'spline' : 'linear',
         fillOpacity: custom.fillOpacity,
-        gradientMode: custom.gradientMode,
+        gradientMode: custom.gradientMode as 'none' | 'opacity' | undefined,
         points: { show: custom.showPoints === 'always', size: custom.showPoints === 'always' ? custom.pointSize : 6 },
         overrides,
         spanGaps: custom.spanNulls,
@@ -250,7 +265,7 @@ export default function index(props: Props) {
                 dateFormat: options?.standardOptions?.dateFormat,
               },
               v,
-            ).text;
+            ).text as string;
           },
         }),
         ...secondYAxisBuilder(panel, darkMode),

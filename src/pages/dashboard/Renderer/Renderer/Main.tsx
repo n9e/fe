@@ -24,6 +24,7 @@ import {
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 import type { DashboardQueryState } from '../datasource/types';
+import type { CalculatedSeries } from '../utils/getCalculatedValuesBySeries';
 
 import PanelEmpty from '../components/PanelEmpty';
 import CloneIcon from '../components/CloneIcon';
@@ -100,12 +101,13 @@ function index(
 
   // TODO: 如果 hexbin 的 colorRange 为 string 时转成成 array
   if (typeof _.get(values, 'custom.colorRange') === 'string') {
-    _.set(values, 'custom.colorRange', _.split(_.get(values, 'custom.colorRange'), ','));
+    _.set(values, 'custom.colorRange', _.split(_.get(values, 'custom.colorRange') as string, ','));
   }
   const subProps = {
     id,
     values,
-    series,
+    // DashboardSeries 含日志序列（metric 为 unknown），渲染器按 CalculatedSeries 消费，运行时结构兼容
+    series: series as CalculatedSeries[],
     dataRevision: revision,
     onOverridesChange,
   };
@@ -203,7 +205,7 @@ function index(
               </Space>
             ),
             onClick: () => {
-              tableRef.current.exportCsv();
+              tableRef.current?.exportCsv();
               setVisible(false);
             },
           },
@@ -220,7 +222,7 @@ function index(
               </Space>
             ),
             onClick: () => {
-              tableNGRef.current.exportCsv();
+              tableNGRef.current?.exportCsv();
               setVisible(false);
             },
           },
@@ -297,7 +299,8 @@ function index(
     ),
     stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} isPreview={isPreview} />,
     table: () => <Table {...subProps} themeMode={themeMode} isPreview={isPreview} ref={tableRef} />,
-    tableNG: () => <TableNG {...subProps} themeMode={themeMode} isPreview={isPreview} ref={tableNGRef} />,
+    // TableNG 的 series 类型为 DashboardSeries[]，与其他渲染器（CalculatedSeries[]）不同
+    tableNG: () => <TableNG {...subProps} series={series} themeMode={themeMode} isPreview={isPreview} ref={tableNGRef} />,
     pie: () => <Pie {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     hexbin: () => <Hexbin {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     barGauge: () => <BarGauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,

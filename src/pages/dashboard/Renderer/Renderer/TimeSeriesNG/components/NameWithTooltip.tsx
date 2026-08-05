@@ -5,7 +5,7 @@ import { Tooltip } from 'antd';
 interface NameWithTooltipRecord {
   name?: string;
   metric: Record<string, string | undefined>;
-  offset?: string;
+  offset?: string | number;
 }
 
 export default function NameWithTooltip({ record, children }: { record: NameWithTooltipRecord; children: React.ReactNode }) {

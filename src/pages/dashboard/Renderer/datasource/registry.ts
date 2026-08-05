@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import type { ITarget, JsonObject } from '@/pages/dashboard/types';
+import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
 
 import type { DashboardQueryResultType } from './types';
 
@@ -122,7 +122,10 @@ const DEFAULT_TARGETS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number
   },
 };
 
-const hasQueryText = (target: ITarget, key: 'query' | 'sql' = 'query') => typeof target.query?.[key] === 'string' && target.query[key].trim().length > 0;
+const hasQueryText = (target: ITarget, key: 'query' | 'sql' = 'query') => {
+  const value = target.query?.[key];
+  return typeof value === 'string' && value.trim().length > 0;
+};
 
 // 沿用旧版各数据源查询函数的静默短路条件：未就绪的 target 不进入 query-batch，且不触发表单校验提示。
 const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number], (target: ITarget) => boolean>> = {
@@ -156,7 +159,7 @@ const serializeTarget = (target: ITarget, cate: string) => {
     payload.keys = Object.entries(payload.keys).reduce<Record<string, unknown>>((keys, [key, value]) => {
       keys[key] = Array.isArray(value) ? value.join(' ') : value;
       return keys;
-    }, {});
+    }, {}) as unknown as JsonValue;
   }
   if (target.queries) {
     payload.queries = _.cloneDeep(target.queries);

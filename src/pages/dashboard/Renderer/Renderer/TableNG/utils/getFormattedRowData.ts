@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { IOptions, IOverride, CellOptions } from '@/pages/dashboard/types';
+import { IOptions, IOverride, CellOptions, IStandardOptions, IValueMapping, IThresholds } from '@/pages/dashboard/types';
 import { getSerieTextObj } from '@/pages/dashboard/Renderer/utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '@/pages/dashboard/Renderer/utils/getOverridePropertiesByName';
 import type { TableData } from '@/pages/dashboard/transformations/types';
@@ -32,19 +32,21 @@ export default function getFormattedRowData(
     const newRow: { [key: string]: TextObject } = {};
     _.forEach(row, (value, field) => {
       const overrideProps = getOverridePropertiesByName(overrides, 'byName', field);
-      const currentCellOptions = _.isEmpty(overrideProps) || !overrideProps.cellOptions?.type ? cellOptions : overrideProps.cellOptions;
+      const overrideCellOptions = overrideProps.cellOptions as CellOptions | undefined;
+      const currentCellOptions = _.isEmpty(overrideProps) || !overrideCellOptions?.type ? cellOptions : overrideCellOptions;
       const currentOptions = _.isEmpty(overrideProps)
         ? options
         : {
-            standardOptions: overrideProps.standardOptions || options.standardOptions,
-            valueMappings: overrideProps.valueMappings || options.valueMappings,
-            thresholds: overrideProps.thresholds || options.thresholds,
+            standardOptions: (overrideProps.standardOptions as IStandardOptions | undefined) || options.standardOptions,
+            valueMappings: (overrideProps.valueMappings as IValueMapping[] | undefined) || options.valueMappings,
+            thresholds: (overrideProps.thresholds as IThresholds | undefined) || options.thresholds,
           };
 
       let valueDomain: [number, number] = [0, 100];
 
-      if (_.isNumber(currentOptions.standardOptions?.min) && _.isNumber(currentOptions.standardOptions?.max)) {
-        valueDomain = [currentOptions.standardOptions.min, currentOptions.standardOptions.max];
+      const standardOptions = currentOptions.standardOptions;
+      if (standardOptions && typeof standardOptions.min === 'number' && typeof standardOptions.max === 'number') {
+        valueDomain = [standardOptions.min, standardOptions.max];
       } else if (currentCellOptions.type === 'gauge') {
         const fieldObj = _.find(tableData.fields, (item) => item.state.displayName === field || item.name === field);
         if (fieldObj && fieldObj.type === 'number') {
@@ -58,9 +60,15 @@ export default function getFormattedRowData(
 
       if (parsedValue !== null) {
         currentValue = parsedValue;
-        textObject = getSerieTextObj(currentValue, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain);
+        textObject = getSerieTextObj(currentValue, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain) as Omit<
+          TextObject,
+          'valueDomain'
+        >;
       } else {
-        textObject = getSerieTextObj(value, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain, false);
+        textObject = getSerieTextObj(value, currentOptions.standardOptions, currentOptions.valueMappings, currentOptions.thresholds, valueDomain, false) as Omit<
+          TextObject,
+          'valueDomain'
+        >;
       }
 
       newRow[field] = {

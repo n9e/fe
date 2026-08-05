@@ -32,7 +32,7 @@ const functionsLabelMap = {
   rawData: 'raw data',
 };
 
-export default function index({ prefixField = {}, prefixFields = [], prefixNameField = [], datasourceValue, index, valueRefVisible = true }: IProps) {
+export default function index({ prefixField = {} as FormListFieldData, prefixFields = [], prefixNameField = [], datasourceValue, index, valueRefVisible = true }: IProps) {
   const { t } = useTranslation('datasource');
   const [search, setSearch] = useState('');
   const [fieldsOptions, setFieldsOptions] = useState<ElasticsearchSelectOption[]>([]);

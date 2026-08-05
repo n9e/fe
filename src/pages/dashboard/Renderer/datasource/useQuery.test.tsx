@@ -54,6 +54,7 @@ const baseProps: UseQueryProps = {
   datasourceCate: 'prometheus',
   datasourceValue: 1,
   custom: {},
+  targets: [],
 };
 
 const wrapper = createCommonStateWrapper({ datasourceList: [] });

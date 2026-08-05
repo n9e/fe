@@ -22,15 +22,20 @@ export default function TargetDatasourceSelect({ fieldName, target, onTargetChan
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const datasourceVars = _.filter(variablesWithOptions, (item) => _.includes(['datasource', 'datasourceIdentifier'], item.type));
 
-  const getDatasourceOptions = (list: DashboardDatasource[]): DashboardDatasource[] =>
+  // 运行时支持字符串模板变量数据源（如 ${var}），id 可为 string | number
+  type DatasourceOption = Pick<DashboardDatasource, 'name' | 'plugin_type' | 'is_default' | 'identifier'> & { id: string | number };
+  const getDatasourceOptions = (list: DatasourceOption[]): DatasourceOption[] =>
     _.filter(
       _.concat(
-        _.map(datasourceVars, (item) => ({
-          id: `\${${item.name}}`,
-          name: `\${${item.name}}`,
-          plugin_type: item.definition,
-          is_default: false,
-        })),
+        _.map(
+          datasourceVars,
+          (item): DatasourceOption => ({
+            id: `\${${item.name}}`,
+            name: `\${${item.name}}`,
+            plugin_type: item.definition,
+            is_default: false,
+          }),
+        ),
         list,
       ),
       (item) => {

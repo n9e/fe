@@ -56,10 +56,11 @@ export default class PartitionByValuesTransformation implements Transformation {
     // 按字段值分组
     const groups = new Map<string | number | null, number[]>();
     fieldValues.forEach((value, index) => {
-      if (!groups.has(value)) {
-        groups.set(value, []);
+      const key = value as string | number | null;
+      if (!groups.has(key)) {
+        groups.set(key, []);
       }
-      groups.get(value)!.push(index);
+      groups.get(key)!.push(index);
     });
 
     // 为每个分组创建一个新的 TableData

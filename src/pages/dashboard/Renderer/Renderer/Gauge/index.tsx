@@ -119,7 +119,7 @@ function GaugeItem(props: GaugeItemProps) {
   let item = props.item;
 
   if (valueField !== 'Value') {
-    const value = _.get(item, ['metric', valueField]);
+    const value = _.get(item, ['metric', valueField as string]);
     if (!_.isNaN(_.toNumber(value))) {
       const result = getSerieTextObj(
         value,
@@ -131,7 +131,7 @@ function GaugeItem(props: GaugeItemProps) {
         options?.valueMappings,
         options?.thresholds,
       );
-      item.value = result?.value;
+      item.value = result?.value as string | number | undefined;
       item.unit = result?.unit;
       item.color = result?.color;
     } else {
@@ -168,12 +168,21 @@ export default function Index(props: IProps) {
   const { custom, options } = values;
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
-  const { calc, textMode, valueField = 'Value' } = custom;
+  // custom 为 JsonObject（宽类型），按仪表盘 gauge 面板实际使用的结构收窄
+  const {
+    calc,
+    textMode,
+    valueField = 'Value',
+  } = custom as {
+    calc?: string;
+    textMode?: string;
+    valueField?: string;
+  };
   const calculatedValues = useMemo(
     () =>
       getCalculatedValuesBySeries(
         series,
-        calc,
+        calc as string,
         {
           unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
@@ -220,8 +229,7 @@ export default function Index(props: IProps) {
               return (
                 <GaugeItem
                   key={item.id}
-                  item={item}
-                  idx={idx}
+                  item={item as unknown as GaugeValue}
                   textMode={textMode}
                   themeMode={themeMode}
                   options={options}

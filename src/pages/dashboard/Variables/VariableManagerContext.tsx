@@ -347,9 +347,12 @@ export const VariableManagerProvider = ({
       if (variable.type === 'query') {
         // 分析 definition 中的依赖
         if (variable.definition) {
-          extractDependencies(variable.definition, validVarNames).forEach((dep) => dependencySet.add(dep));
+          extractDependencies(variable.definition as string, validVarNames).forEach((dep) => dependencySet.add(dep));
         } else if (variable.query?.query) {
-          extractDependencies(variable.query.query, validVarNames).forEach((dep) => dependencySet.add(dep));
+          const variableQuery = variable.query.query;
+          if (typeof variableQuery === 'string') {
+            extractDependencies(variableQuery, validVarNames).forEach((dep) => dependencySet.add(dep));
+          }
         }
 
         // 分析 datasource.value 中的依赖

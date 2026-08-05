@@ -18,7 +18,7 @@ interface IProps {
 
 export default function DateField(props: IProps) {
   const { t } = useTranslation('alertRules');
-  const { datasourceValue, index, prefixField = {}, prefixNames = [prefixField.name], disabled } = props;
+  const { datasourceValue, index, prefixField = {} as FormListFieldData, prefixNames = [prefixField.name], disabled } = props;
   const restPrefixField = _.omit(prefixField, 'key');
   const [fieldsOptions, setFieldsOptions] = useState<ElasticsearchSelectOption[]>([]);
   const { run } = useDebounceFn(

@@ -8,7 +8,7 @@ import { hexPalette } from '@/pages/dashboard/config';
 
 import { IPanel } from '../../../types';
 
-import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
+import getDataFrameAndBaseSeries, { BaseSeriesItem, OldSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import getLegendData from './utils/getLegendData';
 import getChartContainerSize from './utils/getChartContainerSize';
 import { LegendList, LegendTable } from './components/Legend';
@@ -84,7 +84,7 @@ export default function index(props: Props) {
   const [activeLegend, setActiveLegend] = useState<string>(); // legendSelectMode === 'single'
   const [activeLegends, setActiveLegends] = useState<string[]>([]); // legendSelectMode === 'multiple'
   const { frames, baseSeries } = useMemo(() => {
-    return getDataFrameAndBaseSeries(mainProps.series);
+    return getDataFrameAndBaseSeries(mainProps.series as unknown as OldSeriesItem[]);
   }, [dataDependency]);
   useEffect(() => {
     setDataRefresh(_.uniqueId('dataRefresh_'));
