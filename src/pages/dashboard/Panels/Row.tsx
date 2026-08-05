@@ -135,7 +135,8 @@ export default function Row(props: IProps) {
         onOk={() => {
           onEditClick({
             ...row,
-            name: newName as string,
+            // 空输入（undefined 或清空）不覆盖原行名
+            name: newName || row.name,
           });
           setEditVisble(false);
         }}
@@ -152,7 +153,8 @@ export default function Row(props: IProps) {
             onPressEnter={() => {
               onEditClick({
                 ...row,
-                name: newName as string,
+                // 空输入（undefined 或清空）不覆盖原行名
+                name: newName || row.name,
               });
               setEditVisble(false);
             }}
