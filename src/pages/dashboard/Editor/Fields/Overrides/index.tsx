@@ -37,6 +37,22 @@ interface Props {
   showMinMax?: boolean;
 }
 
+export function OverrideHeader({ name, showIndex }: { name: number; showIndex: boolean }) {
+  const { t } = useTranslation('dashboard');
+  const matcherId = Form.useWatch(['overrides', name, 'matcher', 'id']);
+  const matcherValue = Form.useWatch(['overrides', name, 'matcher', 'value']);
+  const matcherLabel =
+    matcherId === 'byFrameRefID' ? t('panel.overrides.matcher.byFrameRefID.option') : matcherId === 'byName' ? t('panel.overrides.matcher.byName.option') : undefined;
+  const matcherText = matcherLabel && matcherValue ? `${matcherLabel}: ${matcherValue}` : undefined;
+
+  return (
+    <span>
+      {showIndex ? `Override ${name + 1}` : 'Override'}
+      {matcherText && <span style={{ marginLeft: 6, color: 'var(--fc-text-4)', fontWeight: 'normal' }}>· {matcherText}</span>}
+    </span>
+  );
+}
+
 export default function index({ targets, matcherNames = ['byFrameRefID', 'byName'], defaultMatcherId = 'byFrameRefID', overrideOptions, activeOptions, showMinMax }: Props) {
   const { t } = useTranslation('dashboard');
   const [tableFields] = useGlobalState('tableFields');
@@ -51,7 +67,7 @@ export default function index({ targets, matcherNames = ['byFrameRefID', 'byName
               isActive={false}
               key={key}
               isInner
-              header={fields.length > 1 ? `Override ${name + 1}` : 'Override'}
+              header={<OverrideHeader name={name} showIndex={fields.length > 1} />}
               extra={
                 <Space>
                   <PlusCircleOutlined
