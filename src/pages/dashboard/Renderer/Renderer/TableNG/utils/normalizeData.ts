@@ -130,6 +130,15 @@ export default function normalizeData(
   const enabledTransformations = _.filter(transformations, (transformation) => transformation.disabled !== true);
 
   if (enabledTransformations && enabledTransformations.length > 0) {
+    // 转换链会基于 TableData 重建对象（如 organize 返回新的 fields 列表），
+    // 先快照各帧的 id，供转换后回填，避免丢失用于帧切换的标识。
+    const idByRefId = new Map<string, string>();
+    _.forEach(data, (item) => {
+      if (item.id !== undefined && item.id !== null) {
+        idByRefId.set(item.refId, item.id);
+      }
+    });
+
     const pipeline = new TransformationPipeline();
     _.forEach(enabledTransformations, (transformationConfig) => {
       if (isRegisteredTransformationId(transformationConfig.id)) {
@@ -141,22 +150,28 @@ export default function normalizeData(
     });
     // 转换链对 TableData 结构做变换，运行时保留 id 字段，这里做类型收窄
     data = pipeline.apply(data) as (TableData & { id: string })[];
+    // 转换后若 id 丢失（例如转换器只返回 { refId, fields }），按原始 refId 回填。
+    data = _.map(data, (item) => {
+      if (item.id !== undefined && item.id !== null) {
+        return item;
+      }
+      const restoredId = idByRefId.get(item.refId);
+      return restoredId === undefined ? item : { ...item, id: restoredId };
+    });
   }
 
   return _.map(data, (item) => {
+    const visibleFields = _.filter(item.fields, (field) => {
+      return field.state.hide !== true;
+    });
     return {
       ...item,
-      columns: _.map(
-        _.filter(item.fields, (field) => {
-          return field.state.hide !== true;
-        }),
-        (field) => {
-          return field.state.displayName || field.name;
-        },
-      ),
-      rows: _.map(item.fields[0]?.values, (_value, index) => {
+      columns: _.map(visibleFields, (field) => {
+        return field.state.displayName || field.name;
+      }),
+      rows: _.map(visibleFields[0]?.values, (_value, index) => {
         const row: { [key: string]: string | number | null } = {};
-        _.forEach(item.fields, (field) => {
+        _.forEach(visibleFields, (field) => {
           const name = field.state.displayName || field.name;
           row[name] = (field.values[index] ?? null) as string | number | null;
         });

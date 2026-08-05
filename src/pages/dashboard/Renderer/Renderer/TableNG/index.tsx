@@ -136,11 +136,20 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   });
   const [, setSeries] = useGlobalState('series');
   const [, setTableFields] = useGlobalState('tableFields');
-  const { data, rowData, columns, formattedData, sourceRowByFormattedRow } = useMemo(() => {
+  const {
+    data,
+    rowData,
+    columns,
+    formattedData,
+    sourceRowByFormattedRow,
+    activeIndex: safeActiveIndex,
+  } = useMemo(() => {
     const data = normalizeData(series, transformations);
     const columns = _.uniq(_.flatMap(data, 'columns'));
 
-    const activeData = data[activeIndex];
+    // 转换链可能合并/减少帧数（如 merge、organize），activeIndex 需收敛到有效范围，避免取到 undefined 帧。
+    const safeActiveIndex = Math.min(activeIndex, Math.max(data.length - 1, 0));
+    const activeData = data[safeActiveIndex];
     const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides, rangeMode });
     const sourceRowByFormattedRow = new WeakMap<object, RowDetailData>();
     _.forEach(formattedData, (formattedRow, index) => {
@@ -156,6 +165,7 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
       columns: activeData?.columns || [],
       formattedData,
       sourceRowByFormattedRow,
+      activeIndex: safeActiveIndex,
     };
   }, [activeIndex, dataDependency, stableTransformations, stableCellOptions, stableOptions, stableOverrides]);
 
@@ -441,7 +451,7 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
               value: index,
             };
           })}
-          value={activeIndex}
+          value={safeActiveIndex}
           onChange={(val) => {
             setActiveIndex(val);
           }}

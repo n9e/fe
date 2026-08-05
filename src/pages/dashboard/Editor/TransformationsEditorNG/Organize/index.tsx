@@ -50,8 +50,15 @@ export default function OrganizeFields(props: IProps) {
   const { columns, error } = useColumns({ fieldName: field.name });
 
   useDeepCompareEffect(() => {
-    if (value) {
-      onChange && onChange({ ...value, fields: columns });
+    // columns 来自当前数据的列，仅在字段列表为空或数据源新增字段时补齐，
+    // 保留用户已配置的字段顺序（拖动排序），避免每次挂载/数据刷新都覆盖用户的调整。
+    if (!value || !columns) {
+      return;
+    }
+    const existingFields = value.fields ?? [];
+    const nextFields = _.union(existingFields, columns);
+    if (!_.isEqual(existingFields, nextFields)) {
+      onChange && onChange({ ...value, fields: nextFields });
     }
   }, [columns]);
 

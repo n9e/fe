@@ -74,6 +74,17 @@ export default defineConfig(({ mode }) => {
     define: {
       // 'process.env.NODE_ENV': JSON.stringify(mode), // 如确实需要兼容旧代码 NODE_ENV=production , 放开这个
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          // 依赖预构建（esbuild）默认只替换 process.env.NODE_ENV，不会替换其他 process.env.*；
+          // react-draggable@4.7.0 的 log() 引用了 process.env.DRAGGABLE_DEBUG，
+          // 浏览器环境没有 process，会导致拖拽（如 tableNG 面板）时抛 ReferenceError: process is not defined。
+          'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || mode),
+          'process.env.DRAGGABLE_DEBUG': JSON.stringify(false),
+        },
+      },
+    },
     resolve: {
       alias: [
         {
@@ -95,6 +106,17 @@ export default defineConfig(({ mode }) => {
     server: {
       hmr: true,
       proxy: {
+        // 本地联调兼容尚未升级到 n9e-plus 权限接口的后端；生产环境不经过 Vite dev server。
+        '/api/n9e-plus/self/perms': {
+          target: proxyURL,
+          changeOrigin: true,
+          rewrite: (requestPath) => requestPath.replace('/api/n9e-plus/self/perms', '/api/n9e/self/perms'),
+        },
+        '/api/n9e-plus/operation': {
+          target: proxyURL,
+          changeOrigin: true,
+          rewrite: (requestPath) => requestPath.replace('/api/n9e-plus/operation', '/api/n9e/operation'),
+        },
         '/api': {
           target: proxyURL,
           changeOrigin: true,

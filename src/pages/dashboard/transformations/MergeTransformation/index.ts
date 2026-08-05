@@ -74,9 +74,9 @@ export default class MergeTransformation implements Transformation {
     // 按共同字段分组合并
     const mergedRowsMap = new Map<string, Record<string, TableCellValue>>();
 
-    allRows.forEach((row) => {
-      // 创建共同字段的键
-      const commonKey = commonFields.map((fieldName) => `${fieldName}:${row.data[fieldName]}`).join('|');
+    allRows.forEach((row, rowIndex) => {
+      // 无共同字段时退化为逐行拼接，避免所有行共用空 key 被合并成一行造成数据丢失
+      const commonKey = commonFields.length === 0 ? `__row_${rowIndex}` : commonFields.map((fieldName) => `${fieldName}:${row.data[fieldName]}`).join('|');
 
       if (mergedRowsMap.has(commonKey)) {
         // 如果已存在相同的共同字段组合，合并其他字段的数据

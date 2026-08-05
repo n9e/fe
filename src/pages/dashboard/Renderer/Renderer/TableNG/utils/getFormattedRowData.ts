@@ -24,6 +24,10 @@ export default function getFormattedRowData(
   },
 ) {
   const { options, overrides, cellOptions } = panelParams;
+  // 防御：activeIndex 越界 / 无帧数据时 tableData 可能为 undefined，返回空行避免渲染崩溃。
+  if (!tableData || !Array.isArray(tableData.rows)) {
+    return [];
+  }
   return _.map(tableData.rows, (row) => {
     const newRow: { [key: string]: TextObject } = {};
     _.forEach(row, (value, field) => {
