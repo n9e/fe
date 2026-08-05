@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 import type { ITarget } from '@/pages/dashboard/types';
 import getDefaultTargets from '@/pages/dashboard/utils/getDefaultTargets';
@@ -22,7 +23,7 @@ const dashboardDatasourceEditorDefinitions = Object.keys(dashboardDatasourceDefi
     ...definition,
     QueryEditor: QueryBuilder,
     createDefaultTarget(refId, datasourceId) {
-      const defaultTarget = _.cloneDeep(getDefaultTargets(cate as any)[0] ?? {}) as Partial<ITarget>;
+      const defaultTarget = _.cloneDeep(getDefaultTargets(cate as DatasourceCateEnum)[0] ?? {}) as Partial<ITarget>;
       const registryDefaultTarget = _.cloneDeep(definition.defaultTarget ?? {});
       const target: ITarget = {
         ...defaultTarget,

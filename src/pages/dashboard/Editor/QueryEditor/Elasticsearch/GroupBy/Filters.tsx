@@ -1,11 +1,12 @@
 import React from 'react';
 import { Form, Select, Row, Col, Input, Space } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { groupByCates } from './configs';
 
-export default function Filters({ prefixField }) {
+export default function Filters({ prefixField }: { prefixField: FormListFieldData }) {
   const { t } = useTranslation('alertRules');
   const restPrefixField = _.omit(prefixField, 'key');
   return (

@@ -10,7 +10,7 @@ import HideButton from './HideButton';
 
 interface Props {
   field: FormListFieldData;
-  add: (defaultValue?: any, insertIndex?: number) => void;
+  add: (defaultValue?: unknown, insertIndex?: number) => void;
 }
 
 export default function QueryExtraActions({ field, add }: Props) {

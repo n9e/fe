@@ -7,9 +7,10 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 
 import { IOptions, IBarGaugeStyles } from '../../../../types';
 import { getSerieTextObj } from '../../../utils/getCalculatedValuesBySeries';
+import type { BarGaugeValue } from '../utils';
 
 interface Props {
-  item: any;
+  item: BarGaugeValue;
   custom: IBarGaugeStyles;
   options: IOptions;
   themeMode?: 'dark';

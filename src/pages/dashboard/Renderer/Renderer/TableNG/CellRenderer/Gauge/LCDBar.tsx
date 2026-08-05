@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import _ from 'lodash';
 import Color from 'color';
 
@@ -43,7 +43,7 @@ export default function LCDBar(props: Props) {
       true,
       rangeMode,
     );
-    const cellStyles: any = {};
+    const cellStyles: CSSProperties = {};
     cellStyles.width = `${CELL_WIDTH}px`;
     cellStyles.height = `${CELL_HEIGHT}px`;
     cellStyles.marginRight = `${CELL_SPACING}px`;

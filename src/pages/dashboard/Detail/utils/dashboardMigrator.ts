@@ -1,25 +1,134 @@
 import _ from 'lodash';
 import semver from 'semver';
 
-import { getTargetRefId, inferTargetResultType, isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target';
+import type { JsonObject, JsonValue } from '@/pages/dashboard/types';
+import { isJsonObject } from '@/pages/dashboard/utils/json';
 
-const migratePanelToV4 = (panel: any): any => {
+type LegacyDatasource = JsonObject & {
+  cate: string;
+  id?: number | string;
+};
+
+type LegacyQuery = JsonObject & {
+  mode?: string;
+  syntax?: string;
+  filter_language?: string;
+  values?: Array<JsonObject & { func?: string }>;
+};
+
+type LegacyTarget = JsonObject & {
+  refId?: string;
+  kind?: 'query' | 'expression';
+  __mode__?: '__expr__' | '__query__';
+  datasource?: LegacyDatasource;
+  expression?: string;
+  expr?: string;
+  query?: LegacyQuery;
+  resultType?: 'time_series' | 'logs';
+  maxDataPoints?: number;
+  time?: JsonValue;
+};
+
+type LegacyStandardOptions = JsonObject & {
+  util?: string;
+  unit?: string;
+  max?: number;
+};
+
+type LegacyOptions = JsonObject & {
+  standardOptions?: LegacyStandardOptions;
+  thresholds?: JsonValue;
+};
+
+type LegacyCustom = JsonObject & {
+  maxValue?: number;
+  baseColor?: string;
+  stack?: string;
+};
+
+type LegacyOverride = JsonObject & {
+  properties?: (JsonObject & {
+    rightYAxisDisplay?: string;
+    standardOptions?: LegacyStandardOptions;
+  });
+};
+
+export type LegacyPanel = JsonObject & {
+  id?: string;
+  version?: string;
+  type?: string;
+  datasourceCate?: string;
+  datasourceValue?: string | number;
+  targets?: LegacyTarget[];
+  panels?: LegacyPanel[];
+  custom?: LegacyCustom;
+  options?: LegacyOptions;
+  overrides?: LegacyOverride[];
+  maxDataPoints?: number;
+  queryOptionsTime?: JsonValue;
+};
+
+export type LegacyDashboard = JsonObject & {
+  version?: string;
+  panels: LegacyPanel[];
+};
+
+const getTargetRefId = (index: number) => {
+  let value = index;
+  let refId = '';
+  do {
+    refId = String.fromCharCode(65 + (value % 26)) + refId;
+    value = Math.floor(value / 26) - 1;
+  } while (value >= 0);
+  return refId;
+};
+
+const isExpressionTarget = (target: LegacyTarget) => target.kind === 'expression' || target.__mode__ === '__expr__';
+
+const inferTargetResultType = (target: LegacyTarget): 'time_series' | 'logs' => {
+  const mode = target.query?.mode?.toLowerCase();
+  const valueFunctions = target.query?.values?.map((value) => value.func);
+  if (mode === 'raw' || mode === 'logs' || valueFunctions?.includes('rawData')) {
+    return 'logs';
+  }
+  return target.resultType ?? 'time_series';
+};
+
+const asLegacyTarget = (value: JsonValue): LegacyTarget | undefined => (isJsonObject(value) ? value : undefined);
+
+const asLegacyPanel = (value: JsonValue): LegacyPanel | undefined => {
+  if (!isJsonObject(value)) {
+    return undefined;
+  }
+  const targets = Array.isArray(value.targets) ? value.targets.map(asLegacyTarget).filter((target): target is LegacyTarget => target !== undefined) : undefined;
+  const panels = Array.isArray(value.panels) ? value.panels.map(asLegacyPanel).filter((panel): panel is LegacyPanel => panel !== undefined) : undefined;
+  return { ...value, ...(targets ? { targets } : {}), ...(panels ? { panels } : {}) };
+};
+
+export const decodeLegacyDashboard = (value: unknown): LegacyDashboard | undefined => {
+  if (!isJsonObject(value) || !Array.isArray(value.panels)) {
+    return undefined;
+  }
+  const panels = value.panels.map(asLegacyPanel).filter((panel): panel is LegacyPanel => panel !== undefined);
+  return { ...value, panels };
+};
+
+const migratePanelToV4 = (panel: LegacyPanel): LegacyPanel => {
   const panelCopy = _.cloneDeep(panel);
   if (Array.isArray(panelCopy.panels)) {
     panelCopy.panels = panelCopy.panels.map(migratePanelToV4);
   }
 
-  // 即使面板版本已是 v4，也要继续规范化遗留的表达式标识，避免编辑器同时处理两套数据结构。
-  const needsTargetMigration = _.some(panelCopy.targets, (target: any) => !target.kind || (isExpressionTarget(target) && target.kind !== 'expression') || target.__mode__ === '__expr__');
+  const targets = panelCopy.targets ?? [];
+  const needsTargetMigration = targets.some((target) => !target.kind || (isExpressionTarget(target) && target.kind !== 'expression') || target.__mode__ === '__expr__');
   const isMixedDatasource = panelCopy.datasourceCate === 'mixed' || panelCopy.datasourceValue === 'mixed';
-  // mixed 是 v4 编辑器的展示哨兵值，真实数据源仍位于 targets[].datasource，不能按旧面板级数据源迁移。
   const hasLegacyDatasource = !isMixedDatasource && (panelCopy.datasourceCate !== undefined || panelCopy.datasourceValue !== undefined);
-  const hasTargetDatasource = _.some(panelCopy.targets, (target: any) => !isExpressionTarget(target) && target.datasource);
+  const hasTargetDatasource = targets.some((target) => !isExpressionTarget(target) && target.datasource);
   if (semver.gte(semver.coerce(panelCopy.version) || '0.0.0', '4.0.0') && !needsTargetMigration && !hasLegacyDatasource && !hasTargetDatasource) {
     return panelCopy;
   }
 
-  panelCopy.targets = _.map(panelCopy.targets, (target: any, index: number) => {
+  panelCopy.targets = targets.map((target, index) => {
     const targetCopy = _.cloneDeep(target);
     targetCopy.refId = targetCopy.refId || getTargetRefId(index);
     if (isExpressionTarget(targetCopy)) {
@@ -29,15 +138,11 @@ const migratePanelToV4 = (panel: any): any => {
     } else {
       targetCopy.kind = 'query';
       if (!hasLegacyDatasource) {
-        targetCopy.datasource = targetCopy.datasource ?? {
-          cate: 'prometheus',
-          id: undefined,
-        };
+        targetCopy.datasource = targetCopy.datasource ?? { cate: 'prometheus' };
       }
       const datasourceCate = targetCopy.datasource?.cate ?? panelCopy.datasourceCate;
-      if (_.includes(['elasticsearch', 'opensearch'], datasourceCate) && targetCopy.query) {
-        targetCopy.query.filter_language =
-          targetCopy.query.filter_language ?? (targetCopy.query.syntax === 'kuery' || targetCopy.query.syntax === 'kql' ? 'kql' : 'lucene');
+      if ((datasourceCate === 'elasticsearch' || datasourceCate === 'opensearch') && targetCopy.query) {
+        targetCopy.query.filter_language = targetCopy.query.filter_language ?? (targetCopy.query.syntax === 'kuery' || targetCopy.query.syntax === 'kql' ? 'kql' : 'lucene');
         delete targetCopy.query.syntax;
       }
       targetCopy.resultType = inferTargetResultType(targetCopy);
@@ -46,18 +151,16 @@ const migratePanelToV4 = (panel: any): any => {
     return targetCopy;
   });
 
-  const datasourceTargets = _.filter(panelCopy.targets, (target: any) => target.kind === 'query' && target.datasource);
-  const datasourceKeys = _.uniq(_.map(datasourceTargets, (target: any) => `${target.datasource.cate}:${target.datasource.id}`));
+  const datasourceTargets = panelCopy.targets.filter((target) => target.kind === 'query' && target.datasource);
+  const datasourceKeys = _.uniq(datasourceTargets.map((target) => `${target.datasource?.cate}:${target.datasource?.id}`));
   if (isMixedDatasource) {
-    // mixed 是面板级哨兵值。即使只有一个普通查询（其余 target 都是表达式），
-    // 真实数据源也必须继续保留在 target 上，不能再上提并删除。
     panelCopy.datasourceCate = 'mixed';
     panelCopy.datasourceValue = 'mixed';
   } else if (hasLegacyDatasource || datasourceKeys.length <= 1) {
     const datasource = datasourceTargets[0]?.datasource;
     panelCopy.datasourceCate = panelCopy.datasourceCate ?? datasource?.cate ?? 'prometheus';
     panelCopy.datasourceValue = panelCopy.datasourceValue ?? datasource?.id;
-    _.forEach(datasourceTargets, (target: any) => delete target.datasource);
+    datasourceTargets.forEach((target) => delete target.datasource);
   } else {
     panelCopy.datasourceCate = 'mixed';
     panelCopy.datasourceValue = 'mixed';
@@ -66,117 +169,79 @@ const migratePanelToV4 = (panel: any): any => {
   return panelCopy;
 };
 
-export default function dashboardMigrator(data: any) {
-  const panels = _.map(data.panels, (panel: any) => {
+const migratePanelToV32 = (panel: LegacyPanel) => {
+  if (panel.targets?.length) {
+    const target = panel.targets[0];
+    if (target?.maxDataPoints !== undefined) {
+      panel.maxDataPoints = target.maxDataPoints;
+      delete target.maxDataPoints;
+    }
+    if (target?.time !== undefined) {
+      panel.queryOptionsTime = target.time;
+      delete target.time;
+    }
+  }
+  panel.version = '3.2.0';
+};
+
+const migratePanelToV33 = (panel: LegacyPanel) => {
+  const standardOptions = panel.options?.standardOptions;
+  if (standardOptions?.util) {
+    standardOptions.unit = standardOptions.util;
+    delete standardOptions.util;
+  }
+  if (panel.custom?.stack === 'noraml') {
+    panel.custom.stack = 'normal';
+  }
+  panel.overrides = panel.overrides?.map((item) => {
+    const itemCopy = _.cloneDeep(item);
+    if (itemCopy.properties?.rightYAxisDisplay === 'noraml') {
+      itemCopy.properties.rightYAxisDisplay = 'normal';
+    }
+    const overrideStandardOptions = itemCopy.properties?.standardOptions;
+    if (overrideStandardOptions?.util) {
+      overrideStandardOptions.unit = overrideStandardOptions.util;
+      delete overrideStandardOptions.util;
+    }
+    return itemCopy;
+  });
+  panel.version = '3.3.0';
+};
+
+export default function dashboardMigrator(data: unknown): LegacyDashboard {
+  const dashboard = decodeLegacyDashboard(data);
+  if (!dashboard) {
+    return { panels: [] };
+  }
+  const panels = dashboard.panels.map((panel) => {
     const panelCopy = _.cloneDeep(panel);
-    const { custom, options } = panelCopy;
-    if (panel.version === '3.0.0') {
-      if (panel.type === 'barGauge') {
-        // 3.1.0 版本废弃 custom.maxValue 改用 options.standardOptions.max
-        if (_.isNumber(custom.maxValue)) {
-          _.set(options, ['standardOptions', 'max'], custom.maxValue);
-          _.set(custom, ['maxValue'], undefined);
-        }
-        // 3.1.0 版本废弃 custom.baseColor 改用 options.standardOptions.thresholds
-        // 多个保险判断，没有意义正常不会出现这个情况
-        if (!options.thresholds) {
-          _.set(options, ['thresholds'], {
-            mode: 'absolute',
-            steps: [
-              {
-                color: custom.baseColor ?? '#7EB26D',
-                type: 'base',
-                value: null,
-              },
-            ],
-          });
-          _.set(custom, ['baseColor'], undefined);
-        }
+    if (panel.version === '3.0.0' && panel.type === 'barGauge') {
+      const custom = panelCopy.custom;
+      const options = panelCopy.options;
+      if (custom?.maxValue !== undefined && options) {
+        options.standardOptions = { ...options.standardOptions, max: custom.maxValue };
+        delete custom.maxValue;
+      }
+      if (custom?.baseColor !== undefined && options && !options.thresholds) {
+        options.thresholds = { mode: 'absolute', steps: [{ color: custom.baseColor, type: 'base', value: null }] };
+        delete custom.baseColor;
       }
     }
-    if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.2.0')) {
-      // 取 targets[0].maxDataPoints 和 targets[0].time 改动 panel.maxDataPoints 和 panel.queryOptionsTime
-      if (panelCopy.targets && panelCopy.targets.length > 0) {
-        const target = panelCopy.targets[0];
-        if (_.isNumber(target.maxDataPoints)) {
-          panelCopy.maxDataPoints = target.maxDataPoints;
-          target.maxDataPoints = undefined;
-        }
-        if (target.time) {
-          panelCopy.queryOptionsTime = target.time;
-          target.time = undefined;
-        }
-      }
-      panelCopy.version = '3.2.0';
+    if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.2.0')) {
+      migratePanelToV32(panelCopy);
     }
-    if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.3.0')) {
-      if (panelCopy?.options?.standardOptions?.util) {
-        panelCopy.options.standardOptions.unit = panelCopy.options.standardOptions?.util;
-        delete panelCopy.options.standardOptions.util;
-      }
-      if (panelCopy?.custom?.stack === 'noraml') {
-        panelCopy.custom.stack = 'normal';
-      }
-      panelCopy.overrides = _.map(panelCopy.overrides, (item) => {
-        let itemCopy = _.cloneDeep(item);
-        if (itemCopy?.properties?.rightYAxisDisplay === 'noraml') {
-          _.set(itemCopy, ['properties', 'rightYAxisDisplay'], 'normal');
-        }
-        if (itemCopy?.properties?.standardOptions?.util) {
-          _.set(itemCopy, ['properties', 'standardOptions', 'unit'], itemCopy.properties.standardOptions.util);
-          _.set(itemCopy, ['properties', 'standardOptions', 'util'], undefined);
-        }
-        return itemCopy;
+    if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.3.0')) {
+      migratePanelToV33(panelCopy);
+    }
+    if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.4.0')) {
+      panelCopy.panels?.forEach((subPanel) => {
+        migratePanelToV32(subPanel);
+        migratePanelToV33(subPanel);
+        subPanel.version = '3.4.0';
       });
-      panelCopy.version = '3.3.0';
-    }
-    if (semver.lt(semver.coerce(panel.version) || '0.0.0', '3.4.0')) {
-      // row panel 迁移子面板
-      if (panelCopy.panels && panelCopy.panels.length > 0) {
-        panelCopy.panels = panelCopy.panels.map((subPanel: any) => {
-          let subPanelCopy = _.cloneDeep(subPanel);
-          if (subPanelCopy.targets && subPanelCopy.targets.length > 0) {
-            const subPanelTarget = subPanelCopy.targets[0];
-            if (_.isNumber(subPanelTarget.maxDataPoints)) {
-              subPanelCopy.maxDataPoints = subPanelTarget.maxDataPoints;
-              subPanelTarget.maxDataPoints = undefined;
-            }
-            if (subPanelTarget.time) {
-              subPanelCopy.queryOptionsTime = subPanelTarget.time;
-              subPanelTarget.time = undefined;
-            }
-          }
-          if (subPanelCopy?.options?.standardOptions?.util) {
-            subPanelCopy.options.standardOptions.unit = subPanelCopy.options.standardOptions?.util;
-            delete subPanelCopy.options.standardOptions.util;
-          }
-          if (subPanelCopy?.custom?.stack === 'noraml') {
-            subPanelCopy.custom.stack = 'normal';
-          }
-          if (subPanelCopy.overrides && subPanelCopy.overrides.length > 0) {
-            subPanelCopy.overrides = _.map(subPanelCopy.overrides, (item) => {
-              let itemCopy = _.cloneDeep(item);
-              if (itemCopy?.properties?.rightYAxisDisplay === 'noraml') {
-                _.set(itemCopy, ['properties', 'rightYAxisDisplay'], 'normal');
-              }
-              if (itemCopy?.properties?.standardOptions?.util) {
-                _.set(itemCopy, ['properties', 'standardOptions', 'unit'], itemCopy.properties.standardOptions.util);
-                _.set(itemCopy, ['properties', 'standardOptions', 'util'], undefined);
-              }
-              return itemCopy;
-            });
-          }
-          return subPanelCopy;
-        });
-      }
       panelCopy.version = '3.4.0';
     }
     return migratePanelToV4(panelCopy);
   });
-
-  return {
-    ...data,
-    version: '4.0.0',
-    panels,
-  };
+  return { ...dashboard, version: '4.0.0', panels };
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Form, AutoComplete } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { getIndices } from '@/services/warning';
+import type { ElasticsearchSelectOption } from './types';
 
 interface IProps {
-  prefixField?: any;
+  prefixField?: FormListFieldData;
   prefixName?: string[] | number[];
   cate: string;
   datasourceValue?: number;
@@ -13,7 +15,7 @@ interface IProps {
 }
 
 export default function IndexSelect({ prefixField = {}, prefixName = [], cate, datasourceValue, name }: IProps) {
-  const [options, setOptions] = useState<any[]>([]);
+  const [options, setOptions] = useState<ElasticsearchSelectOption[]>([]);
   const [search, setSearch] = useState('');
   const { t } = useTranslation('datasource');
   const restPrefixField = _.omit(prefixField, 'key');

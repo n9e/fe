@@ -7,12 +7,12 @@ import { useSize } from 'ahooks';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, IBarGaugeStyles } from '../../../types';
-import { calculatePercentage } from './utils';
+import { BarGaugeValue, calculatePercentage } from './utils';
 
 interface Props {
   custom: IBarGaugeStyles;
   options: IOptions;
-  item: any;
+  item: BarGaugeValue;
   themeMode?: 'dark';
   minValue: number;
   maxValue: number;

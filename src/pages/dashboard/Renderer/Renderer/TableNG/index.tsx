@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext, useImperativeHandle } from 'react';
-import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType } from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType, GridApi, ICellRendererParams, RowNode } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
 import _ from 'lodash';
@@ -14,6 +14,7 @@ import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import useStableValue from '@/pages/dashboard/hooks/useStableValue';
 
 import { IOverride, IPanel } from '../../../types';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { downloadCsv } from '../Table/utils';
 import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
 import getFormattedRowData from './utils/getFormattedRowData';
@@ -30,6 +31,7 @@ import CellRenderer from './CellRenderer';
 import { TextObject } from './CellRenderer/types';
 import CustomColumnFilter, { doesFilterPass } from './CustomColumnFilter';
 import Links, { cellClickCallback } from './Links';
+import type { LinksHandle } from './Links';
 import RowDetailDrawer from './RowDetailDrawer';
 import TextSearchIcon from './TextSearchIcon';
 import { getDisplayedRowDetails, shouldIgnoreRowDetailClickAway } from './rowDetailUtils';
@@ -48,13 +50,14 @@ const i18nAgGrid = {
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const ROW_DETAIL_COLUMN_ID = '__table_ng_row_detail__';
+type TableGridRow = Record<string, TextObject>;
 
 interface Props {
   themeMode?: 'dark';
   isPreview?: boolean;
   id?: string; // dashboardID
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   rangeMode?: 'lcro' | 'lcrc';
   ajustColumns?: (columns: string[]) => string[];
   themes?: {
@@ -70,15 +73,15 @@ interface Props {
       {
         [key: string]: TextObject;
       },
-      any,
-      any
+      TextObject,
+      unknown
     >,
   ) => void;
   domLayout?: DomLayoutType;
   onOverridesChange?: (overrides: IOverride[]) => void;
 }
 
-function index(props: Props, ref: React.Ref<any>) {
+function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   const { t, i18n } = useTranslation('dashboard');
   const { siteInfo } = useContext(CommonStateContext);
   const {
@@ -115,9 +118,9 @@ function index(props: Props, ref: React.Ref<any>) {
   // useRef 不支持懒初始化，在渲染时直接同步读取初始值
   const cachedColWidthsRef = React.useRef<Record<string, number>>(readCachedColumnWidths(cacheKey));
   const appliedColWidthsRef = React.useRef<Record<string, number>>({});
-  const gridApiRef = React.useRef<any>(null);
+  const gridApiRef = React.useRef<GridApi<Record<string, TextObject>>>(null);
   const persistedColumnWidths = getResolvedColumnWidths(cachedColWidthsRef.current, overrides);
-  const linksRef = React.useRef<any>(null);
+  const linksRef = React.useRef<LinksHandle>(null);
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [rowDetailState, setRowDetailState] = useState<{
@@ -280,7 +283,7 @@ function index(props: Props, ref: React.Ref<any>) {
                   cellStyle: {
                     padding: 0,
                   },
-                  cellRenderer: (params) => (
+                  cellRenderer: (params: ICellRendererParams<TableGridRow>) => (
                     <Tooltip title={t('panel.custom.tableNG.rowDetail.triggerTip')}>
                       <div
                         className='absolute inset-0 flex items-center justify-center cursor-pointer'
@@ -319,7 +322,7 @@ function index(props: Props, ref: React.Ref<any>) {
                 'n9e-dashboard-panel-table-ng-cell-link': () => (options.links ? options.links.length === 1 : showUnderline),
                 'n9e-dashboard-panel-table-ng-cell-links': () => (options.links ? options.links.length > 1 : false),
               },
-              comparator: (value1, value2, node1, node2) => {
+              comparator: (_value1: TextObject | undefined, _value2: TextObject | undefined, node1: RowNode<TableGridRow>, node2: RowNode<TableGridRow>) => {
                 // 手动获取字段值，解决字段名包含"点"时无法正确获取的问题
                 const fieldValue1 = node1.data?.[item];
                 const fieldValue2 = node2.data?.[item];
@@ -339,7 +342,7 @@ function index(props: Props, ref: React.Ref<any>) {
                 }
                 return localeCompare(date1Number, date2Number);
               },
-              cellRenderer: (params) => {
+              cellRenderer: (params: ICellRendererParams<TableGridRow, TextObject>) => {
                 const field = params.colDef?.field;
                 const fieldValue = params.data?.[field];
 

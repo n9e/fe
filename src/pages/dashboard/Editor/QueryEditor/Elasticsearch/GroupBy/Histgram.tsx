@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Select, Button, Input, InputNumber } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { groupByCates } from './configs';
 
-export default function Terms({ prefixField }) {
+export default function Terms({ prefixField }: { prefixField: FormListFieldData }) {
   const { t } = useTranslation('alertRules');
   const [expanded, setExpanded] = useState(false);
   const restPrefixField = _.omit(prefixField, 'key');

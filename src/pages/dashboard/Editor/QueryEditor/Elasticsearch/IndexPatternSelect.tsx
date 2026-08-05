@@ -1,12 +1,14 @@
 import React from 'react';
 import { Form, Select } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import type { ElasticsearchIndexPattern } from './types';
 
 interface Props {
-  field: any;
+  field: FormListFieldData;
   name?: string[]; // 订阅规则里在 field.name 和 index_pattern 之间插入的字段
-  indexPatterns: any[];
+  indexPatterns: ElasticsearchIndexPattern[];
 }
 
 export default function IndexPatternSelect(props: Props) {

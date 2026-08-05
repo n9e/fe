@@ -27,6 +27,7 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 import { renderFn } from './render';
 import { IPanel, IHexbinStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
@@ -35,13 +36,19 @@ import './style.less';
 
 interface HoneyCombProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
   dataRevision?: number;
 }
 
-const getColumnsKeys = (data: any[]) => {
+interface HexbinValue {
+  name?: string;
+  stat: number;
+  metric: Record<string, string | undefined>;
+}
+
+const getColumnsKeys = (data: Array<{ metric: Record<string, string | undefined> }>) => {
   const keys = _.reduce(
     data,
     (result, item) => {
@@ -94,7 +101,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       .domain(getColorScaleLinearDomain(calculatedValues, colorDomainAuto, colorDomain))
       .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
 
-    const detailFormatter = (data: any) => {
+    const detailFormatter = (data: HexbinValue) => {
       const scopedVars = {
         '__field.name': data.name,
         '__field.value': data.stat,

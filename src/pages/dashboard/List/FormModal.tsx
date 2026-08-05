@@ -30,7 +30,16 @@ interface Props {
   busiId?: number;
   initialValues?: IDashboard;
   dashboardSaveMode?: string;
-  onOk?: (values) => void;
+  onOk?: (values: DashboardFormValues) => void;
+}
+
+interface DashboardFormValues {
+  name: string;
+  ident?: string;
+  tags?: string[];
+  note?: string;
+  graphTooltip?: IDashboardConfig['graphTooltip'];
+  graphZoom?: IDashboardConfig['graphZoom'];
 }
 
 function index(props: Props & ModalWrapProps) {
@@ -66,7 +75,7 @@ function index(props: Props & ModalWrapProps) {
       visible={visible}
       onCancel={destroy}
       onOk={() => {
-        form.validateFields().then(async (values) => {
+        form.validateFields().then(async (values: DashboardFormValues) => {
           if (dashboardSaveMode === 'manual') {
             if (onOk) {
               onOk(values);

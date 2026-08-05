@@ -14,6 +14,7 @@ import getChartContainerSize from './utils/getChartContainerSize';
 import { LegendList, LegendTable } from './components/Legend';
 import Main from './Main';
 import useStableValue from '../../../hooks/useStableValue';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import './style.less';
 
 export { getDataFrameAndBaseSeries };
@@ -22,8 +23,8 @@ export type { BaseSeriesItem };
 interface Props {
   id?: string;
   values: IPanel;
-  series: any[];
-  annotations: any[];
+  series: CalculatedSeries[];
+  annotations: import('@/pages/dashboard/types').DashboardAnnotation[];
   setAnnotationsRefreshFlag?: (flag: string) => void;
   colors?: string[];
   time?: IRawTimeRange;
@@ -35,7 +36,7 @@ interface Props {
   tableHeight?: string;
   themeMode?: 'dark';
   hideResetBtn?: boolean;
-  onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
+  onClick?: (event: Event, datetime: Date, value: number, points: unknown[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
   dataRevision?: number;
 }
@@ -83,7 +84,7 @@ export default function index(props: Props) {
   const [activeLegend, setActiveLegend] = useState<string>(); // legendSelectMode === 'single'
   const [activeLegends, setActiveLegends] = useState<string[]>([]); // legendSelectMode === 'multiple'
   const { frames, baseSeries } = useMemo(() => {
-    return getDataFrameAndBaseSeries(mainProps.series as any);
+    return getDataFrameAndBaseSeries(mainProps.series);
   }, [dataDependency]);
   useEffect(() => {
     setDataRefresh(_.uniqueId('dataRefresh_'));

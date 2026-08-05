@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Select, Button, InputNumber, AutoComplete } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import _ from 'lodash';
 import { groupByCates } from './configs';
 
-export default function Terms({ prefixField, fieldsOptions, values }) {
+interface TermsProps {
+  prefixField: FormListFieldData;
+  fieldsOptions: Array<{ value: string }>;
+  values: Array<{ ref: string; func: string; field?: string }>;
+}
+
+export default function Terms({ prefixField, fieldsOptions, values }: TermsProps) {
   const { t } = useTranslation('alertRules');
   const [expanded, setExpanded] = useState(false);
   const [search, setSearch] = useState('');

@@ -23,6 +23,7 @@ import '@fc-plot/ts-graph/dist/index.css';
 import { IPanel } from '../../../types';
 import { statHexPalette } from '../../../config';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { calculateGridDimensions } from '../../utils/squares';
 import { useGlobalState } from '../../../globalState';
 import { getMinFontSizeByList, IGrid } from './utils';
@@ -33,7 +34,7 @@ import './style.less';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   bodyWrapRef: {
     current: HTMLDivElement | null;
   };
@@ -44,7 +45,7 @@ interface IProps {
 
 const ITEM_SPACIING = 2;
 
-const getColumnsKeys = (data: any[]) => {
+const getColumnsKeys = (data: CalculatedSeries[]) => {
   const keys = _.reduce(
     data,
     (result, item) => {

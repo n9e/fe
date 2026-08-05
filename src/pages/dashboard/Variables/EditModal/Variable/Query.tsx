@@ -28,6 +28,12 @@ interface Props {
   footerExtraRef: React.RefObject<HTMLDivElement>;
 }
 
+interface DatasourceOption {
+  id: number | string;
+  name: string;
+  plugin_type: string;
+}
+
 export default function Query(props: Props) {
   const { t, i18n } = useTranslation('dashboard');
   const [range] = useGlobalState('range');
@@ -56,7 +62,7 @@ export default function Query(props: Props) {
       });
       const formatedDefinition = formatString(item.definition, data);
       const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
-      const datasourceValue = formatDatasource(item.datasource.value as any, data);
+      const datasourceValue = formatDatasource(item.datasource.value, data);
 
       if (!item.datasource) {
         const errMsg = 'Variable ' + item.name + ' datasource not found';
@@ -96,6 +102,12 @@ export default function Query(props: Props) {
   const { run, loading } = useRequest(service, {
     manual: true,
   });
+  const variableDatasourceOptions: DatasourceOption[] = _.map(datasourceVars, (variable) => ({
+    id: `\${${variable.name}}`,
+    name: `\${${variable.name}}`,
+    plugin_type: variable.definition,
+  }));
+  const selectableDatasourceList: DatasourceOption[] = datasourceList;
 
   return (
     <>
@@ -117,14 +129,8 @@ export default function Query(props: Props) {
           ajustDatasourceList={(list) => {
             return _.filter(
               _.concat(
-                _.map(datasourceVars, (item) => {
-                  return {
-                    id: `\${${item.name}}`,
-                    name: `\${${item.name}}`,
-                    plugin_type: item.definition,
-                  };
-                }),
-                list as any,
+                variableDatasourceOptions,
+                list,
               ),
               (item) => {
                 const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
@@ -135,14 +141,8 @@ export default function Query(props: Props) {
           onChange={(val) => {
             const cate = _.find(
               _.concat(
-                _.map(datasourceVars, (item) => {
-                  return {
-                    id: `\${${item.name}}`,
-                    name: `\${${item.name}}`,
-                    plugin_type: item.definition,
-                  };
-                }),
-                datasourceList as any,
+                variableDatasourceOptions,
+                selectableDatasourceList,
               ),
               { id: val },
             )?.plugin_type;

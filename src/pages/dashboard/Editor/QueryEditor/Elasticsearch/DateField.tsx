@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
 import { Form, AutoComplete } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
 import { getFields } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import type { ElasticsearchSelectOption } from './types';
 
 interface IProps {
-  prefixField?: any;
+  prefixField?: FormListFieldData;
   prefixNames?: (string | number)[]; // 前缀字段名
   datasourceValue: number;
   index: string;
@@ -18,7 +20,7 @@ export default function DateField(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { datasourceValue, index, prefixField = {}, prefixNames = [prefixField.name], disabled } = props;
   const restPrefixField = _.omit(prefixField, 'key');
-  const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
+  const [fieldsOptions, setFieldsOptions] = useState<ElasticsearchSelectOption[]>([]);
   const { run } = useDebounceFn(
     () => {
       getFields(datasourceValue, index, 'date').then((res) => {

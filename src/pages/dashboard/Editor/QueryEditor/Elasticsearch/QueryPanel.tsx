@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Row, Col, Input, InputNumber, Space, Select, Tooltip, Radio } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { FormListFieldData } from 'antd/lib/form/FormList';
+import { FormListFieldData, FormListOperation } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -19,19 +19,20 @@ import Values from './Values';
 import GroupBy from './GroupBy';
 import Time from './Time';
 import IndexPatternSelect from './IndexPatternSelect';
+import type { ElasticsearchIndexPattern } from './types';
 
 interface Props {
   fields: FormListFieldData[];
   field: FormListFieldData;
   index: number;
-  add: () => void;
-  remove: (index: number | number[]) => void;
+  add: FormListOperation['add'];
+  remove: FormListOperation['remove'];
   datasourceValue: number;
 }
 
 export default function QueryPanel({ fields, field, index, add, remove, datasourceValue }: Props) {
   const { t } = useTranslation('dashboard');
-  const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
+  const [indexPatterns, setIndexPatterns] = useState<ElasticsearchIndexPattern[]>([]);
   const prefixName = ['targets', field.name];
   const datasourceCate = Form.useWatch('datasourceCate');
   const refId = Form.useWatch([...prefixName, 'refId']) || generateQueryNameByIndex(index);

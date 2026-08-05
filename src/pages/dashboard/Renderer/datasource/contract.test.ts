@@ -5,8 +5,8 @@ import type { ITarget } from '@/pages/dashboard/types';
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse, validateDashboardQueryRequest } from './contract';
 import dashboardDatasourceDefinitions, { DASHBOARD_DATASOURCE_CATES } from './registry';
 
-jest.mock('./prometheus', () => ({
-  getRealStep: () => 30,
+jest.mock('./queryStep', () => ({
+  getDashboardQueryStep: () => 30,
 }));
 
 jest.mock('@/components/TimeRangePicker/utils', () => ({
@@ -124,9 +124,10 @@ describe('dashboard unified query contract', () => {
         filter_language: 'kql',
       },
     });
-    expect((request.queries[0] as any).query).not.toHaveProperty('syntax');
-    expect((request.queries[0] as any).query).toMatchObject({ value: { func: 'rawData' } });
-    expect((request.queries[0] as any).query).not.toHaveProperty('values');
+    const query = request.queries[0]?.kind === 'query' ? request.queries[0].query : {};
+    expect(query).not.toHaveProperty('syntax');
+    expect(query).toMatchObject({ value: { func: 'rawData' } });
+    expect(query).not.toHaveProperty('values');
   });
 
   it('expands Elasticsearch values into backend-compatible single-value queries', () => {
@@ -221,16 +222,18 @@ describe('dashboard unified query contract', () => {
       datasourceList: [],
     });
 
-    expect((request.queries[0] as any).query.keys).toEqual({
+    const firstQuery = request.queries[0]?.kind === 'query' ? request.queries[0].query : {};
+    const secondQuery = request.queries[1]?.kind === 'query' ? request.queries[1].query : {};
+    expect(firstQuery).toMatchObject({ keys: {
       valueKey: 'value count',
       labelKey: 'host region',
       timeKey: 'time',
-    });
-    expect((request.queries[1] as any).query.keys).toEqual({
+    } });
+    expect(secondQuery).toMatchObject({ keys: {
       metricKey: 'value count',
       labelKey: 'host',
       timeFormat: '2006-01-02T15:04:05',
-    });
+    } });
   });
 
   it('builds a mixed datasource request with only backend execution fields', () => {

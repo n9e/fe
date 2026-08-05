@@ -4,14 +4,35 @@ import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
 import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { getMaxFontSize } from '../../utils/getTextWidth';
+import type { IOptions } from '../../../types';
 
 const MIN_SIZE = 12;
 const UNIT_PADDING = 4;
-const getTextColor = (color, colorMode) => {
+const getTextColor = (color: string | undefined, colorMode: string) => {
   return colorMode === 'value' ? color : '#fff';
 };
 
-export default function StatItem(props) {
+interface StatItemData {
+  name?: string;
+  metric: Record<string, string | number | undefined>;
+  value?: string | number;
+  unit?: string;
+  color?: string;
+}
+interface StatItemProps {
+  item: StatItemData;
+  textMode: string;
+  colorMode: string;
+  textSize?: { title?: number; value?: number };
+  isFullSizeBackground: boolean;
+  valueField?: string;
+  graphMode: string;
+  serie: unknown;
+  options: IOptions;
+  style?: React.CSSProperties;
+}
+
+export default function StatItem(props: StatItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
   const chartEleRef = useRef<HTMLDivElement>(null);
@@ -64,7 +85,7 @@ export default function StatItem(props) {
         xkey: 0,
         ykey: 1,
         ykey2: 2,
-        ykeyFormatter: (value) => Number(value),
+        ykeyFormatter: (value: number | string) => Number(value),
         chart: {
           renderTo: chartEleRef.current,
           height: chartEleRef.current.clientHeight,

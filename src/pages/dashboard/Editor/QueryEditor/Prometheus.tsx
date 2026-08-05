@@ -13,13 +13,20 @@ import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recomme
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import type { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
 import { isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-export default function PrometheusContent({ panelWidth, datasourceValue, range }) {
+interface PrometheusContentProps {
+  panelWidth?: number;
+  datasourceValue: number;
+  range: IRawTimeRange;
+}
+
+export default function PrometheusContent({ panelWidth, datasourceValue, range }: PrometheusContentProps) {
   const { t } = useTranslation('dashboard');
   const { i18n } = useTranslation();
   const form = Form.useFormInstance();

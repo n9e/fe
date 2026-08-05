@@ -1,27 +1,42 @@
 import React, { useRef, useEffect } from 'react';
 import _ from 'lodash';
 import TsGraph from '@fc-plot/ts-graph';
-import { IOverride } from '../../../types';
+import { IOptions, IOverride } from '../../../types';
 import { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 
 const UNIT_PADDING = 4;
-const getTextColor = (color, colorMode) => {
+interface StatItemData {
+  name?: string;
+  metric: Record<string, string | number | undefined>;
+  fields?: { refId?: string };
+  stat?: number | string | null;
+  value?: React.ReactNode;
+  unit?: string;
+  color?: string;
+}
+
+interface StatFontSize {
+  title?: number;
+  value?: number;
+}
+
+const getTextColor = (color: string | undefined, colorMode: string) => {
   return colorMode === 'value' ? color : '#fff';
 };
 
 interface Props {
-  item: any;
+  item: StatItemData;
   textMode: string;
   colorMode: string;
-  textSize: any;
+  textSize?: StatFontSize;
   isFullSizeBackground: boolean;
   valueField: string;
   graphMode: string;
-  serie: any;
-  options: any;
-  style: any;
-  minFontSize: any;
+  serie: unknown;
+  options: IOptions;
+  style?: React.CSSProperties;
+  minFontSize?: StatFontSize;
   overrides: IOverride[];
 }
 
@@ -76,7 +91,7 @@ export default function StatItem(props: Props) {
         xkey: 0,
         ykey: 1,
         ykey2: 2,
-        ykeyFormatter: (value) => Number(value),
+        ykeyFormatter: (value: number | string) => Number(value),
         chart: {
           renderTo: chartEleRef.current,
           height: chartEleRef.current.clientHeight,

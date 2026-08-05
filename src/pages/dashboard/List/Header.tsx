@@ -30,10 +30,10 @@ import BatchClone from './BatchClone';
 
 interface IProps {
   gids?: string;
-  selectRowKeys: any[];
+  selectRowKeys: number[];
   refreshList: () => void;
   searchVal: string;
-  onSearchChange: (val) => void;
+  onSearchChange: (val: string) => void;
   visibleColumns: string[];
   setVisibleColumns: (val: string[]) => void;
   columnOptions: { label: string; value: string; order?: number }[];

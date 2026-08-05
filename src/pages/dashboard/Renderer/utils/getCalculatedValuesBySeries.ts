@@ -16,17 +16,32 @@
  */
 import _ from 'lodash';
 import stringToRegex from '../../Variables/utils/stringToRegex';
-import { IValueMapping, IThresholds, IOverride } from '../../types';
+import { IStandardOptions, ITarget, IValueMapping, IThresholds, IOverride } from '../../types';
 import valueFormatter from './valueFormatter';
 import getSerieName from './getSerieName';
 
-const getValueAndToNumber = (value: any[]) => {
-  return _.toNumber(_.get(value, 1, NaN));
+type SeriesValue = number | string | null;
+type SeriesPoint = [timestamp: number, value: SeriesValue];
+
+export interface CalculatedSeries {
+  id: string;
+  refId: string;
+  name?: string;
+  metric: Record<string, string>;
+  data: SeriesPoint[];
+  target?: ITarget;
+  isExp?: boolean;
+  offset?: number;
+  visible?: boolean;
+}
+
+const getValueAndToNumber = (value?: SeriesPoint) => {
+  return _.toNumber(value?.[1] ?? NaN);
 };
 
 export const getSerieTextObj = (
   value: number | string | null | undefined,
-  standardOptions?: any,
+  standardOptions?: IStandardOptions,
   valueMappings?: IValueMapping[],
   thresholds?: IThresholds,
   valueRange?: [number, number],
@@ -35,7 +50,7 @@ export const getSerieTextObj = (
 ) => {
   const { decimals, dateFormat } = standardOptions || {};
   const unit = standardOptions?.unit;
-  const matchedValueMapping = _.find(valueMappings, (item: any) => {
+  const matchedValueMapping = _.find(valueMappings, (item) => {
     const { type, match } = item;
     if (value === null || value === '' || value === undefined) {
       if (type === 'specialValue') {
@@ -122,7 +137,7 @@ export const getSerieTextObj = (
 
 export const getMappedTextObj = (textValue: string, valueMappings?: IValueMapping[]) => {
   if (typeof textValue === 'string') {
-    const matchedValueMapping = _.find(valueMappings, (item: any) => {
+  const matchedValueMapping = _.find(valueMappings, (item) => {
       const { type, match } = item;
       if (type === 'textValue') {
         if (textValue === match?.textValue) return true;
@@ -147,7 +162,7 @@ export const getMappedTextObj = (textValue: string, valueMappings?: IValueMappin
 };
 
 const getCalculatedValuesBySeries = (
-  series: any[],
+  series: CalculatedSeries[],
   calc: string,
   {
     unit,
@@ -164,7 +179,14 @@ const getCalculatedValuesBySeries = (
   thresholds?: IThresholds,
 ) => {
   if (calc === 'origin') {
-    let values: any[] = [];
+    let values: Array<{
+      id: string;
+      name?: string;
+      __time__: number;
+      metric: Record<string, string | undefined>;
+      fields: Record<string, string | number>;
+      stat: SeriesValue;
+    }> = [];
     _.forEach(series, (serie) => {
       _.forEach(serie.data, (item) => {
         values.push({
@@ -204,10 +226,10 @@ const getCalculatedValuesBySeries = (
       last: () => _.get(_.last(serie.data), 1),
       firstNotNull: () => _.get(_.first(_.filter(serie.data, (item) => item[1] !== null && !_.isNaN(_.toNumber(item[1])))), 1),
       first: () => _.get(_.first(serie.data), 1),
-      min: () => getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),
-      max: () => getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
-      avg: () => _.meanBy(serie.data, (item: any) => _.toNumber(item[1])),
-      sum: () => _.sumBy(serie.data, (item: any) => _.toNumber(item[1])),
+      min: () => getValueAndToNumber(_.minBy(serie.data, (item) => _.toNumber(item[1]))),
+      max: () => getValueAndToNumber(_.maxBy(serie.data, (item) => _.toNumber(item[1]))),
+      avg: () => _.meanBy(serie.data, (item) => _.toNumber(item[1])),
+      sum: () => _.sumBy(serie.data, (item) => _.toNumber(item[1])),
       count: () => _.size(serie.data),
     };
     let stat = results[calc] ? results[calc]() : NaN;
@@ -257,7 +279,7 @@ const getCalculatedValuesBySeries = (
   return values;
 };
 
-export const getLegendValues = (series: any[], standardOptions, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
+export const getLegendValues = (series: CalculatedSeries[], standardOptions: IStandardOptions | undefined, hexPalette: string[], stack = false, valueMappings?: IValueMapping[], overrides?: IOverride[]) => {
   let { decimals, dateFormat } = standardOptions || {};
   let unit = standardOptions?.unit;
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
@@ -269,11 +291,11 @@ export const getLegendValues = (series: any[], standardOptions, hexPalette: stri
       dateFormat = override?.properties?.standardOptions?.dateFormat;
     }
     const results = {
-      max: getValueAndToNumber(_.maxBy(serie.data, (item: any) => _.toNumber(item[1]))),
-      min: getValueAndToNumber(_.minBy(serie.data, (item: any) => _.toNumber(item[1]))),
-      avg: _.meanBy(serie.data, (item: any) => _.toNumber(item[1])),
-      sum: _.sumBy(serie.data, (item: any) => _.toNumber(item[1])),
-      last: getValueAndToNumber(_.last(serie.data) as any),
+      max: getValueAndToNumber(_.maxBy(serie.data, (item) => _.toNumber(item[1]))),
+      min: getValueAndToNumber(_.minBy(serie.data, (item) => _.toNumber(item[1]))),
+      avg: _.meanBy(serie.data, (item) => _.toNumber(item[1])),
+      sum: _.sumBy(serie.data, (item) => _.toNumber(item[1])),
+      last: getValueAndToNumber(_.last(serie.data)),
     };
     return {
       id: serie.id,

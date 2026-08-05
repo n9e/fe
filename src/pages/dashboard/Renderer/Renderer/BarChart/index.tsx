@@ -21,6 +21,7 @@ import { corelib, extend, Runtime } from '@antv/g2';
 
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../utils/valueFormatter';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
@@ -30,13 +31,15 @@ const Chart = extend(Runtime, corelib());
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
   dataRevision?: number;
 }
 
-const getColumnsKeys = (data: any[]) => {
+type ChartRow = Record<string, string | number | undefined>;
+
+const getColumnsKeys = (data: Array<{ metric: Record<string, string> }>) => {
   const keys = _.reduce(
     data,
     (result, item) => {
@@ -50,7 +53,7 @@ const getColumnsKeys = (data: any[]) => {
 export default function Bar(props: IProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const containerSize = useSize(containerRef);
-  const chartRef = useRef<any>();
+  const chartRef = useRef<InstanceType<typeof Chart>>();
   const { values, series, themeMode, isPreview } = props;
   const dataDependency = props.dataRevision ?? series;
   const { custom, options } = values;
@@ -74,7 +77,7 @@ export default function Bar(props: IProps) {
   const [statFields, setStatFields] = useGlobalState('statFields');
   const render = () => {
     if (!chartRef.current) return;
-    let data: any[] = [];
+    let data: ChartRow[] = [];
     data = _.map(calculatedValues, (item) => {
       return {
         ...item.metric,
@@ -124,7 +127,7 @@ export default function Bar(props: IProps) {
       })
       .axis('y', {
         title: false,
-        labelFormatter: (d) => {
+        labelFormatter: (d: number | string) => {
           const valueObj = valueFormatter(
             {
               unit: options?.standardOptions?.unit,
@@ -144,7 +147,7 @@ export default function Bar(props: IProps) {
           },
           {
             channel: 'y',
-            valueFormatter: (d) => {
+            valueFormatter: (d: number | string) => {
               const valueObj = valueFormatter(
                 {
                   unit: options?.standardOptions?.unit,

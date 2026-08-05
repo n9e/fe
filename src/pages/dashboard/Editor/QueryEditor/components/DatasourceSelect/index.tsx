@@ -8,10 +8,18 @@ import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import getDefaultTargets from '@/pages/dashboard/utils/getDefaultTargets';
 import { IS_PLUS } from '@/utils/constant';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
+import type { DashboardDatasource } from '@/pages/dashboard/types';
 
 import DatasourceSelectExtra from './DatasourceSelectExtra';
 
-export default function index({ datasourceCate, datasourceValue, variablesWithOptions }) {
+interface DatasourceSelectProps {
+  datasourceCate?: string;
+  datasourceValue?: number | string;
+  variablesWithOptions: IVariable[];
+}
+
+export default function index({ datasourceCate, datasourceValue, variablesWithOptions }: DatasourceSelectProps) {
   const { t } = useTranslation('dashboard');
   const { datasourceCateOptions } = useContext(CommonStateContext);
   const datasourceVars = _.filter(variablesWithOptions, (item) => {
@@ -46,9 +54,10 @@ export default function index({ datasourceCate, datasourceValue, variablesWithOp
                         id: `\${${item.name}}`,
                         name: `\${${item.name}}`,
                         plugin_type: item.definition,
+                        is_default: false,
                       };
                     }),
-                    list as any,
+                    list as DashboardDatasource[],
                   ),
                   (item) => {
                     const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
@@ -92,7 +101,7 @@ export default function index({ datasourceCate, datasourceValue, variablesWithOp
                 chartForm.setFieldsValue({
                   datasourceCate: cate,
                   datasourceValue: val,
-                  ...(previousCate !== cate ? { targets: getDefaultTargets(cate as any) } : {}),
+                  ...(previousCate !== cate ? { targets: getDefaultTargets(cate as import('@/utils/constant').DatasourceCateEnum) } : {}),
                 });
               }}
             />

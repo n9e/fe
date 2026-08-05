@@ -25,15 +25,16 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
+import type { IPanel } from '../types';
 
 interface IProps {
   isAuthorized: boolean;
   name: string;
-  row: any;
+  row: IPanel;
   onToggle: () => void;
   onAddClick: () => void;
   onPasteClick: () => void;
-  onEditClick: (row: any) => void;
+  onEditClick: (row: IPanel) => void;
   onDeleteClick: (mode: 'self' | 'withPanels') => void;
 }
 

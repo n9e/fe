@@ -41,7 +41,7 @@ import initializeVariablesValue from '@/pages/dashboard/Variables/utils/initiali
 import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import Variables, { IVariable } from '../Variables';
-import { ILink, IDashboardConfig } from '../types';
+import { ILink, IDashboardConfig, DashboardAnnotation, IPanel, JsonValue, ScopedVariables } from '../types';
 import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
@@ -62,13 +62,31 @@ interface IProps {
   isPreview?: boolean;
   isBuiltin?: boolean;
   gobackPath?: string;
-  builtinParams?: any;
+  builtinParams?: number;
   onLoaded?: (dashboard: Dashboard['configs']) => boolean;
   hideGoBack?: boolean;
   hideGoList?: boolean;
 }
 
-const fetchDashboard = ({ id, builtinParams }) => {
+interface FetchDashboardParams {
+  id: string;
+  builtinParams?: IProps['builtinParams'];
+}
+
+interface DashboardUpdatePayload {
+  configs: string;
+  name?: string;
+  ident?: string;
+  tags?: string;
+  note?: string;
+}
+
+interface RouterPromptHandle {
+  redirect: () => void;
+  hidePrompt: () => void;
+}
+
+const fetchDashboard = ({ id, builtinParams }: FetchDashboardParams) => {
   if (builtinParams) {
     return getPayloadByUUID(builtinParams).then((res) => {
       let { content } = res;
@@ -82,11 +100,12 @@ const fetchDashboard = ({ id, builtinParams }) => {
   }
   return getDashboard(id);
 };
-const builtinParamsToID = (builtinParams) => {
-  return `${builtinParams['__uuid__']}`;
+const builtinParamsToID = (params: Record<string, string | (string | null)[] | null>) => {
+  const value = params.__uuid__;
+  return Array.isArray(value) ? `${value[0] ?? ''}` : `${value ?? ''}`;
 };
 
-const replaceTargetQueryVariables = (value: unknown, range: IRawTimeRange, scopedVars?: any): unknown => {
+const replaceTargetQueryVariables = (value: JsonValue, range: IRawTimeRange, scopedVars?: ScopedVariables): JsonValue => {
   if (typeof value === 'string') {
     return replaceTemplateVariables(value, { range, scopedVars });
   }
@@ -94,8 +113,11 @@ const replaceTargetQueryVariables = (value: unknown, range: IRawTimeRange, scope
     return value.map((item) => replaceTargetQueryVariables(item, range, scopedVars));
   }
   if (value && typeof value === 'object') {
-    return Object.keys(value).reduce<Record<string, unknown>>((result, key) => {
-      result[key] = replaceTargetQueryVariables((value as Record<string, unknown>)[key], range, scopedVars);
+    return Object.keys(value).reduce<Record<string, JsonValue>>((result, key) => {
+      const nestedValue = value[key];
+      if (nestedValue !== undefined) {
+        result[key] = replaceTargetQueryVariables(nestedValue, range, scopedVars);
+      }
       return result;
     }, {});
   }
@@ -120,8 +142,8 @@ export default function DetailV2(props: IProps) {
   }
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
-  const [panels, setPanels] = useState<any[]>([]);
-  const [annotations, setAnnotations] = useState<any[]>([]);
+  const [panels, setPanels] = useState<IPanel[]>([]);
+  const [annotations, setAnnotations] = useState<DashboardAnnotation[]>([]);
   const [annotationsRefreshFlag, setAnnotationsRefreshFlag] = useState<string>(_.uniqueId('annotationsRefreshFlag_'));
   const [loading, setLoading] = useState(false);
   const [range, setRange] = useState<IRawTimeRange>(getDefaultTimeRange(id, query, dashboardDefaultRangeIndex));
@@ -131,7 +153,7 @@ export default function DetailV2(props: IProps) {
   const [editorData, setEditorData] = useState({
     visible: false,
     id: '',
-    initialValues: {} as any,
+    initialValues: {} as IPanel,
   });
   const [migrationVisible, setMigrationVisible] = useState(false);
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
@@ -142,7 +164,7 @@ export default function DetailV2(props: IProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const editModalVariablecontainerRef = useRef<HTMLDivElement>(null);
   let updateAtRef = useRef<number>();
-  const routerPromptRef = useRef<any>();
+  const routerPromptRef = useRef<RouterPromptHandle>(null);
   const refresh = async (cbk?: () => void) => {
     // 自动保存模式下不显示 loading
     if (dashboardSaveMode === 'manual') {
@@ -212,7 +234,7 @@ export default function DetailV2(props: IProps) {
         setLoading(false);
       });
   };
-  const handleUpdateDashboardConfigs = (id, updateData) => {
+  const handleUpdateDashboardConfigs = (id: number | string, updateData: DashboardUpdatePayload) => {
     if (dashboardSaveMode === 'manual') {
       let configs = {} as IDashboardConfig;
       try {
@@ -234,10 +256,10 @@ export default function DetailV2(props: IProps) {
       }
       setDashboard({
         ...dashboard,
-        name: updateData.name,
-        ident: updateData.ident,
-        tags: updateData.tags,
-        note: updateData.note,
+        name: updateData.name ?? dashboard.name,
+        ident: updateData.ident ?? dashboard.ident,
+        tags: updateData.tags ?? dashboard.tags,
+        note: updateData.note ?? dashboard.note,
         configs,
       });
     } else {
@@ -247,8 +269,8 @@ export default function DetailV2(props: IProps) {
       });
     }
   };
-  const handleVariableChange = (newValue) => {
-    const dashboardConfigs: any = dashboard.configs;
+  const handleVariableChange = (newValue: IVariable[]) => {
+    const dashboardConfigs: IDashboardConfig = _.cloneDeep(dashboard.configs);
     dashboardConfigs.var = _.map(newValue, (item) => {
       return _.omit(item, ['value', 'options']); // 兼容性代码，去除掉 value, options
     });
@@ -329,9 +351,10 @@ export default function DetailV2(props: IProps) {
 
   useDeepCompareEffect(() => {
     // 更新全局状态
-    const obj = {};
+    const obj: Record<string, string[]> = {};
     _.forEach(variablesWithOptions, (item) => {
-      obj[item.name] = _.isArray(item.value) ? item.value : [item.value];
+      const values = Array.isArray(item.value) ? item.value : [item.value];
+      obj[item.name] = values.filter((value): value is string | number => value !== undefined && value !== null).map(String);
     });
     const parsedRange = parseRange(range);
     setParamsAiAction({
@@ -619,7 +642,7 @@ export default function DetailV2(props: IProps) {
           <Button
             key='cancel'
             onClick={() => {
-              routerPromptRef.current.hidePrompt();
+              routerPromptRef.current?.hidePrompt();
             }}
           >
             {t('detail.prompt.cancelText')}
@@ -629,7 +652,7 @@ export default function DetailV2(props: IProps) {
             type='primary'
             danger
             onClick={() => {
-              routerPromptRef.current.redirect();
+              routerPromptRef.current?.redirect();
             }}
           >
             {t('detail.prompt.discardText')}
@@ -638,7 +661,7 @@ export default function DetailV2(props: IProps) {
             key='ok'
             type='primary'
             onClick={() => {
-              routerPromptRef.current.hidePrompt();
+              routerPromptRef.current?.hidePrompt();
               updateDashboard(dashboard.id, {
                 name: dashboard.name,
                 ident: dashboard.ident,

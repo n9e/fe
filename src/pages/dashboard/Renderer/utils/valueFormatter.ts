@@ -23,7 +23,7 @@ import * as byteConverter from './byteConverter';
 import { toNanoSeconds, toMicroSeconds, toMilliSeconds, toSeconds } from './dateTimeFormatters';
 import { toFixed, FormattedValue } from './valueFormats';
 
-export function timeFormatter(val, type: 'seconds' | 'milliseconds' | 'microseconds' | 'nanoseconds', decimals) {
+export function timeFormatter(val: number | string | null | undefined, type: 'seconds' | 'milliseconds' | 'microseconds' | 'nanoseconds', decimals?: number) {
   if (typeof val !== 'number')
     return {
       value: val,
@@ -56,7 +56,13 @@ export function timeFormatter(val, type: 'seconds' | 'milliseconds' | 'microseco
   };
 }
 
-const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss' }, val) => {
+interface ValueFormatterOptions {
+  unit?: string;
+  decimals?: number | null;
+  dateFormat?: string;
+}
+
+const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss' }: ValueFormatterOptions, val: number | string | null | undefined) => {
   if (val === null || val === '' || val === undefined) {
     return {
       value: '',

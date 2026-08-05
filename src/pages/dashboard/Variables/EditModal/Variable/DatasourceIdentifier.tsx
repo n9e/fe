@@ -29,18 +29,12 @@ export default function DatasourceIdentifier(props: Props) {
   >([]);
 
   useEffect(() => {
-    let datasourceList = definition
-      ? _.filter(groupedDatasourceList[definition] as any, (item) => {
-          return item.identifier;
-        })
-      : [];
+    let datasourceList = typeof definition === 'string' ? (groupedDatasourceList[definition] ?? []).filter((item) => item.identifier !== undefined) : [];
     if (regex) {
-      datasourceList = _.filter(datasourceList, (option) => {
-        return regex.test(option.identifier);
-      });
+      datasourceList = datasourceList.filter((option) => option.identifier !== undefined && regex.test(option.identifier));
     }
     const itemOptions = _.map(datasourceList, (ds) => {
-      return { label: ds.name, value: ds.identifier };
+      return { label: ds.identifier ?? ds.name, value: ds.identifier ?? '' };
     });
     setOptions(itemOptions);
   }, [definition, regex, groupedDatasourceList]);
@@ -73,7 +67,7 @@ export default function DatasourceIdentifier(props: Props) {
       <Form.Item label={t('var.datasource.defaultValue')} name='defaultValue'>
         <Select showSearch>
           {_.map(
-            _.filter(groupedDatasourceList[definition], (item) => {
+            _.filter(typeof definition === 'string' ? groupedDatasourceList[definition] ?? [] : [], (item) => {
               if (item.identifier) {
                 if (regex) {
                   return regex.test(item.identifier);

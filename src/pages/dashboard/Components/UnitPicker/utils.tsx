@@ -21,7 +21,17 @@ import i18next from 'i18next';
 import { binaryPrefix, SIPrefix } from '@/pages/dashboard/Renderer/utils/symbolFormatters';
 import { toFixedUnit } from '@/pages/dashboard/Renderer/utils/valueFormats';
 
-export const units: any = [
+export interface UnitOption {
+  label: React.ReactNode;
+  value?: string;
+  symbol?: string;
+  fn?: (...args: never[]) => unknown;
+  options?: UnitOption[];
+  cleanLabel?: string;
+  cleanLabelLink?: React.ReactNode;
+}
+
+export const units: UnitOption[] = [
   {
     label: 'none',
     value: 'none',
@@ -386,7 +396,7 @@ export const units: any = [
   },
 ];
 
-export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter?: (units: any) => any) => {
+export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter?: (units: UnitOption[]) => UnitOption[]) => {
   let unitsClone = _.cloneDeep(units);
   if (hideSIOption) {
     unitsClone = _.filter(unitsClone, (unit) => unit.value !== 'sishort');

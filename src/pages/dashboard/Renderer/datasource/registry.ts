@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import type { ITarget } from '@/pages/dashboard/types';
+import type { ITarget, JsonObject } from '@/pages/dashboard/types';
 
 import type { DashboardQueryResultType } from './types';
 
@@ -68,7 +68,7 @@ export interface DashboardDatasourceDefinition {
   resultTypes: DashboardQueryResultType[];
   defaultTarget?: Partial<ITarget>;
   isQueryReady: (target: ITarget) => boolean;
-  serializeTarget: (target: ITarget) => Record<string, any>;
+  serializeTarget: (target: ITarget) => JsonObject;
 }
 
 const DEFAULT_TARGETS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number], Partial<ITarget>>> = {
@@ -148,7 +148,7 @@ const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number
 };
 
 const serializeTarget = (target: ITarget, cate: string) => {
-  const payload: Record<string, any> = {
+  const payload: JsonObject = {
     ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
     ..._.omit(target, DASHBOARD_TARGET_META_FIELDS),
   };

@@ -1,4 +1,4 @@
-import { DataPoint, Transformation, QueryResult, TimeSeries, TableData } from '../types';
+import { DataPoint, Transformation, QueryResult, TimeSeries, TableCellValue, TableData } from '../types';
 import { isTimeSeriesArray, isTableDataArray } from '../utils';
 
 export default class MergeTransformation implements Transformation {
@@ -56,13 +56,13 @@ export default class MergeTransformation implements Transformation {
     const commonFields = allFieldNames.filter((fieldName) => tables.every((table) => table.fields.some((field) => field.name === fieldName)));
 
     // 创建行数据映射
-    const allRows: Array<{ tableIndex: number; rowIndex: number; data: Record<string, any> }> = [];
+    const allRows: Array<{ tableIndex: number; rowIndex: number; data: Record<string, TableCellValue> }> = [];
 
     tables.forEach((table, tableIndex) => {
       const maxRowCount = Math.max(...table.fields.map((f) => f.values.length));
 
       for (let rowIndex = 0; rowIndex < maxRowCount; rowIndex++) {
-        const rowData: Record<string, any> = {};
+        const rowData: Record<string, TableCellValue> = {};
         table.fields.forEach((field) => {
           rowData[field.name] = field.values[rowIndex] ?? null;
         });
@@ -72,7 +72,7 @@ export default class MergeTransformation implements Transformation {
     });
 
     // 按共同字段分组合并
-    const mergedRowsMap = new Map<string, Record<string, any>>();
+    const mergedRowsMap = new Map<string, Record<string, TableCellValue>>();
 
     allRows.forEach((row) => {
       // 创建共同字段的键
@@ -88,7 +88,7 @@ export default class MergeTransformation implements Transformation {
         });
       } else {
         // 创建新行，复制所有字段
-        const newRow: Record<string, any> = {};
+        const newRow: Record<string, TableCellValue> = {};
         allFieldNames.forEach((fieldName) => {
           newRow[fieldName] = row.data[fieldName];
         });

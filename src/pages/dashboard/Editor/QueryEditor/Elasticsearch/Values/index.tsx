@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Row, Col, Input, Select, AutoComplete } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -7,9 +8,10 @@ import { useDebounceFn } from 'ahooks';
 import { getFields } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { generateQueryName, generateQueryNameByIndex } from '@/components/QueryName/utils';
+import type { ElasticsearchSelectOption } from '../types';
 
 interface IProps {
-  prefixField?: any;
+  prefixField?: FormListFieldData;
   prefixFields?: string[]; // 前缀字段名
   prefixNameField?: string[] | number[]; // 列表字段名
   datasourceValue: number;
@@ -33,7 +35,7 @@ const functionsLabelMap = {
 export default function index({ prefixField = {}, prefixFields = [], prefixNameField = [], datasourceValue, index, valueRefVisible = true }: IProps) {
   const { t } = useTranslation('datasource');
   const [search, setSearch] = useState('');
-  const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
+  const [fieldsOptions, setFieldsOptions] = useState<ElasticsearchSelectOption[]>([]);
   const restPrefixField = _.omit(prefixField, 'key');
   const { run } = useDebounceFn(
     () => {

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { deleteAnnotations } from '@/services/dashboardV2';
 import { dateTimeFormat } from '@/utils/datetime/formatter';
+import type { DashboardAnnotation } from '@/pages/dashboard/types';
 
 import EditButton from './EditButton';
 
@@ -17,14 +18,14 @@ import './style.less';
 const DEFAULT_ANNOTATION_COLOR = 'rgba(0, 211, 255, 1)';
 
 interface MarkersProps {
-  annotations: any[];
-  uplotRef: React.MutableRefObject<uPlot>;
+  annotations: DashboardAnnotation[];
+  uplotRef: React.MutableRefObject<uPlot | undefined>;
   timeZone?: string;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-function Marker({ annotation, content, timeZone, onEdit, onDelete }) {
+function Marker({ annotation, content, timeZone, onEdit, onDelete }: { annotation: DashboardAnnotation; content: React.ReactNode; timeZone?: string; onEdit: () => void; onDelete: () => void }) {
   const { t } = useTranslation('dashboard');
   const { time_start, time_end, description, tags } = annotation;
   const [popoverVisible, setPopoverVisible] = React.useState(false);
@@ -105,6 +106,7 @@ function Marker({ annotation, content, timeZone, onEdit, onDelete }) {
 export function Markers(props: MarkersProps) {
   const { annotations, uplotRef, timeZone, onEdit, onDelete } = props;
   const uplot = uplotRef.current;
+  if (!uplot) return null;
 
   return (
     <>
@@ -150,7 +152,7 @@ export function Markers(props: MarkersProps) {
   );
 }
 
-export default function annotationsPlugin(options: { annotations: any[]; renderMarkers: (xAxisEle: HTMLDivElement) => void }) {
+export default function annotationsPlugin(options: { annotations: DashboardAnnotation[]; renderMarkers: (xAxisEle: HTMLDivElement) => void }) {
   const { annotations, renderMarkers } = options;
 
   return {

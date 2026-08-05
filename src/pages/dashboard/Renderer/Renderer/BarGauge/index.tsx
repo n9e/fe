@@ -22,6 +22,7 @@ import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
 
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
 import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import useStableValue from '../../../hooks/useStableValue';
@@ -33,7 +34,7 @@ import './style.less';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
   dataRevision?: number;

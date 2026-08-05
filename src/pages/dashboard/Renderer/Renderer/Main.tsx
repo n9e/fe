@@ -23,6 +23,7 @@ import {
 
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import type { DashboardQueryState } from '../datasource/types';
 
 import PanelEmpty from '../components/PanelEmpty';
 import CloneIcon from '../components/CloneIcon';
@@ -46,16 +47,7 @@ import { IProps } from './index';
 function index(
   props: IProps & {
     controllersVisible: boolean;
-    queryResult: {
-      query: any[];
-      series: any[];
-      error: string;
-      loading: boolean;
-      loaded: boolean;
-      range: IRawTimeRange;
-      revision: number;
-      errorsByRef: Record<string, any>;
-    };
+    queryResult: DashboardQueryState;
     containerEleRef: React.RefObject<HTMLDivElement>;
     time: IRawTimeRange;
     setTime?: (time: IRawTimeRange) => void;
@@ -91,8 +83,8 @@ function index(
   } = props;
   const [visible, setVisible] = useState(false);
   const values = _.cloneDeep(props.values);
-  const tableRef = useRef<any>(null);
-  const tableNGRef = useRef<any>(null);
+  const tableRef = useRef<{ exportCsv: () => void }>(null);
+  const tableNGRef = useRef<{ exportCsv: () => void }>(null);
   const bodyWrapRef = useRef<HTMLDivElement>(null);
   const { query, series, error, loading, loaded, range, revision } = queryResult;
   const name = replaceTemplateVariables(values.name, {

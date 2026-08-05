@@ -27,7 +27,7 @@ import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import { DASHBOARD_VERSION } from '../config';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
-import FormCpt from './Form';
+import FormCpt, { EditorFormHandle } from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
 import getDefaultTargets from '../utils/getDefaultTargets';
@@ -47,14 +47,14 @@ interface IProps {
   time: IRawTimeRange;
   timezone: string;
   setTimezone: (timezone: string) => void;
-  onOK: (formData: any, mode: string) => void;
+  onOK: (formData: IPanel, mode: string) => void;
   onCancel?: () => void;
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const formRef = useRef<any>();
+  const formRef = useRef<EditorFormHandle>(null);
   const { panelWidth, mode, visible, setVisible, id, time, timezone, setTimezone } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [series] = useGlobalState('series');
@@ -96,10 +96,10 @@ function index(props: IProps) {
   const handleAddChart = async () => {
     if (formRef.current && formRef.current.getFormInstance) {
       const formInstance = formRef.current.getFormInstance();
-      formInstance.validateFields().then(async (values) => {
+      formInstance.validateFields().then(async (values: IPanel) => {
         values.targets = formInstance.getFieldValue('targets') ?? values.targets;
         // TODO: 渲染 hexbin 图时，colorRange 需要从 string 转换为 array
-        if (values.type === 'hexbin') {
+        if (values.type === 'hexbin' && typeof values.custom.colorRange === 'string') {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
         let formData = Object.assign(values, {

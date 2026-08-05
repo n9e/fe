@@ -79,7 +79,11 @@ export interface BaseSeriesItem {
   show: boolean;
   label: string;
   n9e_internal: {
-    [index: string]: any;
+    id: string;
+    refId: string;
+    offset?: number;
+    metric: Record<string, string>;
+    values?: (number | null | undefined)[];
   };
 }
 

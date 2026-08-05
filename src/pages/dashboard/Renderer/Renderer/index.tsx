@@ -42,7 +42,7 @@ export interface IProps {
   values: IPanel;
   isPreview?: boolean; // 是否是预览，预览中不显示编辑和分享
   isAuthorized?: boolean; // 是否有权限
-  annotations: any[];
+  annotations: import('@/pages/dashboard/types').DashboardAnnotation[];
   onCloneClick?: () => void;
   onShareClick?: () => void;
   onEditClick?: (panelWidth?: number) => void;

@@ -26,9 +26,10 @@ import StandardOptions from '../StandardOptions';
 import { useGlobalState } from '../../../globalState';
 import CellOptions from '../../Options/TableNG/CellOptions';
 import { defaultThreshold } from '../../config';
+import { ITarget } from '../../../types';
 
 interface Props {
-  targets: any;
+  targets: ITarget[];
   matcherNames?: string[];
   defaultMatcherId?: string;
   overrideOptions?: string[];

@@ -19,7 +19,9 @@ import _ from 'lodash';
 import { Tooltip } from 'antd';
 import { useSize } from 'ahooks';
 import { IPanel } from '../../../types';
+import type { IOptions } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
 import Gauge from './Gauge';
@@ -28,7 +30,7 @@ import './style.less';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
   dataRevision?: number;
@@ -45,7 +47,28 @@ interface IGrid {
 const MIN_SIZE = 12;
 const ITEM_SPACIING = 8;
 
-function GaugeItemContent(props) {
+interface GaugeValue {
+  name?: string;
+  stat: number;
+  metric: Record<string, string | undefined>;
+  value?: string | number;
+  unit?: string;
+  color?: string;
+}
+interface GaugeItemProps {
+  item: GaugeValue;
+  options: IOptions;
+  themeMode?: 'dark';
+  textMode?: string;
+  style?: React.CSSProperties;
+  valueField?: string;
+}
+interface GaugeItemContentProps extends GaugeItemProps {
+  eleSize?: { width?: number; height?: number };
+  realHeaderFontSize: number;
+}
+
+function GaugeItemContent(props: GaugeItemContentProps) {
   const { eleSize, realHeaderFontSize, item, themeMode, options } = props;
   const height = eleSize?.height! - realHeaderFontSize;
   const width = eleSize?.width! > height ? height : eleSize?.width;
@@ -70,7 +93,7 @@ function GaugeItemContent(props) {
   );
 }
 
-function GaugeItemLabel(props) {
+function GaugeItemLabel(props: { eleSize?: { width?: number }; realHeaderFontSize: number; name?: string }) {
   const { eleSize, realHeaderFontSize, name } = props;
 
   if (!eleSize?.width) return null;
@@ -87,7 +110,7 @@ function GaugeItemLabel(props) {
   );
 }
 
-function GaugeItem(props) {
+function GaugeItem(props: GaugeItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
   const { textMode = 'valueAndName', style, options, valueField } = props;
@@ -128,7 +151,7 @@ function GaugeItem(props) {
   );
 }
 
-const getColumnsKeys = (data: any[]) => {
+const getColumnsKeys = (data: Array<{ metric: Record<string, string | undefined> }>) => {
   const keys = _.reduce(
     data,
     (result, item) => {

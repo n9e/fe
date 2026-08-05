@@ -8,7 +8,7 @@ import * as MySQLMeta from '@/plugins/mysql/components/Meta';
 // @ts-ignore
 import DatasourceSelectExtra from 'plus:/components/DatasourceSelectExtra';
 
-export default function index({ datasourceValue }) {
+export default function index({ datasourceValue }: { datasourceValue?: number | string }) {
   const datasourceCate = Form.useWatch('datasourceCate');
 
   if (datasourceCate === DatasourceCateEnum.ck && datasourceValue !== undefined) {

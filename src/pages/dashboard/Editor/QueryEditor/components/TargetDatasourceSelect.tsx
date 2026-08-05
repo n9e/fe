@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { IS_PLUS } from '@/utils/constant';
-import type { ITarget } from '@/pages/dashboard/types';
+import type { DashboardDatasource, ITarget } from '@/pages/dashboard/types';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { createDashboardQueryTarget } from '../registry';
@@ -22,13 +22,14 @@ export default function TargetDatasourceSelect({ fieldName, target, onTargetChan
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const datasourceVars = _.filter(variablesWithOptions, (item) => _.includes(['datasource', 'datasourceIdentifier'], item.type));
 
-  const getDatasourceOptions = (list: any[]) =>
+  const getDatasourceOptions = (list: DashboardDatasource[]): DashboardDatasource[] =>
     _.filter(
       _.concat(
         _.map(datasourceVars, (item) => ({
           id: `\${${item.name}}`,
           name: `\${${item.name}}`,
           plugin_type: item.definition,
+          is_default: false,
         })),
         list,
       ),
@@ -41,7 +42,7 @@ export default function TargetDatasourceSelect({ fieldName, target, onTargetChan
   const handleDatasourceChange = (datasourceId: number | string) => {
     const targets = [...(form.getFieldValue('targets') ?? [])] as ITarget[];
     const currentTarget = target ?? (fieldName === undefined ? undefined : targets[fieldName]);
-    const datasourceCate = _.find(getDatasourceOptions(datasourceList as any[]), {
+    const datasourceCate = _.find(getDatasourceOptions(datasourceList), {
       id: datasourceId,
     })?.plugin_type;
     if (!datasourceCate) return;

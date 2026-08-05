@@ -25,7 +25,7 @@ export default class PartitionByValuesTransformation implements Transformation {
     const { field } = this.options;
 
     // 按字段值分组
-    const groups = new Map<any, DataPoint[]>();
+    const groups = new Map<DataPoint[string], DataPoint[]>();
     series.data.forEach((dataPoint) => {
       const key = dataPoint[field as keyof DataPoint];
       if (!groups.has(key)) {
@@ -54,7 +54,7 @@ export default class PartitionByValuesTransformation implements Transformation {
     const fieldValues = table.fields[fieldIndex].values;
 
     // 按字段值分组
-    const groups = new Map<any, number[]>();
+    const groups = new Map<string | number | null, number[]>();
     fieldValues.forEach((value, index) => {
       if (!groups.has(value)) {
         groups.set(value, []);

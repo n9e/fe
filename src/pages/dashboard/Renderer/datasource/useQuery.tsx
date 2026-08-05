@@ -22,6 +22,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import { N9E_PATHNAME } from '@/utils/constant';
 
 import type { ITarget } from '../../types';
+import type { JsonObject, ScopedVariables } from '../../types';
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse } from './contract';
 import { fetchDashboardQuery } from './service';
 import type { DashboardQueryState } from './types';
@@ -36,15 +37,23 @@ interface IProps {
   targets: ITarget[];
   inViewPort?: boolean;
   spanNulls?: boolean;
-  scopedVars?: any;
+  scopedVars?: ScopedVariables;
   inspect?: boolean;
   type?: string;
-  custom: any;
+  custom: JsonObject;
   maxDataPoints?: number;
   queryOptionsTime?: IRawTimeRange;
 }
 
-const getErrorMessage = (error: any) => error?.message || error?.name || String(error);
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === 'object') {
+    const value = error as { message?: unknown; name?: unknown };
+    if (typeof value.message === 'string') return value.message;
+    if (typeof value.name === 'string') return value.name;
+  }
+  return String(error);
+};
 
 export default function useQuery(props: IProps) {
   const { time, targets, inViewPort, datasourceCate, datasourceValue, maxDataPoints, queryOptionsTime } = props;

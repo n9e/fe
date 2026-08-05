@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { TransformationPipeline, transformationsMap } from '@/pages/dashboard/transformations';
-import type { TableData } from '@/pages/dashboard/transformations/types';
+import { isRegisteredTransformationId, TransformationPipeline, transformationsMap } from '@/pages/dashboard/transformations';
+import type { TableCellValue, TableData } from '@/pages/dashboard/transformations/types';
 import type { ITransformation } from '@/pages/dashboard/types';
 import { calculateVariance, calculateStdDev } from '@/pages/dashboard/Renderer/utils/calculateField';
 import { normalizeDataPointValue } from './parseNumericValue';
@@ -67,10 +67,10 @@ export default function normalizeData(
       }
 
       const columns = _.union(['__time'], _.uniq(_.flatMap(subSeries, (item) => _.keys(item.metric))), [`__value_#${refId}`]);
-      const rows: { [key: string]: any }[] = [];
+      const rows: Array<Record<string, TableCellValue>> = [];
       _.forEach(subSeries, (item) => {
         _.forEach(item.data, (dataPoint) => {
-          const row = {};
+          const row: Record<string, TableCellValue> = {};
           _.forEach(columns, (column) => {
             if (column === '__time') {
               row[column] = dataPoint[0];
@@ -135,8 +135,8 @@ export default function normalizeData(
   if (enabledTransformations && enabledTransformations.length > 0) {
     const pipeline = new TransformationPipeline();
     _.forEach(enabledTransformations, (transformationConfig) => {
-      const transformationClass = transformationsMap[transformationConfig.id];
-      if (transformationClass) {
+      if (isRegisteredTransformationId(transformationConfig.id)) {
+        const transformationClass = transformationsMap[transformationConfig.id];
         const transformation = new transformationClass(transformationConfig.options);
         pipeline.addTransformation(transformation);
       }

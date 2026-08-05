@@ -45,7 +45,7 @@ interface IProps {
   dashboard: IDashboard;
   dashboardLinks?: ILink[];
   setDashboardLinks: (links: ILink[]) => void;
-  handleUpdateDashboardConfigs: (id: number, params: any) => void;
+  handleUpdateDashboardConfigs: (id: number, params: Record<string, unknown>) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
   timezone: string;
@@ -64,7 +64,7 @@ interface IProps {
   hasUnsavedChanges: boolean;
   setAllowedLeave: (allowed: boolean) => void;
   setHasUnsavedChanges: (changed: boolean) => void;
-  routerPromptRef: any;
+  routerPromptRef: React.MutableRefObject<{ showPrompt: () => void }>;
   hideGoBack?: boolean;
   hideGoList?: boolean;
 }
@@ -377,9 +377,11 @@ export default function Title(props: IProps) {
                         dashboardSaveMode,
                         onOk: (values) => {
                           if (dashboardSaveMode === 'manual') {
-                            const dashboardConfigs: any = dashboard.configs;
-                            dashboardConfigs.graphTooltip = values.graphTooltip;
-                            dashboardConfigs.graphZoom = values.graphZoom;
+                            const dashboardConfigs = {
+                              ...dashboard.configs,
+                              graphTooltip: values.graphTooltip,
+                              graphZoom: values.graphZoom,
+                            };
                             handleUpdateDashboardConfigs(dashboard.id, {
                               name: values.name,
                               ident: values.ident,
@@ -399,8 +401,10 @@ export default function Title(props: IProps) {
                   editable={isAuthorized}
                   value={dashboardLinks}
                   onChange={(v) => {
-                    const dashboardConfigs: any = dashboard.configs;
-                    dashboardConfigs.links = v;
+                    const dashboardConfigs = {
+                      ...dashboard.configs,
+                      links: v,
+                    };
                     handleUpdateDashboardConfigs(dashboard.id, {
                       ...dashboard,
                       configs: JSON.stringify(dashboardConfigs),

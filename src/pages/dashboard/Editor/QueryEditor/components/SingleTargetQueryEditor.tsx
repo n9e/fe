@@ -19,7 +19,7 @@ interface Props {
 }
 
 interface QueryFormProps extends Omit<Props, 'headerActions'> {
-  QueryEditor: React.ComponentType<any>;
+  QueryEditor: typeof import('../QueryBuilder').default;
 }
 
 function QueryForm({ target, type, panelWidth, range, datasourceValue, onChange, QueryEditor }: QueryFormProps) {

@@ -3,10 +3,11 @@ import React from 'react';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel, IIframeStyles } from '../../../types';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
 }
 

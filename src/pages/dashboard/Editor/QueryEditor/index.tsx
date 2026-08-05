@@ -20,8 +20,18 @@ import SingleTargetQueryEditor from './components/SingleTargetQueryEditor';
 import { createDashboardQueryTarget } from './registry';
 import DatasourceSelect from './components/DatasourceSelect';
 import QueryBuilder from './QueryBuilder';
+import type { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { IType } from '@/pages/dashboard/types';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
-export default function index({ panelWidth, type, variablesWithOptions, range }) {
+interface QueryEditorProps {
+  panelWidth?: number;
+  type: IType;
+  variablesWithOptions: IVariable[];
+  range: IRawTimeRange;
+}
+
+export default function index({ panelWidth, type, variablesWithOptions, range }: QueryEditorProps) {
   const { t } = useTranslation('dashboard');
   const [mode, setMode] = useState('query');
   const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);

@@ -17,18 +17,31 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Tooltip, Switch, Button, Space, Select } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import type { FormListFieldData, FormListOperation } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { getBusiGroupsDashboards } from '@/services/dashboardV2';
 import ModalHOC, { ModalWrapProps } from '../Components/ModalHOC';
 import { ILink } from '../types';
 
-interface IProps {
-  initialValues: ILink[];
-  onOk: (values: any) => void;
+interface DashboardOption {
+  id: number;
+  name: string;
 }
 
-function LinkItem({ allDashboards, restField, name, remove }) {
+interface IProps {
+  initialValues: ILink[];
+  onOk: (values: ILink[]) => void;
+}
+
+interface LinkItemProps {
+  allDashboards: DashboardOption[];
+  restField: Omit<FormListFieldData, 'key' | 'name'>;
+  name: number;
+  remove: FormListOperation['remove'];
+}
+
+function LinkItem({ allDashboards, restField, name, remove }: LinkItemProps) {
   const { t } = useTranslation('dashboard');
   const type = Form.useWatch(['links', name, 'type']) ?? 'link';
 
@@ -123,7 +136,7 @@ function index(props: ModalWrapProps & IProps) {
   const { t } = useTranslation('dashboard');
   const { visible, initialValues } = props;
   const [form] = Form.useForm();
-  const [allDashboards, setAllDashboards] = React.useState([]);
+  const [allDashboards, setAllDashboards] = React.useState<DashboardOption[]>([]);
 
   useEffect(() => {
     getBusiGroupsDashboards().then((res) => {

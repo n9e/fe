@@ -23,7 +23,16 @@ import moment from 'moment';
 export { JSONParse } from '../utils';
 export { convertDashboardGrafanaToN9E, checkGrafanaDashboardVersion } from '../utils';
 
-export function exportDataStringify(data: any) {
+interface DashboardExportData {
+  name: string;
+  tags: string;
+  note?: string;
+  ident?: string;
+  uuid?: string | number;
+  configs: string;
+}
+
+export function exportDataStringify(data: DashboardExportData) {
   return JSON.stringify(
     {
       name: data.name,
@@ -41,6 +50,7 @@ export function exportDataStringify(data: any) {
 /**
  * 获取导入数据结构的版本，老版本为 undefined, 新版本暂时为语义化的 3.0.0
  */
+// dashboard-any-ignore-start: legacy dashboard import migration is outside the active dashboard runtime scope.
 export function getImportDataVersionIsValid(data: any): string | undefined {
   let dataClone = _.cloneDeep(data);
   const configs = _.get(dataClone, 'configs');
@@ -67,3 +77,4 @@ export function getValidImportData(dat: any) {
   }
   return data;
 }
+// dashboard-any-ignore-end

@@ -30,15 +30,16 @@ export function extractDependencies(str: string, validVars?: Set<string>): strin
 }
 
 // 生成稳定的 JSON 字符串，确保相同的对象产生相同的字符串
-function stringifyStable(obj: any): string {
+function stringifyStable(obj: unknown): string {
   if (obj === null || obj === undefined) return String(obj);
   if (typeof obj !== 'object') return JSON.stringify(obj);
   if (Array.isArray(obj)) {
     return '[' + obj.map(stringifyStable).join(',') + ']';
   }
   // 对对象的键进行排序，确保一致的输出
-  const keys = Object.keys(obj).sort();
-  return '{' + keys.map((k) => `"${k}":${stringifyStable(obj[k])}`).join(',') + '}';
+  const record = obj as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  return '{' + keys.map((k) => `"${k}":${stringifyStable(record[k])}`).join(',') + '}';
 }
 
 interface VariableManagerContextType {

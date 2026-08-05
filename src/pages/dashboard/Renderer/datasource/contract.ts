@@ -3,12 +3,12 @@ import _ from 'lodash';
 
 import type { IRawTimeRange } from '@/components/TimeRangePicker/types';
 import { parseRange } from '@/components/TimeRangePicker/utils';
-import type { ITarget } from '@/pages/dashboard/types';
+import type { ITarget, JsonObject } from '@/pages/dashboard/types';
 import flatten from '@/utils/flatten';
 import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { getRealStep } from './prometheus';
-import type { DashboardQueryRequest, DashboardQueryResponse, DatasourceQuery, ExpressionQuery, NormalizedDashboardQueryResponse } from './types';
+import { getDashboardQueryStep } from './queryStep';
+import type { DashboardQueryRequest, DashboardQueryResponse, DatasourceQuery, ExpressionQuery, NormalizedDashboardQueryResponse, DashboardSeries } from './types';
 import { getTargetRefId, inferTargetResultType, isExpressionTarget } from './target';
 import { DASHBOARD_TARGET_META_FIELDS, getDashboardDatasourceDefinition } from './registry';
 
@@ -18,7 +18,7 @@ const FORBIDDEN_REQUEST_FIELDS = new Set(['timezone', 'max_data_points', 'interv
 const REF_ID_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
 const REF_ID_REFERENCE_PATTERN = /\$([A-Za-z][A-Za-z0-9_]*)/g;
 
-function interpolateQueryValue(value: unknown, range: IRawTimeRange, step: number | undefined, scopedVars: any): unknown {
+function interpolateQueryValue(value: unknown, range: IRawTimeRange, step: number | undefined, scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined): unknown {
   if (typeof value === 'string') {
     return replaceTemplateVariables(value, {
       range,
@@ -51,9 +51,9 @@ function getDatasourceQueryPayload(
     ({
       ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
       ..._.omit(target, DASHBOARD_TARGET_META_FIELDS),
-    } as Record<string, any>);
+    } as JsonObject);
 
-  const step = getRealStep({
+  const step = getDashboardQueryStep({
     time: options.effectiveRange,
     maxDataPoints: options.maxDataPoints,
     panelWidth: options.panelWidth,
@@ -76,10 +76,10 @@ export interface BuildDashboardQueryRequestOptions {
   time: IRawTimeRange;
   queryOptionsTime?: IRawTimeRange;
   targets: ITarget[];
-  datasourceList: any[];
+  datasourceList: import('@/pages/dashboard/types').DashboardDatasource[];
   panelWidth?: number;
   maxDataPoints?: number;
-  scopedVars?: any;
+  scopedVars?: import('@/pages/dashboard/types').ScopedVariables;
   legacyDatasource?: {
     cate?: string;
     id?: number | string;
@@ -229,7 +229,7 @@ function stableIdentityHash(value: string) {
 }
 
 export function normalizeDashboardQueryResponse(response: DashboardQueryResponse, targets: ITarget[]): NormalizedDashboardQueryResponse {
-  const series: any[] = [];
+  const series: DashboardSeries[] = [];
   const errorsByRef: NormalizedDashboardQueryResponse['errorsByRef'] = {};
 
   (response.results ?? []).forEach((result) => {

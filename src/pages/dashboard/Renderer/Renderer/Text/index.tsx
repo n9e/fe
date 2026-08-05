@@ -4,10 +4,11 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 
 import { IPanel, ITextStyles } from '../../../types';
 import Markdown from '../../../Editor/Components/Markdown';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
 }
 

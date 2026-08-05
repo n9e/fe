@@ -32,7 +32,7 @@ export default class OrganizeFieldsTransformation implements Transformation {
     }
 
     const newData = series.data.map((dataPoint) => {
-      const newDataPoint: Record<string, any> = {};
+      const newDataPoint: Record<string, DataPoint[string]> = {};
 
       // 获取所有字段并排除被标记为排除的字段
       const availableFields = fields.filter((field) => !excludeByName?.[field]);

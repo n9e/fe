@@ -26,7 +26,7 @@ export default class GroupByTransformation implements Transformation {
     const { field, aggregation } = this.options;
 
     // 按字段值分组
-    const groups = new Map<any, DataPoint[]>();
+    const groups = new Map<DataPoint[string], DataPoint[]>();
     series.data.forEach((dataPoint) => {
       const key = dataPoint[field as keyof DataPoint];
       if (!groups.has(key)) {
@@ -79,7 +79,7 @@ export default class GroupByTransformation implements Transformation {
     const fieldValues = table.fields[fieldIndex].values;
 
     // 按字段值分组
-    const groups = new Map<any, number[]>();
+    const groups = new Map<string | number | null, number[]>();
     fieldValues.forEach((value, index) => {
       if (!groups.has(value)) {
         groups.set(value, []);
@@ -92,7 +92,7 @@ export default class GroupByTransformation implements Transformation {
       name: string;
       type: string;
       values: (string | number | null)[];
-      state: any;
+      state: TableData['fields'][number]['state'];
     }> = [];
 
     // 添加分组字段

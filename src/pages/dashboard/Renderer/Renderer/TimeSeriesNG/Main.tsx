@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { AlignedData, Options } from 'uplot';
+import uPlot from 'uplot';
 import _ from 'lodash';
 import moment from 'moment';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -14,10 +15,12 @@ import { hexPalette } from '@/pages/dashboard/config';
 import { IPanel } from '../../../types';
 import valueFormatter from '../../utils/valueFormatter';
 import { getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import secondYAxisBuilder from './utils/secondYAxisBuilder';
 import { defaultOptionsValues } from '../../../Editor/config';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
+import type { DashboardAnnotation } from '@/pages/dashboard/types';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import drawThresholds from './utils/drawThresholds';
@@ -37,8 +40,8 @@ interface Props {
   width: number;
   height: number;
   panel: IPanel;
-  series: any[];
-  annotations: any[];
+  series: CalculatedSeries[];
+  annotations: DashboardAnnotation[];
   setAnnotationsRefreshFlag?: (flag: string) => void;
   colors?: string[];
   range?: IRawTimeRange;
@@ -47,7 +50,7 @@ interface Props {
   inDashboard?: boolean; // 是否在仪表盘中
   isPreview?: boolean; // 是否在编辑面板的预览模式
   hideResetBtn?: boolean;
-  onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
+  onClick?: (event: Event, datetime: Date, value: number, points: unknown[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
   dataRevision?: number;
 }
@@ -85,7 +88,7 @@ export default function index(props: Props) {
   const stableOverrides = useStableValue(overrides);
   const stableQueryOptionsTime = useStableValue(queryOptionsTime);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const uplotRef = useRef<any>();
+  const uplotRef = useRef<uPlot>();
   // 保存 x 和 y 轴初始缩放范围
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
@@ -124,11 +127,11 @@ export default function index(props: Props) {
       plugins: [
         tooltipPlugin({
           id,
-          mode: options.tooltip?.mode ?? (defaultOptionsValues.tooltip.mode as any),
-          sort: options.tooltip?.sort ?? (defaultOptionsValues.tooltip.sort as any),
+          mode: options.tooltip?.mode ?? 'single',
+          sort: options.tooltip?.sort ?? 'none',
           pinningEnabled: true,
           zIndex: isPreview ? 1999 : 999, // 预览模式下 z-index 需要超过编辑面板的 z-index(1000)
-          graphTooltip: dashboardMeta.graphTooltip as any,
+          graphTooltip: dashboardMeta.graphTooltip === 'sharedCrosshair' || dashboardMeta.graphTooltip === 'sharedTooltip' ? dashboardMeta.graphTooltip : 'default',
           timeZone: timezone,
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
             let root = rootRefs.current.get(domNode);
@@ -264,7 +267,7 @@ export default function index(props: Props) {
                   mode,
                 },
                 thresholdsStyle: {
-                  mode: options.thresholdsStyle?.mode ?? (defaultOptionsValues.thresholdsStyle.mode as any),
+                  mode: options.thresholdsStyle?.mode ?? 'dashed',
                 },
               });
             }
@@ -341,16 +344,16 @@ export default function index(props: Props) {
     uOptions.bands = stackedDataAndBands.bands;
     uOptions.series = _.map(uOptions.series, (s, i) => {
       if (i === 0) return s;
+      const seriesWithMetadata = s as typeof s & { n9e_internal?: Record<string, unknown> };
       return {
         ...s,
         n9e_internal: {
-          // @ts-ignore
-          ...s.n9e_internal,
+          ...seriesWithMetadata.n9e_internal,
           values: processedFrames[i], // 只用于堆叠图下保存原始数据
         },
       };
     });
-    data = _.concat([processedFrames[0]], stackedData) as any;
+    data = _.concat([processedFrames[0]], stackedData);
   }
 
   useEffect(() => {

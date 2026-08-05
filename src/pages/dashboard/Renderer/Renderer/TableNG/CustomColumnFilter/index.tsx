@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import type { IAfterGuiAttachedParams } from 'ag-grid-community';
 import type { CustomFilterDisplayProps } from 'ag-grid-react';
 import { useGridFilterDisplay } from 'ag-grid-react';
+import type { IFilterPassParams } from 'ag-grid-community';
 
 import { SIZE } from '@/utils/constant';
 
@@ -76,7 +77,7 @@ const CustomColumnFilter = ({ state, onStateChange, onAction, api }: CustomFilte
 
 export default CustomColumnFilter;
 
-export function doesFilterPass(params) {
+export function doesFilterPass(params: IFilterPassParams) {
   const { model, handlerParams } = params;
   if (!model) return true; // 没有过滤器时显示所有数据
 
@@ -88,7 +89,7 @@ export function doesFilterPass(params) {
   model
     .toLowerCase()
     .split(' ')
-    .forEach((filterWord) => {
+    .forEach((filterWord: string) => {
       if (value.toString().toLowerCase().indexOf(filterWord) < 0) {
         passed = false;
       }

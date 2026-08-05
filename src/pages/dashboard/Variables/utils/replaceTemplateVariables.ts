@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDefaultStepByTime } from '@/pages/dashboard/utils';
 import { getGlobalState } from '@/pages/dashboard/globalState';
+import type { DashboardDatasource, ScopedVariables } from '@/pages/dashboard/types';
 
 import { IVariable } from '../types';
 import adjustData from './ajustData';
@@ -20,7 +21,7 @@ export default function replaceTemplateVariables(
       panelWidth?: number;
       maxDataPoints?: number;
     };
-    scopedVars?: { [key: string]: any };
+    scopedVars?: ScopedVariables;
   },
 ) {
   // 如果 str 为空，如果没有包含变量则直接返回
@@ -42,7 +43,7 @@ export default function replaceTemplateVariables(
       _.map(scopedVars, (value, key) => {
         return {
           name: key,
-          value,
+          value: value.value,
         } as IVariable;
       }),
     );
@@ -56,7 +57,7 @@ export default function replaceTemplateVariables(
 }
 
 export function getBuiltInVariables(
-  range,
+  range: IRawTimeRange | undefined,
   params?: {
     range?: IRawTimeRange;
     step?: number;
@@ -108,7 +109,7 @@ export function getBuiltInVariables(
 export function replaceDatasourceVariables(
   value: string | number,
   params: {
-    datasourceList: any[];
+    datasourceList: DashboardDatasource[];
   },
 ) {
   const variablesWithOptions = getGlobalState('variablesWithOptions');

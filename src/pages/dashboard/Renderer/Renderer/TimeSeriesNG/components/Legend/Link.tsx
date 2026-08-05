@@ -4,9 +4,10 @@ import { Tooltip } from 'antd';
 import _ from 'lodash';
 
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import type { DataItem } from '../../utils/getLegendData';
 
 interface Props {
-  data: any;
+  data: DataItem;
   name?: string;
   url?: string;
   style?: React.CSSProperties;

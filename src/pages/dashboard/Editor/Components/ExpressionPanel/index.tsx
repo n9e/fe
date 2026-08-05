@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Input, Space } from 'antd';
+import type { FormListFieldData, FormListOperation } from 'antd/lib/form/FormList';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import HideButton from '@/pages/dashboard/Components/HideButton';
@@ -7,7 +8,13 @@ import LegendInput from '@/pages/dashboard/Components/LegendInput';
 import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import { Panel } from '../Collapse';
 
-export default function index({ fields, remove, field }) {
+interface ExpressionPanelProps {
+  fields: FormListFieldData[];
+  remove: FormListOperation['remove'];
+  field: FormListFieldData;
+}
+
+export default function index({ fields, remove, field }: ExpressionPanelProps) {
   const { t } = useTranslation('dashboard');
   const targets = Form.useWatch('targets');
   const target = targets?.[field.name] || {};

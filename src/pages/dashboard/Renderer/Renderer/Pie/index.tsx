@@ -23,6 +23,7 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 
 import { IPanel } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../utils/valueFormatter';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
@@ -30,13 +31,21 @@ import './style.less';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
   dataRevision?: number;
 }
 
-const getColumnsKeys = (data: any[]) => {
+type PieMetric = Record<string, string | number | undefined>;
+
+interface PieDatum {
+  name: string;
+  value: number;
+  metric: PieMetric;
+}
+
+const getColumnsKeys = (data: Array<{ metric: PieMetric }>) => {
   const keys = _.reduce(
     data,
     (result, item) => {
@@ -68,7 +77,7 @@ export default function Pie(props: IProps) {
     return `${resFormatter.value}${resFormatter.unit}`;
   };
 
-  const detailFormatter = (data: any) => {
+  const detailFormatter = (data: PieDatum) => {
     const scopedVars = {
       '__field.name': data.name,
       '__field.value': data.value,
@@ -96,7 +105,7 @@ export default function Pie(props: IProps) {
     [dataDependency, stableCustom, stableOptions],
   );
 
-  let data: any[] = [];
+  let data: PieDatum[] = [];
   if (valueField !== 'Value') {
     if (countOfValueField === true) {
       data = _.map(
@@ -104,7 +113,7 @@ export default function Pie(props: IProps) {
           _.map(calculatedValues, (item) => {
             return {
               name: custom.valueField,
-              value: _.get(item, ['metric', custom.valueField]),
+              value: _.toNumber(_.get(item, ['metric', custom.valueField])),
             };
           }),
           'value',
@@ -122,15 +131,15 @@ export default function Pie(props: IProps) {
     } else {
       data = _.map(calculatedValues, (item) => {
         return {
-          name: item.name,
-          value: _.get(item, ['metric', custom.valueField]),
+          name: item.name ?? '',
+          value: _.toNumber(_.get(item, ['metric', custom.valueField])),
           metric: item.metric,
         };
       });
     }
     data =
       max && data.length > max
-        ? data.slice(0, max).concat({ name: 'Other', value: data.slice(max).reduce((previousValue, currentValue) => currentValue.value + previousValue, 0), metric: {} })
+        ? data.slice(0, max).concat({ name: 'Other', value: data.slice(max).reduce((previousValue: number, currentValue) => currentValue.value + previousValue, 0), metric: {} })
         : data;
   } else {
     const sortedValues = calculatedValues.sort((a, b) => b.stat - a.stat);
@@ -138,9 +147,9 @@ export default function Pie(props: IProps) {
       max && sortedValues.length > max
         ? sortedValues
             .slice(0, max)
-            .map((i) => ({ name: i.name, value: i.stat, metric: i.metric }))
-            .concat({ name: 'Other', value: sortedValues.slice(max).reduce((previousValue, currentValue) => currentValue.stat + previousValue, 0), metric: {} })
-        : sortedValues.map((i) => ({ name: i.name, value: i.stat, metric: i.metric }));
+            .map((i) => ({ name: i.name ?? '', value: i.stat, metric: i.metric }))
+            .concat({ name: 'Other', value: sortedValues.slice(max).reduce((previousValue: number, currentValue: (typeof sortedValues)[number]) => currentValue.stat + previousValue, 0), metric: {} })
+        : sortedValues.map((i) => ({ name: i.name ?? '', value: i.stat, metric: i.metric }));
   }
 
   // 只有单个序列值且是背景色模式，则填充整个卡片的背景色

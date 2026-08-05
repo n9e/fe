@@ -1,4 +1,5 @@
 import type { ITarget } from '@/pages/dashboard/types';
+import type { IRawTimeRange } from '@/components/TimeRangePicker';
 
 export type DashboardQueryResultType = 'time_series' | 'logs';
 
@@ -65,18 +66,50 @@ export interface DashboardQueryResponse {
 }
 
 export interface NormalizedDashboardQueryResponse {
-  series: any[];
+  series: DashboardSeries[];
   errorsByRef: Record<string, FailedResult['error']>;
 }
 
+export interface DashboardTimeSeries {
+  id: string;
+  refId: string;
+  name?: string;
+  metric: Record<string, string>;
+  data: Array<[timestampSeconds: number, value: number | null]>;
+  mode: 'timeSeries';
+  target?: ITarget;
+  isExp: boolean;
+}
+
+export interface DashboardLogSeries {
+  id: string;
+  refId: string;
+  metric: Record<string, unknown>;
+  data: [];
+  mode: 'raw';
+  target?: ITarget;
+}
+
+export type DashboardSeries = DashboardTimeSeries | DashboardLogSeries;
+
+export interface DashboardInspectQuery {
+  type: 'Dashboard Query';
+  request: {
+    url: string;
+    method: 'POST';
+    data: DashboardQueryRequest;
+  };
+  response: DashboardQueryResponse;
+}
+
 export interface DashboardQueryState {
-  query: any[];
-  series: any[];
+  query: DashboardInspectQuery[];
+  series: DashboardSeries[];
   errorsByRef: Record<string, FailedResult['error']>;
   error: string;
   loading: boolean;
   loaded: boolean;
-  range: any;
+  range: IRawTimeRange;
   revision: number;
 }
 

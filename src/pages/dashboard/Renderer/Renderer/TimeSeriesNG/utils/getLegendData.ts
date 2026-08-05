@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { AlignedData } from 'uplot';
 
-import { IValueMapping, IThresholds, IOverride } from '../../../../types';
+import { IStandardOptions, IValueMapping, IThresholds, IOverride } from '../../../../types';
 import { getMappedTextObj } from '../../../utils/getCalculatedValuesBySeries';
 import valueFormatter from '../../../utils/valueFormatter';
 import { calculateVariance, calculateStdDev } from '../../../utils/calculateField';
@@ -12,7 +12,7 @@ interface Props {
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
   hexPalette: string[];
-  standardOptions?: any;
+  standardOptions?: IStandardOptions;
   valueMappings?: IValueMapping[];
   thresholds?: IThresholds;
   overrides?: IOverride[];
@@ -27,6 +27,7 @@ interface ColData {
 export interface DataItem {
   id: string;
   name: string;
+  metric: Record<string, string | undefined>;
   min: ColData;
   max: ColData;
   avg: ColData;
@@ -37,7 +38,7 @@ export interface DataItem {
   show: boolean;
 }
 
-function getUnit(standardOptions: any) {
+function getUnit(standardOptions?: IStandardOptions) {
   return standardOptions?.unit;
 }
 

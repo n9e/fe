@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import type { IPanel } from '../types';
 
 const toRowVariable = (fieldName: string) => `\${__row.${fieldName}}`;
 
@@ -15,8 +16,8 @@ const replaceLegacyLinkVariables = (url: string, valueFieldName: string) => {
     .replace(/\$__field\.value/g, () => toRowVariable(valueFieldName));
 };
 
-const isRecord = (value: unknown): value is Record<string, any> => value != null && typeof value === 'object' && !Array.isArray(value);
-const asRecordArray = (value: unknown): Record<string, any>[] => (Array.isArray(value) ? value.filter(isRecord) : []);
+const isRecord = (value: unknown): value is Record<string, unknown> => value != null && typeof value === 'object' && !Array.isArray(value);
+const asRecordArray = (value: unknown): Record<string, unknown>[] => (Array.isArray(value) ? value.filter(isRecord) : []);
 const asStringArray = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []);
 
 const resolveTransformedFieldName = (sourceFieldName: string, transformations: unknown) => {
@@ -39,7 +40,7 @@ const resolveTransformedFieldName = (sourceFieldName: string, transformations: u
 };
 
 /** 将旧版 Table 面板转换为 TableNG 可识别的配置。 */
-export function upgradeTableToNG(panel: any, availableFields?: string[]) {
+export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPanel {
   const fallback = _.cloneDeep(panel);
   try {
     if (!isRecord(fallback)) return fallback;

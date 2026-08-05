@@ -9,25 +9,30 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 
 import { IOptions } from '../../../types';
 
+type RowValue = string | number | null;
+type RowData = Record<string, RowValue>;
+
+export interface LinksHandle {
+  show: (item: RowData, position: { left: number; top: number }) => void;
+}
+
 interface Props {
   links: IOptions['links'];
 }
 
 export function cellClickCallback(
-  cellEvent: any,
+  cellEvent: { data?: Record<string, { value?: RowValue }>; event?: MouseEvent },
   {
     links,
     linksRef,
   }: {
     links: IOptions['links'];
-    linksRef: React.RefObject<any>;
+    linksRef: React.RefObject<LinksHandle>;
   },
 ) {
   if (_.isEmpty(links)) return;
 
-  const data: {
-    [key: string]: string | number | null;
-  } = {};
+  const data: RowData = {};
   _.forEach(cellEvent.data, (valueState, key) => {
     data[`__row.${key}`] = valueState.value;
   });
@@ -39,7 +44,7 @@ export function cellClickCallback(
     });
     window.open(interpolatedUrl, link.targetBlank ? '_blank' : '_self');
   } else {
-    const event = cellEvent.event as any;
+    const event = cellEvent.event;
     const { x: left, y: top } = event || {};
     if (left !== undefined && top !== undefined) {
       linksRef.current?.show(data, { left, top });
@@ -47,23 +52,24 @@ export function cellClickCallback(
   }
 }
 
-function Links(props: Props, ref) {
+function Links(props: Props, ref: React.ForwardedRef<LinksHandle>) {
   const { t } = useTranslation('dashboard');
   const { links } = props;
   const [visible, setVisible] = useState(false);
-  const [rowDataItem, setRowDataItem] = useState<{
-    [key: string]: string | number | null;
-  }>({});
+  const [rowDataItem, setRowDataItem] = useState<RowData>({});
   const linksPopverRef = React.useRef<HTMLDivElement>(null);
 
   useImperativeHandle(
     ref,
     () => {
       return {
-        show: (item, { left, top }) => {
+        show: (item: RowData, { left, top }: { left: number; top: number }) => {
           setRowDataItem(item);
           setVisible(true);
-          (window as any).placement(
+          const placement = (window as Window & {
+            placement?: (target: HTMLElement | null, position: { left: number; top: number }, side: string, align: string, options: { bound: HTMLElement }) => void;
+          }).placement;
+          placement?.(
             linksPopverRef.current,
             {
               left,
@@ -111,4 +117,4 @@ function Links(props: Props, ref) {
   );
 }
 
-export default forwardRef(Links);
+export default forwardRef<LinksHandle, Props>(Links);

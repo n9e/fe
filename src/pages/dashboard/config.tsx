@@ -85,5 +85,5 @@ export const AddPanelSvg = () => (
     ></path>
   </svg>
 );
-export const AddPanelIcon = (props) => <Icon component={AddPanelSvg} {...props} className='anticon-addpanel' />;
+export const AddPanelIcon = (props: React.ComponentProps<typeof Icon>) => <Icon component={AddPanelSvg} {...props} className='anticon-addpanel' />;
 export const DASHBOARD_VERSION = '4.0.0';

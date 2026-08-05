@@ -16,17 +16,23 @@ import Renderer from '../Renderer/Renderer';
 import { useGlobalState } from '../globalState';
 import QueryEditor from './QueryEditor';
 import VariablesMain from '../Variables/Main';
+import type { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { IPanel } from '../types';
+
+export interface EditorFormHandle {
+  getFormInstance: () => ReturnType<typeof Form.useForm>[0];
+}
 
 interface IProps {
   panelWidth?: number; // 面板宽度
-  initialValues: any;
-  range: any;
+  initialValues: IPanel;
+  range: IRawTimeRange;
   timezone: string;
   id: string;
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
-function FormCpt(props: IProps, ref) {
+function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
   const { t } = useTranslation('dashboard');
   const { darkMode } = useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
@@ -89,7 +95,7 @@ function FormCpt(props: IProps, ref) {
               <div className='n9e-dashboard-editor-modal-left-vars-wrapper gap-4'>
                 <span>{t('var.vars')}</span>
                 {/* 直接渲染变量选择器，避免依赖 portal 对 ref 变化不触发重渲染的问题 */}
-                <VariablesMain variableValueFixed={queryParams.__variable_value_fixed as any} loading={false} />
+                <VariablesMain variableValueFixed={queryParams.__variable_value_fixed === 'true'} loading={false} />
               </div>
               <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper'>
                 {values && (
@@ -289,4 +295,4 @@ function FormCpt(props: IProps, ref) {
   );
 }
 
-export default forwardRef(FormCpt);
+export default forwardRef<EditorFormHandle, IProps>(FormCpt);
