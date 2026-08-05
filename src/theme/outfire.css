@@ -1,0 +1,34 @@
+/* 该文件用于 Outfire 业务专属主题颜色
+ * 基础颜色优先使用 variable.css 中的
+ * 变量命名统一使用 --fc- 前缀，防止与其他变量冲突
+ */
+
+/* 浅色模式 */
+:root {
+  /* SLO 达标率 */
+  --fc-slo-rate-no-data: var(--fc-fill-4);
+  --fc-slo-rate-100: #24be73;
+  --fc-slo-rate-above-80: #ffe69d;
+  --fc-slo-rate-60-80: #ffd600;
+  --fc-slo-rate-40-60: #f27f0d;
+  --fc-slo-rate-20-40: #f38c8f;
+  --fc-slo-rate-10-20: #ea5d61;
+  --fc-slo-rate-5-10: #cc2e39;
+  --fc-slo-rate-below-5: #a20202;
+}
+
+/* -------------------  分割线 ------------------- */
+
+/* 深色模式 */
+.theme-dark {
+  /* SLO 达标率 */
+  --fc-slo-rate-no-data: var(--fc-fill-4);
+  --fc-slo-rate-100: #038643;
+  --fc-slo-rate-above-80: #615413;
+  --fc-slo-rate-60-80: #b38d00;
+  --fc-slo-rate-40-60: #c25400;
+  --fc-slo-rate-20-40: #542627;
+  --fc-slo-rate-10-20: #6b1e20;
+  --fc-slo-rate-5-10: #6b1e20;
+  --fc-slo-rate-below-5: #6b1e20;
+}
