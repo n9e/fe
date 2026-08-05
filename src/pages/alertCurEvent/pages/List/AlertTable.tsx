@@ -33,7 +33,6 @@ interface IProps {
   setRefreshFlag: (refreshFlag: string) => void;
   tagDisplayMode: AlertEventTagsDisplayMode;
   alertEscalationEnable: boolean;
-  showTriggerValue?: boolean;
 }
 
 function formatDuration(ms: number) {
@@ -60,7 +59,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, tagDisplayMode, alertEscalationEnable, showTriggerValue } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, tagDisplayMode, alertEscalationEnable } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
@@ -202,10 +201,7 @@ export default function AlertTable(props: IProps) {
         );
       },
     },
-  ];
-
-  if (showTriggerValue) {
-    columns.splice(1, 0, {
+    {
       title: t('trigger_value'),
       dataIndex: 'trigger_value',
       render(value) {
@@ -219,8 +215,8 @@ export default function AlertTable(props: IProps) {
           </div>
         );
       },
-    } as any);
-  }
+    },
+  ];
 
   if (import.meta.env.VITE_IS_PRO === 'true') {
     columns.splice(3, 0, {

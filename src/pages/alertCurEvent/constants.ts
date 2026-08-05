@@ -5,4 +5,3 @@ export const EVENTS_TABLE_PAGESIZE_CACHE_KEY = 'alert_active_events_table_pagesi
 export const MY_GRPUPS_CACHE_KEY = 'alert_cur_events_my_groups';
 export const AGGR_RULE_ID_CACHE_KEY = 'alert_cur_events_aggr_rule_id';
 export const TIME_RANGE_CACHE_KEY = 'alert_cur_events_time_range';
-export const SHOW_TRIGGER_VALUE_CACHE_KEY = 'alert_cur_events_show_trigger_value';

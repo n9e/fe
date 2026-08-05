@@ -22,7 +22,6 @@ const ja_JP = {
   prod: '監視タイプ',
   duration: '持続時間',
   trigger_value: 'トリガ値',
-  show_trigger_value: 'トリガ値を表示',
   aggregate_rule: '集計ルール',
   aggregate_rule_mgs: '集計ルールを選択してください',
   aggregate_rule_tip: `イベントの属性とタグに基づいてアラートを集計して分類し、表示を簡素化します。Go Templateを使用してイベントフィールドを参照します。例：

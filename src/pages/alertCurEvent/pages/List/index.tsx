@@ -1,5 +1,5 @@
 import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Input, Checkbox, Collapse, Segmented, Button, Space, Switch } from 'antd';
+import { Input, Checkbox, Collapse, Segmented, Button, Space } from 'antd';
 import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -21,7 +21,7 @@ import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 // @ts-ignore
 import { getBrainLicense } from 'plus:/components/License/services';
 
-import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS, SHOW_TRIGGER_VALUE_CACHE_KEY, TIME_RANGE_CACHE_KEY } from '../../constants';
+import { AGGR_RULE_ID_CACHE_KEY, MY_GRPUPS_CACHE_KEY, NS, TIME_RANGE_CACHE_KEY } from '../../constants';
 import getFilterByURLQuery from '../../utils/getFilter';
 import deleteAlertEventsModal from '../../utils/deleteAlertEventsModal';
 import { ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, readAlertEventTagsDisplayMode, writeAlertEventTagsDisplayMode } from '../../utils/eventColumnExpandedStorage';
@@ -124,7 +124,6 @@ const AlertCurEvent: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [alertEscalationEnable, setAlertEscalationEnable] = useState(false);
   const [tagDisplayMode, setTagDisplayMode] = useState(() => readAlertEventTagsDisplayMode(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY));
-  const [showTriggerValue, setShowTriggerValue] = useState(() => localStorage.getItem(SHOW_TRIGGER_VALUE_CACHE_KEY) === 'true');
   const [prodFilterExpanded, setProdFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('prod', true));
   const [severityFilterExpanded, setSeverityFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('severity', true));
   const [datasourceFilterExpanded, setDatasourceFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('datasource', false));
@@ -397,17 +396,6 @@ const AlertCurEvent: React.FC = () => {
                     <div className='p-2'>
                       <div className='alert-event-summary-toolbar'>
                         <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
-                        <Space>
-                          <span className='text-sm text-fc-text-3'>{t('show_trigger_value')}</span>
-                          <Switch
-                            size='small'
-                            checked={showTriggerValue}
-                            onChange={(checked) => {
-                              localStorage.setItem(SHOW_TRIGGER_VALUE_CACHE_KEY, String(checked));
-                              setShowTriggerValue(checked);
-                            }}
-                          />
-                        </Space>
                       </div>
                       <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
                     </div>
@@ -468,7 +456,6 @@ const AlertCurEvent: React.FC = () => {
                       setRefreshFlag={setRefreshFlag}
                       tagDisplayMode={tagDisplayMode}
                       alertEscalationEnable={alertEscalationEnable}
-                      showTriggerValue={showTriggerValue}
                     />
                   </div>
                 </div>
