@@ -11,8 +11,9 @@ import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NAME_SPACE as VICTORIALOGS_NS } from '../../constants';
+import { NAME_SPACE as VICTORIALOGS_NS, VICTORIALOGS_LOGS_QUERY_DOC_URL } from '../../constants';
 import { getFieldNames, getFieldValues } from '../services';
 import { FieldNameSuggestion, VictoriaLogsAggregation, VictoriaLogsFilter, VictoriaLogsMetricBuilderState, VictoriaLogsRawBuilderState } from '../types';
 import { renderLogsQL, renderMetricLogsQL } from '../utils/logsQL';
@@ -724,7 +725,7 @@ function OrderBy(props: {
 
 export default function Builder(props: Props) {
   const { visible, mode, queryBuilderPinned, setQueryBuilderPinned, onClose, onExecute, onPreviewQL } = props;
-  const { t } = useTranslation(VICTORIALOGS_NS);
+  const { t, i18n } = useTranslation(VICTORIALOGS_NS);
   const parentForm = Form.useFormInstance();
   const [form] = Form.useForm();
   const [validationMessage, setValidationMessage] = useState<string>();
@@ -926,21 +927,37 @@ export default function Builder(props: Props) {
         </Space>
       </Form>
       <div className='absolute top-2 right-2'>
-        <Tooltip title={queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}>
+        <Space size={0}>
           <Button
-            type='text'
-            icon={<PushpinOutlined />}
-            onMouseDown={() => {
-              ignoreNextOutsideClick();
-            }}
+            type='link'
             onClick={(e) => {
               e.stopPropagation();
-              setQueryBuilderPinned(!queryBuilderPinned);
+              DocumentDrawer({
+                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                title: t('common:document_title'),
+                type: 'iframe',
+                documentPath: VICTORIALOGS_LOGS_QUERY_DOC_URL,
+              });
             }}
           >
-            {queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}
+            {t('common:document_title')}
           </Button>
-        </Tooltip>
+          <Tooltip title={queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}>
+            <Button
+              type='text'
+              icon={<PushpinOutlined />}
+              onMouseDown={() => {
+                ignoreNextOutsideClick();
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setQueryBuilderPinned(!queryBuilderPinned);
+              }}
+            >
+              {queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}
+            </Button>
+          </Tooltip>
+        </Space>
       </div>
     </div>
   );
