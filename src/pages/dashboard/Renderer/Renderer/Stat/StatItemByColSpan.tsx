@@ -4,14 +4,36 @@ import { useSize } from 'ahooks';
 import TsGraph from '@fc-plot/ts-graph';
 import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { getMaxFontSize } from '../../utils/getTextWidth';
+import type { IOptions } from '../../../types';
 
 const MIN_SIZE = 12;
 const UNIT_PADDING = 4;
-const getTextColor = (color, colorMode) => {
+const getTextColor = (color: string | undefined, colorMode: string) => {
   return colorMode === 'value' ? color : '#fff';
 };
 
-export default function StatItem(props) {
+interface StatItemData {
+  name?: string;
+  metric: Record<string, string | number | undefined>;
+  value?: string | number;
+  unit?: string;
+  color?: string;
+}
+interface StatItemProps {
+  item: StatItemData;
+  idx?: number;
+  textMode: string;
+  colorMode: string;
+  textSize?: { title?: number; value?: number };
+  isFullSizeBackground: boolean;
+  valueField?: string;
+  graphMode: string;
+  serie: unknown;
+  options: IOptions;
+  style?: React.CSSProperties;
+}
+
+export default function StatItem(props: StatItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
   const chartEleRef = useRef<HTMLDivElement>(null);
@@ -32,7 +54,7 @@ export default function StatItem(props) {
         options?.valueMappings,
         options?.thresholds,
       );
-      item.value = result?.value;
+      item.value = result?.value as string | number | undefined;
       item.unit = result?.unit;
       item.color = result?.color;
     } else {
@@ -47,7 +69,7 @@ export default function StatItem(props) {
   let valueAndUnitFontSize = textSize?.value ?? MIN_SIZE;
   if (eleSize) {
     if (!textSize?.title) {
-      headerFontSize = getMaxFontSize(item.name, (eleSize?.width - 20) * 0.8, eleSize?.height / 2 / 3);
+      headerFontSize = getMaxFontSize(item.name as string, (eleSize?.width - 20) * 0.8, eleSize?.height / 2 / 3);
     }
     if (!textSize?.value) {
       valueAndUnitFontSize = getMaxFontSize(valueAndUnit, (eleSize?.width - 20) * 0.8, (eleSize?.height / 2 / 3) * 2);
@@ -64,7 +86,7 @@ export default function StatItem(props) {
         xkey: 0,
         ykey: 1,
         ykey2: 2,
-        ykeyFormatter: (value) => Number(value),
+        ykeyFormatter: (value: number | string) => Number(value),
         chart: {
           renderTo: chartEleRef.current,
           height: chartEleRef.current.clientHeight,
@@ -89,6 +111,12 @@ export default function StatItem(props) {
         },
       });
     }
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = null;
+      }
+    };
   }, [colorMode, graphMode]);
 
   return (

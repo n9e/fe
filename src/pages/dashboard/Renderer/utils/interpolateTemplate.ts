@@ -3,14 +3,15 @@ import _ from 'lodash';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import { replaceFieldWithVariable, getOptionsList } from '../../VariableConfig/constant';
+import type { IVariable } from '../../Variables/types';
 
 export default function interpolateTemplate(
   template: string,
-  values: Record<string, any>,
+  values: Record<string, unknown>,
   options: {
     dashboardMeta: {
       dashboardId: string;
-      variableConfigWithOptions: any;
+      variableConfigWithOptions: IVariable[];
       graphTooltip: string;
       graphZoom: string;
     };

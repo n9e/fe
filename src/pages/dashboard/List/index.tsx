@@ -34,6 +34,7 @@ import { CommonStateContext } from '@/App';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import { getDashboardCompatibleGids } from '@/components/BusinessGroup/presetFilters';
 import EnhancedTable from '@/components/EnhancedTable';
+import type { RowAction } from '@/components/EnhancedTable/types';
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import EllipsisText from '@/components/EllipsisText';
@@ -69,7 +70,7 @@ export default function index() {
   const { businessGroup, perms } = useContext(CommonStateContext);
   const queryParams = queryString.parse(useLocation().search);
   const [gids, setGids] = useState<string | undefined>(() => getDashboardCompatibleGids(getDefaultGidsInDashboard(queryParams, N9E_GIDS_LOCALKEY, businessGroup)));
-  const [list, setList] = useState<any[]>([]);
+  const [list, setList] = useState<DashboardType[]>([]);
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>(sessionStorage.getItem(SEARCH_SESSION_STORAGE_KEY) || '');
@@ -78,7 +79,7 @@ export default function index() {
     return saved ? Number(saved) : 1;
   });
   const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number[] | undefined>(getDefaultPublicSelectGids(PUBLIC_SELECT_GIDS_LOCALKEY)); // 目前只有公开仪表盘会用到
-  const [busiGroups, setBusiGroups] = useState<any[]>([]);
+  const [busiGroups, setBusiGroups] = useState<Array<{ id: number; name: string }>>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
@@ -379,7 +380,7 @@ export default function index() {
                       },
                     }
                   : undefined,
-              ]) as any,
+              ]) as RowAction[],
             })}
             actionColumn={{ title: t('common:table.operations'), width: 130 }}
             rowKey='id'

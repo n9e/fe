@@ -18,21 +18,21 @@ export default class ReduceTransformation implements Transformation {
   }
 
   private reduceTimeSeries(series: TimeSeries): TimeSeries {
-    let reducedData = series.data[0].value;
+    let reducedData = series.data[0]?.value ?? 0;
 
     for (let i = 1; i < series.data.length; i++) {
       switch (this.options.operation) {
         case 'sum':
-          reducedData += series.data[i].value;
+          reducedData += series.data[i]?.value ?? 0;
           break;
         case 'avg':
-          reducedData += series.data[i].value;
+          reducedData += series.data[i]?.value ?? 0;
           break;
         case 'max':
-          reducedData = Math.max(reducedData, series.data[i].value);
+          reducedData = Math.max(reducedData, series.data[i]?.value ?? 0);
           break;
         case 'min':
-          reducedData = Math.min(reducedData, series.data[i].value);
+          reducedData = Math.min(reducedData, series.data[i]?.value ?? 0);
           break;
       }
     }

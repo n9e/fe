@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Row, Col, Input, Select, AutoComplete } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -7,9 +8,10 @@ import { useDebounceFn } from 'ahooks';
 import { getFields } from '@/pages/explorer/Elasticsearch/services';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { generateQueryName, generateQueryNameByIndex } from '@/components/QueryName/utils';
+import type { ElasticsearchSelectOption } from '../types';
 
 interface IProps {
-  prefixField?: any;
+  prefixField?: FormListFieldData;
   prefixFields?: string[]; // 前缀字段名
   prefixNameField?: string[] | number[]; // 列表字段名
   datasourceValue: number;
@@ -30,10 +32,11 @@ const functionsLabelMap = {
   rawData: 'raw data',
 };
 
-export default function index({ prefixField = {}, prefixFields = [], prefixNameField = [], datasourceValue, index, valueRefVisible = true }: IProps) {
+export default function index({ prefixField = {} as FormListFieldData, prefixFields = [], prefixNameField = [], datasourceValue, index, valueRefVisible = true }: IProps) {
   const { t } = useTranslation('datasource');
   const [search, setSearch] = useState('');
-  const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
+  const [fieldsOptions, setFieldsOptions] = useState<ElasticsearchSelectOption[]>([]);
+  const restPrefixField = _.omit(prefixField, 'key');
   const { run } = useDebounceFn(
     () => {
       getFields(datasourceValue, index, 'number').then((res) => {
@@ -58,7 +61,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
   }, [datasourceValue, index]);
 
   return (
-    <Form.List {...prefixField} name={[...prefixNameField, 'query', 'values']} initialValue={[{ func: 'count' }]}>
+    <Form.List {...restPrefixField} name={[...prefixNameField, 'query', 'values']} initialValue={[{ func: 'count' }]}>
       {(fields, { add, remove }) => (
         <div>
           <Form.Item
@@ -94,9 +97,12 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
           </Form.Item>
 
           {fields.map((field, index) => {
+            const restField = _.omit(field, 'key');
             return (
               <div key={field.key} style={{ marginBottom: 0 }}>
-                <Form.Item {...field} name={[field.name, 'ref']} hidden />
+                <Form.Item {...restField} name={[field.name, 'ref']} hidden>
+                  <input type='hidden' />
+                </Form.Item>
                 <Form.Item shouldUpdate noStyle>
                   {({ getFieldValue, setFields }) => {
                     const func = getFieldValue([...prefixFields, ...prefixNameField, 'query', 'values', field.name, 'func']);
@@ -107,7 +113,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                             <Col span={func === 'count' ? 24 : 12}>
                               <Input.Group>
                                 {valueRefVisible && <span className='ant-input-group-addon'>{generateQueryNameByIndex(index)}</span>}
-                                <Form.Item {...field} name={[field.name, 'func']}>
+                                <Form.Item {...restField} name={[field.name, 'func']}>
                                   <Select
                                     style={{ width: '100%' }}
                                     onChange={(val) => {
@@ -141,7 +147,7 @@ export default function index({ prefixField = {}, prefixFields = [], prefixNameF
                             {func !== 'count' && func !== 'rawData' && (
                               <Col span={12}>
                                 <InputGroupWithFormItem label='Field key' labelWidth={80}>
-                                  <Form.Item {...field} name={[field.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
+                                  <Form.Item {...restField} name={[field.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
                                     <AutoComplete
                                       options={_.filter(fieldsOptions, (item) => {
                                         if (search) {

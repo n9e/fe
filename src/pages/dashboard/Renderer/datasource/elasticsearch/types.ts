@@ -1,7 +1,8 @@
 export interface ElasticsearchQuery {
   index: string;
   filter: string;
-  syntax?: string; // lucene | kuery
+  filter_language?: 'lucene' | 'kql';
+  syntax?: 'lucene' | 'kuery'; // 旧直连查询兼容；统一 query-batch 请求会转换为 filter_language
   date_field: string;
   interval?: string; // TODO: 是否可以为空？
   values: {

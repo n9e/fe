@@ -149,6 +149,42 @@ describe('MergeTransformation', () => {
       expect(valueFieldA?.values).toEqual([10, 20, null]);
       expect(valueFieldB?.values).toEqual([30, null, 40]);
     });
+
+    it('should keep all rows when tables share no common fields (union 而非合并成一行)', () => {
+      const input: TableData[] = [
+        {
+          refId: 'A',
+          fields: [
+            {
+              name: 'a',
+              type: 'string',
+              values: ['a1', 'a2'],
+              state: {},
+            },
+          ],
+        },
+        {
+          refId: 'B',
+          fields: [
+            {
+              name: 'b',
+              type: 'string',
+              values: ['b1', 'b2'],
+              state: {},
+            },
+          ],
+        },
+      ];
+
+      const result = new MergeTransformation().apply(input) as TableData[];
+
+      expect(result.length).toBe(1);
+      const fieldA = result[0].fields.find((f) => f.name === 'a');
+      const fieldB = result[0].fields.find((f) => f.name === 'b');
+      // 无共同字段时退化为逐行拼接，4 行数据不能丢失
+      expect(fieldA?.values).toEqual(['a1', 'a2', null, null]);
+      expect(fieldB?.values).toEqual([null, null, 'b1', 'b2']);
+    });
   });
 
   describe('Mixed Data', () => {

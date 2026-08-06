@@ -21,6 +21,7 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
           <>
             <Collapse>
               {_.map(fields, (field, index) => {
+                const restField = _.omit(field, 'key');
                 return (
                   <Panel
                     header={
@@ -44,7 +45,7 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
                       </div>
                     }
                   >
-                    <Form.Item noStyle {...field} name={[field.name, 'refId']}>
+                    <Form.Item noStyle {...restField} name={[field.name, 'refId']}>
                       <div />
                     </Form.Item>
                     <Row gutter={10}>
@@ -67,7 +68,7 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
                               </Tooltip>
                             </span>
                           }
-                          {...field}
+                          {...restField}
                           name={[field.name, 'query', 'query']}
                           validateTrigger={['onBlur']}
                           rules={[
@@ -119,7 +120,7 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
                       <Col flex='auto'>
                         <Form.Item
                           label='Legend'
-                          {...field}
+                          {...restField}
                           name={[field.name, 'legend']}
                           tooltip={{
                             getPopupContainer: () => document.body,

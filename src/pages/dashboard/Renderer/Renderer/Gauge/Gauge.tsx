@@ -27,13 +27,13 @@ interface Iprops {
   min?: number;
   max?: number;
   className?: string;
-  style?: any;
+  style?: React.CSSProperties;
   width?: number; // 宽度必须是高度的两倍，否则可能导致图形被截断
   height?: number;
   color?: string;
   bgColor?: string;
   value: number;
-  formatedValue?: string;
+  formatedValue?: string | number;
   valueUnit?: string;
   thresholds?: IFieldConfig;
 }
@@ -84,13 +84,13 @@ export default function index(props: Iprops) {
 
       // draw background
       context.beginPath();
-      arc()
+      arc<{ startAngle: number; endAngle: number }>()
         .outerRadius(radius - thresholdFanWidth - FAN_MARGIN)
         .innerRadius(radius - valueFanWidth)
         .context(context)({
         startAngle: START_ANGLE * Math.PI + Math.PI / 2,
         endAngle: END_ANGLE * Math.PI + Math.PI / 2,
-      } as any);
+      });
       context.fillStyle = bgColor;
       context.fill();
       context.closePath();
@@ -99,13 +99,13 @@ export default function index(props: Iprops) {
       const formattedThresholds = getFormattedThresholds(thresholds, min, max);
       _.forEach(formattedThresholds, (threshold) => {
         context.beginPath();
-        arc()
+        arc<{ startAngle: number; endAngle: number }>()
           .outerRadius(radius)
           .innerRadius(radius - thresholdFanWidth)
           .context(context)({
           startAngle: (START_ANGLE + (threshold.start / relativeMax) * (END_ANGLE - START_ANGLE)) * Math.PI + Math.PI / 2,
           endAngle: (START_ANGLE + (threshold.end / relativeMax) * (END_ANGLE - START_ANGLE)) * Math.PI + Math.PI / 2,
-        } as any);
+        });
         context.fillStyle = threshold.color;
         context.fill();
         context.closePath();
@@ -113,13 +113,13 @@ export default function index(props: Iprops) {
 
       // draw active
       context.beginPath();
-      arc()
+      arc<{ startAngle: number; endAngle: number }>()
         .outerRadius(radius - thresholdFanWidth - FAN_MARGIN)
         .innerRadius(radius - valueFanWidth)
         .context(context)({
         startAngle: START_ANGLE * Math.PI + Math.PI / 2,
         endAngle: (START_ANGLE + ((value - min < 0 ? 0 : value - min) / relativeMax) * (END_ANGLE - START_ANGLE)) * Math.PI + Math.PI / 2,
-      } as any);
+      });
       context.fillStyle = color;
       context.fill();
       context.closePath();

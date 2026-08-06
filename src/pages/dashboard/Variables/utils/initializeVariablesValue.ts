@@ -2,6 +2,9 @@ import _ from 'lodash';
 
 import { IVariable } from '../types';
 
+export type VariableQueryParam = string | (string | null)[] | null | undefined;
+type VariableRuntimeValue = string | number | (string | null)[] | null | undefined;
+
 /**
  * 初始化变量的值
  * 从 URL 参数、localStorage 中读取变量值
@@ -12,7 +15,7 @@ import { IVariable } from '../types';
  */
 export default function initializeVariablesValue(
   variables: IVariable[],
-  queryParams: Record<string, any>,
+  queryParams: Record<string, VariableQueryParam>,
   params: {
     dashboardId: number;
   },
@@ -23,7 +26,7 @@ export default function initializeVariablesValue(
     if (variablesItem.type === 'constant') return variablesItem;
     const variableName = variablesItem.name;
     const isTextbox = variablesItem.type === 'textbox';
-    let variableValue = queryParams[variableName];
+    let variableValue: VariableRuntimeValue = queryParams[variableName];
     // 如果没有固定 URL 参数值，则从 localStorage 读取缓存值
     if (queryParams.__variable_value_fixed === undefined) {
       if (variableValue === undefined) {

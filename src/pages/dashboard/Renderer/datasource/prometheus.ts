@@ -89,7 +89,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
           exp: target.expr,
         });
       } else {
-        const realExpr = replaceTemplateVariables(target.expr, {
+        const realExpr = replaceTemplateVariables(target.expr ?? '', {
           range: target.time ?? queryOptionsTime ?? time,
           step,
           scopedVars,
@@ -124,7 +124,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
               });
             }
           }
-          exprs.push(target.expr);
+          exprs.push(target.expr ?? '');
           refIds.push(target.refId);
           signalKey += `-${target.expr}`;
         }

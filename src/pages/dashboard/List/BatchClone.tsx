@@ -22,9 +22,14 @@ import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { boardsClones } from '@/services/dashboardV2';
 
+interface BusinessGroupOption {
+  id: number;
+  name: string;
+}
+
 interface IProps {
   board_ids: number[];
-  busiGroups: any[];
+  busiGroups: BusinessGroupOption[];
 }
 
 function BatchClone(props: IProps & ModalWrapProps) {

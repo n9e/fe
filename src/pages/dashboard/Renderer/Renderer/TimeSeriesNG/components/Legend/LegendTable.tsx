@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Table } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
+import type { SorterResult } from 'antd/lib/table/interface';
 import { useSize } from 'ahooks';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -74,7 +75,7 @@ export default function LegendTable(props: Props) {
         title: `Series (${tableData.length})`,
         dataIndex: 'name',
         width: '100%',
-        render: (text, record: any) => {
+        render: (text: string, record: DataItem) => {
           return (
             <div className='w-full flex items-center gap-2 whitespace-nowrap'>
               <div className='w-[14px] h-[4px] rounded-[10px] inline-block flex-shrink-0' style={{ backgroundColor: record.color }} />
@@ -139,7 +140,7 @@ export default function LegendTable(props: Props) {
   const bottomPadding = Math.max(sortedData.length - visibleRange.end, 0) * ROW_HEIGHT;
 
   const VirtualBodyWrapper = useCallback(
-    (wrapperProps: any) => {
+    (wrapperProps: React.HTMLAttributes<HTMLTableSectionElement>) => {
       const { children, ...restProps } = wrapperProps;
 
       return (
@@ -181,14 +182,14 @@ export default function LegendTable(props: Props) {
             wrapper: VirtualBodyWrapper,
           },
         }}
-        onChange={(pagination, filters, sorter: any) => {
+        onChange={(_pagination, _filters, sorter: SorterResult<DataItem> | SorterResult<DataItem>[]) => {
           if (_.isArray(sorter)) {
             return;
           }
           setScrollTop(0);
           containerRef.current?.scrollTo({ top: 0 });
           setSortState({
-            column: sorter?.order ? sorter?.field : undefined,
+            column: sorter?.order && typeof sorter.field === 'string' ? sorter.field : undefined,
             dir: sorter?.order === 'descend' ? 'desc' : sorter?.order === 'ascend' ? 'asc' : undefined,
           });
         }}

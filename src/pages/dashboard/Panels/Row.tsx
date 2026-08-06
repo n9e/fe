@@ -25,15 +25,16 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
+import type { IPanel } from '../types';
 
 interface IProps {
   isAuthorized: boolean;
   name: string;
-  row: any;
+  row: IPanel;
   onToggle: () => void;
   onAddClick: () => void;
   onPasteClick: () => void;
-  onEditClick: (row: any) => void;
+  onEditClick: (row: IPanel) => void;
   onDeleteClick: (mode: 'self' | 'withPanels') => void;
 }
 
@@ -134,7 +135,8 @@ export default function Row(props: IProps) {
         onOk={() => {
           onEditClick({
             ...row,
-            name: newName,
+            // 空输入（undefined 或清空）不覆盖原行名
+            name: newName || row.name,
           });
           setEditVisble(false);
         }}
@@ -151,7 +153,8 @@ export default function Row(props: IProps) {
             onPressEnter={() => {
               onEditClick({
                 ...row,
-                name: newName,
+                // 空输入（undefined 或清空）不覆盖原行名
+                name: newName || row.name,
               });
               setEditVisble(false);
             }}
