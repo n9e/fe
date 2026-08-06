@@ -127,6 +127,7 @@ const SideMenu = (props: SideMenuProps) => {
   const [menuWidthPx, setMenuWidthPx] = useState<number>(readInitialSideMenuWidth);
   const [isResizingMenu, setIsResizingMenu] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [profileMenuOpenKeys, setProfileMenuOpenKeys] = useState<string[]>([]);
   const quickMenuRef = useRef<{ open: () => void }>({ open: () => {} });
   const resizeActiveRef = useRef(false);
   const isCustomBg = effectiveSideMenuBgMode !== 'light';
@@ -344,13 +345,21 @@ const SideMenu = (props: SideMenuProps) => {
   const profileMenuClassName = cn('side-menu-profile-menu', profilePopupThemeClassName);
   const profileSubmenuClassName = cn('side-menu-profile-submenu', profilePopupThemeClassName);
   const profileMenuAlign = { points: ['bl', 'tr'] as [string, string], offset: [collapsed ? 8 : -24, 0] as [number, number] };
+  const handleProfileMenuVisibleChange = (open: boolean) => {
+    setProfileMenuOpen(open);
+    if (!open) {
+      setProfileMenuOpenKeys([]);
+    }
+  };
   const profileMenu = (
     <Menu
       className={profileMenuClassName}
       selectable={false}
+      openKeys={profileMenuOpenKeys}
+      onOpenChange={setProfileMenuOpenKeys}
       onClick={({ key }) => {
         if (!['theme', 'language'].includes(String(key))) {
-          setProfileMenuOpen(false);
+          handleProfileMenuVisibleChange(false);
         }
       }}
     >
@@ -485,7 +494,15 @@ const SideMenu = (props: SideMenuProps) => {
           <div
             className={cn('side-menu-footer shrink-0 border-0 border-t border-solid px-2', isCustomBg ? 'border-[rgba(255,255,255,0.12)]' : 'border-[var(--fc-sidemenu-border)]')}
           >
-            <Dropdown overlay={profileMenu} trigger={['hover']} placement='topLeft' align={profileMenuAlign} visible={profileMenuOpen} onVisibleChange={setProfileMenuOpen}>
+            <Dropdown
+              overlay={profileMenu}
+              trigger={['hover']}
+              placement='topLeft'
+              align={profileMenuAlign}
+              visible={profileMenuOpen}
+              onVisibleChange={handleProfileMenuVisibleChange}
+              destroyPopupOnHide
+            >
               <div className={cn('side-menu-profile-row rounded transition-colors', collapsed ? 'justify-center' : '', isCustomBg ? 'text-[#fff]' : 'text-title hover:bg-fc-200')}>
                 <button
                   type='button'
