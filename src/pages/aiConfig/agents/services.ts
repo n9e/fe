@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
+import { N9E_PATHNAME } from '@/utils/constant';
 
 import { Item, FormValues } from './types';
 
@@ -40,7 +41,7 @@ export const deleteItem = function (id: number) {
 };
 
 export const getMCPServers = function (): Promise<{ id: number; name: string }[]> {
-  return request('/api/n9e/mcp-servers', {
+  return request(`/api/${N9E_PATHNAME}/mcp-servers`, {
     method: RequestMethod.Get,
   }).then((res) => res.dat ?? []);
 };
