@@ -17,7 +17,7 @@ import { inferMetricTimeseriesKeys } from '../utils/logsQL';
 import appendFieldFilter from '../utils/appendFieldFilter';
 import MainMoreOperations from '../components/MainMoreOperations';
 import Metric from './Metric';
-import QueryInput, { QueryInputHandle } from './QueryInput';
+import QueryInput from './QueryInput';
 import Raw from './Raw';
 
 interface Props {
@@ -39,7 +39,6 @@ export default function Main(props: Props) {
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
   const [snapRangeResetKey, setSnapRangeResetKey] = useState<string>();
-  const queryInputRef = React.useRef<QueryInputHandle>(null);
   const tableSelector = {
     antd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`,
     rgd: `.victorialogs-explorer-container-${tabKey} .n9e-event-logs-table`,
@@ -54,7 +53,6 @@ export default function Main(props: Props) {
   };
 
   const executeCommittedQuery = () => {
-    queryInputRef.current?.commit();
     resetSnapRange();
     setIsContentChangedDotVisible(false);
     executeQuery();
@@ -116,7 +114,6 @@ export default function Main(props: Props) {
           </Col>
           <Col flex='auto' style={{ minWidth: 0 }}>
             <QueryInput
-              ref={queryInputRef}
               executeQuery={executeCommittedQuery}
               queryBuilderPinned={queryBuilderPinned}
               queryBuilderVisible={!queryBuilderPinned ? queryBuilderVisible : true}
