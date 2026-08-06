@@ -14,3 +14,5 @@ export const DEFAULT_QUERY = '_time: 1m | ';
 export const TABLE_DEFAULT_SETTINGS = {
   customize_columns: undefined, // all
 };
+
+export const VICTORIALOGS_LOGS_QUERY_DOC_URL = 'https://flashcat.cloud/docs/content/flashcat/log/discover/victorialogs-log-query/';
