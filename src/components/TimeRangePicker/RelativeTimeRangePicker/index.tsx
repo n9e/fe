@@ -63,7 +63,7 @@ export default function index(props: ITimeRangePickerProps) {
     value,
     onChange = () => {},
     dateFormat = 'YYYY-MM-DD HH:mm',
-    placeholder = '请选择时间',
+    placeholder = t('placeholder'),
     allowClear = false,
     onClear = () => {},
     disabled,

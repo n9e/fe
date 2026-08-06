@@ -1,8 +1,8 @@
 const en_US = {
-  displayColumns: 'Display Columns',
-  searchColumns: 'Search Columns',
-  noData: 'No Data',
-  selectAll: 'Select All',
+  displayColumns: 'Display columns',
+  searchColumns: 'Search columns',
+  noData: 'No data',
+  selectAll: 'Select all',
 };
 
 export default en_US;

@@ -27,7 +27,7 @@ const en_US = {
   addPanel: 'Add panel',
   translation: 'Metric description',
   batch: {
-    not_select: 'Please select the metric first',
+    not_select: 'Please select metrics first',
     export: {
       title: 'Export metrics',
     },
@@ -41,19 +41,19 @@ const en_US = {
   filter: {
     title: 'Filters',
     title_tip:
-      'The purpose of the filter is to narrow the scope of monitoring data queries when clicking on the right metric to view the monitoring data of the metric. If the filter condition {ident="n9e01"} is configured and selected, the query initiated when querying cpu_usage_idle is cpu_usage_idle{ident="n9e01"}, which will greatly reduce the number of query curves',
+      'Filters narrow the scope of data queries when you click a metric to view its data. For example, with the filter {ident="n9e01"} configured and selected, querying cpu_usage_idle actually queries cpu_usage_idle{ident="n9e01"}, which greatly reduces the number of queried series',
     add_title: 'Add filter',
     edit_title: 'Edit filter',
     import_title: 'Import filter',
     name: 'Name',
-    datasource: 'Datasource',
+    datasource: 'Data source',
     datasource_tip: 'Auxiliary data source for querying filter conditions',
     configs: 'Filter conditions',
     groups_perm: 'Authorized teams',
     groups_perm_gid_msg: 'Please select the authorized team',
     perm: {
-      1: 'Read and Write',
-      0: 'Read Only',
+      1: 'Read and write',
+      0: 'Read only',
     },
     build_labelfilter_and_expression_error: 'Failed to build label filter conditions and expressions',
     filter_label_msg: 'Label is required',

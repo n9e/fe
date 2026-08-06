@@ -35,17 +35,17 @@ const en_US = {
     <3>Strings containing spaces need to be wrapped in quotes</3>
     `,
   time: 'Time',
-  duration_max: 'Max Duration',
-  duration_min: 'Min Duration',
-  num_traces: 'Number of Traces',
+  duration_max: 'Max duration',
+  duration_min: 'Min duration',
+  num_traces: 'Number of traces',
   query: 'Execute',
   traceid_msg: 'Please enter Trace ID',
   sort: {
-    MOST_RECENT: 'Most Recent',
-    LONGEST_FIRST: 'Longest First',
-    SHORTEST_FIRST: 'Shortest First',
-    MOST_SPANS: 'Most Spans',
-    LEAST_SPANS: 'Least Spans',
+    MOST_RECENT: 'Most recent',
+    LONGEST_FIRST: 'Longest first',
+    SHORTEST_FIRST: 'Shortest first',
+    MOST_SPANS: 'Most spans',
+    LEAST_SPANS: 'Least spans',
   },
 };
 export default en_US;

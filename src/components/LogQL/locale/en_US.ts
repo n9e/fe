@@ -1,7 +1,7 @@
 const en_US = {
-  logicalOperators: 'Logical Operators',
-  sqlkeywords: 'SQL Keywords',
-  fieldName: 'Field Name',
-  historicalRecords: 'Historical Records',
+  logicalOperators: 'Logical operators',
+  sqlkeywords: 'SQL keywords',
+  fieldName: 'Field name',
+  historicalRecords: 'Historical records',
 };
 export default en_US;
