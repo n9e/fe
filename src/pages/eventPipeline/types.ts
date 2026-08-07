@@ -38,10 +38,10 @@ export type CallbackItem = BaseItem & {
       url: string;
       header?: Record<string, string>;
       timeout?: string;
-      insecure_skip_verify?: boolean;
+      skip_ssl_verify?: boolean;
       proxy?: string;
-      basic_auth_user?: string;
-      basic_auth_pass?: string;
+      auth_username?: string;
+      auth_password?: string;
     };
   }[];
 };
