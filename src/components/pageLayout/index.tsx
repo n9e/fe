@@ -48,6 +48,7 @@ interface IPageLayoutProps {
   showBack?: Boolean;
   backPath?: string;
   docFn?: Function;
+  headerCenter?: ReactNode;
 }
 
 export const i18nMap = {
