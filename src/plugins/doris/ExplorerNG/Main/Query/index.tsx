@@ -173,7 +173,7 @@ export default function index(props: Props) {
               list: _.concat(data?.list, newLogs),
               total: res.total,
               hash: _.uniqueId('logs_'),
-              colWidths: calcColWidthByData(_.concat(data?.list, newLogs)),
+              colWidths: calcColWidthByData(newLogs, data?.colWidths),
               highlights: _.concat(data?.highlights || [], nextHighlights),
             };
           } else {
