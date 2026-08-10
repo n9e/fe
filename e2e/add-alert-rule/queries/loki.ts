@@ -28,15 +28,15 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiTap, aiAsser
   await aiTap('左侧配置步骤中的告警条件');
   await aiWaitFor('告警条件区域已显示，并且可以看到 LogQL 查询条件输入框和告警级别');
 
-  // Fill LogQL Input — 使用 placeholder 定位
-  const logqlInput = page.getByPlaceholder('Input logql to query. Press Shift+Enter for newlines');
-  await expect(logqlInput, 'Loki LogQL input').toBeVisible({ timeout: 5000 });
-  await logqlInput.click();
+  // Fill LogQL Input — Loki 使用 LokiMonacoEditor（Monaco），通过 textarea role 定位
+  // 注意：不要先 click Monaco 的 textarea，否则会被 .view-line 拦截 pointer events，直接 fill 即可（fill 会自动聚焦）
+  const logqlInput = page.locator('[data-section-key="rule"]').getByRole('textbox', { name: 'Editor content' }).first();
+  await expect(logqlInput, 'Loki LogQL Monaco editor').toBeVisible({ timeout: 5000 });
   await logqlInput.fill(item.promQl);
 
   // 验证 severity 处于选中状态
   if (item.severityName && aiAssert) {
-    await aiAssert(`二级报警（Warning）单选框处于选中状态`);
+    await aiAssert(`二级告警（Warning）单选框处于选中状态`);
   }
 };
 
