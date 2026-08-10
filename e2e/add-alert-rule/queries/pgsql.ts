@@ -43,11 +43,10 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   await aiTap('左侧配置步骤中的告警条件');
   await aiWaitFor('告警条件区域已显示，并且可以看到 PostgreSQL 查询条件编辑器和辅助配置');
 
-  // Fill the SQL query in the LogQL CodeMirror editor
-  // PostgreSQL 插件使用 LogQL 组件，渲染为 .logql-codemirror .cm-content
-  const editor = page.locator('.logql-codemirror .cm-content').first();
-  await expect(editor, 'PostgreSQL SQL query CodeMirror editor').toBeVisible();
-  await editor.click();
+  // Fill the SQL query in the Monaco editor (SqlMonacoEditor)
+  // 注意：不要先 click Monaco 的 textarea，否则会被 .view-line 拦截 pointer events，直接 fill 即可（fill 会自动聚焦）
+  const editor = page.locator('[data-section-key="rule"]').getByRole('textbox', { name: 'Editor content' }).first();
+  await expect(editor, 'PostgreSQL SQL query Monaco editor').toBeVisible();
   await editor.fill(item.sql);
 
   // Fill keys in Advanced Settings (always expanded for PostgreSQL)
