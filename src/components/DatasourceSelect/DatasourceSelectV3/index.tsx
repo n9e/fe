@@ -50,7 +50,7 @@ export default function index(props: SelectProps & Props) {
           const datasourceCate = _.find(datasourceCateList, { value: item.plugin_type });
           const displayLabel = getCateDisplayLabel(datasourceCate, i18n.language);
           return {
-            filter: item.plugin_type + item.name,
+            filter: [item.plugin_type, displayLabel, item.name].join(' '),
             originLabel: item.name,
             optionLabel: (
               <div>
