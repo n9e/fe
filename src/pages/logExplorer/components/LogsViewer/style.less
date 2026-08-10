@@ -7,6 +7,26 @@
     padding: 0 !important;
     position: relative;
   }
+
+  // P1-2: Origin 模式虚拟列表（react-virtuoso）自定义表头与行，样式对齐原 antd Table
+  .n9e-log-explorer-raw-header {
+    // 覆盖 antd 默认 th 的 16px 内边距，对齐 ant-table-small 的 8px
+    th {
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+
+  .n9e-log-explorer-raw-row {
+    border-bottom: 1px solid var(--fc-border-color);
+    font-size: 12px;
+
+    &:hover {
+      background: rgb(var(--fc-fill-5-rgb) / 0.2);
+    }
+  }
 }
 
 .n9e-log-explorer-log-viewer-tabs {
