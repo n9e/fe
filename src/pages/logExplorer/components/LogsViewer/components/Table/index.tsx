@@ -172,7 +172,6 @@ export default function Table<Row>(props: Props<Row>) {
         'rdg-light': theme === 'light',
         'rdg-dark': theme === 'dark',
       })}
-      enableVirtualization={false}
       defaultColumnOptions={{
         resizable: true,
       }}

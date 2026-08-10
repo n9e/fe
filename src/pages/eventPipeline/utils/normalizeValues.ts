@@ -1,10 +1,26 @@
 import _ from 'lodash';
 
 import { Item } from '../types';
-interface HeaderItem {
-  key: string;
-  value: string;
-}
+
+/**
+ * 表单里 header / custom_params / url_shot_opts.headers 是 [{key, value}] 数组，
+ * 提交给后端（header 为 map[string]string 等）需要对象形式。
+ * 若值已经是对象（例如克隆数据没有经过 normalizeInitialValues），原样返回，保证幂等。
+ */
+const pairsToObject = (value: unknown): unknown => {
+  if (!Array.isArray(value)) return value;
+  return _.fromPairs(_.map(value, (item) => [item?.key, item?.value]));
+};
+
+/**
+ * 后端返回的 header / custom_params / url_shot_opts.headers 是对象形式，表单 Form.List 需要数组。
+ * 若值已经是数组（例如后端存了旧格式或表单回填过），原样返回，保证幂等。
+ */
+const objectToPairs = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value;
+  if (value == null || typeof value !== 'object') return value;
+  return _.map(value as { [key: string]: string }, (v, k) => ({ key: k, value: v }));
+};
 
 /**
  * 后端 GET / 列表接口会按当前 processors 派生出 nodes、connections 再返回（FillWorkflowFields），
@@ -23,26 +39,61 @@ export function omitDerivedFields<T extends object>(values: T): T {
   return _.omit(values, ['nodes', 'connections']) as T;
 }
 
+/**
+ * 提交给后端前：把每个处理器 config 里的数组形态（header / custom_params / url_shot_opts.headers）
+ * 转成后端要求的对象形态（header 为 map[string]string 等）。
+ * 供事件流页面（Add/Edit）与告警规则表单内联工作流（FormNG 的 WorkflowItem）共用。
+ * 注意：调用方传入的多是表单实时值（Form.useWatch），不能原地修改，先 cloneDeep 保护引用。
+ */
+export function normalizeProcessorsForSubmit(processors: any[]): any[] {
+  return _.map(_.cloneDeep(processors), (processor: any) => {
+    const config = processor?.config || {};
+    if (_.includes(['callback', 'event_update', 'ai_summary'], processor?.typ) && config.header != null) {
+      config.header = pairsToObject(config.header);
+    }
+    if (_.includes(['ai_summary'], processor?.typ) && config.custom_params != null) {
+      config.custom_params = pairsToObject(config.custom_params);
+    }
+    if (_.includes(['alert_shot'], processor?.typ) && config.url_shot_opts?.headers != null) {
+      config.url_shot_opts.headers = pairsToObject(config.url_shot_opts.headers);
+    }
+    return {
+      ...processor,
+      config,
+    };
+  });
+}
+
+/**
+ * 回填表单前：把后端返回的对象形态（header 等）转成表单 Form.List 需要的数组形态。
+ * 幂等：输入已经是数组时原样保留。同样先 cloneDeep，避免污染拉取到的原始数据。
+ */
+export function normalizeProcessorsForForm(processors: any[]): any[] {
+  return _.map(_.cloneDeep(processors), (processor: any) => {
+    const config = processor?.config || {};
+    if (_.includes(['callback', 'event_update', 'ai_summary'], processor?.typ) && config.header != null) {
+      config.header = objectToPairs(config.header);
+    }
+    if (_.includes(['ai_summary'], processor?.typ) && config.custom_params != null) {
+      config.custom_params = objectToPairs(config.custom_params);
+    }
+    if (_.includes(['alert_shot'], processor?.typ) && config.url_shot_opts?.headers != null) {
+      config.url_shot_opts.headers = objectToPairs(config.url_shot_opts.headers);
+    }
+    return {
+      ...processor,
+      config,
+    };
+  });
+}
+
 export function normalizeFormValues(values: Item): any {
+  // 整份深拷贝：这里未来可能叠加其他数据处理，入口处先隔离外部引用，
+  // 处理器级转换内部的 cloneDeep 是第二层保险（性能可忽略）
   values = _.cloneDeep(values);
   return {
     ...values,
-    processors: _.map(values.processors, (processor: any) => {
-      const config = processor?.config || {};
-      if (_.includes(['callback', 'event_update', 'ai_summary'], processor?.typ) && config.header) {
-        config.header = _.fromPairs(_.map(config.header as HeaderItem[], (item) => [item.key, item.value]));
-      }
-      if (_.includes(['ai_summary'], processor?.typ) && config.custom_params) {
-        config.custom_params = _.fromPairs(_.map(config.custom_params as HeaderItem[], (item) => [item.key, item.value]));
-      }
-      if (_.includes(['alert_shot'], processor?.typ) && config.url_shot_opts?.headers) {
-        config.url_shot_opts.headers = _.fromPairs(_.map(config.url_shot_opts.headers as HeaderItem[], (item) => [item.key, item.value]));
-      }
-      return {
-        ...processor,
-        config,
-      };
-    }),
+    processors: normalizeProcessorsForSubmit(values.processors as any[]),
   };
 }
 
@@ -50,30 +101,6 @@ export function normalizeInitialValues(values: any): Item {
   values = _.cloneDeep(values);
   return {
     ...values,
-    processors: _.map(values.processors, (processor: any) => {
-      const config = processor?.config || {};
-      if (_.includes(['callback', 'event_update', 'ai_summary'], processor?.typ) && config.header) {
-        config.header = _.map(config.header as { [key: string]: string }, (value, key) => ({
-          key,
-          value,
-        }));
-      }
-      if (_.includes(['ai_summary'], processor?.typ) && config.custom_params) {
-        config.custom_params = _.map(config.custom_params as { [key: string]: string }, (value, key) => ({
-          key,
-          value,
-        }));
-      }
-      if (_.includes(['alert_shot'], processor?.typ) && config.url_shot_opts?.headers) {
-        config.url_shot_opts.headers = _.map(config.url_shot_opts.headers as { [key: string]: string }, (value, key) => ({
-          key,
-          value,
-        }));
-      }
-      return {
-        ...processor,
-        config,
-      };
-    }),
+    processors: normalizeProcessorsForForm(values.processors),
   };
 }

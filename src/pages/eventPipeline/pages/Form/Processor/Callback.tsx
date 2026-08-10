@@ -41,12 +41,12 @@ export default function Callback(props: Props) {
               <Col flex='auto'>
                 <Row gutter={10}>
                   <Col span={12}>
-                    <Form.Item {...resetField} label={t('callback.basic_auth_user')} name={[...namePath, 'basic_auth_user']} className='mb-0 flex-1'>
+                    <Form.Item {...resetField} label={t('callback.basic_auth_user')} name={[...namePath, 'auth_username']} className='mb-0 flex-1'>
                       <Input />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item {...resetField} label={t('callback.basic_auth_pass')} name={[...namePath, 'basic_auth_pass']} className='mb-0 flex-1'>
+                    <Form.Item {...resetField} label={t('callback.basic_auth_pass')} name={[...namePath, 'auth_password']} className='mb-0 flex-1'>
                       <Input.Password />
                     </Form.Item>
                   </Col>
@@ -125,7 +125,7 @@ export default function Callback(props: Props) {
                     </Form.Item>
                   </Col>
                   <Col span={6}>
-                    <Form.Item {...resetField} label='TLS InsecureSkipVerify' name={[...namePath, 'insecure_skip_verify']} valuePropName='checked'>
+                    <Form.Item {...resetField} label='TLS InsecureSkipVerify' name={[...namePath, 'skip_ssl_verify']} valuePropName='checked'>
                       <Switch size='small' />
                     </Form.Item>
                   </Col>
