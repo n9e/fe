@@ -74,6 +74,24 @@ export default function useQuery(props: IProps) {
   const requestSequenceRef = useRef(new DashboardRequestSequence());
   const controllerRef = useRef<AbortController>();
   const mountedRef = useRef(true);
+  // 记录已成功加载的查询参数标识：面板滚动进出视口时，若参数未变化则直接复用已加载数据，避免重复请求
+  const loadedKeyRef = useRef<string | undefined>();
+
+  const getQueryKey = () =>
+    JSON.stringify({
+      targets,
+      time,
+      variablesWithOptions,
+      datasourceList,
+      datasourceCate,
+      datasourceValue,
+      spanNulls: props.spanNulls,
+      scopedVars: props.scopedVars,
+      panelWidth: props.panelWidth,
+      inspect: props.inspect,
+      maxDataPoints,
+      queryOptionsTime,
+    });
 
   const { run: fetchData, cancel: cancelDebounce } = useDebounceFn(
     async () => {
@@ -146,6 +164,7 @@ export default function useQuery(props: IProps) {
             range: time,
           }),
         );
+        loadedKeyRef.current = getQueryKey();
       } catch (error) {
         if (controller.signal.aborted || !mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
         setState((previous) =>
@@ -169,6 +188,7 @@ export default function useQuery(props: IProps) {
   useDeepCompareEffect(() => {
     if (!targets?.length) {
       hasRequestedRef.current = false;
+      loadedKeyRef.current = undefined;
       requestSequenceRef.current.invalidate();
       cancelDebounce();
       controllerRef.current?.abort();
@@ -189,6 +209,11 @@ export default function useQuery(props: IProps) {
       return;
     }
     if (inViewPort) {
+      // 查询参数未变化且已成功加载过数据：滚动进出视口时直接复用已加载数据，不再重复请求
+      if (loadedKeyRef.current === getQueryKey()) {
+        hasRequestedRef.current = true;
+        return;
+      }
       hasRequestedRef.current = true;
       requestSequenceRef.current.invalidate();
       cancelDebounce();
@@ -217,7 +242,7 @@ export default function useQuery(props: IProps) {
   ]);
 
   useEffect(() => {
-    if (inViewPort && !hasRequestedRef.current) {
+    if (inViewPort && !hasRequestedRef.current && loadedKeyRef.current !== getQueryKey()) {
       hasRequestedRef.current = true;
       fetchData();
     }

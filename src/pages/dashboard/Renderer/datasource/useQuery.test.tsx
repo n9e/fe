@@ -223,6 +223,77 @@ describe('dashboard useQuery', () => {
     }
   });
 
+  it('does not re-request a loaded panel when it scrolls back into viewport', async () => {
+    jest.useFakeTimers();
+    try {
+      fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
+      const { rerender, result } = renderUseQuery({ targets: [createMockTarget()] });
+
+      // 首次进入视口 → 加载成功
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+      expect(result.current.loaded).toBe(true);
+
+      // 滚出视口
+      rerender({ ...baseProps, targets: [createMockTarget()], inViewPort: false });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+
+      // 滚回视口：查询参数未变化，已加载的面板不应再触发请求
+      rerender({ ...baseProps, targets: [createMockTarget()], inViewPort: true });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+      expect(result.current.loaded).toBe(true);
+      expect(result.current.series).toHaveLength(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('refetches when query parameters changed while panel was out of viewport', async () => {
+    jest.useFakeTimers();
+    try {
+      fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
+      const { rerender } = renderUseQuery({ targets: [createMockTarget()] });
+
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+
+      // 滚出视口
+      rerender({ ...baseProps, targets: [createMockTarget()], inViewPort: false });
+
+      // 视口外修改查询参数
+      rerender({ ...baseProps, targets: [createMockTarget({ expr: 'up{job="b"}' })], inViewPort: false });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+
+      // 滚回视口：查询参数已变化 → 应重新请求
+      rerender({ ...baseProps, targets: [createMockTarget({ expr: 'up{job="b"}' })], inViewPort: true });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('drops stale responses that resolve out of order', async () => {
     jest.useFakeTimers();
     try {
