@@ -15,7 +15,7 @@ jest.mock('@/components/TimeRangePicker/utils', () => ({
 
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
-  default: (value: string) => value,
+  default: jest.fn((value: string) => value),
   replaceDatasourceVariables: (value: number | string) => (value === '${metrics}' ? 9 : value),
 }));
 
@@ -334,6 +334,51 @@ describe('dashboard unified query contract', () => {
     });
 
     expect(request.queries).toEqual([]);
+  });
+
+  it('falls back to the legacy panel datasource and skips unresolved defaults', () => {
+    const options = {
+      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+      datasourceList: [],
+      targets: [
+        { refId: 'A', kind: 'query', expr: 'up' },
+        { refId: 'B', kind: 'query', datasource: { cate: 'prometheus', id: 2 }, expr: 'up' },
+      ],
+    } as Parameters<typeof buildDashboardQueryRequest>[0];
+
+    expect(buildDashboardQueryRequest({ ...options, legacyDatasource: { cate: 'prometheus', id: 1 } }).queries).toMatchObject([
+      { ref_id: 'A', datasource: { cate: 'prometheus', id: 1 } },
+      { ref_id: 'B', datasource: { cate: 'prometheus', id: 2 } },
+    ]);
+    expect(buildDashboardQueryRequest(options).queries).toMatchObject([{ ref_id: 'B', datasource: { cate: 'prometheus', id: 2 } }]);
+  });
+
+  it('uses queryOptionsTime and interpolates nested query values without request-only fields', () => {
+    const replaceTemplateVariables = require('@/pages/dashboard/Variables/utils/replaceTemplateVariables').default as jest.Mock;
+    const queryOptionsTime = { start: moment('2026-07-24T02:00:00.000Z'), end: moment('2026-07-24T03:00:00.000Z') };
+    const scopedVars = { host: { value: 'api-1', text: 'api-1' } };
+    const request = buildDashboardQueryRequest({
+      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+      queryOptionsTime,
+      scopedVars,
+      datasourceList: [],
+      targets: [{
+        refId: 'A', kind: 'query', datasource: { cate: 'mysql', id: 1 },
+        query: { query: 'select ${host}', nested: { label: '${host}', timezone: 'UTC', request_id: 'old' }, values: ['${host}'], max_data_points: 1 },
+      }],
+    });
+
+    expect(request).toMatchObject({ from: 1784858400, to: 1784862000, queries: [{ query: { query: 'select ${host}', nested: { label: '${host}' }, values: ['${host}'] } }] });
+    expect(JSON.stringify(request)).not.toMatch(/timezone|max_data_points|request_id/);
+    expect(replaceTemplateVariables).toHaveBeenCalledWith('select ${host}', expect.objectContaining({ range: queryOptionsTime, scopedVars }));
+  });
+
+  it('serializes instant Prometheus queries', () => {
+    expect(buildDashboardQueryRequest({
+      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+      datasourceList: [],
+      targets: [{ refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 }, expr: 'up', instant: true }],
+    }).queries[0]).toMatchObject({ query: { expr: 'up', instant: true } });
   });
 
   it('normalizes timeseries, logs and ref-level failures with stable ids', () => {

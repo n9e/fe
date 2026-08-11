@@ -1,4 +1,4 @@
-import dashboardMigrator from './dashboardMigrator';
+import dashboardMigrator, { decodeLegacyDashboard } from './dashboardMigrator';
 
 describe('dashboard v4 migration', () => {
   const legacyPanel = {
@@ -274,5 +274,69 @@ describe('dashboard v4 migration', () => {
       panels: [legacyPanel],
     });
     expect(dashboardMigrator(once)).toEqual(once);
+  });
+
+  it('returns an empty dashboard for invalid input and drops invalid panels and targets', () => {
+    expect(dashboardMigrator(null)).toEqual({ panels: [] });
+    expect(dashboardMigrator({ panels: {} })).toEqual({ panels: [] });
+    expect(decodeLegacyDashboard({ panels: [null, { targets: [null, { expr: 'up' }] }] })).toEqual({
+      panels: [{ targets: [{ expr: 'up' }] }],
+    });
+  });
+
+  it('migrates missing-version panels through the legacy version chain', () => {
+    const panel = dashboardMigrator({
+      panels: [{ targets: [{ expr: 'up', maxDataPoints: 100, time: { start: 'now-2h', end: 'now' } }], options: {}, custom: {} }],
+    }).panels[0];
+
+    expect(panel).toMatchObject({
+      version: '4.0.0',
+      maxDataPoints: 100,
+      queryOptionsTime: { start: 'now-2h', end: 'now' },
+      datasourceCate: 'prometheus',
+      targets: [{ refId: 'A', kind: 'query', resultType: 'time_series' }],
+    });
+    expect(panel.targets[0]).not.toHaveProperty('maxDataPoints');
+    expect(panel.targets[0]).not.toHaveProperty('time');
+  });
+
+  it('migrates v3.3 options, bar gauge settings, and old row children', () => {
+    const migrated = dashboardMigrator({
+      panels: [
+        {
+          version: '3.0.0', type: 'barGauge', targets: [], custom: { maxValue: 90, baseColor: 'red', stack: 'noraml' },
+          options: { standardOptions: { util: 'percent' } },
+          overrides: [{ properties: { rightYAxisDisplay: 'noraml', standardOptions: { util: 'bytesSI' } } }],
+        },
+        { version: '3.1.0', type: 'row', panels: [{ targets: [{ expr: 'up', maxDataPoints: 12 }], custom: {}, options: {} }] },
+      ],
+    });
+
+    expect(migrated.panels[0]).toMatchObject({
+      options: { standardOptions: { unit: 'percent', max: 90 }, thresholds: { steps: [{ color: 'red' }] } },
+      custom: { stack: 'normal' },
+      overrides: [{ properties: { rightYAxisDisplay: 'normal', standardOptions: { unit: 'bytesSI' } } }],
+    });
+    expect(migrated.panels[1].panels[0]).toMatchObject({ version: '4.0.0', maxDataPoints: 12 });
+  });
+
+  it('preserves existing bar gauge thresholds and normalizes OpenSearch and log targets', () => {
+    const migrated = dashboardMigrator({
+      panels: [{
+        version: '3.0.0', type: 'barGauge', datasourceCate: 'opensearch', datasourceValue: 1,
+        options: { thresholds: { mode: 'percentage' } }, custom: { baseColor: 'red' },
+        targets: [
+          { query: { syntax: 'sql', mode: 'logs' } },
+          { query: { values: [{ func: 'rawData' }] } },
+        ],
+      }],
+    }).panels[0];
+
+    expect(migrated.options?.thresholds).toEqual({ mode: 'percentage' });
+    expect(migrated.targets).toMatchObject([
+      { refId: 'A', resultType: 'logs', query: { filter_language: 'lucene' } },
+      { refId: 'B', resultType: 'logs' },
+    ]);
+    expect(migrated.targets[0].query).not.toHaveProperty('syntax');
   });
 });
