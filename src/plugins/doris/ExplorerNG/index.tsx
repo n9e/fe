@@ -102,7 +102,11 @@ export default function index(props: Props) {
   };
 
   const handleValueFilter = (params: OnValueFilterParams) => {
-    const assignmentOperator = params.assignmentOperator || ':';
+    // params.key 是日志行 flatten 后的名字，可能是 fctags.dirname 这类非表字段；indexName 才是真实字段。
+    // 两者不一致说明点中的值只是该字段值里的一个片段，只能用 ":" 做内容匹配，"=" 永远匹配不到。
+    const filterKey = params.indexName || params.key;
+    const isFragmentOfField = _.toLower(filterKey) !== _.toLower(params.key);
+    const assignmentOperator = isFragmentOfField ? ':' : params.assignmentOperator || ':';
     const values = form.getFieldsValue();
     const query = values.query;
     let queryStr = _.trim(query.query);
@@ -111,10 +115,10 @@ export default function index(props: Props) {
     }
     if (params.value === null) {
       if (params.operator === 'AND') {
-        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key} IS NULL`;
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${filterKey} IS NULL`;
       }
       if (params.operator === 'NOT') {
-        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key} IS NOT NULL`;
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${filterKey} IS NOT NULL`;
       }
     } else {
       let escapedValue = params.value;
@@ -123,10 +127,10 @@ export default function index(props: Props) {
         escapedValue = _.replace(params.value, /"/g, '\\"');
       }
       if (params.operator === 'AND') {
-        queryStr += `${queryStr === '' ? '' : ' AND'} ${params.key}${assignmentOperator}"${escapedValue}"`;
+        queryStr += `${queryStr === '' ? '' : ' AND'} ${filterKey}${assignmentOperator}"${escapedValue}"`;
       }
       if (params.operator === 'NOT') {
-        queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${params.key}${assignmentOperator}"${escapedValue}"`;
+        queryStr += `${queryStr === '' ? ' NOT' : ' AND NOT'} ${filterKey}${assignmentOperator}"${escapedValue}"`;
       }
     }
     form.setFieldsValue({

@@ -19,6 +19,7 @@ import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
+import getValidIndexName from '../../utils/getValidIndexName';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
 import { HandleValueFilterParams } from '../../types';
@@ -535,6 +536,10 @@ export default function index(props: Props) {
               // state context
               fieldConfig={currentFieldConfig}
               indexData={indexData}
+              getAddToQueryInfo={(params) => {
+                const indexName = getValidIndexName(params);
+                return { isIndex: !!indexName, indexName };
+              }}
               range={queryValues?.range}
             />
           ) : loading || histogramLoading ? (
