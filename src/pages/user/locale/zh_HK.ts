@@ -5,6 +5,8 @@ const zh_HK = {
     search_placeholder: '使用者名稱、郵箱或手機',
     create: '創建使用者',
     edit: '編輯使用者',
+    belong: '賬號來源',
+    belong_local: '本地',
     busi_groups: '業務組',
     user_groups: '團隊',
     last_active_time: '最後活躍時間',
