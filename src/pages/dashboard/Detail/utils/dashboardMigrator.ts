@@ -47,10 +47,10 @@ type LegacyCustom = JsonObject & {
 };
 
 type LegacyOverride = JsonObject & {
-  properties?: (JsonObject & {
+  properties?: JsonObject & {
     rightYAxisDisplay?: string;
     standardOptions?: LegacyStandardOptions;
-  });
+  };
 };
 
 export type LegacyPanel = JsonObject & {

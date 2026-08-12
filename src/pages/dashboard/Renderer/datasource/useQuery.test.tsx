@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { createCommonStateWrapper } from '@/test/renderWithProviders';
 import { resetDashboardGlobalState } from '@/test/resetGlobalState';
-import { createMockQueryResponse, createMockTarget, createMockTimeSeriesResult } from '@/test/fixtures/dashboardQuery';
+import { createMockQueryResponse, createMockTarget, createMockTimeSeriesResult } from '@/pages/dashboard/test/fixtures/dashboardQuery';
 
 import type { DashboardQueryResponse } from './types';
 import useQuery from './useQuery';
