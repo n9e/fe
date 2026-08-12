@@ -53,6 +53,9 @@ function useAiEntClickHandler(options?: {
         createNew: true,
         ...queryPageFrom,
         ...queryAction,
+        // After spreads: ConfigHost pages live on /flashai*, where AiChat stays
+        // in page mode unless forceDrawer is set (knowledge / scheduled-task).
+        forceDrawer: true,
       } as any,
     });
   }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);
