@@ -3,7 +3,7 @@ import { Space, Button, Switch, Modal, Input } from 'antd';
 import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import { IS_PLUS } from '@/utils/constant';
 import PageLayout from '@/components/pageLayout';
@@ -16,35 +16,35 @@ import { getTeamInfoList } from '@/services/manage';
 import usePagination from '@/components/usePagination';
 
 import { getItems, putItem, deleteItems } from '../services';
-import { NS, CN, TABLE_PAGINATION_CACHE_KEY } from '../constants';
+import { NS, CN, TABLE_PAGINATION_CACHE_KEY, FILTER_SESSION_STORAGE_KEY } from '../constants';
 import { RuleItem } from '../types';
+import { getPageFromSearch, setPageInSearch } from '@/utils/urlPage';
 
 interface Filter {
   search?: string;
 }
 
-const FILTER_SESSION_STORAGE_KEY = 'notification-rules-filter';
-
 export default function List() {
   const { t } = useTranslation(NS);
   const history = useHistory();
+  const location = useLocation();
   const pagination = usePagination({ PAGESIZE_KEY: TABLE_PAGINATION_CACHE_KEY });
   const [loading, setLoading] = useState(false);
   let defaultFilter = {} as Filter;
-  let defaultPage = 1;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     defaultFilter = saved;
-    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
+  const defaultPage = getPageFromSearch(location.search);
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [current, setCurrent] = useState<number>(defaultPage);
   const handleFilterChange = (newFilter: Filter) => {
     setFilter(newFilter);
     setCurrent(1);
-    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...newFilter, current: 1 }));
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
+    history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
   };
   const [data, setData] = useState<RuleItem[]>([]);
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
@@ -154,8 +154,7 @@ export default function List() {
           pagination={{ ...pagination, current }}
           onChange={(pag) => {
             setCurrent(pag.current || 1);
-            const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
-            window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...saved, current: pag.current || 1 }));
+            history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
           }}
           columns={[
             {
@@ -166,6 +165,7 @@ export default function List() {
                   <Link
                     to={{
                       pathname: IS_PLUS ? `/${NS}/detail/${record.id}` : `/${NS}/edit/${record.id}`,
+                      search: `?page=${current}`,
                     }}
                   >
                     {val}
@@ -250,7 +250,7 @@ export default function List() {
           ]}
           rowActions={(record) => ({
             inline: [
-              { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => history.push({ pathname: `/${NS}/edit/${record.id}` }) },
+              { key: 'edit', icon: 'edit', text: t('common:btn.edit'), onClick: () => history.push({ pathname: `/${NS}/edit/${record.id}`, search: `?page=${current}` }) },
               { key: 'clone', icon: 'copy', text: t('common:btn.clone'), onClick: () => window.open(`/${NS}/edit/${record.id}?mode=clone`) },
               {
                 key: 'delete',

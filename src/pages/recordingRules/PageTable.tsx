@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { Button, Modal, message, Dropdown, Switch, Select, Space } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
 import _ from 'lodash';
@@ -19,9 +19,11 @@ import usePagination from '@/components/usePagination';
 import EditModal from './components/editModal';
 import Import from './components/Import';
 import Export from './components/Export';
+import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 
 interface Props {
   gids?: string;
+  groupSwitchCount?: number;
 }
 
 interface Filter {
@@ -30,7 +32,7 @@ interface Filter {
   disabled?: 0 | 1;
 }
 
-const FILTER_SESSION_STORAGE_KEY = 'recording-rules-filter';
+export const FILTER_SESSION_STORAGE_KEY = 'recording-rules-filter';
 
 const { confirm } = Modal;
 const exportIgnoreAttrsObj = {
@@ -43,22 +45,26 @@ const exportIgnoreAttrsObj = {
   update_by: undefined,
 };
 
-const PageTable: React.FC<Props> = ({ gids }) => {
+const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
   const [severity] = useState<number>();
   const { t } = useTranslation('recordingRules');
   const history = useHistory();
+  const location = useLocation();
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<strategyItem[]>([]);
+  const clearSelection = () => {
+    setSelectRowKeys([]);
+    setSelectedRows([]);
+  };
   const { groupedDatasourceList, businessGroup, busiGroups } = useContext(CommonStateContext);
   let defaultFilter = {} as Filter;
-  let defaultPage = 1;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     defaultFilter = saved;
-    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
+  const defaultPage = getPageFromSearch(location.search);
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
@@ -116,12 +122,24 @@ const PageTable: React.FC<Props> = ({ gids }) => {
   };
 
   const handleClickEdit = (id, isClone = false) => {
-    history.push(`/recording-rules/edit/${id}${isClone ? '?mode=clone' : ''}`);
+    history.push(`/recording-rules/edit/${id}${isClone ? '?mode=clone&' : '?'}fromGids=${gids ?? '-2'}&page=${current}`);
   };
 
   const refreshList = () => {
     getRecordingRules();
   };
+  // 重置到第一页：清除 URL 里的 page 参数（切换业务组时调用，保留其余筛选条件）
+  const resetPaging = () => {
+    setCurrent(1);
+    clearSelection();
+    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+  };
+  // 切换业务组时重置到第一页（父组件在业务组选择源头递增计数触发，不依赖 gids 变化时序）
+  useEffect(() => {
+    if (groupSwitchCount) {
+      resetPaging();
+    }
+  }, [groupSwitchCount]);
 
   const columns: ColumnType<strategyItem>[] = _.concat([
     {
@@ -259,6 +277,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
                   if (businessGroup.id) {
                     deleteRecordingRule(selectRowKeys as number[], businessGroup.id).then(() => {
                       message.success(t('common:success.delete'));
+                      clearSelection();
                       refreshList();
                     });
                   }
@@ -300,6 +319,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
       );
       if (!res.err) {
         message.success(t('common:success.edit'));
+        clearSelection();
         refreshList();
         setisModalVisible(false);
       } else {
@@ -329,7 +349,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             onChange={(val) => {
               setDatasourceIds(val);
               setCurrent(1);
-              saveState({ datasourceIds: val, current: 1 });
+              saveState({ datasourceIds: val });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
           >
             {_.map(groupedDatasourceList?.prometheus, (item) => (
@@ -344,7 +365,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             onSearch={(val) => {
               setQuery(val);
               setCurrent(1);
-              saveState({ query: val, current: 1 });
+              saveState({ query: val });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
             allowClear
           />
@@ -359,7 +381,8 @@ const PageTable: React.FC<Props> = ({ gids }) => {
             onChange={(val) => {
               setFilterDisabled(val);
               setCurrent(1);
-              saveState({ disabled: val, current: 1 });
+              saveState({ disabled: val });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
           />
         </Space>
@@ -397,7 +420,7 @@ const PageTable: React.FC<Props> = ({ gids }) => {
           current,
           onChange: (page) => {
             setCurrent(page);
-            saveState({ current: page });
+            history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, page) });
           },
         }}
         loading={loading}

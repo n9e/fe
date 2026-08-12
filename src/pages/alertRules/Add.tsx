@@ -23,6 +23,7 @@ import PageLayout from '@/components/pageLayout';
 import { generateQueryNameByIndex } from '@/components/QueryName';
 import Form from './FormNG';
 import { defaultValues } from './Form/constants';
+import { getPageFromSearch } from '@/utils/urlPage';
 
 export default function Add() {
   const { t } = useTranslation('alertRules');
@@ -64,7 +65,7 @@ export default function Add() {
   }
 
   return (
-    <PageLayout title={t('title')} showBack backPath='/alert-rules'>
+    <PageLayout title={t('title')} showBack backPath={`/alert-rules?page=${getPageFromSearch(location.search)}`}>
       <div className='n9e h-full overflow-hidden p-0'>
         <Form initialValues={initialValues} />
       </div>

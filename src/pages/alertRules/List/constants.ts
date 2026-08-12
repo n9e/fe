@@ -18,6 +18,7 @@ import i18next from 'i18next';
  *
  */
 export const LOCAL_STORAGE_KEY = 'alertRules_columns_configs';
+export const FILTER_SESSION_STORAGE_KEY = 'alert-rules-filter';
 export const defaultColumnsConfigs = [
   {
     name: 'cur_event_count',

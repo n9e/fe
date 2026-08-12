@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { Row, Col, Select, Card, Space, Tag, Tooltip, Button } from 'antd';
 import { InfoCircleOutlined, TeamOutlined } from '@ant-design/icons';
 
@@ -13,6 +13,7 @@ import { getBrainLicense } from 'plus:/components/License/services';
 
 import { NS, CN } from '../../constants';
 import { getNotifyStatistics, NotifyStatistics, getItem, RuleItem } from '../../services';
+import { getPageFromSearch } from '@/utils/urlPage';
 import { UpIcon, DownIcon } from '../../components/Icon';
 import Events from './Events';
 import AlertRules from './AlertRules';
@@ -21,6 +22,7 @@ import SubscribeRules from './SubscribeRules';
 export default function Detail() {
   const { t } = useTranslation(NS);
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const [days, setDays] = useState(7);
   const [notifyStatistics, setNotifyStatistics] = useState<NotifyStatistics>();
   const [activeTabKey, setActiveTabKey] = useState('events');
@@ -66,7 +68,7 @@ export default function Detail() {
   };
 
   return (
-    <PageLayout title={t('title')} showBack backPath={`/${NS}`}>
+    <PageLayout title={t('title')} showBack backPath={`/${NS}?page=${getPageFromSearch(location.search)}`}>
       <div className={`n9e ${CN} overflow-hidden`}>
         <div className='h-full flex flex-col gap-4'>
           <div className='flex-shrink-0 flex justify-between'>
@@ -98,6 +100,7 @@ export default function Detail() {
               <Link
                 to={{
                   pathname: `/${NS}/edit/${itemData?.id}`,
+                  search: `?page=${getPageFromSearch(location.search)}`,
                 }}
               >
                 <Button type='primary'>{t('common:btn.edit')}</Button>

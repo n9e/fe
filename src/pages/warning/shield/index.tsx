@@ -21,7 +21,7 @@ import { CloseCircleOutlined, ExclamationCircleOutlined, SearchOutlined } from '
 import moment from 'moment';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, Link, useLocation } from 'react-router-dom';
 
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
@@ -34,6 +34,7 @@ import RefreshIcon from '@/components/RefreshIcon';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
+import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import EmptyGuide from '@/components/EmptyGuide';
@@ -54,23 +55,23 @@ interface Filter {
   disabled?: 0 | 1;
 }
 
-const FILTER_SESSION_STORAGE_KEY = 'alert-mutes-filter';
+export const FILTER_SESSION_STORAGE_KEY = 'alert-mutes-filter';
 const DOC_PATH = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-mute/';
 
 const Shield: React.FC = () => {
   const { t, i18n } = useTranslation('alertMutes');
   const history = useHistory();
+  const location = useLocation();
   const { datasourceList, groupedDatasourceList, businessGroup, busiGroups, darkMode } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   let defaultFilter = {} as Filter;
-  let defaultPage = 1;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     defaultFilter = saved;
-    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
+  const defaultPage = getPageFromSearch(location.search);
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
@@ -84,6 +85,12 @@ const Shield: React.FC = () => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
+  // 切换业务组时清除 URL 里的页码，回到第一页（在业务组选择源头触发，不依赖 gids 变化时序）
+  const handleSelectGids = (ids: string) => {
+    setGids(ids);
+    setCurrent(1);
+    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+  };
   const columns: ColumnsType = [
     {
       title: t('note'),
@@ -95,7 +102,7 @@ const Shield: React.FC = () => {
             <Link
               to={{
                 pathname: `/alert-mutes/edit/${record.id}`,
-                search: `?bgid=${record.group_id}`,
+                search: `?bgid=${record.group_id}&page=${current}`,
               }}
             >
               {data}
@@ -329,7 +336,8 @@ const Shield: React.FC = () => {
     let val = e.target.value;
     setQuery(val);
     setCurrent(1);
-    saveState({ query: val, current: 1 });
+    saveState({ query: val });
+    history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
   };
 
   // 只有选中了叶子业务组才能新建屏蔽规则
@@ -347,7 +355,7 @@ const Shield: React.FC = () => {
   return (
     <PageLayout title={t('title')} icon={<CloseCircleOutlined />} doc={DOC_PATH}>
       <div className='shield-content'>
-        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
+        <BusinessGroupSideBarWithAll gids={gids} setGids={handleSelectGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div className='shield-index fc-border rounded-lg' style={{ height: '100%', overflowY: 'auto' }}>
           <div className='flex justify-between'>
             <Space>
@@ -363,7 +371,8 @@ const Shield: React.FC = () => {
                 onChange={(val) => {
                   setDatasourceIds(val);
                   setCurrent(1);
-                  saveState({ datasourceIds: val, current: 1 });
+                  saveState({ datasourceIds: val });
+                  history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
                 }}
               />
               <Input
@@ -386,7 +395,8 @@ const Shield: React.FC = () => {
                 onChange={(val) => {
                   setFilterDisabled(val);
                   setCurrent(1);
-                  saveState({ disabled: val, current: 1 });
+                  saveState({ disabled: val });
+                  history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
                 }}
               />
             </Space>
@@ -420,7 +430,7 @@ const Shield: React.FC = () => {
             pagination={{ ...pagination, current }}
             onChange={(pag) => {
               setCurrent(pag.current || 1);
-              saveState({ current: pag.current || 1 });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
             }}
             loading={loading}
             dataSource={currentShieldData}
@@ -465,7 +475,7 @@ const Shield: React.FC = () => {
                   onClick: () => {
                     history.push({
                       pathname: `/alert-mutes/edit/${record.id}`,
-                      search: `?mode=clone&bgid=${record.group_id}`,
+                      search: `?mode=clone&bgid=${record.group_id}&page=${current}`,
                     });
                   },
                 },

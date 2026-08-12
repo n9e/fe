@@ -15,17 +15,19 @@
  *
  */
 import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { RollbackOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import PageLayout from '@/components/pageLayout';
+import { getPageFromSearch } from '@/utils/urlPage';
 import { CommonStateContext } from '@/App';
 
 import ResultContent from './ResultContent';
 
 const index = (props: any) => {
   const history = useHistory();
+  const location = useLocation();
   const { businessGroup } = useContext(CommonStateContext);
   const curBusiId = businessGroup.id!;
   const { params } = props.match;
@@ -36,7 +38,7 @@ const index = (props: any) => {
     <PageLayout
       title={
         <>
-          <RollbackOutlined className='back' onClick={() => history.push('/job-tasks')} />
+          <RollbackOutlined className='back' onClick={() => history.push(`/job-tasks?page=${getPageFromSearch(location.search)}`)} />
           {t('task')}
         </>
       }

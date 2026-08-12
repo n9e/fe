@@ -16,6 +16,7 @@ import ListNG from './ListNG';
 
 interface ListProps {
   gids?: string;
+  groupSwitchCount?: number;
 }
 
 function HeaderExtra(
@@ -23,12 +24,13 @@ function HeaderExtra(
     selectRowKeys?: React.Key[];
     selectedRows?: AlertRuleType<any>[];
     getList?: () => void;
+    clearSelection?: () => void;
   },
 ) {
   const { t } = useTranslation('alertRules');
   const { businessGroup, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const history = useHistory();
-  const { gids, selectRowKeys = [], selectedRows = [], getList } = props;
+  const { gids, selectRowKeys = [], selectedRows = [], getList, clearSelection } = props;
 
   return (
     <Space>
@@ -67,6 +69,7 @@ function HeaderExtra(
           selectRowKeys={selectRowKeys}
           selectedRows={selectedRows}
           getAlertRules={getList}
+          clearSelection={clearSelection}
         />
       )}
     </Space>
@@ -77,7 +80,7 @@ export default function List(props: ListProps) {
   const { t } = useTranslation('alertRules');
   const { businessGroup, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
   const history = useHistory();
-  const { gids } = props;
+  const { gids, groupSwitchCount } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [data, setData] = useState<AlertRuleType<any>[]>([]);
   const [loading, setLoading] = useState(false);
@@ -107,6 +110,8 @@ export default function List(props: ListProps) {
       <ListNG
         hideBusinessGroupColumn={businessGroup.isLeaf && gids !== '-2'}
         showRowSelection
+        gids={gids}
+        groupSwitchCount={groupSwitchCount}
         headerExtra={<HeaderExtra gids={gids} />}
         data={data}
         loading={loading}
