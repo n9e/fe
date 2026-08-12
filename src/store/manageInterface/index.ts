@@ -35,6 +35,8 @@ export interface User {
   create_by: number;
   update_at: number;
   update_by: number;
+  /** 账号来源，SSO 同步的账号为 ldap/oidc/cas/oauth2 等，本地创建的账号为空字符串 */
+  belong: string;
   busi_groups?: null | { id: number; name: string }[];
 }
 export interface Team {

@@ -5,6 +5,8 @@ const en_US = {
     search_placeholder: 'Username, email or phone number',
     create: 'Create user',
     edit: 'Edit user',
+    belong: 'Account source',
+    belong_local: 'Local',
     busi_groups: 'Business groups',
     user_groups: 'Teams',
     last_active_time: 'Last active time',

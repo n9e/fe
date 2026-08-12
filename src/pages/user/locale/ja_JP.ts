@@ -5,6 +5,8 @@ const ja_JP = {
     search_placeholder: 'ユーザー名、メール、または電話',
     create: 'ユーザーを作成',
     edit: 'ユーザーを編集',
+    belong: 'アカウントソース',
+    belong_local: 'ローカル',
     busi_groups: 'ビジネスグループ',
     user_groups: 'チーム',
     last_active_time: '最後のアクティブ時間',
