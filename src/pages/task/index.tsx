@@ -15,13 +15,14 @@
  *
  */
 import React, { useContext, useState, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Checkbox, Row, Col, Select, Button, Space } from 'antd';
 import { CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useAntdTable } from 'ahooks';
+import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import EnhancedTable from '@/components/EnhancedTable';
 import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 
@@ -45,7 +46,6 @@ interface DataItem {
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_NODE_ID';
 
 const FILTER_SESSION_KEY = 'task_filter';
-const PAGE_SESSION_KEY = 'task_page';
 
 function getDefaultFilter() {
   try {
@@ -58,7 +58,6 @@ function getDefaultFilter() {
 function getTableData(options: any, gids: string | undefined, query: string, mine: boolean, days: number) {
   if (gids) {
     const ids = gids === '-2' ? undefined : gids;
-    sessionStorage.setItem(PAGE_SESSION_KEY, String(options.current));
     return request(`/api/n9e/busi-groups/tasks`, {
       method: RequestMethod.Get,
       params: {
@@ -78,6 +77,7 @@ function getTableData(options: any, gids: string | undefined, query: string, min
 
 const index = (_props: any) => {
   const history = useHistory();
+  const location = useLocation();
   const { t } = useTranslation('common');
   const defaultFilter = getDefaultFilter();
   const [query, setQuery] = useState(defaultFilter.query || '');
@@ -97,12 +97,18 @@ const index = (_props: any) => {
     window.sessionStorage.setItem(FILTER_SESSION_KEY, JSON.stringify({ query, mine, days }));
   }, [query, mine, days]);
 
-  const defaultPage = Number(sessionStorage.getItem(PAGE_SESSION_KEY) || '1');
-  const { tableProps } = useAntdTable((options) => getTableData(options, gids, query, mine, days), {
+  const defaultPage = getPageFromSearch(location.search);
+  const { tableProps, pagination: tablePagination } = useAntdTable((options) => getTableData(options, gids, query, mine, days), {
     refreshDeps: [gids, query, mine, days, refreshFlag],
     defaultPageSize: pagination.pageSize,
     defaultCurrent: defaultPage,
   });
+  // 切换业务组时重置到第一页（在业务组选择源头触发，不依赖 gids 变化时序）
+  const handleSelectGids = (ids: string) => {
+    setGids(ids);
+    tablePagination.changeCurrent(1);
+    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+  };
 
   const handleOpenMetaDrawer = (record: any) => {
     setMetaDrawerTaskId(String(record.id));
@@ -134,7 +140,7 @@ const index = (_props: any) => {
           const groupName = _.find(busiGroups, { id: record.group_id })?.name;
           return (
             <div className='flex flex-col gap-0.5'>
-              <Link to={{ pathname: `/job-tasks/${record.id}/result` }}>{text}</Link>
+              <Link to={{ pathname: `/job-tasks/${record.id}/result`, search: `?page=${tableProps.pagination?.current || 1}` }}>{text}</Link>
               <span className='text-soft text-xs inline-flex items-center gap-2'>
                 <span>ID: {record.id}</span>
                 {showBusinessGroup && groupName && <span>{groupName}</span>}
@@ -145,8 +151,8 @@ const index = (_props: any) => {
       },
     ] as any,
     [
-      dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true, sortable: true }),
-      updateByColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname' }),
+      dateColumn({ title: t('task.created'), dataIndex: 'create_at', unix: true }),
+      updateByColumn({ title: t('task.creator'), dataIndex: 'create_by', nickname: 'create_by_nickname', filterMode: 'none' }),
     ] as any,
   );
 
@@ -157,7 +163,7 @@ const index = (_props: any) => {
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/self-healing/create-temporary-task/'
     >
       <div style={{ display: 'flex' }}>
-        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:task.allOptionLabel')} />
+        <BusinessGroupSideBarWithAll gids={gids} setGids={handleSelectGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:task.allOptionLabel')} />
         {gids ? (
           <div className='fc-border rounded-lg p-4' style={{ flex: 1 }}>
             <Row>
@@ -203,7 +209,7 @@ const index = (_props: any) => {
                   <Button
                     type='primary'
                     onClick={() => {
-                      history.push('/job-tasks/add');
+                      history.push({ pathname: '/job-tasks/add', search: `?page=${tableProps.pagination?.current || 1}` });
                     }}
                   >
                     {t('task.temporary.create')}
@@ -222,13 +228,17 @@ const index = (_props: any) => {
                     key: 'clone',
                     icon: 'copy',
                     text: t('task.clone'),
-                    onClick: () => history.push({ pathname: '/job-tasks/add', search: `task=${record.id}` }),
+                    onClick: () => history.push({ pathname: '/job-tasks/add', search: `task=${record.id}&page=${tableProps.pagination?.current || 1}` }),
                   },
                   { key: 'meta', icon: 'view', text: t('task.meta'), onClick: () => handleOpenMetaDrawer(record) },
                 ],
               })}
               actionColumn={{ title: t('table.operations'), width: 64 }}
               {...(tableProps as any)}
+              onChange={(pag: any, filters?: any, sorter?: any) => {
+                tableProps.onChange?.(pag, filters, sorter);
+                history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
+              }}
               pagination={{
                 ...pagination,
                 ...tableProps.pagination,

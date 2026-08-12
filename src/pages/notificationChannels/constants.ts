@@ -2,6 +2,7 @@ import i18next from 'i18next';
 
 export const NS = 'notification-channels';
 export const PERM = `/${NS}`;
+export const FILTER_SESSION_STORAGE_KEY = 'notification-channels-filter';
 export const DEFAULT_VALUES = {
   enable: true,
   param_config: {

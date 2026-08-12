@@ -3,6 +3,7 @@ import moment from 'moment';
 export const NS = 'notification-rules';
 export const CN = 'n9e-notification-rules';
 export const PERM = `/${NS}`;
+export const FILTER_SESSION_STORAGE_KEY = 'notification-rules-filter';
 export const DEFAULT_VALUES = {
   enable: true,
   notify_configs: [
