@@ -85,20 +85,19 @@ export default function index() {
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/'
     >
       <div className='n9e'>
-        <div className='flex h-full overflow-hidden'>
-          <div className='h-full shrink-0 overflow-hidden'>
-            <div className='flex h-full w-[360px] flex-col overflow-hidden'>
-              <div className='pr-[16px] mb-4 flex-0'>
-                <Input
-                  placeholder={t('types_search_placeholder')}
-                  value={typesSearch}
-                  onChange={(e) => {
-                    setTypesSearch(e.target.value);
-                  }}
-                />
-              </div>
-              <div className='pr-[10px] h-full min-h-0 best-looking-scroll'>
-                <div className='grid grid-cols-2 gap-3'>
+        <div className='flex items-start'>
+          <div className='w-[360px] shrink-0'>
+            <div className='pr-[16px] mb-4'>
+              <Input
+                placeholder={t('types_search_placeholder')}
+                value={typesSearch}
+                onChange={(e) => {
+                  setTypesSearch(e.target.value);
+                }}
+              />
+            </div>
+            <div className='pr-[10px]'>
+              <div className='grid grid-cols-2 gap-3'>
                   {map(filteredTypes, (val, key) => {
                     return (
                       <Link to={`/notification-channels/add?ident=${key}`} key={key}>
@@ -117,9 +116,8 @@ export default function index() {
                 </div>
               </div>
             </div>
-          </div>
-          <div className='w-px bg-fc-300'></div>
-          <div className='ml-4 w-full min-w-0 flex-1 flex flex-col gap-4'>
+          <div className='w-px self-stretch bg-fc-300'></div>
+          <div className='ml-4 min-w-0 flex-1 flex flex-col gap-4'>
             <div className='flex justify-between'>
               <Space>
                 <Input
@@ -230,8 +228,7 @@ export default function index() {
                 </Button>
               </Space>
             </div>
-            <div className='n9e-antd-table-height-full'>
-              <EnhancedTable
+            <EnhancedTable
                 size='small'
                 loading={loading}
                 rowKey='id'
@@ -360,9 +357,7 @@ export default function index() {
                   setCurrent(pag.current || 1);
                   history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
                 }}
-                scroll={{ y: 'calc(100% - 42px)' }}
               />
-            </div>
           </div>
         </div>
       </div>
