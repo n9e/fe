@@ -37,7 +37,7 @@ const calcUrlPath = (url: string) => {
 };
 
 /** 侧栏展开宽度（px），持久化 localStorage */
-const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx';
+const SIDE_MENU_WIDTH_STORAGE_KEY = 'sideMenuWidthPx-1';
 const SIDE_MENU_MIN_WIDTH = 170;
 const SIDE_MENU_MAX_WIDTH = 400;
 const i18nMap: Record<string, string> = {
@@ -55,19 +55,37 @@ function clampSideMenuWidth(px: number): number {
   return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));
 }
 
-function readInitialSideMenuWidth(): number {
+function getDefaultSideMenuWidthByLang(lang: string): number {
+  const def = lang === 'en_US' || lang === 'ru_RU' ? 200 : 172;
+  return clampSideMenuWidth(def);
+}
+
+/** 用户手动拖拽后才会写入 localStorage；无值时表示未自定义 */
+function readCustomSideMenuWidth(): number | null {
   try {
     const raw = localStorage.getItem(SIDE_MENU_WIDTH_STORAGE_KEY);
-    if (raw != null) {
-      const n = Number(raw);
-      if (Number.isFinite(n)) return clampSideMenuWidth(n);
-    }
-    const lang = localStorage.getItem('i18nextLng') || 'zh_CN';
-    const def = lang === 'en_US' || lang === 'ru_RU' ? 250 : 172;
-    return clampSideMenuWidth(def);
+    if (raw == null) return null;
+    const n = Number(raw);
+    if (!Number.isFinite(n)) return null;
+    return clampSideMenuWidth(n);
   } catch {
-    return 172;
+    return null;
   }
+}
+
+function persistCustomSideMenuWidth(px: number): void {
+  try {
+    localStorage.setItem(SIDE_MENU_WIDTH_STORAGE_KEY, String(clampSideMenuWidth(px)));
+  } catch {
+    /* ignore */
+  }
+}
+
+function readInitialSideMenuWidth(): number {
+  const custom = readCustomSideMenuWidth();
+  if (custom != null) return custom;
+  const lang = localStorage.getItem('language') || 'zh_CN';
+  return getDefaultSideMenuWidthByLang(lang);
 }
 
 interface SideMenuProps {
@@ -254,12 +272,9 @@ const SideMenu = (props: SideMenuProps) => {
   const menuList = getMenuList(embeddedProductMenu, hideDeprecatedMenus);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(SIDE_MENU_WIDTH_STORAGE_KEY, String(menuWidthPx));
-    } catch {
-      /* ignore */
-    }
-  }, [menuWidthPx]);
+    if (readCustomSideMenuWidth() != null) return;
+    setMenuWidthPx(getDefaultSideMenuWidthByLang(i18n.language));
+  }, [i18n.language]);
 
   const onResizeHandleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -270,14 +285,17 @@ const SideMenu = (props: SideMenuProps) => {
       setIsResizingMenu(true);
       const startX = e.clientX;
       const startW = menuWidthPx;
+      let finalW = startW;
       const onMove = (ev: MouseEvent) => {
         if (!resizeActiveRef.current) return;
         const delta = ev.clientX - startX;
-        setMenuWidthPx(clampSideMenuWidth(startW + delta));
+        finalW = clampSideMenuWidth(startW + delta);
+        setMenuWidthPx(finalW);
       };
       const onUp = () => {
         resizeActiveRef.current = false;
         setIsResizingMenu(false);
+        persistCustomSideMenuWidth(finalW);
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
         document.body.style.removeProperty('cursor');
