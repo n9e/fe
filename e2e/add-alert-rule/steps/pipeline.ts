@@ -21,7 +21,13 @@ async function fillRelabelConfig(page: Page, relabel: NormalizedRelabelConfig, i
   const item = page.locator('.n9e-alert-relabel-item').nth(index);
   await expect(item, `Relabel item ${index}`).toBeVisible();
 
-  if (!(await item.locator('.ant-select-selection-item').filter({ hasText: relabel.action }).isVisible().catch(() => false))) {
+  if (
+    !(await item
+      .locator('.ant-select-selection-item')
+      .filter({ hasText: relabel.action })
+      .isVisible()
+      .catch(() => false))
+  ) {
     await selectAntSelectOption(page, item.getByRole('combobox', { name: /^action$/ }), relabel.action);
   }
   await item.getByRole('textbox', { name: /target_label/ }).fill(relabel.targetLabel);
@@ -40,7 +46,12 @@ async function fillRelabelConfig(page: Page, relabel: NormalizedRelabelConfig, i
 
 async function addAnnotation(page: Page, key: string, value: string, index: number) {
   const pipelineSection = page.locator('[data-section-key="pipeline"]');
-  const addIcon = pipelineSection.locator('xpath=.//*[normalize-space(.)="附加信息"]/following::*[contains(@class,"control-icon-normal")][1]').first();
+  // 附加信息标题所在的 ant-space 容器内的加号图标（PlusCircleOutlined → .anticon-plus-circle）
+  const annotationsSpace = pipelineSection
+    .getByText('附加信息', { exact: true })
+    .locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ant-space ")][1]');
+  const addIcon = annotationsSpace.locator('.anticon-plus-circle').first();
+  await expect(addIcon, 'annotations add icon').toBeVisible();
   await addIcon.click();
   const combobox = pipelineSection.locator(`xpath=(.//*[normalize-space(.)="附加信息"]/following::*[@role="combobox"])[${index + 1}]`);
   await expect(combobox, `annotation key ${index}`).toBeVisible();

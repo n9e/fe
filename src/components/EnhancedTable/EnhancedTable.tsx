@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { Table } from 'antd';
 import type { ColumnType, ColumnsType } from 'antd/lib/table';
 import classNames from 'classnames';
+import i18next from 'i18next';
 
 import { injectColumnFilters } from './columns';
 import { RowActionCell } from './RowActionCell';
@@ -78,7 +79,7 @@ export default function EnhancedTable<RecordType extends object = any>(props: En
 
     if (hasRowActions) {
       const opColumn: ColumnType<RecordType> = {
-        title: '操作',
+        title: i18next.t('common:table.operations'),
         key: '__fc_action__',
         fixed: 'right',
         width: 100,

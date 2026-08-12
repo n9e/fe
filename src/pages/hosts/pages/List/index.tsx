@@ -7,6 +7,10 @@ import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import { getTargetsCompatibleGids } from '@/components/BusinessGroup/presetFilters';
+import { IS_ENT } from '@/utils/constant';
+
+// @ts-ignore — ObsLoop HostEntry（srm-fe parcel；开源/plus 源仓不挂此依赖）
+import ObsLoopHostEntry from 'plus:/parcels/ObsLoop/HostEntry';
 
 import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
@@ -43,7 +47,11 @@ export default function index() {
   }, [businessGroup.ids]);
 
   return (
-    <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/infrastructure/server-list/'>
+    <PageLayout
+      title={t('title')}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/infrastructure/server-list/'
+      headerCenter={IS_ENT ? <ObsLoopHostEntry gids={gids} /> : undefined}
+    >
       <div className='n9e n9e-hosts-ng-list overflow-hidden'>
         <div className='flex gap-[6px] h-full'>
           <BusinessGroup2

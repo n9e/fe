@@ -5,7 +5,7 @@ const en_US = {
     },
   },
   context: {
-    title: 'Context Viewer',
+    title: 'Context viewer',
     back_lines_btn: 'Earlier',
     current_lines_btn: 'Current log',
     forward_lines_btn: 'Newer',
@@ -23,9 +23,9 @@ const en_US = {
     query_failed: 'Failed to load context logs',
   },
   mode_switch: {
-    confirm_title: 'Switch Mode Confirmation',
+    confirm_title: 'Switch mode confirmation',
     confirm_content:
-      'The current query contains a range aggregation function, which is not supported in Raw Logs mode. Switching will clear the current query. Do you want to proceed?',
+      'The current query contains a range aggregation function, which is not supported in Raw logs mode. Switching will clear the current query. Do you want to proceed?',
     confirm_ok: 'Switch',
     confirm_cancel: 'Cancel',
   },

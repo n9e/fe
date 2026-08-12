@@ -52,7 +52,7 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
         queryAction: { key: 'creation' },
         promptList: isZhCN(lang)
           ? ['帮我创建一个 Host 机器的仪表盘', '帮我创建一个 MySQL 的仪表盘', '帮我创建一个 Redis 的仪表盘']
-          : ['Create a Host machine dashboard', 'Create a MySQL dashboard', 'Create a Redis dashboard'],
+          : ['Create a host dashboard', 'Create a MySQL dashboard', 'Create a Redis dashboard'],
       };
     case 'alert_rule':
       return {
@@ -60,8 +60,8 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
           ? ['创建一条 CPU 使用率超过 80% 的告警规则', '为什么某个告警规则没有发出告警', '这个告警为什么会触发']
           : [
               'Create a CPU usage alert rule with a threshold above 80%',
-              'Why did a certain alert rule not fire',
-              'Why did this alert trigger',
+              'Why did a specific alert rule not fire?',
+              'Why did this alert fire?',
             ],
       };
     case 'alert_history':
@@ -69,7 +69,7 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
         queryAction: { key: 'alert_query' },
         promptList: isZhCN(lang)
           ? ['总结当前筛选范围内的告警趋势', '哪些告警规则触发最频繁', '按级别、业务组、对象拆解当前告警']
-          : ['Summarize alert trends in the current filter range', 'Which alert rules fired most frequently', 'Break down current alerts by severity, busi group and target'],
+          : ['Summarize alert trends in the current filter range', 'Which alert rules fired most frequently?', 'Break down current alerts by severity, business group and target'],
       };
     case 'active_alert':
       return {
@@ -78,8 +78,8 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
           ? ['总结当前活跃告警的分布情况', '哪些规则或对象的活跃告警最多', '按级别和业务组汇总当前活跃告警']
           : [
               'Summarize the distribution of currently active alerts',
-              'Which rules or targets have the most active alerts',
-              'Group current active alerts by severity and busi group',
+              'Which rules or targets have the most active alerts?',
+              'Group current active alerts by severity and business group',
             ],
       };
     case 'targets':
@@ -87,9 +87,9 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
         promptList: isZhCN(lang)
           ? ['我刚装的机器为什么没出现 / 显示 unknown？', '这台机器为什么失联了？', '如何部署 categraf 采集器']
           : [
-              'I just installed a machine but it does not appear / shows unknown, why?',
-              'Why did this machine go offline?',
-              'How to deploy the categraf collector',
+              'I just installed a host but it does not appear / shows unknown, why?',
+              'Why did this host go offline?',
+              'How do I deploy the Categraf collector?',
             ],
       };
     case 'notification_rules':
@@ -107,7 +107,7 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
         promptList: isZhCN(lang)
           ? ['检查一下这条媒介配置的是否正确', '飞书 / 钉钉 / 企微怎么 @ 到具体的人？', '我有个 v6/v7 老脚本 / 老媒介配置，v8 升级后字段对不上，帮我看看怎么改']
           : [
-              'Check whether this channel is configured correctly',
+              'Check whether this media type is configured correctly',
               'How to @ a specific person in Feishu / DingTalk / WeCom?',
               'I have an old v6/v7 script or channel config that no longer matches v8 fields, help me fix it',
             ],
@@ -138,7 +138,7 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
 export function getExplorerPrompts(lang?: string) {
   return isZhCN(lang)
     ? ['帮我生成一个查询主机 CPU 使用率的语句', '帮我生成一个查询机器内存使用率的语句', '帮我生成一个查询机器磁盘使用率的语句']
-    : ['Generate a query for host CPU usage', 'Generate a query for memory usage', 'Generate a query for host disk usage'];
+    : ['Generate a query for host CPU usage', 'Generate a query for host memory usage', 'Generate a query for host disk usage'];
 }
 
 export function getNotifyTplPrompts(lang?: string) {

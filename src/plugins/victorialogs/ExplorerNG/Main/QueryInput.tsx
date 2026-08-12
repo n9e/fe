@@ -20,25 +20,16 @@ interface Props {
   onContentChange?: () => void;
 }
 
-export interface QueryInputHandle {
-  commit: () => string | undefined;
-}
-
-function getTextAreaValue(refValue: any) {
-  return refValue?.resizableTextArea?.textArea?.value ?? refValue?.textArea?.value ?? refValue?.input?.value;
-}
-
-export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(props, ref) {
+export default function QueryInput(props: Props) {
   const { executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick, onContentChange } = props;
   const { t } = useTranslation(NAME_SPACE);
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
-  const inputRef = React.useRef<any>(null);
   const [focused, setFocused] = React.useState(false);
 
   const handleCommit = (value?: string) => {
     const query = form.getFieldValue('query') || {};
-    const nextValue = value ?? getTextAreaValue(inputRef.current) ?? '';
+    const nextValue = value || '';
     if (_.toString(query.query || '') === nextValue) return nextValue;
     form.setFieldsValue({
       query: {
@@ -55,10 +46,6 @@ export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(pro
     onContentChange?.();
     return nextValue;
   };
-
-  React.useImperativeHandle(ref, () => ({
-    commit: () => handleCommit(),
-  }));
 
   if (!datasourceValue) return null;
 
@@ -100,7 +87,6 @@ export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(pro
         >
           <Form.Item name={['query', 'query']} rules={[{ required: true, whitespace: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
             <SharedQueryInput
-              inputRef={inputRef}
               onChange={handleCommit}
               onEnterPress={(value) => {
                 handleCommit(value);
@@ -114,4 +100,4 @@ export default React.forwardRef<QueryInputHandle, Props>(function QueryInput(pro
       </div>
     </InputGroupWithFormItem>
   );
-});
+}

@@ -32,10 +32,17 @@ export default function DateField(props: IProps) {
           }),
         );
         const formValuesClone = _.cloneDeep(form.getFieldsValue());
-        const currentDateField = _.get(formValuesClone, [...preName, field.name, ...midName, 'date_field']);
-        if (!currentDateField) {
+        const dateFieldPath = [...preName, field.name, ...midName, 'date_field'];
+        const currentDateField = _.get(formValuesClone, dateFieldPath);
+        if (!res.fields?.length) {
+          // 该索引下没有日期类型字段，旧的 date_field 已不适用，清空
+          if (currentDateField) {
+            _.set(formValuesClone, dateFieldPath, undefined);
+            form.setFieldsValue(formValuesClone);
+          }
+        } else if (!currentDateField) {
           const defaultDateField = _.includes(res.fields, '@timestamp') ? '@timestamp' : res.fields[0];
-          _.set(formValuesClone, [...preName, field.name, ...midName, 'date_field'], defaultDateField);
+          _.set(formValuesClone, dateFieldPath, defaultDateField);
           form.setFieldsValue(formValuesClone);
         }
       });

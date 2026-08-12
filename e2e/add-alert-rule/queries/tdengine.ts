@@ -36,10 +36,10 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   await aiTap('左侧配置步骤中的告警条件');
   await aiWaitFor('告警条件区域已显示，并且可以看到 TDengine 查询条件编辑器和辅助配置');
 
-  // TDengine 使用普通的 <Input /> 而非 CodeMirror 编辑器
-  const editor = page.locator('.tdengine-discover-query input').first();
-  await expect(editor, 'TDengine query input').toBeVisible();
-  await editor.click();
+  // TDengine 查询编辑器使用 SqlMonacoEditor（Monaco），通过 textarea role 定位
+  // 注意：不要先 click Monaco 的 textarea，否则会被 .view-line 拦截 pointer events，直接 fill 即可（fill 会自动聚焦）
+  const editor = page.locator('[data-section-key="rule"]').getByRole('textbox', { name: 'Editor content' }).first();
+  await expect(editor, 'TDengine query Monaco editor').toBeVisible();
   await editor.fill(item.query);
 
   // 填写查询间隔（InputNumber）
@@ -49,23 +49,13 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
     await spinbutton.fill(String(item.interval));
   }
 
-  // 填写 AdvancedSettings 中的 MetricKey 和 LabelKey（graph 模式默认展开）
+  // 填写 AdvancedSettings 中的值字段（metricKey）和标签字段（labelKey）（graph 模式默认展开）
+  // 前端标签使用默认文案：值字段 / 标签字段（fillAdvancedSettings 的 DEFAULT_LABELS）
   if (item.keys) {
-    await fillAdvancedSettings(
-      page,
-      {
-        valueKey: Array.isArray(item.keys.metricKey)
-          ? item.keys.metricKey
-          : item.keys.metricKey ? [String(item.keys.metricKey)] : undefined,
-        labelKey: Array.isArray(item.keys.labelKey)
-          ? item.keys.labelKey
-          : item.keys.labelKey ? [String(item.keys.labelKey)] : undefined,
-      },
-      {
-        valueKey: 'MetricKey',
-        labelKey: 'LabelKey',
-      },
-    );
+    await fillAdvancedSettings(page, {
+      valueKey: Array.isArray(item.keys.metricKey) ? item.keys.metricKey : item.keys.metricKey ? [String(item.keys.metricKey)] : undefined,
+      labelKey: Array.isArray(item.keys.labelKey) ? item.keys.labelKey : item.keys.labelKey ? [String(item.keys.labelKey)] : undefined,
+    });
   }
 
   // 填充 builder 模式（mode === 0）的阈值判断

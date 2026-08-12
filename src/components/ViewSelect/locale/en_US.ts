@@ -13,10 +13,10 @@ const en_US = {
   public_cate: 'Visibility',
   public_cate_placeholder: 'All',
   public_cate_0: 'Only me',
-  public_cate_1: 'Team visible',
+  public_cate_1: 'Visible to teams',
   public_cate_2: 'Visible to everyone',
   search_placeholder: 'Search views',
-  gids: 'Team',
+  gids: 'Teams',
   post_favorite: 'Added view to favorites successfully',
   delete_favorite: 'Removed view from favorites successfully',
 };

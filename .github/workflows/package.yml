@@ -1,15 +1,19 @@
-name: Build and Release
+name: Package Only
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      upload_artifact:
+        description: 'Upload the packaged tar.gz as a GitHub Actions artifact'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build:
+  package:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,20 +37,10 @@ jobs:
       - name: Package files to tar.gz
         run: tar -czf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz pub
 
-      - name: Upload workflow artifact
+      - name: Upload packaged artifact
+        if: ${{ inputs.upload_artifact }}
         uses: actions/upload-artifact@v4
         with:
-          name: package-output-tar-gz
+          name: n9e-fe-${{ steps.pkg_version.outputs.version }}-tar-gz
           path: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
           if-no-files-found: error
-
-      - name: Create or update GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          ARCHIVE: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
-        run: |
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" "$ARCHIVE" --clobber
-          else
-            gh release create "$GITHUB_REF_NAME" "$ARCHIVE" --title "$GITHUB_REF_NAME" --generate-notes
-          fi

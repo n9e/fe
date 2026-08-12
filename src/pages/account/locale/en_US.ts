@@ -13,8 +13,8 @@ const en_US = {
     confirm: 'Confirm new password',
     confirmMsg: 'Please enter new password again',
     changeSuccess: 'Password changed successfully',
-    notMatch: 'Password not match',
-    ruleMsg: 'Password must contain two of the four characters: uppercase letters, lowercase letters, numbers, special characters, and be 6-20 characters long',
+    notMatch: 'Passwords do not match',
+    ruleMsg: 'Password must contain at least two of the four character types (uppercase letters, lowercase letters, numbers, special characters) and be 6-20 characters long',
   },
   profile: {
     title: 'Profile',
@@ -28,9 +28,9 @@ const en_US = {
     contactPlaceholder: 'Please select contact method',
   },
   token: {
-    title: 'Token Management',
-    createToken: 'Create Token',
-    tokenName: 'Token Name',
+    title: 'Token management',
+    createToken: 'Create token',
+    tokenName: 'Token name',
     last_used: 'Last used',
     updateSuccess: 'Token updated successfully',
     createSuccess: 'Token created successfully',
@@ -39,6 +39,6 @@ const en_US = {
   },
   editPicture: 'Edit',
   pictureURL: 'URL',
-  pictureMsg: 'The address needs to start with http',
+  pictureMsg: 'The URL must start with http',
 };
 export default en_US;

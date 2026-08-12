@@ -32,7 +32,9 @@ describe('SideMenu hover panel styles', () => {
     expect(indexContent).toContain('side-menu-profile-avatar-on-light');
     expect(indexContent).toContain('side-menu-profile-avatar-on-dark');
     expect(lessContent).toMatch(/\.side-menu-profile-avatar\s*\{[\s\S]*?box-sizing:\s*border-box;/);
-    expect(lessContent).toMatch(/\.side-menu-profile-avatar-on-light\s*\{[\s\S]*?background:\s*var\(--fc-fill-2\);[\s\S]*?border:\s*1px solid rgb\(var\(--fc-text-link-rgb\) \/ 0\.28\);/);
+    expect(lessContent).toMatch(
+      /\.side-menu-profile-avatar-on-light\s*\{[\s\S]*?background:\s*var\(--fc-fill-2\);[\s\S]*?border:\s*1px solid rgb\(var\(--fc-text-link-rgb\) \/ 0\.28\);/,
+    );
   });
 
   it('keeps the collapsed hover panel at the same menu level as the expanded side menu', () => {
@@ -41,5 +43,16 @@ describe('SideMenu hover panel styles', () => {
 
     expect(menuListContent).not.toContain('flattenMenuChildrenForHoverPanel');
     expect(menuListContent).toContain('const hoverChildren = visibleChildren;');
+  });
+
+  it('clears profile submenus without changing their popup container', () => {
+    const indexPath = path.join(__dirname, 'index.tsx');
+    const indexContent = fs.readFileSync(indexPath, 'utf8');
+
+    expect(indexContent).not.toContain('getProfileMenuPopupContainer');
+    expect(indexContent).toContain('openKeys={profileMenuOpenKeys}');
+    expect(indexContent).toContain('onOpenChange={setProfileMenuOpenKeys}');
+    expect(indexContent).toMatch(/if \(!open\) \{\s*setProfileMenuOpenKeys\(\[\]\);\s*\}/);
+    expect(indexContent).toContain('destroyPopupOnHide');
   });
 });
