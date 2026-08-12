@@ -339,6 +339,8 @@ export default function AlertRules(props: Props) {
       const datasourceIdsWithoutHost = _.filter(datasourceIds, (id) => id !== -999);
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
+        // 列表数据排除 prod 为 firemap(灭火图)、northstar(北极星) 的记录
+        !_.includes(['firemap', 'northstar'], item.prod) &&
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || _.join(item.append_tags, ' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
         ((prod && prod === item.prod) || !prod) &&
         ((item.severities &&
