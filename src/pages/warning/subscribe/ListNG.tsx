@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button, Input, message, Modal, Space, Switch, Tag, Tooltip, Select } from 'antd';
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -26,6 +26,7 @@ import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } fr
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY, DOC_URL } from './constants';
+import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import ScenarioList from './components/ScenarioList';
 import './locale';
 import './index.less';
@@ -39,7 +40,7 @@ interface Filter {
   disabled?: 0 | 1;
 }
 
-const FILTER_SESSION_STORAGE_KEY = 'alert-subscribes-filter';
+export const FILTER_SESSION_STORAGE_KEY = 'alert-subscribes-filter';
 
 const { confirm } = Modal;
 
@@ -53,24 +54,26 @@ interface Props {
   loading: boolean;
   setRefreshFlag: (flag: string) => void;
   linkTarget?: string;
+  gids?: string;
+  groupSwitchCount?: number;
 }
 
 const Subscribe = (props: Props) => {
   const { t, i18n } = useTranslation('alertSubscribes');
   const history = useHistory();
+  const location = useLocation();
   const { datasourceList, busiGroups, darkMode } = useContext(CommonStateContext);
-  const { hideBusinessGroupColumn, readonly, canCreate, headerExtra, data, loading, setRefreshFlag, linkTarget } = props;
+  const { hideBusinessGroupColumn, readonly, canCreate, headerExtra, data, loading, setRefreshFlag, linkTarget, gids, groupSwitchCount } = props;
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
   let defaultFilter = {} as Filter;
-  let defaultPage = 1;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     defaultFilter = saved;
-    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
+  const defaultPage = getPageFromSearch(location.search);
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
@@ -79,6 +82,13 @@ const Subscribe = (props: Props) => {
     const prev = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...prev, ...patch }));
   };
+  // 切换业务组时清除 URL 里的页码，回到第一页（父组件在业务组选择源头递增计数触发，不依赖 gids 变化时序）
+  useEffect(() => {
+    if (groupSwitchCount) {
+      setCurrent(1);
+      history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+    }
+  }, [groupSwitchCount]);
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
   const notificationRulesAuthorized = useIsAuthorized([notificationRulesPerm]);
 
@@ -94,6 +104,7 @@ const Subscribe = (props: Props) => {
               <Link
                 to={{
                   pathname: `/alert-subscribes/edit/${record.id}`,
+                  search: `?page=${current}`,
                   state: record,
                 }}
                 target={linkTarget}
@@ -357,7 +368,8 @@ const Subscribe = (props: Props) => {
             onChange={(val) => {
               setDatasourceIds(val);
               setCurrent(1);
-              saveState({ datasourceIds: val, current: 1 });
+              saveState({ datasourceIds: val });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
           />
           <Input
@@ -366,7 +378,8 @@ const Subscribe = (props: Props) => {
             onChange={(e) => {
               setQuery(e.target.value);
               setCurrent(1);
-              saveState({ query: e.target.value, current: 1 });
+              saveState({ query: e.target.value });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
             prefix={<SearchOutlined />}
             placeholder={t('search_placeholder')}
@@ -382,7 +395,8 @@ const Subscribe = (props: Props) => {
             onChange={(val) => {
               setFilterDisabled(val);
               setCurrent(1);
-              saveState({ disabled: val, current: 1 });
+              saveState({ disabled: val });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
           />
         </Space>
@@ -410,7 +424,7 @@ const Subscribe = (props: Props) => {
         pagination={{ ...pagination, current }}
         onChange={(pag) => {
           setCurrent(pag.current || 1);
-          saveState({ current: pag.current || 1 });
+          history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
         }}
         loading={loading}
         // 仅在「确实一条订阅都没有」时展示引导；搜索命中为空时回退到默认空态，避免误导
@@ -469,13 +483,13 @@ const Subscribe = (props: Props) => {
                     key: 'edit',
                     icon: 'edit',
                     text: t('common:btn.edit'),
-                    onClick: () => history.push({ pathname: `/alert-subscribes/edit/${record.id}` }),
+                    onClick: () => history.push({ pathname: `/alert-subscribes/edit/${record.id}`, search: `?page=${current}` }),
                   },
                   {
                     key: 'clone',
                     icon: 'copy',
                     text: t('common:btn.clone'),
-                    onClick: () => history.push({ pathname: `/alert-subscribes/edit/${record.id}`, search: 'mode=clone' }),
+                    onClick: () => history.push({ pathname: `/alert-subscribes/edit/${record.id}`, search: `mode=clone&page=${current}` }),
                   },
                   {
                     key: 'delete',

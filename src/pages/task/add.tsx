@@ -17,12 +17,13 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Button, Spin, Row, Col, Card, Alert, message } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import PageLayout from '@/components/pageLayout';
+import { getPageFromSearch } from '@/utils/urlPage';
 import request from '@/utils/request';
 import api from '@/utils/api';
 import { CommonStateContext } from '@/App';
@@ -31,6 +32,7 @@ import TplForm from '../taskTpl/tplForm';
 
 const Add = (props: any) => {
   const history = useHistory();
+  const location = useLocation();
   const query = queryString.parse(_.get(props, 'location.search'));
   const { businessGroup } = useContext(CommonStateContext);
   const curBusiId = (query.gid as string) || businessGroup.id!;
@@ -101,12 +103,12 @@ const Add = (props: any) => {
       title={
         query.tpl ? (
           <>
-            <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
+            <RollbackOutlined className='back' onClick={() => history.push(`/job-tpls?page=${getPageFromSearch(location.search)}`)} />
             {t('tpl')}
           </>
         ) : (
           <>
-            <RollbackOutlined className='back' onClick={() => history.push('/job-tasks')} />
+            <RollbackOutlined className='back' onClick={() => history.push(`/job-tasks?page=${getPageFromSearch(location.search)}`)} />
             {t('task')}
           </>
         )

@@ -26,6 +26,12 @@ export default function List() {
   const history = useHistory();
   const { businessGroup } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup)); // -2: 所有告警策略
+  const [groupSwitchCount, setGroupSwitchCount] = useState(0);
+  // 切换业务组时通知列表重置到第一页（在业务组选择源头触发，不依赖 gids 变化时序）
+  const handleSelectGids = (ids: string) => {
+    setGids(ids);
+    setGroupSwitchCount((count) => count + 1);
+  };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [data, setData] = useState<Array<subscribeItem>>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,7 +54,7 @@ export default function List() {
   return (
     <PageLayout title={t('title')} icon={<CopyOutlined />} doc={DOC_URL}>
       <div className='shield-content'>
-        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
+        <BusinessGroupSideBarWithAll gids={gids} setGids={handleSelectGids} localeKey={N9E_GIDS_LOCALKEY} />
         <div
           className='fc-border rounded-lg p-4'
           style={{
@@ -59,6 +65,8 @@ export default function List() {
           <ListNG
             hideBusinessGroupColumn={businessGroup.isLeaf && gids !== '-2'}
             canCreate={businessGroup.isLeaf && gids !== '-2'}
+            gids={gids}
+            groupSwitchCount={groupSwitchCount}
             headerExtra={
               businessGroup.isLeaf && gids !== '-2' ? (
                 <div>

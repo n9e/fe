@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import _ from 'lodash';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import { Form, Input, Button, Modal, message, Space, Select, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
@@ -16,6 +17,7 @@ import { CommonStateContext } from '@/App';
 import CronPattern from '@/components/CronPattern';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
 import { getBusiGroups } from '@/components/BusinessGroup/services';
+import { getPageFromSearch } from '@/utils/urlPage';
 
 const DATASOURCE_ALL = 0;
 
@@ -34,6 +36,9 @@ const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
   const { t } = useTranslation('recordingRules');
   const { i18n } = useTranslation();
   const history = useHistory(); // 创建的时候默认选中的值
+  const location = useLocation();
+  // 编辑/克隆入口会带上原列表的业务组上下文（fromGids），保存后跳回原上下文而不是记录的 group_id
+  const fromGids = queryString.parse(location.search)?.fromGids;
   const [form] = Form.useForm();
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const { openAiChat } = useAiChatContext();
@@ -65,7 +70,7 @@ const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
           message.success(t('common:success.edit'));
           history.push({
             pathname: goListPath,
-            search: `ids=${values.group_id}&isLeaf=true`,
+            search: fromGids ? `ids=${fromGids}&isLeaf=true` : `ids=${values.group_id}&isLeaf=true`,
           });
         }
       } else {
@@ -80,7 +85,7 @@ const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
           message.success(`${type === 2 ? t('common:success.clone') : t('common:success.add')}`);
           history.push({
             pathname: goListPath,
-            search: `ids=${values.group_id}&isLeaf=true`,
+            search: fromGids ? `ids=${fromGids}&isLeaf=true` : `ids=${values.group_id}&isLeaf=true`,
           });
         } else {
           message.error(t(msg));
@@ -213,7 +218,10 @@ const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
 
               <Button
                 onClick={() => {
-                  history.push('/recording-rules');
+                  history.push({
+                    pathname: goListPath,
+                    search: fromGids ? `ids=${fromGids}&isLeaf=true&page=${getPageFromSearch(location.search)}` : `?page=${getPageFromSearch(location.search)}`,
+                  });
                 }}
               >
                 {t('common:btn.cancel')}
