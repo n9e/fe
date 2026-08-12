@@ -161,42 +161,40 @@ export default function index() {
       render: (val, record) => {
         const recordClone = _.cloneDeep(record);
         return (
-          <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} inTooltip /> : undefined}>
-            <a
-              onClick={() => {
-                const curFilter = filtersRef.current?.getActive();
-                let label_filter = '';
-                try {
-                  if (curFilter && curFilter.configs) {
-                    label_filter = filtersToStr(JSON.parse(curFilter.configs));
-                  }
-                } catch (e) {
-                  console.error(e);
+          <a
+            onClick={() => {
+              const curFilter = filtersRef.current?.getActive();
+              let label_filter = '';
+              try {
+                if (curFilter && curFilter.configs) {
+                  label_filter = filtersToStr(JSON.parse(curFilter.configs));
                 }
-                if (label_filter) {
-                  buildLabelFilterAndExpression({
-                    label_filter,
-                    promql: record.expression,
+              } catch (e) {
+                console.error(e);
+              }
+              if (label_filter) {
+                buildLabelFilterAndExpression({
+                  label_filter,
+                  promql: record.expression,
+                })
+                  .then((res) => {
+                    recordClone.expression = res;
+                    setExplorerDrawerVisible(true);
+                    setExplorerDrawerData(recordClone);
                   })
-                    .then((res) => {
-                      recordClone.expression = res;
-                      setExplorerDrawerVisible(true);
-                      setExplorerDrawerData(recordClone);
-                    })
-                    .catch(() => {
-                      message.warning(t('filter.build_labelfilter_and_expression_error'));
-                      setExplorerDrawerVisible(true);
-                      setExplorerDrawerData(recordClone);
-                    });
-                } else {
-                  setExplorerDrawerVisible(true);
-                  setExplorerDrawerData(recordClone);
-                }
-              }}
-            >
-              {val}
-            </a>
-          </Tooltip>
+                  .catch(() => {
+                    message.warning(t('filter.build_labelfilter_and_expression_error'));
+                    setExplorerDrawerVisible(true);
+                    setExplorerDrawerData(recordClone);
+                  });
+              } else {
+                setExplorerDrawerVisible(true);
+                setExplorerDrawerData(recordClone);
+              }
+            }}
+          >
+            {val}
+          </a>
         );
       },
     },
@@ -241,9 +239,15 @@ export default function index() {
     {
       title: t('note'),
       dataIndex: 'note',
-      ellipsis: { showTitle: false },
       render: (value) => {
-        return <EllipsisText text={value} />;
+        if (!value) return '-';
+        return (
+          <EllipsisText
+            text={value}
+            title={<Markdown content={value} inTooltip />}
+            tooltipProps={{ overlayClassName: 'ant-tooltip-max-width-600 ant-tooltip-with-link' }}
+          />
+        );
       },
     },
     updateByColumn({
