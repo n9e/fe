@@ -195,9 +195,12 @@ const en_US = {
     default_duration_tip2: 'Maximum aggregation interval cannot exceed 3600 seconds',
     attribute_keys_map: {
       cluster: 'Data source',
+      cate: 'Data source type',
       group_name: 'Business group',
       rule_id: 'Alert rule',
+      rule_prod: 'Monitoring type',
       severity: 'Alert severity',
+      is_recovered: 'Recovery status',
     },
     enable_tip: 'After enabling, alerts that match the rules will be merged by dimension into one notification <a>documentation</a>',
     labels_filter: {
