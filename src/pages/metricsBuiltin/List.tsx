@@ -241,10 +241,13 @@ export default function index() {
       dataIndex: 'note',
       render: (value) => {
         if (!value) return '-';
+        // Cap width on the ellipsis node (not column.ellipsis) so the table stays
+        // tableLayout:auto and long notes truncate with a markdown tooltip.
         return (
           <EllipsisText
             text={value}
             title={<Markdown content={value} inTooltip />}
+            style={{ maxWidth: 320 }}
             tooltipProps={{ overlayClassName: 'ant-tooltip-max-width-600 ant-tooltip-with-link' }}
           />
         );
