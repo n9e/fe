@@ -14,6 +14,8 @@ import { OnValueFilterParams, FieldValueType } from './types';
 import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
 import LogFieldValue from './components/LogFieldValue';
+import { LogsViewerStateContext } from './index';
+import { shouldRenderMultilineValueAsSingleField } from './renderValue';
 import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 
 const explorerOriginInlineCellClassName = 'inline-block mr-1 my-[2px] align-top';
@@ -79,8 +81,27 @@ interface RenderValueProps {
 export function RenderValue({ name, value, parentKey, onValueFilter, adjustFieldValue, showExistsAction }: RenderValueProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { rawValue, highlight } = useContext(DataContext);
+  const { enableLogTextSelectMenu } = useContext(LogsViewerStateContext);
 
   const [expand, setExpand] = useState(false);
+
+  // 划词菜单依赖字段值对应唯一的 LogFieldValue 实例。若按换行拆分，
+  // 每一行都会收到同一次 document mouseup，从而重复弹出菜单。
+  if (shouldRenderMultilineValueAsSingleField(enableLogTextSelectMenu, value)) {
+    return (
+      <LogFieldValue
+        parentKey={parentKey}
+        name={name}
+        value={value}
+        onTokenClick={onValueFilter}
+        rawValue={rawValue}
+        highlight={highlight}
+        fieldValueClassName='whitespace-pre-wrap'
+        adjustFieldValue={adjustFieldValue}
+        showExistsAction={showExistsAction}
+      />
+    );
+  }
 
   if (typeof value === 'string' && value.indexOf('\n') > -1) {
     const allLines = value.split('\n');
