@@ -199,13 +199,12 @@ export default function ChatPanel(props: IAiChatProps) {
       const chat = await createChat(queryPageFrom);
       setActiveChat(chat);
       setMessages([]);
-      onChatChange?.(chat);
       return chat;
     } catch (error) {
       handleError(error instanceof Error ? error : new Error('create chat failed'));
       return undefined;
     }
-  }, [handleError, onChatChange, queryPageFrom]);
+  }, [handleError, queryPageFrom]);
 
   const startPolling = useCallback(
     (locator: IAiChatMessageLocator) => {
@@ -341,7 +340,7 @@ export default function ChatPanel(props: IAiChatProps) {
           </Spin>
         </div>
 
-        <div className='mt-4 rounded-lg fc-border'>
+        <div className='mt-4 rounded-lg fc-border shadow-mf'>
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 8 }}
             bordered={false}

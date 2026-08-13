@@ -34,6 +34,13 @@ export const deleteChat = (chatId: string): Promise<void> => {
   }).then(() => undefined);
 };
 
+export const renameChat = (data: { chat_id: string; title: string }): Promise<void> => {
+  return request(`${apiPrefix}/chat/rename`, {
+    method: RequestMethod.Post,
+    data,
+  }).then(() => undefined);
+};
+
 export const sendMessage = (data: IAiChatSendMessageRequest): Promise<IAiChatSendMessageResponse> => {
   return request(`${apiPrefix}/message/new`, {
     method: RequestMethod.Post,

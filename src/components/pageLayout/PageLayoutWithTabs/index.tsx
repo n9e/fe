@@ -81,6 +81,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({
   const [currentMenu, setCurrentMenu] = useState<MenuMatchResult | null>(null);
   const menuList = getCurrentMenuList();
   const documentUrl = getProductDocumentLink({ productDocLink, doc, siteDocumentUrl: siteInfo?.document_url });
+  const isNightingaleAIConfigPage = location.pathname.startsWith('/nightingale-ai/') && !location.pathname.startsWith('/nightingale-ai/chat/');
 
   useEffect(() => {
     const result = findMenuByPath(location.pathname, menuList);
@@ -154,7 +155,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({
                         <div className='product-changelog absolute bottom-[2px] left-[7px]'></div>
                       </Button>
                     )}
-                    <FlashAiButton />
+                    {!isNightingaleAIConfigPage && <FlashAiButton />}
                     {rightArea}
                     <DocLink link={documentUrl} />
                     {!IS_ENT && !IS_PLUS && (

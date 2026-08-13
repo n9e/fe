@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { RobotOutlined } from '@ant-design/icons';
+import { Sparkles } from 'lucide-react';
 
 import IconFont from '@/components/IconFont';
 
@@ -11,6 +12,12 @@ import './locale';
 
 export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecatedMenus: boolean = false) => {
   const menu: MenuItem[] = [
+    {
+      key: '/nightingale-ai',
+      label: 'menu.nightingale_ai',
+      icon: <Sparkles className='-ml-0.5 h-4 w-4' strokeWidth={1.8} />,
+      children: [],
+    },
     {
       key: 'infrastructure',
       label: 'menu.infrastructure',
