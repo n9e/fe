@@ -17,6 +17,7 @@ interface IChatHistoryPageProps {
   showActions?: boolean;
   refreshKey?: number;
   onSelect: (chat: IAiChatHistoryItem) => void;
+  onShare?: (chat: IAiChatHistoryItem) => void;
   onHistoryLoaded?: (history: IAiChatHistoryItem[]) => void;
   onDelete?: (chat: IAiChatHistoryItem) => void;
   onError?: (error: Error) => void;
@@ -60,12 +61,13 @@ function formatHistoryItemTooltipTime(timestamp: number | undefined, t: (key: st
 
 export default function ChatHistory(props: IChatHistoryPageProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { selectedChatId, compact = false, searchable = false, showActions = false, refreshKey, onSelect, onHistoryLoaded, onDelete, onError } = props;
+  const { selectedChatId, compact = false, searchable = false, showActions = false, refreshKey, onSelect, onShare, onHistoryLoaded, onDelete, onError } = props;
   const [history, setHistory] = React.useState<IAiChatHistoryItem[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState('');
   const [renameChatId, setRenameChatId] = React.useState<string>();
   const [renameTitle, setRenameTitle] = React.useState('');
+  const [openActionChatId, setOpenActionChatId] = React.useState<string>();
 
   const loadHistory = React.useCallback(async () => {
     setLoading(true);
@@ -128,9 +130,13 @@ export default function ChatHistory(props: IChatHistoryPageProps) {
 
   const handleShare = React.useCallback(
     (chat: IAiChatHistoryItem) => {
+      if (onShare) {
+        onShare(chat);
+        return;
+      }
       copyAiChatShareUrl(buildAiChatShareUrl(chat.chat_id), t('toolbar.share_copied'));
     },
-    [t],
+    [onShare, t],
   );
 
   const handleRename = React.useCallback(
@@ -243,6 +249,7 @@ export default function ChatHistory(props: IChatHistoryPageProps) {
                                       ]}
                                       onClick={({ key, domEvent }) => {
                                         domEvent.stopPropagation();
+                                        setOpenActionChatId(undefined);
                                         if (key === 'rename') {
                                           setRenameChatId(chat.chat_id);
                                           setRenameTitle(chat.title);
@@ -253,6 +260,8 @@ export default function ChatHistory(props: IChatHistoryPageProps) {
                                     />
                                   }
                                   trigger={['click']}
+                                  visible={openActionChatId === chat.chat_id}
+                                  onVisibleChange={(visible) => setOpenActionChatId(visible ? chat.chat_id : undefined)}
                                 >
                                   <Button
                                     aria-label={t('history.more_actions')}

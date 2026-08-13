@@ -162,14 +162,17 @@ export default function NightingaleAIPage() {
     [chatId, history, setCachedSessionId],
   );
 
-  const handleShare = useCallback(() => {
-    if (!chatId) return;
-    const url = new URL(window.location.href);
-    url.pathname = `${PAGE_PATH}/chat/${encodeURIComponent(chatId)}`;
-    url.searchParams.delete(aiChatShareQueryKey);
-    url.searchParams.set(aiChatShareReadonlyQueryKey, '1');
-    copyAiChatShareUrl(url.toString(), t('toolbar.share_copied'));
-  }, [chatId, t]);
+  const handleShare = useCallback(
+    (sharedChatId: string) => {
+      if (!sharedChatId) return;
+      const url = new URL(window.location.href);
+      url.pathname = `${PAGE_PATH}/chat/${encodeURIComponent(sharedChatId)}`;
+      url.searchParams.delete(aiChatShareQueryKey);
+      url.searchParams.set(aiChatShareReadonlyQueryKey, '1');
+      copyAiChatShareUrl(url.toString(), t('toolbar.share_copied'));
+    },
+    [t],
+  );
   const handleHistoryLoaded = useCallback((nextHistoryItems: IAiChatHistoryItem[]) => setHistoryItems(nextHistoryItems), []);
   const historyChat = useMemo(() => historyItems.find((item) => item.chat_id === chatId), [chatId, historyItems]);
   const chatTitle = chatId ? historyChat?.title || (selectedChat?.chat_id === chatId ? selectedChat.title : t('nightingale.title')) : t('nightingale.new_chat');
@@ -230,7 +233,16 @@ export default function NightingaleAIPage() {
         <div className='mx-4 h-px bg-fc-300' />
         <div className='flex min-h-0 flex-1 flex-col p-2'>
           <div className='px-2 pb-2 text-base font-semibold text-hint'>{t('nightingale.sessions')}</div>
-          <ChatHistory compact searchable showActions refreshKey={historyRefreshKey} selectedChatId={chatId} onHistoryLoaded={handleHistoryLoaded} onSelect={selectChat} />
+          <ChatHistory
+            compact
+            searchable
+            showActions
+            refreshKey={historyRefreshKey}
+            selectedChatId={chatId}
+            onHistoryLoaded={handleHistoryLoaded}
+            onSelect={selectChat}
+            onShare={(chat) => handleShare(chat.chat_id)}
+          />
         </div>
         {!sidebarCollapsed && <div className='absolute right-0 top-0 h-full w-1 cursor-ew-resize' onMouseDown={startSidebarResize} />}
       </aside>
@@ -261,7 +273,7 @@ export default function NightingaleAIPage() {
               <span className='truncate font-semibold text-title'>{chatTitle}</span>
               {chatId && (
                 <Tooltip title={t('toolbar.share')}>
-                  <Button aria-label={t('toolbar.share')} icon={<Share2 size={16} />} size='small' type='text' onClick={handleShare} />
+                  <Button aria-label={t('toolbar.share')} icon={<Share2 size={16} />} size='small' type='text' onClick={() => handleShare(chatId)} />
                 </Tooltip>
               )}
             </div>
