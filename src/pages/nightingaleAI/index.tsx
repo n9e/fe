@@ -31,6 +31,13 @@ const configItems = [
   { key: 'ai-task', labelKey: 'nightingale.ai_task', icon: RadioTower, perm: '/ai-task', component: AiTaskPage, plusOnly: true },
 ] as const;
 
+const configIconAnimationClasses = {
+  'llm-configs': 'group-hover:animate-nightingale-bot-wiggle motion-reduce:group-hover:animate-none',
+  skills: 'group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:rotate-6 motion-reduce:group-hover:transform-none',
+  'mcp-servers': 'group-hover:animate-nightingale-cable-plug motion-reduce:group-hover:animate-none',
+  'ai-task': 'group-hover:scale-110 motion-reduce:group-hover:transform-none',
+} as const;
+
 type ConfigItemKey = (typeof configItems)[number]['key'];
 
 function getConfigItem(pathname: string) {
@@ -176,13 +183,13 @@ export default function NightingaleAIPage() {
         </div>
         <nav className='flex flex-col gap-1 p-2'>
           <button
-            className={`flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-md border-0 px-2.5 text-left text-main hover:bg-primary/10 hover:text-primary ${
+            className={`group flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-md border-0 px-2.5 text-left text-main hover:bg-primary/10 hover:text-primary ${
               !configItem && !chatId ? 'bg-primary/10 text-primary' : 'bg-transparent'
             }`}
             type='button'
             onClick={goToChat}
           >
-            <MessageSquarePlus size={17} />
+            <MessageSquarePlus className='transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:group-hover:transform-none' size={17} />
             <span>{t('nightingale.new_chat')}</span>
           </button>
           {visibleConfigItems.map((item) => {
@@ -190,13 +197,18 @@ export default function NightingaleAIPage() {
             return (
               <button
                 key={item.key}
-                className={`flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-md border-0 px-2.5 text-left text-main hover:bg-primary/10 hover:text-primary ${
+                className={`group flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-md border-0 px-2.5 text-left text-main hover:bg-primary/10 hover:text-primary ${
                   configItem?.key === item.key ? 'bg-primary/10 text-primary' : 'bg-transparent'
                 }`}
                 type='button'
                 onClick={() => selectConfig(item.key)}
               >
-                <Icon size={17} />
+                <span className='relative inline-flex h-[17px] w-[17px] shrink-0 items-center justify-center' aria-hidden>
+                  {item.key === 'ai-task' && (
+                    <span className='pointer-events-none absolute inset-0 rounded-full border border-hint/50 opacity-0 group-hover:animate-nightingale-radio-pulse motion-reduce:group-hover:animate-none' />
+                  )}
+                  <Icon className={`relative transition-transform duration-200 ease-out ${configIconAnimationClasses[item.key]}`} size={17} />
+                </span>
                 <span>{t(item.labelKey)}</span>
               </button>
             );
