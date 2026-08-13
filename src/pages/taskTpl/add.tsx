@@ -19,6 +19,7 @@ import { Button, Card, message } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useHistory, useLocation } from 'react-router-dom';
+import { getPageFromSearch } from '@/utils/urlPage';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import PageLayout from '@/components/pageLayout';
@@ -42,7 +43,7 @@ const Add = (props: any) => {
     }).then(() => {
       message.success(t('msg.create.success'));
       // TODO: 这里返回列表页时需要获取参数里的 ids，不能用 history.push
-      window.location.href = `/job-tpls?ids=${curBusiId}&isLeaf=true`;
+      window.location.href = `/job-tpls?ids=${curBusiId}&isLeaf=true&page=${getPageFromSearch(location.search)}`;
     });
   };
 
@@ -50,7 +51,7 @@ const Add = (props: any) => {
     <PageLayout
       title={
         <>
-          <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
+          <RollbackOutlined className='back' onClick={() => history.push(`/job-tpls?page=${getPageFromSearch(location.search)}`)} />
           {t('tpl')}
         </>
       }

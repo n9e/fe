@@ -45,7 +45,6 @@ export default function Add() {
         </Space>
       }
       showBack
-      backPath={`/${NS}`}
     >
       <div className='n9e'>
         {data ? (

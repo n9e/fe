@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Input, Select, Space, Button, Modal, Switch, message } from 'antd';
 import { NotificationOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { map, upperCase, includes, filter } from 'lodash';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useRequest } from 'ahooks';
 import moment from 'moment';
 
@@ -13,9 +13,10 @@ import { Import, Export } from '@/components/ExportImport';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 
-import { NS, getNotificationChannelTypes } from '../../constants';
+import { NS, getNotificationChannelTypes, FILTER_SESSION_STORAGE_KEY } from '../../constants';
 import { getItems, getItem, putItem, deleteItems, postItems } from '../../services';
 import { ChannelItem } from '../../types';
+import { getPageFromSearch, setPageInSearch } from '@/utils/urlPage';
 
 interface Filter {
   search?: string;
@@ -23,10 +24,10 @@ interface Filter {
   idents?: string[];
 }
 
-const FILTER_SESSION_STORAGE_KEY = 'notification-channels-filter';
-
 export default function index() {
   const { t } = useTranslation(NS);
+  const history = useHistory();
+  const location = useLocation();
   const channelTypes = getNotificationChannelTypes();
   const pagination = usePagination({ PAGESIZE_KEY: 'notification-channels-pagesize' });
 
@@ -43,20 +44,20 @@ export default function index() {
 
   const { data, loading, run, mutate } = useRequest(getItems);
   let defaultFilter = {} as Filter;
-  let defaultPage = 1;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     defaultFilter = saved;
-    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
+  const defaultPage = getPageFromSearch(location.search);
   const [filters, setFilters] = useState<Filter>(defaultFilter);
   const [current, setCurrent] = useState<number>(defaultPage);
   const handleFilterChange = (newFilter: Filter) => {
     setFilters(newFilter);
     setCurrent(1);
-    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...newFilter, current: 1 }));
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
+    history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
   };
   const [selectedRows, setSelectedRows] = useState<ChannelItem[]>([]);
   const [togglingId, setTogglingId] = useState<number>();
@@ -84,20 +85,19 @@ export default function index() {
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/'
     >
       <div className='n9e'>
-        <div className='flex h-full overflow-hidden'>
-          <div className='h-full shrink-0 overflow-hidden'>
-            <div className='flex h-full w-[360px] flex-col overflow-hidden'>
-              <div className='pr-[16px] mb-4 flex-0'>
-                <Input
-                  placeholder={t('types_search_placeholder')}
-                  value={typesSearch}
-                  onChange={(e) => {
-                    setTypesSearch(e.target.value);
-                  }}
-                />
-              </div>
-              <div className='pr-[10px] h-full min-h-0 best-looking-scroll'>
-                <div className='grid grid-cols-2 gap-3'>
+        <div className='flex items-start'>
+          <div className='w-[360px] shrink-0'>
+            <div className='pr-[16px] mb-4'>
+              <Input
+                placeholder={t('types_search_placeholder')}
+                value={typesSearch}
+                onChange={(e) => {
+                  setTypesSearch(e.target.value);
+                }}
+              />
+            </div>
+            <div className='pr-[10px]'>
+              <div className='grid grid-cols-2 gap-3'>
                   {map(filteredTypes, (val, key) => {
                     return (
                       <Link to={`/notification-channels/add?ident=${key}`} key={key}>
@@ -116,9 +116,8 @@ export default function index() {
                 </div>
               </div>
             </div>
-          </div>
-          <div className='w-px bg-fc-300'></div>
-          <div className='ml-4 w-full min-w-0 flex-1 flex flex-col gap-4'>
+          <div className='w-px self-stretch bg-fc-300'></div>
+          <div className='ml-4 min-w-0 flex-1 flex flex-col gap-4'>
             <div className='flex justify-between'>
               <Space>
                 <Input
@@ -229,8 +228,7 @@ export default function index() {
                 </Button>
               </Space>
             </div>
-            <div className='n9e-antd-table-height-full'>
-              <EnhancedTable
+            <EnhancedTable
                 size='small'
                 loading={loading}
                 rowKey='id'
@@ -247,6 +245,7 @@ export default function index() {
                           className='block truncate'
                           to={{
                             pathname: `/${NS}/edit/${record.id}`,
+                            search: `?page=${current}`,
                           }}
                         >
                           {val}
@@ -356,12 +355,9 @@ export default function index() {
                 pagination={{ ...pagination, current }}
                 onChange={(pag) => {
                   setCurrent(pag.current || 1);
-                  const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
-                  window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...saved, current: pag.current || 1 }));
+                  history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
                 }}
-                scroll={{ y: 'calc(100% - 42px)' }}
               />
-            </div>
           </div>
         </div>
       </div>

@@ -5,6 +5,8 @@ const zh_CN = {
     search_placeholder: '用户名、邮箱或手机',
     create: '创建用户',
     edit: '编辑用户',
+    belong: '账号来源',
+    belong_local: '本地',
     busi_groups: '业务组',
     user_groups: '团队',
     last_active_time: '最后活跃时间',
