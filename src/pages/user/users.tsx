@@ -80,6 +80,14 @@ const Resource: React.FC = () => {
       render: (text: []) => text.join(', '),
     },
     {
+      // belong 由 SSO 登录/同步流程写入，本地创建的账号后端返回空字符串
+      title: t('user.belong'),
+      dataIndex: 'belong',
+      width: 120,
+      ellipsis: true,
+      render: (text: string) => text || t('user.belong_local'),
+    },
+    {
       title: t('user.busi_groups'),
       dataIndex: 'busi_groups',
       width: 160,
