@@ -25,7 +25,8 @@ const refreshMap = {
 
 interface IProps {
   disabled?: boolean;
-  tooltip?: string;
+  tooltip?: React.ReactNode;
+  intervalTooltip?: React.ReactNode;
   onRefresh: () => void;
   localKey?: string;
   intervalSeconds?: number;
@@ -100,40 +101,49 @@ function Refresh(props: IProps, ref) {
       <Tooltip title={props.tooltip}>
         <Button disabled={props.disabled} icon={<SyncOutlined className={intervalSeconds ? 'rotate-icon' : ''} />} onClick={props.onRefresh} />
       </Tooltip>
-      <Dropdown
-        disabled={props.disabled}
-        trigger={['click']}
-        visible={visible}
-        onVisibleChange={(visible) => {
-          setVisible(visible);
-        }}
-        overlay={
-          <Menu
-            onClick={(e) => {
-              setIntervalSeconds(_.toNumber(e.key));
-              props.localKey && window.localStorage.setItem(props.localKey, e.key);
-              props.onIntervalSecondsChange && props.onIntervalSecondsChange(_.toNumber(e.key));
-              setVisible(false);
-            }}
-          >
-            {_.map(refreshMap, (text, value) => {
-              return <Menu.Item key={value}>{text}</Menu.Item>;
-            })}
-          </Menu>
-        }
+      <Tooltip
+        // 浮层落在展开后的菜单前两项上且层级更高，必须让它不参与命中测试，
+        // 否则会吞掉这两项的点击；同时浮层不可悬浮，移向菜单时才能正常消失
+        overlayStyle={{ maxWidth: 320, pointerEvents: 'none' }}
+        title={props.intervalTooltip}
       >
-        <Button
-          onClick={() => {
-            setVisible(!visible);
-          }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          {refreshMap[intervalSeconds]} {visible ? <UpOutlined /> : <DownOutlined style={{ fontSize: 12 }} />}
-        </Button>
-      </Dropdown>
+        <span>
+          <Dropdown
+            disabled={props.disabled}
+            trigger={['click']}
+            visible={visible}
+            onVisibleChange={(visible) => {
+              setVisible(visible);
+            }}
+            overlay={
+              <Menu
+                onClick={(e) => {
+                  setIntervalSeconds(_.toNumber(e.key));
+                  props.localKey && window.localStorage.setItem(props.localKey, e.key);
+                  props.onIntervalSecondsChange && props.onIntervalSecondsChange(_.toNumber(e.key));
+                  setVisible(false);
+                }}
+              >
+                {_.map(refreshMap, (text, value) => {
+                  return <Menu.Item key={value}>{text}</Menu.Item>;
+                })}
+              </Menu>
+            }
+          >
+            <Button
+              onClick={() => {
+                setVisible(!visible);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {refreshMap[intervalSeconds]} {visible ? <UpOutlined /> : <DownOutlined style={{ fontSize: 12 }} />}
+            </Button>
+          </Dropdown>
+        </span>
+      </Tooltip>
     </div>
   );
 }

@@ -26,7 +26,7 @@ import { ITimeRangePickerWithRefreshProps } from './types';
 import { valueAsString } from './utils';
 
 export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRefreshProps) {
-  const { value, onChange, style, refreshTooltip, timeRangeTooltip, showRefreshButton = true, dateFormat = 'YYYY-MM-DD HH:mm', localKey, onRefresh } = props;
+  const { value, onChange, style, refreshTooltip, intervalTooltip, timeRangeTooltip, showRefreshButton = true, dateFormat = 'YYYY-MM-DD HH:mm', localKey, onRefresh } = props;
   const [globalVar] = useGlobalVar();
   const [timeRangeTooltipVisible, setTimeRangeTooltipVisible] = React.useState(false);
 
@@ -36,6 +36,7 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
         <AutoRefresh
           localKey={localKey && `${localKey}_refresh`}
           tooltip={refreshTooltip}
+          intervalTooltip={intervalTooltip}
           onRefresh={() => {
             if (value && onChange) {
               onChange({
@@ -55,7 +56,7 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
         <span style={{ display: 'inline-flex' }} onClickCapture={() => setTimeRangeTooltipVisible(false)}>
           <TimeRangePicker
             limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
-            {..._.omit(props, ['style', 'timeRangeTooltip', 'showRefreshButton'])}
+            {..._.omit(props, ['style', 'refreshTooltip', 'intervalTooltip', 'timeRangeTooltip', 'showRefreshButton', 'intervalSeconds', 'onIntervalSecondsChange', 'onRefresh'])}
             onChange={(val) => {
               if (localKey) {
                 localStorage.setItem(
