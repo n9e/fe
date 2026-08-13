@@ -56,6 +56,10 @@ function useAiEntClickHandler(options?: {
         // After spreads: ConfigHost pages live on /flashai*, where AiChat stays
         // in page mode unless forceDrawer is set (knowledge / scheduled-task).
         forceDrawer: true,
+        // Edge every launch: createNew alone stays true→true when a prior launch
+        // left it latched, so initSession would not re-run and a knowledge-base
+        // prefill would remain in the composer (ai-task "创建" after "AI 创建").
+        launchTick: Date.now(),
       } as any,
     });
   }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);
