@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { Space } from 'antd';
+import { Space, Tooltip } from 'antd';
 import _ from 'lodash';
 
 import { useGlobalVar } from '@/utils/useHook';
@@ -26,7 +26,7 @@ import { ITimeRangePickerWithRefreshProps } from './types';
 import { valueAsString } from './utils';
 
 export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRefreshProps) {
-  const { value, onChange, style, refreshTooltip, dateFormat = 'YYYY-MM-DD HH:mm', localKey, onRefresh } = props;
+  const { value, onChange, style, refreshTooltip, intervalTooltip, timeRangeTooltip, dateFormat = 'YYYY-MM-DD HH:mm', localKey, onRefresh } = props;
   const [globalVar] = useGlobalVar();
 
   return (
@@ -34,6 +34,7 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
       <AutoRefresh
         localKey={localKey && `${localKey}_refresh`}
         tooltip={refreshTooltip}
+        intervalTooltip={intervalTooltip}
         onRefresh={() => {
           if (value && onChange) {
             onChange({
@@ -48,26 +49,30 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
         intervalSeconds={props.intervalSeconds}
         onIntervalSecondsChange={props.onIntervalSecondsChange}
       />
-      <TimeRangePicker
-        limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
-        {..._.omit(props, ['style'])}
-        onChange={(val) => {
-          if (localKey) {
-            localStorage.setItem(
-              localKey,
-              val
-                ? JSON.stringify({
-                    start: valueAsString(val.start, dateFormat),
-                    end: valueAsString(val.end, dateFormat),
-                  })
-                : '',
-            );
-          }
-          if (onChange) {
-            onChange(val);
-          }
-        }}
-      />
+      <Tooltip title={timeRangeTooltip}>
+        <span style={{ display: 'inline-flex' }}>
+          <TimeRangePicker
+            limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
+            {..._.omit(props, ['style', 'refreshTooltip', 'intervalTooltip', 'timeRangeTooltip', 'intervalSeconds', 'onIntervalSecondsChange', 'onRefresh'])}
+            onChange={(val) => {
+              if (localKey) {
+                localStorage.setItem(
+                  localKey,
+                  val
+                    ? JSON.stringify({
+                        start: valueAsString(val.start, dateFormat),
+                        end: valueAsString(val.end, dateFormat),
+                      })
+                    : '',
+                );
+              }
+              if (onChange) {
+                onChange(val);
+              }
+            }}
+          />
+        </span>
+      </Tooltip>
     </Space>
   );
 }
