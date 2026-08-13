@@ -9,7 +9,7 @@ import { useAiChatContext } from '@/components/AiChatNG';
 import ChatHistory from '@/components/AiChatNG/ChatHistory';
 import ChatPanel from '@/components/AiChatNG/ChatPanel';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
-import { buildAiChatShareUrl, copyAiChatShareUrl } from '@/components/AiChatNG/share';
+import { aiChatShareQueryKey, aiChatShareReadonlyQueryKey, copyAiChatShareUrl } from '@/components/AiChatNG/share';
 import { IAiChatHistoryItem } from '@/components/AiChatNG/types';
 import { IS_ENT, IS_PLUS } from '@/utils/constant';
 
@@ -61,7 +61,7 @@ export default function NightingaleAIPage() {
   const history = useHistory();
   const location = useLocation();
   const { profile, perms } = useContext(CommonStateContext);
-  const { cachedSessionId, setCachedSessionId } = useAiChatContext();
+  const { cachedSessionId, setCachedSessionId, setShareReadonly } = useAiChatContext();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(getInitialSidebarWidth);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
@@ -84,6 +84,14 @@ export default function NightingaleAIPage() {
       history.replace(`${PAGE_PATH}/chat/${encodeURIComponent(cachedSessionId)}`);
     }
   }, [cachedSessionId, history, location.pathname, location.state]);
+
+  useEffect(() => {
+    setShareReadonly(new URLSearchParams(location.search).get(aiChatShareReadonlyQueryKey) === '1');
+  }, [location.search, setShareReadonly]);
+
+  useEffect(() => {
+    return () => setShareReadonly(false);
+  }, [setShareReadonly]);
 
   useEffect(() => {
     const onMouseMove = (event: MouseEvent) => {
@@ -155,7 +163,12 @@ export default function NightingaleAIPage() {
   );
 
   const handleShare = useCallback(() => {
-    if (chatId) copyAiChatShareUrl(buildAiChatShareUrl(chatId), t('toolbar.share_copied'));
+    if (!chatId) return;
+    const url = new URL(window.location.href);
+    url.pathname = `${PAGE_PATH}/chat/${encodeURIComponent(chatId)}`;
+    url.searchParams.delete(aiChatShareQueryKey);
+    url.searchParams.set(aiChatShareReadonlyQueryKey, '1');
+    copyAiChatShareUrl(url.toString(), t('toolbar.share_copied'));
   }, [chatId, t]);
   const handleHistoryLoaded = useCallback((nextHistoryItems: IAiChatHistoryItem[]) => setHistoryItems(nextHistoryItems), []);
   const historyChat = useMemo(() => historyItems.find((item) => item.chat_id === chatId), [chatId, historyItems]);
