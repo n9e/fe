@@ -35,4 +35,15 @@ describe('useAiEntClickHandler', () => {
     expect(spreadAt).toBeGreaterThanOrEqual(0);
     expect(forceAt).toBeGreaterThan(spreadAt);
   });
+
+  it('bumps launchTick on every click so createNew-only re-launches re-run initSession', () => {
+    // createNew alone is a latch (true→true); launchTick must change so a prior
+    // knowledge-base prefill is cleared when ai-task "创建" opens the drawer again.
+    expect(handler).toMatch(/launchTick:\s*Date\.now\(\)/);
+    const customStart = handler.indexOf('custom:');
+    const customBlock = handler.slice(customStart);
+    const spreadAt = customBlock.indexOf('...queryAction');
+    const tickAt = customBlock.search(/launchTick:\s*Date\.now\(\)/);
+    expect(tickAt).toBeGreaterThan(spreadAt);
+  });
 });
