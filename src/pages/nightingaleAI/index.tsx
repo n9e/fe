@@ -1,13 +1,14 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Spin, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { Blocks, Bot, Cable, MessageSquarePlus, PanelLeftClose, PanelLeftOpen, RadioTower, Share2 } from 'lucide-react';
+import { AlarmClock, Blocks, Bot, Cable, Compass, MessageSquarePlus, PanelLeftClose, PanelLeftOpen, RadioTower, Share2 } from 'lucide-react';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 
 import { CommonStateContext } from '@/App';
 import { useAiChatContext } from '@/components/AiChatNG';
 import ChatHistory from '@/components/AiChatNG/ChatHistory';
 import ChatPanel from '@/components/AiChatNG/ChatPanel';
+import { EmptyConversation } from '@/components/AiChatNG/MessageBlocks';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
 import { aiChatShareQueryKey, aiChatShareReadonlyQueryKey, copyAiChatShareUrl } from '@/components/AiChatNG/share';
 import { IAiChatHistoryItem } from '@/components/AiChatNG/types';
@@ -39,6 +40,36 @@ const configIconAnimationClasses = {
 } as const;
 
 type ConfigItemKey = (typeof configItems)[number]['key'];
+
+const welcomeCardConfigs = [
+  { key: 'overview', icon: Compass, colorClassName: 'text-blue-600' },
+  { key: 'alerts', icon: Bot, colorClassName: 'text-green-600' },
+  { key: 'create_alert', icon: AlarmClock, colorClassName: 'text-orange-600' },
+] as const;
+
+function NightingaleWelcomeCards({ onPromptClick }: { onPromptClick: (prompt: string) => void }) {
+  const { t } = useTranslation('ai_chat_ng');
+
+  return (
+    <div className='w-[90%] grid grid-cols-1 gap-4 md:grid-cols-3'>
+      {welcomeCardConfigs.map((card) => {
+        const Icon = card.icon;
+        return (
+          <button
+            key={card.key}
+            className='group flex cursor-pointer flex-col items-start rounded-xl border border-fc-300 bg-fc-50 p-4 text-left transition duration-200 ease-out hover:-translate-y-px hover:border-fc-500 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
+            type='button'
+            onClick={() => onPromptClick(t(`nightingale.welcome_cards.${card.key}.prompt`))}
+          >
+            <Icon className={`${card.colorClassName} transition-transform duration-200 ease-out group-hover:scale-110 group-hover:-rotate-6`} size={22} strokeWidth={1.8} />
+            <span className='mt-3 text-l1 font-semibold text-title'>{t(`nightingale.welcome_cards.${card.key}.title`)}</span>
+            <span className='text-base text-hint'>{t(`nightingale.welcome_cards.${card.key}.description`)}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function getConfigItem(pathname: string) {
   const key = pathname.slice(`${PAGE_PATH}/`.length) as ConfigItemKey;
@@ -278,7 +309,21 @@ export default function NightingaleAIPage() {
               )}
             </div>
             <div className='min-h-0 flex-1 p-4'>
-              <ChatPanel chatId={chatId} queryPageFrom={chatPageFrom} onChatChange={handleChatChange} />
+              <ChatPanel
+                chatId={chatId}
+                queryPageFrom={chatPageFrom}
+                onChatChange={handleChatChange}
+                inputContainerClassName='mb-5'
+                welcomeSlot={
+                  chatId
+                    ? undefined
+                    : (onPromptClick) => (
+                        <EmptyConversation onPromptClick={onPromptClick}>
+                          <NightingaleWelcomeCards onPromptClick={onPromptClick} />
+                        </EmptyConversation>
+                      )
+                }
+              />
             </div>
           </div>
         )}

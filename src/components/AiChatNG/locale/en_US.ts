@@ -31,6 +31,23 @@ const en_US = {
     ai_task: 'Task channel',
     collapse_sidebar: 'Collapse AI sidebar',
     expand_sidebar: 'Expand AI sidebar',
+    welcome_cards: {
+      overview: {
+        title: 'Get to know Nightingale',
+        description: 'Understand the product and what the AI assistant can do in one minute',
+        prompt: 'Give me a one-minute introduction to Nightingale monitoring and what you can help me do',
+      },
+      alerts: {
+        title: 'Review my alerts',
+        description: 'Which rules are the noisiest, and which have never fired?',
+        prompt: 'Review my current alert rules: which have fired most often in the last 7 days, and which have never fired?',
+      },
+      create_alert: {
+        title: 'Create an alert in one sentence',
+        description: 'Describe the scenario and I will generate PromQL and thresholds',
+        prompt: 'Create an alert rule: alert when host CPU usage stays above 80% for 5 minutes',
+      },
+    },
   },
   input: {
     placeholder: 'Ask a question. Press Enter to send, Shift + Enter for a new line',

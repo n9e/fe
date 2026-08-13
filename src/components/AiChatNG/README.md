@@ -32,7 +32,7 @@ AiChat 默认导出组件的入参如下：
 | chatId                | string                      | 否   | 当前会话 ID。传入时加载指定会话；不传时在首次发送消息时创建会话   |
 | queryPageFrom         | IAiChatPageInfo             | 是   | 消息查询请求里的 page_from 参数，同时用于创建会话时传递页面上下文 |
 | queryAction           | IAiChatAction               | 否   | 消息查询请求里的 action 参数，用于约束 AI 在当前场景的行为        |
-| welcomeSlot           | React.ReactNode             | 否   | 自定义空态欢迎区。未传时使用内置欢迎内容                          |
+| welcomeSlot           | React.ReactNode \| `(onPromptClick) => React.ReactNode` | 否   | 自定义空态欢迎区；函数形式可通过 `onPromptClick` 发送推荐问题。未传时使用内置欢迎内容 |
 | promptList            | string[]                    | 否   | 空态下展示的推荐提示词                                            |
 | onExecuteQueryForQueryContent | (query, context) => void | 否   | 当 response 中出现 `content_type: "query"` 时，点击“执行查询”回调 |
 | onChatChange          | (chat?) => void             | 否   | 当前会话变化时触发                                                |

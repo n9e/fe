@@ -31,6 +31,23 @@ const ja_JP = {
     ai_task: 'タスクチャンネル',
     collapse_sidebar: 'AI サイドバーを閉じる',
     expand_sidebar: 'AI サイドバーを開く',
+    welcome_cards: {
+      overview: {
+        title: 'Nightingale をすばやく知る',
+        description: '製品と AI アシスタントのできることを 1 分で理解',
+        prompt: 'Nightingale 監視の主な機能と、あなたが支援できることを 1 分で紹介してください',
+      },
+      alerts: {
+        title: 'アラートを見直す',
+        description: '最も頻繁なルールと一度も発火していないルールを確認',
+        prompt: '現在のアラートルールを確認してください。過去 7 日間で最も頻繁に発火したものと、一度も発火していないものはどれですか？',
+      },
+      create_alert: {
+        title: '一言でアラートを作成',
+        description: 'シナリオを説明すると PromQL としきい値を生成します',
+        prompt: 'アラートルールを作成してください：ホスト CPU 使用率が 5 分間 80% を超えたらアラートする',
+      },
+    },
   },
   input: {
     placeholder: '質問を入力してください。Enter で送信、Shift + Enter で改行',

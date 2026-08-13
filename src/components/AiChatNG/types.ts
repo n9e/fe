@@ -135,11 +135,12 @@ export type AiChatExecuteQueryForQueryContent = (query: string, context: IAiChat
 
 export interface IAiChatProps {
   className?: string;
+  inputContainerClassName?: string;
   placeholder?: string;
   chatId?: string;
   queryPageFrom: IAiChatPageInfo;
   queryAction?: IAiChatAction;
-  welcomeSlot?: React.ReactNode;
+  welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);
   promptList?: string[];
   initialMessage?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
