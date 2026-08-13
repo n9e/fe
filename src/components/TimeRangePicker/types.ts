@@ -85,6 +85,8 @@ export interface ITimeRangePickerProps {
 
 export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps {
   refreshTooltip?: string;
+  timeRangeTooltip?: React.ReactNode;
+  showRefreshButton?: boolean;
   intervalSeconds?: number;
   onIntervalSecondsChange?: (value: number) => void;
   onRefresh?: () => void;
