@@ -19,6 +19,7 @@ import { md } from './plugins/md';
 import plusResolve from './plugins/plusResolve';
 import prefixPlugin from './plugins/vite-plugin-prefix';
 import lazyToEagerOnBuild from './plugins/vite-plugin-lazy-eager';
+import dotPathSpaFallback from './plugins/vite-plugin-dot-path-spa-fallback';
 import devSingleLocale from './plugins/vite-plugin-dev-locale';
 import getFontFamilyByEnv from './src/utils/getFontFamilyByEnv';
 import react from '@vitejs/plugin-react';
@@ -58,6 +59,7 @@ export default defineConfig(({ mode }) => {
     base: baseName + '/',
     plugins: [
       lazyToEagerOnBuild(),
+      dotPathSpaFallback(),
       devSingleLocale(env.VITE_DEV_LOCALE || 'zh_CN'),
       react(),
       svgr({
