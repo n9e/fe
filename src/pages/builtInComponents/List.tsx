@@ -13,6 +13,7 @@ import AlertRules from './AlertRules';
 import CollectTpls from './CollectTpls';
 import Metrics from './Metrics';
 import Dashboards from './Dashboards';
+import ComponentSteps from './ComponentSteps';
 import { getComponents, Component, deleteComponents, putComponent } from './services';
 import ComponentFormModal from './components/ComponentFormModal';
 import { IS_ENT } from '@/utils/constant';
@@ -33,8 +34,12 @@ export default function index() {
   const [data, setData] = useState<Component[]>([]);
   const [activeComponent, setActiveComponent] = useState<Component>();
   const [readme, setReadme] = useState('');
-  const [activeTab, setActiveTab] = useState(localStorage.getItem(BUILT_IN_ACTIVE_TAB_KEY) || 'tab_instructions');
+  // ?tab= 优先于上次停留的页签：从别处深链过来（如采集验证通过后的「导入仪表盘」）
+  // 是带着明确目的的，不该被用户上一次看的页签盖掉
+  const [activeTab, setActiveTab] = useState((query.tab as string) || localStorage.getItem(BUILT_IN_ACTIVE_TAB_KEY) || 'tab_instructions');
   const [readmeEditabled, setReadmeEditabled] = useState(false);
+  // 三步进度存在 localStorage 里，导入成功后递增这个信号让步骤条重读
+  const [packFlag, setPackFlag] = useState(0);
   const fetchData = () => {
     return getComponents().then((res) => {
       setData(res);
@@ -245,6 +250,18 @@ export default function index() {
         }
       >
         {activeComponent && (
+          <ComponentSteps
+            ident={activeComponent.ident}
+            componentId={activeComponent.id}
+            activeTab={activeTab}
+            refreshFlag={packFlag}
+            onGoTab={(tab) => {
+              setActiveTab(tab);
+              localStorage.setItem(BUILT_IN_ACTIVE_TAB_KEY, tab);
+            }}
+          />
+        )}
+        {activeComponent && (
           <Tabs
             className='builtin-drawer-tabs'
             activeKey={activeTab}
@@ -272,10 +289,10 @@ export default function index() {
               <Metrics component={activeComponent.ident} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_dashboards')} key='tab_dashboards'>
-              <Dashboards component_id={activeComponent.id} />
+              <Dashboards component_id={activeComponent.id} componentIdent={activeComponent.ident} onPackStepDone={() => setPackFlag((prev) => prev + 1)} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={t('tab_alertRules')} key='tab_alertRules'>
-              <AlertRules component_id={activeComponent.id} />
+              <AlertRules component_id={activeComponent.id} componentIdent={activeComponent.ident} onPackStepDone={() => setPackFlag((prev) => prev + 1)} />
             </Tabs.TabPane>
             {IS_ENT && (
               <Tabs.TabPane tab={t('tab_firemap')} key='tab_firemap'>

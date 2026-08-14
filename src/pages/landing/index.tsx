@@ -190,7 +190,8 @@ export default function Landing() {
           </section>
 
           {/* Section 1.5 · 新手任务清单（仅开源版、且仍有未完成步骤时展示） */}
-          {!IS_PLUS && <OnboardingChecklist />}
+          {/* 专业版同样展示：/landing 路由本身已是 !IS_ENT，这里跟着放开即可 */}
+          <OnboardingChecklist />
 
           {/* Section header for the matrix */}
           <div className='n9e-landing-header'>

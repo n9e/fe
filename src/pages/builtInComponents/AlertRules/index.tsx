@@ -16,6 +16,7 @@ import Tags from '@/components/TableTags/Tags';
 import { PERM as notificationRulesPerm } from '@/pages/notificationRules/constants';
 import { RuleType } from './types';
 import Import from './Import';
+import { markPackStep } from '../packProgress';
 import { getPayloads, deletePayloads, getCates } from '../services';
 import { pathname } from '../constants';
 import { TypeEnum } from '../types';
@@ -24,10 +25,18 @@ import PayloadFormModal from '../components/PayloadFormModal';
 
 interface Props {
   component_id: number;
+  /** 记录「一条龙」进度用；不传则不记 */
+  componentIdent?: string;
+  onPackStepDone?: () => void;
 }
 
 export default function index(props: Props) {
-  const { component_id } = props;
+  const { component_id, componentIdent, onPackStepDone } = props;
+  const markImported = () => {
+    if (!componentIdent) return;
+    markPackStep(componentIdent, 'alert');
+    onPackStepDone?.();
+  };
   const { t } = useTranslation('builtInComponents');
   const commonState = useContext(CommonStateContext);
   const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions, darkMode } = commonState;
@@ -153,6 +162,7 @@ export default function index(props: Props) {
               Import({
                 data: formatBeautifyJsons(_.map(selectedRows.current, 'content')),
                 busiGroups,
+                onSuccess: markImported,
                 groupedDatasourceList,
                 reloadGroupedDatasourceList,
                 datasourceCateOptions,
@@ -256,6 +266,7 @@ export default function index(props: Props) {
                   Import({
                     data: formatBeautifyJson(record.content),
                     busiGroups,
+                    onSuccess: markImported,
                     groupedDatasourceList,
                     reloadGroupedDatasourceList,
                     datasourceCateOptions,

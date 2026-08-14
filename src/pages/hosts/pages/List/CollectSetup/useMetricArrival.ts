@@ -15,7 +15,7 @@ export interface ArrivalDatasource {
 }
 
 const POLL_INTERVAL = 5000;
-const POLL_TIMEOUT = 5 * 60 * 1000;
+const DEFAULT_POLL_TIMEOUT = 5 * 60 * 1000;
 
 interface Options {
   /** 进入验证步骤才开始轮询 */
@@ -36,6 +36,12 @@ interface Options {
    * 观察是否出现基线外的新 ident。
    */
   idents?: string[];
+  /**
+   * 等多久算超时。默认 5 分钟够用于「用户刚在机器上执行完命令」；
+   * 中心端下发要等 agent 先拉到配置再跑一轮采集（reload_interval 默认 120 秒），
+   * 沿用 5 分钟很容易把还在路上的判成失败，调用方按场景放宽。
+   */
+  timeout?: number;
 }
 
 /**
@@ -44,7 +50,7 @@ interface Options {
  * 数据源不建基线、下一轮重试——避免瞬断后把存量机器误判成新增。
  */
 export default function useMetricArrival(options: Options) {
-  const { active, datasources, metricPrefix, metric, idents } = options;
+  const { active, datasources, metricPrefix, metric, idents, timeout = DEFAULT_POLL_TIMEOUT } = options;
   const [status, setStatus] = useState<MetricArrivalStatus>('baselining');
   const [newIdents, setNewIdents] = useState<string[]>([]);
   const [reportingIdents, setReportingIdents] = useState<string[]>([]);
@@ -149,7 +155,7 @@ export default function useMetricArrival(options: Options) {
       }
 
       if (baselines.size > 0) setStatus('waiting');
-      if (Date.now() - startedAt >= POLL_TIMEOUT) {
+      if (Date.now() - startedAt >= timeout) {
         setStatus('timeout');
         return;
       }
@@ -161,7 +167,7 @@ export default function useMetricArrival(options: Options) {
       stopped = true;
       clearTimeout(timer);
     };
-  }, [active, datasourceKey, identsKey, metricPrefix, metric, round]);
+  }, [active, datasourceKey, identsKey, metricPrefix, metric, round, timeout]);
 
   return { status, newIdents, reportingIdents, missingIdents, preexistingIdents, hitDatasourceNames, restart: () => setRound((r) => r + 1) };
 }
