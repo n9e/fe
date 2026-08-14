@@ -150,17 +150,6 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
-      key: 'ai-config',
-      label: 'menu.ai_config',
-      type: 'tabs',
-      icon: <RobotOutlined />,
-      children: [
-        { key: '/ai-config/agents', label: 'menu.ai_config_agents' },
-        { key: '/ai-config/llm-configs', label: 'menu.ai_config_llm_configs' },
-        { key: '/ai-config/skills', label: 'menu.ai_config_skills' },
-      ],
-    },
-    {
       key: 'organization',
       label: 'menu.organization',
       icon: <IconFont type='icon-nav_organization_light' />,
