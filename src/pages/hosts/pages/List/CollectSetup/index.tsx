@@ -14,8 +14,11 @@ import { writeOnboardingMarker } from '@/components/OnboardingProgress/detect';
 import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
 
 import { localizeDocUrl } from '@/utils/docUrl';
+import { IS_PLUS } from '@/utils/constant';
+// @ts-ignore — 专业版才有的采集配置服务；开源构建下 plus: 解析到占位模块，此分支被 IS_PLUS 挡住不会执行
+import { postCollect } from 'plus:/pages/collects/services';
 
-import { CATEGRAF_TROUBLESHOOT_DOC, NS, VERIFIED_DATASOURCE_IDS_KEY } from '../../../constants';
+import { CATEGRAF_TROUBLESHOOT_DOC, NS } from '../../../constants';
 import { CategrafInstallMeta, probeTargets } from '../../../services';
 import CommandBlock from '../components/CommandBlock';
 import { isValidServerAddr, normalizeServerAddr } from '../InstallCategraf/buildCommand';
@@ -24,6 +27,8 @@ import { buildToml, CollectFormValues } from './buildToml';
 import { buildCollectCommand, buildManualCollectCommand } from './buildCommand';
 import ComponentPicker from './ComponentPicker';
 import useMetricArrival from './useMetricArrival';
+import { readVerifiedDatasourceIds, writeVerifiedDatasourceIds } from './verifiedDatasources';
+import CentralDispatch from './CentralDispatch';
 
 interface Props {
   meta: CategrafInstallMeta;
@@ -37,26 +42,8 @@ interface Props {
 /** 数据源列表未加载时的稳定空引用，避免每次渲染都让下游 useMemo 失效 */
 const EMPTY_DATASOURCES: { id: number; name: string; is_default?: boolean }[] = [];
 
-function readVerifiedDatasourceIds(): number[] {
-  try {
-    const raw = localStorage.getItem(VERIFIED_DATASOURCE_IDS_KEY);
-    const parsed = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) ? _.filter(parsed, (id) => typeof id === 'number') : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function writeVerifiedDatasourceIds(ids: number[]) {
-  try {
-    localStorage.setItem(VERIFIED_DATASOURCE_IDS_KEY, JSON.stringify(ids));
-  } catch (e) {
-    // 记不住只是下次要重新选，不值得打断验证流程
-  }
-}
-
 /** 以 field.default 初始化一个新实例的取值 */
-function newInstance(component: CollectComponent): Record<string, unknown> {
+export function newInstance(component: CollectComponent): Record<string, unknown> {
   const instance: Record<string, unknown> = {};
   _.forEach(component.fields, (field) => {
     if (field.default !== undefined) instance[field.key] = field.default;
@@ -64,7 +51,8 @@ function newInstance(component: CollectComponent): Record<string, unknown> {
   return instance;
 }
 
-function FieldInput(props: { field: CollectField; namePrefix: (string | number)[] }) {
+/** 单个字段的输入控件。企业版采集配置页复用同一套 catalog 字段定义，所以这里导出 */
+export function FieldInput(props: { field: CollectField; namePrefix: (string | number)[] }) {
   const { field, namePrefix } = props;
   const { t } = useTranslation(NS);
   const label = t(`collect.fields.${field.key}`, { defaultValue: field.key });
@@ -128,12 +116,18 @@ export default function CollectSetup(props: Props) {
   const [authPass, setAuthPass] = useState('');
 
   const [logoMap, setLogoMap] = useState<Record<string, string>>({});
+  // 中心端下发要带 component_id，所以顺手把 ident -> id 也留一份，不必再拉一次
+  const [componentIdMap, setComponentIdMap] = useState<Record<string, number>>({});
   useEffect(() => {
     getComponents()
       .then((components) => {
         setLogoMap(_.fromPairs(_.map(components, (item) => [_.toLower(item.ident), item.logo])));
+        setComponentIdMap(_.fromPairs(_.map(components, (item) => [_.toLower(item.ident), item.id])));
       })
-      .catch(() => setLogoMap({})); // 拿不到 logo 只是回退分类图标，不阻塞向导
+      .catch(() => {
+        setLogoMap({}); // 拿不到 logo 只是回退分类图标，不阻塞向导
+        setComponentIdMap({});
+      });
   }, []);
 
   const metricPrefix = component ? (component.metricPrefix === undefined ? component.name : component.metricPrefix) : null;
@@ -149,6 +143,27 @@ export default function CollectSetup(props: Props) {
     });
   }, []);
 
+  /**
+   * 配置怎么到机器：`command` = 用户登录机器执行一条命令（开源版唯一的路）；
+   * `central` = 中心端下发给 categraf 的 http_provider，不必登录机器（专业版）。
+   * 两条路的第 4 步到达验证完全一样。
+   */
+  const [dispatchMode, setDispatchMode] = useState<'command' | 'central'>('command');
+  const [dispatchGroupId, setDispatchGroupId] = useState<number>();
+  const [collectName, setCollectName] = useState('');
+  const [dispatching, setDispatching] = useState(false);
+  const [dispatchError, setDispatchError] = useState<string>();
+  // 名称自动生成，用户改过就不再覆盖
+  const lastAutoNameRef = useRef<string>();
+  useEffect(() => {
+    if (!component) return;
+    const suggestion =
+      targetIdents.length === 1 ? `${component.name}-${targetIdents[0]}` : t('collect.central.name_auto', { name: component.name, count: targetIdents.length });
+    if (collectName && collectName !== lastAutoNameRef.current) return;
+    lastAutoNameRef.current = suggestion;
+    setCollectName(suggestion);
+  }, [component?.name, _.join(targetIdents, ',')]);
+
   const prometheusList = groupedDatasourceList.prometheus || EMPTY_DATASOURCES;
 
   // 机器指标落在哪个数据源，由服务端按 pushgw 的 writer 配置匹配后随 meta 下发 ——
@@ -158,10 +173,7 @@ export default function CollectSetup(props: Props) {
   // 上次验证通过的数据源：writer URL 匹配天然会 miss，而「上次真的查到了指标」是经验证过的更强信号，
   // 所以优先级放在 meta 之前。只在 id 仍然可见时采纳，数据源被删/权限变更后自动退回后面的策略。
   const rememberedDatasourceIds = useRef(readVerifiedDatasourceIds()).current;
-  const defaultFromRemembered = useMemo(
-    () => _.filter(rememberedDatasourceIds, (id) => _.some(prometheusList, (ds) => ds.id === id)),
-    [rememberedDatasourceIds, prometheusList],
-  );
+  const defaultFromRemembered = useMemo(() => _.filter(rememberedDatasourceIds, (id) => _.some(prometheusList, (ds) => ds.id === id)), [rememberedDatasourceIds, prometheusList]);
 
   const defaultDatasourceIds = useMemo(() => {
     if (defaultFromRemembered.length > 0) return defaultFromRemembered;
@@ -176,7 +188,11 @@ export default function CollectSetup(props: Props) {
   const [pickedDatasourceIds, setPickedDatasourceIds] = useState<number[]>();
   const datasourceIds = pickedDatasourceIds ?? defaultDatasourceIds;
   const arrivalDatasources = useMemo(
-    () => _.map(_.filter(prometheusList, (ds) => _.includes(datasourceIds, ds.id)), (ds) => ({ id: ds.id, name: ds.name })),
+    () =>
+      _.map(
+        _.filter(prometheusList, (ds) => _.includes(datasourceIds, ds.id)),
+        (ds) => ({ id: ds.id, name: ds.name }),
+      ),
     [prometheusList, datasourceIds],
   );
 
@@ -188,6 +204,8 @@ export default function CollectSetup(props: Props) {
     metricPrefix: metricPrefix || '',
     metric: component?.verifyMetric,
     idents: targetIdents,
+    // 中心端下发要多等 agent 两轮拉取（默认 120 秒一轮），5 分钟基本不够
+    timeout: dispatchMode === 'central' ? 10 * 60 * 1000 : undefined,
   });
 
   // 指标确认到达即视为"采集已验证"，写本地标记点亮引导清单里那一步。
@@ -276,6 +294,41 @@ export default function CollectSetup(props: Props) {
     setStep(2);
   };
 
+  /**
+   * 中心端下发：把这一步生成的 toml 直接建成一条采集配置，下发范围就是勾选的这几台机器。
+   * 成功后照常进第 4 步做到达验证 —— 那一步两条路共用。
+   */
+  const handleCentralDispatch = async () => {
+    if (!component || !dispatchGroupId) return;
+    setDispatching(true);
+    setDispatchError(undefined);
+    try {
+      await postCollect(
+        {
+          name: _.trim(collectName),
+          group_id: dispatchGroupId,
+          cate: component.name,
+          content: finalToml,
+          // catalog 里有些条目没登记 builtinIdent（influxdb / nats / tengine 等），
+          // 回落用插件名再找一次；都找不到就不带，后端会记成 Uncategorized
+          component_id: componentIdMap[_.toLower(component.builtinIdent ?? '')] ?? componentIdMap[_.toLower(component.name)],
+          queries: [{ key: 'hosts', op: '==', values: targetIdents }],
+          disabled: 0,
+        } as any,
+        // 自己渲染错误，不要全局再弹一条后端英文原文
+        { silence: true },
+      );
+      setStep(3);
+    } catch (err: any) {
+      // 后端「同一业务组内内容 MD5 不能重复」的报错是英文原文，直接抛给用户看不懂。
+      // 翻成可读中文并指出出路 —— 这条约束正在推动后端放宽，在那之前至少别让人卡在这里
+      const raw = err?.message || err?.data?.err || _.toString(err);
+      setDispatchError(_.includes(raw, 'name or content exists') ? t('collect.central.duplicate') : raw);
+    } finally {
+      setDispatching(false);
+    }
+  };
+
   const addrValid = isValidServerAddr(addr);
   const command = useMemo(
     () =>
@@ -311,20 +364,26 @@ export default function CollectSetup(props: Props) {
       onClose={onClose}
       footer={
         <div className='flex justify-between'>
-          <div>
-            {step > 0 && (
-              <Button onClick={() => setStep(step - 1)}>{t('collect.prev')}</Button>
-            )}
-          </div>
+          <div>{step > 0 && <Button onClick={() => setStep(step - 1)}>{t('collect.prev')}</Button>}</div>
           <Space>
             {step === 1 && (
               <Button type='primary' onClick={handleConfigNext}>
                 {t('collect.next')}
               </Button>
             )}
-            {step === 2 && (
+            {step === 2 && dispatchMode === 'command' && (
               <Button type='primary' disabled={!command} onClick={() => setStep(3)}>
                 {t('collect.next')}
+              </Button>
+            )}
+            {step === 2 && dispatchMode === 'central' && (
+              <Button
+                type='primary'
+                loading={dispatching}
+                disabled={!dispatchGroupId || !_.trim(collectName) || _.isEmpty(targetIdents) || !finalToml}
+                onClick={handleCentralDispatch}
+              >
+                {t('collect.central.submit')}
               </Button>
             )}
             {step === 3 && (
@@ -405,9 +464,7 @@ export default function CollectSetup(props: Props) {
                           <span className='text-[12px] opacity-60'>
                             {t('collect.instance')} #{instanceField.name + 1}
                           </span>
-                          {instances.length > 1 && (
-                            <Button size='small' type='text' icon={<MinusCircleOutlined />} onClick={() => remove(instanceField.name)} />
-                          )}
+                          {instances.length > 1 && <Button size='small' type='text' icon={<MinusCircleOutlined />} onClick={() => remove(instanceField.name)} />}
                         </div>
                         <div className='grid grid-cols-2 gap-x-4'>
                           {_.map(component.fields, (field) => (
@@ -424,16 +481,34 @@ export default function CollectSetup(props: Props) {
               </Form.List>
               <div className='mt-3'>
                 <div className='mb-1 text-[12px] opacity-60'>{t('collect.toml_preview')}</div>
-                <pre className='m-0 bg-fc-100 fc-border rounded-lg p-3 text-[12px] leading-5 max-h-[220px] overflow-auto whitespace-pre-wrap break-all'>
-                  {previewToml}
-                </pre>
+                <pre className='m-0 bg-fc-100 fc-border rounded-lg p-3 text-[12px] leading-5 max-h-[220px] overflow-auto whitespace-pre-wrap break-all'>{previewToml}</pre>
               </div>
             </Form>
           )}
         </div>
       )}
 
-      {step === 2 && component && (
+      {step === 2 && component && IS_PLUS && (
+        // 专业版多一条路：配置由中心端下发给 categraf，不必登录机器。
+        // 两条路在这里合流，而不是让用户在「机器列表的向导」和「采集配置页」之间自己发现
+        <Radio.Group className='mb-3' value={dispatchMode} onChange={(e) => setDispatchMode(e.target.value)}>
+          <Radio.Button value='command'>{t('collect.central.mode_command')}</Radio.Button>
+          <Radio.Button value='central'>{t('collect.central.mode_central')}</Radio.Button>
+        </Radio.Group>
+      )}
+
+      {step === 2 && component && IS_PLUS && dispatchMode === 'central' && (
+        <CentralDispatch
+          idents={targetIdents}
+          groupId={dispatchGroupId}
+          onGroupIdChange={setDispatchGroupId}
+          name={collectName}
+          onNameChange={setCollectName}
+          error={dispatchError}
+        />
+      )}
+
+      {step === 2 && component && dispatchMode === 'command' && (
         <Form layout='vertical'>
           <Form.Item
             label={t('install.addr_label')}
@@ -574,11 +649,7 @@ export default function CollectSetup(props: Props) {
                 <Alert
                   type='warning'
                   showIcon
-                  message={
-                    targetIdents.length > 0
-                      ? t('collect.verify.timeout_targets', { idents: _.join(arrival.missingIdents, ', ') })
-                      : t('collect.verify.timeout')
-                  }
+                  message={targetIdents.length > 0 ? t('collect.verify.timeout_targets', { idents: _.join(arrival.missingIdents, ', ') }) : t('collect.verify.timeout')}
                   description={
                     <>
                       <div>{t('collect.verify.timeout_tip', { prefix: `${metricPrefix}_` })}</div>
