@@ -45,6 +45,30 @@ describe('SideMenu hover panel styles', () => {
     expect(menuListContent).toContain('const hoverChildren = visibleChildren;');
   });
 
+  it('never re-opens the collapsed rail from a menu click', () => {
+    const indexPath = path.join(__dirname, 'index.tsx');
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const indexContent = fs.readFileSync(indexPath, 'utf8');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    // The collapse toggle in the header is the only writer, so no click path needs to opt out of expanding.
+    expect(indexContent).not.toContain('keepCollapsed');
+    expect(menuListContent).not.toContain('keepCollapsed');
+    expect(indexContent.match(/localStorage\.setItem\('menuCollapsed'/g)).toHaveLength(1);
+    expect(indexContent).toMatch(/const toggleCollapsed = \(\) => \{[\s\S]*?localStorage\.setItem\('menuCollapsed'/);
+  });
+
+  it('labels collapsed top-level rows with a tooltip instead of expanding them', () => {
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    // Leaf rows (e.g. FlashAI) render icon-only when collapsed, so the label has to come from a tooltip.
+    expect(menuListContent).toContain('function wrapCollapsedRowWithTooltip');
+    expect(menuListContent.match(/return wrapCollapsedRowWithTooltip\(row, \{ collapsed, isSub, title: t\(item\.label\) \}\);/g)).toHaveLength(2);
+    // A collapsed group row must not act on click; its children are reachable through the hover panel.
+    expect(menuListContent).toMatch(/onClick=\{\(\) => \{[\s\S]{0,160}?if \(collapsed\) return;\s*setIsExpand\(!isExpand\);/);
+  });
+
   it('clears profile submenus without changing their popup container', () => {
     const indexPath = path.join(__dirname, 'index.tsx');
     const indexContent = fs.readFileSync(indexPath, 'utf8');

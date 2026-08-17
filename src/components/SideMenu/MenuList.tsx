@@ -24,7 +24,7 @@ const SIDE_MENU_HOVER_TOOLTIP_PLACEMENTS = (() => {
 interface IMenuProps {
   collapsed: boolean;
   selectedKeys?: string[];
-  onClick?: (key: any, opts?: { keepCollapsed?: boolean }) => void;
+  onClick?: (key: any) => void;
   sideMenuBgColor: string;
   isCustomBg: boolean;
   quickMenuRef: React.MutableRefObject<{ open: () => void }>;
@@ -88,6 +88,21 @@ function getMenuGroupIconColorClass(opts: {
     return '';
   }
   return 'text-[#6E6587]';
+}
+
+/**
+ * Collapsed top-level rows show an icon only, so the label has to come from a tooltip.
+ * Sub rows live inside the hover panel, which already renders their labels.
+ */
+function wrapCollapsedRowWithTooltip(row: React.ReactElement, opts: { collapsed: boolean; isSub: boolean; title: React.ReactNode }) {
+  if (!opts.collapsed || opts.isSub) {
+    return row;
+  }
+  return (
+    <Tooltip title={opts.title} placement='right'>
+      {row}
+    </Tooltip>
+  );
 }
 
 function chunkMenusBySection(items: IMenuItem[]) {
@@ -169,10 +184,8 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
     <div className='w-full' ref={rootRef}>
       <div
         onClick={() => {
-          if (collapsed) {
-            otherProps.onClick?.(item.key);
-            return;
-          }
+          // Collapsed rail: the hover panel is the only way into a group's children.
+          if (collapsed) return;
           setIsExpand(!isExpand);
         }}
         className={cn(
@@ -304,7 +317,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
     ? 'hover:bg-[rgba(204,204,220,0.12)]'
     : 'hover:bg-fc-200';
 
-  return (
+  const row = (
     <Link
       to={savedPath || path}
       className={cn(
@@ -397,6 +410,8 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       )}
     </Link>
   );
+
+  return wrapCollapsedRowWithTooltip(row, { collapsed, isSub, title: t(item.label) });
 }
 
 function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean } & IMenuProps) {
@@ -418,7 +433,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
     ? 'px-3.5 text-[var(--fc-sidemenu-item-text)] hover:bg-[var(--fc-sidemenu-item-hover-bg)]'
     : cn('px-3.5', isCustomBg ? 'text-[#ccccdc]' : 'text-main', 'hover:bg-[rgba(204,204,220,0.12)]');
 
-  return (
+  const row = (
     <a
       href={item.path}
       target={item.target}
@@ -462,6 +477,8 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
       )}
     </a>
   );
+
+  return wrapCollapsedRowWithTooltip(row, { collapsed, isSub, title: t(item.label) });
 }
 
 export default function MenuList(
@@ -711,7 +728,7 @@ export default function MenuList(
                                 </>
                               );
                               const handleClick = () => {
-                                props.onClick?.(c.key, { keepCollapsed: true });
+                                props.onClick?.(c.key);
                                 closeHoverPanel();
                               };
                               if (c.pathType === 'absolute') {
