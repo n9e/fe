@@ -59,6 +59,12 @@ export default function useMetricArrival(options: Options) {
   /** 逐台确认模式下：开始检测前就已在上报的（修改配置场景） */
   const [preexistingIdents, setPreexistingIdents] = useState<string[]>([]);
   const [hitDatasourceNames, setHitDatasourceNames] = useState<string[]>([]);
+  /**
+   * 精确哨兵指标连续数轮查空后自动降级为前缀匹配的标记，UI 据此标注「按前缀匹配」。
+   * 背景：catalog 登记的精确指标名可能与部署实际对不上（真机已抓到 Ping 一例），
+   * 降级让错误的登记只损失精确性，不把整场验证拖到超时。
+   */
+  const [fallbackToPrefix, setFallbackToPrefix] = useState(false);
   const [round, setRound] = useState(0);
 
   // 数组入参每次渲染都是新引用，effect 依赖用稳定 key，轮询内部经 ref 取最新值
@@ -87,9 +93,15 @@ export default function useMetricArrival(options: Options) {
 
     const startedAt = Date.now();
     const selected = _.compact(identsRef.current ?? []);
-    const promql = buildArrivalPromql({ metricPrefix, metric, idents: selected });
+    // 降级只发生在逐台确认模式：通用模式靠「基线外新增」判成功，切换指标会把
+    // 存量机器全部算成新增，直接制造假阳性；逐台模式的成功条件是「所选机器都在上报」，
+    // 换成前缀匹配语义不变，只是失去区分存量的精度（由 fallbackToPrefix 让 UI 如实标注）。
+    let useFallback = false;
+    let exactEmptyRounds = 0;
+    setFallbackToPrefix(false);
+    const buildQuery = () => buildArrivalPromql({ metricPrefix, metric: useFallback ? undefined : metric, idents: selected });
 
-    const queryIdents = (datasourceId: number): Promise<string[] | null> =>
+    const queryIdents = (datasourceId: number, promql: string): Promise<string[] | null> =>
       getPromData(`/api/${N9E_PATHNAME}/proxy/${datasourceId}/api/v1/query`, {
         time: moment().unix(),
         query: promql,
@@ -106,8 +118,25 @@ export default function useMetricArrival(options: Options) {
     let timer: ReturnType<typeof setTimeout>;
     const tick = async () => {
       const list = datasourcesRef.current;
-      const results = await Promise.all(_.map(list, (ds) => queryIdents(ds.id)));
+      const promql = buildQuery();
+      const results = await Promise.all(_.map(list, (ds) => queryIdents(ds.id, promql)));
       if (stopped) return;
+
+      // 精确指标自愈降级：连续 3 轮（约 15 秒）所有数据源一条序列都没有，
+      // 大概率是指标名登记错了而不是数据没到，切前缀继续等，别陪着错名字空转到超时
+      if (metric && !useFallback && selected.length > 0) {
+        const anySeries = _.some(results, (r) => r !== null && r.length > 0);
+        const anySuccess = _.some(results, (r) => r !== null);
+        if (anySuccess && !anySeries) {
+          exactEmptyRounds += 1;
+          if (exactEmptyRounds >= 3) {
+            useFallback = true;
+            setFallbackToPrefix(true);
+          }
+        } else if (anySeries) {
+          exactEmptyRounds = 0;
+        }
+      }
 
       const allIdents = new Set<string>();
       const freshIdents = new Set<string>();
@@ -169,5 +198,5 @@ export default function useMetricArrival(options: Options) {
     };
   }, [active, datasourceKey, identsKey, metricPrefix, metric, round, timeout]);
 
-  return { status, newIdents, reportingIdents, missingIdents, preexistingIdents, hitDatasourceNames, restart: () => setRound((r) => r + 1) };
+  return { status, newIdents, reportingIdents, missingIdents, preexistingIdents, hitDatasourceNames, fallbackToPrefix, restart: () => setRound((r) => r + 1) };
 }

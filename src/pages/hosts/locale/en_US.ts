@@ -303,6 +303,7 @@ const en_US = {
       targets_tip: 'Pick the hosts you will run the command on to confirm each host individually; leave empty to watch for any newly reporting host',
       targets_placeholder: 'Select host identifiers',
       detected_targets: 'All {{count}} selected host(s) are reporting {{metric}} metrics: {{idents}} (data source: {{datasource}})',
+      fallback_note: 'The exact sentinel metric kept returning nothing, so the check fell back to the {{prefix}} prefix (existing reporters cannot be distinguished in this mode)',
       preexisting_note: '{{idents}} were already reporting before detection started; if you were modifying an existing config, continuous reporting means it took effect',
       partial: '{{arrived}}/{{total}} host(s) reporting: {{idents}}',
       timeout_targets: 'Timed out; selected host(s) still not reporting: {{idents}}',

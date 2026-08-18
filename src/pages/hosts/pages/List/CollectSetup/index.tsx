@@ -635,6 +635,8 @@ export default function CollectSetup(props: Props) {
                   }
                   description={
                     <>
+                      {/* 精确哨兵连查不到、按前缀匹配成功的，如实标注——此时区分不了存量机器 */}
+                      {arrival.fallbackToPrefix && <div className='mb-1'>{t('collect.verify.fallback_note', { prefix: `${metricPrefix}_` })}</div>}
                       {arrival.preexistingIdents.length > 0 && (
                         <div className='mb-1'>{t('collect.verify.preexisting_note', { idents: _.join(arrival.preexistingIdents, ', ') })}</div>
                       )}

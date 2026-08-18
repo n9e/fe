@@ -302,6 +302,7 @@ const zh_HK = {
       targets_tip: '選擇你將要執行命令的機器：可逐台確認上報情況；不選則監聽所有機器的新增上報',
       targets_placeholder: '選擇機器標識',
       detected_targets: '所選 {{count}} 台機器均已上報 {{metric}} 指標：{{idents}}（數據源：{{datasource}}）',
+      fallback_note: '精確指標連續查不到，已改按 {{prefix}} 前綴匹配確認（此模式下無法區分存量機器）',
       preexisting_note: '{{idents}} 在開始檢測前就已在上報；如果你是修改配置，指標持續上報即為生效',
       partial: '已上報 {{arrived}}/{{total}} 台：{{idents}}',
       timeout_targets: '等待逾時，所選機器中仍未上報：{{idents}}',
