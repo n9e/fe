@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Form, Space, Pagination, Empty, Popover, InputNumber, Select } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
@@ -219,7 +219,7 @@ export default function index(props: Props) {
               list: mergedList,
               total: res.total,
               hash: _.uniqueId('logs_'),
-              colWidths: calcColWidthByData(mergedList),
+              colWidths: calcColWidthByData(newData, data?.colWidths),
               fields: filterOutBuiltinFields(getFields(mergedList, queryValues.date_field)),
               highlights: mergedHighlights,
             };
@@ -363,6 +363,61 @@ export default function index(props: Props) {
     setExecuteLoading(loading || histogramLoading);
   }, [loading, histogramLoading]);
 
+  // P0-1: 稳定引用。避免插件每次重渲（如查询输入框敲字）导致 LogsViewer/Context value 重建，
+  // 进而打穿 Raw/Table 的 memo。query 字符串参与 drilldownContext 是必要的（建链接要用），
+  // 其余与输入无关的部分保持稳定。
+  const drilldownContext = useMemo(
+    () => ({
+      cate: DatasourceCateEnum.elasticsearch,
+      datasource_id: datasourceValue,
+      resource: { es_resource: { index: queryValues?.index, date_field: queryValues?.date_field } },
+      query: queryValues?.query,
+    }),
+    [datasourceValue, queryValues?.index, queryValues?.date_field, queryValues?.query],
+  );
+
+  const handleFilterFields = useCallback(
+    (fieldKeys: string[]) => {
+      return filteredFields(fieldKeys, organizeFields);
+    },
+    [organizeFields],
+  );
+
+  const handleTimeFieldColumnFormat = useCallback(
+    (val: string | number) => {
+      if (!queryValues?.date_field) return val as string;
+      if (queryValues?.index_pattern) {
+        return getDateTokenDisplayValue({
+          value: _.toString(val),
+          fieldValue: _.toString(val),
+          name: queryValues.date_field,
+          fieldConfig: currentFieldConfig,
+        });
+      }
+      const parsedTime = moment(val);
+      if (parsedTime.isValid()) {
+        return parsedTime.format('YYYY-MM-DD HH:mm:ss.SSS');
+      }
+      return val as string;
+    },
+    [queryValues?.date_field, queryValues?.index_pattern, currentFieldConfig],
+  );
+
+  const handleLinesColumnFormat = useCallback(
+    (val: number) => {
+      if (pageLoadMode === 'infiniteScroll') return val;
+      return serviceParams.pageSize * (serviceParams.current - 1) + val;
+    },
+    [pageLoadMode, serviceParams],
+  );
+
+  const handleAdjustFieldValue = useCallback((formatedValue: string, highlightValue?: string[]) => {
+    if (highlightValue) {
+      return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlightValue)) }} />;
+    }
+    return formatedValue;
+  }, []);
+
   return (
     <>
       {refreshFlag ? (
@@ -373,12 +428,7 @@ export default function index(props: Props) {
               fieldConfig={currentFieldConfig}
               indexData={indexData}
               range={queryValues?.range}
-              drilldownContext={{
-                cate: DatasourceCateEnum.elasticsearch,
-                datasource_id: datasourceValue,
-                resource: { es_resource: { index: queryValues?.index, date_field: queryValues?.date_field } },
-                query: queryValues?.query,
-              }}
+              drilldownContext={drilldownContext}
               // props
               id_key='__n9e_id_n9e__'
               raw_key='__n9e_raw_n9e__'
@@ -398,9 +448,7 @@ export default function index(props: Props) {
               timeColumnWidth={240}
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}
-              filterFields={(fieldKeys) => {
-                return filteredFields(fieldKeys, organizeFields);
-              }}
+              filterFields={handleFilterFields}
               renderHistogramAddonAfterRender={(toggleNode) => {
                 if (data) {
                   return (
@@ -597,32 +645,9 @@ export default function index(props: Props) {
                   }));
                 }
               }}
-              timeFieldColumnFormat={(val) => {
-                if (!queryValues.date_field) return val as string;
-                if (queryValues?.index_pattern) {
-                  return getDateTokenDisplayValue({
-                    value: _.toString(val),
-                    fieldValue: _.toString(val),
-                    name: queryValues.date_field,
-                    fieldConfig: currentFieldConfig,
-                  });
-                }
-                const parsedTime = moment(val);
-                if (parsedTime.isValid()) {
-                  return parsedTime.format('YYYY-MM-DD HH:mm:ss.SSS');
-                }
-                return val as string;
-              }}
-              linesColumnFormat={(val) => {
-                if (pageLoadMode === 'infiniteScroll') return val;
-                return serviceParams.pageSize * (serviceParams.current - 1) + val;
-              }}
-              adjustFieldValue={(formatedValue, highlightValue) => {
-                if (highlightValue) {
-                  return <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(formatedValue, highlightValue)) }} />;
-                }
-                return formatedValue;
-              }}
+              timeFieldColumnFormat={handleTimeFieldColumnFormat}
+              linesColumnFormat={handleLinesColumnFormat}
+              adjustFieldValue={handleAdjustFieldValue}
               logClusting={{
                 enabled: IS_PLUS,
                 queryStrRef,

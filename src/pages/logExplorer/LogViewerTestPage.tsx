@@ -270,29 +270,32 @@ function LogModeSection() {
             enableLogTextSelectMenu: false,
           }}
         >
-          {mode === 'origin' ? (
-            <Raw
-              id_key='___id___'
-              raw_key='___raw___'
-              timeField='___time___'
-              data={MOCK_LOGS}
-              highlights={HIGHLIGHTS}
-              options={{ ...DEFAULT_OPTIONS, logMode: 'origin', lineBreak: lineBreak ? 'true' : 'false', jsonDisplaType: jsonType }}
-              onReverseChange={() => {}}
-              onValueFilter={handleValueFilter}
-            />
-          ) : (
-            <Table
-              id_key='___id___'
-              raw_key='___raw___'
-              timeField='___time___'
-              data={MOCK_LOGS}
-              highlights={HIGHLIGHTS}
-              options={{ ...DEFAULT_OPTIONS, logMode: 'table', lineBreak: lineBreak ? 'true' : 'false', jsonDisplaType: jsonType }}
-              onReverseChange={() => {}}
-              onValueFilter={handleValueFilter}
-            />
-          )}
+          {/* P1-2: Origin 模式已切换为 react-virtuoso 虚拟列表，需要确定高度；Card 内补固定高度容器 */}
+          <div className='h-[480px]'>
+            {mode === 'origin' ? (
+              <Raw
+                id_key='___id___'
+                raw_key='___raw___'
+                timeField='___time___'
+                data={MOCK_LOGS}
+                highlights={HIGHLIGHTS}
+                options={{ ...DEFAULT_OPTIONS, logMode: 'origin', lineBreak: lineBreak ? 'true' : 'false', jsonDisplaType: jsonType }}
+                onReverseChange={() => {}}
+                onValueFilter={handleValueFilter}
+              />
+            ) : (
+              <Table
+                id_key='___id___'
+                raw_key='___raw___'
+                timeField='___time___'
+                data={MOCK_LOGS}
+                highlights={HIGHLIGHTS}
+                options={{ ...DEFAULT_OPTIONS, logMode: 'table', lineBreak: lineBreak ? 'true' : 'false', jsonDisplaType: jsonType }}
+                onReverseChange={() => {}}
+                onValueFilter={handleValueFilter}
+              />
+            )}
+          </div>
         </LogsViewerStateContext.Provider>
       </Card>
 
