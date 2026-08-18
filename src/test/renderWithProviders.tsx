@@ -34,6 +34,8 @@ export function createMockCommonState(overrides: Partial<ICommonState> = {}): IC
     isPlus: false,
     sideMenuBgMode: 'dark',
     setSideMenuBgMode: () => {},
+    // 兼容新增的必填菜单背景默认值；通过展开保留对旧版 ICommonState 的兼容。
+    ...{ defaultMenuBgMode: 'light' },
     darkMode: false,
     setDarkMode: () => {},
     esIndexMode: '',

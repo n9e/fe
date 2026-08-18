@@ -183,7 +183,7 @@ export default function LegendTable(props: Props) {
           },
         }}
         onChange={(_pagination, _filters, sorter: SorterResult<DataItem> | SorterResult<DataItem>[]) => {
-          if (_.isArray(sorter)) {
+          if (Array.isArray(sorter)) {
             return;
           }
           setScrollTop(0);

@@ -47,29 +47,29 @@ export default function initializeVariablesValue(
       }
     }
     if (isTextbox) {
-      if (_.isArray(variableValue)) {
+      if (Array.isArray(variableValue)) {
         variableValue = variableValue[0] ?? variablesItem.defaultValue ?? '';
       }
       if (variableValue === null || variableValue === undefined) {
         variableValue = variablesItem.defaultValue ?? '';
       }
-    } else if (variableValue === null || variableValue === undefined || variableValue === '' || (_.isArray(variableValue) && _.isEmpty(variableValue))) {
+    } else if (variableValue === null || variableValue === undefined || variableValue === '' || (Array.isArray(variableValue) && variableValue.length === 0)) {
       // 如果值为空（null, undefined, '', []）则置为 undefined
       variableValue = undefined;
-    } else if (variablesItem.type === 'datasource' && !_.isNaN(_.toNumber(variableValue))) {
+    } else if (variablesItem.type === 'datasource' && !Number.isNaN(Number(variableValue))) {
       variableValue = _.toNumber(variableValue);
     } else if (variablesItem.multi) {
       // 多选模式
       if (variableValue === 'all') {
         // 全选值（all）设置为 ['all']
         variableValue = ['all'];
-      } else if (_.isString(variableValue)) {
+      } else if (typeof variableValue === 'string') {
         // 单选值（string）转换为数组
         variableValue = [variableValue];
       }
     } else {
       // 单选模式，值为数组时取第一个
-      if (_.isArray(variableValue)) {
+      if (Array.isArray(variableValue)) {
         variableValue = variableValue[0] ?? undefined;
       }
     }
