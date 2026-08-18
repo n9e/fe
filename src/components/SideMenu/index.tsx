@@ -480,13 +480,7 @@ const SideMenu = (props: SideMenuProps) => {
                 isCustomBg={isCustomBg}
                 quickMenuRef={quickMenuRef}
                 topExtra={topExtra}
-                onClick={(key, opts) => {
-                  if (collapsed && !opts?.keepCollapsed) {
-                    setCollapsed(false);
-                    localStorage.setItem('menuCollapsed', '0');
-                  }
-                  onMenuClick?.(key);
-                }}
+                onClick={onMenuClick}
                 isGoldTheme={isGoldTheme}
               />
             </ScrollArea>
