@@ -43,14 +43,12 @@ const resolveTransformedFieldName = (sourceFieldName: string, transformations: u
 export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPanel {
   const fallback = _.cloneDeep(panel);
   try {
-    if (!isRecord(fallback)) return fallback;
-
     const result = fallback;
     const custom = isRecord(result.custom) ? result.custom : {};
     const displayMode = typeof custom.displayMode === 'string' ? custom.displayMode : 'seriesToRows';
     const targets = asRecordArray(result.targets);
     const legacyLinks = asRecordArray(custom.links);
-    const existingOptionLinks = asRecordArray(isRecord(result.options) ? result.options.links : undefined);
+    const existingOptionLinks = asRecordArray(result.options.links);
     const valueFieldNames = targets.filter((target) => typeof target.refId === 'string' && target.refId).map((target) => `__value_#${target.refId}`);
     const valueFieldDisplayNames = targets.map((target, index) => (typeof target.legend === 'string' && target.legend ? target.legend : valueFieldNames[index]));
     const renameByName = Object.fromEntries(
@@ -68,7 +66,7 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
         type: 'none',
       },
     };
-    result.options = { ...(isRecord(result.options) ? result.options : {}) };
+    result.options = { ...result.options };
     delete result.options.links;
     result.targets = targets.map((target) => {
       if (displayMode === 'labelValuesToRows') {

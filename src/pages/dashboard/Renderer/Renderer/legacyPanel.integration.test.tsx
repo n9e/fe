@@ -60,7 +60,7 @@ describe('legacy dashboard panel rendering', () => {
     jest.useFakeTimers();
     try {
       fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
-      const panel = dashboardMigrator(fixture).panels[0] as React.ComponentProps<typeof Renderer>['values'];
+      const panel = dashboardMigrator(fixture).panels[0] as unknown as React.ComponentProps<typeof Renderer>['values'];
       render(<Renderer id='panel-1' isPreview panelWidth={800} time={time} values={panel} annotations={[]} />, { wrapper: createCommonStateWrapper({ datasourceList: [] }) });
 
       await act(async () => {
@@ -81,7 +81,7 @@ describe('legacy dashboard panel rendering', () => {
     jest.useFakeTimers();
     try {
       fetchDashboardQueryMock.mockResolvedValue({ results: [{ ref_id: 'A', status: 'error', error: { code: 'QUERY_FAILED', message: 'backend down', retryable: true } }] });
-      const panel = dashboardMigrator(legacyPromTimeseries).panels[0] as React.ComponentProps<typeof Renderer>['values'];
+      const panel = dashboardMigrator(legacyPromTimeseries).panels[0] as unknown as React.ComponentProps<typeof Renderer>['values'];
       render(<Renderer id='panel-1' isPreview panelWidth={800} time={time} values={panel} annotations={[]} />, { wrapper: createCommonStateWrapper({ datasourceList: [] }) });
       await act(async () => {
         jest.advanceTimersByTime(600);
@@ -98,7 +98,7 @@ describe('legacy dashboard panel rendering', () => {
     jest.useFakeTimers();
     try {
       fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
-      const panel = dashboardMigrator(legacyPromTimeseries).panels[0] as React.ComponentProps<typeof Renderer>['values'];
+      const panel = dashboardMigrator(legacyPromTimeseries).panels[0] as unknown as React.ComponentProps<typeof Renderer>['values'];
       const view = render(<Renderer id='panel-1' isPreview panelWidth={800} time={time} values={panel} annotations={[]} />, {
         wrapper: createCommonStateWrapper({ datasourceList: [] }),
       });

@@ -152,9 +152,9 @@ function TableCpt(props: IProps, ref: any) {
     } else if (displayMode === 'labelsOfSeriesToRows') {
       fields = !_.isEmpty(columns) ? (columns as string[]) : isRawData(series) ? getColumnsKeys(data) : [...getColumnsKeys(data), 'value'];
     } else if (displayMode === 'labelValuesToRows') {
-      fields = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension as string];
+      fields = Array.isArray(aggrDimension) ? aggrDimension : aggrDimension ? [aggrDimension] : [];
     }
-    const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension as string];
+    const aggrDimensions = Array.isArray(aggrDimension) ? aggrDimension : aggrDimension ? [aggrDimension] : [];
     const tableDataSource = formatToTable(data, aggrDimensions, 'refId');
     const groupNames = _.reduce(
       tableDataSource,
@@ -339,7 +339,7 @@ function TableCpt(props: IProps, ref: any) {
     }
 
     if (displayMode === 'labelValuesToRows' && aggrDimension) {
-      const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension as string];
+      const aggrDimensions = Array.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
       tableDataSource = formatToTable(calculatedValues, aggrDimensions, 'refId');
       const groupNames = _.reduce(
         tableDataSource,
@@ -501,7 +501,7 @@ function TableCpt(props: IProps, ref: any) {
             data.unshift(keys);
           }
           if (displayMode === 'labelValuesToRows' && aggrDimension) {
-            const aggrDimensions = _.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
+            const aggrDimensions = Array.isArray(aggrDimension) ? aggrDimension : [aggrDimension];
             const groupNames = _.reduce(
               tableDataSource,
               (pre, item) => {

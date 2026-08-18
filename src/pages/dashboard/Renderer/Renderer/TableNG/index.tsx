@@ -351,7 +351,7 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
                 if (date2Number === null) {
                   return 1;
                 }
-                if (_.isNumber(date1Number) && _.isNumber(date2Number)) {
+                if (typeof date1Number === 'number' && typeof date2Number === 'number') {
                   return date1Number - date2Number;
                 }
                 return localeCompare(date1Number, date2Number);

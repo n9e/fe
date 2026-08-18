@@ -45,7 +45,7 @@ describe('legacy dashboard panel rendering by cate', () => {
     try {
       fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
       const spec = legacyPanelSpecByCate[cate];
-      const panel = dashboardMigrator(buildLegacyDashboard(spec)).panels[0] as React.ComponentProps<typeof Renderer>['values'];
+      const panel = dashboardMigrator(buildLegacyDashboard(spec)).panels[0] as unknown as React.ComponentProps<typeof Renderer>['values'];
       render(<Renderer id={`panel-${cate}`} isPreview panelWidth={800} time={time} values={panel} annotations={[]} />, {
         wrapper: createCommonStateWrapper({ datasourceList: [] }),
       });
@@ -69,7 +69,7 @@ describe('legacy dashboard panel rendering by cate', () => {
     try {
       fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse([{ ref_id: 'A', status: 'success', result_type: 'logs', records: [{ fields: { message: 'hello' } }] }]));
       const spec = legacyLogsPanelSpecByCate[cate];
-      const panel = dashboardMigrator(buildLegacyDashboard(spec)).panels[0] as React.ComponentProps<typeof Renderer>['values'];
+      const panel = dashboardMigrator(buildLegacyDashboard(spec)).panels[0] as unknown as React.ComponentProps<typeof Renderer>['values'];
       render(<Renderer id={`panel-${cate}-logs`} isPreview panelWidth={800} time={time} values={panel} annotations={[]} />, {
         wrapper: createCommonStateWrapper({ datasourceList: [] }),
       });
