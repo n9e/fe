@@ -1,7 +1,8 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Form, Input, Row, Col, Select, Switch, Button, Space } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useDeepCompareEffect } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { useGlobalState } from '@/pages/dashboard/globalState';
@@ -58,9 +59,9 @@ function EditItem(props: IProps) {
     : '';
   const footerExtraRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     form.setFieldsValue(data);
-  }, [JSON.stringify(data)]);
+  }, [data]);
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form}>

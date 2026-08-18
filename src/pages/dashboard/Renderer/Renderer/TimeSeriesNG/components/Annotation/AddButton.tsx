@@ -11,7 +11,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import FormModal, { Values } from './FormModal';
 
 interface Props {
-  uplotRef: React.MutableRefObject<uPlot>;
+  uplotRef: React.MutableRefObject<uPlot | undefined>;
   panelID: string;
   timeZone?: string;
   closeOverlay: () => void;

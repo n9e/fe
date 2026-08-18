@@ -4,9 +4,11 @@ import { Tooltip } from 'antd';
 import _ from 'lodash';
 
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import type { DataItem } from '../../utils/getLegendData';
+import type { ScopedVariables } from '@/pages/dashboard/types';
 
 interface Props {
-  data: any;
+  data: DataItem;
   name?: string;
   url?: string;
   style?: React.CSSProperties;
@@ -15,7 +17,7 @@ interface Props {
 export default function Link(props: Props) {
   const { data, name, url, style } = props;
   if (!url) return null;
-  const scopedVars = {
+  const scopedVars: Record<string, string | number | null | undefined> = {
     '__field.name': data.name,
     '__field.value': data.last?.stat,
   };
@@ -24,7 +26,8 @@ export default function Link(props: Props) {
   });
 
   const linkHref = replaceTemplateVariables(url, {
-    scopedVars,
+    // 运行时 scopedVars 为扁平字符串映射（非 { value } 结构），仅做类型收窄
+    scopedVars: scopedVars as unknown as ScopedVariables,
   });
 
   return (

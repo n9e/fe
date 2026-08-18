@@ -2,11 +2,12 @@ import React from 'react';
 import _ from 'lodash';
 
 import { IOptions, IBarGaugeStyles } from '../../../../types';
+import type { BarGaugeValue } from '../utils';
 
 import LCDBar from './LCDBar';
 
 interface Props {
-  values: any[];
+  values: BarGaugeValue[];
   custom: IBarGaugeStyles;
   options: IOptions;
   themeMode?: 'dark';

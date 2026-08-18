@@ -1,4 +1,4 @@
-import { DataPoint, Transformation, QueryResult, TimeSeries, TableData } from '../types';
+import { DataPoint, Transformation, QueryResult, TimeSeries, TableCellValue, TableData, TableFieldState } from '../types';
 import { isTimeSeriesArray, isTableDataArray } from '../utils';
 
 export interface JoinByFieldOptions {
@@ -43,7 +43,7 @@ export default class JoinByFieldTransformation implements Transformation {
         if (!timestampMap.has(timestamp)) {
           timestampMap.set(timestamp, {});
         }
-        timestampMap.get(timestamp)![`value${index}`] = dataPoint.value;
+        timestampMap.get(timestamp)![`value${index}`] = dataPoint.value as number;
       });
     });
 
@@ -94,7 +94,7 @@ export default class JoinByFieldTransformation implements Transformation {
     // 创建连接键到行索引的映射
     const keyToRowIndexMaps = tables.map((table) => {
       const joinField = table.fields.find((field) => field.name === byField)!;
-      const keyToRowIndex = new Map<any, number[]>();
+      const keyToRowIndex = new Map<TableCellValue, number[]>();
 
       joinField.values.forEach((value, index) => {
         if (!keyToRowIndex.has(value)) {
@@ -107,7 +107,7 @@ export default class JoinByFieldTransformation implements Transformation {
     });
 
     // 获取所有可能的连接键
-    const allKeys = new Set<any>();
+    const allKeys = new Set<TableCellValue>();
     keyToRowIndexMaps.forEach((keyMap) => {
       Array.from(keyMap.keys()).forEach((key) => allKeys.add(key));
     });
@@ -123,12 +123,15 @@ export default class JoinByFieldTransformation implements Transformation {
     const resultFields: Array<{
       name: string;
       type: string;
-      values: (string | number | null)[];
-      state: any;
+      values: TableCellValue[];
+      state: TableFieldState;
     }> = [];
 
     // 添加连接字段
-    const joinFieldFromFirstTable = tables[0].fields.find((field) => field.name === byField)!;
+    const firstTable = tables[0];
+    if (!firstTable) return tables;
+    const joinFieldFromFirstTable = firstTable.fields.find((field) => field.name === byField);
+    if (!joinFieldFromFirstTable) return tables;
     resultFields.push({
       name: byField,
       type: joinFieldFromFirstTable.type,
@@ -169,13 +172,16 @@ export default class JoinByFieldTransformation implements Transformation {
 
       if (combinations === 0 && mode === 'outer') {
         // 对于外连接，如果某个表没有这个键，创建一行 null 值
-        resultFields[0].values.push(key); // 连接字段值
+        const resultJoinField = resultFields[0];
+        if (!resultJoinField) return;
+        resultJoinField.values.push(key); // 连接字段值
 
         let fieldIndex = 1;
         tables.forEach((table, tableIndex) => {
           table.fields.forEach((field) => {
             if (field.name !== byField) {
-              resultFields[fieldIndex].values.push(null);
+              const resultField = resultFields[fieldIndex];
+              if (resultField) resultField.values.push(null);
               fieldIndex++;
             }
           });
@@ -185,17 +191,20 @@ export default class JoinByFieldTransformation implements Transformation {
         const maxCombinations = Math.max(1, ...rowIndices.map((indices) => indices.length));
 
         for (let combIndex = 0; combIndex < maxCombinations; combIndex++) {
-          resultFields[0].values.push(key); // 连接字段值
+          const resultJoinField = resultFields[0];
+          if (!resultJoinField) return;
+          resultJoinField.values.push(key); // 连接字段值
 
           let fieldIndex = 1;
           tables.forEach((table, tableIndex) => {
-            const tableRowIndices = rowIndices[tableIndex];
+            const tableRowIndices = rowIndices[tableIndex] ?? [];
             const rowIndex = tableRowIndices.length > 0 ? tableRowIndices[combIndex % tableRowIndices.length] : -1;
 
             table.fields.forEach((field) => {
               if (field.name !== byField) {
-                const value = rowIndex >= 0 ? field.values[rowIndex] : null;
-                resultFields[fieldIndex].values.push(value);
+                const value = rowIndex >= 0 ? field.values[rowIndex] ?? null : null;
+                const resultField = resultFields[fieldIndex];
+                if (resultField) resultField.values.push(value);
                 fieldIndex++;
               }
             });

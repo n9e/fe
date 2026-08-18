@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext, useImperativeHandle } from 'react';
-import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType } from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType, GridApi, ICellRendererParams, RowNode } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
 import _ from 'lodash';
@@ -11,8 +11,10 @@ import { CommonStateContext } from '@/App';
 import getFontFamily from '@/utils/getFontFamily';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
+import useStableValue from '@/pages/dashboard/hooks/useStableValue';
 
-import { IOverride, IPanel } from '../../../types';
+import { IOverride, IPanel, CellOptions } from '../../../types';
+import type { DashboardSeries } from '../../datasource/types';
 import { downloadCsv } from '../Table/utils';
 import { DARK_PARAMS, LIGHT_PARAMS } from './constants';
 import getFormattedRowData from './utils/getFormattedRowData';
@@ -29,6 +31,7 @@ import CellRenderer from './CellRenderer';
 import { TextObject } from './CellRenderer/types';
 import CustomColumnFilter, { doesFilterPass } from './CustomColumnFilter';
 import Links, { cellClickCallback } from './Links';
+import type { LinksHandle } from './Links';
 import RowDetailDrawer from './RowDetailDrawer';
 import TextSearchIcon from './TextSearchIcon';
 import { getDisplayedRowDetails, shouldIgnoreRowDetailClickAway } from './rowDetailUtils';
@@ -47,13 +50,14 @@ const i18nAgGrid = {
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const ROW_DETAIL_COLUMN_ID = '__table_ng_row_detail__';
+type TableGridRow = Record<string, TextObject>;
 
 interface Props {
   themeMode?: 'dark';
   isPreview?: boolean;
   id?: string; // dashboardID
   values: IPanel;
-  series: any[];
+  series: DashboardSeries[];
   rangeMode?: 'lcro' | 'lcrc';
   ajustColumns?: (columns: string[]) => string[];
   themes?: {
@@ -63,20 +67,21 @@ interface Props {
   headerHeight?: number;
   rowHeight?: number;
   showUnderline?: boolean;
+  dataRevision?: number;
   onCellClick?: (
     cellEvent: CellClickedEvent<
       {
         [key: string]: TextObject;
       },
-      any,
-      any
+      TextObject,
+      unknown
     >,
   ) => void;
   domLayout?: DomLayoutType;
   onOverridesChange?: (overrides: IOverride[]) => void;
 }
 
-function index(props: Props, ref: React.Ref<any>) {
+function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   const { t, i18n } = useTranslation('dashboard');
   const { siteInfo } = useContext(CommonStateContext);
   const {
@@ -98,18 +103,26 @@ function index(props: Props, ref: React.Ref<any>) {
     domLayout,
     onOverridesChange,
   } = props;
+  const dataDependency = props.dataRevision ?? series;
 
   // 列宽缓存 key：dashboardID + panelID
   const cacheKey = dashboardId && values?.id ? `tableNG_colWidths_${dashboardId}_${values.id}` : null;
 
   const { transformationsNG: transformations, custom, options, overrides } = values;
-  const { showHeader = true, cellOptions = {}, filterable, sortColumn, sortOrder, enableRowDetail = false } = custom || {};
+  const { showHeader = true, filterable, sortColumn, sortOrder, enableRowDetail = false } = custom || {};
+  // custom.cellOptions 来自面板持久化配置（JsonValue），运行时为 CellOptions 结构，这里做类型收窄
+  const cellOptions = ((custom || {}).cellOptions ?? {}) as unknown as CellOptions;
+  const stableTransformations = useStableValue(transformations);
+  const stableCellOptions = useStableValue(cellOptions);
+  const stableOptions = useStableValue(options);
+  const stableOverrides = useStableValue(overrides);
+  const stableThemes = useStableValue(themes);
   // useRef 不支持懒初始化，在渲染时直接同步读取初始值
   const cachedColWidthsRef = React.useRef<Record<string, number>>(readCachedColumnWidths(cacheKey));
   const appliedColWidthsRef = React.useRef<Record<string, number>>({});
-  const gridApiRef = React.useRef<any>(null);
+  const gridApiRef = React.useRef<GridApi<Record<string, TextObject>> | null>(null);
   const persistedColumnWidths = getResolvedColumnWidths(cachedColWidthsRef.current, overrides);
-  const linksRef = React.useRef<any>(null);
+  const linksRef = React.useRef<LinksHandle>(null);
   const tableContainerRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [rowDetailState, setRowDetailState] = useState<{
@@ -123,12 +136,20 @@ function index(props: Props, ref: React.Ref<any>) {
   });
   const [, setSeries] = useGlobalState('series');
   const [, setTableFields] = useGlobalState('tableFields');
-  const { data, rowData, columns, formattedData, sourceRowByFormattedRow } = useMemo(() => {
+  const {
+    data,
+    rowData,
+    columns,
+    formattedData,
+    sourceRowByFormattedRow,
+    activeIndex: safeActiveIndex,
+  } = useMemo(() => {
     const data = normalizeData(series, transformations);
     const columns = _.uniq(_.flatMap(data, 'columns'));
-    setTableFields(columns);
 
-    const activeData = data[activeIndex];
+    // 转换链可能合并/减少帧数（如 merge、organize），activeIndex 需收敛到有效范围，避免取到 undefined 帧。
+    const safeActiveIndex = Math.min(activeIndex, Math.max(data.length - 1, 0));
+    const activeData = data[safeActiveIndex];
     const formattedData = getFormattedRowData(activeData, { cellOptions, options, overrides, rangeMode });
     const sourceRowByFormattedRow = new WeakMap<object, RowDetailData>();
     _.forEach(formattedData, (formattedRow, index) => {
@@ -144,8 +165,13 @@ function index(props: Props, ref: React.Ref<any>) {
       columns: activeData?.columns || [],
       formattedData,
       sourceRowByFormattedRow,
+      activeIndex: safeActiveIndex,
     };
-  }, [activeIndex, JSON.stringify(_.map(series, 'id')), JSON.stringify(transformations), JSON.stringify(cellOptions), JSON.stringify(options), JSON.stringify(overrides)]); // TODO : 依赖项可能需要更精确的控制，不然会导致不必要的重新渲染
+  }, [activeIndex, dataDependency, stableTransformations, stableCellOptions, stableOptions, stableOverrides]);
+
+  useEffect(() => {
+    setTableFields(columns);
+  }, [columns, setTableFields]);
 
   useEffect(() => {
     setRowDetailState({
@@ -195,13 +221,13 @@ function index(props: Props, ref: React.Ref<any>) {
       ...LIGHT_PARAMS,
       ...themes.light,
     });
-  }, [themeMode, JSON.stringify(themes)]);
+  }, [themeMode, stableThemes]);
 
   useEffect(() => {
     if (isPreview) {
       setSeries(series);
     }
-  }, [JSON.stringify(_.map(series, 'id'))]);
+  }, [dataDependency]);
 
   const applyPersistedColumnWidths = (api = gridApiRef.current) => {
     if (!api) return;
@@ -223,9 +249,11 @@ function index(props: Props, ref: React.Ref<any>) {
   }, [cacheKey]);
 
   // 编辑器表单或仪表盘状态更新 override 后，立即同步到当前网格。
+  // JSON.stringify 不直接放进依赖数组（见 dependencyPolicy），先 memo 成稳定 key。
+  const overridesKey = useMemo(() => JSON.stringify(overrides), [overrides]);
   useEffect(() => {
     applyPersistedColumnWidths();
-  }, [JSON.stringify(overrides)]);
+  }, [overridesKey]);
 
   return (
     <div
@@ -269,7 +297,7 @@ function index(props: Props, ref: React.Ref<any>) {
                   cellStyle: {
                     padding: 0,
                   },
-                  cellRenderer: (params) => (
+                  cellRenderer: (params: ICellRendererParams<TableGridRow>) => (
                     <Tooltip title={t('panel.custom.tableNG.rowDetail.triggerTip')}>
                       <div
                         className='absolute inset-0 flex items-center justify-center cursor-pointer'
@@ -308,7 +336,7 @@ function index(props: Props, ref: React.Ref<any>) {
                 'n9e-dashboard-panel-table-ng-cell-link': () => (options.links ? options.links.length === 1 : showUnderline),
                 'n9e-dashboard-panel-table-ng-cell-links': () => (options.links ? options.links.length > 1 : false),
               },
-              comparator: (value1, value2, node1, node2) => {
+              comparator: (_value1: TextObject | undefined, _value2: TextObject | undefined, node1: RowNode<TableGridRow>, node2: RowNode<TableGridRow>) => {
                 // 手动获取字段值，解决字段名包含"点"时无法正确获取的问题
                 const fieldValue1 = node1.data?.[item];
                 const fieldValue2 = node2.data?.[item];
@@ -328,8 +356,9 @@ function index(props: Props, ref: React.Ref<any>) {
                 }
                 return localeCompare(date1Number, date2Number);
               },
-              cellRenderer: (params) => {
+              cellRenderer: (params: ICellRendererParams<TableGridRow, TextObject>) => {
                 const field = params.colDef?.field;
+                if (field === undefined) return '';
                 const fieldValue = params.data?.[field];
 
                 if (fieldValue === undefined) return '';
@@ -390,12 +419,16 @@ function index(props: Props, ref: React.Ref<any>) {
             params.api.applyColumnState({
               state: [
                 {
-                  colId: sortColumn,
+                  colId: String(sortColumn),
                   sort: sortOrder === 'ascend' ? 'asc' : 'desc',
                 },
               ],
             });
           }
+        }}
+        onGridPreDestroyed={() => {
+          // 网格销毁前释放 api 引用，避免残留导致的内存无法回收
+          gridApiRef.current = null;
         }}
         onCellClicked={(cellEvent) => {
           if (cellEvent.column.getColId() === ROW_DETAIL_COLUMN_ID) {
@@ -418,7 +451,7 @@ function index(props: Props, ref: React.Ref<any>) {
               value: index,
             };
           })}
-          value={activeIndex}
+          value={safeActiveIndex}
           onChange={(val) => {
             setActiveIndex(val);
           }}

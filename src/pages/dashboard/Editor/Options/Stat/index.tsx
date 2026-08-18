@@ -20,8 +20,9 @@ import StandardOptions from '../../Fields/StandardOptions';
 import ValueMappings from '../../Fields/ValueMappings';
 import Thresholds from '../../Fields/Thresholds';
 import Overrides from '../../Fields/Overrides';
+import type { ITarget } from '../../../types';
 
-export default function Stat({ targets }) {
+export default function Stat({ targets }: { targets: ITarget[] }) {
   return (
     <>
       <GraphStyles />

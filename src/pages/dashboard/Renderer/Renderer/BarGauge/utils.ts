@@ -1,6 +1,17 @@
 import _ from 'lodash';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 
-export const getColumnsKeys = (data: any[]) => {
+export interface BarGaugeValue {
+  id: string;
+  name?: string;
+  metric: Record<string, string | undefined>;
+  stat: number;
+  value?: string;
+  unit?: string;
+  color?: string;
+}
+
+export const getColumnsKeys = (data: CalculatedSeries[]) => {
   const keys = _.reduce(
     data,
     (result, item) => {

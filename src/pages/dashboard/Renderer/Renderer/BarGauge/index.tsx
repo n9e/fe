@@ -20,47 +20,75 @@ import { useSize } from 'ahooks';
 
 import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
 
-import { IPanel } from '../../../types';
-import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import { IPanel, IBarGaugeStyles } from '../../../types';
+import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries, CalculatedSeriesValue } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
-import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import useStableValue from '../../../hooks/useStableValue';
 
-import { getColumnsKeys } from './utils';
+import { getColumnsKeys, BarGaugeValue } from './utils';
 import BasicDisplayMode from './BasicDisplayMode';
 import LCDBars from './LCDBars';
 import './style.less';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 const NAME_VALUE_SPACE = 10;
 
 export default function BarGauge(props: IProps) {
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom, options } = values;
-  const { displayMode = 'basic', calc, sortOrder = 'desc', valueField = 'Value', topn, combine_other, otherPosition = 'none' } = custom;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
+  // custom 为 JsonObject（宽类型），按 bar gauge 面板实际使用的结构收窄
+  const {
+    displayMode = 'basic',
+    calc,
+    sortOrder = 'desc',
+    valueField = 'Value',
+    topn,
+    combine_other,
+    otherPosition = 'none',
+    nameField,
+  } = custom as {
+    displayMode?: 'basic' | 'lcd';
+    calc?: string;
+    sortOrder?: 'none' | 'asc' | 'desc';
+    valueField?: string;
+    topn?: number;
+    combine_other?: boolean;
+    otherPosition?: 'top' | 'bottom' | 'none';
+    nameField?: string;
+  };
   const containerRef = useRef(null);
   const containerSize = useSize(containerRef);
   const [statFields, setStatFields] = useGlobalState('statFields');
-  let calculatedValues = getCalculatedValuesBySeries(
-    series,
-    calc,
-    {
-      unit: options?.standardOptions?.unit,
-      decimals: options?.standardOptions?.decimals,
-      dateFormat: options?.standardOptions?.dateFormat,
-    },
-    options?.valueMappings,
-    options?.thresholds,
+  let calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc as string,
+        {
+          unit: options?.standardOptions?.unit,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+        options?.thresholds,
+      ),
+    [dataDependency, stableCustom, stableOptions],
   );
   if (valueField !== 'Value') {
     calculatedValues = _.map(calculatedValues, (item) => {
       const itemClone = _.cloneDeep(item);
-      const value = _.get(item, ['metric', valueField]);
+      const value = _.get(item, ['metric', valueField]) as string | number | undefined;
       if (!_.isNaN(_.toNumber(value))) {
         const result = getSerieTextObj(
           value,
@@ -73,12 +101,12 @@ export default function BarGauge(props: IProps) {
           options?.thresholds,
         );
         itemClone.stat = _.toNumber(value);
-        itemClone.value = result?.value;
-        itemClone.unit = result?.unit;
+        itemClone.value = result?.value ?? itemClone.value;
+        itemClone.unit = result?.unit ?? itemClone.unit;
         itemClone.color = result?.color;
       } else {
-        itemClone.stat = value;
-        itemClone.value = value;
+        itemClone.stat = value as string | number;
+        itemClone.value = value ?? itemClone.value;
       }
       return itemClone;
     });
@@ -88,10 +116,10 @@ export default function BarGauge(props: IProps) {
   }
 
   if (topn) {
-    const items = _.take(calculatedValues, topn);
+    const items = _.take(calculatedValues, topn as number);
     if (combine_other) {
-      const sumValue = _.sumBy(_.slice(calculatedValues, topn), (item) => {
-        return item.stat;
+      const sumValue = _.sumBy(_.slice(calculatedValues, topn as number), (item) => {
+        return item.stat as number;
       });
       const textObj = getSerieTextObj(
         sumValue,
@@ -110,11 +138,11 @@ export default function BarGauge(props: IProps) {
         unit: textObj?.unit,
       };
       if (otherPosition === 'top') {
-        calculatedValues = _.concat([otherOption], items);
+        calculatedValues = _.concat([otherOption as CalculatedSeriesValue], items);
       } else if (otherPosition === 'bottom') {
-        calculatedValues = _.concat(items, [otherOption]);
+        calculatedValues = _.concat(items, [otherOption as CalculatedSeriesValue]);
       } else if (otherPosition === 'none') {
-        calculatedValues = _.concat(items, [otherOption]);
+        calculatedValues = _.concat(items, [otherOption as CalculatedSeriesValue]);
         if (sortOrder && sortOrder !== 'none') {
           calculatedValues = _.orderBy(calculatedValues, ['stat'], [sortOrder]);
         }
@@ -130,9 +158,8 @@ export default function BarGauge(props: IProps) {
       let max = 0;
       _.forEach(calculatedValues, (item) => {
         const { metric } = item;
-        const { nameField } = custom;
         const name = nameField ? _.get(metric, nameField, item.name) : item.name;
-        const nameWidth = getTextWidth(name);
+        const nameWidth = getTextWidth(name ?? '');
         if (nameWidth > max) {
           max = nameWidth;
         }
@@ -143,25 +170,25 @@ export default function BarGauge(props: IProps) {
       return max;
     }
     return 0;
-  }, [calculatedValues, containerSize]);
+  }, [dataDependency, stableCustom, stableOptions, containerSize]);
 
   useEffect(() => {
     if (isPreview) {
-      setStatFields(getColumnsKeys(calculatedValues));
+      setStatFields(getColumnsKeys(calculatedValues as unknown as CalculatedSeries[]));
     }
-  }, [isPreview, JSON.stringify(calculatedValues)]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   return (
     <div className='renderer-bar-gauge-container-wrapper'>
       <div className='renderer-bar-gauge-container scroll-container' ref={containerRef}>
         {displayMode === 'lcd' && containerSize?.width ? (
           <LCDBars
-            values={calculatedValues}
-            custom={custom}
+            values={calculatedValues as BarGaugeValue[]}
+            custom={custom as unknown as IBarGaugeStyles}
             options={options}
             themeMode={themeMode}
-            minValue={_.floor(minValue)}
-            maxValue={_.ceil(maxValue)}
+            minValue={_.floor(minValue as number)}
+            maxValue={_.ceil(maxValue as number)}
             maxNameWidth={maxNameWidth}
             maxBarWidth={containerSize.width - maxNameWidth - NAME_VALUE_SPACE}
           />
@@ -171,12 +198,12 @@ export default function BarGauge(props: IProps) {
               return (
                 <BasicDisplayMode
                   key={item.id}
-                  item={item}
-                  custom={custom}
+                  item={item as BarGaugeValue}
+                  custom={custom as unknown as IBarGaugeStyles}
                   options={options}
                   themeMode={themeMode}
-                  minValue={minValue}
-                  maxValue={maxValue}
+                  minValue={minValue as number}
+                  maxValue={maxValue as number}
                   maxNameWidth={maxNameWidth}
                 />
               );

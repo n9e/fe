@@ -1,7 +1,33 @@
 export interface DataPoint {
   timestamp: number;
-  value: number;
+  value: number | null;
   [key: string]: null | string | number | boolean;
+}
+
+export type TableCellValue = string | number | boolean | null;
+
+export interface TableFieldCalcs {
+  min: number | null;
+  max: number | null;
+  avg: number | null;
+  sum: number | null;
+  last: number | null;
+  variance: number | null;
+  stdDev: number | null;
+  count: number | null;
+}
+
+export interface TableFieldState {
+  hide?: boolean;
+  displayName?: string;
+  calcs?: TableFieldCalcs;
+}
+
+export interface TableField {
+  name: string;
+  type: string;
+  values: TableCellValue[];
+  state: TableFieldState;
 }
 
 export interface TimeSeries {
@@ -13,25 +39,7 @@ export interface TimeSeries {
 
 export interface TableData {
   refId: string;
-  fields: {
-    name: string;
-    type: string; // 'string' | 'number' | 'time'
-    values: (string | number | null)[];
-    state: {
-      hide?: boolean; // 是否隐藏该字段
-      displayName?: string; // 显示名称
-      calcs?: {
-        min: number | null;
-        max: number | null;
-        avg: number | null;
-        sum: number | null;
-        last: number | null;
-        variance: number | null;
-        stdDev: number | null;
-        count: number | null;
-      };
-    };
-  }[];
+  fields: TableField[];
 }
 
 export type QueryResult = TimeSeries | TableData;

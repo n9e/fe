@@ -3,14 +3,24 @@ import _ from 'lodash';
 import moment from 'moment';
 import { message } from 'antd';
 import i18next from 'i18next';
+import type { History } from 'history';
 
 import { getDefaultDatasourceValue, setDefaultDatasourceValue } from '@/utils';
-import { IPanel } from '@/pages/dashboard/types';
+import { DashboardDatasource, IPanel } from '@/pages/dashboard/types';
 import { rangeOptions } from '@/components/TimeRangePicker/config';
 import { getDefaultValue, isValid } from '@/components/TimeRangePicker';
 import { InternalTimeZones } from '@/utils/datetime/types';
 
-export const getLocalDatasourceValue = (search: string, groupedDatasourceList) => {
+type GroupedDatasourceList = Record<string, DashboardDatasource[]>;
+type DashboardLocationQuery = Record<string, string | string[] | null | undefined>;
+type LegacyDashboardDatasourceConfig = {
+  datasourceValue?: number | string;
+  version?: string;
+};
+
+const getQueryValue = (value: DashboardLocationQuery[string]): string | undefined => (typeof value === 'string' ? value : undefined);
+
+export const getLocalDatasourceValue = (search: string, groupedDatasourceList: GroupedDatasourceList) => {
   const locationQuery = queryString.parse(search);
   const urlValue = _.get(locationQuery, '__datasourceValue');
   if (urlValue) {
@@ -25,30 +35,30 @@ export const getLocalDatasourceValue = (search: string, groupedDatasourceList) =
  * 获取数据源值，v6 开始使用数据源 ID，v5 使用数据源名称
  * 这里需要把数据源名称转换为数据源 ID
  */
-export const getDatasourceValue = (dashboardConfigs, datasources) => {
+export const getDatasourceValue = (dashboardConfigs: LegacyDashboardDatasourceConfig, datasources: DashboardDatasource[]) => {
   if (dashboardConfigs.datasourceValue && dashboardConfigs.version === '2.0.0') {
     console.warn('v6 版本的监控仪表盘将不再支持 v5 版本的数据源');
-    dashboardConfigs.datasourceValue = _.find(datasources, { name: dashboardConfigs.datasourceValue })?.id;
+    dashboardConfigs.datasourceValue = _.find(datasources, (ds) => ds.name === dashboardConfigs.datasourceValue)?.id;
   }
   return dashboardConfigs.datasourceValue;
 };
 
-export const getLocalStep = (id) => {
+export const getLocalStep = (id: string | number) => {
   const localStep = localStorage.getItem(`dashboard_${id}_step`);
   return localStep ? _.toNumber(localStep) : null;
 };
 
-export const setLocalStep = (id, step) => {
+export const setLocalStep = (id: string | number, step: number | null | undefined) => {
   if (step) {
-    localStorage.setItem(`dashboard_${id}_step`, step);
+    localStorage.setItem(`dashboard_${id}_step`, String(step));
   } else {
     localStorage.removeItem(`dashboard_${id}_step`);
   }
 };
 
 export const dashboardThemeModeCacheKey = 'dashboard-themeMode-value';
-export const getDefaultThemeMode = (query) => {
-  return query.themeMode || window.localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
+export const getDefaultThemeMode = (query: DashboardLocationQuery) => {
+  return getQueryValue(query.themeMode) || window.localStorage.getItem(dashboardThemeModeCacheKey) || 'light';
 };
 
 export const ROW_HEIGHT = 40;
@@ -67,8 +77,8 @@ export const scrollToLastPanel = (panels: IPanel[]) => {
   }
 };
 
-export async function goBack(history) {
-  return new Promise((resolve, reject) => {
+export async function goBack(history: History): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
     const timer = setTimeout(() => reject('nowhere to go'), 100);
     history.goBack();
     const onBack = () => {
@@ -94,16 +104,16 @@ export const dashboardTimezoneCacheKey = 'dashboard-timezone-value';
 message.config({
   maxCount: 1,
 });
-export const getDefaultTimeRange = (id, query, dashboardDefaultRangeIndex?) => {
+export const getDefaultTimeRange = (id: string | number, query: DashboardLocationQuery, dashboardDefaultRangeIndex?: number) => {
   const defaultRange =
-    dashboardDefaultRangeIndex !== undefined && dashboardDefaultRangeIndex !== ''
+    dashboardDefaultRangeIndex !== undefined && String(dashboardDefaultRangeIndex) !== ''
       ? rangeOptions[dashboardDefaultRangeIndex]
       : {
           start: 'now-1h',
           end: 'now',
         };
   if (query.__from && query.__to) {
-    if (isValid(query.__from) && isValid(query.__to)) {
+    if (isValid(query.__from as string) && isValid(query.__to as string)) {
       return {
         start: query.__from,
         end: query.__to,
@@ -121,7 +131,7 @@ export const getDefaultTimeRange = (id, query, dashboardDefaultRangeIndex?) => {
   return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
 };
 
-export const getDefaultIntervalSeconds = (query) => {
+export const getDefaultIntervalSeconds = (query: DashboardLocationQuery) => {
   if (query.__refresh) {
     const intervalSeconds = _.toNumber(query.__refresh);
     if (intervalSeconds > 0) {
@@ -131,7 +141,7 @@ export const getDefaultIntervalSeconds = (query) => {
   return undefined;
 };
 
-export const getDefaultTimezone = (id, query) => {
+export const getDefaultTimezone = (id: string | number, query: DashboardLocationQuery) => {
   if (query.__timezone) {
     return query.__timezone;
   }

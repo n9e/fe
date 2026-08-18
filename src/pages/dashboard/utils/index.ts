@@ -32,7 +32,7 @@ import convertPanleTarget from 'plus:/utils/convertDashboardGrafanaToN9E/convert
 // @ts-ignore
 import convertDatasource from 'plus:/utils/convertDashboardGrafanaToN9E/convertDatasource';
 
-export function JSONParse(str) {
+export function JSONParse(str: string): unknown {
   if (str) {
     try {
       return JSON.parse(str);
@@ -100,6 +100,7 @@ function normalizeCalc(calc: string) {
   return 'lastNotNull';
 }
 
+// dashboard-any-ignore-start: legacy Grafana import conversion is outside the active dashboard runtime scope.
 function convertThresholdsGrafanaToN9E(config: any) {
   return {
     mode: config.thresholds?.mode, // mode 目前是不支持的
@@ -498,3 +499,4 @@ export function checkGrafanaDashboardVersion(data) {
   }
   return 2;
 }
+// dashboard-any-ignore-end

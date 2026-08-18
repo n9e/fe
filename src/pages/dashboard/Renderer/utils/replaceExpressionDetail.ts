@@ -1,34 +1,41 @@
 import _ from 'lodash';
 import { replaceFieldWithVariable, getOptionsList } from '../../VariableConfig/constant';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { IVariable } from '../../Variables/types';
 
-const replaceLabelsVariables = (url, variables) => {
+export interface DetailExpressionData {
+  name?: string;
+  value?: string | number;
+  metric?: Record<string, string | number>;
+}
+
+const replaceLabelsVariables = (url: string, variables: Record<string, string | number>) => {
   // 匹配 ${} 中的变量名
   const pattern = /\${__field\.labels\.(.*?)}/g;
   return url.replace(pattern, (match, variable) => {
     // 获取变量的值
     const value = variables[variable.trim()];
     // 如果变量值存在，则替换；否则保留原字符串
-    return value !== undefined ? value : match;
+    return value !== undefined ? String(value) : match;
   });
 };
 
-const replaceValueVariables = (url, dataValue) => {
+const replaceValueVariables = (url: string, dataValue: string | number) => {
   return replaceData(/\${__field\.(value)}/g, url, dataValue);
 };
 
-const replaceNameVariables = (url, dataValue) => {
+const replaceNameVariables = (url: string, dataValue: string | number) => {
   return replaceData(/\${__field\.(name)}/g, url, dataValue);
 };
 
-const replaceData = (pattern: RegExp, url, dataValue) => {
-  return url.replace(pattern, (match, _) => {
+const replaceData = (pattern: RegExp, url: string, dataValue: string | number) => {
+  return url.replace(pattern, (match) => {
     const value = dataValue; // 获取变量的值
-    return value !== undefined ? value : match;
+    return value !== undefined ? String(value) : match;
   });
 };
 
-export const replaceExpressionDetail = (url, data) => {
+export const replaceExpressionDetail = (url: string, data: DetailExpressionData) => {
   let resultUrl = url;
   resultUrl = data?.name ? replaceNameVariables(resultUrl, data.name) : resultUrl;
   resultUrl = data?.value ? replaceValueVariables(resultUrl, data.value) : resultUrl;
@@ -46,10 +53,10 @@ export const replaceExpressionDetail = (url, data) => {
  */
 export const getDetailUrl = (
   detailUrl: string,
-  data: any,
+  data: DetailExpressionData | undefined,
   dashboardMeta: {
     dashboardId: string;
-    variableConfigWithOptions: any;
+    variableConfigWithOptions: IVariable[];
   },
   time: IRawTimeRange,
 ) => {
