@@ -15,12 +15,11 @@ import { IVariable } from '../../types';
 import adjustData from '../../utils/ajustData';
 import isPlaceholderQuoted from '../../utils/isPlaceholderQuoted';
 import { formatString, formatDatasource } from '../../utils/formatString';
-import normalizeQueryOptions from '../../utils/normalizeQueryOptions';
+import filterOptionsByReg from '../../utils/filterOptionsByReg';
 import { getBuiltInVariables } from '../../utils/replaceTemplateVariables';
 import Querybuilder from '../Querybuilder';
 import datasource from '../../datasource';
 import Preview from '../Preview';
-import { isQueryVariableMultiSelectEnabled } from './queryUtils';
 
 interface Props {
   formatedReg: string;
@@ -44,9 +43,6 @@ export default function Query(props: Props) {
   const form = Form.useFormInstance();
   const item = Form.useWatch<IVariable>([]);
   const datasourceCate = Form.useWatch(['datasource', 'cate']);
-  const legacyQueryType = Form.useWatch(['query', 'type']);
-  const gcmQueryType = Form.useWatch(['query', 'query_type']);
-  const queryType = legacyQueryType || gcmQueryType;
 
   const service = () => {
     if (item) {
@@ -84,9 +80,8 @@ export default function Query(props: Props) {
           config: item.config, // config 是 es 特有的写法
         },
       })
-        .then((res: { label: string; value: string }[] | string[]) => {
-          const normalized = normalizeQueryOptions(res, formatedReg, datasourceCate);
-          const itemOptions: { label: string; value: string }[] = _.sortBy(normalized, 'value');
+        .then((options) => {
+          const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
           setOptions(itemOptions);
           setErrorMsg('');
         })
@@ -202,7 +197,7 @@ export default function Query(props: Props) {
       <Form.Item label={t('var.width')} name='width' tooltip={t('var.width_tip')}>
         <InputNumber min={120} placeholder='180' style={{ width: '100%' }} />
       </Form.Item>
-      {isQueryVariableMultiSelectEnabled(datasourceCate, queryType) && (
+      {_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql], datasourceCate) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>

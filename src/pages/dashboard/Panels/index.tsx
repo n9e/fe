@@ -62,7 +62,6 @@ interface IProps {
   setHasUnsavedChanges: (flag: boolean) => void;
   range: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
-  queryEnabled?: boolean;
   timezone: string;
   setTimezone: (timezone: string) => void;
   panels: any[];
@@ -93,7 +92,6 @@ function index(props: IProps) {
     setAllowedLeave,
     setHasUnsavedChanges,
     range,
-    queryEnabled,
     timezone,
     setTimezone,
     panels,
@@ -279,7 +277,6 @@ function index(props: IProps) {
                       id={item.id}
                       time={range}
                       setRange={props.setRange}
-                      queryEnabled={queryEnabled}
                       timezone={timezone}
                       setTimezone={setTimezone}
                       values={item}

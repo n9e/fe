@@ -173,7 +173,7 @@ function index(props: IProps) {
               }
             } else {
               try {
-                const rawResult = await datasource({
+                options = await datasource({
                   dashboardId: id,
                   datasourceCate,
                   datasourceValue,
@@ -184,17 +184,8 @@ function index(props: IProps) {
                     definition,
                   },
                 });
-                const flattenedOptions: string[] = [];
-                if (Array.isArray(rawResult)) {
-                  for (const item of rawResult) {
-                    if (typeof item === 'string') {
-                      flattenedOptions.push(item);
-                    } else if (typeof item === 'object' && item !== null) {
-                      flattenedOptions.push(String(item.value ?? (item as { label?: string }).label ?? ''));
-                    }
-                  }
-                }
-                options = _.uniq(flattenedOptions);
+                options = _.sortBy(_.uniq(options));
+                options = _.map(options, _.toString);
               } catch (error) {
                 console.error(error);
               }

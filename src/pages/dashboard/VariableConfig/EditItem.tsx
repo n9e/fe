@@ -28,7 +28,6 @@ import { Dashboard } from '@/store/dashboardInterface';
 import { IVariable } from './definition';
 import { stringToRegex } from './constant';
 import Querybuilder from './Querybuilder';
-import { isQueryVariableMultiSelectEnabled } from '../Variables/EditModal/Variable/queryUtils';
 
 interface IProps {
   id: string;
@@ -83,9 +82,6 @@ function EditItem(props: IProps) {
   const otherVars = _.filter(vars, (item) => item.name !== data.name);
   const varType = Form.useWatch(['type'], form);
   const datesourceCate = Form.useWatch(['datasource', 'cate'], form);
-  const legacyQueryType = Form.useWatch(['query', 'type'], form);
-  const gcmQueryType = Form.useWatch(['query', 'query_type'], form);
-  const queryType = legacyQueryType || gcmQueryType;
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
@@ -365,7 +361,7 @@ function EditItem(props: IProps) {
         </>
       )}
       {(_.includes(['custom', 'hostIdent'], varType) ||
-        (varType === 'query' && isQueryVariableMultiSelectEnabled(datesourceCate, queryType))) && (
+        _.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql], datesourceCate)) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
