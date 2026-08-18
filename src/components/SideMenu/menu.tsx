@@ -2,7 +2,6 @@
  * 这是开源版的菜单配置，专业版和企业版的配置在其他对应的仓库文件里
  */
 import React from 'react';
-import { RobotOutlined } from '@ant-design/icons';
 
 import IconFont from '@/components/IconFont';
 
@@ -11,19 +10,6 @@ import './locale';
 
 export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecatedMenus: boolean = false) => {
   const menu: MenuItem[] = [
-    {
-      key: 'infrastructure',
-      label: 'menu.infrastructure',
-      icon: <IconFont type='icon-nav_devicelist_light' />,
-      children: [
-        {
-          key: 'devices',
-          label: 'menu.devices',
-          type: 'tabs',
-          children: [{ key: '/targets', label: 'menu.targets' }],
-        },
-      ],
-    },
     {
       key: 'explorer',
       label: 'menu.explorer',
@@ -123,6 +109,19 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
+      key: 'infrastructure',
+      label: 'menu.infrastructure',
+      icon: <IconFont type='icon-nav_devicelist_light' />,
+      children: [
+        {
+          key: 'devices',
+          label: 'menu.devices',
+          type: 'tabs',
+          children: [{ key: '/targets', label: 'menu.targets' }],
+        },
+      ],
+    },
+    {
       key: 'integrations',
       label: 'menu.integrations',
       icon: <IconFont type='icon-nav_infrastructure_light' />,
@@ -140,17 +139,6 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
           label: 'menu.embedded_products',
         },
         ...embeddedProductMenu,
-      ],
-    },
-    {
-      key: 'ai-config',
-      label: 'menu.ai_config',
-      type: 'tabs',
-      icon: <RobotOutlined />,
-      children: [
-        { key: '/ai-config/agents', label: 'menu.ai_config_agents' },
-        { key: '/ai-config/llm-configs', label: 'menu.ai_config_llm_configs' },
-        { key: '/ai-config/skills', label: 'menu.ai_config_skills' },
       ],
     },
     {
