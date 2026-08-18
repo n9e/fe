@@ -1,4 +1,10 @@
 .n9e-log-explorer-raw-table {
+  // react-virtuoso 替换 antd Table 后不再有 .ant-table-container，
+  // 在此补回原表格容器的外框与圆角。
+  border: 1px solid var(--fc-border-color);
+  border-radius: 8px;
+  overflow: hidden;
+
   .ant-table-expanded-row {
     display: none !important;
   }
@@ -10,11 +16,16 @@
 
   // P1-2: Origin 模式虚拟列表（react-virtuoso）自定义表头与行，样式对齐原 antd Table
   .n9e-log-explorer-raw-header {
-    // 覆盖 antd 默认 th 的 16px 内边距，对齐 ant-table-small 的 8px
+    table {
+      border-spacing: 0;
+    }
+
+    // 覆盖 antd 默认 th 的 16px 内边距，对齐 ant-table-small 的 8px。
     th {
       padding: 8px;
       font-size: 12px;
       font-weight: 500;
+      line-height: 1;
       white-space: nowrap;
     }
   }

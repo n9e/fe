@@ -1,7 +1,7 @@
 .n9e-logs-viewer-rdg {
-  border-radius: 2px;
-  border-left: 0 none;
-  border-right: 0 none;
+  // react-data-grid 在组件挂载时注入根节点边框样式，需提高优先级覆盖。
+  border: 1px solid var(--fc-border-color) !important;
+  border-radius: 8px !important;
 
   /* 允许表格水平滚动 */
   overflow-x: auto;

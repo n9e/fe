@@ -27,7 +27,7 @@ interface TabItem {
 }
 
 /** P2 方案A：LRU 保活容量（最近 N 个页签保活挂载，其余卸载） */
-const LRU_CAPACITY = 3;
+const LRU_CAPACITY = 5;
 
 /**
  * 单个页签的 Explorer 容器。
