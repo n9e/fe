@@ -24,6 +24,7 @@ import PageLayout from '@/components/pageLayout';
 import { getWarningStrategy } from '@/services/warning';
 import Form from './FormNG';
 import { getAlertRulePure } from './services';
+import { getPageFromSearch } from '@/utils/urlPage';
 
 export default function Edit() {
   const { t } = useTranslation('alertRules');
@@ -62,7 +63,7 @@ export default function Edit() {
   }, 2000);
 
   return (
-    <PageLayout title={t('title')} showBack backPath='/alert-rules'>
+    <PageLayout title={t('title')} showBack backPath={`/alert-rules?page=${getPageFromSearch(search)}`}>
       <div className='n9e h-full overflow-hidden p-0'>{!_.isEmpty(values) && <Form type={mode === 'clone' ? 2 : 1} initialValues={values} editable={editable} />}</div>
     </PageLayout>
   );

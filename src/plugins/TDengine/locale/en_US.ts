@@ -18,10 +18,10 @@ const en_US = {
     range: 'Range',
     power_sql: 'SQL enhance',
     query: 'SQL',
-    query_msg: 'Please input SQL',
+    query_msg: 'Please enter SQL',
     query_tip1: 'TDengine query syntax reference',
     query_tip2: 'Document',
-    sqlTemplates: 'SQL Templates',
+    sqlTemplates: 'SQL templates',
     sqlTemplates_tip: 'The following SQL query conditions are for reference only. When using them in practice, you need to replace the $variable with the actual value',
     mode: {
       timeSeries: 'Time series',
@@ -30,11 +30,11 @@ const en_US = {
     advancedSettings: {
       title: 'Advanced settings',
       metricKey_label: 'Value field',
-      metricKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as curves to display on the chart',
+      metricKey_tip: 'SQL query results usually contain multiple columns; specify which columns are displayed as series on the chart',
       tags_placeholder: 'Press Enter to input multiple',
-      labelKey_label: 'LabelKey',
-      labelKey_tip: 'SQL query results usually contain multiple columns, you can specify which columns are used as label metadata for curves',
-      timeKey_tip: 'Specify which field is the time field and use it as the x-axis coordinate for drawing the curve',
+      labelKey_label: 'Label field',
+      labelKey_tip: 'SQL query results usually contain multiple columns; specify which columns are used as label metadata for series',
+      timeKey_tip: 'Specify which field is the time field, used as the x-axis of the chart',
       timeFormat_tip: 'The format of the time, which will convert the time to a timestamp according to this format',
     },
     schema: 'Schema',
@@ -43,7 +43,7 @@ const en_US = {
   },
   trigger: {
     title: 'Trigger',
-    value_msg: 'Please input expression value',
+    value_msg: 'Please enter the expression value',
   },
 };
 export default en_US;

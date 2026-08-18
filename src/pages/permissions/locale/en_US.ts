@@ -1,13 +1,13 @@
 const en_US = {
   title: 'Roles',
   roles: 'Roles',
-  role_add: 'Add Role',
+  role_add: 'Add role',
   edit_title: {
-    post: 'Add Role',
-    put: 'Edit Role',
+    post: 'Add role',
+    put: 'Edit role',
   },
   unselect_role: 'Please select a role first',
-  expand_all: 'Expand All',
-  collapse_all: 'Collapse All',
+  expand_all: 'Expand all',
+  collapse_all: 'Collapse all',
 };
 export default en_US;

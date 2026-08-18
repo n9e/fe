@@ -31,6 +31,7 @@ import BatchClone from './BatchClone';
 interface IProps {
   gids?: string;
   selectRowKeys: number[];
+  setSelectRowKeys: (keys: number[]) => void;
   refreshList: () => void;
   searchVal: string;
   onSearchChange: (val: string) => void;
@@ -44,7 +45,19 @@ interface IProps {
 export default function Header(props: IProps) {
   const { businessGroup, busiGroups } = useContext(CommonStateContext);
   const { t } = useTranslation('dashboard');
-  const { gids, selectRowKeys, refreshList, searchVal, onSearchChange, visibleColumns, setVisibleColumns, columnOptions, selectedBusinessGroup, setSelectedBusinessGroup } = props;
+  const {
+    gids,
+    selectRowKeys,
+    setSelectRowKeys,
+    refreshList,
+    searchVal,
+    onSearchChange,
+    visibleColumns,
+    setVisibleColumns,
+    columnOptions,
+    selectedBusinessGroup,
+    setSelectedBusinessGroup,
+  } = props;
   const [importData, setImportData] = React.useState<{
     visible: boolean;
     busiId?: number;
@@ -120,6 +133,9 @@ export default function Header(props: IProps) {
                           BatchClone({
                             board_ids: selectRowKeys,
                             busiGroups,
+                            onOk: () => {
+                              setSelectRowKeys([]);
+                            },
                           });
                         } else {
                           message.warning(t('batch.noSelected'));
@@ -137,6 +153,7 @@ export default function Header(props: IProps) {
                             onOk: async () => {
                               removeDashboards(selectRowKeys).then(() => {
                                 message.success(t('common:success.delete'));
+                                setSelectRowKeys([]);
                                 refreshList();
                               });
                             },

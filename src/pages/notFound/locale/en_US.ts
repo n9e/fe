@@ -1,6 +1,6 @@
 const en_US = {
-  网络开小差了: ' network has deviated',
-  可以刷新一下试试: 'You can try refreshing it',
+  网络开小差了: 'Network error',
+  可以刷新一下试试: 'Try refreshing the page',
   刷新: 'Refresh',
 };
 

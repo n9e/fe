@@ -11,8 +11,9 @@ import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import DocumentDrawer from '@/components/DocumentDrawer';
 
-import { NAME_SPACE } from '../../constants';
+import { NAME_SPACE, LOKI_LOGS_QUERY_DOC_URL } from '../../constants';
 import { DEFAULT_RAW_LOG_LIMIT, MAX_RAW_LOG_LIMIT } from '../constants';
 import { getLabelNames, getLabelValues, getParsedFields } from '../services';
 import { FieldNameSuggestion, LokiLabelMatcher, LokiLineFilter, LokiMetricBuilderState, LokiParsedFieldFilter, LokiRawBuilderState } from '../types';
@@ -685,7 +686,7 @@ function ParsedFieldFilterPopover(props: {
 }
 
 export default function Builder(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
   const { visible, mode, queryBuilderPinned, setQueryBuilderPinned, onClose, onExecute, onPreviewQL } = props;
   const parentForm = Form.useFormInstance();
   const [form] = Form.useForm();
@@ -1028,19 +1029,35 @@ export default function Builder(props: Props) {
         </Space>
       </Form>
       <div className='absolute top-2 right-2'>
-        <Tooltip title={queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}>
+        <Space size={0}>
           <Button
-            type='text'
-            icon={<PushpinOutlined />}
-            onMouseDown={ignoreNextOutsideClick}
+            type='link'
             onClick={(e) => {
               e.stopPropagation();
-              setQueryBuilderPinned(!queryBuilderPinned);
+              DocumentDrawer({
+                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                title: t('common:document_title'),
+                type: 'iframe',
+                documentPath: LOKI_LOGS_QUERY_DOC_URL,
+              });
             }}
           >
-            {queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}
+            {t('common:document_title')}
           </Button>
-        </Tooltip>
+          <Tooltip title={queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}>
+            <Button
+              type='text'
+              icon={<PushpinOutlined />}
+              onMouseDown={ignoreNextOutsideClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                setQueryBuilderPinned(!queryBuilderPinned);
+              }}
+            >
+              {queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}
+            </Button>
+          </Tooltip>
+        </Space>
       </div>
     </div>
   );

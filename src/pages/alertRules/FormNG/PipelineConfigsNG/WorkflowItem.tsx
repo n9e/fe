@@ -9,6 +9,7 @@ import { SIZE } from '@/utils/constant';
 import { postItem as postWorkflow, putItem as putWorkflow } from '@/pages/eventPipeline/services';
 import { DEFAULT_VALUES, NS as EVENTPIPELINE_NS } from '@/pages/eventPipeline/constants';
 import { hasRunnableProcessors } from '@/pages/eventPipeline/utils/processors';
+import { normalizeProcessorsForForm, normalizeProcessorsForSubmit } from '@/pages/eventPipeline/utils/normalizeValues';
 import TestModal from '@/pages/eventPipeline/pages/Form/TestModal';
 
 import { useFormNGData } from '../context';
@@ -68,15 +69,16 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
     if (workflowId && item?.processors) {
       // 将 data.processors 设置到 form 中, path 是 [...prefixNamePath, ...namePath, 'processors']
       // 使用 setFieldsValue 而非 setFields，避免 Form.List 内部 key 未正确初始化导致重复 key
+      // 后端返回的 header / custom_params 是对象，表单 Form.List 需要数组，先转换再回填
       const currentValues = _.cloneDeep(form.getFieldsValue());
-      _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], item.processors);
+      _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], normalizeProcessorsForForm(item.processors));
       form.setFieldsValue(currentValues);
     }
   }, [workflowId, item?.processors]);
 
   useEffect(() => {
     if (workflowId !== undefined && item?.processors) {
-      setSavedProcessorsSnapshot(_.cloneDeep(item.processors));
+      setSavedProcessorsSnapshot(_.cloneDeep(normalizeProcessorsForForm(item.processors)));
     }
   }, [workflowId, item?.processors]);
 
@@ -143,13 +145,15 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
 
     setSavingWorkflow(true);
     try {
+      // 表单里的 header 等是数组，后端要对象，保存前必须转换（与事件流页 Add/Edit 同一套逻辑）
+      const submitProcessors = normalizeProcessorsForSubmit(processors);
       if (workflowId) {
         await putWorkflow({
           id: workflowId,
           group_id,
           use_case: 'alert_rule',
           name,
-          processors,
+          processors: submitProcessors,
         });
         setSavedProcessorsSnapshot(_.cloneDeep(processors));
         refreshWorkflows();
@@ -159,7 +163,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
           group_id,
           use_case: 'alert_rule',
           name,
-          processors,
+          processors: submitProcessors,
         });
 
         const createdWorkflowId = _.get(createdWorkflow, 'id', createdWorkflow);

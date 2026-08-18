@@ -12,10 +12,13 @@ function sameStringArray(left: string[], right: string[]) {
 }
 
 async function ensureEffectiveTimeRangeCount(page: Page, count: number) {
-  const addIcon = page.locator('xpath=(//*[normalize-space(.)="生效时间"])[last()]/following::*[contains(@class,"control-icon-normal")][1]');
+  // 生效时间标题后的加号图标（FormNG Effective 使用 PlusCircleOutlined → .anticon-plus-circle）
+  const effectiveSection = page.locator('[data-section-key="effective"]');
+  const addIcon = effectiveSection.locator('xpath=.//*[normalize-space(.)="生效时间"]/following::*[contains(@class,"anticon-plus-circle")][1]').first();
   for (let index = 1; index < count; index += 1) {
     const timePickerCount = await page.locator('.ant-picker input:visible').count();
     if (timePickerCount >= (index + 1) * 2) continue;
+    await expect(addIcon, 'effective time range add icon').toBeVisible();
     await addIcon.click();
   }
 }
@@ -43,11 +46,16 @@ async function fillEffectiveTimeRange(page: Page, range: NormalizedTimeRange, in
 }
 
 async function ensureServiceCalConfigCount(page: Page, count: number) {
-  const serviceCalTitle = page.getByText('服务日历', { exact: true }).filter({ visible: true }).last();
+  const effectiveSection = page.locator('[data-section-key="effective"]');
+  const serviceCalTitle = effectiveSection.getByText('服务日历', { exact: true }).filter({ visible: true }).last();
   await serviceCalTitle.scrollIntoViewIfNeeded();
-  const addIcon = page.getByLabel('plus-circle').filter({ visible: true }).last();
+  // 服务日历标题所在 ant-space 内的加号图标（PlusCircleOutlined），
+  // 避免误点到生效时间/附加信息等其他区域的 plus-circle。
+  const serviceCalSpace = serviceCalTitle.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ant-space ")][1]');
+  const addIcon = serviceCalSpace.getByLabel('plus-circle').first();
   for (let index = 0; index < count; index += 1) {
-    await addIcon.click({ force: true });
+    await expect(addIcon, 'service calendar add icon').toBeVisible();
+    await addIcon.click();
   }
 }
 

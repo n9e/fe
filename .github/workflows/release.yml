@@ -31,7 +31,7 @@ jobs:
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Package files to tar.gz
-        run: tar -C pub -czf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz .
+        run: tar -czf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz pub
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4

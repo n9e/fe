@@ -60,6 +60,7 @@ describe('createLogExplorerTabItem', () => {
       key: 'new',
       name: 'Query 2',
       isInited: false,
+      isNewTab: true,
       formValues: {
         datasourceCate: 'elasticsearch',
         datasourceValue: 1,
@@ -90,6 +91,7 @@ describe('createLogExplorerTabItem', () => {
       key: 'new',
       name: 'Query 2',
       isInited: false,
+      isNewTab: true,
       formValues: {
         datasourceCate: 'elasticsearch',
         datasourceValue: 2,
@@ -122,6 +124,7 @@ describe('createLogExplorerTabItem', () => {
       key: 'new',
       name: 'Query 2',
       isInited: false,
+      isNewTab: true,
       formValues: {
         datasourceCate: 'elasticsearch',
         datasourceValue: 2,

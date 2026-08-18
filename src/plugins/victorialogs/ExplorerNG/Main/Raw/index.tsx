@@ -175,7 +175,7 @@ export default function Raw(props: Props) {
               list: mergedList,
               total: res.total,
               hash: _.uniqueId('logs_'),
-              colWidths: calcColWidthByData(mergedList),
+              colWidths: calcColWidthByData(newData, data?.colWidths),
               fields: getFields(mergedList),
             };
           }

@@ -39,12 +39,10 @@ const query: AlertRuleConditionHandler = async ({ page, uiConfig, aiAssert, aiSc
   await aiTap('左侧配置步骤中的告警条件');
   await aiWaitFor('告警条件区域已显示，并且可以看到 InfluxDB 查询条件编辑器和辅助配置');
 
-  // Fill the SQL query in the plain Input component
-  // InfluxDB 使用普通 <Input>，位于 .ant-input-group 中
-  const sqlGroup = page.locator('.ant-input-group').filter({ hasText: '查询条件' });
-  const sqlInput = sqlGroup.locator('input').last();
-  await expect(sqlInput, 'InfluxDB SQL input').toBeVisible();
-  await sqlInput.click();
+  // Fill the SQL query in the Monaco editor (SqlMonacoEditor)
+  // 注意：不要先 click Monaco 的 textarea，否则会被 .view-line 拦截 pointer events，直接 fill 即可（fill 会自动聚焦）
+  const sqlInput = page.locator('[data-section-key="rule"]').getByRole('textbox', { name: 'Editor content' }).first();
+  await expect(sqlInput, 'InfluxDB SQL Monaco editor').toBeVisible();
   await sqlInput.fill(item.sql);
 
   // Fill keys in Advanced Settings (always expanded for influxDB)

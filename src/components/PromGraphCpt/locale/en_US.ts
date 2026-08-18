@@ -1,7 +1,7 @@
 const en_US = {
   builder_btn: 'Builder',
   query_btn: 'Execute',
-  table_promql_interpolate_string: 'We detected that your PromQL contains variables, automatically replaced with 5m. The replaced PromQL is: {{query}}',
+  table_promql_interpolate_string: 'Your PromQL contains variables; they were automatically replaced with 5m. The resulting PromQL is: {{query}}',
   tab_table: 'Table',
   tab_graph: 'Graph',
   max_data_points: 'Max data points',
@@ -19,7 +19,7 @@ const en_US = {
   tooltip_sort: 'Sort order',
   tooltip_sort_desc: 'Descending',
   tooltip_sort_asc: 'Ascending',
-  show_legend: 'Show Legend',
+  show_legend: 'Show legend',
   value_format: 'Value format',
   series: 'Series ({{count}})',
   series_filter: 'Search series name',

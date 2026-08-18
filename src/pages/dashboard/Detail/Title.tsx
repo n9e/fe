@@ -16,6 +16,7 @@
  */
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
+import { getPageFromSearch } from '@/utils/urlPage';
 import querystring from 'query-string';
 import _ from 'lodash';
 import moment from 'moment';
@@ -105,6 +106,8 @@ export default function Title(props: IProps) {
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const query = querystring.parse(location.search);
   const { viewMode, __public__ } = query;
+  // 从列表进入详情时 URL 带 page 参数，返回列表时回到原页；其他入口回列表第一页
+  const goListPath = props.gobackPath || (getPageFromSearch(location.search) > 1 ? `/dashboards?page=${getPageFromSearch(location.search)}` : '/dashboards');
   // AI 分析仅在正常已保存的仪表盘下展示：匿名公开、模板预览、内置组件场景要么调不通 assistant 接口，要么没有真实 dashboard_id
   const showAiAnalysis = !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id;
   const isClickTrigger = useRef(false);
@@ -193,7 +196,7 @@ export default function Title(props: IProps) {
                     onClick={() => {
                       if (allowedLeave) {
                         goBack(history).catch(() => {
-                          history.push(props.gobackPath || '/dashboards');
+                          history.push(goListPath);
                         });
                       } else {
                         routerPromptRef.current.showPrompt();
@@ -204,7 +207,7 @@ export default function Title(props: IProps) {
               )}
               {!hideGoList && (
                 <Space className='pr-2'>
-                  <Link to={props.gobackPath || '/dashboards'} style={{ fontSize: 14 }}>
+                  <Link to={goListPath} style={{ fontSize: 14 }}>
                     {isBuiltin ? t('builtInComponents:title') : t('list')}
                   </Link>
                   {'/'}

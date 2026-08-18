@@ -1,0 +1,46 @@
+name: Package Only
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_artifact:
+        description: 'Upload the packaged tar.gz as a GitHub Actions artifact'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.15.0
+          cache: npm
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Get version from package.json
+        id: pkg_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Package files to tar.gz
+        run: tar -czf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz pub
+
+      - name: Upload packaged artifact
+        if: ${{ inputs.upload_artifact }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: n9e-fe-${{ steps.pkg_version.outputs.version }}-tar-gz
+          path: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
+          if-no-files-found: error

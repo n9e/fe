@@ -5,12 +5,13 @@ import { PlusOutlined } from '@ant-design/icons';
 import AffixWrapper from '@/components/AffixWrapper';
 import { ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { getTeamInfoList } from '@/services/manage';
 import { getBusiGroupsAlertRules } from '@/services/warning';
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
+import { getPageFromSearch } from '@/utils/urlPage';
 import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
 import { ChannelItem, getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
 
@@ -47,6 +48,7 @@ function buildAutoName(channelName: string | undefined, notifyConfig: any, teams
 export default function FormCpt(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { disabled, initialValues, onOk, onCancel } = props;
+  const location = useLocation();
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>();
@@ -327,7 +329,7 @@ export default function FormCpt(props: Props) {
               {onCancel ? (
                 <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
               ) : (
-                <Link to={`/${NS}`}>
+                <Link to={{ pathname: `/${NS}`, search: `?page=${getPageFromSearch(location.search)}` }}>
                   <Button>{t('common:btn.cancel')}</Button>
                 </Link>
               )}

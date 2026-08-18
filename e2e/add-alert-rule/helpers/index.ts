@@ -52,7 +52,16 @@ export async function fillIntervalAndDuration(page: Page, uiConfig: NormalizedAl
   await expect(cronPattern, '执行频率下拉选择框').toBeVisible();
   await cronPattern.click();
   await cronPattern.fill(uiConfig.cronPattern);
-  await page.keyboard.press('Enter');
+  // 执行频率是 antd AutoComplete：fill + Enter 不会把值写入表单，需要从建议列表中点击对应选项提交
+  const cronDropdown = page.locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden)').last();
+  if (await cronDropdown.isVisible().catch(() => false)) {
+    const cronOption = cronDropdown.locator('.ant-select-item-option-content').filter({ hasText: uiConfig.cronPattern }).first();
+    if (await cronOption.isVisible().catch(() => false)) {
+      await cronOption.click();
+    } else {
+      await page.keyboard.press('Enter');
+    }
+  }
 
   const durationInput = ruleSection
     .locator('.ant-form-item')

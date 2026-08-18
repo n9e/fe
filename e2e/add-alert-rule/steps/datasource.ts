@@ -16,6 +16,9 @@ async function selectDatasourceCate(page: Page, cateName: string) {
 /**
  * 操作 antd Select multiple/mode 多选下拉选择器，选中指定选项。
  * 选中后自动关闭下拉菜单，并验证选项已显示为标签（`.ant-select-selection-item`）。
+ *
+ * 注意：antd 多选 Select（showSearch）下直接 click 下拉 option 不可靠（点击不会触发选中），
+ * 需先在 combobox 输入选项文本过滤，再按 Enter 选中（与 tags 模式行为一致）。
  */
 export async function selectAntSelectMultipleOption(page: Page, select: Locator, optionText: string) {
   const selectRoot = select.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]');
@@ -25,11 +28,22 @@ export async function selectAntSelectMultipleOption(page: Page, select: Locator,
   await expect(dropdown, `dropdown for option ${optionText}`).toBeVisible();
 
   const exactOptionText = new RegExp(`^${optionText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
-  const option = dropdown.getByRole('option', { name: exactOptionText }).first();
+
+  // 先点击 option（父级 .ant-select-item-option）。若点击直接选中则完成；
+  // 若未选中，这次点击也会激活 rc-select 的搜索输入框，使后续键盘输入生效。
+  const option = dropdown.locator('.ant-select-item-option').filter({ hasText: exactOptionText }).first();
   if (await option.isVisible().catch(() => false)) {
     await option.click();
-  } else {
-    await dropdown.locator('.ant-select-item-option-content').filter({ hasText: exactOptionText }).first().click();
+  }
+
+  // 若点击未生效（selection 为空），用键盘输入过滤 + Enter 选中
+  const selectionItem = selectRoot.locator('.ant-select-selection-item').filter({ hasText: exactOptionText });
+  if (!(await selectionItem.isVisible().catch(() => false))) {
+    const combobox = selectRoot.locator('input').first();
+    await combobox.focus();
+    await page.keyboard.type(optionText);
+    await page.waitForTimeout(300);
+    await page.keyboard.press('Enter');
   }
 
   if (await dropdown.isVisible().catch(() => false)) {

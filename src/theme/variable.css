@@ -299,7 +299,7 @@
   --fc-fill-error: rgb(var(--fc-fill-error-rgb));
 
   --fc-fill-gold: #ffbc0d;
-  --fc-primary-bg: var(--fc-violet-3);
+  --fc-primary-bg: #683bfc21;
   /* 文本 */
   --fc-text-link: #9470ff;
   --fc-text-link-rgb: 148 112 255;

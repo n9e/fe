@@ -171,6 +171,21 @@ export default function AlertTable(props: IProps) {
       },
     },
     {
+      title: t('trigger_value'),
+      dataIndex: 'trigger_value',
+      render(value) {
+        return (
+          <div
+            style={{
+              minWidth: getTextWidth(t('trigger_value')),
+            }}
+          >
+            {value}
+          </div>
+        );
+      },
+    },
+    {
       title: t('duration'),
       dataIndex: 'duration',
       render(_, record) {

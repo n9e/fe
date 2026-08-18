@@ -16,6 +16,7 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { getPageFromSearch } from '@/utils/urlPage';
 import { Button, Spin, Card, message, Space } from 'antd';
 import { RollbackOutlined, CopyOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -47,7 +48,7 @@ const Modify = (props: any) => {
       message.success(t('msg.modify.success'));
       props.history.push({
         pathname: `/job-tpls`,
-        search: `ids=${curBusiId}&isLeaf=true`,
+        search: `ids=${curBusiId}&isLeaf=true&page=${getPageFromSearch(location.search)}`,
       });
     });
   };
@@ -74,7 +75,7 @@ const Modify = (props: any) => {
     <PageLayout
       title={
         <>
-          <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
+          <RollbackOutlined className='back' onClick={() => history.push(`/job-tpls?page=${getPageFromSearch(location.search)}`)} />
           {t('tpl')}
         </>
       }

@@ -1,5 +1,5 @@
 const en_US = {
-  title: 'Prompt',
+  title: 'Notice',
   content: 'Please <a>create a business group</a> first.',
 };
 export default en_US;
