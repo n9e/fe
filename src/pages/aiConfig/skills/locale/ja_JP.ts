@@ -25,7 +25,7 @@ const ja_JP = {
   upload_modal_invalid_type: '.zip と .tar.gz 形式のファイルのみ対応しています',
   upload_modal_file_required: 'Skill の圧縮ファイルをアップロードしてください',
   edit_title: 'スキルを編集',
-  toggle_needs_team: '有効化/無効化の前に、「置き換え」で管理チームを設定してください',
+  toggle_needs_team: '有効化/無効化の前に、「修正」で管理チームを設定してください',
   document_empty: 'ドキュメント内容がありません',
   search_placeholder: 'キーワードで検索',
   builtin: '組み込み',
