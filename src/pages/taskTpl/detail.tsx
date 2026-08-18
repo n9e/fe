@@ -16,6 +16,7 @@
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
+import { getPageFromSearch } from '@/utils/urlPage';
 import { Button, Spin, Divider, Card } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -64,7 +65,7 @@ const Detail = (props: any) => {
     <PageLayout
       title={
         <>
-          <RollbackOutlined className='back' onClick={() => history.push('/job-tpls')} />
+          <RollbackOutlined className='back' onClick={() => history.push(`/job-tpls?page=${getPageFromSearch(location.search)}`)} />
           {t('tpl')}
         </>
       }
@@ -136,12 +137,12 @@ const Detail = (props: any) => {
               </div>
             </div>
             <div style={{ marginTop: 10 }}>
-              <Link to={{ pathname: `/job-tpls/${id}/modify`, search: `gid=${curBusiId}` }}>
+              <Link to={{ pathname: `/job-tpls/${id}/modify`, search: `gid=${curBusiId}&page=${getPageFromSearch(location.search)}` }}>
                 <Button type='primary' style={{ marginRight: 10 }}>
                   {t('tpl.modify')}
                 </Button>
               </Link>
-              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${id}&gid=${curBusiId}` }}>
+              <Link to={{ pathname: `/job-tpls/add/task`, search: `tpl=${id}&gid=${curBusiId}&page=${getPageFromSearch(location.search)}` }}>
                 <Button type='primary'>{t('tpl.create.task')}</Button>
               </Link>
             </div>

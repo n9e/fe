@@ -19,9 +19,9 @@ const RULE_VERSION_LABEL_MAP: Record<string, string> = {
 };
 
 const SEVERITY_LABEL_MAP: Record<number, string> = {
-  1: '一级报警（Critical）',
-  2: '二级报警（Warning）',
-  3: '三级报警（Info）',
+  1: '一级告警（Critical）',
+  2: '二级告警（Warning）',
+  3: '三级告警（Info）',
 };
 
 const CATE_LABEL_MAP: Record<string, string> = {
@@ -246,6 +246,18 @@ export function buildExpectedAlertRule(config: AlertRuleConfig, uiConfig: Normal
   // The add form does not expose a disabled/enable toggle.
   // New rules are always created as enabled (disabled: 0).
   expected.disabled = 0;
+
+  // FormNG PipelineConfigsNG 对 pipeline_id === 0（未选择 workflow）的项不会提交 pipeline_id 字段，
+  // 且后端实际保存时 enable 为 false，故从 expected 中删除 pipeline_id 并把 enable 对齐为 false。
+  if (Array.isArray(expected.pipeline_configs)) {
+    expected.pipeline_configs = expected.pipeline_configs.map((pc) => {
+      if (isPlainObject(pc) && pc.pipeline_id === 0) {
+        const { pipeline_id: _pipelineId, ...rest } = pc as Record<string, unknown>;
+        return { ...rest, enable: false };
+      }
+      return pc;
+    });
+  }
 
   // 使用引用数据中的 name→ID 映射替换 datasource_queries 中的 ID，
   // 使其与实际 UI 选中的 ID 一致（UI 通过名称选择 datasource，最终 ID 可能与 config 原始值不同）

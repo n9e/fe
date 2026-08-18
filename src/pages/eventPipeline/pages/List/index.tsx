@@ -17,6 +17,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY, MAX_NAME_LENGTH } from '../../constants';
 import { Item, getList, putItemsDisabled, deleteItems } from '../../services';
+import { normalizeInitialValues } from '../../utils/normalizeValues';
 import { truncateName } from '../../components/buildWorkflowName';
 import ScenarioList from '../../components/ScenarioList';
 import Add from '../Add';
@@ -343,7 +344,9 @@ export default function List() {
                   visible: true,
                   action: 'clone',
                   data: {
-                    ..._.omit(item, 'id'),
+                    // 列表接口返回的是后端格式（header / custom_params 为对象），而表单 Form.List 需要数组，
+                    // 必须与编辑页一样先过 normalizeInitialValues，否则克隆出来的 header 在表单里渲染为空、保存时被破坏
+                    ...normalizeInitialValues(_.omit(item, 'id')),
                     // 原名称已接近上限时直接拼后缀会超出后端 varchar(128)，先给后缀留出位置
                     name: `${truncateName(item.name, MAX_NAME_LENGTH - Array.from(t('clone_suffix')).length)}${t('clone_suffix')}`,
                   },

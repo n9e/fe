@@ -3,10 +3,11 @@ import _ from 'lodash';
 import { Form, Space, Input, Switch, Button, Row, Col, Tooltip } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
+import { getPageFromSearch } from '@/utils/urlPage';
 import { Document } from '@/components/DocumentDrawer';
 import Splitter from '@/components/Splitter';
 
@@ -30,6 +31,7 @@ interface Props {
 
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
+  const location = useLocation();
   const [form] = Form.useForm();
   const requestType = Form.useWatch('request_type', form);
   const ident = Form.useWatch('ident', form);
@@ -194,7 +196,7 @@ export default function FormCpt(props: Props) {
                       })
                     }
                   />
-                  <Link to={`/${NS}`}>
+                  <Link to={{ pathname: `/${NS}`, search: `?page=${getPageFromSearch(location.search)}` }}>
                     <Button>{t('common:btn.cancel')}</Button>
                   </Link>
                 </Space>

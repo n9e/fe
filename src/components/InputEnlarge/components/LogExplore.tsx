@@ -26,7 +26,7 @@ export default function LogExplore({
     form.setFields([
       {
         name: ['logExplore', 'query_string'],
-        value: value + '$' + v,
+        value: `${value}\${${v}}`,
       },
     ]);
   };

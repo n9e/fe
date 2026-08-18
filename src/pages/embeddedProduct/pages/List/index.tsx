@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import { Button, Modal, message, Switch } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { MenuOutlined } from '@ant-design/icons';
+import { HolderOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
@@ -11,6 +11,7 @@ import { arrayMoveImmutable } from 'array-move';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
+import usePagination from '@/components/usePagination';
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
@@ -23,7 +24,7 @@ import EmbeddedProductModal from '../../components/EmbeddedProductModal';
 import './style.less';
 
 const DragHandle = SortableHandle<{ disabled?: boolean }>((props) => {
-  return <Button type='text' size='small' icon={<MenuOutlined />} className='embedded-product-row-drag-handle' disabled={props.disabled} />;
+  return <Button type='text' size='small' icon={<HolderOutlined />} className='embedded-product-row-drag-handle' disabled={props.disabled} />;
 });
 
 const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => <tbody {...props} />);
@@ -37,6 +38,7 @@ export default function Index() {
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
   const [hideSavingId, setHideSavingId] = useState<number | null>(null);
+  const pagination = usePagination({ PAGESIZE_KEY: NS });
 
   const fetchData = async (): Promise<any> => {
     const res = await getEmbeddedProducts();
@@ -168,7 +170,7 @@ export default function Index() {
           size='small'
           rowKey='id'
           showSorterTooltip={false}
-          pagination={false}
+          pagination={pagination}
           dataSource={data}
           columns={columns}
           rowActions={(record: EmbeddedProductResponse) => ({

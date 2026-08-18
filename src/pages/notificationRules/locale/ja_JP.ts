@@ -196,9 +196,12 @@ const ja_JP = {
     default_duration_tip2: '集約最大間隔は3600秒を超えることはできません',
     attribute_keys_map: {
       cluster: 'データソース',
+      cate: 'データソースタイプ',
       group_name: 'ビジネスグループ',
       rule_id: 'アラートルール',
+      rule_prod: '監視タイプ',
       severity: 'アラートレベル',
+      is_recovered: '復旧ステータス',
     },
     enable_tip: '有効化後、ルールに合致するアラートは次元別に一つの通知に統合されます <a>使用文書</a>',
     labels_filter: {

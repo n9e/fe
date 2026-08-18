@@ -21,6 +21,9 @@ import PageLayout from '@/components/pageLayout';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import BlankBusinessPlaceholder from '@/components/BlankBusinessPlaceholder';
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
+// @ts-ignore — ObsLoop AlertRulesTip（srm-fe parcel；开源/plus 源仓不挂此依赖）
+import ObsLoopAlertRulesTip from 'plus:/parcels/ObsLoop/AlertRulesTip';
 import List from './List';
 import Add from './Add';
 import Edit from './Edit';
@@ -35,12 +38,23 @@ export default function index() {
   const { businessGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
+  const [groupSwitchCount, setGroupSwitchCount] = useState(0);
+  // 切换业务组时通知列表重置到第一页（在业务组选择源头触发，不依赖 gids 变化时序）
+  const handleSelectGids = (ids: string) => {
+    setGids(ids);
+    setGroupSwitchCount((count) => count + 1);
+  };
 
   return (
-    <PageLayout title={t('title')} icon={<SettingOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/'>
+    <PageLayout
+      title={t('title')}
+      icon={<SettingOutlined />}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/'
+      headerCenter={IS_ENT ? <ObsLoopAlertRulesTip /> : undefined}
+    >
       <div className='alert-rules-container'>
-        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
-        {businessGroup.ids ? <List gids={gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
+        <BusinessGroupSideBarWithAll gids={gids} setGids={handleSelectGids} localeKey={N9E_GIDS_LOCALKEY} />
+        {businessGroup.ids ? <List gids={gids} groupSwitchCount={groupSwitchCount} /> : <BlankBusinessPlaceholder text={t('title')} />}
       </div>
     </PageLayout>
   );

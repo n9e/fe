@@ -238,7 +238,7 @@ export default function index() {
           defaultDatasourceValue={defaultDatasourceValue}
         />
       }
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/'
+      doc={IS_ENT ? '/docs/content/flashcat/log/discover/what-is-log-discover/' : undefined}
     >
       <div className='n9e'>
         {_.map(items, (item, itemIndex) => {

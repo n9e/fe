@@ -35,6 +35,7 @@ interface MoreOperationsProps {
   selectRowKeys: React.Key[];
   selectedRows: any[];
   getAlertRules: () => void;
+  clearSelection?: () => void;
 }
 
 const ignoreFields = [
@@ -67,7 +68,7 @@ const ignoreFields = [
 
 export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
-  const { bgid, isLeaf, selectRowKeys, selectedRows, getAlertRules } = props;
+  const { bgid, isLeaf, selectRowKeys, selectedRows, getAlertRules, clearSelection } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const { isPlus, busiGroups } = useContext(CommonStateContext);
 
@@ -103,6 +104,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
                       onOk: () => {
                         deleteStrategy(selectRowKeys as number[], bgid!).then(() => {
                           message.success(t('batch.delete_success'));
+                          clearSelection?.();
                           getAlertRules();
                         });
                       },
@@ -140,7 +142,10 @@ export default function MoreOperations(props: MoreOperationsProps) {
                   CloneToBgids({
                     ids: selectRowKeys,
                     busiGroups,
-                    onOk: getAlertRules,
+                    onOk: () => {
+                      clearSelection?.();
+                      getAlertRules();
+                    },
                   });
                 }}
               >
@@ -159,7 +164,10 @@ export default function MoreOperations(props: MoreOperationsProps) {
                     gid: bgid!,
                     ids: selectRowKeys,
                     busiGroups,
-                    onOk: getAlertRules,
+                    onOk: () => {
+                      clearSelection?.();
+                      getAlertRules();
+                    },
                   });
                 }}
               >
@@ -211,6 +219,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
               );
               if (!res.err) {
                 message.success(t('common:success.modify'));
+                clearSelection?.();
                 getAlertRules();
                 setisModalVisible(false);
               } else {
@@ -227,6 +236,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
               );
               if (!res.err) {
                 message.success(t('common:success.modify'));
+                clearSelection?.();
                 getAlertRules();
                 setisModalVisible(false);
               } else {
@@ -245,6 +255,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
               );
               if (!res.err) {
                 message.success(t('common:success.modify'));
+                clearSelection?.();
                 getAlertRules();
                 setisModalVisible(false);
               } else {
