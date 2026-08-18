@@ -41,6 +41,18 @@ const en_US = {
       light: 'Light theme',
     },
   },
+  sharing_link: {
+    title: 'Generate sharing link',
+    allow_anonymous: 'Allow anonymous access without login',
+    expire_at: 'Expiration',
+    theme: 'Theme',
+    theme_default: 'System',
+    theme_dark: 'Dark',
+    theme_light: 'Light',
+    generating: 'Generating...',
+    anonymous_tip: 'Anyone with the link can view this dashboard and query its referenced datasources until the link expires. Share with care',
+    recommend_tip: 'A public anonymous dashboard is permanently accessible to anyone with the URL. For temporary sharing, use "Generate sharing link" to create a time-limited anonymous link',
+  },
   default_filter: {
     title: 'Preset filters',
     public: 'Public dashboards',

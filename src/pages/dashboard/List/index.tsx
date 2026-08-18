@@ -20,7 +20,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, Modal, Space, message, Tooltip } from 'antd';
-import { FundViewOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { FundViewOutlined, EditOutlined, ShareAltOutlined, LinkOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useUpdateEffect } from 'ahooks';
@@ -52,6 +52,7 @@ import Export from './Export';
 import Import, { ModalType } from './Import';
 import { exportDataStringify } from './utils';
 import PublicForm from './PublicForm';
+import SharingLinkModal from './SharingLinkModal';
 
 import './style.less';
 
@@ -291,6 +292,17 @@ export default function index() {
                     return (
                       <Space>
                         {content}
+                        {/* 公开仪表盘视图（gids==='-1'）列出的是全站公开大盘，当前用户多半不属于其业务组，
+                            签发 board 分享 token 时后端 bgroCheck 会 403，故与 EditOutlined 同守卫，不在该视图给出死链入口 */}
+                        {gids !== '-1' && (
+                          <Tooltip title={t('sharing_link.title')}>
+                            <LinkOutlined
+                              onClick={() => {
+                                SharingLinkModal({ boardId: record.id });
+                              }}
+                            />
+                          </Tooltip>
+                        )}
                         {gids !== '-1' && (
                           <EditOutlined
                             onClick={() => {

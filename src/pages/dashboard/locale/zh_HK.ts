@@ -41,6 +41,18 @@ const zh_HK = {
       light: '亮色主題連結',
     },
   },
+  sharing_link: {
+    title: '生成分享連結',
+    allow_anonymous: '允許不登入匿名訪問',
+    expire_at: '有效期',
+    theme: '主題',
+    theme_default: '跟隨系統',
+    theme_dark: '暗色',
+    theme_light: '亮色',
+    generating: '生成中...',
+    anonymous_tip: '匿名連結在有效期內無需登入即可查看該儀表板，並可查詢其引用的數據源數據，請謹慎分享',
+    recommend_tip: '匿名公開後，任何知道連結的人都可以永久訪問；如僅需臨時分享，建議使用「生成分享連結」創建限時匿名連結',
+  },
   default_filter: {
     title: '預置篩選',
     public: '公開儀表盤',

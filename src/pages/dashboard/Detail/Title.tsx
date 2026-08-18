@@ -22,7 +22,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, notification, Input, Modal, message, Tooltip } from 'antd';
-import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
+import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 
 import { TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
@@ -38,6 +38,7 @@ import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
+import SharingLinkModal from '../List/SharingLinkModal';
 import { IDashboard, ILink, IPanel } from '../types';
 import { goBack, dashboardTimeCacheKey } from './utils';
 import { isValidPanelConfig } from '../Panels/utils';
@@ -438,6 +439,16 @@ export default function Title(props: IProps) {
                   />
                 )}
               </>
+            )}
+            {!isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id && (
+              <Tooltip title={t('sharing_link.title')}>
+                <Button
+                  icon={<ShareAltOutlined />}
+                  onClick={() => {
+                    SharingLinkModal({ boardId: dashboard.id });
+                  }}
+                />
+              </Tooltip>
             )}
             <Tooltip title={dashboard.configs?.mode === 'iframe' ? t('embeddedDashboards:exitFullScreen_tip') : undefined}>
               <Button

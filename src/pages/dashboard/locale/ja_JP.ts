@@ -41,6 +41,18 @@ const ja_JP = {
       light: 'ライトテーマリンク',
     },
   },
+  sharing_link: {
+    title: '共有リンクを生成',
+    allow_anonymous: 'ログインなしの匿名アクセスを許可',
+    expire_at: '有効期限',
+    theme: 'テーマ',
+    theme_default: 'システムに従う',
+    theme_dark: 'ダーク',
+    theme_light: 'ライト',
+    generating: '生成中...',
+    anonymous_tip: '有効期限内はリンクを知っている人なら誰でもこのダッシュボードを閲覧し、参照データソースをクエリできます。共有にはご注意ください',
+    recommend_tip: '匿名公開すると、URL を知っている人は誰でも永続的にアクセスできます。一時的な共有には「共有リンクを生成」で期限付きリンクの作成を推奨します',
+  },
   default_filter: {
     title: 'デフォルトフィルタ',
     public: '公開ダッシュボード',

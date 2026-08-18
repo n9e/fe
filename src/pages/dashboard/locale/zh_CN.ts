@@ -41,6 +41,18 @@ const zh_CN = {
       light: '亮色主题链接',
     },
   },
+  sharing_link: {
+    title: '生成分享链接',
+    allow_anonymous: '允许不登录匿名访问',
+    expire_at: '有效期',
+    theme: '主题',
+    theme_default: '跟随系统',
+    theme_dark: '暗色',
+    theme_light: '亮色',
+    generating: '生成中...',
+    anonymous_tip: '匿名链接在有效期内无需登录即可查看该仪表盘，并可查询其引用的数据源数据，请谨慎分享',
+    recommend_tip: '匿名公开后，任何知道链接的人都可以永久访问；如仅需临时分享，建议使用「生成分享链接」创建限时匿名链接',
+  },
   default_filter: {
     title: '预置筛选',
     public: '公开仪表盘',

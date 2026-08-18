@@ -100,6 +100,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
           </>
         )}
         {hasHostIdentVariable && publicVal === 1 && publicCate === 0 && <Alert message={t('var.hostIdent.invalid2')} type='warning' />}
+        {!hasHostIdentVariable && publicVal === 1 && publicCate === 0 && <Alert message={t('sharing_link.recommend_tip')} type='info' />}
       </Form>
     </Modal>
   );
