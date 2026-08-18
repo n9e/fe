@@ -12,7 +12,7 @@ import { CommonStateContext, ICommonState } from '@/App';
  * CommonStateContext，否则加载真实 App 模块会失败。
  */
 export function createMockCommonState(overrides: Partial<ICommonState> = {}): ICommonState {
-  return {
+  const commonState = {
     datasourceCateOptions: [],
     groupedDatasourceList: {},
     reloadGroupedDatasourceList: () => {},
@@ -34,8 +34,8 @@ export function createMockCommonState(overrides: Partial<ICommonState> = {}): IC
     isPlus: false,
     sideMenuBgMode: 'dark',
     setSideMenuBgMode: () => {},
-    // 兼容新增的必填菜单背景默认值；通过展开保留对旧版 ICommonState 的兼容。
-    ...{ defaultMenuBgMode: 'light' },
+    // 兼容新增的必填菜单配置；通过展开保留对旧版 ICommonState 的兼容。
+    ...{ defaultMenuBgMode: 'light', sideMenuSettings: 'default' as const },
     darkMode: false,
     setDarkMode: () => {},
     esIndexMode: '',
@@ -44,6 +44,8 @@ export function createMockCommonState(overrides: Partial<ICommonState> = {}): IC
     logsDefaultRange: { start: 'now-1h', end: 'now' },
     ...overrides,
   };
+  // 测试仅需最小状态集合；生产环境新增但当前测试未使用的必填字段由此断言兼容。
+  return commonState as ICommonState;
 }
 
 /** 返回一个包裹 CommonStateContext.Provider 的包装组件，可同时用于 render / renderHook */
