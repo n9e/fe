@@ -16,16 +16,21 @@
  */
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Icon from '@ant-design/icons';
+import { Card } from 'antd';
+
 import PageLayout from '@/components/pageLayout';
-import SystemInfoSvg from '@/assets/n9e/image/system-info.svg?react';
-import pkgJson from '../../../../package.json';
-import './locale';
 import { IS_ENT } from '@/utils/constant';
+
 // @ts-ignore
 import LicenseInfo from 'plus:/parcels/LicenseInfo';
 // @ts-ignore
 import DataSourceInfo from 'plus:/parcels/DataSourceInfo';
+
+import pkgJson from '../../../../package.json';
+import DataSourceSupport from './DataSourceSupport';
+
+import './locale';
+
 export default function version() {
   const { t } = useTranslation('version');
   const [backendVersion, setBackendVersion] = useState('');
@@ -41,26 +46,22 @@ export default function version() {
   }, []);
 
   return (
-    <PageLayout
-      title={
-        <>
-          <Icon component={SystemInfoSvg as any} /> {t('title')}
-        </>
-      }
-    >
+    <PageLayout title={t('title')}>
       <div>
         {!IS_ENT && (
-          <ul className='fc-border rounded-lg' style={{ padding: '20px 30px' }}>
-            <li>
-              {t('frontend')}：{pkgJson.version}
-            </li>
-            <li>
-              {t('backend')}：{backendVersion}
-            </li>
-          </ul>
+          <Card size='small'>
+            <ul className='m-0 pl-5'>
+              <li>
+                {t('frontend')}：{pkgJson.version}
+              </li>
+              <li>
+                {t('backend')}：{backendVersion}
+              </li>
+            </ul>
+          </Card>
         )}
         <LicenseInfo />
-        <DataSourceInfo />
+        {IS_ENT ? <DataSourceInfo /> : <DataSourceSupport />}
       </div>
     </PageLayout>
   );

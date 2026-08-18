@@ -6,11 +6,12 @@ import { Alert } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
+import { allCates } from '@/components/AdvancedWrap/utils';
 import { IS_ENT } from '@/utils/constant';
 import { getDefaultDatasourceValue } from '@/utils';
 import PageLayout from '@/components/pageLayout';
 
-import { DEFAULT_DATASOURCE_CATE, ENABLED_VIEW_CATES, NAME_SPACE } from './constants';
+import { DEFAULT_DATASOURCE_CATE, NAME_SPACE } from './constants';
 import { getLocalItems, setLocalItems } from './utils/getLocalItems';
 import { getLocalActiveKey } from './utils/getLocalActiveKey';
 import getDefaultDatasourceCate from './utils/getDefaultDatasourceCate';
@@ -128,7 +129,10 @@ export default function index() {
 
   const datasourceManagePath = IS_ENT ? '/settings/source/log' : '/datasources';
   // 仅展示当前版本实际支持的数据源类型（graphPro 类型在开源版下过滤掉）
-  const enabledDatasourceTypes = ENABLED_VIEW_CATES.filter((cate) => isLogExplorerDatasourceCateSupported(cate)).join(', ');
+  const enabledDatasourceTypes = allCates
+    .filter((cate) => isLogExplorerDatasourceCateSupported(cate.value))
+    .map((cate) => cate.value)
+    .join(', ');
 
   const paramDatasourceCate = params['data_source_name'] || undefined;
   const useParamDatasource = paramDatasourceCate && isLogExplorerDatasourceCateSupported(paramDatasourceCate) && _.find(datasourceList, { plugin_type: paramDatasourceCate });
