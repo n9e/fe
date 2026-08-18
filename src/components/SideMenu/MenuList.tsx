@@ -378,7 +378,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
                   : 'text-[#fff]'
                 : 'text-title'
               : '',
-            !collapsed ? 'mr-4' : '',
+            !collapsed ? 'mr-2.5' : '',
           )}
         >
           {item.icon}
@@ -444,7 +444,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
         <div
           className={cn(
             'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
-            !collapsed ? 'mr-4' : '',
+            !collapsed ? 'mr-2.5' : '',
             isLight ? 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]' : '',
           )}
         >
