@@ -10,6 +10,7 @@ import usePagination from '@/components/usePagination';
 
 import { NS } from '../../constants';
 import { Item, getList, deleteItems } from '../../services';
+import { normalizeInitialValues } from '../../utils/normalizeValues';
 import Add from '../Add';
 import Edit from '../Edit';
 import MoreOperations from './MoreOperations';
@@ -184,7 +185,7 @@ export default function List() {
                       setEventPipelineDrawerState({
                         visible: true,
                         action: 'clone',
-                        data: _.omit(item, 'id'),
+                        data: normalizeInitialValues(_.omit(item, 'id')),
                       });
                     }}
                   >

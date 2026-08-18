@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { SIZE } from '@/utils/constant';
 import { getItem as getWorkflowItem, getList as getWorkflowList, postItem as postWorkflow, putItem as putWorkflow } from '@/pages/eventPipeline/services';
 import { DEFAULT_VALUES, NS as EVENTPIPELINE_NS } from '@/pages/eventPipeline/constants';
+import { normalizeProcessorsForForm, normalizeProcessorsForSubmit } from '@/pages/eventPipeline/utils/normalizeValues';
 import TestModal from '@/pages/eventPipeline/pages/Form/TestModal';
 
 import Processor from './Processor';
@@ -80,7 +81,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
         // 将 data.processors 设置到 form 中, path 是 [...prefixNamePath, ...namePath, 'processors']
         // 使用 setFieldsValue 而非 setFields，避免 Form.List 内部 key 未正确初始化导致重复 key
         const currentValues = _.cloneDeep(form.getFieldsValue());
-        _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], data.processors);
+        _.set(currentValues, [...prefixNamePath, ...namePath, 'processors'], normalizeProcessorsForForm(data.processors));
         form.setFieldsValue(currentValues);
       },
     },
@@ -88,7 +89,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
 
   useEffect(() => {
     if (workflowId !== undefined && item?.processors) {
-      setSavedProcessorsSnapshot(_.cloneDeep(item.processors));
+      setSavedProcessorsSnapshot(normalizeProcessorsForForm(item.processors));
     }
   }, [workflowId, item?.processors]);
 
@@ -149,13 +150,14 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
 
     setSavingWorkflow(true);
     try {
+      const submitProcessors = normalizeProcessorsForSubmit(processors);
       if (workflowId) {
         await putWorkflow({
           id: workflowId,
           group_id,
           use_case: 'alert_rule',
           name,
-          processors,
+          processors: submitProcessors,
         });
         setSavedProcessorsSnapshot(_.cloneDeep(processors));
         message.success(t('common:success.edit'));
@@ -164,7 +166,7 @@ const WorkflowItem = React.forwardRef<WorkflowItemRef, Props>((props, ref) => {
           group_id,
           use_case: 'alert_rule',
           name,
-          processors,
+          processors: submitProcessors,
         });
 
         const createdWorkflowId = _.get(createdWorkflow, 'id', createdWorkflow);

@@ -226,7 +226,7 @@ export default function AISummary(props: Props) {
                     </Form.Item>
                   </Col>
                   <Col span={6}>
-                    <Form.Item {...resetField} label='TLS InsecureSkipVerify' name={[...namePath, 'insecure_skip_verify']} valuePropName='checked'>
+                    <Form.Item {...resetField} label='TLS InsecureSkipVerify' name={[...namePath, 'skip_ssl_verify']} valuePropName='checked'>
                       <Switch size='small' />
                     </Form.Item>
                   </Col>
