@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Form, Space } from 'antd';
 import _ from 'lodash';
+import { Boxes } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -26,6 +27,12 @@ export default function index({ datasourceCate, datasourceValue, variablesWithOp
     return _.includes(['datasource', 'datasourceIdentifier'], item.type);
   });
   const chartForm = Form.useFormInstance();
+  const mixedOptionLabel = (
+    <Space align='center'>
+      <Boxes className='block' size={16} />
+      {t('query.mixed_datasource')}
+    </Space>
+  );
 
   return (
     <>
@@ -70,8 +77,8 @@ export default function index({ datasourceCate, datasourceValue, variablesWithOp
                 {
                   value: 'mixed',
                   filter: 'mixed 混用数据源',
-                  optionLabel: t('query.mixed_datasource', '混用数据源'),
-                  label: t('query.mixed_datasource', '混用数据源'),
+                  optionLabel: mixedOptionLabel,
+                  label: mixedOptionLabel,
                 },
               ]}
               onChange={(val, cate) => {
