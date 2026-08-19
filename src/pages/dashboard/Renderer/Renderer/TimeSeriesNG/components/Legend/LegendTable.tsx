@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
+
+type SortOrder = 'ascend' | 'descend';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +27,16 @@ export default function LegendTable(props: Props) {
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
+
+  // 图表配置里的排序仅作为默认排序，用户点击表头可手动覆盖；配置变更时重置为新的默认值
+  const defaultSort: { column: string; order: SortOrder } | undefined = legendSortBy && legendSortDir
+    ? { column: legendSortBy, order: legendSortDir === 'desc' ? 'descend' : 'ascend' }
+    : undefined;
+  const [sortState, setSortState] = useState<typeof defaultSort>(defaultSort);
+
+  useEffect(() => {
+    setSortState(defaultSort);
+  }, [legendSortBy, legendSortDir]);
 
   let columns: ColumnProps<DataItem>[] = [
     {
@@ -56,7 +68,7 @@ export default function LegendTable(props: Props) {
         }),
         dataIndex: column,
         sorter: (a, b) => a[column].stat - b[column].stat,
-        sortOrder: legendSortBy === column ? (legendSortDir === 'desc' ? 'descend' : 'ascend') : null,
+        sortOrder: sortState?.column === column ? sortState.order : null,
         render: (text) => {
           return text.text;
         },
@@ -75,6 +87,18 @@ export default function LegendTable(props: Props) {
         dataSource={data}
         rowClassName={(record) => {
           return !record.show ? 'cursor-pointer text-soft' : 'cursor-pointer';
+        }}
+        onChange={(_, __, sorter) => {
+          const s = (Array.isArray(sorter) ? sorter[0] : sorter) as {
+            columnKey?: React.Key;
+            field?: React.Key;
+            order?: SortOrder;
+          };
+          if (s?.order) {
+            setSortState({ column: String(s.columnKey ?? s.field ?? ''), order: s.order });
+          } else {
+            setSortState(undefined);
+          }
         }}
         onRow={(record) => {
           return {

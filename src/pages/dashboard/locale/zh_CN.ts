@@ -243,6 +243,7 @@ const zh_CN = {
         variance: '方差',
         stdDev: '标准差',
         columns: '显示列',
+        none: '无',
         behaviour: {
           label: '单击触发行为',
           showItem: '显示项目',

@@ -242,6 +242,7 @@ const zh_HK = {
         variance: '方差',
         stdDev: '標準差',
         columns: '顯示列',
+        none: '無',
         behaviour: {
           label: '點擊觸發的行為',
           showItem: '显示项目',

@@ -242,6 +242,7 @@ const ja_JP = {
         variance: '分散',
         stdDev: '標準偏差',
         columns: '表示列',
+        none: 'なし',
         behaviour: {
           label: 'クリックで行動',
           showItem: 'アイテムを表示',

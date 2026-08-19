@@ -242,6 +242,7 @@ const en_US = {
         variance: 'Variance',
         stdDev: 'StdDev',
         columns: 'Columns',
+        none: 'none',
         behaviour: {
           label: 'Behavior triggered by click',
           showItem: 'Show item',
