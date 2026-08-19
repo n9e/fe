@@ -13,12 +13,20 @@ import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recomme
 import { getRealStep } from '@/pages/dashboard/Renderer/datasource/prometheus';
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import type { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import Collapse, { Panel } from '../Components/Collapse';
 import ExpressionPanel from '../Components/ExpressionPanel';
+import { isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target';
 import AddQueryButtons from '../Components/AddQueryButtons';
 
-export default function PrometheusContent({ panelWidth, datasourceValue, range }) {
+interface PrometheusContentProps {
+  panelWidth?: number;
+  datasourceValue: number;
+  range: IRawTimeRange;
+}
+
+export default function PrometheusContent({ panelWidth, datasourceValue, range }: PrometheusContentProps) {
   const { t } = useTranslation('dashboard');
   const { i18n } = useTranslation();
   const form = Form.useFormInstance();
@@ -39,8 +47,8 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
           <>
             <Collapse>
               {_.map(fields, (field, index) => {
-                const { __mode__ } = targets?.[field.name] || {};
-                if (__mode__ === '__expr__') {
+                const restField = _.omit(field, 'key');
+                if (isExpressionTarget(targets?.[field.name])) {
                   return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
                 }
                 return (
@@ -57,7 +65,7 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                           });
                           const name = target?.refId || generateQueryNameByIndex(index);
                           return (
-                            <Space>
+                            <Space align='center'>
                               {name}
                               {step ? (
                                 <Tooltip placement='right' title={t('query.prometheus.step.tag_tip')}>
@@ -83,7 +91,7 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                       </Space>
                     }
                   >
-                    <Form.Item noStyle {...field} name={[field.name, 'refId']}>
+                    <Form.Item noStyle {...restField} name={[field.name, 'refId']}>
                       <div />
                     </Form.Item>
                     <div className='flex items-center gap-2'>
@@ -94,7 +102,7 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                             overlayInnerStyle: { width: 330 },
                             title: <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />,
                           }}
-                          {...field}
+                          {...restField}
                           name={[field.name, 'expr']}
                           validateTrigger={['onBlur']}
                           rules={[
@@ -162,7 +170,7 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                         <Col flex='auto'>
                           <Form.Item
                             label={t('query.legend')}
-                            {...field}
+                            {...restField}
                             name={[field.name, 'legend']}
                             tooltip={{
                               getPopupContainer: () => document.body,
@@ -176,7 +184,7 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                         </Col>
                       )}
                       <Col flex='none'>
-                        <Form.Item label={t('query.prometheus.minStep.label')} tooltip={t('query.prometheus.minStep.tip')} {...field} name={[field.name, 'step']}>
+                        <Form.Item label={t('query.prometheus.minStep.label')} tooltip={t('query.prometheus.minStep.tip')} {...restField} name={[field.name, 'step']}>
                           <Resolution placeholder='15' width='100%' />
                         </Form.Item>
                       </Col>
@@ -184,7 +192,7 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                         <Form.Item
                           label={t('query.prometheus.instant.label')}
                           tooltip={t('query.prometheus.instant.tip')}
-                          {...field}
+                          {...restField}
                           name={[field.name, 'instant']}
                           valuePropName='checked'
                         >

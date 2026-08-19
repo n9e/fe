@@ -8,8 +8,9 @@ import Overrides from '@/pages/dashboard/Editor/Fields/Overrides';
 import Thresholds from '@/pages/dashboard/Editor/Fields/Thresholds';
 
 import GraphStyles from './GraphStyles';
+import type { ITarget } from '../../../types';
 
-export default function Table({ targets }) {
+export default function Table({ targets }: { targets: ITarget[] }) {
   const cellOptionsType = Form.useWatch(['custom', 'cellOptions', 'type']);
 
   return (

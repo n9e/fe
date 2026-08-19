@@ -68,7 +68,7 @@ function Graph(props: {
                 unit,
               },
               val,
-            ).text;
+            ).text as string;
           },
         }),
       ],
@@ -97,7 +97,7 @@ function Graph(props: {
                 unit,
               },
               v,
-            ).text;
+            ).text as string;
           },
         }),
       ],

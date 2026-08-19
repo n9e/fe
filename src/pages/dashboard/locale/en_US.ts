@@ -641,6 +641,7 @@ const en_US = {
     options_time: 'Time',
     options_time_tip: 'Specify a custom time range for the query, leave blank to use the dashboard time range',
     copy_query: 'Copy query',
+    mixed_datasource: 'Mixed datasource',
     hide_response: 'Hide response data',
   },
   migrate: {

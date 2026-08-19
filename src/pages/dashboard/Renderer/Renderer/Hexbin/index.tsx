@@ -27,19 +27,28 @@ import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceT
 import { renderFn } from './render';
 import { IPanel, IHexbinStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 
 import './style.less';
 
 interface HoneyCombProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
-const getColumnsKeys = (data: any[]) => {
+interface HexbinValue {
+  name?: string;
+  stat: number;
+  metric: Record<string, string | undefined>;
+}
+
+const getColumnsKeys = (data: Array<{ metric: Record<string, string | undefined> }>) => {
   const keys = _.reduce(
     data,
     (result, item) => {
@@ -52,7 +61,9 @@ const getColumnsKeys = (data: any[]) => {
 
 const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom = {}, options } = values;
+  const stableOptions = useStableValue(options);
   const {
     calc,
     colorRange = [],
@@ -90,7 +101,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       .domain(getColorScaleLinearDomain(calculatedValues, colorDomainAuto, colorDomain))
       .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
 
-    const detailFormatter = (data: any) => {
+    const detailFormatter = (data: HexbinValue) => {
       const scopedVars = {
         '__field.name': data.name,
         '__field.value': data.stat,
@@ -126,19 +137,7 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
         renderFn(data, renderProps, detailFormatter);
       }
     }
-  }, [
-    isPreview,
-    JSON.stringify(series),
-    JSON.stringify(options),
-    svgSize?.width,
-    svgSize?.height,
-    calc,
-    colorRange,
-    reverseColorOrder,
-    colorDomainAuto,
-    colorDomain,
-    fontBackground,
-  ]);
+  }, [isPreview, dataDependency, stableOptions, svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain, fontBackground]);
 
   return (
     <div ref={svgEl} style={{ width: '100%', height: '100%' }}>

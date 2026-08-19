@@ -22,12 +22,13 @@ import { useTranslation } from 'react-i18next';
 import { SIZE } from '@/utils/constant';
 import { Panel } from '../../Components/Collapse';
 import ColorPicker from '../../../Components/ColorPicker';
+import { IThresholds } from '../../../types';
 
 interface Props {
   hideBase?: boolean;
   preNamePrefix?: (string | number)[];
   namePrefix?: (string | number)[];
-  initialValue?: any;
+  initialValue?: IThresholds['steps'];
   showMode?: boolean;
   showStyle?: boolean;
   isActive?: boolean;

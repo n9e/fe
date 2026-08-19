@@ -209,4 +209,41 @@ describe('upgradeTableToNG', () => {
       },
     ]);
   });
+
+  it('uses distinct value names for multiple series and preserves option links before legacy links', () => {
+    const result = upgradeTableToNG({
+      type: 'table',
+      custom: { displayMode: 'seriesToRows', links: [{ title: 'legacy', url: 'https://legacy/${__field.value}' }] },
+      options: { links: [{ title: 'existing', url: 'https://existing/${__field.value}' }] },
+      targets: [{ refId: 'A' }, { refId: 'B' }],
+    });
+
+    expect(result.transformationsNG[0]).toMatchObject({ options: { renameByName: { '__value_#A': 'value_A', '__value_#B': 'value_B' } } });
+    expect(result.options.links).toEqual([
+      { title: 'existing', url: 'https://existing/${__row.value_A}' },
+      { title: 'legacy', url: 'https://legacy/${__row.value_A}' },
+    ]);
+  });
+
+  it('degrades an unmatched RefID override to a matcher without a value', () => {
+    const result = upgradeTableToNG({
+      type: 'table', targets: [{ refId: 'A' }],
+      overrides: [{ matcher: { id: 'byFrameRefID', value: 'missing' }, properties: {} }],
+    });
+
+    expect(result.overrides[0]).toMatchObject({ matcher: { id: 'byName' } });
+    expect(result.overrides[0].matcher).not.toHaveProperty('value');
+  });
+
+  it('derives sensible fields without availableFields for every display mode', () => {
+    expect(upgradeTableToNG({ type: 'table', custom: { displayMode: 'seriesToRows' }, targets: [{ refId: 'A' }] }).transformationsNG[0]).toMatchObject({
+      options: { fields: ['__name__', '__value_#A'] },
+    });
+    expect(upgradeTableToNG({ type: 'table', custom: { displayMode: 'labelsOfSeriesToRows', columns: ['host', 'value'] }, targets: [{ refId: 'A' }] }).transformationsNG[0]).toMatchObject({
+      options: { fields: ['host', '__value_#A'] },
+    });
+    expect(upgradeTableToNG({ type: 'table', custom: { displayMode: 'labelValuesToRows', aggrDimension: ['host'] }, targets: [{ refId: 'A' }] }).transformationsNG[2]).toMatchObject({
+      options: { fields: ['host', '__value_#A (last)'] },
+    });
+  });
 });

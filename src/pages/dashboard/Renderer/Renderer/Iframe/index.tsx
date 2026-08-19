@@ -3,17 +3,18 @@ import React from 'react';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel, IIframeStyles } from '../../../types';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
 }
 
 export default function index(props: IProps) {
   const { values } = props;
   const { custom } = values;
-  const { src } = custom as IIframeStyles;
+  const { src } = custom as unknown as IIframeStyles;
   const content = replaceTemplateVariables(src);
 
   return (

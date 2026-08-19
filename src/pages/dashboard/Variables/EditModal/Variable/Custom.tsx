@@ -28,7 +28,7 @@ export default function Custom(props: Props) {
     const itemOptions = _.sortBy(filterOptionsByReg(options), 'value');
 
     setOptions(itemOptions);
-  }, [JSON.stringify(definition)]);
+  }, [definition]);
 
   return (
     <>

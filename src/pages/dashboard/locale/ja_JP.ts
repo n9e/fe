@@ -643,6 +643,7 @@ const ja_JP = {
     options_time: '時間',
     options_time_tip: 'クエリのカスタム時間範囲を指定できます。空白のままにすると、ダッシュボードの時間範囲が使用されます',
     copy_query: 'クエリをコピー',
+    mixed_datasource: 'データソース混在',
     hide_response: 'レスポンスを非表示',
   },
   migrate: {

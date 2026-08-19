@@ -26,3 +26,13 @@
 ## 3.4.0
 
 - fix: 修复分组里的面板没有做 maxDataPoints、queryOptionsTime 迁移的问题
+
+## 4.0.0
+
+### 多数据源查询
+
+- feat: 每个查询 target 支持独立数据源（`targets[].datasource`），单个面板可混用多种数据源（面板 `datasourceCate` 为 `mixed`），通过新接口 `/api/n9e/dashboard/query` 一次提交多个数据源查询，并在服务端计算跨数据源表达式
+- refactor: 旧版表达式 target 迁移为新结构：`__mode__: '__expr__'` 与 `expr` 统一为 `kind: 'expression'` + `expression` 字段
+- refactor: Elasticsearch/OpenSearch 查询的 `query.syntax`（kuery/kql/lucene）迁移为 `query.filter_language`（kql/lucene）
+- feat: 查询 target 新增 `resultType`（`time_series` | `logs`），按查询模式自动推断
+- refactor: Elasticsearch/OpenSearch 多值 target（`query.values` 含多个值）在请求时展开为多个单值查询，首个值保留原 refId，其余分配唯一子 refId
