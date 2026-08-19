@@ -440,7 +440,10 @@ export default function Title(props: IProps) {
                 )}
               </>
             )}
-            {!isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id && (
+            {/* 必须带 isAuthorized：签发一条匿名链接比改看板更敏感，而 __public__
+                只在从列表页「公开」页签跳转时才写进 URL——直接用 /dashboards/<id>
+                打开公开看板时它不存在，非业务组成员照样会看到按钮，点开必然 403 */}
+            {isAuthorized && !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id && (
               <Tooltip title={t('sharing_link.title')}>
                 <Button
                   icon={<ShareAltOutlined />}

@@ -5,7 +5,7 @@ import _ from 'lodash';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateBoardPublic, getDashboard } from '@/services/dashboardV2';
 
-import SharingLinkSection from './SharingLinkSection';
+import SharingLinkSection, { HostIdentState } from './SharingLinkSection';
 
 interface IProps {
   boardId: number;
@@ -21,28 +21,39 @@ function PublicForm(props: IProps & ModalWrapProps) {
   const publicVal = Form.useWatch('public', form);
   const publicCate = Form.useWatch('public_cate', form);
   const [dashboardConfig, setDashboardConfig] = useState<any>({});
+  // 用独立状态表达「读取中 / 读到了 / 读失败」，不要往 dashboardConfig 里塞
+  // 伪造的 hostIdent 变量来表达失败——那会让下面的 Alert 对用户断言「本仪表盘
+  // 配置了机器标识变量」，而实际只是接口抖了一下，且用户无从分辨、也没有重试入口
+  const [configState, setConfigState] = useState<'checking' | 'loaded' | 'failed'>('checking');
   const hasHostIdentVariable = _.some(dashboardConfig.var, (item) => {
     return item.type === 'hostIdent';
   });
+  // 读不到配置一律按「不确定 → 不允许匿名」处理
+  const hostIdentState: HostIdentState =
+    configState === 'checking' ? 'checking' : configState === 'failed' || hasHostIdentVariable ? 'blocked' : 'allowed';
 
   useEffect(() => {
     if (boardId) {
+      setConfigState('checking');
       getDashboard(boardId)
         .then((res) => {
           try {
             setDashboardConfig(JSON.parse(res.configs));
+            setConfigState('loaded');
           } catch (e) {
             console.error(e);
             setDashboardConfig({});
+            setConfigState('failed');
           }
         })
         .catch((error) => {
           console.error(error);
-          // 读取失败时按「不确定 → 不允许匿名」保守降级，交给下面的 hostIdent 判定
-          setDashboardConfig({ var: [{ type: 'hostIdent' }] });
+          setDashboardConfig({});
+          setConfigState('failed');
         });
     } else {
       setDashboardConfig({});
+      setConfigState('loaded');
     }
   }, [boardId]);
 
@@ -61,7 +72,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
         });
       }}
       okButtonProps={{
-        disabled: hasHostIdentVariable && publicVal === 1 && publicCate === 0,
+        disabled: hostIdentState !== 'allowed' && publicVal === 1 && publicCate === 0,
       }}
     >
       <Form
@@ -104,7 +115,9 @@ function PublicForm(props: IProps & ModalWrapProps) {
             )}
           </>
         )}
+        {/* 两条原因分开说：真有机器标识变量 vs 配置没读到，用户需要分辨得出 */}
         {hasHostIdentVariable && publicVal === 1 && publicCate === 0 && <Alert message={t('var.hostIdent.invalid2')} type='warning' />}
+        {configState === 'failed' && publicVal === 1 && publicCate === 0 && <Alert message={t('sharing_link.config_load_failed')} type='warning' />}
       </Form>
       {/* 匿名访问在新版本由限时分享链接承载，故仅在该类型下展开链接生成器；
           「不公开」等其他类型如需临时分享，走仪表盘详情页的分享入口 */}
@@ -117,7 +130,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
           <div className='mb-2'>
             <Typography.Text type='secondary'>{t('sharing_link.recommend_tip')}</Typography.Text>
           </div>
-          <SharingLinkSection boardId={boardId} hasHostIdentVariable={hasHostIdentVariable} alwaysAnonymous />
+          <SharingLinkSection boardId={boardId} hostIdentState={hostIdentState} alwaysAnonymous />
         </>
       )}
     </Modal>
