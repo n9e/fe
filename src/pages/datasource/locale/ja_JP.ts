@@ -242,6 +242,8 @@ const ja_JP = {
     no_busi_group: 'ビジネスグループがありません。先に「組織」で作成してください',
     imported_dashboards: '{{count}} 個のダッシュボードをインポートしました。',
     goto_dashboards: '確認する',
+    imported_alerts: '{{count}} 件のアラートルールをインポートしました。',
+    goto_alerts: '確認する',
     already_imported: '{{name}}（インポート済み）',
     import_failed: '一部のダッシュボードのインポートに失敗しました',
     import_error: 'インポートに失敗しました。しばらくしてからもう一度お試しください',

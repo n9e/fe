@@ -235,6 +235,8 @@ const zh_CN = {
     no_busi_group: '还没有业务组，请先到「人员组织」创建一个',
     imported_dashboards: '已导入 {{count}} 个仪表盘。',
     goto_dashboards: '去查看',
+    imported_alerts: '已导入 {{count}} 条告警规则。',
+    goto_alerts: '去查看',
     already_imported: '{{name}}（已导入）',
     import_failed: '部分仪表盘导入失败',
     import_error: '导入失败，请稍后重试',

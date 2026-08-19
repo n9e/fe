@@ -235,6 +235,8 @@ const zh_HK = {
     no_busi_group: '還沒有業務組，請先到「人員組織」建立一個',
     imported_dashboards: '已導入 {{count}} 個儀表盤。',
     goto_dashboards: '去查看',
+    imported_alerts: '已導入 {{count}} 條告警規則。',
+    goto_alerts: '去查看',
     already_imported: '{{name}}（已導入）',
     import_failed: '部分儀表盤導入失敗',
     import_error: '導入失敗，請稍後重試',

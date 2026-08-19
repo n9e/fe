@@ -243,6 +243,8 @@ const ru_RU = {
     no_busi_group: 'Бизнес-групп пока нет — создайте её в разделе «Организация»',
     imported_dashboards: 'Импортировано дашбордов: {{count}}.',
     goto_dashboards: 'Посмотреть',
+    imported_alerts: 'Импортировано правил оповещения: {{count}}.',
+    goto_alerts: 'Посмотреть',
     already_imported: '{{name}} (импортирован)',
     import_failed: 'Часть дашбордов не удалось импортировать',
     import_error: 'Не удалось импортировать, попробуйте позже',

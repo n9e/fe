@@ -241,6 +241,8 @@ const en_US = {
     no_busi_group: 'No business group yet — create one under Organization first',
     imported_dashboards: 'Imported {{count}} dashboard(s).',
     goto_dashboards: 'View them',
+    imported_alerts: 'Imported {{count}} alert rule(s).',
+    goto_alerts: 'View them',
     already_imported: '{{name}} (imported)',
     import_failed: 'Some dashboards failed to import',
     import_error: 'Import failed, please try again later',

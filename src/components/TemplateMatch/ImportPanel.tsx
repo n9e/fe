@@ -87,6 +87,8 @@ export default function ImportPanel(props: Props) {
   // 勾选态按分类分别保存，来回切分类不丢用户已经挑好的规则
   const [alertCheckedMap, setAlertCheckedMap] = useState<Record<string, (number | string)[]>>(() => _.fromPairs(_.map(alertGroups, (g) => [g.cate, _.map(g.rules, 'uuid')])));
   const [importing, setImporting] = useState(false);
+  // 已导入的告警条数，累计——用户可能先导 categraf 那组，再切到 exporter 组接着导
+  const [alertImportedCount, setAlertImportedCount] = useState(0);
 
   const defaultTab = show === 'alerts' || (show === 'both' && _.isEmpty(dashboards)) ? 'alerts' : 'dashboards';
   // uuid 在 match 接口里是 number、在 payload 接口里可能是 string，一律按字符串比对，
@@ -290,6 +292,22 @@ export default function ImportPanel(props: Props) {
               </div>
             )}
 
+            {alertImportedCount > 0 && (
+              <Alert
+                className='mb-2'
+                type='success'
+                showIcon
+                message={
+                  <span>
+                    {t('tpl_match.imported_alerts', { count: alertImportedCount })} {/* 新标签打开：用户可能还要接着导别的，不该把这里冲掉 */}
+                    <Link to='/alert-rules' target='_blank'>
+                      {t('tpl_match.goto_alerts')}
+                    </Link>
+                  </span>
+                }
+              />
+            )}
+
             {/* 与集成中心弹窗共用同一个 ImportForm，只是内联在这里，不再叠第二层弹窗。
                 规则列表经 beforeSubmit 插在字段与提交按钮之间：配置项必须在长列表之前，
                 否则几十条规则一滚，业务组/通知规则就被埋到看不见的地方了。 */}
@@ -331,6 +349,11 @@ export default function ImportPanel(props: Props) {
                 </>
               }
               onSuccess={() => {
+                // ImportForm 只在整批都成功时才回调，所以提交时勾了几条就是导入了几条
+                setAlertImportedCount((prev) => prev + activeChecked.length);
+                // 清空该组勾选：导完还留着全选，用户很容易再点一次导出重复规则。
+                // 不置灰是因为规则内容由 activeChecked 过滤而来，清空即可让按钮变成「导入 0 条」
+                setActiveChecked([]);
                 onImported?.('alert');
               }}
             />
