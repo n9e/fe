@@ -29,7 +29,7 @@ interface IOptions {
  * 根据 target 判断是否为查询 raw data
  */
 function isRawDataQuery(target: ITarget) {
-  if (_.size(target.query?.values) === 1) {
+  if (_.size(target.query?.values as unknown[] | undefined) === 1) {
     const func = _.get(target, ['query', 'values', 0, 'func']);
     return func === 'rawData';
   }

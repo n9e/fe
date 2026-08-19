@@ -1,6 +1,8 @@
 import _ from 'lodash';
 
 import { DatasourceCateEnum } from '@/utils/constant';
+import type { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { DashboardDatasource } from '@/pages/dashboard/types';
 
 import { IVariable } from '../types';
 import { replaceAllSeparatorMap } from '../constant';
@@ -44,7 +46,7 @@ function adjustValue(
 function joinValues(
   values: {
     label: string;
-    value: string;
+    value: string | number;
   }[],
   params: {
     separator: string;
@@ -58,13 +60,13 @@ function joinValues(
   // mysql 多值：按 Grafana sqlstring 风格输出 'val1','val2'
   if (datasourceCate === DatasourceCateEnum.mysql) {
     return _.join(
-      _.map(values, (item) => adjustValue(item.value, { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isMysqlMulti: true })),
+      _.map(values, (item) => adjustValue(String(item.value), { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isMysqlMulti: true })),
       ',',
     );
   }
   // 如果只有一个值时，不需要使用分隔符连接和外包裹（括号）
-  if (_.size(values) === 1) {
-    return adjustValue(values[0].value, {
+  if (values.length === 1 && values[0]) {
+    return adjustValue(String(values[0].value), {
       datasourceCate,
       isPlaceholderQuoted,
     });
@@ -73,7 +75,7 @@ function joinValues(
     return `(${_.trim(
       _.join(
         _.map(values, (item) => {
-          return adjustValue(item.value, {
+          return adjustValue(String(item.value), {
             datasourceCate,
             isPlaceholderQuoted,
             isEscapeJsonString,
@@ -100,18 +102,18 @@ export default function adjustData(
     }[];
   },
 ): {
-  [key: string]: string | number;
+  [key: string]: string | number | undefined;
 } {
   const { isEscapeJsonString, isPlaceholderQuoted, datasourceList } = options;
   if (_.isEmpty(variables)) {
     return {};
   }
-  const data = _.reduce(
+  const data = _.reduce<IVariable, Record<string, string | number | undefined>>(
     variables,
     (result, variable) => {
       const { options, reg, defaultValue, definition, value, allValue, type, datasource } = variable;
       const datasourceCate = (datasource?.cate as DatasourceCateEnum) || DatasourceCateEnum.prometheus;
-      const separator = replaceAllSeparatorMap[datasourceCate];
+      const separator = datasourceCate in replaceAllSeparatorMap ? replaceAllSeparatorMap[datasourceCate as keyof typeof replaceAllSeparatorMap] : '';
       const params = {
         separator,
         datasourceCate,
@@ -135,14 +137,14 @@ export default function adjustData(
         } else {
           joinedValue = joinValues(
             _.filter(options, (option) => {
-              return !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(option.value);
+              return !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(String(option.value));
             }),
             params,
           );
         }
       } else if (_.isArray(value)) {
         const currentOptions = _.map(value, (item) => {
-          return _.find(options, (option) => option.value === item) || { label: item, value: item };
+          return _.find(options, (option) => option.value === item) || { label: String(item), value: item };
         });
         joinedValue = joinValues(currentOptions, params);
       } else if (_.isString(value)) {
@@ -156,7 +158,7 @@ export default function adjustData(
           }
         }
       }
-      result[variable.name] = joinedValue;
+      result[variable.name] = Array.isArray(joinedValue) ? joinedValue.join(',') : joinedValue;
       return result;
     },
     {},
@@ -164,10 +166,18 @@ export default function adjustData(
   return data;
 }
 
-export function buildVariableInterpolations({ variable, variables, datasourceList, range }: { variable: IVariable; variables: IVariable[]; datasourceList: any[]; range: any }) {
-  const builtInVariables = getBuiltInVariables({
-    range,
-  });
+export function buildVariableInterpolations({
+  variable,
+  variables,
+  datasourceList,
+  range,
+}: {
+  variable: IVariable;
+  variables: IVariable[];
+  datasourceList: DashboardDatasource[];
+  range: IRawTimeRange;
+}) {
+  const builtInVariables = getBuiltInVariables(range);
   const data = adjustData(_.concat(variables, builtInVariables), {
     datasourceList: datasourceList,
     isPlaceholderQuoted: isPlaceholderQuoted(variable.definition, variable.name), // only for ES

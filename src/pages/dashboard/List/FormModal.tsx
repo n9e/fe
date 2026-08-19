@@ -14,10 +14,11 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Modal, Form, Input, Select, Radio, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useDeepCompareEffect } from 'ahooks';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateDashboard, createDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
@@ -29,7 +30,16 @@ interface Props {
   busiId?: number;
   initialValues?: IDashboard;
   dashboardSaveMode?: string;
-  onOk?: (values) => void;
+  onOk?: (values: DashboardFormValues) => void;
+}
+
+interface DashboardFormValues {
+  name: string;
+  ident?: string;
+  tags?: string[];
+  note?: string;
+  graphTooltip?: IDashboardConfig['graphTooltip'];
+  graphZoom?: IDashboardConfig['graphZoom'];
 }
 
 function index(props: Props & ModalWrapProps) {
@@ -37,12 +47,12 @@ function index(props: Props & ModalWrapProps) {
   const { visible, destroy, busiId, action, initialValues, dashboardSaveMode, onOk } = props;
   const [form] = Form.useForm();
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (initialValues?.id) {
       getDashboard(initialValues.id).then((res) => {
         let configs = {} as IDashboardConfig;
         try {
-          configs = JSONParse(res.configs);
+          configs = JSONParse(res.configs) as IDashboardConfig;
         } catch (e) {
           console.warn(e);
         }
@@ -56,7 +66,7 @@ function index(props: Props & ModalWrapProps) {
         });
       });
     }
-  }, [JSON.stringify(initialValues)]);
+  }, [initialValues]);
 
   return (
     <Modal
@@ -65,7 +75,7 @@ function index(props: Props & ModalWrapProps) {
       visible={visible}
       onCancel={destroy}
       onOk={() => {
-        form.validateFields().then(async (values) => {
+        form.validateFields().then(async (values: DashboardFormValues) => {
           if (dashboardSaveMode === 'manual') {
             if (onOk) {
               onOk(values);
@@ -96,7 +106,7 @@ function index(props: Props & ModalWrapProps) {
               message.success(t('common:success.create'));
             }
             if (result) {
-              const configs = JSONParse(result.configs);
+              const configs = JSONParse(result.configs) as IDashboardConfig;
               await updateDashboardConfigs(result.id, {
                 configs: JSON.stringify({
                   ...configs,

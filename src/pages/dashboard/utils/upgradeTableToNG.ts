@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import type { IPanel, ITarget, IOverride, LinksItem } from '../types';
 
 const toRowVariable = (fieldName: string) => `\${__row.${fieldName}}`;
 
@@ -15,8 +16,8 @@ const replaceLegacyLinkVariables = (url: string, valueFieldName: string) => {
     .replace(/\$__field\.value/g, () => toRowVariable(valueFieldName));
 };
 
-const isRecord = (value: unknown): value is Record<string, any> => value != null && typeof value === 'object' && !Array.isArray(value);
-const asRecordArray = (value: unknown): Record<string, any>[] => (Array.isArray(value) ? value.filter(isRecord) : []);
+const isRecord = (value: unknown): value is Record<string, unknown> => value != null && typeof value === 'object' && !Array.isArray(value);
+const asRecordArray = (value: unknown): Record<string, unknown>[] => (Array.isArray(value) ? value.filter(isRecord) : []);
 const asStringArray = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []);
 
 const resolveTransformedFieldName = (sourceFieldName: string, transformations: unknown) => {
@@ -39,17 +40,15 @@ const resolveTransformedFieldName = (sourceFieldName: string, transformations: u
 };
 
 /** 将旧版 Table 面板转换为 TableNG 可识别的配置。 */
-export function upgradeTableToNG(panel: any, availableFields?: string[]) {
+export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPanel {
   const fallback = _.cloneDeep(panel);
   try {
-    if (!isRecord(fallback)) return fallback;
-
     const result = fallback;
     const custom = isRecord(result.custom) ? result.custom : {};
     const displayMode = typeof custom.displayMode === 'string' ? custom.displayMode : 'seriesToRows';
     const targets = asRecordArray(result.targets);
     const legacyLinks = asRecordArray(custom.links);
-    const existingOptionLinks = asRecordArray(isRecord(result.options) ? result.options.links : undefined);
+    const existingOptionLinks = asRecordArray(result.options.links);
     const valueFieldNames = targets.filter((target) => typeof target.refId === 'string' && target.refId).map((target) => `__value_#${target.refId}`);
     const valueFieldDisplayNames = targets.map((target, index) => (typeof target.legend === 'string' && target.legend ? target.legend : valueFieldNames[index]));
     const renameByName = Object.fromEntries(
@@ -67,7 +66,7 @@ export function upgradeTableToNG(panel: any, availableFields?: string[]) {
         type: 'none',
       },
     };
-    result.options = { ...(isRecord(result.options) ? result.options : {}) };
+    result.options = { ...result.options };
     delete result.options.links;
     result.targets = targets.map((target) => {
       if (displayMode === 'labelValuesToRows') {
@@ -75,10 +74,11 @@ export function upgradeTableToNG(panel: any, availableFields?: string[]) {
         return { ...targetWithoutLegend, instant: true };
       }
       return { ...target, instant: true };
-    });
+    }) as ITarget[];
     result.overrides = asRecordArray(result.overrides).map((override) => {
-      if (override.matcher?.id !== 'byFrameRefID') return override;
-      const targetIndex = asRecordArray(result.targets).findIndex((target) => target.refId === override.matcher.value);
+      const matcher = isRecord(override.matcher) ? override.matcher : undefined;
+      if (matcher?.id !== 'byFrameRefID') return override;
+      const targetIndex = asRecordArray(result.targets).findIndex((target) => target.refId === matcher.value);
       let fieldName: string | undefined;
       if (targetIndex >= 0) {
         if (displayMode === 'labelValuesToRows') {
@@ -104,7 +104,7 @@ export function upgradeTableToNG(panel: any, availableFields?: string[]) {
           ...(isRecord(override.properties) ? override.properties : {}),
         },
       };
-    });
+    }) as unknown as IOverride[];
     if (displayMode === 'seriesToRows') {
       const fields = asStringArray(availableFields).length ? asStringArray(availableFields) : ['__name__', ...valueFieldNames];
       const nameField = fields.find((field) => field === '__name__') || fields.find((field) => field === 'name');
@@ -172,7 +172,7 @@ export function upgradeTableToNG(panel: any, availableFields?: string[]) {
     const optionLinks = [...existingOptionLinks, ...legacyLinks].map((link) => ({
       ...link,
       url: typeof link.url === 'string' ? replaceLegacyLinkVariables(link.url, valueFieldName) : link.url,
-    }));
+    })) as LinksItem[];
     if (optionLinks.length) result.options.links = optionLinks;
 
     return result;

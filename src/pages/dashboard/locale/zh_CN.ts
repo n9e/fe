@@ -647,6 +647,7 @@ const zh_CN = {
     options_time: '查询时间范围',
     options_time_tip: '可指定查询时间范围，默认为仪表盘全局时间范围',
     copy_query: '复制查询',
+    mixed_datasource: '混用数据源',
     hide_response: '隐藏查询结果',
   },
   migrate: {

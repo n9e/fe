@@ -3,12 +3,13 @@ import { Form, Select } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
 interface IProps {
   cate: string;
   name?: string | string[];
   label?: React.ReactNode;
-  datasourceVars?: any[];
+  datasourceVars?: IVariable[];
   disabled?: boolean;
 }
 

@@ -14,22 +14,23 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
 import { Modal, Select, Space, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
+import { useDeepCompareEffect } from 'ahooks';
 
-import { SIZE } from '@/utils/constant';
+import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
-import { CommonStateContext } from '@/App';
 
 import { DASHBOARD_VERSION } from '../config';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
-import FormCpt from './Form';
+import FormCpt, { EditorFormHandle } from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
+import getDefaultTargets from '../utils/getDefaultTargets';
 import { upgradeTableToNG } from '../utils/upgradeTableToNG';
 import { useGlobalState } from '../globalState';
 import normalizeData from '../Renderer/Renderer/TableNG/utils/normalizeData';
@@ -46,15 +47,14 @@ interface IProps {
   time: IRawTimeRange;
   timezone: string;
   setTimezone: (timezone: string) => void;
-  onOK: (formData: any, mode: string) => void;
+  onOK: (formData: IPanel, mode: string) => void;
   onCancel?: () => void;
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
-  const formRef = useRef<any>();
+  const formRef = useRef<EditorFormHandle>(null);
   const { panelWidth, mode, visible, setVisible, id, time, timezone, setTimezone } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [series] = useGlobalState('series');
@@ -62,7 +62,10 @@ function index(props: IProps) {
   const changeVisualization = (val: string, migrateLegacyTable = false) => {
     if (!formRef.current?.getFormInstance) return;
     const formInstance = formRef.current.getFormInstance();
-    const values = formInstance.getFieldsValue();
+    const values = {
+      ...(formInstance.getFieldsValue() as Record<string, unknown>),
+      targets: formInstance.getFieldValue('targets'),
+    } as IPanel;
     if (migrateLegacyTable) {
       const availableFields = _.uniq(_.flatMap(normalizeData(series || []), 'columns'));
       setInitialValues(upgradeTableToNG(values, availableFields));
@@ -72,10 +75,11 @@ function index(props: IProps) {
     _.set(valuesCopy, 'type', val);
     _.set(valuesCopy, 'custom', defaultCustomValuesMap[val]);
     _.set(valuesCopy, 'options', defaultOptionsValuesMap[val]);
+    const datasourceCate = valuesCopy.datasourceCate || valuesCopy.targets?.[0]?.datasource?.cate || 'prometheus';
     _.set(
       valuesCopy,
       'targets',
-      valuesCopy.targets
+      valuesCopy.targets?.length
         ? _.map(valuesCopy.targets, (item) => {
             // 如果切换到时序图类型，但是面板的查询配置里的模式不是时序图数据，则切换到时序图模式
             if (val === 'timeseries' && item.query?.mode && item.query?.mode !== 'timeSeries') {
@@ -83,19 +87,19 @@ function index(props: IProps) {
             }
             return item;
           })
-        : [{ refId: 'A' }],
+        : getDefaultTargets(datasourceCate === 'mixed' ? DatasourceCateEnum.prometheus : (datasourceCate as DatasourceCateEnum)),
     );
-    _.set(valuesCopy, 'datasourceCate', valuesCopy.datasourceCate || 'prometheus');
-    _.set(valuesCopy, 'datasourceValue', valuesCopy.datasourceValue || groupedDatasourceList['prometheus'][0]?.id);
+    // 清空 overrides
     _.set(valuesCopy, 'overrides', []);
     setInitialValues(valuesCopy);
   };
   const handleAddChart = async () => {
     if (formRef.current && formRef.current.getFormInstance) {
       const formInstance = formRef.current.getFormInstance();
-      formInstance.validateFields().then(async (values) => {
+      formInstance.validateFields().then(async (values: IPanel) => {
+        values.targets = formInstance.getFieldValue('targets') ?? values.targets;
         // TODO: 渲染 hexbin 图时，colorRange 需要从 string 转换为 array
-        if (values.type === 'hexbin') {
+        if (values.type === 'hexbin' && typeof values.custom.colorRange === 'string') {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
         let formData = Object.assign(values, {
@@ -112,7 +116,7 @@ function index(props: IProps) {
     }
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     const initialValuesCopy = _.cloneDeep(props.initialValues);
     initialValuesCopy.type = initialValuesCopy.type || defaultValues.type;
     // TODO: 渲染 hexbin 配置时，colorRange 需要从 array 转换为 string
@@ -126,7 +130,7 @@ function index(props: IProps) {
     } else {
       setInitialValues(initialValuesCopy);
     }
-  }, [JSON.stringify(props.initialValues)]);
+  }, [props.initialValues]);
 
   return (
     <Modal
@@ -219,8 +223,7 @@ function index(props: IProps) {
         backgroundColor: 'var(--fc-fill-1)',
       }}
     >
-      {/* 除了 text 和 iframe 类型其他的类型比如存在 initialValues?.datasourceCate */}
-      {(initialValues?.datasourceCate || _.includes(['text', 'iframe'], initialValues.type)) && (
+      {(initialValues?.targets?.length || _.includes(['text', 'iframe'], initialValues.type)) && (
         <FormCpt
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}

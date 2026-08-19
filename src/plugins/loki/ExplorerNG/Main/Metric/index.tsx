@@ -88,7 +88,7 @@ function Graph(props: {
           mode: 'all',
           sort: 'asc',
           pointValueformatter: (val) => {
-            return valueFormatter({ unit }, val).text;
+            return valueFormatter({ unit }, val).text as string;
           },
         }),
       ],
@@ -112,7 +112,7 @@ function Graph(props: {
           scaleKey: 'y',
           theme: darkMode ? 'dark' : 'light',
           formatValue: (v) => {
-            return valueFormatter({ unit }, v).text;
+            return valueFormatter({ unit }, v).text as string;
           },
         }),
       ],

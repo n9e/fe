@@ -2,6 +2,9 @@ import _ from 'lodash';
 
 import { IVariable } from '../types';
 
+export type VariableQueryParam = string | (string | null)[] | null | undefined;
+type VariableRuntimeValue = string | number | (string | null)[] | null | undefined;
+
 /**
  * 初始化变量的值
  * 从 URL 参数、localStorage 中读取变量值
@@ -12,7 +15,7 @@ import { IVariable } from '../types';
  */
 export default function initializeVariablesValue(
   variables: IVariable[],
-  queryParams: Record<string, any>,
+  queryParams: Record<string, VariableQueryParam>,
   params: {
     dashboardId: number;
   },
@@ -23,7 +26,7 @@ export default function initializeVariablesValue(
     if (variablesItem.type === 'constant') return variablesItem;
     const variableName = variablesItem.name;
     const isTextbox = variablesItem.type === 'textbox';
-    let variableValue = queryParams[variableName];
+    let variableValue: VariableRuntimeValue = queryParams[variableName];
     // 如果没有固定 URL 参数值，则从 localStorage 读取缓存值
     if (queryParams.__variable_value_fixed === undefined) {
       if (variableValue === undefined) {
@@ -44,29 +47,29 @@ export default function initializeVariablesValue(
       }
     }
     if (isTextbox) {
-      if (_.isArray(variableValue)) {
+      if (Array.isArray(variableValue)) {
         variableValue = variableValue[0] ?? variablesItem.defaultValue ?? '';
       }
       if (variableValue === null || variableValue === undefined) {
         variableValue = variablesItem.defaultValue ?? '';
       }
-    } else if (variableValue === null || variableValue === undefined || variableValue === '' || (_.isArray(variableValue) && _.isEmpty(variableValue))) {
+    } else if (variableValue === null || variableValue === undefined || variableValue === '' || (Array.isArray(variableValue) && variableValue.length === 0)) {
       // 如果值为空（null, undefined, '', []）则置为 undefined
       variableValue = undefined;
-    } else if (variablesItem.type === 'datasource' && !_.isNaN(_.toNumber(variableValue))) {
+    } else if (variablesItem.type === 'datasource' && !Number.isNaN(Number(variableValue))) {
       variableValue = _.toNumber(variableValue);
     } else if (variablesItem.multi) {
       // 多选模式
       if (variableValue === 'all') {
         // 全选值（all）设置为 ['all']
         variableValue = ['all'];
-      } else if (_.isString(variableValue)) {
+      } else if (typeof variableValue === 'string') {
         // 单选值（string）转换为数组
         variableValue = [variableValue];
       }
     } else {
       // 单选模式，值为数组时取第一个
-      if (_.isArray(variableValue)) {
+      if (Array.isArray(variableValue)) {
         variableValue = variableValue[0] ?? undefined;
       }
     }

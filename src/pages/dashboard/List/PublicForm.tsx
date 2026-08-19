@@ -4,11 +4,27 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateBoardPublic, getDashboard } from '@/services/dashboardV2';
+import { isJsonObject, parseJson } from '@/pages/dashboard/utils/json';
+
+interface BusinessGroup {
+  id: number;
+  name: string;
+}
+
+interface PublicDashboardValues {
+  public?: number;
+  public_cate?: number;
+  bgids?: number[];
+}
+
+interface DashboardVariableConfig {
+  var?: Array<{ type: string }>;
+}
 
 interface IProps {
   boardId: number;
-  busiGroups: any[];
-  initialValues: any;
+  busiGroups: BusinessGroup[];
+  initialValues: PublicDashboardValues;
   onOk: () => void;
 }
 
@@ -18,7 +34,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
   const [form] = Form.useForm();
   const publicVal = Form.useWatch('public', form);
   const publicCate = Form.useWatch('public_cate', form);
-  const [dashboardConfig, setDashboardConfig] = useState<any>({});
+  const [dashboardConfig, setDashboardConfig] = useState<DashboardVariableConfig>({});
   const hasHostIdentVariable = _.some(dashboardConfig.var, (item) => {
     return item.type === 'hostIdent';
   });
@@ -28,7 +44,11 @@ function PublicForm(props: IProps & ModalWrapProps) {
       getDashboard(boardId)
         .then((res) => {
           try {
-            setDashboardConfig(JSON.parse(res.configs));
+            const parsed = parseJson(res.configs);
+            const variables = isJsonObject(parsed) && Array.isArray(parsed.var) ? parsed.var : [];
+            setDashboardConfig({
+              var: variables.filter(isJsonObject).flatMap((item) => (typeof item.type === 'string' ? [{ type: item.type }] : [])),
+            });
           } catch (e) {
             console.error(e);
             setDashboardConfig({});

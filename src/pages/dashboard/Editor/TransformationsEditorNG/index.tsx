@@ -34,7 +34,9 @@ export default function index() {
                 const id = form.getFieldValue(['transformationsNG', name, 'id']);
                 return (
                   <div key={key}>
-                    <Form.Item {...resetField} name={[name, 'id']} hidden />
+                    <Form.Item {...resetField} name={[name, 'id']} hidden>
+                      <input type='hidden' />
+                    </Form.Item>
                     {id === 'organize' && (
                       <Form.Item {...resetField} name={[name, 'options']}>
                         <Organize

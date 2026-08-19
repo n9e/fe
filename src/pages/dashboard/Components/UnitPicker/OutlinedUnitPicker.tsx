@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { OutlinedSelect } from '@/components/OutlinedSelect';
 
 import { buildUnitOptions } from './utils';
+import type { UnitOption } from './utils';
 import CustomUnitPicker from './CustomUnitPicker';
 import './locale';
 
@@ -17,7 +18,7 @@ export { CustomUnitPicker };
 interface Props {
   hideOptionLabel?: boolean;
   hideSIOption?: boolean;
-  ajustUnitOptions?: (units: any) => any;
+  ajustUnitOptions?: (units: UnitOption[]) => UnitOption[];
 }
 
 export default function index(props: SelectProps & Props) {

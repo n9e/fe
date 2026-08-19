@@ -22,8 +22,9 @@ import StandardOptions from '../../Fields/StandardOptions';
 import Thresholds from '../../Fields/Thresholds';
 import Overrides from './Overrides';
 import ValueMappings from './ValueMappings';
+import type { ITarget } from '../../../types';
 
-export default function Timeseries({ targets }) {
+export default function Timeseries({ targets }: { targets: ITarget[] }) {
   return (
     <>
       <Tooltip />

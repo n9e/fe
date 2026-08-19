@@ -34,7 +34,7 @@ type DataType = {
 };
 interface Props {
   data: DataType[];
-  positon: 'top' | 'left' | 'right' | 'bottom';
+  positon?: 'top' | 'left' | 'right' | 'bottom';
   hidden: boolean;
   labelWithName: boolean;
   labelWithValue: boolean;

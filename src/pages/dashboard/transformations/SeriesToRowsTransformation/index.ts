@@ -21,11 +21,11 @@ export default class SeriesToRowsTransformation implements Transformation {
 
   private convertSeriesToRows(seriesList: TimeSeries[]): TableData {
     const columns = ['timestamp', 'value', 'name', ...this.getLabelKeys(seriesList)];
-    const rows: Record<string, any>[] = [];
+    const rows: Record<string, DataPoint[string]>[] = [];
 
     seriesList.forEach((series) => {
       series.data.forEach((dataPoint) => {
-        const row: Record<string, any> = {
+        const row: Record<string, DataPoint[string]> = {
           timestamp: dataPoint.timestamp,
           value: dataPoint.value,
           name: series.name,
