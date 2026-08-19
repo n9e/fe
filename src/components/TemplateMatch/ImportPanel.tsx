@@ -41,6 +41,20 @@ interface Props {
   defaultBgid?: number;
   /** 导入成功。旅程标记这类调用方专属的副作用放在这里做，面板本身不认识它们 */
   onImported?: (type: 'dashboard' | 'alert') => void;
+  /**
+   * 游离树里的调用方必须把这些传进来。
+   *
+   * ModalHOC 用 createRoot 把内容挂到 body 上，那棵树在 App 的 Provider 之外，
+   * useContext(CommonStateContext) 恒为 `{}` —— 业务组会是空数组，选择器只能显示
+   * 原始 id，还会误报「还没有业务组」。正常树里的调用方（数据源那边）不传，走 context。
+   */
+  ctx?: {
+    busiGroups?: { id: number; name: string }[];
+    groupedDatasourceList?: any;
+    reloadGroupedDatasourceList?: () => void;
+    datasourceCateOptions?: any[];
+    notificationRulesAuthorized?: boolean;
+  };
 }
 
 interface PayloadLike {
@@ -50,10 +64,17 @@ interface PayloadLike {
 
 export default function ImportPanel(props: Props) {
   const { t } = useTranslation('datasourceManage');
-  const { datasourceId, entry, show, defaultBgid, onImported } = props;
-  const { busiGroups, groupedDatasourceList, reloadGroupedDatasourceList, datasourceCateOptions } = useContext(CommonStateContext);
-  // 在这里算好传给告警导入弹窗：那个弹窗经 ModalHOC 渲染在游离节点上，自己读不到 CommonStateContext
-  const notificationRulesAuthorized = useIsAuthorized([notificationRulesPerm]);
+  const { datasourceId, entry, show, defaultBgid, onImported, ctx } = props;
+  const provided = useContext(CommonStateContext);
+  // 调用方给了就用它的，否则走 Provider —— 游离树里 Provider 是空的，见 ctx 的注释
+  const busiGroups = ctx?.busiGroups ?? provided.busiGroups;
+  const groupedDatasourceList = ctx?.groupedDatasourceList ?? provided.groupedDatasourceList;
+  const reloadGroupedDatasourceList = ctx?.reloadGroupedDatasourceList ?? provided.reloadGroupedDatasourceList;
+  const datasourceCateOptions = ctx?.datasourceCateOptions ?? provided.datasourceCateOptions;
+  // 在这里算好传给告警导入弹窗：那个弹窗同样渲染在游离节点上，自己读不到 CommonStateContext。
+  // hook 不能条件调用，所以先照常算，再让调用方的值优先
+  const authorizedFromCtx = useIsAuthorized([notificationRulesPerm]);
+  const notificationRulesAuthorized = ctx?.notificationRulesAuthorized ?? authorizedFromCtx;
 
   const dashboards = entry.dashboards || [];
   const alertGroups = entry.alert_groups || [];
