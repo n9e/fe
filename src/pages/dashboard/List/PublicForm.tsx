@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Radio, Modal, Select, Alert } from 'antd';
+import { Form, Radio, Modal, Select, Alert, Divider, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateBoardPublic, getDashboard } from '@/services/dashboardV2';
+
+import SharingLinkSection from './SharingLinkSection';
 
 interface IProps {
   boardId: number;
@@ -34,8 +36,10 @@ function PublicForm(props: IProps & ModalWrapProps) {
             setDashboardConfig({});
           }
         })
-        .catch(() => {
-          setDashboardConfig({});
+        .catch((error) => {
+          console.error(error);
+          // 读取失败时按「不确定 → 不允许匿名」保守降级，交给下面的 hostIdent 判定
+          setDashboardConfig({ var: [{ type: 'hostIdent' }] });
         });
     } else {
       setDashboardConfig({});
@@ -45,6 +49,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
   return (
     <Modal
       visible={visible}
+      width={800}
       title={t('public.name')}
       onCancel={destroy}
       onOk={() => {
@@ -100,8 +105,21 @@ function PublicForm(props: IProps & ModalWrapProps) {
           </>
         )}
         {hasHostIdentVariable && publicVal === 1 && publicCate === 0 && <Alert message={t('var.hostIdent.invalid2')} type='warning' />}
-        {!hasHostIdentVariable && publicVal === 1 && publicCate === 0 && <Alert message={t('sharing_link.recommend_tip')} type='info' />}
       </Form>
+      {/* 匿名访问在新版本由限时分享链接承载，故仅在该类型下展开链接生成器；
+          「不公开」等其他类型如需临时分享，走仪表盘详情页的分享入口 */}
+      {publicVal === 1 && publicCate === 0 && (
+        <>
+          <Divider style={{ margin: '16px 0 12px' }} />
+          <div className='mb-1'>
+            <Typography.Text strong>{t('sharing_link.title_anonymous')}</Typography.Text>
+          </div>
+          <div className='mb-2'>
+            <Typography.Text type='secondary'>{t('sharing_link.recommend_tip')}</Typography.Text>
+          </div>
+          <SharingLinkSection boardId={boardId} hasHostIdentVariable={hasHostIdentVariable} alwaysAnonymous />
+        </>
+      )}
     </Modal>
   );
 }
