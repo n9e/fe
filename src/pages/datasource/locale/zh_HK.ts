@@ -245,7 +245,7 @@ const zh_HK = {
     pick_group: '規則分類',
     group_option: '{{name}}（{{count}} 條）',
     selected_count: '已選 {{checked}} / {{total}}',
-    datasource_bound: '導入時將自動綁定當前資料來源（ID: {{id}}）',
+    datasource_bound: '導入時將自動綁定資料來源「{{name}}」',
   },
 };
 

@@ -252,7 +252,7 @@ const ja_JP = {
     pick_group: 'ルール分類',
     group_option: '{{name}}（{{count}} 件）',
     selected_count: '{{checked}} / {{total}} 件選択中',
-    datasource_bound: 'インポート時に現在のデータソース（ID: {{id}}）を自動でバインドします',
+    datasource_bound: 'インポート時にデータソース「{{name}}」を自動でバインドします',
   },
 };
 

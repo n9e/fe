@@ -251,7 +251,7 @@ const en_US = {
     pick_group: 'Rule category',
     group_option: '{{name}} ({{count}})',
     selected_count: '{{checked}} / {{total}} selected',
-    datasource_bound: 'The current datasource (ID: {{id}}) will be bound automatically on import',
+    datasource_bound: 'Datasource "{{name}}" will be bound automatically on import',
   },
 };
 export default en_US;

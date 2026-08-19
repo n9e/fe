@@ -253,7 +253,7 @@ const ru_RU = {
     pick_group: 'Категория правил',
     group_option: '{{name}} ({{count}})',
     selected_count: 'Выбрано {{checked}} из {{total}}',
-    datasource_bound: 'При импорте будет автоматически привязан текущий источник (ID: {{id}})',
+    datasource_bound: 'При импорте будет автоматически привязан источник «{{name}}»',
   },
 };
 

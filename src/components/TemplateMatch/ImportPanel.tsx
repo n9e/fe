@@ -144,6 +144,12 @@ export default function ImportPanel(props: Props) {
     [alertPayloads, activeChecked],
   );
   const boundDatasourceQueries = useMemo(() => [{ match_type: 0, op: 'in', values: [datasourceId] }], [datasourceId]);
+  // 底部那行提示显示名字而不是主键：用户认得的是「VictoriaMetrics」，不是「ID: 1」。
+  // 数据源列表里找不到（被删了、或调用方没给列表）才退回显示 id
+  const boundDatasourceName = useMemo(
+    () => _.get(_.find(groupedDatasourceList?.prometheus, { id: datasourceId }), 'name') || String(datasourceId),
+    [groupedDatasourceList, datasourceId],
+  );
 
   /**
    * 仪表盘就地导入：模板内容是用户勾出来的，再弹一个 JSON 文本框让人确认没有意义，
@@ -360,7 +366,7 @@ export default function ImportPanel(props: Props) {
           </Tabs.TabPane>
         )}
       </Tabs>
-      <div className='mt-3 text-[var(--fc-text-4)]'>{t('tpl_match.datasource_bound', { id: datasourceId })}</div>
+      <div className='mt-3 text-[var(--fc-text-4)]'>{t('tpl_match.datasource_bound', { name: boundDatasourceName })}</div>
     </>
   );
 }

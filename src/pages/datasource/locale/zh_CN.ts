@@ -245,7 +245,7 @@ const zh_CN = {
     pick_group: '规则分类',
     group_option: '{{name}}（{{count}} 条）',
     selected_count: '已选 {{checked}} / {{total}}',
-    datasource_bound: '导入时将自动绑定当前数据源（ID: {{id}}）',
+    datasource_bound: '导入时将自动绑定数据源「{{name}}」',
   },
 };
 export default zh_CN;
