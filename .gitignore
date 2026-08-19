@@ -5,6 +5,7 @@ dist-ssr
 *.local
 .vscode
 .idea/*
+.claude/
 pub
 deploy.sh
 src/Packages/*

@@ -24,6 +24,9 @@ import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 import SqlVizTypeSwitch from './SqlVizTypeSwitch';
 
+// P0-1: 模块级稳定引用，避免每次渲染新建函数打穿 LogsViewerStateContext 的 useMemo
+const alwaysNotIndex = () => ({ isIndex: false, indexName: '' });
+
 interface IProps {
   sqlVizType: string;
   tableSelector: {
@@ -194,7 +197,7 @@ export default function Table(props: IProps) {
               logs={logs.data}
               logsHash={data?.hash + '_' + logs.hash}
               colWidths={data?.colWidths}
-              getAddToQueryInfo={() => ({ isIndex: false, indexName: '' })}
+              getAddToQueryInfo={alwaysNotIndex}
               fields={fields}
               options={options}
               organizeFields={organizeFields}
