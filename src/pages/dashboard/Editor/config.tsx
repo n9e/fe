@@ -113,6 +113,8 @@ export const defaultOptionsValues = {
   },
   legend: {
     displayMode: 'hidden',
+    sortBy: '',
+    sortDir: 'asc',
   },
   thresholds: {
     steps: [defaultThreshold],

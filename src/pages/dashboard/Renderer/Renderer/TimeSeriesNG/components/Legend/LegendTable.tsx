@@ -14,12 +14,14 @@ interface Props {
   panel: IPanel;
   data: DataItem[];
   legendColumns?: string[];
+  legendSortBy?: string;
+  legendSortDir?: string;
   onRowClick: (record: DataItem) => void;
 }
 
 export default function LegendTable(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { panel, data, legendColumns, onRowClick } = props;
+  const { panel, data, legendColumns, legendSortBy, legendSortDir, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
@@ -54,6 +56,7 @@ export default function LegendTable(props: Props) {
         }),
         dataIndex: column,
         sorter: (a, b) => a[column].stat - b[column].stat,
+        sortOrder: legendSortBy === column ? (legendSortDir === 'desc' ? 'descend' : 'ascend') : null,
         render: (text) => {
           return text.text;
         },
