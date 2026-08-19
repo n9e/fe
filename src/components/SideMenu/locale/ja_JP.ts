@@ -69,6 +69,7 @@ const ja_JP = {
     about: '製品について',
     license_management: 'ライセンス管理',
     ai_config: 'AI 設定',
+    nightingale_ai: 'Nightingale AI',
     ai_config_agents: 'Agent 管理',
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',

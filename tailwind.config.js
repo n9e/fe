@@ -151,11 +151,28 @@ module.exports = {
       },
       animation: {
         'dot-pulse': 'dotPulse 1.4s ease-in-out infinite both',
+        'nightingale-bot-wiggle': 'nightingaleBotWiggle 0.45s ease',
+        'nightingale-cable-plug': 'nightingaleCablePlug 0.42s cubic-bezier(0.34, 1.4, 0.64, 1)',
+        'nightingale-radio-pulse': 'nightingaleRadioPulse 0.9s ease-out',
       },
       keyframes: {
         dotPulse: {
           '0%, 60%, 100%': { transform: 'scale(1)', opacity: '0.4' },
           '30%': { transform: 'scale(1.3)', opacity: '1' },
+        },
+        nightingaleBotWiggle: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '30%': { transform: 'rotate(-12deg)' },
+          '60%': { transform: 'rotate(8deg)' },
+        },
+        nightingaleCablePlug: {
+          '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+          '40%': { transform: 'translate(2px, 1.5px) rotate(12deg)' },
+          '70%': { transform: 'translate(1px, 0.5px) rotate(4deg)' },
+        },
+        nightingaleRadioPulse: {
+          '0%': { opacity: '0.55', transform: 'scale(0.55)' },
+          '100%': { opacity: '0', transform: 'scale(2.1)' },
         },
       },
       transitionProperty: {

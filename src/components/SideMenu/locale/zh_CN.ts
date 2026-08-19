@@ -69,6 +69,7 @@ const zh_CN = {
     about: '关于产品',
     license_management: '证书管理',
     ai_config: 'AI 配置',
+    nightingale_ai: 'Nightingale AI',
     ai_config_agents: 'Agent 管理',
     ai_config_llm_configs: 'LLM 管理',
     ai_config_skills: 'Skill 管理',
