@@ -229,6 +229,7 @@ const ru_RU = {
         series: 'Серия',
         seriesFilter: 'Фильтр серий',
         columns: 'Поля для отображения',
+        none: 'Нет',
         behaviour: {
           label: 'Поведение при однократном нажатии',
           showItem: 'Показать элемент',

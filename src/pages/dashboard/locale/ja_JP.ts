@@ -259,6 +259,7 @@ const ja_JP = {
         series: '系列',
         seriesFilter: '系列をフィルタ',
         columns: '表示列',
+        none: 'なし',
         behaviour: {
           label: 'クリックで行動',
           showItem: 'アイテムを表示',

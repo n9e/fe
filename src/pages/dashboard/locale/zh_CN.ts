@@ -256,6 +256,7 @@ const zh_CN = {
         series: '序列',
         seriesFilter: '筛选序列',
         columns: '显示列',
+        none: '无',
         behaviour: {
           label: '单击触发行为',
           showItem: '显示项目',
