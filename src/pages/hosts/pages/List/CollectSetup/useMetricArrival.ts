@@ -54,6 +54,8 @@ export default function useMetricArrival(options: Options) {
   const [status, setStatus] = useState<MetricArrivalStatus>('baselining');
   const [newIdents, setNewIdents] = useState<string[]>([]);
   const [reportingIdents, setReportingIdents] = useState<string[]>([]);
+  /** 逐台确认模式下：所选机器中已经上报的 */
+  const [arrivedIdents, setArrivedIdents] = useState<string[]>([]);
   /** 逐台确认模式下：所选机器中尚未上报的 */
   const [missingIdents, setMissingIdents] = useState<string[]>([]);
   /** 逐台确认模式下：开始检测前就已在上报的（修改配置场景） */
@@ -87,6 +89,7 @@ export default function useMetricArrival(options: Options) {
     setStatus('baselining');
     setNewIdents([]);
     setReportingIdents([]);
+    setArrivedIdents([]);
     setMissingIdents(identsRef.current ?? []);
     setPreexistingIdents([]);
     setHitDatasourceNames([]);
@@ -165,18 +168,32 @@ export default function useMetricArrival(options: Options) {
       baselines.forEach((set) => set.forEach((ident) => baselineUnion.add(ident)));
 
       if (selected.length > 0) {
-        // 逐台确认：所选机器全部上报即成功（含检测前已在上报的，单独标注）
+        // 逐台确认：**有一台上报就算成功**，不必等齐。
+        //
+        // 从前要求全部到达，但「命中的机器里有几台压根没装 agent / 配置没下发」是常态，
+        // 等齐往往等不到，只能耗满超时——而那时数据其实早就通了。改成有一台即出结论，
+        // 把「还差哪几台」如实列在 missingIdents 里交给 UI 说明，比卡着不给结论有用。
+        //
+        // 这条判据成立的前提是查询已按 selected 收窄（见 buildArrivalPromql），
+        // 查到的 ident 一定是本次的目标机器，不会拿不相干机器的数据冒充成功。
+        const arrived = selected.filter((ident) => allIdents.has(ident));
         const missing = selected.filter((ident) => !allIdents.has(ident));
+        setArrivedIdents(arrived);
         setMissingIdents(missing);
         setPreexistingIdents(selected.filter((ident) => baselineUnion.has(ident)));
-        if (missing.length === 0 && baselines.size > 0) {
-          setNewIdents(selected.filter((ident) => !baselineUnion.has(ident)));
+        if (arrived.length > 0 && baselines.size > 0) {
+          setNewIdents(selected.filter((ident) => !baselineUnion.has(ident) && allIdents.has(ident)));
           setHitDatasourceNames(Array.from(roundDsNames));
           setStatus('detected');
+          // 已出结论但还有机器没上报时不停轮询：让计数继续往上走，用户能看到 1/3 → 3/3。
+          // 全部到齐或超时才收手；已 detected 的不再回退成 timeout。
+          if (missing.length === 0 || Date.now() - startedAt >= timeout) return;
+          timer = setTimeout(tick, POLL_INTERVAL);
           return;
         }
       } else if (freshIdents.size > 0) {
-        // 通用模式：出现基线外的新 ident 即成功
+        // 通用模式（调用方没给目标机器）：查询没有收窄，只能靠「出现基线外的新 ident」
+        // 判定——此时「有数据」证明不了是这次配置的功劳，可能是同组件别的机器本来就在报。
         setNewIdents(Array.from(freshIdents));
         setHitDatasourceNames(Array.from(freshDsNames));
         setStatus('detected');
@@ -198,5 +215,15 @@ export default function useMetricArrival(options: Options) {
     };
   }, [active, datasourceKey, identsKey, metricPrefix, metric, round, timeout]);
 
-  return { status, newIdents, reportingIdents, missingIdents, preexistingIdents, hitDatasourceNames, fallbackToPrefix, restart: () => setRound((r) => r + 1) };
+  return {
+    status,
+    newIdents,
+    reportingIdents,
+    arrivedIdents,
+    missingIdents,
+    preexistingIdents,
+    hitDatasourceNames,
+    fallbackToPrefix,
+    restart: () => setRound((r) => r + 1),
+  };
 }
