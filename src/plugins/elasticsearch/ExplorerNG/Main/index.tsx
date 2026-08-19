@@ -117,7 +117,7 @@ export default function index(props: Props) {
   }, [isSQLMode]);
 
   useEffect(() => {
-    if (datasourceValue) {
+    if (IS_PLUS && datasourceValue) {
       getESClusterInfo({ cate: DatasourceCateEnum.elasticsearch, datasource_id: datasourceValue })
         .then((info) => {
           setSupportsSQL(info?.is_sql_supported ?? false);
@@ -177,7 +177,7 @@ export default function index(props: Props) {
                   ),
                   value: 'query',
                 },
-                ...(IS_PLUS && supportsSQL ? [{ label: 'SQL', value: 'sql' }] : []),
+                ...(supportsSQL ? [{ label: 'SQL', value: 'sql' }] : []),
               ]}
               onChange={(val) => {
                 if (val === 'sql') {

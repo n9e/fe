@@ -256,6 +256,7 @@ const zh_HK = {
         series: '序列',
         seriesFilter: '篩選序列',
         columns: '顯示列',
+        none: '無',
         behaviour: {
           label: '點擊觸發的行為',
           showItem: '显示项目',

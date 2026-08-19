@@ -9,7 +9,7 @@ import { cancelMessage, createChat, getMessageDetail, getMessageHistory, sendMes
 import { NAME_SPACE } from './constants';
 import { EmptyConversation, MessageItem } from './MessageBlocks';
 import { IAiChatAction, IAiChatHistoryItem, IAiChatMessage, IAiChatMessageLocator, IAiChatProps, IAiChatStreamSegment } from './types';
-import { applyStreamChunk, buildStreamingMessage, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
+import { applyStreamChunk, buildStreamingMessage, cn, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
 import { useAiChatStream } from './useStream';
 import { useAiChatContext } from './context';
 
@@ -17,7 +17,19 @@ const POLLING_INTERVAL = 3000;
 
 export default function ChatPanel(props: IAiChatProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { placeholder, chatId, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, onChatChange, onError, welcomeSlot } = props;
+  const {
+    placeholder,
+    chatId,
+    queryPageFrom,
+    queryAction,
+    promptList,
+    initialMessage,
+    onExecuteQueryForQueryContent,
+    onChatChange,
+    onError,
+    welcomeSlot,
+    inputContainerClassName,
+  } = props;
   const { shareReadonly } = useAiChatContext();
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
@@ -199,13 +211,12 @@ export default function ChatPanel(props: IAiChatProps) {
       const chat = await createChat(queryPageFrom);
       setActiveChat(chat);
       setMessages([]);
-      onChatChange?.(chat);
       return chat;
     } catch (error) {
       handleError(error instanceof Error ? error : new Error('create chat failed'));
       return undefined;
     }
-  }, [handleError, onChatChange, queryPageFrom]);
+  }, [handleError, queryPageFrom]);
 
   const startPolling = useCallback(
     (locator: IAiChatMessageLocator) => {
@@ -276,7 +287,22 @@ export default function ChatPanel(props: IAiChatProps) {
         handleError(nextError);
       }
     },
-    [activeChat, chatId, createNewChat, handleError, inputValue, mergeMessage, onChatChange, queryAction, queryPageFrom, shareReadonly, startPolling, submitting, syncMessageDetail, t],
+    [
+      activeChat,
+      chatId,
+      createNewChat,
+      handleError,
+      inputValue,
+      mergeMessage,
+      onChatChange,
+      queryAction,
+      queryPageFrom,
+      shareReadonly,
+      startPolling,
+      submitting,
+      syncMessageDetail,
+      t,
+    ],
   );
 
   useEffect(() => {
@@ -319,29 +345,37 @@ export default function ChatPanel(props: IAiChatProps) {
     ));
   }, [onExecuteQueryForQueryContent, maybeScrollToBottom, messages, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
 
+  const welcomeContent = typeof welcomeSlot === 'function' ? welcomeSlot((prompt) => sendUserMessage(undefined, prompt)) : welcomeSlot;
+
   return (
     <div className='flex w-full h-full min-h-0'>
-      <div className='flex min-w-0 flex-1 flex-col'>
+      <div className='flex w-full min-w-0 flex-1 flex-col'>
         <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll children:h-full'>
-          <Spin spinning={messagesLoading} indicator={<LoadingOutlined />}>
-            <div className='h-full flex flex-col gap-8'>
-              {messageItems.length ? (
-                messageItems
-              ) : welcomeSlot ? (
-                welcomeSlot
-              ) : (
-                <EmptyConversation
-                  prompts={promptList}
-                  onPromptClick={(prompt) => {
-                    setInputValue(prompt);
-                  }}
-                />
-              )}
-            </div>
-          </Spin>
+          <div className='mx-auto flex h-full w-full max-w-[900px] flex-col'>
+            {messagesLoading ? (
+              <div className='flex h-full items-center justify-center'>
+                <Spin indicator={<LoadingOutlined />} />
+              </div>
+            ) : (
+              <div className='h-full flex flex-col gap-8'>
+                {messageItems.length ? (
+                  messageItems
+                ) : welcomeContent ? (
+                  welcomeContent
+                ) : (
+                  <EmptyConversation
+                    prompts={promptList}
+                    onPromptClick={(prompt) => {
+                      setInputValue(prompt);
+                    }}
+                  />
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className='mt-4 rounded-lg fc-border'>
+        <div className={cn('mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md', inputContainerClassName)}>
           <Input.TextArea
             autoSize={{ minRows: 3, maxRows: 8 }}
             bordered={false}
@@ -358,7 +392,7 @@ export default function ChatPanel(props: IAiChatProps) {
               event.preventDefault();
               sendUserMessage();
             }}
-            className='bg-transparent text-base text-main placeholder:text-placeholder'
+            className='bg-transparent px-5 py-3.5 text-base text-main placeholder:text-[14px] placeholder:text-placeholder'
           />
           <div className='mt-3 flex items-center justify-between gap-2 px-2 pb-2'>
             <div />

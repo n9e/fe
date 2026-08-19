@@ -256,6 +256,7 @@ const en_US = {
         series: 'Series',
         seriesFilter: 'Filter series',
         columns: 'Columns',
+        none: 'none',
         behaviour: {
           label: 'Click behavior',
           showItem: 'Show item',
