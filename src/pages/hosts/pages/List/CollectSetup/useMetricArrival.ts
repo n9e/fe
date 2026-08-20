@@ -16,6 +16,8 @@ export interface ArrivalDatasource {
 
 const POLL_INTERVAL = 5000;
 const DEFAULT_POLL_TIMEOUT = 5 * 60 * 1000;
+/** 精确指标连续查空多少轮后，发一次前缀对照查询看是不是指标名登记错了 */
+const FALLBACK_PROBE_ROUNDS = 3;
 
 interface Options {
   /** 进入验证步骤才开始轮询 */
@@ -97,12 +99,14 @@ export default function useMetricArrival(options: Options) {
     const startedAt = Date.now();
     const selected = _.compact(identsRef.current ?? []);
     // 降级只发生在逐台确认模式：通用模式靠「基线外新增」判成功，切换指标会把
-    // 存量机器全部算成新增，直接制造假阳性；逐台模式的成功条件是「所选机器都在上报」，
+    // 存量机器全部算成新增，直接制造假阳性；逐台模式的成功条件是「所选机器里有在上报的」，
     // 换成前缀匹配语义不变，只是失去区分存量的精度（由 fallbackToPrefix 让 UI 如实标注）。
     let useFallback = false;
+    /** 精确指标连续查空的轮数：攒够了才发一次前缀对照查询，不必每轮都多打一条 */
     let exactEmptyRounds = 0;
     setFallbackToPrefix(false);
-    const buildQuery = () => buildArrivalPromql({ metricPrefix, metric: useFallback ? undefined : metric, idents: selected });
+    const buildQuery = (prefixOnly?: boolean) =>
+      buildArrivalPromql({ metricPrefix, metric: prefixOnly || useFallback ? undefined : metric, idents: selected });
 
     const queryIdents = (datasourceId: number, promql: string): Promise<string[] | null> =>
       getPromData(`/api/${N9E_PATHNAME}/proxy/${datasourceId}/api/v1/query`, {
@@ -121,23 +125,31 @@ export default function useMetricArrival(options: Options) {
     let timer: ReturnType<typeof setTimeout>;
     const tick = async () => {
       const list = datasourcesRef.current;
-      const promql = buildQuery();
-      const results = await Promise.all(_.map(list, (ds) => queryIdents(ds.id, promql)));
+      let results = await Promise.all(_.map(list, (ds) => queryIdents(ds.id, buildQuery())));
       if (stopped) return;
 
-      // 精确指标自愈降级：连续 3 轮（约 15 秒）所有数据源一条序列都没有，
-      // 大概率是指标名登记错了而不是数据没到，切前缀继续等，别陪着错名字空转到超时
+      // 精确哨兵指标登记错了的自愈降级。
+      //
+      // 判据必须是「前缀查得到、精确查不到」：只看「精确查不到」区分不了两种原因 ——
+      // catalog 把指标名登记错了，和数据本来就还没到。后者才是常态（用户刚执行完命令、
+      // 中心端下发要等 agent 两轮拉取），而 tick 是立即起跑 + 5 秒一轮，三轮才 10 秒，
+      // 按轮数降级等于每一次正常验证都会降，verifyMetric 的精度形同虚设。
+      // 所以连续查空只作为「值得发一次对照查询」的触发条件，降不降由对照结果说了算。
       if (metric && !useFallback && selected.length > 0) {
-        const anySeries = _.some(results, (r) => r !== null && r.length > 0);
         const anySuccess = _.some(results, (r) => r !== null);
-        if (anySuccess && !anySeries) {
-          exactEmptyRounds += 1;
-          if (exactEmptyRounds >= 3) {
+        const anySeries = _.some(results, (r) => r !== null && r.length > 0);
+        if (anySeries) {
+          exactEmptyRounds = 0;
+        } else if (anySuccess && (exactEmptyRounds += 1) >= FALLBACK_PROBE_ROUNDS) {
+          exactEmptyRounds = 0; // 没证实就重新攒，下一个窗口再探，避免每轮都多发一条
+          const probe = await Promise.all(_.map(list, (ds) => queryIdents(ds.id, buildQuery(true))));
+          if (stopped) return;
+          if (_.some(probe, (r) => r !== null && r.length > 0)) {
             useFallback = true;
             setFallbackToPrefix(true);
+            // 对照查询本轮就有数据，直接当作本轮结果用，不必再空等一个轮询间隔
+            results = probe;
           }
-        } else if (anySeries) {
-          exactEmptyRounds = 0;
         }
       }
 
