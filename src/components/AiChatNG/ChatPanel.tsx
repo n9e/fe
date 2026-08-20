@@ -39,10 +39,11 @@ export default function ChatPanel(props: IAiChatProps) {
   const [isComposing, setIsComposing] = useState(false);
   const [streamingLocator, setStreamingLocator] = useState<IAiChatMessageLocator>();
   const chatBodyRef = useRef<HTMLDivElement>(null);
+  const chatContentRef = useRef<HTMLDivElement>(null);
   const pollingTimerRef = useRef<number>();
   const startStreamRef = useRef<(streamId: string) => Promise<void> | void>();
   const streamBufferRef = useRef<{ locator?: IAiChatMessageLocator; segments: IAiChatStreamSegment[] }>({ locator: undefined, segments: [] });
-  const { maybeScrollToBottom, scrollToBottom } = useAutoScroll(chatBodyRef);
+  const { maybeScrollToBottom, scrollToBottom } = useAutoScroll(chatBodyRef, chatContentRef);
 
   const cleanupPolling = useCallback(() => {
     if (pollingTimerRef.current) {
@@ -127,7 +128,7 @@ export default function ChatPanel(props: IAiChatProps) {
   // 流式消息更新后，如果用户未手动滚动则跟随到底部
   useEffect(() => {
     if (streamingLocator) {
-      maybeScrollToBottom('smooth');
+      maybeScrollToBottom('auto');
     }
   }, [messages, streamingLocator, maybeScrollToBottom]);
 
@@ -266,6 +267,7 @@ export default function ChatPanel(props: IAiChatProps) {
         };
 
         mergeMessage(optimisticMessage);
+        scrollToBottom('smooth');
         setInputValue('');
         onChatChange?.({
           ...chat,
@@ -297,6 +299,7 @@ export default function ChatPanel(props: IAiChatProps) {
       onChatChange,
       queryAction,
       queryPageFrom,
+      scrollToBottom,
       shareReadonly,
       startPolling,
       submitting,
@@ -350,14 +353,14 @@ export default function ChatPanel(props: IAiChatProps) {
   return (
     <div className='flex w-full h-full min-h-0'>
       <div className='flex w-full min-w-0 flex-1 flex-col'>
-        <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll children:h-full'>
-          <div className='mx-auto flex h-full w-full max-w-[900px] flex-col'>
+        <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll'>
+          <div ref={chatContentRef} className='mx-auto flex min-h-full w-full max-w-[900px] flex-col'>
             {messagesLoading ? (
-              <div className='flex h-full items-center justify-center'>
+              <div className='flex flex-1 items-center justify-center'>
                 <Spin indicator={<LoadingOutlined />} />
               </div>
             ) : (
-              <div className='h-full flex flex-col gap-8'>
+              <div className='flex-1 flex flex-col gap-8'>
                 {messageItems.length ? (
                   messageItems
                 ) : welcomeContent ? (
