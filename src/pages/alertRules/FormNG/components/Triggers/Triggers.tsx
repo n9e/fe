@@ -29,6 +29,8 @@ export default function index(props: IProps) {
 
   const cate = Form.useWatch(['cate']);
   const exp_trigger_disable = Form.useWatch([...prefixName, 'exp_trigger_disable']);
+  // 旧规则缺少该字段时，按后端语义仍视为启用阈值判断。
+  const thresholdEnabled = exp_trigger_disable !== true;
   const nodata_trigger_enable = Form.useWatch([...prefixName, 'nodata_trigger', 'enable']);
   const anomaly_trigger_enable = Form.useWatch([...prefixName, 'anomaly_trigger', 'enable']);
 
@@ -48,14 +50,14 @@ export default function index(props: IProps) {
               name={[...prefixName, 'exp_trigger_disable']}
               valuePropName='checked'
               getValueFromEvent={(checked) => !checked}
-              getValueProps={(value) => ({ checked: !value })}
+              getValueProps={() => ({ checked: thresholdEnabled })}
             >
               <Switch size='small' />
             </Form.Item>
           </div>
           <div className='text-soft'>{t('form_ng.triggers_threshold_desc')}</div>
         </div>
-        {exp_trigger_disable === false && (
+        {thresholdEnabled && (
           <div className='mt-4'>
             <div className='mb-4'>
               <Inhibit triggersKey='triggers' />

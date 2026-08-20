@@ -22,14 +22,20 @@ import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { boardsClones } from '@/services/dashboardV2';
 
+interface BusinessGroupOption {
+  id: number;
+  name: string;
+}
+
 interface IProps {
   board_ids: number[];
-  busiGroups: any[];
+  busiGroups: BusinessGroupOption[];
+  onOk?: () => void;
 }
 
 function BatchClone(props: IProps & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, destroy, board_ids, busiGroups } = props;
+  const { visible, destroy, board_ids, busiGroups, onOk } = props;
   const [importResult, setImportResult] = useState<{ name: string; msg: string }[]>();
 
   return (
@@ -60,6 +66,7 @@ function BatchClone(props: IProps & ModalWrapProps) {
               setImportResult(dataSource);
               if (_.every(dataSource, (item) => !item.msg)) {
                 message.success(t('common:success.clone'));
+                onOk?.();
                 destroy();
               }
             })

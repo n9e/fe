@@ -38,6 +38,12 @@ export default function index() {
   const { businessGroup } = useContext(CommonStateContext);
   const { t } = useTranslation('alertRules');
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
+  const [groupSwitchCount, setGroupSwitchCount] = useState(0);
+  // 切换业务组时通知列表重置到第一页（在业务组选择源头触发，不依赖 gids 变化时序）
+  const handleSelectGids = (ids: string) => {
+    setGids(ids);
+    setGroupSwitchCount((count) => count + 1);
+  };
 
   return (
     <PageLayout
@@ -47,8 +53,8 @@ export default function index() {
       headerCenter={IS_ENT ? <ObsLoopAlertRulesTip /> : undefined}
     >
       <div className='alert-rules-container'>
-        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} />
-        {businessGroup.ids ? <List gids={gids} /> : <BlankBusinessPlaceholder text={t('title')} />}
+        <BusinessGroupSideBarWithAll gids={gids} setGids={handleSelectGids} localeKey={N9E_GIDS_LOCALKEY} />
+        {businessGroup.ids ? <List gids={gids} groupSwitchCount={groupSwitchCount} /> : <BlankBusinessPlaceholder text={t('title')} />}
       </div>
     </PageLayout>
   );

@@ -1,27 +1,43 @@
 import React, { useRef, useEffect } from 'react';
 import _ from 'lodash';
 import TsGraph from '@fc-plot/ts-graph';
-import { IOverride } from '../../../types';
+import { IOptions, IOverride, IStandardOptions, IValueMapping, IThresholds } from '../../../types';
 import { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 
 const UNIT_PADDING = 4;
-const getTextColor = (color, colorMode) => {
+interface StatItemData {
+  name?: string;
+  metric: Record<string, string | number | undefined>;
+  fields?: { refId?: string };
+  stat?: number | string | null;
+  value?: React.ReactNode;
+  unit?: string;
+  color?: string;
+}
+
+interface StatFontSize {
+  title?: number;
+  value?: number;
+}
+
+const getTextColor = (color: string | undefined, colorMode: string) => {
   return colorMode === 'value' ? color : '#fff';
 };
 
 interface Props {
-  item: any;
+  item: StatItemData;
   textMode: string;
   colorMode: string;
-  textSize: any;
+  textSize?: StatFontSize;
   isFullSizeBackground: boolean;
   valueField: string;
   graphMode: string;
-  serie: any;
-  options: any;
-  style: any;
-  minFontSize: any;
+  serie: unknown;
+  options: IOptions;
+  style?: React.CSSProperties;
+  // minFontSize 的键是 name/value（与 textSize 的 title/value 不同）
+  minFontSize?: { name?: number; value?: number };
   overrides: IOverride[];
 }
 
@@ -54,8 +70,13 @@ export default function StatItem(props: Props) {
 
   const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', item.fields?.refId);
   if (!_.isEmpty(overrideProps)) {
-    const textObj = getSerieTextObj(item?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings, overrideProps?.thresholds);
-    item.name = getMappedTextObj(item.name, overrideProps?.valueMappings)?.text;
+    const textObj = getSerieTextObj(
+      item?.stat,
+      overrideProps?.standardOptions as IStandardOptions | undefined,
+      overrideProps?.valueMappings as IValueMapping[] | undefined,
+      overrideProps?.thresholds as IThresholds | undefined,
+    );
+    item.name = getMappedTextObj(item.name as string, overrideProps?.valueMappings as IValueMapping[] | undefined)?.text;
     item.value = textObj.value;
     item.unit = textObj.unit;
     item.color = textObj.color;
@@ -63,8 +84,8 @@ export default function StatItem(props: Props) {
 
   const color = item.color;
   const backgroundColor = colorMode === 'background' ? color : 'transparent';
-  const headerFontSize = textSize?.title ?? minFontSize?.name;
-  const valueAndUnitFontSize = textSize?.value ?? minFontSize?.value;
+  const headerFontSize = textSize?.title ?? minFontSize?.name ?? 12;
+  const valueAndUnitFontSize = textSize?.value ?? minFontSize?.value ?? 12;
 
   useEffect(() => {
     if (chartEleRef.current) {
@@ -76,7 +97,7 @@ export default function StatItem(props: Props) {
         xkey: 0,
         ykey: 1,
         ykey2: 2,
-        ykeyFormatter: (value) => Number(value),
+        ykeyFormatter: (value: number | string) => Number(value),
         chart: {
           renderTo: chartEleRef.current,
           height: chartEleRef.current.clientHeight,
@@ -101,6 +122,12 @@ export default function StatItem(props: Props) {
         },
       });
     }
+    return () => {
+      if (chartRef.current) {
+        chartRef.current.destroy();
+        chartRef.current = null;
+      }
+    };
   }, [colorMode, graphMode]);
 
   return (

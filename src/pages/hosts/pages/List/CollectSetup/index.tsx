@@ -21,7 +21,7 @@ import { postCollect } from 'plus:/pages/collects/services';
 import { CATEGRAF_TROUBLESHOOT_DOC, NS } from '../../../constants';
 import { CategrafInstallMeta, probeTargets } from '../../../services';
 import CommandBlock from '../components/CommandBlock';
-import { isValidServerAddr, normalizeServerAddr } from '../InstallCategraf/buildCommand';
+import { isValidServerAddr, pickDefaultServerAddr } from '../InstallCategraf/buildCommand';
 import { CollectComponent, CollectField, getTemplateUrl } from './catalog';
 import { buildToml, CollectFormValues } from './buildToml';
 import { buildCollectCommand, buildManualCollectCommand } from './buildCommand';
@@ -111,7 +111,7 @@ export default function CollectSetup(props: Props) {
   // 预览随表单联动；不用 Form.useWatch 是为了兼容仓库锁定的 antd 4 小版本
   const [previewTick, setPreviewTick] = useState(0);
 
-  const [addr, setAddr] = useState<string>(() => meta.base_url || normalizeServerAddr(siteInfo?.site_url) || window.location.origin);
+  const [addr, setAddr] = useState<string>(() => pickDefaultServerAddr({ metaBaseURL: meta.base_url, siteURL: siteInfo?.site_url, origin: window.location.origin }));
   const [authUser, setAuthUser] = useState('');
   const [authPass, setAuthPass] = useState('');
 

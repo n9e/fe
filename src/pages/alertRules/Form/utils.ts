@@ -212,6 +212,12 @@ export function processInitialValues(values) {
       };
     });
   }
+  if (Array.isArray(values?.rule_config?.triggers)) {
+    // rule_config.triggers 仅包含阈值告警；exp 缺失即未配置有效阈值，不应回填或渲染。
+    values.rule_config.triggers = values.rule_config.triggers.filter((trigger) => {
+      return typeof trigger?.exp === 'string' && trigger.exp.trim().length > 0;
+    });
+  }
   const extra_config = values?.extra_config || {};
   const enrich_queries = _.map(extra_config?.enrich_queries, (item) => {
     return {

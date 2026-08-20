@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Form, AutoComplete } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { getIndices } from '@/services/warning';
+import type { ElasticsearchSelectOption } from './types';
 
 interface IProps {
-  prefixField?: any;
+  prefixField?: FormListFieldData;
   prefixName?: string[] | number[];
   cate: string;
   datasourceValue?: number;
   name?: string | string[]; // 可自定义 name 或者 [...prefixName, 'query', 'index']
 }
 
-export default function IndexSelect({ prefixField = {}, prefixName = [], cate, datasourceValue, name }: IProps) {
-  const [options, setOptions] = useState<any[]>([]);
+export default function IndexSelect({ prefixField = {} as FormListFieldData, prefixName = [], cate, datasourceValue, name }: IProps) {
+  const [options, setOptions] = useState<ElasticsearchSelectOption[]>([]);
   const [search, setSearch] = useState('');
   const { t } = useTranslation('datasource');
+  const restPrefixField = _.omit(prefixField, 'key');
 
   useEffect(() => {
     if (datasourceValue) {
@@ -35,7 +38,7 @@ export default function IndexSelect({ prefixField = {}, prefixName = [], cate, d
     <Form.Item
       label={t('datasource:es.index')}
       tooltip={<Trans ns='datasource' i18nKey='datasource:es.index_tip' components={{ 1: <br /> }} />}
-      {...prefixField}
+      {...restPrefixField}
       name={name || [...prefixName, 'query', 'index']}
       rules={[
         {

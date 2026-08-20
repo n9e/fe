@@ -39,7 +39,7 @@ interface IProps {
   editMode?: number; // 0: 变量名、类型、数据源类型、数据源值无法修改
   onOk: (val: IVariable) => void;
   onCancel: () => void;
-  dashboard: Dashboard;
+  dashboard: Pick<Dashboard, 'id' | 'public' | 'public_cate'>;
 }
 
 const typeOptions = [

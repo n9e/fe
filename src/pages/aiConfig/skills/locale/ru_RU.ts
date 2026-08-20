@@ -25,7 +25,7 @@ const ru_RU = {
   upload_modal_invalid_type: 'Поддерживаются только файлы .zip и .tar.gz',
   upload_modal_file_required: 'Загрузите архив Skill',
   edit_title: 'Редактировать Skill',
-  toggle_needs_team: 'Задайте управляющую команду через «Заменить» перед включением/выключением',
+  toggle_needs_team: 'Задайте управляющую команду через «Изменить» перед включением/выключением',
   document_empty: 'Нет содержимого документа',
   search_placeholder: 'Поиск по ключевому слову',
   builtin: 'Встроенный',

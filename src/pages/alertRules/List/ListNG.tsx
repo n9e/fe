@@ -6,7 +6,7 @@ import { TriangleAlert, CircleCheckBig } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import { CommonStateContext } from '@/App';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
@@ -22,10 +22,11 @@ import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import { getItems as getNotificationRules, RuleItem as NotificationRuleItem } from '@/pages/notificationRules/services';
 import { NS as notificationRulesNS } from '@/pages/notificationRules/constants';
 import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
-import { defaultColumnsConfigs, LOCAL_STORAGE_KEY } from '@/pages/alertRules/List/constants';
+import { defaultColumnsConfigs, LOCAL_STORAGE_KEY, FILTER_SESSION_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
 import EvalRecordsDrawer, { Props as EvalRecordsDrawerProps } from '@/pages/alertRules/List/EvalRecordsDrawer';
 import { matchTriggerType, TRIGGER_TYPE_OPTIONS, TriggerType } from '@/pages/alertRules/List/utils';
+import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 
 interface Filter {
   cate?: string;
@@ -37,7 +38,6 @@ interface Filter {
   triggerType?: TriggerType;
 }
 
-const FILTER_SESSION_STORAGE_KEY = 'alert-rules-filter';
 const includesProm = (datasourceList: any[], ids?: number[]) => {
   return _.some(ids, (id) => {
     return _.some(datasourceList, (item) => {
@@ -56,31 +56,52 @@ interface Props {
   setRefreshFlag?: (flag: string) => void;
   linkTarget?: string;
   emptyGuide?: React.ReactNode;
+  gids?: string;
+  groupSwitchCount?: number;
 }
 
 export default function AlertRules(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
   const { busiGroups, datasourceList, feats } = useContext(CommonStateContext);
-  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide } = props;
+  const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide, gids, groupSwitchCount } = props;
+  const history = useHistory();
+  const location = useLocation();
   let defaultFilter = {} as Filter;
-  let defaultPage = 1;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
     defaultFilter = saved;
-    defaultPage = saved.current || 1;
   } catch (e) {
     console.error(e);
   }
+  const defaultPage = getPageFromSearch(location.search);
   const [filter, setFilter] = useState<Filter>(defaultFilter);
   const [current, setCurrent] = useState<number>(defaultPage);
   const handleFilterChange = (newFilter: Filter) => {
     setFilter(newFilter);
     setCurrent(1);
-    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...newFilter, current: 1 }));
+    window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
+    history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
   };
+  // 新增/编辑/批量操作保存成功后，记录的更新时间会变化，按更新时间倒序的列表会把刚操作的记录排到第一页，
+  // 因此保存后需要把页码重置为 1，避免停留在旧页码看不到刚操作的记录
+  const resetPaging = () => {
+    setCurrent(1);
+    clearSelection();
+    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+  };
+  // 切换业务组时重置到第一页（父组件在业务组选择源头递增计数触发，不依赖 gids 变化时序）
+  useEffect(() => {
+    if (groupSwitchCount) {
+      resetPaging();
+    }
+  }, [groupSwitchCount]);
   const [queryValue, setQueryValue] = useState<string | undefined>(defaultFilter.search);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
+  const clearSelection = () => {
+    setSelectRowKeys([]);
+    setSelectedRows([]);
+  };
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const pagination = usePagination({ PAGESIZE_KEY: 'alert-rules-pagesize' });
   const [eventsDrawerProps, setEventsDrawerProps] = useState<EventsDrawerProps>({
@@ -156,6 +177,7 @@ export default function AlertRules(props: Props) {
                 className='table-text'
                 to={{
                   pathname: `/alert-rules/edit/${record.id}`,
+                  search: `?page=${current}`,
                 }}
                 target={linkTarget}
               >
@@ -339,6 +361,8 @@ export default function AlertRules(props: Props) {
       const datasourceIdsWithoutHost = _.filter(datasourceIds, (id) => id !== -999);
       const lowerCaseQuery = search?.toLowerCase() || '';
       return (
+        // 列表数据排除 prod 为 firemap(灭火图)、northstar(北极星) 的记录
+        !_.includes(['firemap', 'northstar'], item.prod) &&
         (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || _.join(item.append_tags, ' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
         ((prod && prod === item.prod) || !prod) &&
         ((item.severities &&
@@ -470,6 +494,7 @@ export default function AlertRules(props: Props) {
               selectRowKeys,
               selectedRows,
               getList: fetchData,
+              clearSelection,
             })}
           <TableColumnSelect
             options={buildColumnOptions(defaultColumnsConfigs, t)}
@@ -494,8 +519,7 @@ export default function AlertRules(props: Props) {
         pagination={{ ...pagination, current }}
         onChange={(pag) => {
           setCurrent(pag.current || 1);
-          const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
-          window.sessionStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify({ ...saved, current: pag.current || 1 }));
+          history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
         }}
         loading={loading}
         dataSource={filterData()}

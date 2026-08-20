@@ -1,4 +1,4 @@
-import { DataPoint, TimeSeries, TableData, Transformation } from './types';
+import { DataPoint, QueryResult, TimeSeries, TableData, Transformation } from './types';
 import MergeTransformation from './MergeTransformation';
 import OrganizeFieldsTransformation from './OrganizeFieldsTransformation';
 import JoinByFieldTransformation from './JoinByFieldTransformation';
@@ -15,10 +15,9 @@ export class TransformationPipeline {
     this.transformations.push(transformation);
   }
 
-  apply<T>(input: T): T {
+  apply(input: QueryResult[]): QueryResult[] {
     let result = input;
     for (const transformation of this.transformations) {
-      // @ts-ignore
       result = transformation.apply(result);
     }
     return result;
@@ -31,4 +30,10 @@ export const transformationsMap = {
   joinByField: JoinByFieldTransformation,
   timeSeriesTable: TimeSeriesTableTransformation,
   groupedAggregateTable: GroupedAggregateTableTransformation,
-};
+} as const;
+
+export type RegisteredTransformationId = keyof typeof transformationsMap;
+
+export function isRegisteredTransformationId(id: string): id is RegisteredTransformationId {
+  return Object.prototype.hasOwnProperty.call(transformationsMap, id);
+}

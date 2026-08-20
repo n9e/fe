@@ -190,9 +190,12 @@ const zh_HK = {
     default_duration_tip2: '聚合最大間隔不能超過 3600 秒',
     attribute_keys_map: {
       cluster: '數據源',
+      cate: '數據源類型',
       group_name: '業務組',
       rule_id: '告警規則',
+      rule_prod: '監控類型',
       severity: '告警等級',
+      is_recovered: '是否恢復',
     },
     enable_tip: '開啟後，符合規則的告警會按維度合併為一條通知 <a>使用文檔</a>',
     labels_filter: {

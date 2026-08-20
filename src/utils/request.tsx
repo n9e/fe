@@ -149,7 +149,7 @@ request.interceptors.response.use(
           // proxy/elasticsearch 返回的数据结构是 { ...data }
           // proxy/jeager 返回的数据结构是 { data: [], errors: [] }
           if (
-            _.some([`/api/${N9E_PATHNAME}/proxy`, '/probe/v1'], (item) => {
+            _.some([`/api/${N9E_PATHNAME}/proxy`, '/probe/v1', '/api/n9e/dashboard/query'], (item) => {
               return url.includes(item);
             })
           ) {
@@ -235,13 +235,35 @@ request.interceptors.response.use(
           });
       }
     } else if (status >= 500 && status < 600) {
-      throw {
-        name: i18next.t('common:request_fail_msg'),
-        message: i18next.t('common:request_fail_msg'),
-        silence: options.silence,
-        response,
-        status,
-      };
+      return response
+        .clone()
+        .text()
+        .then((data) => {
+          const fallbackMessage = i18next.t('common:request_fail_msg');
+          let errObj: { name: string; message: string; data?: any } = {
+            name: fallbackMessage,
+            message: fallbackMessage,
+          };
+          if (data) {
+            try {
+              const parsed = JSON.parse(data);
+              const errMessage = processError(parsed);
+              errObj = {
+                name: errMessage,
+                message: errMessage,
+                data: parsed,
+              };
+            } catch (error) {
+              // 响应体非 JSON（如网关 502 HTML），回退统一文案
+            }
+          }
+          throw {
+            ...errObj,
+            silence: options.silence,
+            response,
+            status,
+          };
+        });
     } else {
       return response
         .clone()

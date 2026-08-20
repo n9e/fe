@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, forwardRef, useContext } from 'react';
+import React, { useImperativeHandle, forwardRef, useContext, useLayoutEffect, useRef } from 'react';
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -16,17 +16,23 @@ import Renderer from '../Renderer/Renderer';
 import { useGlobalState } from '../globalState';
 import QueryEditor from './QueryEditor';
 import VariablesMain from '../Variables/Main';
+import type { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { IPanel } from '../types';
+
+export interface EditorFormHandle {
+  getFormInstance: () => ReturnType<typeof Form.useForm>[0];
+}
 
 interface IProps {
   panelWidth?: number; // 面板宽度
-  initialValues: any;
-  range: any;
+  initialValues: IPanel;
+  range: IRawTimeRange;
   timezone: string;
   id: string;
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
-function FormCpt(props: IProps, ref) {
+function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
   const { t } = useTranslation('dashboard');
   const { darkMode } = useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
@@ -45,6 +51,13 @@ function FormCpt(props: IProps, ref) {
     }
   });
 
+  const formInitialValuesRef = useRef(_.merge({}, defaultValues, initialValues));
+  useLayoutEffect(() => {
+    // Form.Item / Form.List 中保留各数据源自己的默认值；已保存的面板配置在字段注册后统一覆盖默认值。
+    // 不使用 Form.initialValues，避免同一路径同时存在 Item.initialValue 时触发 antd 警告。
+    chartForm.setFieldsValue(formInitialValuesRef.current);
+  }, [chartForm]);
+
   useImperativeHandle(ref, () => ({
     getFormInstance: () => {
       return chartForm;
@@ -52,7 +65,7 @@ function FormCpt(props: IProps, ref) {
   }));
 
   return (
-    <Form layout='vertical' preserve={true} form={chartForm} initialValues={_.merge({}, defaultValues, initialValues)}>
+    <Form layout='vertical' preserve={true} form={chartForm}>
       <Form.Item name='type' hidden>
         <div />
       </Form.Item>
@@ -82,7 +95,7 @@ function FormCpt(props: IProps, ref) {
               <div className='n9e-dashboard-editor-modal-left-vars-wrapper gap-4'>
                 <span>{t('var.vars')}</span>
                 {/* 直接渲染变量选择器，避免依赖 portal 对 ref 变化不触发重渲染的问题 */}
-                <VariablesMain variableValueFixed={queryParams.__variable_value_fixed as any} loading={false} />
+                <VariablesMain variableValueFixed={queryParams.__variable_value_fixed === 'true'} loading={false} />
               </div>
               <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper'>
                 {values && (
@@ -282,4 +295,4 @@ function FormCpt(props: IProps, ref) {
   );
 }
 
-export default forwardRef(FormCpt);
+export default forwardRef<EditorFormHandle, IProps>(FormCpt);

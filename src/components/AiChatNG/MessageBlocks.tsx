@@ -267,13 +267,14 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
   );
 }
 
-export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string[]; onPromptClick: (prompt: string) => void }) {
+export function EmptyConversation({ prompts, onPromptClick, children }: { prompts?: string[]; onPromptClick: (prompt: string) => void; children?: React.ReactNode }) {
   const { t } = useTranslation(NAME_SPACE);
   const greetingPrefix = t('empty.greeting_prefix');
+  const hasCustomContent = children != null;
 
   return (
-    <div className='w-full h-full flex flex-col items-center text-center'>
-      <div className='w-full h-[40%] flex justify-center items-center'>
+    <div className={cn('w-full h-full flex flex-col items-center text-center', hasCustomContent && 'justify-center gap-10')}>
+      <div className={cn('w-full flex justify-center items-center', hasCustomContent ? 'shrink-0' : 'h-[40%]')}>
         <div className='text-l4 font-bold'>
           <Space align='baseline'>
             <img src='/image/ai-chat/ai.gif' className='w-[24px] h-[24px]' />
@@ -281,23 +282,24 @@ export function EmptyConversation({ prompts, onPromptClick }: { prompts?: string
           </Space>
         </div>
       </div>
-      {prompts?.length ? (
-        <div className='w-[90%] mt-4 flex flex-col gap-2'>
-          {prompts.map((prompt) => (
-            <div
-              key={prompt}
-              className='w-full h-[32px] cursor-pointer flex items-center justify-between gap-2 px-2 fc-border rounded-lg hover:border-primary hover:ring-[3px] hover:ring-primary/10'
-              onClick={() => onPromptClick(prompt)}
-            >
-              <div className='flex items-center gap-2'>
-                <Sparkles size={14} className='text-primary/80' />
-                <span className='truncate text-sm text-main'>{prompt}</span>
+      {children ??
+        (prompts?.length ? (
+          <div className='w-[90%] mt-4 flex flex-col gap-2'>
+            {prompts.map((prompt) => (
+              <div
+                key={prompt}
+                className='w-full h-[32px] cursor-pointer flex items-center justify-between gap-2 px-2 fc-border rounded-lg hover:border-primary hover:ring-[3px] hover:ring-primary/10'
+                onClick={() => onPromptClick(prompt)}
+              >
+                <div className='flex items-center gap-2'>
+                  <Sparkles size={14} className='text-primary/80' />
+                  <span className='truncate text-sm text-main'>{prompt}</span>
+                </div>
+                <ArrowRightOutlined />
               </div>
-              <ArrowRightOutlined />
-            </div>
-          ))}
-        </div>
-      ) : null}
+            ))}
+          </div>
+        ) : null)}
     </div>
   );
 }

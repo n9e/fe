@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'antd';
 import type { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import { IS_ENT } from '@/utils/constant';
 import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
@@ -53,6 +54,9 @@ function useAiEntClickHandler(options?: {
         createNew: true,
         ...queryPageFrom,
         ...queryAction,
+        // After spreads: ConfigHost pages live on /flashai*, where AiChat stays
+        // in page mode unless forceDrawer is set (knowledge / scheduled-task).
+        forceDrawer: true,
       } as any,
     });
   }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);
@@ -60,6 +64,10 @@ function useAiEntClickHandler(options?: {
 
 function FlashAiButtonContent() {
   const handleClick = useFlashAiClickHandler();
+  const location = useLocation();
+  const isNightingaleAIConfigPage = location.pathname.startsWith('/nightingale-ai/') && !location.pathname.startsWith('/nightingale-ai/chat/');
+
+  if (isNightingaleAIConfigPage) return null;
 
   return (
     <Button

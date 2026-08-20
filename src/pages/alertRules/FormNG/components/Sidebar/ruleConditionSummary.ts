@@ -306,7 +306,9 @@ export function stringifyExpressions(expressions: any[]): string {
 }
 
 function buildTrigger(index: number, trigger: any, labels: ConditionSummaryLabels): ConditionSummaryItem {
-  const exp = normalizeSummaryText(trigger?.exp) || stringifyExpressions(trigger?.expressions);
+  // 阈值摘要仅展示后端实际执行的表达式。不要用 builder 的 expressions 回退，
+  // 避免 exp 缺失时把未生效或过期的配置展示成当前阈值。
+  const exp = normalizeSummaryText(trigger?.exp);
   return {
     key: `trigger-${index}`,
     title: `#${index + 1}`,

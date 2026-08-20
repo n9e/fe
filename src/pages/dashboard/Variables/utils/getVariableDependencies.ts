@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { IVariable } from '../types';
 
 export default function getVariableDependencies(variable: IVariable, variables: IVariable[]) {
-  const dependencies: { name: string; value: number | string | string[] }[] = [];
+  const dependencies: { name: string; value: number | string | (string | number)[] }[] = [];
 
   // 获取需要检查依赖的字符串内容
   const checkStrings: string[] = [];
@@ -14,8 +14,9 @@ export default function getVariableDependencies(variable: IVariable, variables: 
   if (_.isString(variable.datasource?.value)) {
     checkStrings.push(String(variable.datasource.value));
   }
-  if (_.isString(variable.query?.query)) {
-    checkStrings.push(variable.query.query);
+  const variableQuery = variable.query?.query;
+  if (typeof variableQuery === 'string') {
+    checkStrings.push(variableQuery);
   }
 
   // 如果没有需要检查的字符串，直接返回空数组

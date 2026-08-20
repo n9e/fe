@@ -15,12 +15,13 @@
  *
  */
 import React, { useState, useContext, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Modal, Row, Col, Button, Dropdown, Menu, message, Space } from 'antd';
 import { DownOutlined, CodeOutlined } from '@ant-design/icons';
 import { ColumnProps } from 'antd/lib/table';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
+import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import { useTranslation } from 'react-i18next';
 
 import EnhancedTable from '@/components/EnhancedTable';
@@ -41,12 +42,10 @@ import UnBindTags from './unBindTags';
 
 const N9E_GIDS_LOCALKEY = 'N9E_TASK_TPL_NODE_ID';
 const SEARCH_SESSION_KEY = 'taskTpl_query';
-const PAGE_SESSION_KEY = 'taskTpl_page';
 
 function getTableData(options: any, gids: string | undefined, query: string) {
   if (gids) {
     const ids = gids === '-2' ? undefined : gids;
-    sessionStorage.setItem(PAGE_SESSION_KEY, String(options.current));
     return request(`/api/n9e/busi-groups/task-tpls`, {
       method: RequestMethod.Get,
       params: {
@@ -65,6 +64,7 @@ function getTableData(options: any, gids: string | undefined, query: string) {
 const index = (_props: any) => {
   const { t, i18n } = useTranslation('common');
   const history = useHistory();
+  const location = useLocation();
   const [query, setQuery] = useState(() => sessionStorage.getItem(SEARCH_SESSION_KEY) || '');
   const { busiGroups, businessGroup } = useContext(CommonStateContext);
   const [selectedIds, setSelectedIds] = useState([] as any[]);
@@ -73,12 +73,23 @@ const index = (_props: any) => {
     sessionStorage.setItem(SEARCH_SESSION_KEY, query);
   }, [query]);
 
-  const defaultPage = Number(sessionStorage.getItem(PAGE_SESSION_KEY) || '1');
-  const { tableProps, refresh } = useAntdTable<any, any>((options) => getTableData(options, gids, query), {
+  const defaultPage = getPageFromSearch(location.search);
+  const {
+    tableProps,
+    refresh,
+    pagination: tablePagination,
+  } = useAntdTable<any, any>((options) => getTableData(options, gids, query), {
     refreshDeps: [gids, query],
     debounceWait: 300,
     defaultParams: [{ current: defaultPage, pageSize: 10 }],
   });
+  // 切换业务组时重置到第一页（在业务组选择源头触发，不依赖 gids 变化时序）
+  const handleSelectGids = (ids: string) => {
+    setGids(ids);
+    tablePagination.changeCurrent(1);
+    setSelectedIds([]);
+    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+  };
   const pagination = usePagination({ PAGESIZE_KEY: 'job-tpls' });
 
   function handleTagClick(tag: string) {
@@ -95,6 +106,7 @@ const index = (_props: any) => {
         selectedIds,
         busiId: businessGroup.id,
         onOk: () => {
+          setSelectedIds([]);
           refresh();
         },
       });
@@ -114,6 +126,7 @@ const index = (_props: any) => {
         uniqueTags,
         busiId: businessGroup.id,
         onOk: () => {
+          setSelectedIds([]);
           refresh();
         },
       });
@@ -131,7 +144,7 @@ const index = (_props: any) => {
           const groupName = _.find(busiGroups, { id: record.group_id })?.name;
           return (
             <div className='flex flex-col gap-0.5'>
-              <Link to={{ pathname: `/job-tpls/${record.id}/detail`, search: `gid=${record.group_id}` }}>{text}</Link>
+              <Link to={{ pathname: `/job-tpls/${record.id}/detail`, search: `gid=${record.group_id}&page=${tableProps.pagination?.current || 1}` }}>{text}</Link>
               <span className='text-soft text-xs inline-flex items-center gap-2'>
                 <span>ID: {record.id}</span>
                 {showBusinessGroup && groupName && <span>{groupName}</span>}
@@ -143,8 +156,8 @@ const index = (_props: any) => {
     ] as any,
     [
       tagsColumn({ title: t('tpl.tags'), dataIndex: 'tags', maxWidth: 180, onTagClick: handleTagClick }),
-      updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
-      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true }),
+      updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname', filterMode: 'none' }),
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true }),
     ] as any,
   );
 
@@ -155,7 +168,7 @@ const index = (_props: any) => {
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/self-healing/self-healing-script/'
     >
       <div style={{ display: 'flex' }}>
-        <BusinessGroupSideBarWithAll gids={gids} setGids={setGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
+        <BusinessGroupSideBarWithAll gids={gids} setGids={handleSelectGids} localeKey={N9E_GIDS_LOCALKEY} allOptionLabel={t('common:tpl.allOptionLabel')} />
         {gids ? (
           <div className='fc-border rounded-lg p-4' style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}>
             <Row>
@@ -219,19 +232,19 @@ const index = (_props: any) => {
                   {
                     key: 'create',
                     text: t('task.create'),
-                    onClick: () => history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}&gid=${record.group_id}` }),
+                    onClick: () => history.push({ pathname: `/job-tpls/add/task`, search: `tpl=${record.id}&gid=${record.group_id}&page=${tableProps.pagination?.current || 1}` }),
                   },
                   {
                     key: 'edit',
                     icon: 'edit',
                     text: t('common:btn.edit'),
-                    onClick: () => history.push({ pathname: `/job-tpls/${record.id}/modify`, search: `gid=${record.group_id}` }),
+                    onClick: () => history.push({ pathname: `/job-tpls/${record.id}/modify`, search: `gid=${record.group_id}&page=${tableProps.pagination?.current || 1}` }),
                   },
                   {
                     key: 'clone',
                     icon: 'copy',
                     text: t('common:btn.clone'),
-                    onClick: () => history.push({ pathname: `/job-tpls/${record.id}/clone`, search: `gid=${record.group_id}` }),
+                    onClick: () => history.push({ pathname: `/job-tpls/${record.id}/clone`, search: `gid=${record.group_id}&page=${tableProps.pagination?.current || 1}` }),
                   },
                   {
                     key: 'delete',
@@ -256,6 +269,10 @@ const index = (_props: any) => {
               })}
               actionColumn={{ title: t('table.operations'), width: 130 }}
               {...(tableProps as any)}
+              onChange={(pag: any, filters?: any, sorter?: any) => {
+                tableProps.onChange?.(pag, filters, sorter);
+                history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
+              }}
               rowSelection={{
                 selectedRowKeys: selectedIds,
                 onChange: (selectedRowKeys) => {

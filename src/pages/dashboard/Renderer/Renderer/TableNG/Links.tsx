@@ -7,63 +7,72 @@ import { LinkOutlined } from '@ant-design/icons';
 import useOnClickOutside from '@/components/useOnClickOutside';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { IOptions } from '../../../types';
+import { IOptions, ScopedVariables } from '../../../types';
+
+type RowValue = string | number | null;
+type RowData = Record<string, RowValue>;
+
+export interface LinksHandle {
+  show: (item: RowData, position: { left: number; top: number }) => void;
+}
 
 interface Props {
   links: IOptions['links'];
 }
 
 export function cellClickCallback(
-  cellEvent: any,
+  cellEvent: { data?: Record<string, { value?: RowValue }>; event?: Event | null },
   {
     links,
     linksRef,
   }: {
     links: IOptions['links'];
-    linksRef: React.RefObject<any>;
+    linksRef: React.RefObject<LinksHandle>;
   },
 ) {
   if (_.isEmpty(links)) return;
 
-  const data: {
-    [key: string]: string | number | null;
-  } = {};
+  const data: RowData = {};
   _.forEach(cellEvent.data, (valueState, key) => {
-    data[`__row.${key}`] = valueState.value;
+    data[`__row.${key}`] = valueState.value as RowValue;
   });
 
   if (links?.length === 1) {
     const link = links[0];
     const interpolatedUrl = replaceTemplateVariables(link.url, {
-      scopedVars: data,
+      // 运行时 scopedVars 为扁平字符串映射（非 { value } 结构），仅做类型收窄
+      scopedVars: data as unknown as ScopedVariables,
     });
     window.open(interpolatedUrl, link.targetBlank ? '_blank' : '_self');
   } else {
-    const event = cellEvent.event as any;
-    const { x: left, y: top } = event || {};
+    const event = cellEvent.event;
+    const { x: left, y: top } = (event as { x?: number; y?: number } | null) || {};
     if (left !== undefined && top !== undefined) {
       linksRef.current?.show(data, { left, top });
     }
   }
 }
 
-function Links(props: Props, ref) {
+function Links(props: Props, ref: React.ForwardedRef<LinksHandle>) {
   const { t } = useTranslation('dashboard');
   const { links } = props;
   const [visible, setVisible] = useState(false);
-  const [rowDataItem, setRowDataItem] = useState<{
-    [key: string]: string | number | null;
-  }>({});
+  const [rowDataItem, setRowDataItem] = useState<RowData>({});
   const linksPopverRef = React.useRef<HTMLDivElement>(null);
 
   useImperativeHandle(
     ref,
     () => {
       return {
-        show: (item, { left, top }) => {
+        show: (item: RowData, { left, top }: { left: number; top: number }) => {
           setRowDataItem(item);
           setVisible(true);
-          (window as any).placement(
+          const placement = (
+            window as Window & {
+              placement?: (target: HTMLElement | null, position: { left: number; top: number }, side: string, align: string, options: { bound: HTMLElement }) => void;
+            }
+          ).placement;
+          placement?.(
             linksPopverRef.current,
             {
               left,
@@ -93,7 +102,8 @@ function Links(props: Props, ref) {
       <div>
         {_.map(links, (link, index) => {
           const interpolatedUrl = replaceTemplateVariables(link.url, {
-            scopedVars: rowDataItem,
+            // 运行时 scopedVars 为扁平字符串映射（非 { value } 结构），仅做类型收窄
+            scopedVars: rowDataItem as unknown as ScopedVariables,
           });
           return (
             <div key={index} className='py-1.5 px-2 n9e-dashboard-panel-table-ng-links-item'>
@@ -111,4 +121,4 @@ function Links(props: Props, ref) {
   );
 }
 
-export default forwardRef(Links);
+export default forwardRef<LinksHandle, Props>(Links);

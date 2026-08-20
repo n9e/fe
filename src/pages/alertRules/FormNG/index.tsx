@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState, useRef,
 import { Alert, Button, Card, Col, Form, Input, message, Row, Select, Space } from 'antd';
 import { Sparkles, ChevronsUpDown, ChevronsDownUp, PanelRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams, useLocation } from 'react-router-dom';
 import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
@@ -12,6 +12,7 @@ import { DatasourceCateSelectV2 } from '@/components/DatasourceSelect';
 import { addStrategy, EditStrategy } from '@/services/warning';
 import { scrollToFirstError } from '@/utils';
 import { IS_PLUS } from '@/utils/constant';
+import { getPageFromSearch } from '@/utils/urlPage';
 import RouterPrompt from '@/components/RouterPrompt';
 
 import { defaultValues } from '../Form/constants';
@@ -72,6 +73,7 @@ function AdvancedSettingsSection(props: {
 export default function FormNG(props: IProps) {
   const { type, initialValues, editable = true } = props;
   const history = useHistory();
+  const location = useLocation();
   const { bgid } = useParams<{ bgid: string }>();
   const { t, i18n } = useTranslation('alertRules');
 
@@ -194,6 +196,7 @@ export default function FormNG(props: IProps) {
   const leaveAfterSave = useCallback(() => {
     allowNextRouteRef.current = true;
     setAllowedLeave(true);
+    // 新增/编辑保存后回列表第一页（不带 page 参数，URL 默认第一页）
     history.push('/alert-rules');
   }, [history]);
 
@@ -393,6 +396,7 @@ export default function FormNG(props: IProps) {
                     <Col xs={24} lg={8}>
                       <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true }]}>
                         <Select
+                          disabled
                           placeholder={t('group_id_placeholder')}
                           options={_.map(busiGroups, (item) => ({
                             label: item.name,
@@ -592,7 +596,7 @@ export default function FormNG(props: IProps) {
                         {t('common:btn.save')}
                       </Button>
                       <TestFireModal bgid={initialValues?.group_id || Number(bgid)} buttonDisabled={editable === false} />
-                      <Link to='/alert-rules'>
+                      <Link to={{ pathname: '/alert-rules', search: `?page=${getPageFromSearch(location.search)}` }}>
                         <Button>{t('common:btn.cancel')}</Button>
                       </Link>
                     </Space>

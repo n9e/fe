@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export default function localeCompare(a: any, b: any) {
+export default function localeCompare(a: unknown, b: unknown) {
   if (typeof a === 'string' && typeof b === 'string') {
     if (!_.isNaN(_.toNumber(a)) && !_.isNaN(_.toNumber(b))) {
       return _.toNumber(a) - _.toNumber(b);

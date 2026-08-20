@@ -60,7 +60,7 @@ describe('ruleConditionSummary', () => {
       title: '#1',
       severity: 2,
       meta: [],
-      valueTags: ['$A < 0'],
+      valueTags: [],
     });
     expect(summary.triggers[1]).toMatchObject({
       title: 'No data',
@@ -405,7 +405,7 @@ describe('ruleConditionSummary', () => {
     expect(summary.queries.map((item) => item.queryText)).toEqual(['select 1', 'select 2']);
     expect(summary.queries[0].queryFullText).toBe(sql);
     expect(summary.queries.map((item) => item.queryPreviewType)).toEqual(['sql', 'sql']);
-    expect(summary.triggers.map((item) => item.valueTags?.[0])).toEqual(['$A > 0', '$B <= 10']);
+    expect(summary.triggers.map((item) => item.valueTags?.[0])).toEqual(['$A > 0', undefined]);
     expect(summary.triggers.map((item) => item.title)).toEqual(['#1', '#2']);
     expect(summary.triggers.map((item) => item.severity)).toEqual([2, 1]);
   });

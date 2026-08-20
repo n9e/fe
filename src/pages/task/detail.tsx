@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Spin, Divider, Button, Card } from 'antd';
 import { RollbackOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -24,12 +24,14 @@ import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import api from '@/utils/api';
 import PageLayout from '@/components/pageLayout';
+import { getPageFromSearch } from '@/utils/urlPage';
 import { CommonStateContext } from '@/App';
 import Editor from '../taskTpl/editor';
 import './style.less';
 
 const Detail = (props: any) => {
   const history = useHistory();
+  const location = useLocation();
   const { businessGroup } = useContext(CommonStateContext);
   const curBusiId = businessGroup.id!;
   const { t } = useTranslation('common');
@@ -59,7 +61,7 @@ const Detail = (props: any) => {
     <PageLayout
       title={
         <>
-          <RollbackOutlined className='back' onClick={() => history.push('/job-tasks')} />
+          <RollbackOutlined className='back' onClick={() => history.push(`/job-tasks?page=${getPageFromSearch(location.search)}`)} />
           {t('task')}
         </>
       }

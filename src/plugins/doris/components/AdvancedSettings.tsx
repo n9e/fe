@@ -26,6 +26,7 @@ interface IProps {
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { span = 6, prefixField = {}, prefixName = [], disabled, expandTriggerVisible = true, onChange, options = [], showUnit, showOffset, valueKeyRequired = true } = props;
+  const restPrefixField = _.omit(prefixField, 'key');
   const [open, setOpen] = useState(!!props.expanded);
   const [valueKeyIsEmpty, setValueKeyIsEmpty] = useState(false);
 
@@ -67,7 +68,7 @@ function AdvancedSettings(props: IProps) {
                 }
               >
                 <Form.Item
-                  {...prefixField}
+                  {...restPrefixField}
                   name={[...prefixName, 'keys', 'valueKey']}
                   style={{ width: '100%' }}
                   rules={[
@@ -101,7 +102,7 @@ function AdvancedSettings(props: IProps) {
                   </Space>
                 }
               >
-                <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
+                <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
                   <Select
                     mode='tags'
                     placeholder={t('query.advancedSettings.tags_placeholder')}
@@ -118,7 +119,7 @@ function AdvancedSettings(props: IProps) {
             {showUnit && (
               <Col span={span}>
                 <InputGroupWithFormItem label={t('common:unit')}>
-                  <Form.Item {...prefixField} name={[...prefixName, 'unit']} initialValue='none' noStyle>
+                  <Form.Item {...restPrefixField} name={[...prefixName, 'unit']} initialValue='none' noStyle>
                     <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
                   </Form.Item>
                 </InputGroupWithFormItem>
@@ -146,7 +147,7 @@ function AdvancedSettings(props: IProps) {
                     </Space>
                   }
                 >
-                  <Form.Item {...prefixField} name={[...prefixName, 'offset']} initialValue={0}>
+                  <Form.Item {...restPrefixField} name={[...prefixName, 'offset']} initialValue={0}>
                     <InputNumber addonAfter={t('common:time.second')} min={0} className='w-full' />
                   </Form.Item>
                 </InputGroupWithFormItem>

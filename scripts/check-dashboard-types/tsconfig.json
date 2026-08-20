@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": false
+  },
+  "include": ["../../src/pages/dashboard/**/*"]
+}

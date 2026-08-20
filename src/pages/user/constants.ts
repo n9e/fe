@@ -45,6 +45,11 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'belong',
+    i18nKey: 'user.belong',
+    visible: true,
+  },
+  {
     name: 'busi_groups',
     i18nKey: 'user.busi_groups',
     visible: true,
