@@ -58,15 +58,24 @@ describe('SideMenu hover panel styles', () => {
     expect(indexContent).toMatch(/const toggleCollapsed = \(\) => \{[\s\S]*?localStorage\.setItem\('menuCollapsed'/);
   });
 
-  it('labels collapsed top-level rows with a tooltip instead of expanding them', () => {
+  it('labels collapsed leaf rows with a tooltip', () => {
     const menuListPath = path.join(__dirname, 'MenuList.tsx');
     const menuListContent = fs.readFileSync(menuListPath, 'utf8');
 
     // Leaf rows (e.g. FlashAI) render icon-only when collapsed, so the label has to come from a tooltip.
     expect(menuListContent).toContain('function wrapCollapsedRowWithTooltip');
     expect(menuListContent.match(/return wrapCollapsedRowWithTooltip\(row, \{ collapsed, isSub, title: t\(item\.label\) \}\);/g)).toHaveLength(2);
-    // A collapsed group row must not act on click; its children are reachable through the hover panel.
-    expect(menuListContent).toMatch(/onClick=\{\(\) => \{[\s\S]{0,160}?if \(collapsed\) return;\s*setIsExpand\(!isExpand\);/);
+  });
+
+  it('opens the first child when a collapsed group icon is clicked', () => {
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    // Clicking the icon is the one-step way into a group; hovering stays the way to reach the other children.
+    expect(menuListContent).toContain('const collapsedTarget = collapsed ? visibleChildren[0] : undefined;');
+    expect(menuListContent).toContain('<Link to={getMenuItemPath(collapsedTarget)}');
+    // The hover panel must not stay open on top of the page we just navigated to.
+    expect(menuListContent).toMatch(/onClick=\{\(\) => \{[\s\S]{0,160}?if \(!hoverEnabled\) return;\s*closeHoverPanel\(\);/);
   });
 
   it('clears profile submenus without changing their popup container', () => {
