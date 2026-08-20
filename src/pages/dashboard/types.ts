@@ -15,6 +15,38 @@
  *
  */
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+
+/** 可持久化到仪表盘配置中的 JSON 值。 */
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+export interface JsonObject {
+  [key: string]: JsonValue;
+}
+
+export interface DashboardDatasource {
+  id: number;
+  name: string;
+  plugin_type: string;
+  is_default: boolean;
+  identifier?: string;
+}
+
+export interface DashboardAnnotation {
+  id: number;
+  dashboard_id: number;
+  panel_id?: string;
+  time_start: number;
+  time_end: number;
+  description?: string;
+  tags: string[];
+}
+
+export interface ScopedVariable {
+  text?: string;
+  value?: string | number | string[];
+}
+
+export type ScopedVariables = Record<string, ScopedVariable>;
 export interface IGridPos {
   h: number;
   w: number;
@@ -26,26 +58,30 @@ export interface IGridPos {
 // query interface
 export interface ITarget {
   refId: string;
-  __mode__: '__expr__' | '__query__';
-  expr: string; // promQL
-  legendFormat: string;
+  kind?: 'query' | 'expression';
+  /**
+   * @deprecated 仅用于迁移 4.0.0 之前的面板配置。
+   */
+  __mode__?: '__expr__' | '__query__';
+  datasource?: {
+    cate: string;
+    id: number | string;
+  };
+  resultType?: 'time_series' | 'logs';
+  expression?: string;
+  expr?: string; // PromQL；表达式配置迁移后使用 expression
+  legendFormat?: string;
   time?: IRawTimeRange; // 固定时间范围，2025-10-20 废弃
   step?: number; // 2024-01-24 从固定 step 改成 min step (v7)
   maxDataPoints?: number; // 2024-01-24 新增 maxDataPoints 用于计算默认的 step (v7)，2025-10-20 废弃
-  query?: {
-    index: string;
-    index_type: 'index' | 'index_pattern';
-    filters: string;
-    values: {
-      func: string;
-    }[];
-  };
+  query?: JsonObject;
+  queries?: JsonObject[];
   legend?: string;
   instant?: boolean;
   hide?: boolean;
 }
 
-export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'tableNG' | 'pie' | 'hexbin' | 'barGauge' | 'text' | 'gauge' | 'iframe';
+export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'tableNG' | 'pie' | 'hexbin' | 'barGauge' | 'text' | 'gauge' | 'iframe' | 'barchart' | 'heatmap';
 
 export interface IValueMapping {
   match: {
@@ -53,18 +89,20 @@ export interface IValueMapping {
     specialValue?: string | number;
     from?: number;
     to?: number;
+    textValue?: string;
   };
   result: {
     color: string;
     text: string;
   };
-  type: 'range' | 'special' | 'specialValue'; // TODO: 历史原因 special 是固定值，specialValue 是特殊值
+  type: 'range' | 'special' | 'specialValue' | 'textValue'; // TODO: 历史原因 special 是固定值，specialValue 是特殊值
 }
 
 export interface IThresholds {
   steps: {
     color: string;
-    value: number;
+    // 基础阈值（base）没有具体的值，value 为 null；其余步骤为数值
+    value: number | null;
     type?: 'base';
   }[];
   mode: 'absolute' | 'percentage';
@@ -129,7 +167,7 @@ export interface IOverride {
   };
   properties: {
     width?: number;
-    [key: string]: any; // standardOptions | valueMappings | width
+    [key: string]: JsonValue | IStandardOptions | IValueMapping[] | number | undefined;
   };
 }
 
@@ -238,9 +276,9 @@ export interface IRow {
 }
 
 export interface ITransformation {
-  id: 'string';
+  id: string;
   options: {
-    [key: string]: any;
+    [key: string]: JsonValue;
   };
   disabled?: boolean;
 }
@@ -252,12 +290,18 @@ export interface IPanel {
   links?: ILink[];
   description: string;
   layout: IGridPos;
-  datasourceCate?: string; // 5.11.0 新增支持配置数据源类型，默认是 prometheus
-  datasourceValue?: number; // 6.x 开始 datasourceName 已经废弃，datasourceValue 即 datasourceId
+  /**
+   * @deprecated 仅用于迁移 4.0.0 之前的面板配置，新的数据源配置位于 targets[].datasource。
+   */
+  datasourceCate?: string;
+  /**
+   * @deprecated 仅用于迁移 4.0.0 之前的面板配置，新的数据源配置位于 targets[].datasource。
+   */
+  datasourceValue?: number | string;
   targets: ITarget[];
   type: IType;
   options: IOptions;
-  custom: any; // 图表
+  custom: JsonObject; // 图表持久化配置
   overrides: IOverride[];
   collapsed?: boolean; // 用于 row 展开收起控制是否显示
   panels?: IPanel[]; // 用于 row 收起时保存子面板
@@ -266,7 +310,7 @@ export interface IPanel {
   repeat?: string;
   maxPerRow?: number;
   repeatPanelId?: string;
-  scopedVars?: any;
+  scopedVars?: ScopedVariables;
   maxDataPoints?: number; // 2025-10-20 新增
   queryOptionsTime?: IRawTimeRange; // 2025-10-20 新增， queryOptionsTime 会覆盖 time
 }
@@ -307,7 +351,7 @@ export interface IDashboard {
   group_id: number;
 }
 
-export interface VariableQuerybuilderProps<VariableType = any> {
+export interface VariableQuerybuilderProps<VariableType = JsonObject> {
   dashboardId: string;
   variables: VariableType[];
   datasourceCate: string;

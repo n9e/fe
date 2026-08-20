@@ -6,13 +6,29 @@ import moment from 'moment';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { updateBoardPublic, getDashboard } from '@/services/dashboardV2';
 import { getSourceTokens, deleteSourceToken, SourceTokenItem } from '@/services/common';
+import { isJsonObject, parseJson } from '@/pages/dashboard/utils/json';
 
 import SharingLinkSection, { HostIdentState } from './SharingLinkSection';
 
+interface BusinessGroup {
+  id: number;
+  name: string;
+}
+
+interface PublicDashboardValues {
+  public?: number;
+  public_cate?: number;
+  bgids?: number[];
+}
+
+interface DashboardVariableConfig {
+  var?: Array<{ type: string }>;
+}
+
 interface IProps {
   boardId: number;
-  busiGroups: any[];
-  initialValues: any;
+  busiGroups: BusinessGroup[];
+  initialValues: PublicDashboardValues;
   onOk: () => void;
 }
 
@@ -22,7 +38,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
   const [form] = Form.useForm();
   const publicVal = Form.useWatch('public', form);
   const publicCate = Form.useWatch('public_cate', form);
-  const [dashboardConfig, setDashboardConfig] = useState<any>({});
+  const [dashboardConfig, setDashboardConfig] = useState<DashboardVariableConfig>({});
   // 用独立状态表达「读取中 / 读到了 / 读失败」，不要往 dashboardConfig 里塞
   // 伪造的 hostIdent 变量来表达失败——那会让下面的 Alert 对用户断言「本仪表盘
   // 配置了机器标识变量」，而实际只是接口抖了一下，且用户无从分辨、也没有重试入口
@@ -40,14 +56,20 @@ function PublicForm(props: IProps & ModalWrapProps) {
       setConfigState('checking');
       getDashboard(boardId)
         .then((res) => {
-          try {
-            setDashboardConfig(JSON.parse(res.configs));
-            setConfigState('loaded');
-          } catch (e) {
-            console.error(e);
+          // parseJson 解析失败时返回 undefined 而不是抛异常，所以「读失败」必须由返回值判定。
+          // 沿用 try/catch 会让 failed 分支变成死代码，配置读不出来的看板反而被当成
+          // 「确认没有机器标识变量」放行匿名分享，正好与这里要保证的失败即关闭相反
+          const parsed = parseJson(res.configs);
+          if (!isJsonObject(parsed)) {
             setDashboardConfig({});
             setConfigState('failed');
+            return;
           }
+          const variables = Array.isArray(parsed.var) ? parsed.var : [];
+          setDashboardConfig({
+            var: variables.filter(isJsonObject).flatMap((item) => (typeof item.type === 'string' ? [{ type: item.type }] : [])),
+          });
+          setConfigState('loaded');
         })
         .catch((error) => {
           console.error(error);
@@ -60,7 +82,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
     }
   }, [boardId]);
 
-  const submit = (values: any) => {
+  const submit = (values: PublicDashboardValues) => {
     return updateBoardPublic(boardId, values).then(() => {
       onOk();
       destroy();
@@ -79,7 +101,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
   // 而注销掉的令牌无法恢复。
   // 令牌列表现取而不用弹窗打开时的快照——SharingLinkSection 就在同一个弹窗里，期间可能刚
   // 签发过新链接。
-  const submitWithRevokeCheck = (values: any) => {
+  const submitWithRevokeCheck = (values: PublicDashboardValues) => {
     return getSourceTokens({ source_type: 'board', source_id: _.toString(boardId) }).then(
       (tokens) => {
         const alive = _.filter(tokens, (item) => item.expire_at <= 0 || item.expire_at > moment().unix());

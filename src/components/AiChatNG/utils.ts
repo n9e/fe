@@ -8,36 +8,74 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function useAutoScroll(containerRef: React.RefObject<HTMLElement>) {
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+const AUTO_SCROLL_THRESHOLD = 48;
+// 程序滚动派发的 scroll 事件晚于滚动本身，需要一个静默窗口避免被当成用户滚动；smooth 还要覆盖整段动画
+const INSTANT_SCROLL_SETTLE_DELAY = 100;
+const SMOOTH_SCROLL_SETTLE_DELAY = 400;
+
+/**
+ * 跟随滚动。是否跟随只取决于用户意图（followRef），位置判定仅用于从用户滚动中推断意图。
+ * @param containerRef 滚动容器
+ * @param contentRef 容器内的内容盒，高度变化（Markdown 渲染、折叠面板动画等）时同步跟随
+ */
+export function useAutoScroll(containerRef: React.RefObject<HTMLElement>, contentRef?: React.RefObject<HTMLElement>) {
+  const [autoScrollEnabled, setAutoScrollEnabledState] = useState(true);
+  const followRef = useRef(true);
+  const programmaticRef = useRef(false);
   const frameRef = useRef<number>();
-  const threshold = 48;
+  const releaseTimerRef = useRef<number>();
+
+  const setAutoScrollEnabled = useCallback((next: boolean) => {
+    followRef.current = next;
+    setAutoScrollEnabledState(next);
+  }, []);
 
   const isNearBottom = useCallback(() => {
     const element = containerRef.current;
     if (!element) return false;
-    return element.scrollHeight - element.scrollTop - element.clientHeight <= threshold;
+    return element.scrollHeight - element.scrollTop - element.clientHeight <= AUTO_SCROLL_THRESHOLD;
   }, [containerRef]);
+
+  const endProgrammaticScroll = useCallback(() => {
+    window.clearTimeout(releaseTimerRef.current);
+    releaseTimerRef.current = undefined;
+    programmaticRef.current = false;
+  }, []);
+
+  const requestScrollToBottom = useCallback(
+    (behavior: ScrollBehavior) => {
+      const element = containerRef.current;
+      if (!element) return;
+      programmaticRef.current = true;
+      cancelAnimationFrame(frameRef.current || 0);
+      frameRef.current = requestAnimationFrame(() => {
+        const target = containerRef.current;
+        if (!target) {
+          programmaticRef.current = false;
+          return;
+        }
+        target.scrollTo({ top: target.scrollHeight, behavior });
+        window.clearTimeout(releaseTimerRef.current);
+        releaseTimerRef.current = window.setTimeout(endProgrammaticScroll, behavior === 'smooth' ? SMOOTH_SCROLL_SETTLE_DELAY : INSTANT_SCROLL_SETTLE_DELAY);
+      });
+    },
+    [containerRef, endProgrammaticScroll],
+  );
 
   const scrollToBottom = useCallback(
     (behavior: ScrollBehavior = 'auto') => {
-      const element = containerRef.current;
-      if (!element) return;
-      cancelAnimationFrame(frameRef.current || 0);
-      frameRef.current = requestAnimationFrame(() => {
-        element.scrollTo({ top: element.scrollHeight, behavior });
-      });
+      setAutoScrollEnabled(true);
+      requestScrollToBottom(behavior);
     },
-    [containerRef],
+    [requestScrollToBottom, setAutoScrollEnabled],
   );
 
   const maybeScrollToBottom = useCallback(
     (behavior: ScrollBehavior = 'auto') => {
-      if (autoScrollEnabled && isNearBottom()) {
-        scrollToBottom(behavior);
-      }
+      if (!followRef.current) return;
+      requestScrollToBottom(behavior);
     },
-    [autoScrollEnabled, isNearBottom, scrollToBottom],
+    [requestScrollToBottom],
   );
 
   useEffect(() => {
@@ -45,12 +83,54 @@ export function useAutoScroll(containerRef: React.RefObject<HTMLElement>) {
     if (!element) return;
 
     const handleScroll = () => {
+      if (programmaticRef.current) return;
       setAutoScrollEnabled(isNearBottom());
     };
 
+    // 用户一介入（滚轮、触摸、拖拽滚动条、按键）就结束程序滚动窗口，保证向上翻看能立即暂停跟随
+    const handleUserIntent = () => {
+      endProgrammaticScroll();
+    };
+
+    // 点击消息内容不是滚动意图，只有按在滚动条上才算
+    const handlePointerDown = (event: MouseEvent) => {
+      const { left } = element.getBoundingClientRect();
+      if (event.clientX - left > element.clientWidth) {
+        endProgrammaticScroll();
+      }
+    };
+
     element.addEventListener('scroll', handleScroll);
-    return () => element.removeEventListener('scroll', handleScroll);
-  }, [containerRef, isNearBottom]);
+    element.addEventListener('wheel', handleUserIntent, { passive: true });
+    element.addEventListener('touchmove', handleUserIntent, { passive: true });
+    element.addEventListener('pointerdown', handlePointerDown, { passive: true });
+    element.addEventListener('keydown', handleUserIntent);
+    return () => {
+      element.removeEventListener('scroll', handleScroll);
+      element.removeEventListener('wheel', handleUserIntent);
+      element.removeEventListener('touchmove', handleUserIntent);
+      element.removeEventListener('pointerdown', handlePointerDown);
+      element.removeEventListener('keydown', handleUserIntent);
+    };
+  }, [containerRef, endProgrammaticScroll, isNearBottom, setAutoScrollEnabled]);
+
+  useEffect(() => {
+    const element = contentRef?.current;
+    if (!element || typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(() => {
+      maybeScrollToBottom('auto');
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [contentRef, maybeScrollToBottom]);
+
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(frameRef.current || 0);
+      window.clearTimeout(releaseTimerRef.current);
+    };
+  }, []);
 
   return {
     autoScrollEnabled,

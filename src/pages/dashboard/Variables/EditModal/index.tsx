@@ -126,7 +126,7 @@ export default function EditModal(props: IProps) {
                   {
                     title: t('common:table.operations'),
                     width: 150,
-                    render: (_text, record, idx) => {
+                    render: (_text: unknown, record: IVariable, idx: number) => {
                       return (
                         <Space>
                           <Button

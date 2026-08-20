@@ -18,6 +18,7 @@ import _ from 'lodash';
 
 import { colors } from '../Components/ColorRangeMenu/config';
 import getDefaultQuery from '../utils/getDefaultTargets';
+import { IThresholds } from '../types';
 
 export const visualizations = [
   {
@@ -84,13 +85,13 @@ export const calcsOptions = {
   count: {},
 };
 
-export const defaultThreshold = {
+export const defaultThreshold: IThresholds['steps'][number] = {
   color: 'rgb(44, 157, 61)',
   value: null,
   type: 'base',
 };
 
-export const gaugeDefaultThresholds = [
+export const gaugeDefaultThresholds: IThresholds['steps'] = [
   {
     color: '#3FC453',
     value: null,

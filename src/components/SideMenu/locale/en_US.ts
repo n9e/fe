@@ -69,6 +69,7 @@ const en_US = {
     about: 'About',
     license_management: 'License',
     ai_config: 'AI Configuration',
+    nightingale_ai: 'Nightingale AI',
     ai_config_agents: 'Agents',
     ai_config_llm_configs: 'LLMs',
     ai_config_skills: 'Skills',

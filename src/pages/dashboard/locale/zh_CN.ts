@@ -291,6 +291,7 @@ const zh_CN = {
         series: '序列',
         seriesFilter: '筛选序列',
         columns: '显示列',
+        none: '无',
         behaviour: {
           label: '单击触发行为',
           showItem: '显示项目',
@@ -682,6 +683,7 @@ const zh_CN = {
     options_time: '查询时间范围',
     options_time_tip: '可指定查询时间范围，默认为仪表盘全局时间范围',
     copy_query: '复制查询',
+    mixed_datasource: '混用数据源',
     hide_response: '隐藏查询结果',
   },
   migrate: {

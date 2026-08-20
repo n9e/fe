@@ -1,5 +1,7 @@
 import { template } from 'lodash';
 
+export type InterpolationValue = string | number | boolean | null | undefined;
+
 /**
  * 变量模板处理方法
  * 要支持以下格式
@@ -10,7 +12,7 @@ import { template } from 'lodash';
  * @param data 变量数据
  * @returns 处理后的字符串
  */
-export function formatString(str: string, data: Record<string, any>): string {
+export function formatString(str: string, data: Record<string, InterpolationValue>): string {
   if (!str || typeof str !== 'string') {
     return str;
   }
@@ -64,7 +66,14 @@ export function formatString(str: string, data: Record<string, any>): string {
   }
 }
 
-export function formatDatasource(str: string, data: Record<string, any>): number | undefined {
+export function formatDatasource(value: string | number | undefined, data: Record<string, InterpolationValue>): number | undefined {
+  if (typeof value === 'number') {
+    return value;
+  }
+  if (value === undefined) {
+    return undefined;
+  }
+  const str = value;
   const result = formatString(str, data);
   if (!result) {
     console.warn('数据源插值处理器解析失败');

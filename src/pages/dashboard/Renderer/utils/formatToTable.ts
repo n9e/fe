@@ -16,6 +16,8 @@
  */
 import _ from 'lodash';
 
+// dashboard-any-ignore-start: legacy Table renderer is scheduled for removal.
+
 const formatToTable = (series: any[], rowBy: string[], colBy: string) => {
   const rows = _.groupBy(series, (item) => {
     let groupkeys = '';
@@ -50,3 +52,4 @@ const formatToTable = (series: any[], rowBy: string[], colBy: string) => {
 };
 
 export default formatToTable;
+// dashboard-any-ignore-end

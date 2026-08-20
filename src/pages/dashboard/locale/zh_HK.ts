@@ -291,6 +291,7 @@ const zh_HK = {
         series: '序列',
         seriesFilter: '篩選序列',
         columns: '顯示列',
+        none: '無',
         behaviour: {
           label: '點擊觸發的行為',
           showItem: '显示项目',
@@ -682,6 +683,7 @@ const zh_HK = {
     options_time: '查詢時間範圍',
     options_time_tip: '可指定時間範圍，預設為儀表盤全域性時間範圍',
     copy_query: '複製查詢',
+    mixed_datasource: '混用資料來源',
     hide_response: '隱藏響應數據',
   },
   migrate: {

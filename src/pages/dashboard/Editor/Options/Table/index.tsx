@@ -19,8 +19,9 @@ import GraphStyles from './GraphStyles';
 import StandardOptions from '../../Fields/StandardOptions';
 import ValueMappings from '../../Fields/ValueMappings';
 import Overrides from '../../Fields/Overrides';
+import type { ITarget } from '../../../types';
 
-export default function Table({ targets }) {
+export default function Table({ targets }: { targets: ITarget[] }) {
   return (
     <>
       <GraphStyles />

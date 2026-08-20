@@ -54,7 +54,7 @@ const BetaSvg = () => (
     ></path>
   </svg>
 );
-const BetaIcon = (props) => <Icon component={BetaSvg} {...props} />;
+const BetaIcon = (props: React.ComponentProps<typeof Icon>) => <Icon component={BetaSvg} {...props} />;
 
 export default function Import(props: IProps) {
   const { t } = useTranslation('dashboard');
@@ -63,7 +63,7 @@ export default function Import(props: IProps) {
   const [checkedVerisonResult, setCheckedVerisonResult] = useState<undefined | 0 | 1 | 2>();
   const [form] = Form.useForm();
   const [importLoading, setImportLoading] = useState(false);
-  const importGrafanaFunc = (json) => {
+  const importGrafanaFunc = (json: unknown) => {
     const data = convertDashboardGrafanaToN9E(json);
     createDashboard(busiId, {
       ...data,

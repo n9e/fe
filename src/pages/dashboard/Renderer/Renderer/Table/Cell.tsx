@@ -18,8 +18,17 @@ interface Props {
 export default function Cell(props: Props) {
   const { text, color, style, panel, record } = props;
   const { custom } = panel;
-  const { links, linkMode, nowrap = false } = custom;
-  const firstLink = _.first<any>(links);
+  // custom 为 JsonObject（宽类型），按表格单元格链接实际结构收窄
+  const {
+    links,
+    linkMode,
+    nowrap = false,
+  } = custom as {
+    links?: Array<{ targetBlank?: boolean; url?: string; title?: string }>;
+    linkMode?: string;
+    nowrap?: boolean;
+  };
+  const firstLink = _.first(links);
   const styleObj = style || { color };
   if (!record) return null;
   const data = {
@@ -60,7 +69,7 @@ export default function Cell(props: Props) {
                         <div key={idx}>
                           <a
                             target={link.targetBlank ? '_blank' : '_self'}
-                            href={replaceTemplateVariables(link.url, {
+                            href={replaceTemplateVariables(link.url as string, {
                               scopedVars,
                             })}
                           >
@@ -77,7 +86,7 @@ export default function Cell(props: Props) {
             ) : (
               <a
                 target={firstLink?.targetBlank ? '_blank' : '_self'}
-                href={replaceTemplateVariables(firstLink?.url, {
+                href={replaceTemplateVariables(firstLink?.url as string, {
                   scopedVars,
                 })}
                 style={styleObj}

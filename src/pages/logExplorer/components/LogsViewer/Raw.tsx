@@ -29,6 +29,14 @@ const explorerOriginLiClassName = 'relative ml-0 pl-0 ';
 /** 无高亮时的稳定空对象引用，避免每次渲染新建 {} 打穿 RawCell 的 memo */
 const EMPTY_HIGHLIGHT: { [key: string]: string[] } = {};
 
+/**
+ * 将行内提示层挂到虚拟列表的滚动容器中，使其随滚动区域裁剪。
+ * 否则 Tooltip 默认渲染到 body，行仅剩一小部分可见时提示仍会溢出表格边界。
+ */
+function getRawRowTooltipContainer(triggerNode: HTMLElement) {
+  return triggerNode.closest<HTMLElement>('.n9e-log-explorer-virtuoso-scroller') ?? document.body;
+}
+
 interface Props {
   /** 时间字段 */
   timeField?: string;
@@ -513,7 +521,7 @@ const RawRow = React.memo(
     return (
       <div className='n9e-log-explorer-raw-row flex items-stretch w-full'>
         <div className='ant-table-row-expand-icon-cell' style={{ width: 48, flex: '0 0 48px' }}>
-          <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
+          <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
             <div
               className='absolute inset-0 flex items-center justify-center cursor-pointer'
               onClick={() => {
@@ -532,7 +540,7 @@ const RawRow = React.memo(
               onOpenDrawer(index);
             }}
           >
-            <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
+            <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
               <div className='absolute inset-0 flex items-center'>{linesColumnFormat ? linesColumnFormat(index + 1) : index + 1}</div>
             </Tooltip>
           </div>
@@ -545,7 +553,7 @@ const RawRow = React.memo(
               onOpenDrawer(index);
             }}
           >
-            <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
+            <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
               <div className='absolute inset-0 flex items-center px-2'>
                 {timeFieldColumnFormat ? timeFieldColumnFormat(item[timeField]) : moment(item[timeField]).format('MM-DD HH:mm:ss.SSS')}
               </div>

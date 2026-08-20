@@ -16,6 +16,38 @@ const zh_HK = {
     unknown_time: '--:--',
     delete_confirm: '刪除該會話？',
     empty: '暫無歷史會話',
+    search_placeholder: '搜尋會話',
+    share: '分享會話',
+    rename: '重新命名',
+    more_actions: '更多會話操作',
+  },
+  nightingale: {
+    title: 'Nightingale AI',
+    new_chat: '新建會話',
+    sessions: '會話',
+    llm_configs: 'LLM 管理',
+    skills: 'Skill 管理',
+    mcp_servers: 'MCP 管理',
+    ai_task: '任務通道',
+    collapse_sidebar: '收起 AI 側欄',
+    expand_sidebar: '展開 AI 側欄',
+    welcome_cards: {
+      overview: {
+        title: '快速了解夜鶯',
+        description: '一分鐘看懂產品與 AI 助手能做什麼',
+        prompt: '一分鐘介紹下夜鶯監控的核心功能，以及你能幫我做什麼',
+      },
+      alerts: {
+        title: '盤一盤我的告警',
+        description: '哪些規則最吵、哪些從沒觸發過',
+        prompt: '幫我盤點當前的告警規則：最近 7 天哪些觸發最頻繁，哪些規則一次都沒觸發過',
+      },
+      create_alert: {
+        title: '一句話配一條告警',
+        description: '描述場景，我來生成 PromQL 和閾值',
+        prompt: '幫我創建一條告警規則：主機 CPU 使用率持續 5 分鐘超過 80% 就告警',
+      },
+    },
   },
   input: {
     placeholder: '輸入問題，Enter 發送，Shift + Enter 換行',

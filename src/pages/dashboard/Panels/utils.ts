@@ -39,13 +39,13 @@ export function sortPanelsByGridLayout(panels: IPanel[]) {
   });
 }
 
-export function updatePanelsLayout(panels: IPanel[], newLayout: IPanel) {
+export function updatePanelsLayout(panels: IPanel[], newLayout: Array<{ i: string; h: number; w: number; x: number; y: number }>) {
   return _.map(panels, (panel: IPanel) => {
     const newPanel = { ...panel };
     const findedLayout = _.find(newLayout, { i: newPanel.layout.i });
     if (findedLayout) {
       // newLayout 可能是 ReactGridLayout.onLayoutChange 中的参数，掺杂了其他属性
-      newPanel.layout = _.pick(findedLayout, ['h', 'w', 'x', 'y', 'i', 'isResizable']);
+      newPanel.layout = _.pick(findedLayout, ['h', 'w', 'x', 'y', 'i', 'isResizable']) as IPanel['layout'];
     }
     return newPanel;
   });
@@ -135,7 +135,7 @@ export function getRowUnCollapsedPanels(panels: IPanel[], row: IPanel) {
  * 关闭 row 时，需要把 row 下面的 rowPanels 删除掉，并且缓存被删除的 panels
  * 展开 row 是，需要把 row 下面的缓存的 rowPanels 添加到 panels 中
  */
-export function handleRowToggle(collapsed, panels: IPanel[], row: IPanel): IPanel[] {
+export function handleRowToggle(collapsed: boolean, panels: IPanel[], row: IPanel): IPanel[] {
   let newPanels = _.cloneDeep(panels);
   if (collapsed) {
     newPanels = getRowCollapsedPanels(newPanels, row);
@@ -177,7 +177,7 @@ const PANEL_W = 12;
 const PANEL_H = 4;
 
 // 新增 panel 到全局
-export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: any, type: 'row' | 'chart', useDefaultSize = true) {
+export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: IPanel, type: 'row' | 'chart', useDefaultSize = true) {
   const w = type === 'row' ? 24 : useDefaultSize ? PANEL_W : panel.layout.w ?? PANEL_W;
   const h = type === 'row' ? 1 : useDefaultSize ? PANEL_H : panel.layout.h ?? PANEL_H;
   const maxItem = _.maxBy(panels, (item: IPanel) => {
@@ -199,7 +199,7 @@ export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: any,
 // 新增 panel 到分组
 export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string, panel: IPanel, useDefaultSize = true) {
   const nextRow = getNextRow(panels, rowId);
-  let nextRowIdx;
+  let nextRowIdx: number | undefined;
   if (nextRow?.id) {
     nextRowIdx = getRowIndex(panels, nextRow?.id);
   }
@@ -217,7 +217,7 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
     },
   };
   const newPanels = _.map(panels, (item, idx) => {
-    if (idx >= nextRowIdx) {
+    if (nextRowIdx !== undefined && idx >= nextRowIdx) {
       return {
         ...item,
         layout: {
@@ -231,7 +231,7 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
   return _.concat(newPanel, newPanels);
 }
 
-export function panelsMergeToConfigs(configs: IDashboardConfig, panels: any[]) {
+export function panelsMergeToConfigs(configs: IDashboardConfig, panels: IPanel[]) {
   const parsedConfigs = configs;
   const cloneDeep = _.cloneDeep(panels);
   cleanUpRepeats(cloneDeep);

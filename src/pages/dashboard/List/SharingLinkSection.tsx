@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Checkbox, InputNumber, Select, Space, Input, Button, Radio, Tooltip, Typography, Table, Popconfirm, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -121,7 +122,7 @@ export default function SharingLinkSection(props: Props) {
       });
   };
 
-  const columns = [
+  const columns: ColumnsType<SourceTokenItem> = [
     {
       title: t('sharing_link.note'),
       dataIndex: 'note',
@@ -255,7 +256,7 @@ export default function SharingLinkSection(props: Props) {
           hostIdent 全都无关——后端 boardGet 在 public/登录判定之前先校验 __token，
           只受过期与显式注销约束。把它藏在这些开关后面，等于在最需要紧急注销时
           让入口消失（改公开类型、看板后来加了机器标识变量都会触发） */}
-      <Table<SourceTokenItem> rowKey='id' size='small' columns={columns as any} dataSource={tokens} pagination={false} scroll={{ y: 240 }} />
+      <Table<SourceTokenItem> rowKey='id' size='small' columns={columns} dataSource={tokens} pagination={false} scroll={{ y: 240 }} />
       <div className='mt-2'>
         <Typography.Text type='secondary'>{t('sharing_link.anonymous_tip')}</Typography.Text>
       </div>
