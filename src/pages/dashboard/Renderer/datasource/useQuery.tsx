@@ -68,6 +68,9 @@ export default function useQuery(props: IProps) {
   const fetchQueryProps = {
     ...props,
     variablesWithOptions,
+    // 兼容旧版 plus 数据源的查询参数命名。
+    variableConfig: variablesWithOptions,
+    dashboardId: props.id,
   };
   const fetchQueryMap = {
     prometheus: prometheusQuery,
