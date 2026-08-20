@@ -23,6 +23,7 @@ export const ENABLED_VIEW_CATES = [
   DatasourceCateEnum.bceBLS,
   DatasourceCateEnum.volcTLS,
 ];
+export const QUERY_INPUT_MIN_WIDTH = 400;
 
 export const TYPE_MAP: Record<string, string> = {
   float: 'number',
