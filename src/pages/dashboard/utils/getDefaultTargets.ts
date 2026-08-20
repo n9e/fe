@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { DatasourceCateEnum } from '@/utils/constant';
 import type { ITarget } from '@/pages/dashboard/types';
 
+// @ts-ignore
 import getProDefaultTargets from 'plus:/parcels/Dashboard/getDefaultTargets';
 
 const isTarget = (value: unknown): value is ITarget => {
