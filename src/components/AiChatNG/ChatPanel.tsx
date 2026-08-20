@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Button, Input, Spin } from 'antd';
 import { LoadingOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -39,10 +39,30 @@ export default function ChatPanel(props: IAiChatProps) {
   const [isComposing, setIsComposing] = useState(false);
   const [streamingLocator, setStreamingLocator] = useState<IAiChatMessageLocator>();
   const chatBodyRef = useRef<HTMLDivElement>(null);
+  const chatContentRef = useRef<HTMLDivElement>(null);
   const pollingTimerRef = useRef<number>();
   const startStreamRef = useRef<(streamId: string) => Promise<void> | void>();
   const streamBufferRef = useRef<{ locator?: IAiChatMessageLocator; segments: IAiChatStreamSegment[] }>({ locator: undefined, segments: [] });
-  const { maybeScrollToBottom, scrollToBottom } = useAutoScroll(chatBodyRef);
+  const activeChatRef = useRef<IAiChatHistoryItem>();
+  const visibleChatIdRef = useRef<string | undefined>(chatId);
+  const messageLoadRequestRef = useRef(0);
+
+  // 在会话切换提交后、异步回调执行前同步更新 ref，避免旧会话回包写回当前界面。
+  useLayoutEffect(() => {
+    if (visibleChatIdRef.current === chatId) return;
+
+    visibleChatIdRef.current = chatId;
+    if (!chatId) {
+      activeChatRef.current = undefined;
+    } else if (activeChatRef.current?.chat_id !== chatId) {
+      activeChatRef.current = { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFrom };
+    }
+  }, [chatId, queryPageFrom]);
+
+  const isCurrentChat = useCallback((targetChatId: string) => {
+    return visibleChatIdRef.current === targetChatId || (!visibleChatIdRef.current && activeChatRef.current?.chat_id === targetChatId);
+  }, []);
+  const { maybeScrollToBottom, scrollToBottom } = useAutoScroll(chatBodyRef, chatContentRef);
 
   const cleanupPolling = useCallback(() => {
     if (pollingTimerRef.current) {
@@ -64,7 +84,11 @@ export default function ChatPanel(props: IAiChatProps) {
 
   const syncMessageDetail = useCallback(
     async (locator: IAiChatMessageLocator, options?: { startStream?: boolean }) => {
+      if (!isCurrentChat(locator.chat_id)) return false;
+
       const detail = await getMessageDetail(locator);
+      if (!isCurrentChat(locator.chat_id)) return false;
+
       const streamingState = streamBufferRef.current;
       const shouldOverlayStream =
         streamingState.locator?.chat_id === locator.chat_id && streamingState.locator?.seq_id === locator.seq_id && streamingState.segments.length > 0 && !detail.is_finish;
@@ -93,8 +117,10 @@ export default function ChatPanel(props: IAiChatProps) {
           segments: [],
         };
       }
+
+      return !detail.is_finish;
     },
-    [cleanupPolling, mergeMessage],
+    [cleanupPolling, isCurrentChat, mergeMessage],
   );
 
   const { start: startStream, stop: stopStream } = useAiChatStream({
@@ -127,7 +153,7 @@ export default function ChatPanel(props: IAiChatProps) {
   // 流式消息更新后，如果用户未手动滚动则跟随到底部
   useEffect(() => {
     if (streamingLocator) {
-      maybeScrollToBottom('smooth');
+      maybeScrollToBottom('auto');
     }
   }, [messages, streamingLocator, maybeScrollToBottom]);
 
@@ -135,33 +161,70 @@ export default function ChatPanel(props: IAiChatProps) {
     startStreamRef.current = startStream;
   }, [startStream]);
 
+  const startPolling = useCallback(
+    (locator: IAiChatMessageLocator) => {
+      if (!isCurrentChat(locator.chat_id)) return;
+      cleanupPolling();
+      pollingTimerRef.current = window.setInterval(() => {
+        if (!isCurrentChat(locator.chat_id)) {
+          cleanupPolling();
+          return;
+        }
+        syncMessageDetail(locator).catch((error) => handleError(error instanceof Error ? error : new Error('poll message failed')));
+      }, POLLING_INTERVAL);
+    },
+    [cleanupPolling, handleError, isCurrentChat, syncMessageDetail],
+  );
+
   const loadMessages = useCallback(
     async (targetChatId: string) => {
+      const requestId = ++messageLoadRequestRef.current;
+      const isLatestRequest = () => requestId === messageLoadRequestRef.current && isCurrentChat(targetChatId);
       setMessagesLoading(true);
       try {
         const nextMessages = await getMessageHistory({ chat_id: targetChatId });
+        if (!isLatestRequest()) return;
+
         setMessages(nextMessages);
-        setActiveChat((previous) => {
-          const nextChat =
-            previous?.chat_id === targetChatId
-              ? previous
-              : {
-                  chat_id: targetChatId,
-                  title: previous?.title || '',
-                  last_update: previous?.last_update || 0,
-                  page_from: previous?.page_from || queryPageFrom,
-                };
-          onChatChange?.(nextChat);
-          return nextChat;
-        });
+        const previous = activeChatRef.current;
+        const nextChat =
+          previous?.chat_id === targetChatId
+            ? previous
+            : {
+                chat_id: targetChatId,
+                title: previous?.title || '',
+                last_update: previous?.last_update || 0,
+                page_from: previous?.page_from || queryPageFrom,
+              };
+        activeChatRef.current = nextChat;
+        setActiveChat(nextChat);
+        onChatChange?.(nextChat);
+
+        const unfinishedMessage = [...nextMessages].reverse().find((message) => !message.is_finish);
+        if (unfinishedMessage) {
+          const locator = {
+            chat_id: unfinishedMessage.chat_id,
+            seq_id: unfinishedMessage.seq_id,
+          };
+          setSubmitting(true);
+          if (await syncMessageDetail(locator, { startStream: true })) {
+            startPolling(locator);
+          }
+        }
+
         requestAnimationFrame(() => scrollToBottom('auto'));
       } catch (error) {
-        handleError(error instanceof Error ? error : new Error('load messages failed'));
+        if (isLatestRequest()) {
+          setSubmitting(false);
+          handleError(error instanceof Error ? error : new Error('load messages failed'));
+        }
       } finally {
-        setMessagesLoading(false);
+        if (isLatestRequest()) {
+          setMessagesLoading(false);
+        }
       }
     },
-    [handleError, onChatChange, queryPageFrom, scrollToBottom],
+    [handleError, isCurrentChat, onChatChange, queryPageFrom, scrollToBottom, startPolling, syncMessageDetail],
   );
 
   useEffect(() => {
@@ -170,30 +233,35 @@ export default function ChatPanel(props: IAiChatProps) {
   }, [cleanupPolling, stopStream]);
 
   useEffect(() => {
+    cleanupPolling();
+    stopStream();
+    setSubmitting(false);
+    setStreamingLocator(undefined);
+    streamBufferRef.current = {
+      locator: undefined,
+      segments: [],
+    };
+
     if (!chatId) {
-      cleanupPolling();
-      stopStream();
+      messageLoadRequestRef.current += 1;
+      activeChatRef.current = undefined;
       setActiveChat(undefined);
       setMessages([]);
-      setStreamingLocator(undefined);
-      streamBufferRef.current = {
-        locator: undefined,
-        segments: [],
-      };
-      setSubmitting(false);
+      setMessagesLoading(false);
       return;
     }
 
-    setActiveChat((previous) =>
-      previous?.chat_id === chatId
-        ? previous
+    const nextChat =
+      activeChatRef.current?.chat_id === chatId
+        ? activeChatRef.current
         : {
             chat_id: chatId,
             title: '',
             last_update: 0,
             page_from: queryPageFrom,
-          },
-    );
+          };
+    activeChatRef.current = nextChat;
+    setActiveChat(nextChat);
     loadMessages(chatId);
   }, [chatId, cleanupPolling, loadMessages, queryPageFrom, stopStream]);
 
@@ -209,6 +277,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const createNewChat = useCallback(async () => {
     try {
       const chat = await createChat(queryPageFrom);
+      activeChatRef.current = chat;
       setActiveChat(chat);
       setMessages([]);
       return chat;
@@ -217,16 +286,6 @@ export default function ChatPanel(props: IAiChatProps) {
       return undefined;
     }
   }, [handleError, queryPageFrom]);
-
-  const startPolling = useCallback(
-    (locator: IAiChatMessageLocator) => {
-      cleanupPolling();
-      pollingTimerRef.current = window.setInterval(() => {
-        syncMessageDetail(locator).catch((error) => handleError(error instanceof Error ? error : new Error('poll message failed')));
-      }, POLLING_INTERVAL);
-    },
-    [cleanupPolling, handleError, syncMessageDetail],
-  );
 
   const sendUserMessage = useCallback(
     async (action?: IAiChatAction, overrideContent?: string) => {
@@ -266,6 +325,7 @@ export default function ChatPanel(props: IAiChatProps) {
         };
 
         mergeMessage(optimisticMessage);
+        scrollToBottom('smooth');
         setInputValue('');
         onChatChange?.({
           ...chat,
@@ -279,8 +339,9 @@ export default function ChatPanel(props: IAiChatProps) {
           seq_id: result.seq_id,
         };
 
-        await syncMessageDetail(locator, { startStream: true });
-        startPolling(locator);
+        if (await syncMessageDetail(locator, { startStream: true })) {
+          startPolling(locator);
+        }
       } catch (error) {
         setSubmitting(false);
         const nextError = error instanceof Error ? error : new Error('send message failed');
@@ -297,6 +358,7 @@ export default function ChatPanel(props: IAiChatProps) {
       onChatChange,
       queryAction,
       queryPageFrom,
+      scrollToBottom,
       shareReadonly,
       startPolling,
       submitting,
@@ -350,14 +412,14 @@ export default function ChatPanel(props: IAiChatProps) {
   return (
     <div className='flex w-full h-full min-h-0'>
       <div className='flex w-full min-w-0 flex-1 flex-col'>
-        <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll children:h-full'>
-          <div className='mx-auto flex h-full w-full max-w-[900px] flex-col'>
+        <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll'>
+          <div ref={chatContentRef} className='mx-auto flex min-h-full w-full max-w-[900px] flex-col'>
             {messagesLoading ? (
-              <div className='flex h-full items-center justify-center'>
+              <div className='flex flex-1 items-center justify-center'>
                 <Spin indicator={<LoadingOutlined />} />
               </div>
             ) : (
-              <div className='h-full flex flex-col gap-8'>
+              <div className='flex-1 flex flex-col gap-8'>
                 {messageItems.length ? (
                   messageItems
                 ) : welcomeContent ? (

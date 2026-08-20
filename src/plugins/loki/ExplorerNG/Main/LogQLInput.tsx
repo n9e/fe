@@ -127,6 +127,7 @@ export default function LogQLInput(props: LokiLogQLInputProps) {
 
   return (
     <LokiMonacoEditor
+      maxHeight={200}
       value={value || ''}
       theme={darkMode ? 'dark' : 'light'}
       placeholder={placeholder}

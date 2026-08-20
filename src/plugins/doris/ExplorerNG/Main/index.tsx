@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
-import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import { NAME_SPACE as logExplorerNS, QUERY_INPUT_MIN_WIDTH } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE, QUERY_BUILDER_PINNED_CACHE_KEY } from '../../constants';
 import { Field } from '../types';
@@ -97,7 +97,7 @@ export default function index(props: Props) {
   return (
     <div className='flex flex-col h-full'>
       <div className='flex-shrink-0 relative'>
-        <Row gutter={SIZE} wrap={false}>
+        <Row gutter={SIZE} wrap>
           <Col flex='none'>
             <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>
               <Segmented
@@ -118,7 +118,7 @@ export default function index(props: Props) {
               />
             </Form.Item>
           </Col>
-          <Col flex='auto' style={{ minWidth: 0 }}>
+          <Col flex='1 1 0' style={{ minWidth: QUERY_INPUT_MIN_WIDTH }}>
             <Form.Item name={['query', 'query']} hidden noStyle>
               <div />
             </Form.Item>
