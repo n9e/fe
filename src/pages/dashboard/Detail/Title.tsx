@@ -22,7 +22,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, notification, Input, Modal, message, Tooltip } from 'antd';
-import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined } from '@ant-design/icons';
+import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { useKeyPress } from 'ahooks';
 
 import { TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
@@ -38,6 +38,7 @@ import { AddPanelIcon } from '../config';
 import { visualizations } from '../Editor/config';
 import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
+import SharingLinkModal from '../List/SharingLinkModal';
 import { IDashboard, ILink, IPanel } from '../types';
 import { goBack, dashboardTimeCacheKey } from './utils';
 import { isValidPanelConfig } from '../Panels/utils';
@@ -432,6 +433,19 @@ export default function Title(props: IProps) {
                   />
                 )}
               </>
+            )}
+            {/* 必须带 isAuthorized：签发一条匿名链接比改看板更敏感，而 __public__
+                只在从列表页「公开」页签跳转时才写进 URL——直接用 /dashboards/<id>
+                打开公开看板时它不存在，非业务组成员照样会看到按钮，点开必然 403 */}
+            {isAuthorized && !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id && (
+              <Tooltip title={t('sharing_link.title')}>
+                <Button
+                  icon={<ShareAltOutlined />}
+                  onClick={() => {
+                    SharingLinkModal({ boardId: dashboard.id });
+                  }}
+                />
+              </Tooltip>
             )}
             <Tooltip title={dashboard.configs?.mode === 'iframe' ? t('embeddedDashboards:exitFullScreen_tip') : undefined}>
               <Button
