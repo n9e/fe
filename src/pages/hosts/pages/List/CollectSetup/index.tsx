@@ -14,9 +14,6 @@ import { writeOnboardingMarker } from '@/components/OnboardingProgress/detect';
 import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
 
 import { localizeDocUrl } from '@/utils/docUrl';
-import { IS_PLUS } from '@/utils/constant';
-// @ts-ignore — 专业版才有的采集配置服务；开源构建下 plus: 解析到占位模块，此分支被 IS_PLUS 挡住不会执行
-import { postCollect } from 'plus:/pages/collects/services';
 
 import { CATEGRAF_TROUBLESHOOT_DOC, NS } from '../../../constants';
 import { CategrafInstallMeta, probeTargets } from '../../../services';
@@ -28,7 +25,6 @@ import { buildCollectCommand, buildManualCollectCommand } from './buildCommand';
 import ComponentPicker from './ComponentPicker';
 import useMetricArrival from './useMetricArrival';
 import { readVerifiedDatasourceIds, writeVerifiedDatasourceIds } from './verifiedDatasources';
-import CentralDispatch from './CentralDispatch';
 
 interface Props {
   meta: CategrafInstallMeta;
@@ -116,17 +112,13 @@ export default function CollectSetup(props: Props) {
   const [authPass, setAuthPass] = useState('');
 
   const [logoMap, setLogoMap] = useState<Record<string, string>>({});
-  // 中心端下发要带 component_id，所以顺手把 ident -> id 也留一份，不必再拉一次
-  const [componentIdMap, setComponentIdMap] = useState<Record<string, number>>({});
   useEffect(() => {
     getComponents()
       .then((components) => {
         setLogoMap(_.fromPairs(_.map(components, (item) => [_.toLower(item.ident), item.logo])));
-        setComponentIdMap(_.fromPairs(_.map(components, (item) => [_.toLower(item.ident), item.id])));
       })
       .catch(() => {
         setLogoMap({}); // 拿不到 logo 只是回退分类图标，不阻塞向导
-        setComponentIdMap({});
       });
   }, []);
 
@@ -142,27 +134,6 @@ export default function CollectSetup(props: Props) {
       setTargetList(_.map(res?.list, 'ident'));
     });
   }, []);
-
-  /**
-   * 配置怎么到机器：`command` = 用户登录机器执行一条命令（开源版唯一的路）；
-   * `central` = 中心端下发给 categraf 的 http_provider，不必登录机器（专业版）。
-   * 两条路的第 4 步到达验证完全一样。
-   */
-  const [dispatchMode, setDispatchMode] = useState<'command' | 'central'>('command');
-  const [dispatchGroupId, setDispatchGroupId] = useState<number>();
-  const [collectName, setCollectName] = useState('');
-  const [dispatching, setDispatching] = useState(false);
-  const [dispatchError, setDispatchError] = useState<string>();
-  // 名称自动生成，用户改过就不再覆盖
-  const lastAutoNameRef = useRef<string>();
-  useEffect(() => {
-    if (!component) return;
-    const suggestion =
-      targetIdents.length === 1 ? `${component.name}-${targetIdents[0]}` : t('collect.central.name_auto', { name: component.name, count: targetIdents.length });
-    if (collectName && collectName !== lastAutoNameRef.current) return;
-    lastAutoNameRef.current = suggestion;
-    setCollectName(suggestion);
-  }, [component?.name, _.join(targetIdents, ',')]);
 
   const prometheusList = groupedDatasourceList.prometheus || EMPTY_DATASOURCES;
 
@@ -204,8 +175,6 @@ export default function CollectSetup(props: Props) {
     metricPrefix: metricPrefix || '',
     metric: component?.verifyMetric,
     idents: targetIdents,
-    // 中心端下发要多等 agent 两轮拉取（默认 120 秒一轮），5 分钟基本不够
-    timeout: dispatchMode === 'central' ? 10 * 60 * 1000 : undefined,
   });
 
   // 指标确认到达即视为"采集已验证"，写本地标记点亮引导清单里那一步。
@@ -294,41 +263,6 @@ export default function CollectSetup(props: Props) {
     setStep(2);
   };
 
-  /**
-   * 中心端下发：把这一步生成的 toml 直接建成一条采集配置，下发范围就是勾选的这几台机器。
-   * 成功后照常进第 4 步做到达验证 —— 那一步两条路共用。
-   */
-  const handleCentralDispatch = async () => {
-    if (!component || !dispatchGroupId) return;
-    setDispatching(true);
-    setDispatchError(undefined);
-    try {
-      await postCollect(
-        {
-          name: _.trim(collectName),
-          group_id: dispatchGroupId,
-          cate: component.name,
-          content: finalToml,
-          // catalog 里有些条目没登记 builtinIdent（influxdb / nats / tengine 等），
-          // 回落用插件名再找一次；都找不到就不带，后端会记成 Uncategorized
-          component_id: componentIdMap[_.toLower(component.builtinIdent ?? '')] ?? componentIdMap[_.toLower(component.name)],
-          queries: [{ key: 'hosts', op: '==', values: targetIdents }],
-          disabled: 0,
-        } as any,
-        // 自己渲染错误，不要全局再弹一条后端英文原文
-        { silence: true },
-      );
-      setStep(3);
-    } catch (err: any) {
-      // 后端「同一业务组内内容 MD5 不能重复」的报错是英文原文，直接抛给用户看不懂。
-      // 翻成可读中文并指出出路 —— 这条约束正在推动后端放宽，在那之前至少别让人卡在这里
-      const raw = err?.message || err?.data?.err || _.toString(err);
-      setDispatchError(_.includes(raw, 'name or content exists') ? t('collect.central.duplicate') : raw);
-    } finally {
-      setDispatching(false);
-    }
-  };
-
   const addrValid = isValidServerAddr(addr);
   const command = useMemo(
     () =>
@@ -371,19 +305,9 @@ export default function CollectSetup(props: Props) {
                 {t('collect.next')}
               </Button>
             )}
-            {step === 2 && dispatchMode === 'command' && (
+            {step === 2 && (
               <Button type='primary' disabled={!command} onClick={() => setStep(3)}>
                 {t('collect.next')}
-              </Button>
-            )}
-            {step === 2 && dispatchMode === 'central' && (
-              <Button
-                type='primary'
-                loading={dispatching}
-                disabled={!dispatchGroupId || !_.trim(collectName) || _.isEmpty(targetIdents) || !finalToml}
-                onClick={handleCentralDispatch}
-              >
-                {t('collect.central.submit')}
               </Button>
             )}
             {step === 3 && (
@@ -488,27 +412,7 @@ export default function CollectSetup(props: Props) {
         </div>
       )}
 
-      {step === 2 && component && IS_PLUS && (
-        // 专业版多一条路：配置由中心端下发给 categraf，不必登录机器。
-        // 两条路在这里合流，而不是让用户在「机器列表的向导」和「采集配置页」之间自己发现
-        <Radio.Group className='mb-3' value={dispatchMode} onChange={(e) => setDispatchMode(e.target.value)}>
-          <Radio.Button value='command'>{t('collect.central.mode_command')}</Radio.Button>
-          <Radio.Button value='central'>{t('collect.central.mode_central')}</Radio.Button>
-        </Radio.Group>
-      )}
-
-      {step === 2 && component && IS_PLUS && dispatchMode === 'central' && (
-        <CentralDispatch
-          idents={targetIdents}
-          groupId={dispatchGroupId}
-          onGroupIdChange={setDispatchGroupId}
-          name={collectName}
-          onNameChange={setCollectName}
-          error={dispatchError}
-        />
-      )}
-
-      {step === 2 && component && dispatchMode === 'command' && (
+      {step === 2 && component && (
         <Form layout='vertical'>
           <Form.Item
             label={t('install.addr_label')}

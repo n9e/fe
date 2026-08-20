@@ -81,14 +81,8 @@ const getProject = async () => {
 const getTopic = async () => {
   return {};
 };
-/** 专业版采集配置服务：开源版没有这条路，调用方一律用 IS_PLUS 挡住，这里只为让打包能解析到符号 */
-function postCollect() {
-  return Promise.reject(new Error('not available in open-source edition'));
-}
-
 export {
   AlertRule,
-  postCollect,
   QueryBuilder,
   datasource,
   Event,
