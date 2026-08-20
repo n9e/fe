@@ -70,6 +70,11 @@ const zh_HK = {
     generate_failed: '生成分享連結失敗',
     revoke_failed: '註銷分享連結失敗',
     config_load_failed: '儀表板配置讀取失敗，暫時無法設定匿名訪問，請關閉後重試',
+    revoke_all_confirm_title: '註銷全部匿名分享連結？',
+    revoke_all_confirm_content:
+      '該儀表板還有 {{num}} 條在有效期內的匿名分享連結。連結的有效性與公開設定無關，改成目前類型後它們依然可以免登入打開該儀表板。確認後將註銷該儀表板下的全部分享連結並儲存設定，註銷不可復原。',
+    revoke_all_ok: '註銷並儲存',
+    revoke_all_check_failed: '未能確認該儀表板是否還有匿名分享連結，公開設定已儲存；請打開分享連結彈窗手動確認',
   },
   default_filter: {
     title: '預置篩選',

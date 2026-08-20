@@ -70,6 +70,12 @@ const en_US = {
     generate_failed: 'Failed to generate sharing link',
     revoke_failed: 'Failed to revoke sharing link',
     config_load_failed: 'Could not read the dashboard config, so anonymous access cannot be set up right now. Please close and retry',
+    revoke_all_confirm_title: 'Revoke all sharing links?',
+    revoke_all_confirm_content:
+      'This dashboard still has {{num}} sharing link(s) that have not expired. A link stays valid regardless of the public settings, so after switching to this type it can still open the dashboard without logging in. Confirming revokes every sharing link on this dashboard and then saves the settings. Revoking cannot be undone.',
+    revoke_all_ok: 'Revoke and save',
+    revoke_all_check_failed:
+      'Could not check whether this dashboard still has sharing links. The public settings were saved - please open the sharing link dialog and check manually',
   },
   default_filter: {
     title: 'Preset filters',
