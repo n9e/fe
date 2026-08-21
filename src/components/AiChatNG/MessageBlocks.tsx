@@ -4,7 +4,6 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
-import Markdown from '@/components/Markdown';
 import { IS_ENT } from '@/utils/constant';
 import { AiChatExecuteQueryForQueryContent, EAiChatContentType, IAiChatAction, IAiChatMessage, IAiChatMessageResponse } from './types';
 import { cn } from './utils';
@@ -13,6 +12,7 @@ import FormSelectContentBlock from './ContentRenderer/FormSelectContentBlock';
 import AlertRuleContentBlock from './ContentRenderer/AlertRuleContentBlock';
 import DashboardContentBlock from './ContentRenderer/DashboardContentBlock';
 import { NAME_SPACE } from './constants';
+import StreamingMarkdown from './StreamingMarkdown';
 
 function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
   const fullText = `${prefix}${brand}`;
@@ -69,7 +69,7 @@ interface IThinkingBlockProps {
   title: string;
   content: string;
   isFinish?: boolean;
-  isStreaming?: boolean;
+  isStreaming: boolean;
 }
 
 function ThinkingBlockComponent({ title, content, isFinish, isStreaming }: IThinkingBlockProps) {
@@ -101,7 +101,7 @@ function ThinkingBlockComponent({ title, content, isFinish, isStreaming }: IThin
     >
       <Collapse.Panel header={<span className='text-sm font-medium text-main'>{displayTitle}</span>} key='thinking'>
         <div className='max-h-60 overflow-y-auto'>
-          {!isStreaming && isFinish ? <Markdown content={content || ''} showCodeCopy /> : <div className='whitespace-pre-wrap break-words text-sm'>{content}</div>}
+          <StreamingMarkdown content={content || ''} isStreaming={isStreaming && !isFinish} />
         </div>
       </Collapse.Panel>
     </Collapse>
@@ -129,7 +129,7 @@ interface IMarkdownBlockProps {
 function MarkdownBlockComponent({ response, isStreaming }: IMarkdownBlockProps) {
   return (
     <div className='rounded-lg border border-transparent bg-transparent text-main'>
-      {isStreaming ? <div className='whitespace-pre-wrap break-words'>{response.content}</div> : <Markdown content={response.content || ''} showCodeCopy />}
+      <StreamingMarkdown content={response.content || ''} isStreaming={!!isStreaming && !response.is_finish} />
     </div>
   );
 }
