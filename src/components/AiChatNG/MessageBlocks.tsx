@@ -65,7 +65,14 @@ interface IAiChatResponseBlocksProps {
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
 }
 
-function ThinkingBlockComponent({ title, content, isFinish }: { title: string; content: string; isFinish?: boolean }) {
+interface IThinkingBlockProps {
+  title: string;
+  content: string;
+  isFinish?: boolean;
+  isStreaming?: boolean;
+}
+
+function ThinkingBlockComponent({ title, content, isFinish, isStreaming }: IThinkingBlockProps) {
   const { t } = useTranslation(NAME_SPACE);
   const userInteractedRef = React.useRef(false);
   const [activeKey, setActiveKey] = React.useState<string | undefined>('thinking');
@@ -94,7 +101,7 @@ function ThinkingBlockComponent({ title, content, isFinish }: { title: string; c
     >
       <Collapse.Panel header={<span className='text-sm font-medium text-main'>{displayTitle}</span>} key='thinking'>
         <div className='max-h-60 overflow-y-auto'>
-          {isFinish ? <Markdown content={content || ''} showCodeCopy /> : <div className='whitespace-pre-wrap break-words text-sm'>{content}</div>}
+          {!isStreaming && isFinish ? <Markdown content={content || ''} showCodeCopy /> : <div className='whitespace-pre-wrap break-words text-sm'>{content}</div>}
         </div>
       </Collapse.Panel>
     </Collapse>
@@ -114,7 +121,12 @@ export function HintBlock({ response }: { response: IAiChatMessageResponse }) {
   );
 }
 
-function MarkdownBlockComponent({ response, isStreaming }: { response: IAiChatMessageResponse; isStreaming?: boolean }) {
+interface IMarkdownBlockProps {
+  response: IAiChatMessageResponse;
+  isStreaming?: boolean;
+}
+
+function MarkdownBlockComponent({ response, isStreaming }: IMarkdownBlockProps) {
   return (
     <div className='rounded-lg border border-transparent bg-transparent text-main'>
       {isStreaming ? <div className='whitespace-pre-wrap break-words'>{response.content}</div> : <Markdown content={response.content || ''} showCodeCopy />}
@@ -214,9 +226,17 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
         switch (contentType) {
           case EAiChatContentType.Thinking:
           case EAiChatContentType.Reasoning:
-            return <ThinkingBlock key={`${response.content_type}-${index}`} title={t('message.thinking')} content={response.content} isFinish={response.is_finish} />;
+            return (
+              <ThinkingBlock
+                key={`${response.content_type}-${index}`}
+                title={t('message.thinking')}
+                content={response.content}
+                isFinish={response.is_finish}
+                isStreaming={isStreaming}
+              />
+            );
           case EAiChatContentType.Markdown:
-            return <MarkdownBlock key={`${response.content_type}-${index}`} response={response} isStreaming={isStreaming && !response.is_finish} />;
+            return <MarkdownBlock key={`${response.content_type}-${index}`} response={response} isStreaming={isStreaming} />;
           case EAiChatContentType.Hint:
             return <HintBlock key={`${response.content_type}-${index}`} response={response} />;
           case EAiChatContentType.Query:
