@@ -119,9 +119,7 @@ const PageLayout: React.FC<IPageLayoutProps> = ({
                   display: query.viewMode === 'fullscreen' ? 'none' : 'flex',
                 }}
               >
-                {/* No min-w-0 here: let this area's minimum width come from its content (the tab nav), so a narrow
-                    header shrinks the headerCenter prose instead of squeezing the tabs into per-character wrapping. */}
-                <div className='flex items-center flex-1'>
+                <div className='flex items-center min-w-0 flex-1'>
                   {!currentMenu?.parentItem?.label && (
                     <div className='page-header-title min-w-0'>
                       {showBack && window.history.state && (
