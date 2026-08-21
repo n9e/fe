@@ -523,13 +523,24 @@ export default function CollectSetup(props: Props) {
                   showIcon
                   icon={<CheckCircleFilled />}
                   message={
+                    /* 逐台确认的成功判据是「有一台上报即出结论」（见 useMetricArrival），
+                       所以文案必须按**实际到达**渲染：拿 targetIdents 会把只到了 1 台说成
+                       「所选 3 台均已上报」，并把还没上报的机器名一并列出来 */
                     targetIdents.length > 0
-                      ? t('collect.verify.detected_targets', {
-                          count: targetIdents.length,
-                          metric: displayMetric,
-                          idents: _.join(_.take(targetIdents, 3), ', '),
-                          datasource: _.join(arrival.hitDatasourceNames, ', '),
-                        })
+                      ? arrival.missingIdents.length > 0
+                        ? t('collect.verify.detected_partial', {
+                            arrived: arrival.arrivedIdents.length,
+                            total: targetIdents.length,
+                            metric: displayMetric,
+                            idents: _.join(_.take(arrival.arrivedIdents, 3), ', '),
+                            datasource: _.join(arrival.hitDatasourceNames, ', '),
+                          })
+                        : t('collect.verify.detected_targets', {
+                            count: arrival.arrivedIdents.length,
+                            metric: displayMetric,
+                            idents: _.join(_.take(arrival.arrivedIdents, 3), ', '),
+                            datasource: _.join(arrival.hitDatasourceNames, ', '),
+                          })
                       : t('collect.verify.detected', {
                           count: arrival.newIdents.length,
                           metric: displayMetric,
@@ -539,6 +550,11 @@ export default function CollectSetup(props: Props) {
                   }
                   description={
                     <>
+                      {/* 部分到达时把还差哪几台如实列出来：成功提示之后 partial 那行不再渲染，
+                          不写在这里用户就拿不到任何「还差谁」的信号 */}
+                      {arrival.missingIdents.length > 0 && (
+                        <div className='mb-1'>{t('collect.verify.missing_note', { idents: _.join(arrival.missingIdents, ', ') })}</div>
+                      )}
                       {/* 精确哨兵连查不到、按前缀匹配成功的，如实标注——此时区分不了存量机器 */}
                       {arrival.fallbackToPrefix && <div className='mb-1'>{t('collect.verify.fallback_note', { prefix: `${metricPrefix}_` })}</div>}
                       {arrival.preexistingIdents.length > 0 && (

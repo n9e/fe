@@ -123,6 +123,14 @@ export default function useMetricArrival(options: Options) {
         });
 
     let timer: ReturnType<typeof setTimeout>;
+    /**
+     * 已经出过 detected 结论。出过之后就不再回退成 waiting/timeout ——
+     * detected 之后仍会继续轮询（好让 arrivedIdents 计数往上走），而 queryIdents 对任何
+     * 请求异常都 catch 成 null，一次代理瞬断就会让那一轮 arrived 为空；没有这个标志的话，
+     * 控制流会落到下面的 setStatus('waiting')，若恰好越过 timeout 还会翻成 'timeout'，
+     * 把已经验证通过的说成失败。
+     */
+    let detected = false;
     const tick = async () => {
       const list = datasourcesRef.current;
       let results = await Promise.all(_.map(list, (ds) => queryIdents(ds.id, buildQuery())));
@@ -194,11 +202,12 @@ export default function useMetricArrival(options: Options) {
         setMissingIdents(missing);
         setPreexistingIdents(selected.filter((ident) => baselineUnion.has(ident)));
         if (arrived.length > 0 && baselines.size > 0) {
+          detected = true;
           setNewIdents(selected.filter((ident) => !baselineUnion.has(ident) && allIdents.has(ident)));
           setHitDatasourceNames(Array.from(roundDsNames));
           setStatus('detected');
           // 已出结论但还有机器没上报时不停轮询：让计数继续往上走，用户能看到 1/3 → 3/3。
-          // 全部到齐或超时才收手；已 detected 的不再回退成 timeout。
+          // 全部到齐或超时才收手；已 detected 的不再回退成 timeout（由 detected 标志兜底）。
           if (missing.length === 0 || Date.now() - startedAt >= timeout) return;
           timer = setTimeout(tick, POLL_INTERVAL);
           return;
@@ -212,9 +221,11 @@ export default function useMetricArrival(options: Options) {
         return;
       }
 
-      if (baselines.size > 0) setStatus('waiting');
+      // detected 之后只继续刷新 arrivedIdents / missingIdents 等计数，不再改状态：
+      // 那一轮 arrived 为空多半是查询失败或数据瞬时查不到，不构成"验证失败"的证据
+      if (!detected && baselines.size > 0) setStatus('waiting');
       if (Date.now() - startedAt >= timeout) {
-        setStatus('timeout');
+        if (!detected) setStatus('timeout');
         return;
       }
       timer = setTimeout(tick, POLL_INTERVAL);

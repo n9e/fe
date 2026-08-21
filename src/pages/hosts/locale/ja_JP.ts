@@ -285,6 +285,8 @@ const ja_JP = {
       targets_tip: 'コマンドを実行するマシンを選択：1 台ずつ報告を確認できます。未選択の場合は全マシンの新規報告を監視します',
       targets_placeholder: 'マシン識別子を選択',
       detected_targets: '選択した {{count}} 台すべてが {{metric}} 指標を報告しています：{{idents}}（データソース：{{datasource}}）',
+      detected_partial: '{{total}} 台中 {{arrived}} 台が {{metric}} メトリクスを送信しています：{{idents}}（データソース：{{datasource}}）',
+      missing_note: '未送信：{{idents}}。全台そろうかタイムアウトするまで検出を続けます',
       fallback_note: '正確なセンチネル指標が見つからないため、{{prefix}} 接頭辞によるマッチに切り替えました（このモードでは既存の報告マシンを区別できません）',
       preexisting_note: '{{idents}} は検出開始前から報告していました。既存設定の変更であれば、指標が継続して報告されていれば反映済みです',
       partial: '{{arrived}}/{{total}} 台が報告済み：{{idents}}',

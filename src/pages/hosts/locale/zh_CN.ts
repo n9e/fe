@@ -284,6 +284,8 @@ const zh_CN = {
       targets_tip: '选择你将要执行命令的机器：可逐台确认上报情况；不选则监听所有机器的新增上报',
       targets_placeholder: '选择机器标识',
       detected_targets: '所选 {{count}} 台机器均已上报 {{metric}} 指标：{{idents}}（数据源：{{datasource}}）',
+      detected_partial: '已有 {{arrived}}/{{total}} 台机器上报 {{metric}} 指标：{{idents}}（数据源：{{datasource}}）',
+      missing_note: '仍未上报：{{idents}}；检测继续进行中，到齐或超时后停止',
       fallback_note: '精确指标连续查不到，已改按 {{prefix}} 前缀匹配确认（此模式下无法区分存量机器）',
       preexisting_note: '{{idents}} 在开始检测前就已在上报；如果你是修改配置，指标持续上报即为生效',
       partial: '已上报 {{arrived}}/{{total}} 台：{{idents}}',
