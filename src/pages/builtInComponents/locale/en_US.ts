@@ -74,5 +74,17 @@ const en_US = {
     no_drilldown_rules: 'No drilldown path; it can be added in the rule',
     no_drilldown_rules_other: 'Drilldown paths already exist; no separate configuration needed',
   },
+  pack: {
+    title: 'Three steps',
+    progress: '{{done}}/{{total}}',
+    steps: {
+      collect: 'Set up collection',
+      collect_tip: 'Roll out a collect config from a built-in template so this component starts reporting metrics',
+      dashboard: 'Import dashboards',
+      dashboard_tip: 'Import built-in dashboards into a business group so there is something to look at once metrics arrive',
+      alert: 'Import alert rules',
+      alert_tip: 'Import built-in alert rules into a business group so someone finds out when things go wrong',
+    },
+  },
 };
 export default en_US;

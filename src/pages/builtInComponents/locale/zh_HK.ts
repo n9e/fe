@@ -74,6 +74,18 @@ const zh_HK = {
     no_drilldown_rules: '無下鑽路徑，可在規則中新增',
     no_drilldown_rules_other: '已內置若干下鑽路徑，無需單獨配置',
   },
+  pack: {
+    title: '接入三步',
+    progress: '{{done}}/{{total}}',
+    steps: {
+      collect: '配置採集',
+      collect_tip: '用內建範本下發採集配置，讓這個組件開始上報指標',
+      dashboard: '導入儀表盤',
+      dashboard_tip: '把內建儀表盤導入到業務組，指標一到就有圖可看',
+      alert: '導入告警規則',
+      alert_tip: '把內建告警規則導入到業務組，出問題時才有人知道',
+    },
+  },
 };
 
 export default zh_HK;

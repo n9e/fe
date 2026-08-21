@@ -19,14 +19,23 @@ import { TypeEnum, Payload } from '../types';
 import PayloadFormModal from '../components/PayloadFormModal';
 import { pathname } from '../constants';
 import Import from './Import';
+import { markPackStep } from '../packProgress';
 import { formatBeautifyJson, formatBeautifyJsons } from '../utils';
 
 interface Props {
   component_id: number;
+  /** 记录「一条龙」进度用；不传则不记 */
+  componentIdent?: string;
+  onPackStepDone?: () => void;
 }
 
 export default function index(props: Props) {
-  const { component_id } = props;
+  const { component_id, componentIdent, onPackStepDone } = props;
+  const markImported = () => {
+    if (!componentIdent) return;
+    markPackStep(componentIdent, 'dashboard');
+    onPackStepDone?.();
+  };
   const { t } = useTranslation('builtInComponents');
   const { busiGroups, darkMode, perms } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
@@ -106,6 +115,7 @@ export default function index(props: Props) {
               Import({
                 data: formatBeautifyJsons(_.map(selectedRows.current, 'content')),
                 busiGroups,
+                onSuccess: markImported,
               });
             }}
           >
@@ -150,6 +160,7 @@ export default function index(props: Props) {
                   Import({
                     data: formatBeautifyJson(record.content),
                     busiGroups,
+                    onSuccess: markImported,
                   });
                 },
               },

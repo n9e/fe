@@ -4,7 +4,6 @@ import { ArrowRightOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
-import Markdown from '@/components/Markdown';
 import { IS_ENT } from '@/utils/constant';
 import { AiChatExecuteQueryForQueryContent, EAiChatContentType, IAiChatAction, IAiChatMessage, IAiChatMessageResponse } from './types';
 import { cn } from './utils';
@@ -13,6 +12,7 @@ import FormSelectContentBlock from './ContentRenderer/FormSelectContentBlock';
 import AlertRuleContentBlock from './ContentRenderer/AlertRuleContentBlock';
 import DashboardContentBlock from './ContentRenderer/DashboardContentBlock';
 import { NAME_SPACE } from './constants';
+import StreamingMarkdown from './StreamingMarkdown';
 
 function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
   const fullText = `${prefix}${brand}`;
@@ -65,7 +65,14 @@ interface IAiChatResponseBlocksProps {
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
 }
 
-export function ThinkingBlock({ title, content, isFinish }: { title: string; content: string; isFinish?: boolean }) {
+interface IThinkingBlockProps {
+  title: string;
+  content: string;
+  isFinish?: boolean;
+  isStreaming: boolean;
+}
+
+function ThinkingBlockComponent({ title, content, isFinish, isStreaming }: IThinkingBlockProps) {
   const { t } = useTranslation(NAME_SPACE);
   const userInteractedRef = React.useRef(false);
   const [activeKey, setActiveKey] = React.useState<string | undefined>('thinking');
@@ -94,12 +101,14 @@ export function ThinkingBlock({ title, content, isFinish }: { title: string; con
     >
       <Collapse.Panel header={<span className='text-sm font-medium text-main'>{displayTitle}</span>} key='thinking'>
         <div className='max-h-60 overflow-y-auto'>
-          <Markdown content={content || ''} showCodeCopy />
+          <StreamingMarkdown content={content || ''} isStreaming={isStreaming && !isFinish} />
         </div>
       </Collapse.Panel>
     </Collapse>
   );
 }
+
+export const ThinkingBlock = React.memo(ThinkingBlockComponent);
 
 export function HintBlock({ response }: { response: IAiChatMessageResponse }) {
   const { t } = useTranslation(NAME_SPACE);
@@ -112,13 +121,27 @@ export function HintBlock({ response }: { response: IAiChatMessageResponse }) {
   );
 }
 
-export function MarkdownBlock({ response }: { response: IAiChatMessageResponse }) {
+interface IMarkdownBlockProps {
+  response: IAiChatMessageResponse;
+  isStreaming?: boolean;
+}
+
+function MarkdownBlockComponent({ response, isStreaming }: IMarkdownBlockProps) {
   return (
     <div className='rounded-lg border border-transparent bg-transparent text-main'>
-      <Markdown content={response.content || ''} showCodeCopy />
+      <StreamingMarkdown content={response.content || ''} isStreaming={!!isStreaming && !response.is_finish} />
     </div>
   );
 }
+
+export const MarkdownBlock = React.memo(
+  MarkdownBlockComponent,
+  (previous, next) =>
+    previous.isStreaming === next.isStreaming &&
+    previous.response.content === next.response.content &&
+    previous.response.is_finish === next.response.is_finish &&
+    previous.response.content_type === next.response.content_type,
+);
 
 export function CurStepBlock({ curStep }: { curStep: string }) {
   return (
@@ -203,9 +226,17 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
         switch (contentType) {
           case EAiChatContentType.Thinking:
           case EAiChatContentType.Reasoning:
-            return <ThinkingBlock key={`${response.content_type}-${index}`} title={t('message.thinking')} content={response.content} isFinish={response.is_finish} />;
+            return (
+              <ThinkingBlock
+                key={`${response.content_type}-${index}`}
+                title={t('message.thinking')}
+                content={response.content}
+                isFinish={response.is_finish}
+                isStreaming={isStreaming}
+              />
+            );
           case EAiChatContentType.Markdown:
-            return <MarkdownBlock key={`${response.content_type}-${index}`} response={response} />;
+            return <MarkdownBlock key={`${response.content_type}-${index}`} response={response} isStreaming={isStreaming} />;
           case EAiChatContentType.Hint:
             return <HintBlock key={`${response.content_type}-${index}`} response={response} />;
           case EAiChatContentType.Query:
@@ -317,7 +348,7 @@ function shouldShowRunningStatusAtMessageBottom(isFinish?: boolean, responseList
   return bottomStatusContentTypes.includes(lastResponse.content_type as EAiChatContentType);
 }
 
-export function MessageItem({ message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
+function MessageItemComponent({ message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
   const showInitialRunningStatus = shouldShowInitialRunningStatus(message.is_finish, message.response);
   const showBottomRunningStatus = shouldShowRunningStatusAtMessageBottom(message.is_finish, message.response);
@@ -353,3 +384,5 @@ export function MessageItem({ message, isStreaming, onExecuteQueryForQueryConten
     </div>
   );
 }
+
+export const MessageItem = React.memo(MessageItemComponent);

@@ -14,6 +14,7 @@ import { useAiChatStream } from './useStream';
 import { useAiChatContext } from './context';
 
 const POLLING_INTERVAL = 3000;
+const STREAM_RENDER_INTERVAL = 50;
 
 export default function ChatPanel(props: IAiChatProps) {
   const { t } = useTranslation(NAME_SPACE);
@@ -41,6 +42,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const chatContentRef = useRef<HTMLDivElement>(null);
   const pollingTimerRef = useRef<number>();
+  const streamRenderTimerRef = useRef<number>();
   const startStreamRef = useRef<(streamId: string) => Promise<void> | void>();
   const streamBufferRef = useRef<{ locator?: IAiChatMessageLocator; segments: IAiChatStreamSegment[] }>({ locator: undefined, segments: [] });
   const activeChatRef = useRef<IAiChatHistoryItem>();
@@ -81,6 +83,39 @@ export default function ChatPanel(props: IAiChatProps) {
   const mergeMessage = useCallback((message: IAiChatMessage) => {
     setMessages((previous) => upsertMessage(previous, message));
   }, []);
+
+  // 流式 chunk 先写入 ref 缓冲，再按固定节奏批量刷新到 React state，避免每个 chunk 都触发整棵消息树渲染。
+  const flushStreamingMessage = useCallback(() => {
+    const { locator, segments } = streamBufferRef.current;
+    if (!locator) return;
+
+    setMessages((previous) => {
+      const target = previous.find((item) => item.chat_id === locator.chat_id && item.seq_id === locator.seq_id);
+      if (!target) return previous;
+      return upsertMessage(previous, buildStreamingMessage(target, segments));
+    });
+  }, []);
+
+  const cancelScheduledStreamRender = useCallback(() => {
+    if (streamRenderTimerRef.current) {
+      window.clearTimeout(streamRenderTimerRef.current);
+      streamRenderTimerRef.current = undefined;
+    }
+  }, []);
+
+  const scheduleStreamRender = useCallback(() => {
+    if (streamRenderTimerRef.current) return;
+
+    streamRenderTimerRef.current = window.setTimeout(() => {
+      streamRenderTimerRef.current = undefined;
+      flushStreamingMessage();
+    }, STREAM_RENDER_INTERVAL);
+  }, [flushStreamingMessage]);
+
+  const flushStreamingMessageImmediately = useCallback(() => {
+    cancelScheduledStreamRender();
+    flushStreamingMessage();
+  }, [cancelScheduledStreamRender, flushStreamingMessage]);
 
   const syncMessageDetail = useCallback(
     async (locator: IAiChatMessageLocator, options?: { startStream?: boolean }) => {
@@ -129,22 +164,22 @@ export default function ChatPanel(props: IAiChatProps) {
       if (!locator) return;
 
       if (chunk.type === 'thinking' || chunk.type === 'text' || chunk.type === 'step') {
-        streamBufferRef.current.segments = applyStreamChunk(streamBufferRef.current.segments, chunk);
+        const previousSegments = streamBufferRef.current.segments;
+        const nextSegments = applyStreamChunk(previousSegments, chunk);
+        if (nextSegments !== previousSegments) {
+          streamBufferRef.current.segments = nextSegments;
+          scheduleStreamRender();
+        }
       }
 
       if (chunk.type === 'error' && chunk.error) {
         handleError(new Error(chunk.error));
       }
-
-      setMessages((previous) => {
-        const target = previous.find((item) => item.chat_id === locator.chat_id && item.seq_id === locator.seq_id);
-        if (!target) return previous;
-        return upsertMessage(previous, buildStreamingMessage(target, streamBufferRef.current.segments));
-      });
     },
     onFinish: () => {
       const locator = streamBufferRef.current.locator;
       if (!locator) return;
+      flushStreamingMessageImmediately();
       syncMessageDetail(locator).catch((error) => handleError(error instanceof Error ? error : new Error('sync message failed')));
     },
     onError: handleError,
@@ -233,10 +268,12 @@ export default function ChatPanel(props: IAiChatProps) {
   }, [cleanupPolling, stopStream]);
 
   useEffect(() => {
+    cancelScheduledStreamRender();
     cleanupPolling();
     stopStream();
     setSubmitting(false);
     setStreamingLocator(undefined);
+    // 切会话时未 flush 的流式缓冲有意丢弃：切回时由 loadMessages 从服务端重拉兜底。
     streamBufferRef.current = {
       locator: undefined,
       segments: [],
@@ -263,14 +300,15 @@ export default function ChatPanel(props: IAiChatProps) {
     activeChatRef.current = nextChat;
     setActiveChat(nextChat);
     loadMessages(chatId);
-  }, [chatId, cleanupPolling, loadMessages, queryPageFrom, stopStream]);
+  }, [cancelScheduledStreamRender, chatId, cleanupPolling, loadMessages, queryPageFrom, stopStream]);
 
   useEffect(() => {
     return () => {
+      cancelScheduledStreamRender();
       cleanupPolling();
       stopStream();
     };
-  }, [cleanupPolling, stopStream]);
+  }, [cancelScheduledStreamRender, cleanupPolling, stopStream]);
 
   const initialMessageSentRef = useRef(false);
 
@@ -377,6 +415,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const handleStop = useCallback(async () => {
     if (!streamingLocator) return;
     try {
+      cancelScheduledStreamRender();
       stopStream();
       cleanupPolling();
       await cancelMessage(streamingLocator);
@@ -391,7 +430,7 @@ export default function ChatPanel(props: IAiChatProps) {
     } catch (error) {
       handleError(error instanceof Error ? error : new Error('cancel message failed'));
     }
-  }, [cleanupPolling, handleError, mergeMessage, stopStream, streamingLocator]);
+  }, [cancelScheduledStreamRender, cleanupPolling, handleError, mergeMessage, stopStream, streamingLocator]);
 
   const messageItems = useMemo(() => {
     return messages.map((messageItem) => (
@@ -401,7 +440,7 @@ export default function ChatPanel(props: IAiChatProps) {
         isStreaming={streamingLocator?.chat_id === messageItem.chat_id && streamingLocator?.seq_id === messageItem.seq_id}
         onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
         onActionClick={sendUserMessage}
-        onOKForFormSelectContent={(action, overrideContent) => sendUserMessage(action, overrideContent)}
+        onOKForFormSelectContent={sendUserMessage}
         maybeScrollToBottom={maybeScrollToBottom}
       />
     ));
