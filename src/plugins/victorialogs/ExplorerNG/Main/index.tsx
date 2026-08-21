@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
-import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import { NAME_SPACE as logExplorerNS, QUERY_INPUT_MIN_WIDTH } from '@/pages/logExplorer/constants';
 import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/types';
 
 import { NAME_SPACE } from '../../constants';
@@ -71,7 +71,7 @@ export default function Main(props: Props) {
   return (
     <div className='flex flex-col flex-1 h-full min-h-0'>
       <div className='flex-shrink-0 relative z-10'>
-        <Row gutter={SIZE} wrap={false}>
+        <Row gutter={SIZE} wrap>
           <Col flex='none'>
             <Segmented
               value={mode}
@@ -112,7 +112,7 @@ export default function Main(props: Props) {
               }}
             />
           </Col>
-          <Col flex='auto' style={{ minWidth: 0 }}>
+          <Col flex='1 1 0' style={{ minWidth: QUERY_INPUT_MIN_WIDTH }}>
             <QueryInput
               executeQuery={executeCommittedQuery}
               queryBuilderPinned={queryBuilderPinned}

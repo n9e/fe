@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Select, Input, Tooltip } from 'antd';
 import _ from 'lodash';
+import { useDeepCompareEffect } from 'ahooks';
 import { IVariable } from './definition';
 
 interface IProps {
@@ -32,7 +33,7 @@ export default function DisplayItem(props: IProps) {
   const [selected, setSelected] = useState<string | string[] | undefined>(value);
   const [searchValue, setSearchValue] = useState('');
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     let curValue = value;
     // 当 query 和 custom 类型开启多选时，如果 value 为字符串，需要转为数组
     if ((type === 'query' || type === 'custom') && multi) {
@@ -43,7 +44,7 @@ export default function DisplayItem(props: IProps) {
       }
     }
     setSelected(curValue);
-  }, [JSON.stringify(value)]);
+  }, [value]);
 
   // 兼容旧数据，constant 的 hide 默认为 true
   if (hide || (type === 'constant' && hide === undefined)) return null;

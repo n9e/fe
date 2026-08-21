@@ -113,8 +113,18 @@ request.interceptors.request.use((url, options) => {
   };
   headers['Authorization'] = `Bearer ${localStorage.getItem(AccessTokenKey) || ''}`;
   headers['X-Language'] = i18next.language;
+  // 仪表盘分享页：把链接上的 __token 透传给所有 API 请求。后端据此匿名放行
+  // board 详情与数据查询接口，并把可查数据源收敛到板内引用集合；仪表盘渲染
+  // 链路（panel 查询、变量、datasource brief）很深，统一在这里追加而不逐层传参
+  let newUrl = url;
+  if (url.startsWith('/api/') && location.pathname.includes('/dashboards/share/')) {
+    const shareToken = new URLSearchParams(location.search).get('__token');
+    if (shareToken && !url.includes('__token=')) {
+      newUrl += `${newUrl.includes('?') ? '&' : '?'}__token=${encodeURIComponent(shareToken)}`;
+    }
+  }
   return {
-    url: basePrefix + url,
+    url: basePrefix + newUrl,
     options: { ...options, headers, sourcePathname: location.pathname },
   };
 });
@@ -149,7 +159,7 @@ request.interceptors.response.use(
           // proxy/elasticsearch 返回的数据结构是 { ...data }
           // proxy/jeager 返回的数据结构是 { data: [], errors: [] }
           if (
-            _.some([`/api/${N9E_PATHNAME}/proxy`, '/probe/v1'], (item) => {
+            _.some([`/api/${N9E_PATHNAME}/proxy`, '/probe/v1', '/api/n9e/dashboard/query'], (item) => {
               return url.includes(item);
             })
           ) {
@@ -235,13 +245,35 @@ request.interceptors.response.use(
           });
       }
     } else if (status >= 500 && status < 600) {
-      throw {
-        name: i18next.t('common:request_fail_msg'),
-        message: i18next.t('common:request_fail_msg'),
-        silence: options.silence,
-        response,
-        status,
-      };
+      return response
+        .clone()
+        .text()
+        .then((data) => {
+          const fallbackMessage = i18next.t('common:request_fail_msg');
+          let errObj: { name: string; message: string; data?: any } = {
+            name: fallbackMessage,
+            message: fallbackMessage,
+          };
+          if (data) {
+            try {
+              const parsed = JSON.parse(data);
+              const errMessage = processError(parsed);
+              errObj = {
+                name: errMessage,
+                message: errMessage,
+                data: parsed,
+              };
+            } catch (error) {
+              // 响应体非 JSON（如网关 502 HTML），回退统一文案
+            }
+          }
+          throw {
+            ...errObj,
+            silence: options.silence,
+            response,
+            status,
+          };
+        });
     } else {
       return response
         .clone()

@@ -27,14 +27,15 @@ interface Props {
   showExistsAction?: boolean;
 }
 
-export default function index(props: Props) {
-  const { indexData: indexList, enableLogTextSelectMenu } = useContext(LogsViewerStateContext);
+// P0-5: memo 化。父层（RawCell/RenderValue）已保证同值字段的 props 引用稳定，
+// 这里浅比较即可在无关重渲时跳过分词与 Token 渲染。
+const LogFieldValue = React.memo(function LogFieldValue(props: Props) {
+  const { indexDataMap, enableLogTextSelectMenu } = useContext(LogsViewerStateContext);
   const { parentKey, name, value, onTokenClick, rawValue, highlight, enableTooltip, fieldValueClassName, adjustFieldValue, showExistsAction } = props;
   const highlightKey = parentKey ? `${parentKey}.${name}` : name;
 
-  const indexData = _.find(indexList, (item) => {
-    return item.field === highlightKey;
-  });
+  // P0-5: 用 context 中预构建的 field → Field Map 查找，替代对 indexData 的线性扫描
+  const indexData = indexDataMap?.get(highlightKey);
 
   const { delimiters } = indexData || ({} as Field);
 
@@ -141,4 +142,6 @@ export default function index(props: Props) {
       showExistsAction={showExistsAction}
     />
   );
-}
+});
+
+export default LogFieldValue;

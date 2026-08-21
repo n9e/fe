@@ -1,6 +1,9 @@
 import { Transformation, QueryResult, TimeSeries, TableData } from '../types';
 import { isTimeSeries, isTableData, calculateVariance, calculateStdDev } from '../utils';
 
+type TableValue = TableData['fields'][number]['values'][number];
+type TableRow = Record<string, TableValue>;
+
 export interface GroupedAggregateTableOptions {
   fields: {
     [fieldName: string]: {
@@ -25,15 +28,15 @@ export default class GroupedAggregateTableTransformation implements Transformati
     });
   }
 
-  private groupByFields(rows: Record<string, any>[], groupFieldNames: string[]): Record<string, Record<string, any>[]> {
-    const grouped: Record<string, Record<string, any>[]> = {};
+  private groupByFields(rows: TableRow[], groupFieldNames: string[]): Record<string, TableRow[]> {
+    const grouped: Record<string, TableRow[]> = {};
 
     rows.forEach((row) => {
       const key = groupFieldNames.map((fieldName) => row[fieldName]).join('|');
       if (!grouped[key]) {
         grouped[key] = [];
       }
-      grouped[key].push(row);
+      grouped[key]?.push(row);
     });
 
     return grouped;
@@ -64,11 +67,11 @@ export default class GroupedAggregateTableTransformation implements Transformati
 
     // 分离分组字段和聚合字段
     const groupFieldNames = Object.keys(fieldConfigs).filter((fieldName) => {
-      return fieldConfigs[fieldName].operation === 'groupby';
+      return fieldConfigs[fieldName]?.operation === 'groupby';
     });
 
     const aggregateFieldNames = Object.keys(fieldConfigs).filter((fieldName) => {
-      return fieldConfigs[fieldName].operation === 'aggregate';
+      return fieldConfigs[fieldName]?.operation === 'aggregate';
     });
 
     if (groupFieldNames.length === 0) {
@@ -86,12 +89,12 @@ export default class GroupedAggregateTableTransformation implements Transformati
 
     // 构建行数据
     const rowCount = table.fields[0]?.values.length || 0;
-    const rows: Record<string, any>[] = [];
+    const rows: TableRow[] = [];
 
     for (let i = 0; i < rowCount; i++) {
-      const row: Record<string, any> = {};
+      const row: TableRow = {};
       table.fields.forEach((field) => {
-        row[field.name] = field.values[i];
+        row[field.name] = field.values[i] ?? null;
       });
       rows.push(row);
     }
@@ -108,12 +111,16 @@ export default class GroupedAggregateTableTransformation implements Transformati
       const newField = {
         name: originalField.name,
         type: originalField.type,
-        values: [] as any[],
+        values: [] as TableValue[],
         state: { ...originalField.state },
       };
 
       groupValues.forEach((groupRows) => {
-        newField.values.push(groupRows[0][groupFieldNames[index]]);
+        const firstRow = groupRows[0];
+        const groupFieldName = groupFieldNames[index];
+        if (firstRow && groupFieldName) {
+          newField.values.push(firstRow[groupFieldName] ?? null);
+        }
       });
 
       newFields.push(newField);
@@ -124,14 +131,14 @@ export default class GroupedAggregateTableTransformation implements Transformati
       const config = fieldConfigs[fieldName];
       const field = table.fields.find((f) => f.name === fieldName);
 
-      if (!field) return;
+      if (!field || !config) return;
 
       // 为每个聚合函数创建一个新字段
       config.aggregations.forEach((aggregation) => {
         const newField = {
           name: `${field.name} (${aggregation})`,
           type: field.type,
-          values: [] as any[],
+          values: [] as TableValue[],
           state: {
             ...field.state,
             displayName: `${field.state.displayName || field.name} (${aggregation})`,
@@ -140,9 +147,9 @@ export default class GroupedAggregateTableTransformation implements Transformati
 
         // 计算每个分组的结果
         groupValues.forEach((groupRows) => {
-          const fieldValues = groupRows.map((row) => row[fieldName]).filter((val) => val != null);
+          const fieldValues = groupRows.map((row) => row[fieldName]).filter((val): val is number => typeof val === 'number');
 
-          let calculatedValue: any = null;
+          let calculatedValue: TableValue = null;
 
           if (fieldValues.length > 0) {
             switch (aggregation) {
@@ -162,7 +169,7 @@ export default class GroupedAggregateTableTransformation implements Transformati
                 calculatedValue = this.min(fieldValues);
                 break;
               case 'last':
-                calculatedValue = fieldValues[fieldValues.length - 1];
+                calculatedValue = fieldValues[fieldValues.length - 1] ?? null;
                 break;
               case 'variance':
                 // 计算方差
@@ -174,7 +181,7 @@ export default class GroupedAggregateTableTransformation implements Transformati
                 calculatedValue = stdDev;
                 break;
               default:
-                calculatedValue = fieldValues[fieldValues.length - 1];
+                calculatedValue = fieldValues[fieldValues.length - 1] ?? null;
                 break;
             }
           }

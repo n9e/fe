@@ -1,12 +1,19 @@
 import { FONT_FAMILY } from '@/utils/constant';
 
-export const defaultFont: any = {
+export interface FontStyle {
+  fontWeight: string;
+  fontSize: string;
+  fontFamily: string;
+  lineHeight?: number;
+}
+
+export const defaultFont: FontStyle = {
   fontWeight: 'normal',
   fontSize: '12px',
   fontFamily: FONT_FAMILY,
 };
 
-export const getFontStr = (font = defaultFont) => {
+export const getFontStr = (font: FontStyle = defaultFont) => {
   return `${font.fontWeight} ${font.fontSize} ${font.fontFamily}`;
 };
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import DataGrid, { Column, RowsChangeData, SortColumn } from 'react-data-grid';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -43,40 +43,59 @@ const ROW_EXPANDED_HEIGHT_DETAIL = 300;
 export default function Table<Row>(props: Props<Row>) {
   const { theme = 'light', className, columns, rowKeyGetter, expandable, sortColumns, onSortColumnsChange, onScroll, getRowHeight, onColumnResize } = props;
   const [detailHeights, setDetailHeights] = useState<Map<number | string, number>>(new Map());
-  const [rows, setRows] = useState<RowExtra<Row>[]>([]);
+  // P1-5: 展开状态单独维护，rows 用 useMemo 派生，避免“先渲染旧 rows 再 setRows 二次渲染”
+  const [expandedKeys, setExpandedKeys] = useState<Set<number | string>>(new Set());
 
   // 兼容 RowExtra<Row> 的 rowKeyGetter 包装
   const rowKeyGetterExtra = useCallback((r: RowExtra<Row>) => rowKeyGetter(r as unknown as Row), [rowKeyGetter]);
 
+  // 数据变化时重置展开状态（与旧实现 useEffect setRows 时 __expanded 全部置 false 保持一致）
+  const prevRowsRef = useRef(props.rows);
   useEffect(() => {
-    setRows(
-      _.map(props.rows, (row) => {
-        return {
-          ...row,
-          __id: rowKeyGetter(row),
-          __type: expandable?.type === 'expand' ? 'MASTER' : 'DRAWER',
-          __expanded: false,
-        };
-      }),
-    );
+    if (prevRowsRef.current !== props.rows) {
+      prevRowsRef.current = props.rows;
+      setExpandedKeys(new Set());
+    }
   }, [props.rows]);
 
-  function onRowsChange(rows: RowExtra<Row>[], { indexes }: RowsChangeData<RowExtra<Row>>) {
-    const row = rows[indexes[0]];
-    if (row.__type === 'MASTER') {
-      if (!row.__expanded) {
-        rows.splice(indexes[0] + 1, 1);
-      } else {
-        const rowKey = rowKeyGetterExtra(row);
-        rows.splice(indexes[0] + 1, 0, {
-          ...row,
+  const rows = useMemo(() => {
+    const masterType = expandable?.type === 'expand' ? 'MASTER' : 'DRAWER';
+    const result: RowExtra<Row>[] = [];
+    _.forEach(props.rows, (row) => {
+      const rowKey = rowKeyGetter(row);
+      const masterRow = {
+        ...row,
+        __id: rowKey,
+        __type: masterType,
+        __expanded: expandable?.type === 'expand' && expandedKeys.has(rowKey),
+      } as RowExtra<Row>;
+      result.push(masterRow);
+      if (expandable?.type === 'expand' && expandedKeys.has(rowKey)) {
+        result.push({
+          ...masterRow,
           __type: 'DETAIL',
           __expanded: false,
-          __id: rowKey + _.uniqueId('__expanded_'),
+          __id: `${rowKey}__expanded_`,
           __parentId: rowKey,
         } as RowExtra<Row>);
       }
-      setRows(rows);
+    });
+    return result;
+  }, [props.rows, expandable?.type, expandedKeys, rowKeyGetter]);
+
+  function onRowsChange(newRows: RowExtra<Row>[], { indexes }: RowsChangeData<RowExtra<Row>>) {
+    const row = newRows[indexes[0]];
+    if (row && row.__type === 'MASTER' && expandable?.type === 'expand') {
+      const rowKey = rowKeyGetterExtra(row);
+      setExpandedKeys((prev) => {
+        const next = new Set(prev);
+        if (row.__expanded) {
+          next.add(rowKey);
+        } else {
+          next.delete(rowKey);
+        }
+        return next;
+      });
     }
   }
 

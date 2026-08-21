@@ -2,7 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import { Tooltip } from 'antd';
 
-export default function NameWithTooltip({ record, children }) {
+interface NameWithTooltipRecord {
+  name?: string;
+  metric: Record<string, string | undefined>;
+  offset?: string | number;
+}
+
+export default function NameWithTooltip({ record, children }: { record: NameWithTooltipRecord; children: React.ReactNode }) {
   const name = _.get(record, 'name');
   const metric = _.get(record, 'metric.__name__');
   return (

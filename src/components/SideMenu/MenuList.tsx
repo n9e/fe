@@ -10,7 +10,7 @@ import IconFont from '@/components/IconFont';
 import { IS_ENT } from '@/utils/constant';
 
 import { IMenuItem } from './types';
-import { cn, getSavedPath } from './utils';
+import { cn, getMenuItemPath } from './utils';
 import DeprecatedIcon from './DeprecatedIcon';
 
 const SIDE_MENU_HOVER_TOOLTIP_PLACEMENTS = (() => {
@@ -24,7 +24,7 @@ const SIDE_MENU_HOVER_TOOLTIP_PLACEMENTS = (() => {
 interface IMenuProps {
   collapsed: boolean;
   selectedKeys?: string[];
-  onClick?: (key: any, opts?: { keepCollapsed?: boolean }) => void;
+  onClick?: (key: any) => void;
   sideMenuBgColor: string;
   isCustomBg: boolean;
   quickMenuRef: React.MutableRefObject<{ open: () => void }>;
@@ -88,6 +88,21 @@ function getMenuGroupIconColorClass(opts: {
     return '';
   }
   return 'text-[#6E6587]';
+}
+
+/**
+ * Collapsed top-level rows show an icon only, so the label has to come from a tooltip.
+ * Sub rows live inside the hover panel, which already renders their labels.
+ */
+function wrapCollapsedRowWithTooltip(row: React.ReactElement, opts: { collapsed: boolean; isSub: boolean; title: React.ReactNode }) {
+  if (!opts.collapsed || opts.isSub) {
+    return row;
+  }
+  return (
+    <Tooltip title={opts.title} placement='right'>
+      {row}
+    </Tooltip>
+  );
 }
 
 function chunkMenusBySection(items: IMenuItem[]) {
@@ -165,30 +180,60 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const submenuOpen = isExpand && !collapsed && visibleChildren.length > 0;
 
+  // Collapsed rail: clicking the icon jumps straight to the group's first child.
+  // The hover panel stays the way to reach the remaining children.
+  const collapsedTarget = collapsed ? visibleChildren[0] : undefined;
+
+  const rowClassName = cn(
+    'group flex h-8 cursor-pointer items-center justify-between rounded-md px-3 transition-colors duration-75',
+    rowHover,
+    collapsed && isActive ? collapsedActiveBg : '',
+  );
+
+  const rowContent = (
+    <>
+      <div className='flex min-w-0 flex-1 items-center gap-2.5'>
+        <div className={cn('inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]', iconColor)}>{item.icon}</div>
+        {!collapsed && <span className={cn('flex-1 text-left truncate text-[13px] leading-[18px] tracking-normal', titleClass)}>{t(item.label)}</span>}
+      </div>
+      {!collapsed && (
+        <RightIcon className={cn('shrink-0 transition', isExpand ? 'rotate-90' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')} style={{ fontSize: 24 }} />
+      )}
+    </>
+  );
+
+  const renderRow = () => {
+    if (!collapsedTarget) {
+      return (
+        <div
+          onClick={() => {
+            // Collapsed group with no visible child: nothing to open.
+            if (collapsed) return;
+            setIsExpand(!isExpand);
+          }}
+          className={rowClassName}
+        >
+          {rowContent}
+        </div>
+      );
+    }
+    if (collapsedTarget.pathType === 'absolute') {
+      return (
+        <a href={collapsedTarget.path} target={collapsedTarget.target} className={rowClassName} onClick={() => props.onClick?.(collapsedTarget.key)}>
+          {rowContent}
+        </a>
+      );
+    }
+    return (
+      <Link to={getMenuItemPath(collapsedTarget)} className={rowClassName} onClick={() => props.onClick?.(collapsedTarget.key)}>
+        {rowContent}
+      </Link>
+    );
+  };
+
   return (
     <div className='w-full' ref={rootRef}>
-      <div
-        onClick={() => {
-          if (collapsed) {
-            otherProps.onClick?.(item.key);
-            return;
-          }
-          setIsExpand(!isExpand);
-        }}
-        className={cn(
-          'group flex h-8 cursor-pointer items-center justify-between rounded-md px-3 transition-colors duration-75',
-          rowHover,
-          collapsed && isActive ? collapsedActiveBg : '',
-        )}
-      >
-        <div className='flex min-w-0 flex-1 items-center gap-2.5'>
-          <div className={cn('inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]', iconColor)}>{item.icon}</div>
-          {!collapsed && <span className={cn('flex-1 text-left truncate text-[13px] leading-[18px] tracking-normal', titleClass)}>{t(item.label)}</span>}
-        </div>
-        {!collapsed && (
-          <RightIcon className={cn('shrink-0 transition', isExpand ? 'rotate-90' : '', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')} style={{ fontSize: 24 }} />
-        )}
-      </div>
+      {renderRow()}
       <div
         className={cn(submenuOpen ? 'mt-0.5' : 'mt-0', 'overflow-hidden transition-height')}
         style={{
@@ -248,8 +293,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
   const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const { item, isSub = false, isCustomBg, collapsed, selectedKeys, isBgBlack, onClick, isGoldTheme, isLight } = props;
   const isActive = item.type === 'tabs' ? selectedKeys?.some((k) => item.children?.some((c) => c.key === k)) : selectedKeys?.includes(item.key);
-  const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
-  const savedPath = item.children ? getSavedPath(path) : item.key;
+  const to = getMenuItemPath(item);
 
   const isSubTreeLayout = Boolean(isSub && !collapsed);
 
@@ -304,9 +348,9 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
     ? 'hover:bg-[rgba(204,204,220,0.12)]'
     : 'hover:bg-fc-200';
 
-  return (
+  const row = (
     <Link
-      to={savedPath || path}
+      to={to}
       className={cn(
         'group relative flex min-w-0 cursor-pointer items-center transition-colors duration-75',
         isSubTreeLayout ? 'h-7 rounded-md' : 'h-8 rounded-md',
@@ -365,7 +409,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
                   : 'text-[#fff]'
                 : 'text-title'
               : '',
-            !collapsed ? 'mr-4' : '',
+            !collapsed ? 'mr-2' : '',
           )}
         >
           {item.icon}
@@ -397,6 +441,8 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
       )}
     </Link>
   );
+
+  return wrapCollapsedRowWithTooltip(row, { collapsed, isSub, title: t(item.label) });
 }
 
 function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: boolean } & IMenuProps) {
@@ -418,7 +464,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
     ? 'px-3.5 text-[var(--fc-sidemenu-item-text)] hover:bg-[var(--fc-sidemenu-item-hover-bg)]'
     : cn('px-3.5', isCustomBg ? 'text-[#ccccdc]' : 'text-main', 'hover:bg-[rgba(204,204,220,0.12)]');
 
-  return (
+  const row = (
     <a
       href={item.path}
       target={item.target}
@@ -429,7 +475,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
         <div
           className={cn(
             'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
-            !collapsed ? 'mr-4' : '',
+            !collapsed ? 'mr-2' : '',
             isLight ? 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]' : '',
           )}
         >
@@ -462,6 +508,8 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
       )}
     </a>
   );
+
+  return wrapCollapsedRowWithTooltip(row, { collapsed, isSub, title: t(item.label) });
 }
 
 export default function MenuList(
@@ -628,6 +676,11 @@ export default function MenuList(
                         if (!hoverEnabled) return;
                         scheduleCloseHoverPanel();
                       }}
+                      onClick={() => {
+                        // Navigating from the collapsed icon must not leave the panel covering the new page.
+                        if (!hoverEnabled) return;
+                        closeHoverPanel();
+                      }}
                     >
                       <MenuGroup key={menu.key} item={menu} {...otherProps} isLight={isLight} />
                     </div>
@@ -671,8 +724,7 @@ export default function MenuList(
                           <div className='sidemenu-hover-panel-list'>
                             {hoverChildren.map((c) => {
                               const isItemActive = c.type === 'tabs' ? props.selectedKeys?.some((key) => c.children?.some((child) => child.key === key)) : props.selectedKeys?.includes(c.key);
-                              const itemPath = c.type === 'tabs' ? c.children?.[0]?.key || c.key : c.key;
-                              const savedItemPath = c.children ? getSavedPath(itemPath) : c.key;
+                              const itemTo = getMenuItemPath(c);
                               const itemClass = cn(
                                 'group relative flex h-7 min-w-0 cursor-pointer items-center gap-2 rounded-md px-2 text-[13px] leading-[18px] transition-colors duration-150',
                                 isItemActive
@@ -710,7 +762,7 @@ export default function MenuList(
                                 </>
                               );
                               const handleClick = () => {
-                                props.onClick?.(c.key, { keepCollapsed: true });
+                                props.onClick?.(c.key);
                                 closeHoverPanel();
                               };
                               if (c.pathType === 'absolute') {
@@ -721,7 +773,7 @@ export default function MenuList(
                                 );
                               }
                               return (
-                                <Link key={c.key} to={savedItemPath || itemPath} className={itemClass} onClick={handleClick}>
+                                <Link key={c.key} to={itemTo} className={itemClass} onClick={handleClick}>
                                   {itemContent}
                                 </Link>
                               );

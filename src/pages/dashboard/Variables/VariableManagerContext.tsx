@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useCallback } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
@@ -29,15 +30,16 @@ export function extractDependencies(str: string, validVars?: Set<string>): strin
 }
 
 // 生成稳定的 JSON 字符串，确保相同的对象产生相同的字符串
-function stringifyStable(obj: any): string {
+function stringifyStable(obj: unknown): string {
   if (obj === null || obj === undefined) return String(obj);
   if (typeof obj !== 'object') return JSON.stringify(obj);
   if (Array.isArray(obj)) {
     return '[' + obj.map(stringifyStable).join(',') + ']';
   }
   // 对对象的键进行排序，确保一致的输出
-  const keys = Object.keys(obj).sort();
-  return '{' + keys.map((k) => `"${k}":${stringifyStable(obj[k])}`).join(',') + '}';
+  const record = obj as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  return '{' + keys.map((k) => `"${k}":${stringifyStable(record[k])}`).join(',') + '}';
 }
 
 interface VariableManagerContextType {
@@ -148,7 +150,9 @@ export const VariableManagerProvider = ({
   const pendingInitialExecution = useRef<Set<string>>(new Set());
   // 追踪正在重新执行的变量，防止并发竞争
   const reExecutingVariables = useRef<Set<string>>(new Set());
-  const rangeSignature = React.useMemo(() => JSON.stringify(range), [range]);
+  const rangeStart = moment.isMoment(range.start) ? range.start.valueOf() : range.start;
+  const rangeEnd = moment.isMoment(range.end) ? range.end.valueOf() : range.end;
+  const rangeSignature = `${rangeStart}\u0000${rangeEnd}\u0000${range.refreshFlag || ''}`;
   const previousRangeSignature = useRef<string>(rangeSignature);
   const pendingRangeRefreshSignature = useRef<string | null>(null);
 
@@ -343,9 +347,12 @@ export const VariableManagerProvider = ({
       if (variable.type === 'query') {
         // 分析 definition 中的依赖
         if (variable.definition) {
-          extractDependencies(variable.definition, validVarNames).forEach((dep) => dependencySet.add(dep));
+          extractDependencies(variable.definition as string, validVarNames).forEach((dep) => dependencySet.add(dep));
         } else if (variable.query?.query) {
-          extractDependencies(variable.query.query, validVarNames).forEach((dep) => dependencySet.add(dep));
+          const variableQuery = variable.query.query;
+          if (typeof variableQuery === 'string') {
+            extractDependencies(variableQuery, validVarNames).forEach((dep) => dependencySet.add(dep));
+          }
         }
 
         // 分析 datasource.value 中的依赖

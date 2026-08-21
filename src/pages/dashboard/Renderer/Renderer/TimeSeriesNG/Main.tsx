@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { AlignedData, Options } from 'uplot';
+import uPlot from 'uplot';
 import _ from 'lodash';
 import moment from 'moment';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -14,9 +15,12 @@ import { hexPalette } from '@/pages/dashboard/config';
 import { IPanel } from '../../../types';
 import valueFormatter from '../../utils/valueFormatter';
 import { getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import secondYAxisBuilder from './utils/secondYAxisBuilder';
 import { defaultOptionsValues } from '../../../Editor/config';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
+import type { DashboardAnnotation, IStandardOptions } from '@/pages/dashboard/types';
 
 import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import drawThresholds from './utils/drawThresholds';
@@ -36,8 +40,8 @@ interface Props {
   width: number;
   height: number;
   panel: IPanel;
-  series: any[];
-  annotations: any[];
+  series: CalculatedSeries[];
+  annotations: DashboardAnnotation[];
   setAnnotationsRefreshFlag?: (flag: string) => void;
   colors?: string[];
   range?: IRawTimeRange;
@@ -46,8 +50,9 @@ interface Props {
   inDashboard?: boolean; // 是否在仪表盘中
   isPreview?: boolean; // 是否在编辑面板的预览模式
   hideResetBtn?: boolean;
-  onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
+  onClick?: (event: Event, datetime: Date, value: number, points: unknown[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
+  dataRevision?: number;
 }
 
 export default function index(props: Props) {
@@ -75,9 +80,28 @@ export default function index(props: Props) {
     onZoomWithoutDefult,
   } = props;
   const id = isPreview ? `${props.id}__view` : props.id;
-  const { custom, options = {}, targets, overrides, queryOptionsTime } = panel;
+  const { custom: rawCustom, options = {}, targets, overrides, queryOptionsTime } = panel;
+  // custom 为 JsonObject（宽类型），按折线图面板实际使用的结构收窄
+  const custom = rawCustom as {
+    scaleDistribution?: { type?: 'log'; log?: number };
+    lineWidth?: number;
+    drawStyle?: string;
+    lineInterpolation?: string;
+    fillOpacity?: number;
+    gradientMode?: string;
+    showPoints?: string;
+    pointSize?: number;
+    spanNulls?: boolean;
+    stack?: string;
+  };
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
+  const stableRange = useStableValue(range);
+  const stableAnnotations = useStableValue(annotations);
+  const stableOverrides = useStableValue(overrides);
+  const stableQueryOptionsTime = useStableValue(queryOptionsTime);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
-  const uplotRef = useRef<any>();
+  const uplotRef = useRef<uPlot>();
   // 保存 x 和 y 轴初始缩放范围
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
@@ -86,7 +110,7 @@ export default function index(props: Props) {
   const rootRefs = useRef<Map<HTMLElement, Root>>(new Map());
   const xMinMax = useMemo(() => {
     return getScalesXMinMax({ range, queryOptionsTime });
-  }, [range, JSON.stringify(queryOptionsTime)]);
+  }, [stableRange, stableQueryOptionsTime]);
 
   // 当 Y 轴为 log 刻度时，将 ≤ 0 的数据值转为 null，避免 uPlot 内部 log 计算产生 -Infinity/NaN 导致崩溃
   const processedFrames = useMemo(() => {
@@ -116,11 +140,11 @@ export default function index(props: Props) {
       plugins: [
         tooltipPlugin({
           id,
-          mode: options.tooltip?.mode ?? (defaultOptionsValues.tooltip.mode as any),
-          sort: options.tooltip?.sort ?? (defaultOptionsValues.tooltip.sort as any),
+          mode: options.tooltip?.mode ?? 'single',
+          sort: options.tooltip?.sort ?? 'none',
           pinningEnabled: true,
           zIndex: isPreview ? 1999 : 999, // 预览模式下 z-index 需要超过编辑面板的 z-index(1000)
-          graphTooltip: dashboardMeta.graphTooltip as any,
+          graphTooltip: dashboardMeta.graphTooltip === 'sharedCrosshair' || dashboardMeta.graphTooltip === 'sharedTooltip' ? dashboardMeta.graphTooltip : 'default',
           timeZone: timezone,
           renderFooter: (domNode: HTMLDivElement, closeOverlay: () => void) => {
             let root = rootRefs.current.get(domNode);
@@ -149,22 +173,24 @@ export default function index(props: Props) {
               name = options?.standardOptions?.displayName;
             }
             const override = _.find(overrides, (item) => item.matcher.value === point?.n9e_internal?.refId);
-            if (override && override?.properties?.standardOptions?.displayName) {
-              name = override?.properties?.standardOptions?.displayName;
+            const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
+            if (override && overrideStandardOptions?.displayName) {
+              name = overrideStandardOptions?.displayName;
             }
-            return getMappedTextObj(name, options?.valueMappings)?.text;
+            return getMappedTextObj(name, options?.valueMappings)?.text as string;
           },
           pointValueformatter: (val, point) => {
             const override = _.find(overrides, (item) => item.matcher.value === point?.n9e_internal?.refId);
             if (override) {
+              const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.unit,
-                  decimals: override?.properties?.standardOptions?.decimals,
-                  dateFormat: override?.properties?.standardOptions?.dateFormat,
+                  unit: overrideStandardOptions?.unit,
+                  decimals: overrideStandardOptions?.decimals,
+                  dateFormat: overrideStandardOptions?.dateFormat,
                 },
                 val,
-              ).text;
+              ).text as string;
             }
             return valueFormatter(
               {
@@ -173,7 +199,7 @@ export default function index(props: Props) {
                 dateFormat: options?.standardOptions?.dateFormat,
               },
               val,
-            ).text;
+            ).text as string;
           },
         }),
         annotationsPlugin({
@@ -209,7 +235,7 @@ export default function index(props: Props) {
         xMinMax,
         yRange,
         yDistr: custom.scaleDistribution?.type === 'log' ? 3 : 1,
-        yLog: custom.scaleDistribution?.type === 'log' ? custom.scaleDistribution?.log : undefined,
+        yLog: custom.scaleDistribution?.type === 'log' ? (custom.scaleDistribution?.log as 2 | 10 | undefined) : undefined,
       }),
       series: seriesBuider({
         baseSeries,
@@ -217,7 +243,7 @@ export default function index(props: Props) {
         width: custom.lineWidth,
         pathsType: custom.drawStyle === 'bars' ? 'bars' : custom.lineInterpolation === 'smooth' ? 'spline' : 'linear',
         fillOpacity: custom.fillOpacity,
-        gradientMode: custom.gradientMode,
+        gradientMode: custom.gradientMode as 'none' | 'opacity' | undefined,
         points: { show: custom.showPoints === 'always', size: custom.showPoints === 'always' ? custom.pointSize : 6 },
         overrides,
         spanGaps: custom.spanNulls,
@@ -239,7 +265,7 @@ export default function index(props: Props) {
                 dateFormat: options?.standardOptions?.dateFormat,
               },
               v,
-            ).text;
+            ).text as string;
           },
         }),
         ...secondYAxisBuilder(panel, darkMode),
@@ -256,7 +282,7 @@ export default function index(props: Props) {
                   mode,
                 },
                 thresholdsStyle: {
-                  mode: options.thresholdsStyle?.mode ?? (defaultOptionsValues.thresholdsStyle.mode as any),
+                  mode: options.thresholdsStyle?.mode ?? 'dashed',
                 },
               });
             }
@@ -315,14 +341,14 @@ export default function index(props: Props) {
     colors,
     dashboardMeta.graphTooltip,
     dashboardMeta.graphZoom,
-    JSON.stringify(custom),
-    JSON.stringify(options),
-    JSON.stringify(range),
-    JSON.stringify(baseSeries),
-    JSON.stringify(xMinMax),
+    stableCustom,
+    stableOptions,
+    stableRange,
+    baseSeries,
+    xMinMax,
     annotationSettingUp,
-    JSON.stringify(annotations),
-    JSON.stringify(overrides),
+    stableAnnotations,
+    stableOverrides,
     timezone,
   ]);
   let data = processedFrames;
@@ -333,22 +359,22 @@ export default function index(props: Props) {
     uOptions.bands = stackedDataAndBands.bands;
     uOptions.series = _.map(uOptions.series, (s, i) => {
       if (i === 0) return s;
+      const seriesWithMetadata = s as typeof s & { n9e_internal?: Record<string, unknown> };
       return {
         ...s,
         n9e_internal: {
-          // @ts-ignore
-          ...s.n9e_internal,
+          ...seriesWithMetadata.n9e_internal,
           values: processedFrames[i], // 只用于堆叠图下保存原始数据
         },
       };
     });
-    data = _.concat([processedFrames[0]], stackedData) as any;
+    data = _.concat([processedFrames[0]], stackedData);
   }
 
   useEffect(() => {
     // 重置缩放按钮状态
     setShowResetZoomBtn(false);
-  }, [JSON.stringify(xMinMax)]);
+  }, [xMinMax]);
 
   return (
     <>

@@ -197,6 +197,7 @@ const SideMenu = (props: SideMenuProps) => {
         // Top-level leaf (no children): keep by its own key so MenuItem is clickable
         // (e.g. FlashAI). Do not treat it as an empty group to drop.
         if (!menu.children || menu.children.length === 0) {
+          if (menu.key === '/nightingale-ai') return menu;
           return perms?.includes(calcUrlPath(menu.key)) ? menu : null;
         }
         const filteredChildren = menu.children
@@ -468,8 +469,8 @@ const SideMenu = (props: SideMenuProps) => {
               onToggleCollapse={toggleCollapsed}
               toggleTitle={collapsed ? t('expand') : t('collapse')}
             />
-            {/* 新手引导徽标仅开源版展示 */}
-            {!hideSideMenu && !IS_PLUS && <OnboardingProgressBadge collapsed={collapsed} isCustomBg={isCustomBg} />}
+            {/* 新手引导徽标：开源版与专业版展示，企业版另有接入体系 */}
+            {!hideSideMenu && !IS_ENT && <OnboardingProgressBadge collapsed={collapsed} isCustomBg={isCustomBg} />}
             <div className={cn('shrink-0 -mt-px h-px', collapsed ? 'mx-2' : 'mx-3', isCustomBg ? 'bg-[rgba(255,255,255,0.12)]' : 'bg-[hsla(240,5%,92%,0.7)]')} />
             <ScrollArea className='-mr-2 mt-3 flex-1'>
               <MenuList
@@ -480,13 +481,7 @@ const SideMenu = (props: SideMenuProps) => {
                 isCustomBg={isCustomBg}
                 quickMenuRef={quickMenuRef}
                 topExtra={topExtra}
-                onClick={(key, opts) => {
-                  if (collapsed && !opts?.keepCollapsed) {
-                    setCollapsed(false);
-                    localStorage.setItem('menuCollapsed', '0');
-                  }
-                  onMenuClick?.(key);
-                }}
+                onClick={onMenuClick}
                 isGoldTheme={isGoldTheme}
               />
             </ScrollArea>

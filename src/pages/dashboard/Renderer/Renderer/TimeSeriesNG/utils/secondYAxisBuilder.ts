@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import { axisBuilder } from '@/components/UPlotChart';
 
-import { IPanel } from '../../../../types';
+import { IPanel, IStandardOptions } from '../../../../types';
 import valueFormatter from '../../../utils/valueFormatter';
 
 export default function secondYAxisBuilder(panel: IPanel, darkMode: boolean) {
@@ -11,7 +11,7 @@ export default function secondYAxisBuilder(panel: IPanel, darkMode: boolean) {
   let standardOptions = options.standardOptions;
 
   if (rightYAxisDisplay === 'normal') {
-    standardOptions = _.get(overrides, [0, 'properties', 'standardOptions']);
+    standardOptions = _.get(overrides, [0, 'properties', 'standardOptions']) as IStandardOptions | undefined;
     return [
       axisBuilder({
         scaleKey: 'y2',
@@ -25,7 +25,7 @@ export default function secondYAxisBuilder(panel: IPanel, darkMode: boolean) {
               dateFormat: standardOptions?.dateFormat,
             },
             v,
-          ).text;
+          ).text as string;
         },
       }),
     ];

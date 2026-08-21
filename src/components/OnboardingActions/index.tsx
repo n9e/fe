@@ -4,7 +4,7 @@ import { notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { basePrefix, isAnonymousPath } from '@/App';
-import { IS_PLUS } from '@/utils/constant';
+import { IS_ENT } from '@/utils/constant';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import QuickCreateModal from '@/pages/notificationRules/components/RuleDropdownSelect/QuickCreateModal';
 import useOnboardingProgress, { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
@@ -23,7 +23,7 @@ interface OnboardingActionsContextValue {
    * 切到下一个动作，此时 onCancel 不能把它关掉。
    */
   closeAction: (key?: OnboardingActionKey) => void;
-  /** 动作层是否可用。商业版走自己的接入体系，这里整体关闭，调用方回退到跳转 */
+  /** 动作层是否可用。企业版走自己的接入体系，那里整体关闭，调用方回退到跳转 */
   enabled: boolean;
   /**
    * 当前用户是否有权执行各动作（按 ACTION_PERMS 与后端 rt.perm 对齐）。
@@ -61,7 +61,10 @@ export function useOnboardingActions() {
  */
 export function OnboardingActionsProvider({ children }: { children: React.ReactNode }) {
   const [current, setCurrent] = React.useState<OnboardingActionState | undefined>(undefined);
-  const enabled = !IS_PLUS;
+  // 专业版同样需要这条引导线：中心端下发采集恰恰只在专业版，而它正是「装完机器之后干什么」
+  // 最需要接力的一段。企业版另有自己的接入叙事（连 /landing 路由都是 !IS_ENT），维持关闭。
+  // 三个动作走的都是 n9e 通用接口（大盘/告警规则导入、通知规则、发送测试），专业版一样有。
+  const enabled = !IS_ENT;
 
   const packPermitted = useIsAuthorized(ACTION_PERMS.pack);
   const notifyPermitted = useIsAuthorized(ACTION_PERMS.notify);
@@ -99,7 +102,7 @@ export function OnboardingActionsProvider({ children }: { children: React.ReactN
  * 而 App.tsx 顶部的 anonymous 是模块级常量、页内跳转不会更新。两个条件都不能少：
  * - 匿名路由（登录页、分享大盘/图表等）：内层 useOnboardingProgress 会发一组鉴权探测请求，
  *   401 后 request.tsx 会把无 token 的匿名访客直接踢到登录页，分享链路就断了；
- * - 商业版（enabled=false）：openAction 是 no-op、弹窗永远开不起来，探测请求纯属浪费。
+ * - 企业版（enabled=false）：openAction 是 no-op、弹窗永远开不起来，探测请求纯属浪费。
  */
 export function OnboardingActionModals() {
   const { enabled } = useOnboardingActions();

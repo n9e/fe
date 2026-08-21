@@ -64,5 +64,17 @@ const zh_CN = {
     no_drilldown_rules: '无下钻路径，可在规则中新增',
     no_drilldown_rules_other: '已内置若干下钻路径，无需单独配置',
   },
+  pack: {
+    title: '接入三步',
+    progress: '{{done}}/{{total}}',
+    steps: {
+      collect: '配置采集',
+      collect_tip: '用内置模板下发采集配置，让这个组件开始上报指标',
+      dashboard: '导入仪表盘',
+      dashboard_tip: '把内置仪表盘导入到业务组，指标一到就有图可看',
+      alert: '导入告警规则',
+      alert_tip: '把内置告警规则导入到业务组，出问题时才有人知道',
+    },
+  },
 };
 export default zh_CN;

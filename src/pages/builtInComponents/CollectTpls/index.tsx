@@ -4,6 +4,7 @@ import { Space, Button, Input, Modal, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useDebounceEffect } from 'ahooks';
+import { useHistory } from 'react-router-dom';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import EnhancedTable from '@/components/EnhancedTable';
@@ -22,6 +23,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { component, component_id } = props;
+  const history = useHistory();
   const { t } = useTranslation('builtInComponents');
   const { darkMode, busiGroups, perms } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<{
@@ -165,7 +167,12 @@ export default function index(props: Props) {
                 GroupSelectModal({
                   busiGroups,
                   onOk: (group_id) => {
-                    window.open(`/collects/add/${group_id}?component_id=${component_id}&cate=${record.cate}&payloadID=${record.id}`, '_blank');
+                    // 这里**不**记「采集」完成：用户才刚选完业务组，配置还没建。
+                    // 完成标记由采集配置真的保存成功时写（plus 的 AfterSaveDrawer），
+                    // 否则中途放弃也会留下一个勾，跟没做过一样看不出来。
+                    // 站内跳转而不是 window.open：新标签页会把用户踢出集成中心，
+                    // 回来时抽屉、页签、进度全没了
+                    history.push(`/collects/add/${group_id}?component_id=${component_id}&cate=${record.cate}&payloadID=${record.id}`);
                   },
                 });
               },

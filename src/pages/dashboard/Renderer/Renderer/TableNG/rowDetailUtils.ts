@@ -6,7 +6,13 @@ interface DisplayedRowsApi {
   forEachNodeAfterFilterAndSort: (callback: (node: { data?: object }) => void) => void;
 }
 
-export function getDisplayedRowDetails(api: DisplayedRowsApi, sourceRowByFormattedRow: WeakMap<object, RowDetailData>, formattedRow: object) {
+export function getDisplayedRowDetails(api: DisplayedRowsApi, sourceRowByFormattedRow: WeakMap<object, RowDetailData>, formattedRow: object | undefined) {
+  if (!formattedRow) {
+    return {
+      rows: [],
+      currentIndex: -1,
+    };
+  }
   const currentRow = sourceRowByFormattedRow.get(formattedRow);
   if (!currentRow) {
     return {

@@ -106,6 +106,17 @@ export default defineConfig(({ mode }) => {
     server: {
       hmr: true,
       proxy: {
+        // 本地联调兼容尚未升级到 n9e-plus 权限接口的后端；生产环境不经过 Vite dev server。
+        '/api/n9e-plus/self/perms': {
+          target: proxyURL,
+          changeOrigin: true,
+          rewrite: (requestPath) => requestPath.replace('/api/n9e-plus/self/perms', '/api/n9e/self/perms'),
+        },
+        '/api/n9e-plus/operation': {
+          target: proxyURL,
+          changeOrigin: true,
+          rewrite: (requestPath) => requestPath.replace('/api/n9e-plus/operation', '/api/n9e/operation'),
+        },
         '/api': {
           target: proxyURL,
           changeOrigin: true,

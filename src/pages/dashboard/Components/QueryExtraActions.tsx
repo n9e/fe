@@ -10,12 +10,13 @@ import HideButton from './HideButton';
 
 interface Props {
   field: FormListFieldData;
-  add: (defaultValue?: any, insertIndex?: number) => void;
+  add: (defaultValue?: unknown, insertIndex?: number) => void;
 }
 
 export default function QueryExtraActions({ field, add }: Props) {
   const { t } = useTranslation('dashboard');
   const targets = Form.useWatch('targets');
+  const { key, ...restField } = field;
 
   return (
     <Space>
@@ -30,7 +31,7 @@ export default function QueryExtraActions({ field, add }: Props) {
           }}
         />
       </Tooltip>
-      <Form.Item noStyle {...field} name={[field.name, 'hide']}>
+      <Form.Item key={key} noStyle {...restField} name={[field.name, 'hide']}>
         <HideButton />
       </Form.Item>
     </Space>

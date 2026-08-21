@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { SIZE, DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
-import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import { NAME_SPACE as logExplorerNS, QUERY_INPUT_MIN_WIDTH } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE, QUERY_BUILDER_PINNED_CACHE_KEY } from '../../constants';
 import { Field, Interval } from '../types';
@@ -117,7 +117,7 @@ export default function index(props: Props) {
   }, [isSQLMode]);
 
   useEffect(() => {
-    if (datasourceValue) {
+    if (IS_PLUS && datasourceValue) {
       getESClusterInfo({ cate: DatasourceCateEnum.elasticsearch, datasource_id: datasourceValue })
         .then((info) => {
           setSupportsSQL(info?.is_sql_supported ?? false);
@@ -146,7 +146,7 @@ export default function index(props: Props) {
   return (
     <div className='flex flex-col h-full'>
       <div className='flex-shrink-0 relative'>
-        <Row gutter={SIZE} wrap={false}>
+        <Row gutter={SIZE} wrap>
           <Col flex='none'>
             <Segmented
               value={segmentedValue}
@@ -177,7 +177,7 @@ export default function index(props: Props) {
                   ),
                   value: 'query',
                 },
-                ...(IS_PLUS && supportsSQL ? [{ label: 'SQL', value: 'sql' }] : []),
+                ...(supportsSQL ? [{ label: 'SQL', value: 'sql' }] : []),
               ]}
               onChange={(val) => {
                 if (val === 'sql') {
@@ -193,7 +193,7 @@ export default function index(props: Props) {
               }}
             />
           </Col>
-          <Col flex='auto' style={{ minWidth: 0 }}>
+          <Col flex='1 1 0' style={{ minWidth: QUERY_INPUT_MIN_WIDTH }}>
             {isSQLMode ? (
               <SQLQueryInput
                 ref={queryInputRef}

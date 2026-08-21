@@ -89,6 +89,14 @@ export default function tooltipPlugin(options: {
 
   const tooltipID = `${id}-tooltip`;
   let overlay = document.getElementById(tooltipID);
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (isPinned) {
+      if (overlay === null) return;
+      if (!overlay.contains(event.target as Node)) {
+        closeOverlay();
+      }
+    }
+  };
   if (!overlay) {
     overlay = document.createElement('div');
     overlay.id = tooltipID;
@@ -97,15 +105,6 @@ export default function tooltipPlugin(options: {
     overlay.style.display = 'none';
     overlay.style.position = 'absolute';
     document.body.appendChild(overlay);
-
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (isPinned) {
-        if (overlay === null) return;
-        if (!overlay.contains(event.target as Node)) {
-          closeOverlay();
-        }
-      }
-    };
 
     if (pinningEnabled) {
       document.addEventListener('mouseup', handleOutsideClick);
@@ -365,7 +364,11 @@ export default function tooltipPlugin(options: {
         }
       },
       destroy: () => {
-        overlay!.style.display = 'none';
+        if (overlay === null) return;
+        overlay.remove();
+        if (pinningEnabled) {
+          document.removeEventListener('mouseup', handleOutsideClick);
+        }
       },
     },
   };

@@ -38,7 +38,7 @@ function index(props: Props & ModalWrapProps) {
       getDashboard(initialValues.id).then((res) => {
         let configs = {} as IDashboardConfig;
         try {
-          configs = JSONParse(res.configs);
+          configs = JSONParse(res.configs) as IDashboardConfig;
         } catch (e) {
           console.warn(e);
         }
@@ -67,7 +67,7 @@ function index(props: Props & ModalWrapProps) {
             });
             message.success(t('common:success.edit'));
             if (result) {
-              const configs = JSONParse(result.configs);
+              const configs = JSONParse(result.configs) as IDashboardConfig;
               await updateDashboardConfigs(result.id, {
                 configs: JSON.stringify({
                   ...configs,

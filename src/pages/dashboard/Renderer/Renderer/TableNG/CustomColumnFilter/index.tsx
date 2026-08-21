@@ -76,7 +76,16 @@ const CustomColumnFilter = ({ state, onStateChange, onAction, api }: CustomFilte
 
 export default CustomColumnFilter;
 
-export function doesFilterPass(params) {
+// ag-grid-react 的 useGridFilterDisplay 过滤传递参数，本地收窄声明（ag-grid-community 无 IFilterPassParams）
+interface FilterPassParams {
+  model: string | undefined;
+  handlerParams: {
+    getValue: (node: unknown) => { value?: unknown } | undefined;
+  };
+  node: unknown;
+}
+
+export function doesFilterPass(params: FilterPassParams) {
   const { model, handlerParams } = params;
   if (!model) return true; // 没有过滤器时显示所有数据
 
@@ -88,7 +97,7 @@ export function doesFilterPass(params) {
   model
     .toLowerCase()
     .split(' ')
-    .forEach((filterWord) => {
+    .forEach((filterWord: string) => {
       if (value.toString().toLowerCase().indexOf(filterWord) < 0) {
         passed = false;
       }

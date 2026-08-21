@@ -25,7 +25,7 @@ export default class ExtractFieldsTransformation implements Transformation {
     const { fields } = this.options;
 
     const newData = series.data.map((dataPoint) => {
-      const extractedDataPoint: Record<string, any> = {};
+      const extractedDataPoint: Record<string, DataPoint[string]> = {};
       fields.forEach((field) => {
         if (dataPoint.hasOwnProperty(field)) {
           extractedDataPoint[field] = dataPoint[field as keyof DataPoint];
