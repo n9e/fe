@@ -34,6 +34,11 @@ export default function index(props: Props) {
     ),
     'id',
   );
+  // gids 是列表筛选条件，-2（全部机器）和 0（未分组）都是预置值，不是可以提交的业务组 ID。
+  const filteredGroupIds = _.filter(
+    _.map(_.split(gids, ','), (id) => _.toNumber(id)),
+    (id) => id > 0,
+  );
   const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
@@ -110,8 +115,10 @@ export default function index(props: Props) {
               optionType='button'
               buttonStyle='solid'
               onChange={(e) => {
-                if (e.target.value === 'del' && gids !== undefined) {
-                  form.setFieldsValue({ bgids: [_.toNumber(gids)] });
+                if (e.target.value === 'del') {
+                  if (filteredGroupIds.length) {
+                    form.setFieldsValue({ bgids: filteredGroupIds });
+                  }
                 }
               }}
             />
