@@ -16,6 +16,12 @@ interface IProps {
   drawerOnly?: boolean;
   drawerOpen?: boolean;
   onDrawerOpenChange?: (open: boolean) => void;
+  /**
+   * 抽屉顶部的出口。这里过去只有元信息、一个链接都没有 —— 用户点开一台机器，
+   * 看完一堆键值对就没有然后了。具体给哪些出口由调用方决定：机器列表能给「这台机器的
+   * 采集配置」，是因为那个抽屉在 plus 里，本组件不该知道它的存在。
+   */
+  extraActions?: React.ReactNode;
 }
 
 function bytesToSize(bytes, precision) {
@@ -175,7 +181,7 @@ function Group({ name, data }) {
 
 export default function TargetMetaDrawer(props: IProps) {
   const { t } = useTranslation('targets');
-  const { ident, targetNode, drawerOnly, drawerOpen, onDrawerOpenChange } = props;
+  const { ident, targetNode, drawerOnly, drawerOpen, onDrawerOpenChange, extraActions } = props;
   const [visible, setVisible] = useState(false);
   const groupsName = ['platform', 'cpu', 'memory', 'network', 'filesystem'];
   const [information, setInformation] = useState({});
@@ -223,6 +229,7 @@ export default function TargetMetaDrawer(props: IProps) {
         onClose={handleClose}
         visible={drawerVisible}
       >
+        {extraActions && <div className='mb-3 flex flex-wrap items-center gap-3'>{extraActions}</div>}
         {_.map(groupsName, (groupName) => {
           return <Group key={groupName} name={groupName} data={information[groupName]} />;
         })}

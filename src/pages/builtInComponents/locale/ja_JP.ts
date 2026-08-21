@@ -64,6 +64,18 @@ const ja_JP = {
     no_drilldown_rules: '上位パスがありません。ルールに追加できます',
     no_drilldown_rules_other: 'すでにいくつかの上位パスがあります。別途設定する必要はありません',
   },
+  pack: {
+    title: '導入 3 ステップ',
+    progress: '{{done}}/{{total}}',
+    steps: {
+      collect: '収集を設定',
+      collect_tip: '組み込みテンプレートから収集設定を配信し、このコンポーネントのメトリクス送信を開始します',
+      dashboard: 'ダッシュボードをインポート',
+      dashboard_tip: '組み込みダッシュボードをビジネスグループにインポートし、メトリクスが届いたらすぐ見られるようにします',
+      alert: 'アラートルールをインポート',
+      alert_tip: '組み込みアラートルールをビジネスグループにインポートし、異常時に気づけるようにします',
+    },
+  },
 };
 
 export default ja_JP;

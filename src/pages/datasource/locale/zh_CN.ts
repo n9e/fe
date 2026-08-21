@@ -235,6 +235,8 @@ const zh_CN = {
     no_busi_group: '还没有业务组，请先到「人员组织」创建一个',
     imported_dashboards: '已导入 {{count}} 个仪表盘。',
     goto_dashboards: '去查看',
+    imported_alerts: '已导入 {{count}} 条告警规则。',
+    goto_alerts: '去查看',
     already_imported: '{{name}}（已导入）',
     import_failed: '部分仪表盘导入失败',
     import_error: '导入失败，请稍后重试',
@@ -243,7 +245,7 @@ const zh_CN = {
     pick_group: '规则分类',
     group_option: '{{name}}（{{count}} 条）',
     selected_count: '已选 {{checked}} / {{total}}',
-    datasource_bound: '导入时将自动绑定当前数据源（ID: {{id}}）',
+    datasource_bound: '导入时将自动绑定数据源「{{name}}」',
   },
 };
 export default zh_CN;

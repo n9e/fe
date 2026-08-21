@@ -15,7 +15,7 @@ import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOn
 
 import { localizeDocUrl } from '@/utils/docUrl';
 
-import { CATEGRAF_TROUBLESHOOT_DOC, NS, VERIFIED_DATASOURCE_IDS_KEY } from '../../../constants';
+import { CATEGRAF_TROUBLESHOOT_DOC, NS } from '../../../constants';
 import { CategrafInstallMeta, probeTargets } from '../../../services';
 import CommandBlock from '../components/CommandBlock';
 import { isValidServerAddr, pickDefaultServerAddr } from '../InstallCategraf/buildCommand';
@@ -24,6 +24,7 @@ import { buildToml, CollectFormValues } from './buildToml';
 import { buildCollectCommand, buildManualCollectCommand } from './buildCommand';
 import ComponentPicker from './ComponentPicker';
 import useMetricArrival from './useMetricArrival';
+import { readVerifiedDatasourceIds, writeVerifiedDatasourceIds } from './verifiedDatasources';
 
 interface Props {
   meta: CategrafInstallMeta;
@@ -37,26 +38,8 @@ interface Props {
 /** 数据源列表未加载时的稳定空引用，避免每次渲染都让下游 useMemo 失效 */
 const EMPTY_DATASOURCES: { id: number; name: string; is_default?: boolean }[] = [];
 
-function readVerifiedDatasourceIds(): number[] {
-  try {
-    const raw = localStorage.getItem(VERIFIED_DATASOURCE_IDS_KEY);
-    const parsed = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) ? _.filter(parsed, (id) => typeof id === 'number') : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function writeVerifiedDatasourceIds(ids: number[]) {
-  try {
-    localStorage.setItem(VERIFIED_DATASOURCE_IDS_KEY, JSON.stringify(ids));
-  } catch (e) {
-    // 记不住只是下次要重新选，不值得打断验证流程
-  }
-}
-
 /** 以 field.default 初始化一个新实例的取值 */
-function newInstance(component: CollectComponent): Record<string, unknown> {
+export function newInstance(component: CollectComponent): Record<string, unknown> {
   const instance: Record<string, unknown> = {};
   _.forEach(component.fields, (field) => {
     if (field.default !== undefined) instance[field.key] = field.default;
@@ -64,7 +47,8 @@ function newInstance(component: CollectComponent): Record<string, unknown> {
   return instance;
 }
 
-function FieldInput(props: { field: CollectField; namePrefix: (string | number)[] }) {
+/** 单个字段的输入控件。企业版采集配置页复用同一套 catalog 字段定义，所以这里导出 */
+export function FieldInput(props: { field: CollectField; namePrefix: (string | number)[] }) {
   const { field, namePrefix } = props;
   const { t } = useTranslation(NS);
   const label = t(`collect.fields.${field.key}`, { defaultValue: field.key });
@@ -133,7 +117,9 @@ export default function CollectSetup(props: Props) {
       .then((components) => {
         setLogoMap(_.fromPairs(_.map(components, (item) => [_.toLower(item.ident), item.logo])));
       })
-      .catch(() => setLogoMap({})); // 拿不到 logo 只是回退分类图标，不阻塞向导
+      .catch(() => {
+        setLogoMap({}); // 拿不到 logo 只是回退分类图标，不阻塞向导
+      });
   }, []);
 
   const metricPrefix = component ? (component.metricPrefix === undefined ? component.name : component.metricPrefix) : null;
@@ -158,10 +144,7 @@ export default function CollectSetup(props: Props) {
   // 上次验证通过的数据源：writer URL 匹配天然会 miss，而「上次真的查到了指标」是经验证过的更强信号，
   // 所以优先级放在 meta 之前。只在 id 仍然可见时采纳，数据源被删/权限变更后自动退回后面的策略。
   const rememberedDatasourceIds = useRef(readVerifiedDatasourceIds()).current;
-  const defaultFromRemembered = useMemo(
-    () => _.filter(rememberedDatasourceIds, (id) => _.some(prometheusList, (ds) => ds.id === id)),
-    [rememberedDatasourceIds, prometheusList],
-  );
+  const defaultFromRemembered = useMemo(() => _.filter(rememberedDatasourceIds, (id) => _.some(prometheusList, (ds) => ds.id === id)), [rememberedDatasourceIds, prometheusList]);
 
   const defaultDatasourceIds = useMemo(() => {
     if (defaultFromRemembered.length > 0) return defaultFromRemembered;
@@ -176,7 +159,11 @@ export default function CollectSetup(props: Props) {
   const [pickedDatasourceIds, setPickedDatasourceIds] = useState<number[]>();
   const datasourceIds = pickedDatasourceIds ?? defaultDatasourceIds;
   const arrivalDatasources = useMemo(
-    () => _.map(_.filter(prometheusList, (ds) => _.includes(datasourceIds, ds.id)), (ds) => ({ id: ds.id, name: ds.name })),
+    () =>
+      _.map(
+        _.filter(prometheusList, (ds) => _.includes(datasourceIds, ds.id)),
+        (ds) => ({ id: ds.id, name: ds.name }),
+      ),
     [prometheusList, datasourceIds],
   );
 
@@ -311,11 +298,7 @@ export default function CollectSetup(props: Props) {
       onClose={onClose}
       footer={
         <div className='flex justify-between'>
-          <div>
-            {step > 0 && (
-              <Button onClick={() => setStep(step - 1)}>{t('collect.prev')}</Button>
-            )}
-          </div>
+          <div>{step > 0 && <Button onClick={() => setStep(step - 1)}>{t('collect.prev')}</Button>}</div>
           <Space>
             {step === 1 && (
               <Button type='primary' onClick={handleConfigNext}>
@@ -405,9 +388,7 @@ export default function CollectSetup(props: Props) {
                           <span className='text-[12px] opacity-60'>
                             {t('collect.instance')} #{instanceField.name + 1}
                           </span>
-                          {instances.length > 1 && (
-                            <Button size='small' type='text' icon={<MinusCircleOutlined />} onClick={() => remove(instanceField.name)} />
-                          )}
+                          {instances.length > 1 && <Button size='small' type='text' icon={<MinusCircleOutlined />} onClick={() => remove(instanceField.name)} />}
                         </div>
                         <div className='grid grid-cols-2 gap-x-4'>
                           {_.map(component.fields, (field) => (
@@ -424,9 +405,7 @@ export default function CollectSetup(props: Props) {
               </Form.List>
               <div className='mt-3'>
                 <div className='mb-1 text-[12px] opacity-60'>{t('collect.toml_preview')}</div>
-                <pre className='m-0 bg-fc-100 fc-border rounded-lg p-3 text-[12px] leading-5 max-h-[220px] overflow-auto whitespace-pre-wrap break-all'>
-                  {previewToml}
-                </pre>
+                <pre className='m-0 bg-fc-100 fc-border rounded-lg p-3 text-[12px] leading-5 max-h-[220px] overflow-auto whitespace-pre-wrap break-all'>{previewToml}</pre>
               </div>
             </Form>
           )}
@@ -544,13 +523,24 @@ export default function CollectSetup(props: Props) {
                   showIcon
                   icon={<CheckCircleFilled />}
                   message={
+                    /* 逐台确认的成功判据是「有一台上报即出结论」（见 useMetricArrival），
+                       所以文案必须按**实际到达**渲染：拿 targetIdents 会把只到了 1 台说成
+                       「所选 3 台均已上报」，并把还没上报的机器名一并列出来 */
                     targetIdents.length > 0
-                      ? t('collect.verify.detected_targets', {
-                          count: targetIdents.length,
-                          metric: displayMetric,
-                          idents: _.join(_.take(targetIdents, 3), ', '),
-                          datasource: _.join(arrival.hitDatasourceNames, ', '),
-                        })
+                      ? arrival.missingIdents.length > 0
+                        ? t('collect.verify.detected_partial', {
+                            arrived: arrival.arrivedIdents.length,
+                            total: targetIdents.length,
+                            metric: displayMetric,
+                            idents: _.join(_.take(arrival.arrivedIdents, 3), ', '),
+                            datasource: _.join(arrival.hitDatasourceNames, ', '),
+                          })
+                        : t('collect.verify.detected_targets', {
+                            count: arrival.arrivedIdents.length,
+                            metric: displayMetric,
+                            idents: _.join(_.take(arrival.arrivedIdents, 3), ', '),
+                            datasource: _.join(arrival.hitDatasourceNames, ', '),
+                          })
                       : t('collect.verify.detected', {
                           count: arrival.newIdents.length,
                           metric: displayMetric,
@@ -560,6 +550,13 @@ export default function CollectSetup(props: Props) {
                   }
                   description={
                     <>
+                      {/* 部分到达时把还差哪几台如实列出来：成功提示之后 partial 那行不再渲染，
+                          不写在这里用户就拿不到任何「还差谁」的信号 */}
+                      {arrival.missingIdents.length > 0 && (
+                        <div className='mb-1'>{t('collect.verify.missing_note', { idents: _.join(arrival.missingIdents, ', ') })}</div>
+                      )}
+                      {/* 精确哨兵连查不到、按前缀匹配成功的，如实标注——此时区分不了存量机器 */}
+                      {arrival.fallbackToPrefix && <div className='mb-1'>{t('collect.verify.fallback_note', { prefix: `${metricPrefix}_` })}</div>}
                       {arrival.preexistingIdents.length > 0 && (
                         <div className='mb-1'>{t('collect.verify.preexisting_note', { idents: _.join(arrival.preexistingIdents, ', ') })}</div>
                       )}
@@ -574,11 +571,7 @@ export default function CollectSetup(props: Props) {
                 <Alert
                   type='warning'
                   showIcon
-                  message={
-                    targetIdents.length > 0
-                      ? t('collect.verify.timeout_targets', { idents: _.join(arrival.missingIdents, ', ') })
-                      : t('collect.verify.timeout')
-                  }
+                  message={targetIdents.length > 0 ? t('collect.verify.timeout_targets', { idents: _.join(arrival.missingIdents, ', ') }) : t('collect.verify.timeout')}
                   description={
                     <>
                       <div>{t('collect.verify.timeout_tip', { prefix: `${metricPrefix}_` })}</div>
