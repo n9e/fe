@@ -158,7 +158,7 @@ export function applyStreamChunk(segments: IAiChatStreamSegment[], chunk: IAiCha
     case 'thinking':
     case 'text': {
       const kind = chunk.type === 'thinking' ? 'thinking' : 'text';
-      if (!delta) return next;
+      if (!delta) return segments;
       if (last && !last.done && last.kind === kind) {
         // 同类未收口段 → 追加
         next[next.length - 1] = { ...last, content: last.content + delta };
