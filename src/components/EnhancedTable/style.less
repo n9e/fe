@@ -88,6 +88,11 @@
   width: 28px;
   height: 28px;
   padding: 0;
+  // Cap layout footprint at 24px (same as sort buttons / inline icons) so rows keep the
+  // 40px rhythm (8px padding + 24px content); the 28px paint/hit area overflows into the
+  // cell padding instead of stretching every row to 45px.
+  margin-top: -2px;
+  margin-bottom: -2px;
   border-radius: 6px;
   color: var(--fc-text-3);
 
