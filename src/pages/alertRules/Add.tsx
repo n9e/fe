@@ -46,20 +46,22 @@ export default function Add() {
             ref: generateQueryNameByIndex(idx),
           };
         }),
-        triggers: [
-          {
+        // 每条查询生成一个独立触发条件：任一越界即告警。
+        // 过去只生成引用 A 的一条，批量带入 N 条 promql 时 B/C… 成了没有触发条件的死查询
+        triggers: _.map(promqls, (_promql, idx) => {
+          return {
             mode: 0,
             expressions: [
               {
-                ref: 'A',
+                ref: generateQueryNameByIndex(idx),
                 comparisonOperator: '>',
                 value: 0,
                 logicalOperator: '&&',
               },
             ],
             severity: 2,
-          },
-        ],
+          };
+        }),
       },
     };
   }
