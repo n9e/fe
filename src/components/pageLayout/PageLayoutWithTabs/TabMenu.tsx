@@ -44,7 +44,7 @@ export const TabMenu: React.FC<TabMenuProps> = ({ currentMenu, onTabChange }) =>
       {_.map(permissionedMenus, (item) => (
         <div
           key={item.key}
-          className={`relative px-5 h-full header-tab-menu flex items-center cursor-pointer text-sm transition-colors duration-300 ${
+          className={`relative px-5 h-full header-tab-menu flex items-center whitespace-nowrap cursor-pointer text-sm transition-colors duration-300 ${
             activeTab === item.key ? `text-primary custom-tab-active ${darkMode ? 'bg-gray-700/20' : 'bg-gray-200/20'}` : ''
           }`}
           onClick={() => {
