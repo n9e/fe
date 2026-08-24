@@ -284,6 +284,16 @@ describe('dashboard v4 migration', () => {
     });
   });
 
+  it('preserves embedded Grafana dashboard configs', () => {
+    const iframeDashboard = {
+      mode: 'iframe',
+      iframe_url: 'https://grafana.example.com/d/abc',
+      version: '4.0.0',
+    };
+
+    expect(dashboardMigrator(iframeDashboard)).toEqual(iframeDashboard);
+  });
+
   it('migrates missing-version panels through the legacy version chain', () => {
     const panel = dashboardMigrator({
       panels: [{ targets: [{ expr: 'up', maxDataPoints: 100, time: { start: 'now-2h', end: 'now' } }], options: {}, custom: {} }],
