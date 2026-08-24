@@ -16,7 +16,15 @@ import CreateBusinessModal from '@/pages/user/component/createModal';
 import { deleteBusinessTeam } from '@/services/manage';
 import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
-import { listToTree, getCollapsedKeys, getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getVaildBusinessGroup } from './utils';
+import {
+  listToTree,
+  getCollapsedKeys,
+  getCleanBusinessGroupIds,
+  getSelectedBusinessGroupKey,
+  getDefaultBusinessGroupKey,
+  getDefaultBusiness,
+  getVaildBusinessGroup,
+} from './utils';
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
 import { getBusiGroups } from './services';
@@ -26,6 +34,7 @@ export {
   listToTree,
   getCollapsedKeys,
   getCleanBusinessGroupIds,
+  getSelectedBusinessGroupKey,
   BusinessGroupSelect,
   getDefaultBusinessGroupKey,
   getDefaultBusiness,
@@ -102,7 +111,7 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
   const query = queryString.parse(location.search);
   const history = useHistory();
   const { title = t('common:business_groups'), renderHeadExtra, onSelect, showSelected = true } = props;
-  const selected = props.selected || businessGroup.key;
+  const selected = getSelectedBusinessGroupKey(props.selected, businessGroup.key);
   const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
   const { busiGroups, siteInfo, setBusiGroups } = useContext(CommonStateContext);
