@@ -130,6 +130,9 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
+    // 自动跳转期间登录表单未挂载，verifyimgRef 为空，此时拉验证码会误报「获取验证码失败」，
+    // 且跳转失败复位后验证码图没有 src。等 ssoRedirecting 复位、表单挂载后再拉
+    if (ssoRedirecting) return;
     getSsoConfig().then((res) => {
       if (res.dat) {
         setDis({
@@ -156,7 +159,7 @@ export default function Login() {
         });
       }
     });
-  }, []);
+  }, [ssoRedirecting]);
 
   const handleSubmit = () => {
     form.validateFields().then(() => {
