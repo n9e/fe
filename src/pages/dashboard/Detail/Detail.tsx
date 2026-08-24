@@ -189,7 +189,7 @@ export default function DetailV2(props: IProps) {
         if (!validationResult.valid) {
           console.warn('Dashboard panels/variables config warnings:', validationResult.errors);
         }
-        if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
+        if (configs.mode !== 'iframe' && (!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
           setMigrationVisible(true);
         }
         setDashboardMeta({
