@@ -107,10 +107,9 @@ export interface ChannelItem {
     dingtalkapp_request_config: DingtalkAppRequestConfig;
     wecomapp_request_config: WecomAppRequestConfig;
     feishuapp_request_config: FeishuAppRequestConfig;
-    feishu_request_config: Omit<FeishuAppRequestConfig, 'app_id' | 'app_secret'>;
-    feishucard_request_config: Omit<FeishuAppRequestConfig, 'app_id' | 'app_secret'>;
-    lark_request_config: Omit<FeishuAppRequestConfig, 'app_id' | 'app_secret'>;
-    larkcard_request_config: Omit<FeishuAppRequestConfig, 'app_id' | 'app_secret'>;
-    dingtalk_request_config: Omit<DingtalkAppRequestConfig, 'app_key' | 'app_secret'>;
+    // 群机器人（webhook）类渠道只有上传告警截图用的应用凭证，字段名与后端 models.RequestConfig 一一对应：
+    // feishu / feishucard / lark / larkcard 共用 feishu_request_config，dingtalk 用 dingtalk_request_config
+    feishu_request_config: Pick<FeishuAppRequestConfig, 'app_id' | 'app_secret'>;
+    dingtalk_request_config: Pick<DingtalkAppRequestConfig, 'app_key' | 'app_secret'>;
   };
 }
