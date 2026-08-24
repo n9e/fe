@@ -15,6 +15,14 @@
  *
  */
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+
+/** 可持久化到仪表盘配置中的 JSON 值。 */
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+export interface JsonObject {
+  [key: string]: JsonValue;
+}
+
 export interface IGridPos {
   h: number;
   w: number;
