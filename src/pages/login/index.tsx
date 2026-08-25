@@ -51,6 +51,7 @@ const i18nMap = {
   en_US: 'En',
   ja_JP: '日本語',
   ru_RU: 'Русский',
+  es_ES: 'Español',
   pt_BR: 'Português',
 };
 

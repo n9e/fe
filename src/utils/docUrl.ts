@@ -5,6 +5,7 @@ export const DOC_URL_LANG_SUFFIX: { [key: string]: string } = {
   en_US: '_en',
   ja_JP: '_en',
   ru_RU: '_en',
+  es_ES: '_en',
   pt_BR: '_en',
 };
 

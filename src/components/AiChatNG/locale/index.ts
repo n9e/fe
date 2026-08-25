@@ -6,6 +6,7 @@ import zh_HK from './zh_HK';
 import ja_JP from './ja_JP';
 import ru_RU from './ru_RU';
 import pt_BR from './pt_BR';
+import es_ES from './es_ES';
 
 const resources = {
   [NAME_SPACE]: {
@@ -15,6 +16,7 @@ const resources = {
     ja_JP,
     ru_RU,
     pt_BR,
+    es_ES,
   },
 };
 

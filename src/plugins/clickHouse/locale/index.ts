@@ -4,6 +4,7 @@ import ru_RU from './ru_RU';
 import zh_CN from './zh_CN';
 import zh_HK from './zh_HK';
 import pt_BR from './pt_BR';
+import es_ES from './es_ES';
 
 const resources = {
   'n9e-ck': {
@@ -13,6 +14,7 @@ const resources = {
     zh_CN,
     zh_HK,
     pt_BR,
+    es_ES,
   },
 };
 
