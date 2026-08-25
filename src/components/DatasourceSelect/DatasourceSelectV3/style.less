@@ -1,9 +1,22 @@
 .n9e-datasource-select-v3 {
+  &-default-tag.ant-tag {
+    margin-right: 0;
+    color: var(--fc-violet-11);
+    background-color: var(--fc-violet-3);
+    border: none;
+    border-radius: 4px;
+  }
+
   .ant-select-selection-search-input {
     text-indent: 24px !important;
   }
 
   .ant-select-selector .ant-select-selection-item {
     transition: unset !important;
+  }
+
+  &.ant-select-open .ant-select-selection-item img {
+    opacity: 0.45;
+    transition: opacity 0.3s;
   }
 }

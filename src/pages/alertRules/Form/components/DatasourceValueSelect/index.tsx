@@ -14,14 +14,16 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useState } from 'react';
-import { Form, Select } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
+import { Form } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { getDatasourceBriefList } from '@/services/common';
 import DatasourceSelectExtra from '@/pages/alertRules/Form/components/DatasourceSelectExtra';
+import { CommonStateContext } from '@/App';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 
 export const DATASOURCE_ALL = 0;
 
@@ -52,6 +54,7 @@ const getInvalidDatasourceIds = (ids: number | number[], datasourceList: { id: n
 
 export default function index({ setFieldsValue, cate, datasourceList, mode, required = true, disabled, showExtra }: IProps) {
   const { t } = useTranslation('alertRules');
+  const { datasourceCateOptions } = useContext(CommonStateContext);
   const [fullDatasourceList, setFullDatasourceList] = useState<any[]>([]);
   const datasourceIds = Form.useWatch('datasource_ids');
   const invalidDatasourceIds = getInvalidDatasourceIds(datasourceIds, datasourceList, fullDatasourceList);
@@ -60,18 +63,6 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
       setFullDatasourceList(res);
     });
   };
-  let curDatasourceList = datasourceList;
-
-  if (cate === 'prometheus' || cate === 'loki') {
-    curDatasourceList = [
-      {
-        id: DATASOURCE_ALL,
-        name: '$all',
-      },
-      ...datasourceList,
-    ];
-  }
-
   useEffect(() => {
     fetchDatasourceList();
   }, []);
@@ -150,8 +141,22 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
           },
         ]}
       >
-        <Select
+        <DatasourceSelectV3
           mode={mode}
+          datasourceCateList={datasourceCateOptions}
+          ajustDatasourceList={(list) => _.filter(list, (item) => _.some(datasourceList, { id: item.id }))}
+          additionalOptions={
+            cate === 'prometheus' || cate === 'loki'
+              ? [
+                  {
+                    filter: '$all',
+                    label: '$all',
+                    optionLabel: '$all',
+                    value: DATASOURCE_ALL,
+                  },
+                ]
+              : undefined
+          }
           onChange={(v: number[] | number) => {
             if (_.isArray(v)) {
               const curVal = _.last(v);
@@ -164,16 +169,8 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
           }}
           maxTagCount='responsive'
           disabled={disabled}
-          showSearch
-          optionFilterProp='children'
           style={{ width: '100%' }}
-        >
-          {_.map(curDatasourceList, (item) => (
-            <Select.Option value={item.id} key={item.id}>
-              {item.name}
-            </Select.Option>
-          ))}
-        </Select>
+        />
       </Form.Item>
       {showExtra && (
         <Form.Item label=' '>
