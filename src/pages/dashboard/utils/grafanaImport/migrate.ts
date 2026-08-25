@@ -48,10 +48,10 @@ enum SpecialValueMatch {
 
 /** 递归遍历所有面板（含 row 子面板） */
 function* walkPanels(dashboard: GrafanaDashboard): Generator<GrafanaPanel> {
-  for (const panel of _.isArray(dashboard.panels) ? dashboard.panels : []) {
+  for (const panel of Array.isArray(dashboard.panels) ? dashboard.panels : []) {
     if (!_.isPlainObject(panel)) continue;
     yield panel;
-    if (panel.type === 'row' && _.isArray(panel.panels)) {
+    if (panel.type === 'row' && Array.isArray(panel.panels)) {
       yield* walkPanels({ panels: panel.panels } as GrafanaDashboard);
     }
   }
@@ -161,7 +161,7 @@ const MIGRATIONS: Migration[] = [
     migrate(dashboard) {
       let changed = false;
       for (const panel of walkPanels(dashboard)) {
-        for (const target of _.isArray(panel.targets) ? panel.targets : []) {
+        for (const target of Array.isArray(panel.targets) ? panel.targets : []) {
           if (!_.isPlainObject(target)) continue;
           if (target.fields && target.tags && target.groupBy) {
             if (target.rawQuery) {
@@ -435,12 +435,12 @@ const MIGRATIONS: Migration[] = [
       let changed = false;
       // 移除重复面板残留（与 grafana removeRepeatedPanels 一致）
       const retained: GrafanaPanel[] = [];
-      for (const panel of _.isArray(dashboard.panels) ? dashboard.panels : []) {
+      for (const panel of Array.isArray(dashboard.panels) ? dashboard.panels : []) {
         if (panel.repeatPanelId || panel.repeatByRow) {
           changed = true;
           continue;
         }
-        if (panel.type === 'row' && _.isArray(panel.panels)) {
+        if (panel.type === 'row' && Array.isArray(panel.panels)) {
           const before = panel.panels.length;
           panel.panels = panel.panels.filter((x) => !x.repeatPanelId);
           if (panel.panels.length !== before) changed = true;
@@ -984,8 +984,8 @@ class RowArea {
 
 function getGridHeight(height: number | string) {
   let h = height;
-  if (_.isString(h)) {
-    h = parseInt(_.replace(h, 'px', ''), 10);
+  if (typeof h === 'string') {
+    h = parseInt(h.replace('px', ''), 10);
   }
   if (h < MIN_PANEL_HEIGHT) {
     h = MIN_PANEL_HEIGHT;
