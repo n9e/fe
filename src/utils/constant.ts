@@ -113,4 +113,8 @@ export const LANGUAGE_MAP = {
   en_US: 'En',
   ja_JP: '日本語',
   ru_RU: 'Русский',
+  pt_BR: 'Português',
 };
+
+// 拉丁字母语言的词比中文长，菜单需要更宽才不折行
+export const WIDE_MENU_LANGS: string[] = ['en_US', 'ru_RU', 'pt_BR'];

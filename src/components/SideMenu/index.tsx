@@ -47,10 +47,11 @@ const i18nMap: Record<string, string> = {
   en_US: 'English',
   ja_JP: '日本語',
   ru_RU: 'Русский',
+  pt_BR: 'Português',
 };
 
 /** 侧栏语言菜单展示顺序（不依赖 Object.keys 插入顺序） */
-const SIDE_MENU_I18N_ORDER = ['zh_CN', 'zh_HK', 'en_US', 'ja_JP', 'ru_RU'] as const;
+const SIDE_MENU_I18N_ORDER = ['zh_CN', 'zh_HK', 'en_US', 'ja_JP', 'ru_RU', 'pt_BR'] as const;
 
 function clampSideMenuWidth(px: number): number {
   return Math.min(SIDE_MENU_MAX_WIDTH, Math.max(SIDE_MENU_MIN_WIDTH, Math.round(px)));

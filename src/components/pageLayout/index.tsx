@@ -57,6 +57,7 @@ export const i18nMap = {
   en_US: 'En',
   ja_JP: '日本語',
   ru_RU: 'Русский',
+  pt_BR: 'Português',
 };
 
 let PageLayout = PageLayoutWithTabs;
