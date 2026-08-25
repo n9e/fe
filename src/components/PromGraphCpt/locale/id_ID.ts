@@ -1,0 +1,30 @@
+const id_ID = {
+  "builder_btn": "Mode pemula",
+  "query_btn": "Kueri",
+  "table_promql_interpolate_string": "Kami menemukan variabel di dalam PromQL kamu dan menggantinya secara otomatis dengan 5m. PromQL hasilnya: {{query}}",
+  "tab_table": "Tabel (Table)",
+  "tab_graph": "Grafik (Graph)",
+  "max_data_points": "Jumlah titik data maksimum",
+  "min_step": "Langkah minimum (Min step)",
+  "load_time": "Durasi: {{time}} ms",
+  "resolution": "Langkah kueri: {{resolution}} d",
+  "result_series": "Seri yang dikembalikan: {{count}}",
+  "time": "Waktu",
+  "unit": "Satuan",
+  "enable_autocomplete": "Aktifkan pelengkapan otomatis",
+  "evaluation_time": "Pilih waktu",
+  "tooltip_mode": "Mode saran",
+  "tooltip_mode_single": "Satu per satu",
+  "tooltip_mode_all": "Semua",
+  "tooltip_sort": "Urutan",
+  "tooltip_sort_desc": "Menurun",
+  "tooltip_sort_asc": "Menaik",
+  "show_legend": "Tampilkan legenda",
+  "value_format": "Format angka",
+  "series": "Seri ({{count}})",
+  "series_filter": "Cari nama seri",
+  "filtered": "Terfilter",
+  "value": "Nilai"
+};
+
+export default id_ID;

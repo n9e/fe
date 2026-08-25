@@ -2,6 +2,7 @@ import moment from 'moment';
 import 'moment/dist/locale/zh-hk';
 import 'moment/dist/locale/ja';
 import 'moment/dist/locale/ru';
+import 'moment/dist/locale/id';
 import 'moment/dist/locale/es';
 import 'moment/dist/locale/pt-br';
 
@@ -38,6 +39,7 @@ const momentLocaleMap: { [key: string]: string } = {
   en_US: 'en',
   ja_JP: 'ja',
   ru_RU: 'ru',
+  id_ID: 'id',
   es_ES: 'es',
   pt_BR: 'pt-br',
 };

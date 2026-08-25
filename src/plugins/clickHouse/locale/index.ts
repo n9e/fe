@@ -5,6 +5,7 @@ import zh_CN from './zh_CN';
 import zh_HK from './zh_HK';
 import pt_BR from './pt_BR';
 import es_ES from './es_ES';
+import id_ID from './id_ID';
 
 const resources = {
   'n9e-ck': {
@@ -15,6 +16,7 @@ const resources = {
     zh_HK,
     pt_BR,
     es_ES,
+    id_ID,
   },
 };
 

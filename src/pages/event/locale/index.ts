@@ -5,6 +5,7 @@ import ja_JP from './ja_JP';
 import ru_RU from './ru_RU';
 import pt_BR from './pt_BR';
 import es_ES from './es_ES';
+import id_ID from './id_ID';
 
 const resources = {
   AlertCurEvents: {
@@ -15,6 +16,7 @@ const resources = {
     ru_RU,
     pt_BR,
     es_ES,
+    id_ID,
   },
 };
 
