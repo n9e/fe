@@ -504,21 +504,21 @@ const ko_KR = {
         "drawStyle": "그리기 모드",
         "lineInterpolation": "선 보간",
         "spanNulls": "빈 값 잇기",
-        "spanNulls_0": "닫기",
-        "spanNulls_1": "켜기",
+        "spanNulls_0": "사용 안 함",
+        "spanNulls_1": "사용",
         "lineWidth": "선 굵기",
         "fillOpacity": "투명도",
         "gradientMode": "그라데이션",
-        "gradientMode_opacity": "켜기",
-        "gradientMode_none": "닫기",
+        "gradientMode_opacity": "사용",
+        "gradientMode_none": "사용 안 함",
         "stack": "누적",
-        "stack_normal": "켜기",
+        "stack_normal": "사용",
         "stack_off": "사용 안 함",
         "yAxis": {
           "title": "Y축 설정",
           "rightYAxis": {
             "label": "오른쪽 Y축 표시",
-            "normal": "사용 중",
+            "normal": "사용",
             "off": "사용 안 함"
           }
         },
