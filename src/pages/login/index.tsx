@@ -55,6 +55,7 @@ const i18nMap = {
   es_ES: 'Español',
   pt_BR: 'Português',
   ko_KR: '한국어',
+  fr_FR: 'Français',
 };
 
 export interface DisplayName {

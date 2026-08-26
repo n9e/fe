@@ -117,7 +117,8 @@ export const LANGUAGE_MAP = {
   es_ES: 'Español',
   pt_BR: 'Português',
   ko_KR: '한국어',
+  fr_FR: 'Français',
 };
 
 // 拉丁字母语言的词比中文长，菜单需要更宽才不折行
-export const WIDE_MENU_LANGS: string[] = ['en_US', 'ru_RU', 'pt_BR', 'es_ES', 'id_ID'];
+export const WIDE_MENU_LANGS: string[] = ['en_US', 'ru_RU', 'pt_BR', 'es_ES', 'id_ID', 'fr_FR'];

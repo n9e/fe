@@ -20,7 +20,7 @@ import _ from 'lodash';
 
 import { syncMomentLocale } from './utils/momentLocale';
 
-const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP', 'pt_BR', 'es_ES', 'id_ID', 'ko_KR'];
+const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP', 'pt_BR', 'es_ES', 'id_ID', 'ko_KR', 'fr_FR'];
 
 // 缺失 key 时的回退链：繁体优先回退简体；其他语言（ja/ru 等）优先回退英文，最终兜底 zh_CN
 const fallbackLng = {
@@ -37,6 +37,7 @@ function detectBrowserLanguage() {
     }
     if (_.startsWith(lang, 'ja')) return 'ja_JP';
     if (_.startsWith(lang, 'ru')) return 'ru_RU';
+    if (_.startsWith(lang, 'fr')) return 'fr_FR';
     if (_.startsWith(lang, 'ko')) return 'ko_KR';
     if (_.startsWith(lang, 'id')) return 'id_ID';
     if (_.startsWith(lang, 'es')) return 'es_ES';
