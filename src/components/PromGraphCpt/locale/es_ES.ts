@@ -1,0 +1,30 @@
+const es_ES = {
+  "builder_btn": "Modo principiante",
+  "query_btn": "Consulta",
+  "table_promql_interpolate_string": "Detectamos variables en tu PromQL y las sustituimos automáticamente por 5m. La PromQL resultante es: {{query}}",
+  "tab_table": "Tabla (Table)",
+  "tab_graph": "Gráfico (Graph)",
+  "max_data_points": "Número máximo de puntos",
+  "min_step": "Paso mínimo (Min step)",
+  "load_time": "Duración: {{time}} ms",
+  "resolution": "Paso de la consulta: {{resolution}} s",
+  "result_series": "Series devueltas: {{count}}",
+  "time": "Tiempo",
+  "unit": "Unidad",
+  "enable_autocomplete": "Activar el autocompletado",
+  "evaluation_time": "Seleccionar hora",
+  "tooltip_mode": "Modo de sugerencias",
+  "tooltip_mode_single": "Individual",
+  "tooltip_mode_all": "Todos",
+  "tooltip_sort": "Orden",
+  "tooltip_sort_desc": "Descendente",
+  "tooltip_sort_asc": "Ascendente",
+  "show_legend": "Mostrar la leyenda",
+  "value_format": "Formato numérico",
+  "series": "Series ({{count}})",
+  "series_filter": "Buscar el nombre de la serie",
+  "filtered": "Filtrado",
+  "value": "Valor"
+};
+
+export default es_ES;

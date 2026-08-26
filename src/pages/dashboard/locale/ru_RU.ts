@@ -583,6 +583,12 @@ const ru_RU = {
         showPoints_always: 'Показывать',
         showPoints_none: 'Не показывать',
         pointSize: 'Размер точки',
+        barAlignment: 'Выравнивание столбцов',
+        barAlignment_before: 'До',
+        barAlignment_center: 'По центру',
+        barAlignment_after: 'После',
+        barWidthFactor: 'Коэффициент ширины столбца',
+        barWidthFactor_tip: 'Задаёт долю временного бакета, занимаемую столбцом. 1 заполняет бакет целиком, а 0.6 использует 60% и оставляет промежуток.',
       },
       iframe: {
         src: 'Адрес iframe',

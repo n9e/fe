@@ -158,6 +158,82 @@ describe('dashboard unified query contract', () => {
     expect(JSON.stringify(request)).not.toContain('"values"');
   });
 
+  it('normalizes Elasticsearch and OpenSearch interval values for query-batch v2', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: {
+            index: 'application-*',
+            date_field: '@timestamp',
+            interval: 5,
+            interval_unit: 'min',
+            values: [{ func: 'count' }],
+          },
+        },
+        {
+          refId: 'B',
+          kind: 'query',
+          datasource: { cate: 'opensearch', id: 13 },
+          query: {
+            index: 'application-*',
+            date_field: '@timestamp',
+            interval: 2,
+            interval_unit: 'hour',
+            values: [{ func: 'count' }],
+          },
+        },
+      ],
+      datasourceList: [],
+    });
+
+    expect(request.queries).toMatchObject([
+      { ref_id: 'A', query: { interval: 300 } },
+      { ref_id: 'B', query: { interval: 7200 } },
+    ]);
+    expect(JSON.stringify(request)).not.toContain('"interval_unit"');
+  });
+
+  it('propagates the V2 Elasticsearch interval to normalized time-series results', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: { index: 'application-*', date_field: '@timestamp', interval: 5, interval_unit: 'min', values: [{ func: 'count' }] },
+        },
+      ],
+      datasourceList: [],
+    });
+    const normalized = normalizeDashboardQueryResponse(
+      {
+        results: [{ ref_id: 'A', status: 'success', result_type: 'time_series', series: [{ labels: {}, samples: [[1, 1]] }] }],
+      },
+      [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: { index: 'application-*', date_field: '@timestamp', interval: 5, interval_unit: 'min', values: [{ func: 'count' }] },
+        },
+      ],
+      request,
+    );
+
+    expect(normalized.series[0]).toMatchObject({ bucketInterval: 300 });
+  });
+
   it('silently skips targets that do not meet legacy datasource query prerequisites', () => {
     const build = (cate: string, query: Record<string, unknown>) =>
       buildDashboardQueryRequest({
@@ -303,6 +379,7 @@ describe('dashboard unified query contract', () => {
             index: 'application-*',
             date_field: '@timestamp',
             filter_language: 'lucene',
+            interval: 60,
             value: { func: 'rawData' },
           },
         },

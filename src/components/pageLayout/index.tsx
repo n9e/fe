@@ -57,6 +57,11 @@ export const i18nMap = {
   en_US: 'En',
   ja_JP: '日本語',
   ru_RU: 'Русский',
+  id_ID: 'Bahasa Indonesia',
+  es_ES: 'Español',
+  pt_BR: 'Português',
+  ko_KR: '한국어',
+  fr_FR: 'Français',
 };
 
 let PageLayout = PageLayoutWithTabs;

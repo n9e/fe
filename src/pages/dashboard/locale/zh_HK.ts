@@ -617,6 +617,12 @@ const zh_HK = {
         showPoints_always: '顯示',
         showPoints_none: '不顯示',
         pointSize: '點大小',
+        barAlignment: '柱形相對時間點對齊',
+        barAlignment_before: '之前',
+        barAlignment_center: '置中',
+        barAlignment_after: '之後',
+        barWidthFactor: '柱寬係數',
+        barWidthFactor_tip: '控制柱子佔用時間桶寬度的比例。1 表示填滿整個時間桶；0.6 表示佔用 60%，其餘作為間隔。',
       },
       iframe: {
         src: 'iframe 地址',

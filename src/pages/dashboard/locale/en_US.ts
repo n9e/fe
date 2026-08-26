@@ -613,6 +613,12 @@ const en_US = {
         showPoints_always: 'Always',
         showPoints_none: 'None',
         pointSize: 'Point size',
+        barAlignment: 'Bar alignment',
+        barAlignment_before: 'Before',
+        barAlignment_center: 'Center',
+        barAlignment_after: 'After',
+        barWidthFactor: 'Bar width factor',
+        barWidthFactor_tip: 'Controls the proportion of each time bucket occupied by a bar. 1 fills the bucket; 0.6 uses 60% and leaves the rest as a gap.',
       },
       iframe: {
         src: 'Src',
