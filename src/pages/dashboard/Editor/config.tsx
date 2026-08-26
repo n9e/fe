@@ -147,6 +147,8 @@ export const defaultCustomValuesMap = {
     },
     showPoints: 'none',
     pointSize: 5,
+    barAlignment: 0,
+    barWidthFactor: 0.6,
   },
   stat: {
     textMode: 'valueAndName',

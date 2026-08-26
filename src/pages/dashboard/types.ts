@@ -195,6 +195,8 @@ export interface ITimeseriesStyles {
     log?: 10 | 2;
   };
   spanNulls: boolean;
+  barAlignment?: -1 | 0 | 1;
+  barWidthFactor?: number;
 }
 
 export interface IStatStyles {

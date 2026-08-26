@@ -597,6 +597,12 @@ const zh_CN = {
         showPoints_always: '显示',
         showPoints_none: '不显示',
         pointSize: '点大小',
+        barAlignment: '柱形相对时间点对齐',
+        barAlignment_before: '之前',
+        barAlignment_center: '居中',
+        barAlignment_after: '之后',
+        barWidthFactor: '柱宽因子',
+        barWidthFactor_tip: '控制柱子占用时间桶宽度的比例。1 表示占满整个时间桶；0.6 表示占用 60%，其余作为间隔。',
       },
       iframe: {
         src: 'iframe 地址',
