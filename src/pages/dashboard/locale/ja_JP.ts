@@ -516,6 +516,12 @@ const ja_JP = {
         showPoints_always: '表示',
         showPoints_none: '非表示',
         pointSize: 'ポイントのサイズ',
+        barAlignment: '棒グラフの配置',
+        barAlignment_before: '前',
+        barAlignment_center: '中央揃え',
+        barAlignment_after: '後',
+        barWidthFactor: '棒幅係数',
+        barWidthFactor_tip: '時間バケット内で棒が占める幅の割合です。1 はバケット全体を埋め、0.6 は 60% を使用して残りを間隔にします。',
       },
       iframe: {
         src: 'iframeのURL',

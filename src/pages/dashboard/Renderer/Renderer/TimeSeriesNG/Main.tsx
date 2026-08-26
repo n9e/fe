@@ -212,6 +212,8 @@ export default function index(props: Props) {
         points: { show: custom.showPoints === 'always', size: custom.showPoints === 'always' ? custom.pointSize : 6 },
         overrides,
         spanGaps: custom.spanNulls,
+        barAlignment: custom.barAlignment,
+        barWidthFactor: custom.barWidthFactor,
       }),
       axes: [
         axisBuilder({
@@ -317,6 +319,7 @@ export default function index(props: Props) {
     timezone,
   ]);
   let data = processedFrames;
+  const barGeometryVersion = _.map(baseSeries, (item) => _.get(item, ['n9e_internal', 'bucketInterval'], '')).join(',');
 
   if (custom.stack === 'normal') {
     const stackedDataAndBands = getStackedDataAndBands(processedFrames);
@@ -345,6 +348,7 @@ export default function index(props: Props) {
     <>
       <div className='renderer-timeseries-ng-graph'>
         <UPlotChart
+          key={`${id}:${barGeometryVersion}:${custom.barAlignment ?? 0}:${custom.barWidthFactor ?? 0.6}`}
           id={id}
           options={uOptions}
           data={data}

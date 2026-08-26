@@ -294,12 +294,17 @@ function convertTimeseriesGrafanaToN9E(panel: any) {
   const lineInterpolation = _.get(panel, 'fieldConfig.defaults.custom.lineInterpolation');
   const fillOpacity = _.get(panel, 'fieldConfig.defaults.custom.fillOpacity');
   const stack = _.get(panel, 'fieldConfig.defaults.custom.stacking.mode');
+  const grafanaBarAlignment = _.get(panel, 'fieldConfig.defaults.custom.barAlignment');
+  const barAlignment = grafanaBarAlignment === -1 || grafanaBarAlignment === 0 || grafanaBarAlignment === 1 ? grafanaBarAlignment : 0;
+  const barWidthFactor = _.get(panel, 'fieldConfig.defaults.custom.barWidthFactor', 0.6);
   return {
     version: DASHBOARD_VERSION,
     drawStyle: panel.type === 'barchart' ? 'bars' : 'lines',
     lineInterpolation: lineInterpolation === 'smooth' ? 'smooth' : 'linear',
     fillOpacity: fillOpacity ? fillOpacity / 100 : 0,
     stack: stack === 'normal' ? 'normal' : 'off',
+    barAlignment,
+    barWidthFactor,
   };
 }
 
