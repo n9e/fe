@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 
 function getBucketInterval(target: { interval?: string | number }) {
-  if (_.isNumber(target.interval)) return target.interval;
+  if (typeof target.interval === 'number') return target.interval;
   const interval = Number.parseFloat(target.interval || '');
   return Number.isFinite(interval) && interval > 0 ? interval : undefined;
 }
