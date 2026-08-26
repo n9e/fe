@@ -44,8 +44,8 @@ const id_ID = {
     },
     "add_to": {
       "btn": "Tambahkan ke…",
-      "recording_rule": "Tambahkan ke aturan perekaman",
-      "add_recording_rule_title": "Tambah aturan perekaman"
+      "recording_rule": "Tambahkan ke recording rule",
+      "add_recording_rule_title": "Tambah recording rule"
     },
     "sql_format": {
       "title": "Pratinjau SQL",
@@ -55,7 +55,7 @@ const id_ID = {
       "timeseries": "Lihat grafik deret waktu",
       "timeseries_tip": "Bisa disalin ke Tampilan struktur tabel -> mode Grafik deret waktu untuk melihat datanya, atau dipakai di dasbor untuk menggambar grafik deret waktu dari data ClickHouse.",
       "table": "Lihat nilai statistik",
-      "table_tip": "Bisa dipakai membuat aturan alert dan aturan perekaman ClickHouse, serta metrik Polaris."
+      "table_tip": "Bisa dipakai membuat aturan alert dan recording rule ClickHouse, serta metrik Northstar."
     },
     "warn_message_btn_1": "Tetap jalankan kueri",
     "warn_message_btn_2": "Kembali dan ubah",

@@ -85,7 +85,7 @@ const pt_BR = {
   "跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）": "Abre um dashboard e aceita variáveis fixas, o que ajuda quando as variáveis do link de detalhamento não batem com os filtros do dashboard — por exemplo, quando o dashboard tem três filtros e o link passa apenas um",
   "日志中的字段均可被作为变量引用，如": "Qualquer campo do log pode ser referenciado como variável, por exemplo",
   "跳转到日志查询": "Abrir a busca de logs",
-  "跳转到灭火图": "Abrir o mapa de incidentes",
+  "跳转到灭火图": "Abrir o Firemap",
   "跳转到仪表盘": "Abrir o dashboard",
   "内置变量": "Variáveis internas",
   "，如": ", por exemplo",

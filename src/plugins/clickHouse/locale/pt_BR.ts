@@ -44,8 +44,8 @@ const pt_BR = {
     },
     "add_to": {
       "btn": "Adicionar a…",
-      "recording_rule": "Adicionar a uma regra de gravação",
-      "add_recording_rule_title": "Adicionar regra de gravação"
+      "recording_rule": "Adicionar a uma regra de registro",
+      "add_recording_rule_title": "Adicionar regra de registro"
     },
     "sql_format": {
       "title": "Prévia do SQL",
@@ -55,7 +55,7 @@ const pt_BR = {
       "timeseries": "Ver o gráfico de série temporal",
       "timeseries_tip": "Pode ser copiado para a visão da estrutura da tabela, no modo série temporal, para ver os dados, ou usado em um dashboard para plotar séries a partir do ClickHouse.",
       "table": "Ver os valores estatísticos",
-      "table_tip": "Pode ser usado para criar regras de alerta e de gravação do ClickHouse, e métricas do NorthStar."
+      "table_tip": "Pode ser usado para criar regras de alerta e de registro do ClickHouse, e métricas do Northstar."
     },
     "warn_message_btn_1": "Executar a consulta mesmo assim",
     "warn_message_btn_2": "Voltar e editar",

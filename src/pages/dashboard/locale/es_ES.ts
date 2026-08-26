@@ -1,16 +1,16 @@
 const es_ES = {
-  "title": "Paneles de monitorización",
-  "list": "Lista de paneles",
-  "back_icon_tip": "Vuelve a la página anterior o, si no la hay, a la lista de paneles",
+  "title": "Dashboards de monitorización",
+  "list": "Lista de dashboards",
+  "back_icon_tip": "Vuelve a la página anterior o, si no la hay, a la lista de dashboards",
   "back_icon_tip_is_built_in": "Vuelve a la página anterior o, si no la hay, al centro de plantillas",
-  "name": "Nombre del panel",
+  "name": "Nombre del dashboard",
   "tags": "Etiquetas de categoría",
   "ident": "Identificador en inglés",
   "ident_msg": "Usa solo letras, números y guiones",
-  "search_placeholder": "Nombre del panel, etiquetas de categoría",
+  "search_placeholder": "Nombre del dashboard, etiquetas de categoría",
   "empty_guide": {
-    "title": "Aún no hay paneles",
-    "desc": "Crea un panel o importa las plantillas integradas con un clic.",
+    "title": "Aún no hay dashboards",
+    "desc": "Crea un dashboard o importa las plantillas integradas con un clic.",
     "from_template": "Importar desde una plantilla"
   },
   "refresh_tip": "Un intervalo de actualización menor que el paso ({{num}}s) no traerá datos nuevos",
@@ -60,7 +60,7 @@ const es_ES = {
     "revoke": "Revocar",
     "revoke_confirm": "Al revocarlo, el enlace deja de funcionar de inmediato. ¿Confirmas?",
     "revoked": "Revocado",
-    "anonymous_tip": "Mientras esté vigente, el enlace anónimo permite ver este panel sin iniciar sesión y consultar los datos de los orígenes referenciados. Compártelo con cuidado",
+    "anonymous_tip": "Mientras esté vigente, el enlace anónimo permite ver este dashboard sin iniciar sesión y consultar los datos de los orígenes referenciados. Compártelo con cuidado",
     "recommend_tip": "El acceso anónimo se hace mediante el enlace de abajo, que durante su vigencia no requiere iniciar sesión. Para dejarlo público mucho tiempo, elige una validez en años",
     "unit_hour": "Horas",
     "unit_day": "Días",
@@ -69,38 +69,38 @@ const es_ES = {
     "fetch_failed": "Error al cargar la lista de enlaces para compartir",
     "generate_failed": "Error al generar el enlace para compartir",
     "revoke_failed": "Error al revocar el enlace para compartir",
-    "config_load_failed": "Error al leer la configuración del panel; por ahora no se puede establecer el acceso anónimo. Ciérralo e inténtalo de nuevo",
+    "config_load_failed": "Error al leer la configuración del dashboard; por ahora no se puede establecer el acceso anónimo. Ciérralo e inténtalo de nuevo",
     "revoke_all_confirm_title": "¿Revocar todos los enlaces anónimos para compartir?",
-    "revoke_all_confirm_content": "Este panel todavía tiene {{num}} enlaces anónimos vigentes. Su validez no depende de la configuración de visibilidad: aun después del cambio seguirían abriendo el panel sin iniciar sesión. Al confirmar, se revocarán todos los enlaces de este panel y se guardará la configuración. La revocación no se puede deshacer.",
+    "revoke_all_confirm_content": "Este dashboard todavía tiene {{num}} enlaces anónimos vigentes. Su validez no depende de la configuración de visibilidad: aun después del cambio seguirían abriendo el dashboard sin iniciar sesión. Al confirmar, se revocarán todos los enlaces de este dashboard y se guardará la configuración. La revocación no se puede deshacer.",
     "revoke_all_ok": "Revocar y guardar",
     "revoke_all_check_failed": "No se pudo comprobar si quedan enlaces anónimos; la configuración de visibilidad se guardó. Abre la ventana de enlaces para comprobarlo manualmente"
   },
   "default_filter": {
     "title": "Filtros predefinidos",
-    "public": "Paneles públicos",
-    "all": "Paneles de mis grupos de negocio",
-    "all_tip": "Esta opción muestra todos los paneles de los grupos de negocio a los que perteneces"
+    "public": "Dashboards públicos",
+    "all": "Dashboards de mis grupos de negocio",
+    "all_tip": "Esta opción muestra todos los dashboards de los grupos de negocio a los que perteneces"
   },
-  "create_title": "Crear panel",
-  "edit_title": "Editar panel",
+  "create_title": "Crear dashboard",
+  "edit_title": "Editar dashboard",
   "add_panel": "Añadir gráfico",
   "cluster": "Clúster",
   "full_screen": "Pantalla completa",
   "exit_full_screen": "Salir de la pantalla completa",
   "copyPanelTip": "Configuración del gráfico copiada. Usa «Añadir gráfico» > «Pegar gráfico» para crear uno a partir del JSON",
   "batch": {
-    "import": "Importar un JSON de panel de Nightingale",
-    "label": "JSON del panel",
-    "import_grafana": "Importar un panel de Grafana (no recomendado)",
-    "import_grafana_tip": "Solo pueden importarse paneles con orígenes de datos Prometheus y con los tipos de gráfico y funciones que admite Nightingale <a>Informar de un problema</a>",
-    "import_grafana_tip_version_error": "No se pueden importar configuraciones de panel anteriores a la v7",
+    "import": "Importar un JSON de dashboard de Nightingale",
+    "label": "JSON del dashboard",
+    "import_grafana": "Importar un dashboard de Grafana (no recomendado)",
+    "import_grafana_tip": "Solo pueden importarse dashboards con orígenes de datos Prometheus y con los tipos de gráfico y funciones que admite Nightingale <a>Informar de un problema</a>",
+    "import_grafana_tip_version_error": "No se pueden importar configuraciones de dashboard anteriores a la v7",
     "import_grafana_tip_version_warning": "Al importar configuraciones anteriores a la v8, puede que algunos gráficos no se admitan o no se dibujen correctamente",
-    "import_grafana_url": "Enlace del panel de Grafana (recomendado)",
-    "import_grafana_url_label": "Enlace del panel de Grafana",
+    "import_grafana_url": "Enlace del dashboard de Grafana (recomendado)",
+    "import_grafana_url_label": "Enlace del dashboard de Grafana",
     "continueToImport": "Continuar con la importación",
-    "noSelected": "Selecciona el panel",
-    "import_builtin": "Importar paneles integrados",
-    "import_builtin_board": "Paneles integrados",
+    "noSelected": "Selecciona el dashboard",
+    "import_builtin": "Importar dashboards integrados",
+    "import_builtin_board": "Dashboards integrados",
     "clone": {
       "name": "Nombre",
       "result": "Resultado",
@@ -108,11 +108,11 @@ const es_ES = {
     }
   },
   "link": {
-    "title": "Enlace del panel",
+    "title": "Enlace del dashboard",
     "name": "Nombre del enlace",
     "url": "Dirección del enlace",
     "isNewBlank": "Abrir en una ventana nueva",
-    "dashboardIds_placeholder": "Selecciona el panel"
+    "dashboardIds_placeholder": "Selecciona el dashboard"
   },
   "var": {
     "vars": "Variable",
@@ -170,11 +170,11 @@ const es_ES = {
       "regex_tip": "Opcional: filtra las opciones mediante una expresión regular. Introduce un <a>literal de expresión regular</a>, es decir, un patrón entre barras."
     },
     "hostIdent": {
-      "invalid": "El identificador de la máquina requiere acceso autorizado; en modo anónimo el panel no cargará",
-      "invalid2": "Este panel usa una variable de identificador de máquina y no admite acceso anónimo"
+      "invalid": "El identificador de la máquina requiere acceso autorizado; en modo anónimo el dashboard no cargará",
+      "invalid2": "Este dashboard usa una variable de identificador de máquina y no admite acceso anónimo"
     },
-    "help_tip": "\n      Cómo usar las variables\n      <1 />\n      ${variable_name}: valor de la variable del panel\n      <1 />\n      ${__field.name}: nombre de la serie en la leyenda\n      <1 />\n      ${__field.value}: valor de la serie en la leyenda\n      <1 />\n      ${__field.labels.X}: valor de la etiqueta\n      <1 />\n      ${__field.labels.__name__}: nombre de la métrica\n      <1 />\n      ${__interval}: intervalo en segundos, por ejemplo 15s; por defecto es el paso\n      <1 />\n      ${__interval_ms}: intervalo en milisegundos, por ejemplo 15000\n      <1 />\n      ${__range}: ventana de tiempo en segundos, por ejemplo 3600s\n      <1 />\n      ${__range_ms}: ventana de tiempo en milisegundos, por ejemplo 3600000\n      <1 />\n      ${__rate_interval}: intervalo en segundos, __interval * 4\n      <1 />\n      ${__from}: inicio del intervalo en milisegundos\n      <1 />\n      ${__from_date_seconds}: inicio del intervalo en segundos\n      <1 />\n      ${__from_date_iso}: inicio del intervalo en ISO 8601/RFC 3339\n      <1 />\n      La misma sintaxis sirve para ${__to}\n    ",
-    "help_tip_table_ng": "\n      Cómo usar las variables\n      <br />\n      ${variable_name}: valor de la variable del panel\n      <br />\n      ${__row.column_name}: valor de una columna de la fila\n      <br />\n      ${__interval}: intervalo en segundos, por ejemplo 15s; por defecto es el paso\n      <br />\n      ${__interval_ms}: intervalo en milisegundos, por ejemplo 15000\n      <br />\n      ${__range}: ventana de tiempo en segundos, por ejemplo 3600s\n      <br />\n      ${__range_ms}: ventana de tiempo en milisegundos, por ejemplo 3600000\n      <br />\n      ${__rate_interval}: intervalo en segundos, __interval * 4\n      <br />\n      ${__from}: inicio del intervalo en milisegundos\n      <br />\n      ${__from_date_seconds}: inicio del intervalo en segundos\n      <br />\n      ${__from_date_iso}: inicio del intervalo en ISO 8601/RFC 3339\n      <br />\n      La misma sintaxis sirve para ${__to}\n    "
+    "help_tip": "\n      Cómo usar las variables\n      <1 />\n      ${variable_name}: valor de la variable del dashboard\n      <1 />\n      ${__field.name}: nombre de la serie en la leyenda\n      <1 />\n      ${__field.value}: valor de la serie en la leyenda\n      <1 />\n      ${__field.labels.X}: valor de la etiqueta\n      <1 />\n      ${__field.labels.__name__}: nombre de la métrica\n      <1 />\n      ${__interval}: intervalo en segundos, por ejemplo 15s; por defecto es el paso\n      <1 />\n      ${__interval_ms}: intervalo en milisegundos, por ejemplo 15000\n      <1 />\n      ${__range}: ventana de tiempo en segundos, por ejemplo 3600s\n      <1 />\n      ${__range_ms}: ventana de tiempo en milisegundos, por ejemplo 3600000\n      <1 />\n      ${__rate_interval}: intervalo en segundos, __interval * 4\n      <1 />\n      ${__from}: inicio del intervalo en milisegundos\n      <1 />\n      ${__from_date_seconds}: inicio del intervalo en segundos\n      <1 />\n      ${__from_date_iso}: inicio del intervalo en ISO 8601/RFC 3339\n      <1 />\n      La misma sintaxis sirve para ${__to}\n    ",
+    "help_tip_table_ng": "\n      Cómo usar las variables\n      <br />\n      ${variable_name}: valor de la variable del dashboard\n      <br />\n      ${__row.column_name}: valor de una columna de la fila\n      <br />\n      ${__interval}: intervalo en segundos, por ejemplo 15s; por defecto es el paso\n      <br />\n      ${__interval_ms}: intervalo en milisegundos, por ejemplo 15000\n      <br />\n      ${__range}: ventana de tiempo en segundos, por ejemplo 3600s\n      <br />\n      ${__range_ms}: ventana de tiempo en milisegundos, por ejemplo 3600000\n      <br />\n      ${__rate_interval}: intervalo en segundos, __interval * 4\n      <br />\n      ${__from}: inicio del intervalo en milisegundos\n      <br />\n      ${__from_date_seconds}: inicio del intervalo en segundos\n      <br />\n      ${__from_date_iso}: inicio del intervalo en ISO 8601/RFC 3339\n      <br />\n      La misma sintaxis sirve para ${__to}\n    "
   },
   "row": {
     "edit_title": "Editar grupo",
@@ -198,7 +198,7 @@ const es_ES = {
       "name_tip": "Los gráficos de tipo tabla necesitan un título; sin él, la edición del panel choca con la cabecera de la tabla",
       "link": {
         "label": "Enlace",
-        "label_tip": "\n          Cómo usar las variables<br />\n          ${variable_name}: valor de la variable del panel\n        ",
+        "label_tip": "\n          Cómo usar las variables<br />\n          ${variable_name}: valor de la variable del dashboard\n        ",
         "btn": "Añadir",
         "name": "Nombre del enlace",
         "name_msg": "Introduce el nombre del enlace",
@@ -266,7 +266,7 @@ const es_ES = {
       },
       "thresholdsStyle": {
         "label": "Estilo del umbral",
-        "off": "Cerrar",
+        "off": "Desactivado",
         "line": "Línea",
         "dashed": "Línea discontinua",
         "line+area": "Línea + área",
@@ -513,13 +513,13 @@ const es_ES = {
         "gradientMode_none": "Cerrar",
         "stack": "Apilado",
         "stack_normal": "Activar",
-        "stack_off": "Cerrar",
+        "stack_off": "Desactivado",
         "yAxis": {
           "title": "Configuración del eje Y",
           "rightYAxis": {
             "label": "Mostrar el eje Y a la derecha",
-            "normal": "Activar",
-            "off": "Cerrar"
+            "normal": "Activado",
+            "off": "Desactivado"
           }
         },
         "showPoints": "Mostrar los puntos",
@@ -580,7 +580,7 @@ const es_ES = {
     "datasource_placeholder": "Selecciona el origen de datos",
     "datasource_msg": "Selecciona el origen de datos",
     "time": "Selección de tiempo",
-    "time_tip": "Se puede definir un intervalo propio; por defecto se usa el global del panel",
+    "time_tip": "Se puede definir un intervalo propio; por defecto se usa el global del dashboard",
     "es": {
       "field_key_msg": "Hay que indicar la clave del campo"
     },
@@ -610,16 +610,16 @@ const es_ES = {
     "options_max_data_points": "Número máximo de puntos",
     "options_max_data_points_tip": "Número máximo de puntos por serie; por defecto es el ancho del panel (240 al crearlo). Se usa en el cálculo step = (end − start) / maxDataPoints",
     "options_time": "Intervalo de la consulta",
-    "options_time_tip": "Se puede definir un intervalo propio para la consulta; por defecto se usa el global del panel",
+    "options_time_tip": "Se puede definir un intervalo propio para la consulta; por defecto se usa el global del dashboard",
     "copy_query": "Duplicar la consulta",
     "mixed_datasource": "Mezclar orígenes de datos",
     "hide_response": "Ocultar el resultado de la consulta"
   },
   "migrate": {
-    "title": "Migrar paneles",
+    "title": "Migrar dashboards",
     "close_and_dismiss": "Cerrar y no volver a mostrar",
-    "batch_migrate": "Ir a la migración masiva de paneles",
-    "migrate_current": "Migrar este panel",
+    "batch_migrate": "Ir a la migración masiva de dashboards",
+    "migrate_current": "Migrar este dashboard",
     "desc_1": "La versión v6 deja de admitir el cambio global de clúster Prometheus; en las versiones nuevas, asocia los gráficos a una variable de origen de datos para lograr lo mismo.",
     "desc_2": "La herramienta de migración crea la variable de origen de datos y la asocia a todos los gráficos que aún no tienen una."
   },
@@ -638,7 +638,7 @@ const es_ES = {
       }
     },
     "saved": "Guardado correctamente",
-    "expired": "Otra persona ha modificado este panel. Actualízalo para ver la configuración y los datos más recientes y evitar sobrescribir su trabajo",
+    "expired": "Otra persona ha modificado este dashboard. Actualízalo para ver la configuración y los datos más recientes y evitar sobrescribir su trabajo",
     "prompt": {
       "title": "Hay cambios sin guardar",
       "message": "¿Quieres guardar los cambios?",
@@ -665,7 +665,7 @@ const es_ES = {
       "default": "Predeterminado",
       "updateTimeRange": "Actualizar el intervalo de tiempo"
     },
-    "save": "Guardar el panel"
+    "save": "Guardar el dashboard"
   },
   "visualizations": {
     "timeseries": "Gráfico de series temporales",

@@ -15,7 +15,7 @@ const ko_KR = {
     "edit_title": "템플릿 필드 수정",
     "preview": "템플릿 내용 미리보기",
     "contentKey": "필드 식별자",
-    "tip": "알림 매체에서 쓸 수 있는 필드이며 $tpl.{{contentKey}}로 그 내용을 참조합니다",
+    "tip": "통지 매체에서 쓸 수 있는 필드이며 $tpl.{{contentKey}}로 그 내용을 참조합니다",
     "prompt": "내용이 바뀌었습니다. 변경 내용을 버릴까요?",
     "value_msg": "필드 내용을 입력하세요",
     "ai_generate": "AI로 생성"
@@ -43,7 +43,7 @@ const ko_KR = {
   },
   "empty_guide": {
     "title": "첫 메시지 템플릿 만들기",
-    "desc": "메시지 템플릿은 알림 내용의 짜임새를 정합니다. 새로 만들 때 고른 알림 매체에 맞춰 바로 쓸 수 있는 템플릿이 자동으로 만들어지며 거기서부터 다듬으면 됩니다."
+    "desc": "메시지 템플릿은 통지 내용의 짜임새를 정합니다. 새로 만들 때 고른 통지 매체에 맞춰 바로 쓸 수 있는 템플릿이 자동으로 만들어지며 거기서부터 다듬으면 됩니다."
   },
   "fields_panel": {
     "desc": "템플릿에서 참조할 수 있는 알림 이벤트 변수입니다. 아무 변수나 누르면 복사되며 왼쪽 편집기에 붙여 넣어 쓰면 됩니다.",
@@ -86,10 +86,10 @@ const ko_KR = {
       "AnnotationsJSON_summary": "특정 주석 하나를 가져오며 summary를 원하는 주석 이름으로 바꿔 쓰세요",
       "TargetIdent": "대상 식별자",
       "TargetNote": "대상 메모",
-      "NotifyRecovered": "복구 알림 여부",
-      "NotifyChannelsJSON": "알림 채널 목록",
-      "NotifyGroupsJSON": "알림 그룹 목록",
-      "NotifyRuleIds": "알림 전송 규칙 ID 목록",
+      "NotifyRecovered": "복구 통지 여부",
+      "NotifyChannelsJSON": "통지 채널 목록",
+      "NotifyGroupsJSON": "통지 그룹 목록",
+      "NotifyRuleIds": "통지 규칙 ID 목록",
       "CallbacksJSON": "콜백 URL 목록",
       "ExtraConfig": "추가 설정 정보",
       "ExtraInfo": "추가 정보 목록",
@@ -104,7 +104,7 @@ const ko_KR = {
       "trigger": "발생 관련",
       "tags": "레이블과 주석",
       "target": "머신 관련",
-      "notify": "알림 관련",
+      "notify": "통지 관련",
       "extra": "콜백과 확장"
     }
   }

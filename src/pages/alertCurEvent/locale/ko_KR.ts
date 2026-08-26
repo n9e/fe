@@ -18,7 +18,7 @@ const ko_KR = {
   "event_name": "이벤트",
   "first_trigger_time": "최초 발생 시각",
   "trigger_time": "발생 시각",
-  "shield": "음소거",
+  "shield": "차단",
   "prod": "모니터링 유형",
   "duration": "지속 시간",
   "trigger_value": "발생 당시 값",
@@ -51,7 +51,7 @@ const ko_KR = {
   "tag_display": "레이블 표시",
   "tag_display_all": "전체",
   "tag_display_compact": "간략",
-  "tag_display_off": "닫기",
+  "tag_display_off": "표시 안 함",
   "detail_title": "알림 상세"
 };
 

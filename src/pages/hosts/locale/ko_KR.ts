@@ -23,7 +23,7 @@ const ko_KR = {
   "explorer_selected_metrics_tip": "선택한 머신의 모니터링 지표 보기",
   "auth_level_current": "현재 등급",
   "auth_level": "채널 등급",
-  "auth_level_0": "닫기",
+  "auth_level_0": "사용 안 함",
   "auth_level_1": "R0",
   "auth_level_2": "R0/W1",
   "auth_level_3": "R0/W1/W2",

@@ -266,7 +266,7 @@ const pt_BR = {
       },
       "thresholdsStyle": {
         "label": "Estilo do limiar",
-        "off": "Fechar",
+        "off": "Desativado",
         "line": "Linha",
         "dashed": "Linha tracejada",
         "line+area": "Linha + área",
@@ -513,13 +513,13 @@ const pt_BR = {
         "gradientMode_none": "Fechar",
         "stack": "Empilhamento",
         "stack_normal": "Ativar",
-        "stack_off": "Fechar",
+        "stack_off": "Desativado",
         "yAxis": {
           "title": "Configuração do eixo Y",
           "rightYAxis": {
             "label": "Exibir eixo Y à direita",
-            "normal": "Ativar",
-            "off": "Fechar"
+            "normal": "Ativado",
+            "off": "Desativado"
           }
         },
         "showPoints": "Exibir pontos",

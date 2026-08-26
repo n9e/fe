@@ -5,8 +5,8 @@ const ko_KR = {
   "llm_config_name": "LLM 설정",
   "llm_config_is_default": "기본",
   "use_case": "용도",
-  "enabled": "사용",
-  "disabled": "사용 중지",
+  "enabled": "사용 중",
+  "disabled": "사용 안 함",
   "add_btn": "새 에이전트",
   "cannot_delete_when_enabled": "사용 중인 에이전트는 삭제할 수 없습니다",
   "form": {

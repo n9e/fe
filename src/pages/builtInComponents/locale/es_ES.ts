@@ -4,8 +4,8 @@ const es_ES = {
   "tab_alertRules": "Regla de alerta",
   "tab_collectTpls": "Plantillas de recolección",
   "tab_metrics": "Sobre las métricas",
-  "tab_dashboards": "Panel",
-  "tab_firemap": "Mapa de incidencias",
+  "tab_dashboards": "Dashboard",
+  "tab_firemap": "Firemap",
   "ident": "Nombre de la plantilla",
   "logo": "Icono",
   "enable": "Activar",
@@ -29,24 +29,24 @@ const es_ES = {
   "formModal": {
     "edit": {
       "alert": "Editar regla de alerta",
-      "dashboard": "Editar panel",
+      "dashboard": "Editar dashboard",
       "collect": "Editar plantilla de recolección",
-      "firemap": "Editar regla del mapa de incidencias"
+      "firemap": "Editar regla de Firemap"
     },
     "create": {
       "alert": "Crear regla de alerta",
-      "dashboard": "Crear panel",
+      "dashboard": "Crear dashboard",
       "collect": "Crear plantilla de recolección",
-      "firemap": "Crear regla del mapa de incidencias"
+      "firemap": "Crear regla de Firemap"
     },
     "no_select": {
       "alert": "Selecciona la regla de alerta",
-      "dashboard": "Selecciona el panel"
+      "dashboard": "Selecciona el dashboard"
     },
     "help": {
       "alert": "Crea y ajusta la regla de alerta en tu propio grupo de negocio, exporta el JSON y pégalo abajo",
-      "dashboard": "Crea y ajusta el panel en tu propio grupo de negocio, exporta el JSON y pégalo abajo",
-      "firemap": "Crea y ajusta la regla del mapa de incidencias en tu espacio y usa «Exportar a plantilla», dentro de más acciones, para pegar el resultado abajo"
+      "dashboard": "Crea y ajusta el dashboard en tu propio grupo de negocio, exporta el JSON y pégalo abajo",
+      "firemap": "Crea y ajusta la regla de Firemap en tu espacio y usa «Exportar a plantilla», dentro de más acciones, para pegar el resultado abajo"
     }
   },
   "payloads": "Plantilla",
@@ -59,7 +59,7 @@ const es_ES = {
   "firemap": {
     "drill_path": "Ruta de profundización",
     "urlConfig": "Dirección de destino",
-    "dashboardConfig": "Panel",
+    "dashboardConfig": "Dashboard",
     "logExplore": "Búsqueda de logs",
     "no_drilldown_rules": "No hay rutas de profundización; añade una en la regla",
     "no_drilldown_rules_other": "Ya hay varias rutas de profundización integradas; no hace falta configurarlas"
@@ -70,8 +70,8 @@ const es_ES = {
     "steps": {
       "collect": "Configurar la recolección",
       "collect_tip": "Usa una plantilla integrada para desplegar la configuración de recolección y que este componente empiece a enviar métricas",
-      "dashboard": "Importar panel",
-      "dashboard_tip": "Importa los paneles integrados al grupo de negocio y tendrás gráficos en cuanto lleguen las métricas",
+      "dashboard": "Importar dashboard",
+      "dashboard_tip": "Importa los dashboards integrados al grupo de negocio y tendrás gráficos en cuanto lleguen las métricas",
       "alert": "Importar reglas de alerta",
       "alert_tip": "Importa las reglas de alerta integradas al grupo de negocio para que alguien se entere cuando algo falle"
     }

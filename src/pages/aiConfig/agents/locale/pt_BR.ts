@@ -5,8 +5,8 @@ const pt_BR = {
   "llm_config_name": "Configuração de LLM",
   "llm_config_is_default": "Padrão",
   "use_case": "Finalidade",
-  "enabled": "Ativar",
-  "disabled": "Desativar",
+  "enabled": "Ativado",
+  "disabled": "Desativado",
   "add_btn": "Novo agente",
   "cannot_delete_when_enabled": "Não é possível excluir um agente ativo",
   "form": {

@@ -97,7 +97,7 @@ const pt_BR = {
       "alertMutes": "Silenciamento de alertas",
       "alertSubscribes": "Assinatura de alertas",
       "objectExplorer": "Objetos monitorados",
-      "recordingRules": "Regras de gravação"
+      "recordingRules": "Regras de registro"
     },
     "collection": {
       "description": "Coletor de código aberto tudo em um",

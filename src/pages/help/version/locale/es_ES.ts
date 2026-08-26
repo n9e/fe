@@ -6,7 +6,7 @@ const es_ES = {
   "datasource": "Origen de datos",
   "instant_query": "Consulta instantánea",
   "alert": "Alertas",
-  "dashboard": "Panel"
+  "dashboard": "Dashboard"
 };
 
 export default es_ES;

@@ -266,7 +266,7 @@ const fr_FR = {
       },
       "thresholdsStyle": {
         "label": "Style du seuil",
-        "off": "Fermer",
+        "off": "Désactivé",
         "line": "Ligne",
         "dashed": "Ligne pointillée",
         "line+area": "Ligne et zone",
@@ -513,13 +513,13 @@ const fr_FR = {
         "gradientMode_none": "Fermer",
         "stack": "Empiler",
         "stack_normal": "Activer",
-        "stack_off": "Fermer",
+        "stack_off": "Désactivé",
         "yAxis": {
           "title": "Réglages de l'axe Y",
           "rightYAxis": {
             "label": "Afficher l'axe Y de droite",
-            "normal": "Activer",
-            "off": "Fermer"
+            "normal": "Activé",
+            "off": "Désactivé"
           }
         },
         "showPoints": "Afficher les points",

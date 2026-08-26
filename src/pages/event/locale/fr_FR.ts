@@ -14,7 +14,7 @@ const fr_FR = {
     "1440": "60 derniers jours",
     "2160": "90 derniers jours"
   },
-  "severity": "Niveau d'alerte",
+  "severity": "Gravité de l'alerte",
   "eventType": "Catégorie d'événement",
   "rule_name": "Titre de la règle et étiquettes de l'événement",
   "first_trigger_time": "Premier déclenchement",
@@ -48,7 +48,7 @@ const fr_FR = {
     "rule_note": "Remarque sur la règle",
     "cate": "Type de source de données",
     "datasource_id": "Source de données",
-    "severity": "Niveau d'alerte",
+    "severity": "Gravité de l'alerte",
     "is_recovered": "État de l'événement",
     "tags": "Étiquettes de l'événement",
     "target_note": "Remarque sur l'objet",

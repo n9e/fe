@@ -23,10 +23,10 @@ const ko_KR = {
   "export_failed": "내보내지 못했습니다",
   "prod": "모니터링 유형",
   "claimant": "담당자",
-  "shield": "음소거",
+  "shield": "차단",
   "rule_prod": {
-    "firemap": "대응 보드",
-    "northstar": "Polaris",
+    "firemap": "Firemap",
+    "northstar": "Northstar",
     "metric": "Metric",
     "host": "Host",
     "logging": "Log",

@@ -42,7 +42,7 @@ const id_ID = {
   "basic_configuration": "Konfigurasi dasar",
   "basic_configuration_desc": "Nama aturan notifikasi, tim yang diberi izin, dan catatannya",
   "name_auto_tip": "Nama dibuat otomatis setelah media notifikasi dan tim penerima dipilih, dan boleh diubah kapan saja",
-  "name_auto_separator": "、",
+  "name_auto_separator": ", ",
   "add_note_btn": "Tambah catatan",
   "user_group_ids": "Tim yang diberi izin",
   "user_group_ids_tip": "Anggota tim yang diisikan di sini berwenang mengelola atau melihat aturan notifikasi ini",
@@ -205,7 +205,7 @@ const id_ID = {
       "label_tip": "Hanya alert yang cocok dengan filter label ini yang ikut diagregasi; alert lain tidak terpengaruh aturan ini<br />Antar kondisi berlaku DAN, begitu pula terhadap filter atribut di bawah"
     },
     "label_keys": {
-      "tip": "Bila diisi ident, event dengan ident yang sama digabungkan menjadi satu grup dan dikirim sebagai satu pesan; ini kerap dipakai untuk mengurangi kebisingan SMS dan pesan instan",
+      "tip": "Bila diisi ident, event dengan ident yang sama digabungkan menjadi satu grup dan dikirim sebagai satu pesan; ini kerap dipakai untuk mengurangi noise SMS dan pesan instan",
       "placeholder": "Misalnya ident atau app. Kunci label yang sudah ada bisa dipilih dari daftar, cara yang disarankan, atau diketik sendiri"
     },
     "attribute_keys": {
@@ -215,11 +215,11 @@ const id_ID = {
   },
   "statistics": {
     "total_notify_events": "Jumlah notifikasi terkirim dalam {{days}} hari terakhir",
-    "total_notify_events_tip": "Menghitung notifikasi yang benar-benar terkirim; event yang <b>digabungkan, ditekan, atau dibisukan</b> tidak dihitung",
+    "total_notify_events_tip": "Menghitung notifikasi yang benar-benar terkirim; event yang <b>digabungkan, disupresi, atau diredam</b> tidak dihitung",
     "escalation_events": "Jumlah event yang dieskalasi dalam {{days}} hari terakhir",
-    "escalation_events_tip": "Jumlah event yang memenuhi aturan eskalasi dan naik prioritasnya. Angka yang tinggi biasanya menandakan waktu penanganan yang lama, sehingga <b>SLA respons, ambang eskalasi, atau strategi penekanan alert</b> perlu diperbaiki",
-    "noise_reduction_ratio": "Rasio pengurangan kebisingan dalam {{days}} hari terakhir",
-    "noise_reduction_ratio_tip": "Rasio pengurangan kebisingan = <b>(1 − jumlah notifikasi terkirim ÷ jumlah event alert asli) × 100%</b>. Makin dekat ke <b>100%</b>, makin baik <b>pengurangan kebisingannya</b>"
+    "escalation_events_tip": "Jumlah event yang memenuhi aturan eskalasi dan naik prioritasnya. Angka yang tinggi biasanya menandakan waktu penanganan yang lama, sehingga <b>SLA respons, ambang eskalasi, atau strategi supresi alert</b> perlu diperbaiki",
+    "noise_reduction_ratio": "Rasio pengurangan noise dalam {{days}} hari terakhir",
+    "noise_reduction_ratio_tip": "Rasio pengurangan noise = <b>(1 − jumlah notifikasi terkirim ÷ jumlah event alert asli) × 100%</b>. Makin dekat ke <b>100%</b>, makin baik <b>pengurangan noisenya</b>"
   },
   "tabs": {
     "events": "Daftar event",

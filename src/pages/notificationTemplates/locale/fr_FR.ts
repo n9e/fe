@@ -32,7 +32,7 @@ const fr_FR = {
   },
   "starter": {
     "rule_name": "Règle",
-    "severity": "Niveau",
+    "severity": "Gravité",
     "status": "État",
     "firing": "Déclenché",
     "recovered": "Résolu",
@@ -65,7 +65,7 @@ const fr_FR = {
       "RuleName": "Nom de la règle",
       "RuleNote": "Remarque sur la règle",
       "RuleHash": "Empreinte de la règle",
-      "Severity": "Niveau d'alerte (1-3)",
+      "Severity": "Gravité de l'alerte (1-3)",
       "Status": "État de l'alerte",
       "PromQl": "Requête de l'alerte",
       "PromForDuration": "Durée (secondes)",

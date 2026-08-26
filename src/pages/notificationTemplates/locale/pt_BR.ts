@@ -66,7 +66,7 @@ const pt_BR = {
       "RuleNote": "Observação da regra",
       "RuleHash": "Hash da regra",
       "Severity": "Severidade do alerta (1-3)",
-      "Status": "Situação do alerta",
+      "Status": "Status do alerta",
       "PromQl": "Consulta do alerta",
       "PromForDuration": "Duração (segundos)",
       "PromEvalInterval": "Intervalo de avaliação (segundos)",

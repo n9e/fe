@@ -1,5 +1,5 @@
 const es_ES = {
-  "title": "Reglas de grabación",
+  "title": "Reglas de registro",
   "search_placeholder": "Buscar por nombre o etiqueta",
   "group_id": "Grupo de negocio",
   "group_id_required": "Selecciona el grupo de negocio",
@@ -14,23 +14,23 @@ const es_ES = {
   "append_tags_msg2": "La etiqueta debe tener el formato key=value, y la clave debe empezar por una letra o un guion bajo y contener solo letras, números y guiones bajos.",
   "append_tags_placeholder": "Etiquetas con el formato key=value, separadas por Intro o espacio",
   "filter_disabled": {
-    "0": "Activar",
-    "1": "Desactivar",
-    "placeholder": "Situación"
+    "0": "Activado",
+    "1": "Desactivado",
+    "placeholder": "Estado de activación"
   },
   "batch": {
     "must_select_one": "No se ha seleccionado ninguna regla",
     "import": {
-      "title": "Importar reglas de grabación",
-      "name": "Reglas de grabación"
+      "title": "Importar reglas de registro",
+      "name": "Reglas de registro"
     },
     "export": {
-      "title": "Exportar reglas de grabación",
+      "title": "Exportar reglas de registro",
       "copy": "Copiar el JSON al portapapeles"
     },
-    "delete": "Eliminar reglas de grabación",
+    "delete": "Eliminar reglas de registro",
     "update": {
-      "title": "Actualizar reglas de grabación",
+      "title": "Actualizar reglas de registro",
       "field": "Campo",
       "changeto": "Cambiar a",
       "options": {

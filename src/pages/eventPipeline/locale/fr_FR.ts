@@ -20,7 +20,7 @@ const fr_FR = {
   },
   "use_case": {
     "label": "Usage",
-    "firemap": "Tableau d'intervention",
+    "firemap": "Firemap",
     "event_pipeline": "Traitement de l'événement"
   },
   "processors_col": "Processeur",
@@ -36,7 +36,7 @@ const fr_FR = {
     "title": "Les workflows conviennent à trois usages",
     "denoise": "Réduction du bruit : rejeter ou inhiber les alertes de faible gravité ou répétitives avant notification",
     "enrich": "Enrichissement : compléter l'alerte par des étiquettes métier, un résumé produit par l'IA ou du contexte issu d'une requête",
-    "dispatch": "Appels sortants : transmettre l'alerte à un système de tickets ou d'automatisation, ou déclencher un script d'autoréparation",
+    "dispatch": "Intégrations sortantes : transmettre l'alerte à un système de tickets ou d'automatisation, ou déclencher un script d'autoréparation",
     "more": "En savoir plus"
   },
   "trigger_mode": {
@@ -117,7 +117,7 @@ const fr_FR = {
     "mock": {
       "desc": "L'événement d'exemple est composé par le système et n'est pas enregistré en base, ce qui permet de vérifier la configuration des processeurs même sur un environnement neuf sans historique d'alertes. Sa gravité et son état de résolution sont modifiables afin de couvrir les processeurs qui s'appuient sur l'un ou l'autre.",
       "preview_title": "Événement d'exemple",
-      "severity": "Niveau d'alerte",
+      "severity": "Gravité de l'alerte",
       "is_recovered": "Événement de résolution",
       "tags": "Étiquettes de l'événement",
       "empty_alert": "Aucun événement d'alerte sur cette période",
@@ -177,7 +177,7 @@ const fr_FR = {
       "rewrite": "Transformer l'événement",
       "denoise": "Réduire le bruit",
       "enrich": "Enrichir",
-      "dispatch": "Appels sortants et exécution",
+      "dispatch": "Intégrations et exécution",
       "other": "Autres"
     },
     "options_desc": {

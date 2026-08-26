@@ -23,7 +23,7 @@ const es_ES = {
   "variable_configuration": {
     "title": "Configuración de variables",
     "contact_key": "Contacto",
-    "contact_key_tip": "Corresponde a los contactos de «Personas y organización - Gestión de usuarios» y determina por dónde sale la notificación. «Phone», por ejemplo, pasa el teléfono del usuario a la solicitud o al script de devolución de llamada. Los tipos de contacto nuevos se crean en la página «Personas y organización - Contactos»",
+    "contact_key_tip": "Corresponde a los contactos de «Personas y organización - Gestión de usuarios» y determina por dónde sale la notificación. «Phone», por ejemplo, pasa el teléfono del usuario a la solicitud o al script de callback. Los tipos de contacto nuevos se crean en la página «Personas y organización - Contactos»",
     "params": {
       "title": "Configuración de parámetros",
       "title_tip": "Define los parámetros personalizados que necesita este medio, como el token del bot de DingTalk o una API Key. Al elegir el medio en una regla de notificación, también pueden indicarse sus valores",
@@ -141,7 +141,7 @@ const es_ES = {
   "types_select_placeholder": "Tipo",
   "types": {
     "flashduty": "FlashDuty",
-    "callback": "Devolución de llamada",
+    "callback": "Callback",
     "email": "Correo electrónico",
     "dingtalk": "DingTalk",
     "dingtalkapp": "Aplicación de DingTalk",

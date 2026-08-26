@@ -20,7 +20,7 @@ const pt_BR = {
     "title": "Dados pessoais",
     "username": "Nome de usuário",
     "nickname": "Nome de exibição",
-    "role": "Perfil",
+    "role": "Papel",
     "email": "E-mail",
     "phone": "Telefone",
     "contact": "Contato",

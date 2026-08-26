@@ -58,7 +58,7 @@ const es_ES = {
     "copied": "Consulta copiada",
     "copy": "Copiar",
     "execute": "Ejecutar consulta",
-    "execute_disabled": "No se proporcionó una devolución de llamada de ejecución; solo se podrá copiar"
+    "execute_disabled": "No se proporcionó un callback de ejecución; solo se podrá copiar"
   },
   "action": {
     "query_generator": "Generar consulta"
@@ -110,14 +110,14 @@ const es_ES = {
     }
   },
   "dashboard": {
-    "title": "Panel",
-    "copied": "ID del panel copiado",
+    "title": "Dashboard",
+    "copied": "ID del dashboard copiado",
     "field": {
-      "id": "ID del panel",
+      "id": "ID del dashboard",
       "name": "Nombre",
       "group": "Grupo de negocio",
       "datasource": "Origen de datos predeterminado",
-      "panels_count": "Gráficos",
+      "panels_count": "Paneles",
       "variables_count": "Variables",
       "tags": "Etiquetas"
     }

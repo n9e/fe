@@ -23,7 +23,7 @@ const id_ID = {
   "explorer_selected_metrics_tip": "Lihat metrik pemantauan mesin yang dipilih",
   "auth_level_current": "Tingkat saat ini",
   "auth_level": "Tingkat kanal",
-  "auth_level_0": "Tutup",
+  "auth_level_0": "Nonaktif",
   "auth_level_1": "R0",
   "auth_level_2": "R0/W1",
   "auth_level_3": "R0/W1/W2",

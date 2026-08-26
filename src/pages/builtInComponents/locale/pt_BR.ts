@@ -5,7 +5,7 @@ const pt_BR = {
   "tab_collectTpls": "Modelos de coleta",
   "tab_metrics": "Sobre as métricas",
   "tab_dashboards": "Dashboard",
-  "tab_firemap": "Mapa de incidentes",
+  "tab_firemap": "Firemap",
   "ident": "Nome do modelo",
   "logo": "Ícone",
   "enable": "Ativar",
@@ -31,13 +31,13 @@ const pt_BR = {
       "alert": "Editar regra de alerta",
       "dashboard": "Editar dashboard",
       "collect": "Editar modelo de coleta",
-      "firemap": "Editar regra do mapa de incidentes"
+      "firemap": "Editar regra do Firemap"
     },
     "create": {
       "alert": "Criar regra de alerta",
       "dashboard": "Criar dashboard",
       "collect": "Criar modelo de coleta",
-      "firemap": "Criar regra do mapa de incidentes"
+      "firemap": "Criar regra do Firemap"
     },
     "no_select": {
       "alert": "Selecione a regra de alerta",
@@ -46,7 +46,7 @@ const pt_BR = {
     "help": {
       "alert": "Crie e ajuste a regra de alerta no seu próprio grupo de negócio, exporte o JSON e cole-o abaixo",
       "dashboard": "Crie e ajuste o dashboard no seu próprio grupo de negócio, exporte o JSON e cole-o abaixo",
-      "firemap": "Crie e ajuste a regra do mapa de incidentes no seu espaço e use \"Exportar para modelo\", em mais ações, para colar o resultado abaixo"
+      "firemap": "Crie e ajuste a regra do Firemap no seu espaço e use \"Exportar para modelo\", em mais ações, para colar o resultado abaixo"
     }
   },
   "payloads": "Modelo",

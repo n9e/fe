@@ -60,7 +60,7 @@ const pt_BR = {
   },
   "name_auto_tip": "O título é gerado automaticamente a partir dos filtros acima e pode ser alterado a qualquer momento",
   "name_auto_template": "Silenciar {{scope}}",
-  "name_auto_separator": "、",
+  "name_auto_separator": ", ",
   "name_auto_all_alerts": "Todos os alertas",
   "summary": {
     "severities_all": "Todas as severidades",
@@ -97,9 +97,9 @@ const pt_BR = {
     }
   },
   "filter_disabled": {
-    "0": "Ativar",
-    "1": "Desativar",
-    "placeholder": "Situação"
+    "0": "Ativado",
+    "1": "Desativado",
+    "placeholder": "Status de ativação"
   }
 };
 

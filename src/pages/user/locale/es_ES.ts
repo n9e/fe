@@ -35,7 +35,7 @@ const es_ES = {
     "add_team": "Equipos autorizados",
     "perm_flag": "Permisos",
     "note_content": "Las reglas de alerta, los eventos, los objetos monitorizados y los scripts de autorreparación pertenecen a un grupo de negocio, que funciona como una unidad autosuficiente dentro del sistema",
-    "empty": "No hay grupos de negocio, y los objetos monitorizados, los paneles, las reglas de alerta y los scripts deben pertenecer a uno. Empieza por",
+    "empty": "No hay grupos de negocio, y los objetos monitorizados, los dashboards, las reglas de alerta y los scripts deben pertenecer a uno. Empieza por",
     "name": "Nombre del grupo de negocio",
     "name_tip": "\n      El separador {{separator}} construye una estructura en árbol <1 />\n      Por ejemplo, redis{{separator}}monitorización y redis{{separator}}inicio de sesión se muestran así:  <1 />\n      redis <1 />\n      - monitorización <1 />\n      - inicio de sesión <1 />\n    ",
     "team_name": "Equipos autorizados",

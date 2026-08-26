@@ -18,7 +18,7 @@ const id_ID = {
   "event_name": "Event",
   "first_trigger_time": "Pertama kali terpicu",
   "trigger_time": "Waktu terpicu",
-  "shield": "Bisukan",
+  "shield": "Redam",
   "prod": "Jenis pemantauan",
   "duration": "Durasi",
   "trigger_value": "Nilai saat terpicu",
@@ -51,7 +51,7 @@ const id_ID = {
   "tag_display": "Tampilan label",
   "tag_display_all": "Semua",
   "tag_display_compact": "Ringkas",
-  "tag_display_off": "Tutup",
+  "tag_display_off": "Nonaktif",
   "detail_title": "Detail alert"
 };
 

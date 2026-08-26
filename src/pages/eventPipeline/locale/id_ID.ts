@@ -20,7 +20,7 @@ const id_ID = {
   },
   "use_case": {
     "label": "Kegunaan",
-    "firemap": "Peta pemadaman",
+    "firemap": "Firemap",
     "event_pipeline": "Pemrosesan event"
   },
   "processors_col": "Pemroses",
@@ -34,9 +34,9 @@ const id_ID = {
   },
   "scenario_tips": {
     "title": "Alur kerja cocok untuk tiga jenis skenario",
-    "denoise": "Mengurangi kebisingan: alert bertingkat rendah atau berulang dibuang maupun ditekan sebelum diberitahukan",
+    "denoise": "Mengurangi noise: alert bertingkat rendah atau berulang dibuang maupun disupresi sebelum diberitahukan",
     "enrich": "Pengayaan: melengkapi alert dengan label bisnis, ringkasan AI, atau konteks dari hasil kueri",
-    "dispatch": "Panggilan keluar: meneruskan alert ke sistem tiket atau otomasi, maupun memicu skrip pemulihan otomatis",
+    "dispatch": "Integrasi keluar: meneruskan alert ke sistem tiket atau otomasi, maupun memicu skrip pemulihan otomatis",
     "more": "Pelajari lebih lanjut"
   },
   "trigger_mode": {
@@ -103,7 +103,7 @@ const id_ID = {
     },
     "result_success": "Eksekusi berhasil",
     "result_failed": "Eksekusi gagal",
-    "dropped": "Event dibuang atau ditekan pada tahap ini, sehingga pemroses berikutnya tidak dijalankan dan tidak ada notifikasi yang muncul",
+    "dropped": "Event dibuang atau disupresi pada tahap ini, sehingga pemroses berikutnya tidak dijalankan dan tidak ada notifikasi yang muncul",
     "steps_title": "Hasil eksekusi per node",
     "event_preview_title": "Event setelah diproses",
     "back_btn": "Pilih event lain",
@@ -162,10 +162,10 @@ const id_ID = {
     "options": {
       "relabel": "Penulisan ulang label event",
       "label_enrich": "Pengayaan label event",
-      "inhibit": "Penekanan event",
+      "inhibit": "Supresi event",
       "event_drop": "Pembuangan event",
       "event_update": "Pembaruan event",
-      "inhibit_qd": "Penekanan event berbasis kueri",
+      "inhibit_qd": "Supresi event berbasis kueri",
       "annotation_qd": "Pengayaan informasi tambahan event berbasis kueri",
       "callback": "Callback webhook",
       "ai_summary": "Pembuatan ringkasan AI",
@@ -175,9 +175,9 @@ const id_ID = {
     },
     "category": {
       "rewrite": "Menulis ulang event",
-      "denoise": "Mengurangi kebisingan",
+      "denoise": "Mengurangi noise",
       "enrich": "Pengayaan",
-      "dispatch": "Panggilan keluar dan eksekusi",
+      "dispatch": "Integrasi dan eksekusi",
       "other": "Lainnya"
     },
     "options_desc": {
@@ -188,8 +188,8 @@ const id_ID = {
       "ai_summary": "Buat ringkasan event dengan model bahasa besar",
       "label_enrich": "Lengkapi label event memakai kamus bawaan",
       "script": "Jalankan skrip untuk memproses event",
-      "inhibit": "Tekan notifikasi ini bila ada alert aktif yang tingkatnya lebih tinggi",
-      "inhibit_qd": "Tekan event menurut hasil kueri data",
+      "inhibit": "Supresi notifikasi ini bila ada alert aktif yang tingkatnya lebih tinggi",
+      "inhibit_qd": "Supresi event menurut hasil kueri data",
       "annotation_qd": "Lampirkan informasi ke event menurut hasil kueri data",
       "event_recover": "Picu tugas pemulihan otomatis",
       "alert_shot": "Tangkap layar dasbor atau halaman web lalu lampirkan ke alert"
@@ -316,43 +316,43 @@ const id_ID = {
     "content_placeholder": "Masukkan isi skrip"
   },
   "inhibit": {
-    "help": "Pemroses penekanan event mencegah notifikasi sebuah alert saat alert lain sedang dikirim, sehingga jumlah notifikasi berkurang. Contoh yang umum: selama ada gangguan aktif tingkat P1 pada aturan yang sama, notifikasi tingkat P2 dan P3 diabaikan. Selengkapnya di <a>dokumentasi</a>",
+    "help": "Pemroses supresi event mencegah notifikasi sebuah alert saat alert lain sedang dikirim, sehingga jumlah notifikasi berkurang. Contoh yang umum: selama ada gangguan aktif tingkat P1 pada aturan yang sama, notifikasi tingkat P2 dan P3 diabaikan. Selengkapnya di <a>dokumentasi</a>",
     "tip1": "Bila <b>alert baru</b> memenuhi kondisi berikut",
     "tip2": "Dan",
     "tip3": "detik terakhir terdapat <b>alert aktif</b> yang memenuhi kondisi berikut",
     "tip4": "dan <b>alert baru</b> serta <b>alert aktif</b> sama pada hal-hal berikut",
-    "tip5": "Bila seluruh kondisi di atas terpenuhi, alert ini ditekan dan tidak diberitahukan",
-    "duration_required": "Durasi penekanan tidak boleh kosong",
-    "duration_max": "Durasi penekanan tidak boleh melebihi 600 detik",
+    "tip5": "Bila seluruh kondisi di atas terpenuhi, alert ini disupresi dan tidak diberitahukan",
+    "duration_required": "Durasi supresi tidak boleh kosong",
+    "duration_max": "Durasi supresi tidak boleh melebihi 600 detik",
     "match_label_keys": "Label",
     "match_label_keys_required": "Label tidak boleh kosong",
     "match_attribute_keys": "Atribut",
     "match_attribute_keys_required": "Atribut tidak boleh kosong",
     "keys_at_least_one_required": "Setidaknya satu label atau atribut dibutuhkan",
-    "labels_conflict": "Nilai label {{label}} berbeda, sehingga penekanan tidak bisa dilakukan",
-    "attributes_conflict": "Nilai atribut {{attribute}} berbeda, sehingga penekanan tidak bisa dilakukan",
-    "preview": "Pratinjau aturan: bila ada «<b>alert baru: {{newAlertLabelsAttrs}}</b>» dan dalam «<b>{{duration}} detik</b>» terakhir terdapat «<b>alert aktif: {{activeAlertLabelsAttrs}}</b>», serta keduanya sama pada «<b>{{matchLabelsAttrs}}</b>», maka notifikasi alert baru ditekan.",
+    "labels_conflict": "Nilai label {{label}} berbeda, sehingga supresi tidak bisa dilakukan",
+    "attributes_conflict": "Nilai atribut {{attribute}} berbeda, sehingga supresi tidak bisa dilakukan",
+    "preview": "Pratinjau aturan: bila ada «<b>alert baru: {{newAlertLabelsAttrs}}</b>» dan dalam «<b>{{duration}} detik</b>» terakhir terdapat «<b>alert aktif: {{activeAlertLabelsAttrs}}</b>», serta keduanya sama pada «<b>{{matchLabelsAttrs}}</b>», maka notifikasi alert baru disupresi.",
     "labels_filter": {
       "label": "Label",
-      "label_tip": "Hanya event alert yang cocok dengan kondisi label ini yang ditekan, sehingga cakupannya menyempit; bila dikosongkan, tidak ada pembatasan. Kunci label yang sudah ada bisa dipilih dari daftar, cara yang disarankan, atau diketik sendiri",
+      "label_tip": "Hanya event alert yang cocok dengan kondisi label ini yang disupresi, sehingga cakupannya menyempit; bila dikosongkan, tidak ada pembatasan. Kunci label yang sudah ada bisa dipilih dari daftar, cara yang disarankan, atau diketik sendiri",
       "label_placeholder": "Ketik atau pilih kunci label yang dipakai untuk pencocokan, misalnya app / cluster / alertname"
     },
     "labels_filter_value_placeholder": "Ketik atau pilih nilai label untuk dicocokkan",
     "attributes_filter": {
       "label": "Atribut",
-      "label_tip": "Batasi cakupan penekanan menurut atribut event: hanya alert yang cocok dengan semua atribut ini yang ditekan. Bila dikosongkan, berlaku untuk semua alert"
+      "label_tip": "Batasi cakupan supresi menurut atribut event: hanya alert yang cocok dengan semua atribut ini yang disupresi. Bila dikosongkan, berlaku untuk semua alert"
     },
     "active_event_labels_filter": {
       "label": "Label",
-      "label_tip": "**Membatasi cakupan alert aktif**\n- Bila dikosongkan: label tidak dipakai untuk memfilter\n- Bila diisi: kunci label yang sudah ada bisa dipilih dari daftar, cara yang disarankan, atau diketik sendiri. Hanya alert aktif yang memenuhi semua kondisi label ini yang masuk ke cakupan.\n\nContoh: dengan service=mon, hanya event berlabel service=mon yang ikut ke logika penekanan berikutnya."
+      "label_tip": "**Membatasi cakupan alert aktif**\n- Bila dikosongkan: label tidak dipakai untuk memfilter\n- Bila diisi: kunci label yang sudah ada bisa dipilih dari daftar, cara yang disarankan, atau diketik sendiri. Hanya alert aktif yang memenuhi semua kondisi label ini yang masuk ke cakupan.\n\nContoh: dengan service=mon, hanya event berlabel service=mon yang ikut ke logika supresi berikutnya."
     },
     "active_event_attributes_filter": {
       "label": "Atribut",
-      "label_tip": "**Membatasi cakupan alert aktif**\n- Bila dikosongkan: atribut tidak dipakai untuk memfilter\n- Bila diisi: hanya alert aktif yang memenuhi semua kondisi atribut ini yang terpilih.\n\nContoh: dengan grup bisnis == DefaultBusiGroup, hanya event aktif yang atribut grup bisnisnya DefaultBusiGroup yang terpilih untuk alur penekanan event berikutnya"
+      "label_tip": "**Membatasi cakupan alert aktif**\n- Bila dikosongkan: atribut tidak dipakai untuk memfilter\n- Bila diisi: hanya alert aktif yang memenuhi semua kondisi atribut ini yang terpilih.\n\nContoh: dengan grup bisnis == DefaultBusiGroup, hanya event aktif yang atribut grup bisnisnya DefaultBusiGroup yang terpilih untuk alur supresi event berikutnya"
     }
   },
   "inhibit_qd": {
-    "help": "Menekan event menurut hasil kueri: saat alert terpicu, kueri data di bawah dijalankan. Bila setidaknya satu baris dikembalikan, alert ini ditekan dan tidak diberitahukan; bila tidak ada data, notifikasi berjalan seperti biasa. Selengkapnya di <a>dokumentasi</a>",
+    "help": "Menyupresi event menurut hasil kueri: saat alert terpicu, kueri data di bawah dijalankan. Bila setidaknya satu baris dikembalikan, alert ini disupresi dan tidak diberitahukan; bila tidak ada data, notifikasi berjalan seperti biasa. Selengkapnya di <a>dokumentasi</a>",
     "t_1": "dan kueri mengembalikan <b>data</b> berikut"
   },
   "annotation_qd": {

@@ -69,7 +69,7 @@ const id_ID = {
     "tip": "Nama dibuat otomatis dari konfigurasi filter dan notifikasi di atas, dan boleh diubah kapan saja",
     "all": "Semua alert",
     "escalation": "Eskalasi",
-    "separator": "、",
+    "separator": ", ",
     "joiner": "-",
     "clone_suffix": "-salinan"
   },
@@ -99,8 +99,8 @@ const id_ID = {
     "more": "Pelajari lebih lanjut"
   },
   "filter_disabled": {
-    "0": "Aktifkan",
-    "1": "Nonaktifkan",
+    "0": "Aktif",
+    "1": "Nonaktif",
     "placeholder": "Status aktif"
   }
 };

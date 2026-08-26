@@ -74,7 +74,7 @@ const id_ID = {
       "timeseries": "Lihat grafik deret waktu",
       "timeseries_tip": "Bisa disalin ke Tampilan struktur tabel -> mode Grafik deret waktu untuk melihat datanya, atau dipakai di dasbor untuk menggambar grafik deret waktu dari data Doris.",
       "table": "Lihat nilai statistik",
-      "table_tip": "Bisa dipakai membuat aturan alert dan aturan perekaman Doris, serta metrik Polaris."
+      "table_tip": "Bisa dipakai membuat aturan alert dan recording rule Doris, serta metrik Northstar."
     },
     "defaultSearchField": "Field pencarian bawaan",
     "default_search_tip_1": "Jadikan field pencarian bawaan",
@@ -104,8 +104,8 @@ const id_ID = {
     },
     "add_to": {
       "btn": "Tambahkan ke…",
-      "recording_rule": "Tambahkan ke aturan perekaman",
-      "add_recording_rule_title": "Tambah aturan perekaman"
+      "recording_rule": "Tambahkan ke recording rule",
+      "add_recording_rule_title": "Tambah recording rule"
     }
   },
   "builder": {

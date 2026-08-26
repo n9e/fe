@@ -6,7 +6,7 @@ const es_ES = {
   "OAuth2": "OAuth2",
   "dingtalk": "DingTalk",
   "feishu": "Feishu",
-  "callback_url": "URL de devolución de llamada",
+  "callback_url": "URL de callback",
   "feishu_setting": {
     "app_id_tip": "Identificador único de la aplicación en la plataforma abierta de Feishu, generado automáticamente al crearla y no editable. El app_id puede consultarse en la página de credenciales e información básica de la <1>consola de desarrollador</1>",
     "app_secret_tip": "Clave secreta de la aplicación, generada automáticamente al crearla",

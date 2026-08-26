@@ -57,7 +57,7 @@ const pt_BR = {
   "notify_configs": "Configuração de notificação",
   "and": "E",
   "btn_add_rule": "Adicionar regra",
-  "basic_configs_desc": "Nome e situação da regra de assinatura; o nome pode ser gerado automaticamente a partir da configuração acima",
+  "basic_configs_desc": "Nome e status de ativação da regra de assinatura; o nome pode ser gerado automaticamente a partir da configuração acima",
   "filter_configs_desc": "Define quais eventos esta assinatura capta. As condições abaixo são combinadas com E; deixando todas vazias, todos os eventos são captados",
   "notify_configs_desc": "Os eventos captados são notificados novamente pelas regras abaixo, o que costuma servir para escalonar ou repassar a outra equipe",
   "no_filter_warning": "Nenhum filtro configurado: esta assinatura captará todos os eventos de alerta",
@@ -69,7 +69,7 @@ const pt_BR = {
     "tip": "O nome é gerado automaticamente a partir dos filtros e das notificações acima, e pode ser alterado a qualquer momento",
     "all": "Todos os alertas",
     "escalation": "Escalonar",
-    "separator": "、",
+    "separator": ", ",
     "joiner": "-",
     "clone_suffix": "-cópia"
   },
@@ -99,9 +99,9 @@ const pt_BR = {
     "more": "Saiba mais"
   },
   "filter_disabled": {
-    "0": "Ativar",
-    "1": "Desativar",
-    "placeholder": "Situação"
+    "0": "Ativado",
+    "1": "Desativado",
+    "placeholder": "Status de ativação"
   }
 };
 

@@ -42,7 +42,7 @@ const es_ES = {
   "basic_configuration": "Configuración básica",
   "basic_configuration_desc": "Nombre, equipos autorizados y observaciones de la regla de notificación",
   "name_auto_tip": "El nombre se genera automáticamente tras elegir el medio y los equipos destinatarios, y puede cambiarse en cualquier momento",
-  "name_auto_separator": "、",
+  "name_auto_separator": ", ",
   "add_note_btn": "Añadir observación",
   "user_group_ids": "Equipos autorizados",
   "user_group_ids_tip": "Los miembros de los equipos que indiques aquí podrán gestionar o ver esta regla de notificación",

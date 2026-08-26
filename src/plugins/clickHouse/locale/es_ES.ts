@@ -44,8 +44,8 @@ const es_ES = {
     },
     "add_to": {
       "btn": "Añadir a…",
-      "recording_rule": "Añadir a una regla de grabación",
-      "add_recording_rule_title": "Añadir regla de grabación"
+      "recording_rule": "Añadir a una regla de registro",
+      "add_recording_rule_title": "Añadir regla de registro"
     },
     "sql_format": {
       "title": "Vista previa del SQL",
@@ -53,9 +53,9 @@ const es_ES = {
       "origin": "Ver el texto bruto del log",
       "origin_tip": "Puedes copiarlo a la vista de la estructura de la tabla, en modo tabla, para ver los datos",
       "timeseries": "Ver el gráfico de series temporales",
-      "timeseries_tip": "Puedes copiarlo a la vista de la estructura de la tabla, en modo serie temporal, para ver los datos, o usarlo en un panel para dibujar series a partir de ClickHouse.",
+      "timeseries_tip": "Puedes copiarlo a la vista de la estructura de la tabla, en modo serie temporal, para ver los datos, o usarlo en un dashboard para dibujar series a partir de ClickHouse.",
       "table": "Ver los valores estadísticos",
-      "table_tip": "Sirve para crear reglas de alerta y de grabación de ClickHouse, y métricas de NorthStar."
+      "table_tip": "Sirve para crear reglas de alerta y de registro de ClickHouse, y métricas de Northstar."
     },
     "warn_message_btn_1": "Ejecutar la consulta de todos modos",
     "warn_message_btn_2": "Volver y editar",

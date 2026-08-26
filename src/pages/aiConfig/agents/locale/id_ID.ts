@@ -5,8 +5,8 @@ const id_ID = {
   "llm_config_name": "Konfigurasi LLM",
   "llm_config_is_default": "Bawaan",
   "use_case": "Kegunaan",
-  "enabled": "Aktifkan",
-  "disabled": "Nonaktifkan",
+  "enabled": "Aktif",
+  "disabled": "Nonaktif",
   "add_btn": "Agen baru",
   "cannot_delete_when_enabled": "Agen yang aktif tidak dapat dihapus",
   "form": {

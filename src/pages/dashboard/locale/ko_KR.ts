@@ -266,7 +266,7 @@ const ko_KR = {
       },
       "thresholdsStyle": {
         "label": "임계값 표시 방식",
-        "off": "닫기",
+        "off": "사용 안 함",
         "line": "선",
         "dashed": "점선",
         "line+area": "선과 영역",
@@ -513,13 +513,13 @@ const ko_KR = {
         "gradientMode_none": "닫기",
         "stack": "누적",
         "stack_normal": "켜기",
-        "stack_off": "닫기",
+        "stack_off": "사용 안 함",
         "yAxis": {
           "title": "Y축 설정",
           "rightYAxis": {
             "label": "오른쪽 Y축 표시",
-            "normal": "켜기",
-            "off": "닫기"
+            "normal": "사용 중",
+            "off": "사용 안 함"
           }
         },
         "showPoints": "점 표시",

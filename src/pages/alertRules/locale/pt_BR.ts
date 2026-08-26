@@ -172,8 +172,8 @@ const pt_BR = {
       },
       "than": "acima de",
       "pct_target_miss_text": "segundos, e a proporção sem contato acima de",
-      "second": "Segundos",
-      "millisecond": "Milissegundos"
+      "second": "segundos",
+      "millisecond": "milissegundos"
     },
     "prom_eval_interval_tip": "Frequência de execução da PromQL: a base de séries temporais é consultada a cada {{num}} segundos e o resultado é renomeado e gravado de volta nela",
     "prom_for_duration_tip": "Normalmente a duração é maior que a frequência de execução: dentro da duração a consulta PromQL roda várias vezes e o alerta só é gerado se todas elas dispararem. Com a duração em 0, basta uma única consulta atingir o limiar para gerar o alerta"
@@ -374,8 +374,8 @@ const pt_BR = {
         "inner_join": "Junção interna",
         "left_join": "Junção à esquerda",
         "right_join": "Junção à direita",
-        "left_exclude": "Exclusão à esquerda",
-        "right_exclude": "Exclusão à direita"
+        "left_exclude": "Anti-junção à esquerda",
+        "right_exclude": "Anti-junção à direita"
       },
       "join_type_placeholder": "Selecione a operação de conjunto",
       "tooltip": "A operação de conjunto só pode ser configurada quando há várias consultas",
@@ -402,9 +402,9 @@ const pt_BR = {
     "anomaly": "Alerta inteligente"
   },
   "filter_disabled": {
-    "0": "Ativar",
-    "1": "Desativar",
-    "placeholder": "Situação"
+    "0": "Ativado",
+    "1": "Desativado",
+    "placeholder": "Status de ativação"
   },
   "var_config": {
     "enable": "Ativar variáveis",
@@ -491,7 +491,7 @@ const pt_BR = {
     "all_day": "Dia inteiro",
     "queries_and_threshold": "Consulta e limiar",
     "condition_summary": "Condição de alerta",
-    "query_statements": "Estatísticas da consulta",
+    "query_statements": "Consultas",
     "triggers": "Condição de disparo",
     "range": "Intervalo da consulta",
     "interval": "Intervalo",

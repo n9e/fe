@@ -51,7 +51,7 @@ const pt_BR = {
   "tag_display": "Exibição de rótulos",
   "tag_display_all": "Todos",
   "tag_display_compact": "Resumido",
-  "tag_display_off": "Fechar",
+  "tag_display_off": "Desativado",
   "detail_title": "Detalhes do alerta"
 };
 

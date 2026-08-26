@@ -65,7 +65,7 @@ const es_ES = {
     "prom_for_duration": "Duración",
     "notify_channels": "Canal de notificación",
     "notify_groups_obj": "Grupos destinatarios",
-    "callbacks": "URL de devolución de llamada",
+    "callbacks": "URL de callback",
     "runbook_url": "Enlace del runbook",
     "notify_rules": "Regla de notificación",
     "detail_url": "Enlace a los detalles",

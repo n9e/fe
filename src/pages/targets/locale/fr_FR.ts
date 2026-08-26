@@ -45,7 +45,7 @@ const fr_FR = {
   },
   "bind_tag": {
     "title": "Associer des étiquettes",
-    "placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par une espace",
+    "placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par un espace",
     "msg1": "Saisissez au moins une étiquette.",
     "msg2": "Le format de l'étiquette est incorrect ; vérifiez-le.",
     "msg3": "Une clé d'étiquette ne peut pas être répétée",

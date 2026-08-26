@@ -25,8 +25,8 @@ const es_ES = {
   "claimant": "Responsable",
   "shield": "Silenciar",
   "rule_prod": {
-    "firemap": "Mapa de incidencias",
-    "northstar": "NorthStar",
+    "firemap": "Firemap",
+    "northstar": "Northstar",
     "metric": "Metric",
     "host": "Host",
     "logging": "Log",

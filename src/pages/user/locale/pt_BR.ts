@@ -26,7 +26,7 @@ const pt_BR = {
     "delete_member_success": "Membro removido com sucesso"
   },
   "business": {
-    "title": "Gerenciamento de grupos de negócio",
+    "title": "Grupos de negócio",
     "list": "Grupo de negócio",
     "search_placeholder": "Nome do negócio",
     "team_search_placeholder": "Buscar pelo nome da equipe",

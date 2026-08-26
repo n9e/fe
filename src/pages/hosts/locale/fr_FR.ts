@@ -23,7 +23,7 @@ const fr_FR = {
   "explorer_selected_metrics_tip": "Voir les métriques des machines sélectionnées",
   "auth_level_current": "Niveau actuel",
   "auth_level": "Niveau du canal",
-  "auth_level_0": "Fermer",
+  "auth_level_0": "Désactivé",
   "auth_level_1": "R0",
   "auth_level_2": "R0/W1",
   "auth_level_3": "R0/W1/W2",
@@ -81,7 +81,7 @@ const fr_FR = {
   },
   "bind_tag": {
     "title": "Associer des étiquettes",
-    "placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par une espace",
+    "placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par un espace",
     "msg1": "Saisissez au moins une étiquette.",
     "msg2": "Le format de l'étiquette est incorrect ; vérifiez-le.",
     "msg3": "Une clé d'étiquette ne peut pas être répétée",

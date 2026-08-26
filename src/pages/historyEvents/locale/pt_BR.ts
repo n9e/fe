@@ -25,8 +25,8 @@ const pt_BR = {
   "claimant": "Responsável",
   "shield": "Silenciar",
   "rule_prod": {
-    "firemap": "Mapa de incidentes",
-    "northstar": "NorthStar",
+    "firemap": "Firemap",
+    "northstar": "Northstar",
     "metric": "Metric",
     "host": "Host",
     "logging": "Log",

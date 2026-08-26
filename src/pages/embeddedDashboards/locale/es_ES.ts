@@ -1,6 +1,6 @@
 const es_ES = {
-  "title": "Panel integrado",
-  "edit_title": "Editar panel integrado",
+  "title": "Dashboard integrado",
+  "edit_title": "Editar dashboard integrado",
   "edit_btn": "Configurar ahora",
   "name": "Nombre",
   "name_msg": "Introduce el nombre",

@@ -40,12 +40,12 @@ const es_ES = {
   },
   "redefine_severity": "Redefinir la severidad de la alerta",
   "redefine_channels": "Redefinir el medio de notificación",
-  "redefine_webhooks": "Redefinir la URL de devolución de llamada",
+  "redefine_webhooks": "Redefinir la URL de callback",
   "user_group_ids": "Grupos destinatarios de la suscripción",
   "for_duration": "Suscribirse a eventos con una duración superior a (segundos)",
   "for_duration_tip": "Por ejemplo, con el valor 300: la primera vez que se capta un evento, no coincide con la suscripción. Las siguientes veces se calcula la diferencia entre el disparo actual y el primero captado; si supera los 300 segundos, la suscripción se cumple y la notificación sigue su curso. Por debajo, no ocurre nada. Esto sirve como escalado: el responsable del equipo puede suscribirse a eventos de más de una hora (3600 s) de duración y ponerse a sí mismo como destinatario, de modo que ninguna alerta quede sin seguimiento.",
-  "webhooks": "Nueva URL de devolución de llamada",
-  "webhooks_msg": "La URL de devolución de llamada no puede estar vacía",
+  "webhooks": "Nueva URL de callback",
+  "webhooks_msg": "La URL de callback no puede estar vacía",
   "prod": "Tipo de monitorización",
   "subscribe_btn": "Suscripción",
   "basic_configs": "Configuración básica",
@@ -57,7 +57,7 @@ const es_ES = {
   "notify_configs": "Configuración de notificación",
   "and": "Y",
   "btn_add_rule": "Añadir regla",
-  "basic_configs_desc": "Nombre y situación de la regla de suscripción; el nombre puede generarse automáticamente a partir de la configuración de arriba",
+  "basic_configs_desc": "Nombre y estado de activación de la regla de suscripción; el nombre puede generarse automáticamente a partir de la configuración de arriba",
   "filter_configs_desc": "Determina qué eventos capta esta suscripción. Las condiciones de abajo se combinan con Y; si se dejan todas vacías, se captan todos los eventos",
   "notify_configs_desc": "Los eventos captados se notifican de nuevo según las reglas de abajo, algo que suele servir para escalar o derivar a otro equipo",
   "no_filter_warning": "No hay ningún filtro configurado: esta suscripción captará todos los eventos de alerta",
@@ -69,7 +69,7 @@ const es_ES = {
     "tip": "El nombre se genera automáticamente a partir de los filtros y las notificaciones de arriba, y puede cambiarse en cualquier momento",
     "all": "Todas las alertas",
     "escalation": "Escalar",
-    "separator": "、",
+    "separator": ", ",
     "joiner": "-",
     "clone_suffix": "-copia"
   },
@@ -95,13 +95,13 @@ const es_ES = {
     "title": "Las reglas de suscripción encajan bien en tres escenarios",
     "cross_team": "Suscribirte a alertas ajenas: el servicio del que dependes lo lleva otro equipo, pero un fallo allí te afecta, así que conviene recibir sus alertas de SLI",
     "escalation": "Escalado de respaldo: las alertas que llevan más de una hora sin recuperarse avisan también al responsable del equipo",
-    "global_callback": "Devolución de llamada global: todos los eventos de alerta llaman a un webhook para automatizar",
+    "global_callback": "Callback global: todos los eventos de alerta llaman a un webhook para automatizar",
     "more": "Más información"
   },
   "filter_disabled": {
-    "0": "Activar",
-    "1": "Desactivar",
-    "placeholder": "Situación"
+    "0": "Activado",
+    "1": "Desactivado",
+    "placeholder": "Estado de activación"
   }
 };
 

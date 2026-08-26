@@ -74,7 +74,7 @@ const pt_BR = {
       "timeseries": "Ver o gráfico de série temporal",
       "timeseries_tip": "Pode ser copiado para a visão da estrutura da tabela, no modo série temporal, para ver os dados, ou usado em um dashboard para plotar séries a partir do Doris.",
       "table": "Ver os valores estatísticos",
-      "table_tip": "Pode ser usado para criar regras de alerta e de gravação do Doris, e métricas do NorthStar."
+      "table_tip": "Pode ser usado para criar regras de alerta e de registro do Doris, e métricas do Northstar."
     },
     "defaultSearchField": "Campos de busca padrão",
     "default_search_tip_1": "Definir como campo de busca padrão",
@@ -104,8 +104,8 @@ const pt_BR = {
     },
     "add_to": {
       "btn": "Adicionar a…",
-      "recording_rule": "Adicionar a uma regra de gravação",
-      "add_recording_rule_title": "Adicionar regra de gravação"
+      "recording_rule": "Adicionar a uma regra de registro",
+      "add_recording_rule_title": "Adicionar regra de registro"
     }
   },
   "builder": {

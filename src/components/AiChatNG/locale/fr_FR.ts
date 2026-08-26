@@ -98,7 +98,7 @@ const fr_FR = {
       "group": "Groupe métier",
       "datasource": "Source de données",
       "cate": "Type de source de données",
-      "severity": "Niveau d'alerte",
+      "severity": "Gravité de l'alerte",
       "metric": "Métrique surveillée",
       "condition": "Condition de déclenchement",
       "note": "Contenu de l'alerte"

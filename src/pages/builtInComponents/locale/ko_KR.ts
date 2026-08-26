@@ -5,7 +5,7 @@ const ko_KR = {
   "tab_collectTpls": "수집 템플릿",
   "tab_metrics": "지표 설명",
   "tab_dashboards": "대시보드",
-  "tab_firemap": "대응 보드",
+  "tab_firemap": "Firemap",
   "ident": "템플릿 이름",
   "logo": "아이콘",
   "enable": "사용",
@@ -31,13 +31,13 @@ const ko_KR = {
       "alert": "알림 규칙 수정",
       "dashboard": "대시보드 수정",
       "collect": "수집 템플릿 수정",
-      "firemap": "대응 보드 규칙 수정"
+      "firemap": "Firemap 규칙 수정"
     },
     "create": {
       "alert": "알림 규칙 만들기",
       "dashboard": "대시보드 만들기",
       "collect": "수집 템플릿 만들기",
-      "firemap": "대응 보드 규칙 만들기"
+      "firemap": "Firemap 규칙 만들기"
     },
     "no_select": {
       "alert": "알림 규칙을 선택하세요",
@@ -46,7 +46,7 @@ const ko_KR = {
     "help": {
       "alert": "본인 비즈니스 그룹에서 알림 규칙을 만들고 다듬은 뒤 JSON으로 내보내 아래에 붙여 넣으세요",
       "dashboard": "본인 비즈니스 그룹에서 대시보드를 만들고 다듬은 뒤 JSON으로 내보내 아래에 붙여 넣으세요",
-      "firemap": "본인 공간에서 대응 보드 규칙을 만들고 다듬은 뒤 추가 작업의 “템플릿으로 내보내기”로 받아 아래에 붙여 넣으세요"
+      "firemap": "본인 공간에서 Firemap 규칙을 만들고 다듬은 뒤 추가 작업의 “템플릿으로 내보내기”로 받아 아래에 붙여 넣으세요"
     }
   },
   "payloads": "템플릿",

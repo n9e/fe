@@ -51,7 +51,7 @@ const es_ES = {
   "tag_display": "Visualización de etiquetas",
   "tag_display_all": "Todas",
   "tag_display_compact": "Resumida",
-  "tag_display_off": "Cerrar",
+  "tag_display_off": "Desactivado",
   "detail_title": "Detalles de la alerta"
 };
 

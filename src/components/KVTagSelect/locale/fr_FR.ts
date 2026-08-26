@@ -2,7 +2,7 @@ const fr_FR = {
   "append_tags_msg": "Le format de l'étiquette est incorrect ; vérifiez-le.",
   "append_tags_msg1": "Une étiquette ne doit pas dépasser 64 caractères",
   "append_tags_msg2": "Le format attendu est clé=valeur, la clé commençant par une lettre ou un tiret bas et ne contenant que des lettres, des chiffres et des tirets bas.",
-  "append_tags_placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par une espace",
+  "append_tags_placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par un espace",
   "tag": {
     "key": {
       "label": "Nom de l'étiquette",

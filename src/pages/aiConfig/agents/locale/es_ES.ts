@@ -5,8 +5,8 @@ const es_ES = {
   "llm_config_name": "Configuración de LLM",
   "llm_config_is_default": "Predeterminado",
   "use_case": "Finalidad",
-  "enabled": "Activar",
-  "disabled": "Desactivar",
+  "enabled": "Activado",
+  "disabled": "Desactivado",
   "add_btn": "Nuevo agente",
   "cannot_delete_when_enabled": "No se puede eliminar un agente activo",
   "form": {

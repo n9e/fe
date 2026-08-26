@@ -14,8 +14,8 @@ const ko_KR = {
   "append_tags_msg2": "레이블 형식은 key=value여야 하며, key는 영문자나 밑줄로 시작하고 영문자, 숫자, 밑줄로 이루어져야 합니다.",
   "append_tags_placeholder": "레이블 형식은 key=value이며 Enter나 공백으로 구분합니다",
   "filter_disabled": {
-    "0": "사용",
-    "1": "사용 중지",
+    "0": "사용 중",
+    "1": "사용 안 함",
     "placeholder": "사용 상태"
   },
   "batch": {

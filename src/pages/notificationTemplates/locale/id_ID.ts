@@ -32,7 +32,7 @@ const id_ID = {
   },
   "starter": {
     "rule_name": "Aturan",
-    "severity": "Tingkat",
+    "severity": "Tingkat keparahan",
     "status": "Status",
     "firing": "Terpicu",
     "recovered": "Pulih",

@@ -5,7 +5,7 @@ const id_ID = {
   "tab_collectTpls": "Templat pengumpulan",
   "tab_metrics": "Keterangan metrik",
   "tab_dashboards": "Dasbor",
-  "tab_firemap": "Peta pemadaman",
+  "tab_firemap": "Firemap",
   "ident": "Nama templat",
   "logo": "Ikon",
   "enable": "Aktifkan",
@@ -31,13 +31,13 @@ const id_ID = {
       "alert": "Ubah aturan alert",
       "dashboard": "Ubah dasbor",
       "collect": "Ubah templat pengumpulan",
-      "firemap": "Ubah aturan peta pemadaman"
+      "firemap": "Ubah aturan Firemap"
     },
     "create": {
       "alert": "Buat aturan alert",
       "dashboard": "Buat dasbor",
       "collect": "Buat templat pengumpulan",
-      "firemap": "Buat aturan peta pemadaman"
+      "firemap": "Buat aturan Firemap"
     },
     "no_select": {
       "alert": "Pilih aturan alert",
@@ -46,7 +46,7 @@ const id_ID = {
     "help": {
       "alert": "Buat dan sunting aturan alert di grup bisnismu sendiri, lalu ekspor JSON-nya dan tempelkan di bawah",
       "dashboard": "Buat dan sunting dasbor di grup bisnismu sendiri, lalu ekspor JSON-nya dan tempelkan di bawah",
-      "firemap": "Buat dan sunting aturan peta pemadaman di ruang kerjamu, lalu gunakan “Ekspor ke templat” pada menu Tindakan lainnya dan tempelkan hasilnya di bawah"
+      "firemap": "Buat dan sunting aturan Firemap di ruang kerjamu, lalu gunakan “Ekspor ke templat” pada menu Tindakan lainnya dan tempelkan hasilnya di bawah"
     }
   },
   "payloads": "Templat",

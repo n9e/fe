@@ -27,7 +27,7 @@ const fr_FR = {
     "funnel": "Traitement de l'événement",
     "funnel_fired": "Déclenché",
     "funnel_pending": "En attente de la durée",
-    "funnel_muted": "Mettre en sourdine",
+    "funnel_muted": "Mise en sourdine",
     "funnel_dropped": "Rejeté par le workflow",
     "funnel_inhibited": "Inhibé",
     "series_total": "{{count}} séries",
@@ -41,7 +41,7 @@ const fr_FR = {
     "stage": "Étape",
     "stage_detail": "Motif du verdict",
     "stage_fired": "Déclenché",
-    "stage_stalled": "Répétition étouffée",
+    "stage_stalled": "Répétition supprimée",
     "stage_notify_muted": "Notification mise en sourdine",
     "stage_pending": "En attente de la durée",
     "stage_muted": "En sourdine",
@@ -63,7 +63,7 @@ const fr_FR = {
     "node_error_hint": "Les journaux restent sur le disque local du nœud concerné, par exemple un centre de données edge. Connectez-vous à ce nœud et exécutez la commande suivante en local, en vous authentifiant avec le BasicAuth défini dans sa configuration HTTP.APIForService :"
   },
   "prod": "Type de supervision",
-  "severity": "Niveau",
+  "severity": "Gravité",
   "notify_groups": "Groupe destinataire",
   "tag_default": "Par défaut",
   "tag_core": "Essentiel",
@@ -78,7 +78,7 @@ const fr_FR = {
   "append_tags_msg": "Le format de l'étiquette est incorrect ; vérifiez-le.",
   "append_tags_msg1": "Une étiquette ne doit pas dépasser 64 caractères",
   "append_tags_msg2": "Le format attendu est clé=valeur, la clé commençant par une lettre ou un tiret bas et ne contenant que des lettres, des chiffres et des tirets bas.",
-  "append_tags_placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par une espace",
+  "append_tags_placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par un espace",
   "group_id": "Groupe métier",
   "note": "Remarque",
   "append_tags_note_tip": "Ajoutées à tous les événements d'alerte produits par cette règle, elles serviront ensuite à les filtrer",
@@ -173,7 +173,7 @@ const fr_FR = {
       "than": "dépasse",
       "pct_target_miss_text": "secondes et la proportion de machines injoignables dépasse",
       "second": "secondes",
-      "millisecond": "Millisecondes"
+      "millisecond": "millisecondes"
     },
     "prom_eval_interval_tip": "Fréquence d'exécution de la PromQL : la base temporelle est interrogée toutes les {{num}} secondes et le résultat y est réécrit sous un nouveau nom",
     "prom_for_duration_tip": "La durée est en général supérieure à la fréquence d'exécution : sur cette durée la requête PromQL est lancée plusieurs fois et l'alerte n'apparaît que si toutes déclenchent. Avec une durée de 0, un seul franchissement du seuil suffit"
@@ -198,7 +198,7 @@ const fr_FR = {
       "name": "Règle d'alerte",
       "result": "Résultat de l'import",
       "errmsg": "Message d'erreur",
-      "force_overwrite": "Écraser les homonymes"
+      "force_overwrite": "Écraser les règles de même nom"
     },
     "import_builtin": "Importer les règles d'alerte intégrées",
     "import_prometheus": "Importer des règles d'alerte Prometheus",
@@ -221,7 +221,7 @@ const fr_FR = {
       "effective_time_add": "Ajouter une plage d'application",
       "options": {
         "datasource_ids": "Source de données",
-        "severity": "Niveau d'alerte",
+        "severity": "Gravité de l'alerte",
         "prom_eval_interval": "Fréquence d'exécution",
         "prom_for_duration": "Durée",
         "disabled": "Activer",
@@ -303,7 +303,7 @@ const fr_FR = {
     "update_at": "Modifié le",
     "update_by": "Modifié par",
     "disabled": "Activer",
-    "severity": "Niveau",
+    "severity": "Gravité",
     "status": "État",
     "status_tip": "Indique si cette règle produit actuellement des événements ; seuls les 30 derniers jours sont comptabilisés"
   },
@@ -314,9 +314,9 @@ const fr_FR = {
     "deprecation_warning": "Le relabel des événements va bientôt disparaître. Cette règle utilise encore une ancienne configuration ; nous vous conseillons de basculer vers le processeur Réécriture des étiquettes du workflow de traitement ci-dessus, qui offre les mêmes possibilités.",
     "if_tip": "Facultatif : seuls les événements correspondant à cette condition voient leurs étiquettes réécrites",
     "target_label_tip": "Clé de la nouvelle étiquette",
-    "replacement_tip": "Valeur finale de l'étiquette. Ce champ peut rester vide si un séparateur est défini, et peut réutiliser les captures de l'expression régulière si celle-ci est renseignée",
+    "replacement_tip": "Valeur finale de l'étiquette. Ce champ peut rester vide si separator est défini, et peut réutiliser les captures de regex si celle-ci est renseignée",
     "source_labels_tip": "Facultatif : étiquettes sources utilisées",
-    "source_labels_tip_placeholder": "Séparez par Entrée ou par une espace",
+    "source_labels_tip_placeholder": "Séparez par Entrée ou par un espace",
     "separator_tip": "Facultatif : caractère de liaison servant à concaténer les valeurs d'étiquettes existantes",
     "regex_tip": "Facultatif : expression régulière extrayant une partie des valeurs d'étiquettes existantes pour composer la nouvelle valeur",
     "labelkeep": {
@@ -402,8 +402,8 @@ const fr_FR = {
     "anomaly": "Alerte intelligente"
   },
   "filter_disabled": {
-    "0": "Activer",
-    "1": "Désactiver",
+    "0": "Activé",
+    "1": "Désactivé",
     "placeholder": "État d'activation"
   },
   "var_config": {
@@ -491,7 +491,7 @@ const fr_FR = {
     "all_day": "Toute la journée",
     "queries_and_threshold": "Requête et seuil",
     "condition_summary": "Condition d'alerte",
-    "query_statements": "Statistiques de requête",
+    "query_statements": "Requêtes",
     "triggers": "Condition d'évaluation",
     "range": "Plage de la requête",
     "interval": "Intervalle",
@@ -516,11 +516,11 @@ const fr_FR = {
       "title_result": "Résultat de la simulation",
       "intro": "Sans attendre que la condition soit remplie, un événement de test est composé à partir de la configuration actuelle puis parcourt réellement les étapes de traitement, de mise en sourdine et de notification, afin de vérifier que tout fonctionne",
       "validate_first": "Complétez d'abord les champs obligatoires",
-      "severity": "Niveau simulé",
+      "severity": "Gravité simulée",
       "severity_single": "Cette règle ne définit que {{severity}} ; l'événement de test sera créé à ce niveau",
       "severity_multi_tip": "Cette règle comporte plusieurs niveaux d'alerte ; choisissez celui à simuler",
       "event_type": "Type d'événement",
-      "event_type_trigger": "Déclenché",
+      "event_type_trigger": "Déclenchement",
       "event_type_recover": "Résolution",
       "recover_disabled_warning": "Cette règle ne notifie pas les résolutions : aucun message ne partira lors d'une vraie résolution",
       "sample": "Données d'exemple",

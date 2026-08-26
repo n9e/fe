@@ -90,7 +90,7 @@ const es_ES = {
       "NotifyChannelsJSON": "Lista de canales de notificación",
       "NotifyGroupsJSON": "Lista de grupos destinatarios",
       "NotifyRuleIds": "Lista de ID de las reglas de notificación",
-      "CallbacksJSON": "Lista de URL de devolución de llamada",
+      "CallbacksJSON": "Lista de URL de callback",
       "ExtraConfig": "Configuración adicional",
       "ExtraInfo": "Lista de información adicional",
       "ExtraInfoMap": "Mapa de información adicional"

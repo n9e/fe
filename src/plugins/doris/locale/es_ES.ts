@@ -72,9 +72,9 @@ const es_ES = {
       "origin": "Ver el texto bruto del log",
       "origin_tip": "Puedes copiarlo a la vista de la estructura de la tabla, en modo tabla, para ver los datos",
       "timeseries": "Ver el gráfico de series temporales",
-      "timeseries_tip": "Puedes copiarlo a la vista de la estructura de la tabla, en modo serie temporal, para ver los datos, o usarlo en un panel para dibujar series a partir de Doris.",
+      "timeseries_tip": "Puedes copiarlo a la vista de la estructura de la tabla, en modo serie temporal, para ver los datos, o usarlo en un dashboard para dibujar series a partir de Doris.",
       "table": "Ver los valores estadísticos",
-      "table_tip": "Sirve para crear reglas de alerta y de grabación de Doris, y métricas de NorthStar."
+      "table_tip": "Sirve para crear reglas de alerta y de registro de Doris, y métricas de Northstar."
     },
     "defaultSearchField": "Campos de búsqueda predeterminados",
     "default_search_tip_1": "Establecer como campo de búsqueda predeterminado",
@@ -104,8 +104,8 @@ const es_ES = {
     },
     "add_to": {
       "btn": "Añadir a…",
-      "recording_rule": "Añadir a una regla de grabación",
-      "add_recording_rule_title": "Añadir regla de grabación"
+      "recording_rule": "Añadir a una regla de registro",
+      "add_recording_rule_title": "Añadir regla de registro"
     }
   },
   "builder": {

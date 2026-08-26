@@ -78,7 +78,7 @@ const id_ID = {
       },
       "alertGovernance": {
         "title": "Tata kelola alert",
-        "description": "Aturan · pembisuan · langganan"
+        "description": "Aturan · peredaman · langganan"
       },
       "eventHistory": {
         "title": "Event historis",
@@ -94,10 +94,10 @@ const id_ID = {
       "metricExplorer": "Analisis metrik",
       "logExplorer": "Analisis log",
       "alertRules": "Aturan alert",
-      "alertMutes": "Pembisuan alert",
+      "alertMutes": "Peredaman alert",
       "alertSubscribes": "Langganan alert",
       "objectExplorer": "Objek pemantauan",
-      "recordingRules": "Aturan perekaman"
+      "recordingRules": "Recording rules"
     },
     "collection": {
       "description": "Pengumpul data sumber terbuka serba satu",
@@ -135,7 +135,7 @@ const id_ID = {
     "footnotes": {
       "scenario": [
         "Isolasi multipenyewa per grup bisnis",
-        "Aturan alert · pembisuan · langganan",
+        "Aturan alert · peredaman · langganan",
         "Analisis dibantu model bahasa besar"
       ],
       "observability": "Kemampuan platform observabilitas menyeluruh",

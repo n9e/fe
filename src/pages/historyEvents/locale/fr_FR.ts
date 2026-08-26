@@ -17,7 +17,7 @@ const fr_FR = {
     "1440": "60 derniers jours",
     "2160": "90 derniers jours"
   },
-  "severity": "Niveau d'alerte",
+  "severity": "Gravité de l'alerte",
   "eventType": "Catégorie d'événement",
   "export": "Exporter",
   "export_failed": "Échec de l'export",
@@ -25,8 +25,8 @@ const fr_FR = {
   "claimant": "Pris en charge par",
   "shield": "Mettre en sourdine",
   "rule_prod": {
-    "firemap": "Tableau d'intervention",
-    "northstar": "Polaris",
+    "firemap": "Firemap",
+    "northstar": "Northstar",
     "metric": "Metric",
     "host": "Host",
     "logging": "Log",

@@ -1,5 +1,5 @@
 const id_ID = {
-  "title": "Aturan perekaman",
+  "title": "Recording rules",
   "search_placeholder": "Cari nama atau label",
   "group_id": "Grup bisnis",
   "group_id_required": "Pilih grup bisnis",
@@ -14,23 +14,23 @@ const id_ID = {
   "append_tags_msg2": "Label harus berformat key=value, dan kuncinya diawali huruf atau garis bawah serta hanya berisi huruf, angka, dan garis bawah.",
   "append_tags_placeholder": "Label berformat key=value, dipisahkan dengan Enter atau spasi",
   "filter_disabled": {
-    "0": "Aktifkan",
-    "1": "Nonaktifkan",
+    "0": "Aktif",
+    "1": "Nonaktif",
     "placeholder": "Status aktif"
   },
   "batch": {
     "must_select_one": "Tidak ada aturan yang dipilih",
     "import": {
-      "title": "Impor aturan perekaman",
-      "name": "Aturan perekaman"
+      "title": "Impor recording rule",
+      "name": "Recording rules"
     },
     "export": {
-      "title": "Ekspor aturan perekaman",
+      "title": "Ekspor recording rule",
       "copy": "Salin JSON ke papan klip"
     },
-    "delete": "Hapus aturan perekaman",
+    "delete": "Hapus recording rule",
     "update": {
-      "title": "Perbarui aturan perekaman",
+      "title": "Perbarui recording rule",
       "field": "Field",
       "changeto": "Ubah menjadi",
       "options": {

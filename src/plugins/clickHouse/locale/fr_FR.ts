@@ -55,7 +55,7 @@ const fr_FR = {
       "timeseries": "Voir la courbe temporelle",
       "timeseries_tip": "À copier dans Vue par structure de table, mode Courbe temporelle, pour consulter les données, ou à réutiliser dans un tableau de bord pour tracer des courbes à partir de données ClickHouse.",
       "table": "Voir les statistiques",
-      "table_tip": "Utilisable pour créer des règles d'alerte et d'enregistrement ClickHouse ainsi que des métriques Polaris."
+      "table_tip": "Utilisable pour créer des règles d'alerte et d'enregistrement ClickHouse ainsi que des métriques Northstar."
     },
     "warn_message_btn_1": "Lancer la requête quand même",
     "warn_message_btn_2": "Revenir et modifier",

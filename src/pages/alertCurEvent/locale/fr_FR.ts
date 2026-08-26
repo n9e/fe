@@ -13,7 +13,7 @@ const fr_FR = {
     "1440": "60 derniers jours",
     "2160": "90 derniers jours"
   },
-  "severity": "Niveau d'alerte",
+  "severity": "Gravité de l'alerte",
   "eventType": "Catégorie d'événement",
   "event_name": "Événement",
   "first_trigger_time": "Premier déclenchement",
@@ -51,7 +51,7 @@ const fr_FR = {
   "tag_display": "Affichage des étiquettes",
   "tag_display_all": "Toutes",
   "tag_display_compact": "Condensé",
-  "tag_display_off": "Fermer",
+  "tag_display_off": "Désactivé",
   "detail_title": "Détail de l'alerte"
 };
 

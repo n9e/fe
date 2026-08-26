@@ -20,7 +20,7 @@ const pt_BR = {
   },
   "use_case": {
     "label": "Finalidade",
-    "firemap": "Mapa de incidentes",
+    "firemap": "Firemap",
     "event_pipeline": "Processamento de eventos"
   },
   "processors_col": "Processador",
@@ -45,7 +45,7 @@ const pt_BR = {
     "api": "Por API"
   },
   "disabled": {
-    "filter_placeholder": "Situação",
+    "filter_placeholder": "Status de ativação",
     "form_label": "Ativar",
     "label": "Ativar",
     "false": "Ativar",
@@ -212,7 +212,7 @@ const pt_BR = {
     },
     "basic": {
       "title": "Dados básicos",
-      "desc": "Nome, equipes autorizadas e situação do fluxo de trabalho"
+      "desc": "Nome, equipes autorizadas e status de ativação do fluxo de trabalho"
     }
   },
   "no_filter_warning": "Nenhum filtro configurado: este fluxo processará todos os eventos de alerta",

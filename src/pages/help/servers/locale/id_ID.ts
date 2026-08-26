@@ -1,7 +1,7 @@
 const id_ID = {
-  "title": "Mesin alert",
-  "instance": "Instans mesin",
-  "cluster": "Kluster mesin",
+  "title": "Engine alert",
+  "instance": "Instans engine",
+  "cluster": "Kluster engine",
   "datasource": "Sumber data",
   "modify_datasource": "Ubah sumber data",
   "clock": "Detak jantung terakhir",

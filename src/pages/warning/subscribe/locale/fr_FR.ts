@@ -69,7 +69,7 @@ const fr_FR = {
     "tip": "Le nom est généré à partir des filtres et de la configuration de notification ci-dessus, et reste modifiable à tout moment",
     "all": "Toutes les alertes",
     "escalation": "Escalade",
-    "separator": "、",
+    "separator": ", ",
     "joiner": "-",
     "clone_suffix": "-copie"
   },
@@ -99,8 +99,8 @@ const fr_FR = {
     "more": "En savoir plus"
   },
   "filter_disabled": {
-    "0": "Activer",
-    "1": "Désactiver",
+    "0": "Activé",
+    "1": "Désactivé",
     "placeholder": "État d'activation"
   }
 };

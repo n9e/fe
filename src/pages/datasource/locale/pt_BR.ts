@@ -110,7 +110,7 @@ const pt_BR = {
     "url_required_msg": "A URL não pode ficar vazia",
     "logs_max_query_rows": "Número máximo de logs retornados",
     "prom": {
-      "write_addr_tip": "Endereço de gravação dos dados gerados pelas regras de gravação; veja exemplos de configuração das bases de séries temporais mais comuns",
+      "write_addr_tip": "Endereço de gravação dos dados gerados pelas regras de registro; veja exemplos de configuração das bases de séries temporais mais comuns",
       "read_addr": "Endereço interno da base de séries temporais",
       "read_addr_tip": "Usado normalmente quando o motor de alertas fica em um data center de borda. Se preenchido, o n9e-edge acessa a base por este endereço; se vazio, usa a URL acima",
       "url_tip": "Exemplos de configuração das bases de séries temporais mais comuns (compatíveis com a API de consulta do Prometheus):",
@@ -211,7 +211,7 @@ const pt_BR = {
     "explore": "Explorar dados"
   },
   "row_actions": {
-    "guide": "Situação dos dados"
+    "guide": "Status dos dados"
   },
   "guide_landing": {
     "title": "A fonte de dados \"{{name}}\" está pronta",

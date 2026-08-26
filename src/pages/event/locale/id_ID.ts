@@ -19,7 +19,7 @@ const id_ID = {
   "rule_name": "Judul aturan dan label event",
   "first_trigger_time": "Pertama kali terpicu",
   "trigger_time": "Waktu terpicu",
-  "shield": "Bisukan",
+  "shield": "Redam",
   "prod": "Jenis pemantauan",
   "aggregate_rule": "Aturan agregasi",
   "aggregate_rule_name": "Nama aturan",

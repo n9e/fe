@@ -19,8 +19,8 @@ const es_ES = {
         "desc": "Genera la configuración de Categraf por componente y comprueba que las métricas han llegado"
       },
       "hostDashboard": {
-        "title": "Aplicar el panel de monitorización de hosts",
-        "desc": "Importa el panel de hosts integrado con un clic y ve los datos de las máquinas al instante"
+        "title": "Aplicar el dashboard de monitorización de hosts",
+        "desc": "Importa el dashboard de hosts integrado con un clic y ve los datos de las máquinas al instante"
       },
       "hostAlert": {
         "title": "Activar las alertas de host",
@@ -35,8 +35,8 @@ const es_ES = {
         "desc": "Integra orígenes de datos como Prometheus y VictoriaMetrics"
       },
       "dashboard": {
-        "title": "Crear panel",
-        "desc": "Convierte las métricas que te importan en un panel"
+        "title": "Crear dashboard",
+        "desc": "Convierte las métricas que te importan en un dashboard"
       },
       "alert": {
         "title": "Configurar reglas de alerta",
@@ -55,7 +55,7 @@ const es_ES = {
   "hero": {
     "badge": "Código abierto · plataforma completa de monitorización y alertas",
     "highlight": "Monitorización más sencilla e inteligente",
-    "description": "Recolección y análisis unificados de métricas y logs, con gobernanza de alertas, paneles y asistente inteligente listos para usar, y afinada para el mundo cloud native.",
+    "description": "Recolección y análisis unificados de métricas y logs, con gobernanza de alertas, dashboards y asistente inteligente listos para usar, y afinada para el mundo cloud native.",
     "primaryAction": "Ver la documentación",
     "secondaryAction": "Preguntar a la IA"
   },
@@ -90,14 +90,14 @@ const es_ES = {
       }
     },
     "observability": {
-      "dashboard": "Panel",
+      "dashboard": "Dashboard",
       "metricExplorer": "Análisis de métricas",
       "logExplorer": "Análisis de logs",
       "alertRules": "Regla de alerta",
       "alertMutes": "Silenciamiento de alertas",
       "alertSubscribes": "Suscripción a alertas",
       "objectExplorer": "Objetos monitorizados",
-      "recordingRules": "Reglas de grabación"
+      "recordingRules": "Reglas de registro"
     },
     "collection": {
       "description": "Recolector de código abierto todo en uno",
@@ -162,7 +162,7 @@ const es_ES = {
       "title": "Observabilidad unificada",
       "description": "Análisis integrado de métricas y logs",
       "links": [
-        "¿Cómo se visualizan las métricas de negocio en un panel?",
+        "¿Cómo se visualizan las métricas de negocio en un dashboard?",
         "¿Cómo se escriben consultas PromQL en el análisis de métricas?"
       ]
     },

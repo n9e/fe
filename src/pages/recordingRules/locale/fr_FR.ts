@@ -12,10 +12,10 @@ const fr_FR = {
   "append_tags_msg": "Le format de l'étiquette est incorrect ; vérifiez-le.",
   "append_tags_msg1": "Une étiquette ne doit pas dépasser 64 caractères",
   "append_tags_msg2": "Le format attendu est clé=valeur, la clé commençant par une lettre ou un tiret bas et ne contenant que des lettres, des chiffres et des tirets bas.",
-  "append_tags_placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par une espace",
+  "append_tags_placeholder": "Le format est clé=valeur ; séparez les entrées par Entrée ou par un espace",
   "filter_disabled": {
-    "0": "Activer",
-    "1": "Désactiver",
+    "0": "Activé",
+    "1": "Désactivé",
     "placeholder": "État d'activation"
   },
   "batch": {

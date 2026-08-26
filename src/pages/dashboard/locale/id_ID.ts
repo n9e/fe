@@ -266,7 +266,7 @@ const id_ID = {
       },
       "thresholdsStyle": {
         "label": "Gaya ambang batas",
-        "off": "Tutup",
+        "off": "Nonaktif",
         "line": "Garis",
         "dashed": "Garis putus-putus",
         "line+area": "Garis dan area",
@@ -513,13 +513,13 @@ const id_ID = {
         "gradientMode_none": "Tutup",
         "stack": "Tumpuk",
         "stack_normal": "Aktif",
-        "stack_off": "Tutup",
+        "stack_off": "Nonaktif",
         "yAxis": {
           "title": "Pengaturan sumbu Y",
           "rightYAxis": {
             "label": "Tampilkan sumbu Y kanan",
             "normal": "Aktif",
-            "off": "Tutup"
+            "off": "Nonaktif"
           }
         },
         "showPoints": "Tampilkan titik",

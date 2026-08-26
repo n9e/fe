@@ -42,7 +42,7 @@ const pt_BR = {
   "basic_configuration": "Configuração básica",
   "basic_configuration_desc": "Nome, equipes autorizadas e observações da regra de notificação",
   "name_auto_tip": "O nome é gerado automaticamente após escolher o meio e as equipes destinatárias, e pode ser alterado a qualquer momento",
-  "name_auto_separator": "、",
+  "name_auto_separator": ", ",
   "add_note_btn": "Adicionar observação",
   "user_group_ids": "Equipes autorizadas",
   "user_group_ids_tip": "Os membros das equipes informadas aqui poderão gerenciar ou ver esta regra de notificação",

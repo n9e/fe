@@ -27,8 +27,8 @@ const ko_KR = {
         "desc": "내장 호스트 알림 규칙을 한 번에 가져와 켭니다"
       },
       "testDelivered": {
-        "title": "테스트 알림 보내기",
-        "desc": "시뮬레이션 이벤트로 알림이 실제로 도착하는지 확인합니다"
+        "title": "테스트 통지 보내기",
+        "desc": "시뮬레이션 이벤트로 통지가 실제로 도착하는지 확인합니다"
       },
       "datasource": {
         "title": "데이터 소스 설정",
@@ -43,7 +43,7 @@ const ko_KR = {
         "desc": "핵심 지표에 첫 알림 규칙을 만듭니다"
       },
       "notification": {
-        "title": "알림 전송 설정",
+        "title": "통지 설정",
         "desc": "DingTalk나 이메일 같은 매체로 알림이 실제로 나가게 합니다"
       },
       "llm": {
@@ -61,10 +61,10 @@ const ko_KR = {
   },
   "matrix": {
     "headerKicker": "기능 한눈에 보기",
-    "headerSubtitle": "데이터 수집과 통합부터 통합 관측과 알림 전송까지 아우르는 관측 플랫폼",
+    "headerSubtitle": "데이터 수집과 통합부터 통합 관측과 통지까지 아우르는 관측 플랫폼",
     "scenarioTag": "시나리오 · 통합 알림",
     "observabilityTag": "플랫폼 · 통합 관측",
-    "notificationTag": "전달 · 알림 매체",
+    "notificationTag": "전달 · 통지 매체",
     "collectionTag": "데이터 · 통합 수집",
     "integrationTag": "데이터 · 통합 연동",
     "integrationBrowseAll": "70개가 넘는 내장 통합 둘러보기",
@@ -78,7 +78,7 @@ const ko_KR = {
       },
       "alertGovernance": {
         "title": "알림 관리",
-        "description": "규칙 · 음소거 · 구독"
+        "description": "규칙 · 차단 · 구독"
       },
       "eventHistory": {
         "title": "지난 이벤트",
@@ -94,7 +94,7 @@ const ko_KR = {
       "metricExplorer": "지표 분석",
       "logExplorer": "로그 분석",
       "alertRules": "알림 규칙",
-      "alertMutes": "알림 음소거",
+      "alertMutes": "알림 차단",
       "alertSubscribes": "알림 구독",
       "objectExplorer": "모니터링 대상",
       "recordingRules": "레코딩 규칙"
@@ -116,15 +116,15 @@ const ko_KR = {
     },
     "notification": {
       "rules": {
-        "title": "알림 전송 규칙",
+        "title": "통지 규칙",
         "description": "세밀한 배분 라우팅"
       },
       "templates": {
-        "title": "알림 템플릿",
+        "title": "통지 템플릿",
         "description": "일관된 메시지 서식"
       },
       "channels": {
-        "title": "알림 매체",
+        "title": "통지 매체",
         "description": "여러 채널로 전달"
       },
       "users": {
@@ -135,14 +135,14 @@ const ko_KR = {
     "footnotes": {
       "scenario": [
         "멀티테넌시와 비즈니스 그룹 격리",
-        "알림 규칙 · 음소거 · 구독",
+        "알림 규칙 · 차단 · 구독",
         "대규모 언어 모델 기반 분석 지원"
       ],
       "observability": "통합 관측 플랫폼 기능",
       "integration": "널리 쓰이는 오픈 소스 데이터 소스",
       "notification": [
-        "알림 센터",
-        "알림과 구독"
+        "통지 센터",
+        "통지와 구독"
       ]
     }
   },
@@ -168,7 +168,7 @@ const ko_KR = {
     },
     "alert": {
       "title": "알림 관리",
-      "description": "알림 규칙 설정과 알림 전달",
+      "description": "알림 규칙 설정과 통지 전달",
       "links": [
         "첫 알림 규칙은 어떻게 만드나요?",
         "사내 메신저를 연결해 알림을 받으려면 어떻게 하나요?"

@@ -5,7 +5,7 @@ const fr_FR = {
   "tab_collectTpls": "Modèles de collecte",
   "tab_metrics": "Description des métriques",
   "tab_dashboards": "Tableau de bord",
-  "tab_firemap": "Tableau d'intervention",
+  "tab_firemap": "Firemap",
   "ident": "Nom du modèle",
   "logo": "Icône",
   "enable": "Activer",
@@ -31,13 +31,13 @@ const fr_FR = {
       "alert": "Modifier la règle d'alerte",
       "dashboard": "Modifier le tableau de bord",
       "collect": "Modifier le modèle de collecte",
-      "firemap": "Modifier la règle du tableau d'intervention"
+      "firemap": "Modifier la règle Firemap"
     },
     "create": {
       "alert": "Créer une règle d'alerte",
       "dashboard": "Créer un tableau de bord",
       "collect": "Créer un modèle de collecte",
-      "firemap": "Créer une règle de tableau d'intervention"
+      "firemap": "Créer une règle Firemap"
     },
     "no_select": {
       "alert": "Choisissez une règle d'alerte",
@@ -46,11 +46,11 @@ const fr_FR = {
     "help": {
       "alert": "Créez et peaufinez la règle d'alerte dans votre propre groupe métier, puis exportez son JSON et collez-le ci-dessous",
       "dashboard": "Créez et peaufinez le tableau de bord dans votre propre groupe métier, puis exportez son JSON et collez-le ci-dessous",
-      "firemap": "Créez et peaufinez la règle de tableau d'intervention dans votre espace, puis utilisez « Exporter vers un modèle » dans Autres actions et collez le résultat ci-dessous"
+      "firemap": "Créez et peaufinez la règle Firemap dans votre espace, puis utilisez « Exporter vers un modèle » dans Autres actions et collez le résultat ci-dessous"
     }
   },
   "payloads": "Modèle",
-  "tags_placeholder": "Séparez par Entrée ou par une espace",
+  "tags_placeholder": "Séparez par Entrée ou par un espace",
   "collect_create": "Créer une collecte",
   "collect_busiGroup_select": "Choix du groupe métier",
   "import_to_buisGroup": "Importer dans un groupe métier",

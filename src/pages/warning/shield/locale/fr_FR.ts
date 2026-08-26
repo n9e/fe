@@ -60,10 +60,10 @@ const fr_FR = {
   },
   "name_auto_tip": "Le titre est généré à partir des filtres ci-dessus et reste modifiable à tout moment",
   "name_auto_template": "Mettre en sourdine {{scope}}",
-  "name_auto_separator": "、",
+  "name_auto_separator": ", ",
   "name_auto_all_alerts": "Toutes les alertes",
   "summary": {
-    "severities_all": "Tous les niveaux",
+    "severities_all": "Toutes les gravités",
     "tags_none": "Étiquettes sans restriction",
     "tags_count": "{{count}} conditions d'étiquette",
     "periodic_count": "{{count}} plages horaires"
@@ -97,8 +97,8 @@ const fr_FR = {
     }
   },
   "filter_disabled": {
-    "0": "Activer",
-    "1": "Désactiver",
+    "0": "Activé",
+    "1": "Désactivé",
     "placeholder": "État d'activation"
   }
 };

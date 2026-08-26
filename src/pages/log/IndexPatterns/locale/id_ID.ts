@@ -85,7 +85,7 @@ const id_ID = {
   "跳转到仪表盘，并支持固定变量（用于下钻链接传入的变量和仪表盘筛选变量不能对齐的场景，比如仪表盘有3个筛选变量，但是下钻链接只传入1个变量）": "Membuka dasbor dengan dukungan variabel tetap, berguna bila variabel dari tautan telusur tidak sepadan dengan variabel filter dasbor, misalnya dasbor punya tiga variabel filter tetapi tautannya hanya membawa satu",
   "日志中的字段均可被作为变量引用，如": "Semua field log bisa dirujuk sebagai variabel, misalnya",
   "跳转到日志查询": "Membuka kueri log",
-  "跳转到灭火图": "Membuka peta pemadaman",
+  "跳转到灭火图": "Buka Firemap",
   "跳转到仪表盘": "Membuka dasbor",
   "内置变量": "Variabel bawaan",
   "，如": ", misalnya",

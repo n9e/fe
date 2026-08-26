@@ -39,8 +39,8 @@ const id_ID = {
     },
     "add_to": {
       "btn": "Tambahkan ke",
-      "recording_rule": "Aturan perekaman",
-      "add_recording_rule_title": "Tambahkan ke aturan perekaman"
+      "recording_rule": "Recording rules",
+      "add_recording_rule_title": "Tambahkan ke recording rule"
     }
   },
   "builder": {

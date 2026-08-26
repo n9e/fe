@@ -74,7 +74,7 @@ const fr_FR = {
       "timeseries": "Voir la courbe temporelle",
       "timeseries_tip": "À copier dans Vue par structure de table, mode Courbe temporelle, pour consulter les données, ou à réutiliser dans un tableau de bord pour tracer des courbes à partir de données Doris.",
       "table": "Voir les statistiques",
-      "table_tip": "Utilisable pour créer des règles d'alerte et d'enregistrement Doris ainsi que des métriques Polaris."
+      "table_tip": "Utilisable pour créer des règles d'alerte et d'enregistrement Doris ainsi que des métriques Northstar."
     },
     "defaultSearchField": "Champs de recherche par défaut",
     "default_search_tip_1": "Définir comme champ de recherche par défaut",

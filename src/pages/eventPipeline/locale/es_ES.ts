@@ -20,7 +20,7 @@ const es_ES = {
   },
   "use_case": {
     "label": "Finalidad",
-    "firemap": "Mapa de incidencias",
+    "firemap": "Firemap",
     "event_pipeline": "Procesamiento de eventos"
   },
   "processors_col": "Procesador",
@@ -45,7 +45,7 @@ const es_ES = {
     "api": "Por API"
   },
   "disabled": {
-    "filter_placeholder": "Situación",
+    "filter_placeholder": "Estado de activación",
     "form_label": "Activar",
     "label": "Activar",
     "false": "Activar",
@@ -167,7 +167,7 @@ const es_ES = {
       "event_update": "Actualización de eventos",
       "inhibit_qd": "Supresión de eventos (por consulta)",
       "annotation_qd": "Enriquecimiento con información adicional (por consulta)",
-      "callback": "Devolución de llamada por webhook",
+      "callback": "Callback por webhook",
       "ai_summary": "Resumen generado por IA",
       "script": "Ejecución de script",
       "event_recover": "Autorreparación",
@@ -192,7 +192,7 @@ const es_ES = {
       "inhibit_qd": "Suprime el evento según el resultado de una consulta",
       "annotation_qd": "Añade información al evento según el resultado de una consulta",
       "event_recover": "Lanza una tarea de autorreparación",
-      "alert_shot": "Captura la pantalla de un panel o una página y la adjunta a la alerta"
+      "alert_shot": "Captura la pantalla de un dashboard o una página y la adjunta a la alerta"
     },
     "delete_confirm": "¿Confirmas la eliminación de este procesador?",
     "switch_type_confirm": "Cambiar el tipo borra la configuración actual de este procesador. ¿Confirmas?",
@@ -212,7 +212,7 @@ const es_ES = {
     },
     "basic": {
       "title": "Datos básicos",
-      "desc": "Nombre, equipos autorizados y situación del flujo de trabajo"
+      "desc": "Nombre, equipos autorizados y estado de activación del flujo de trabajo"
     }
   },
   "no_filter_warning": "No hay ningún filtro configurado: este flujo procesará todos los eventos de alerta",
@@ -404,15 +404,15 @@ const es_ES = {
     "shot_type": {
       "label": "Tipo de objeto",
       "options": {
-        "board": "Panel",
+        "board": "Dashboard",
         "url": "Dirección URL"
       }
     },
     "advanced_settings": "Ajustes avanzados",
     "board_shot_opts": {
       "busi_group": "Grupo de negocio",
-      "board_id": "Panel",
-      "board_url": "URL del panel",
+      "board_id": "Dashboard",
+      "board_url": "URL del dashboard",
       "timeout": "Tiempo de espera (milisegundos)",
       "width": "Ancho de la imagen"
     },

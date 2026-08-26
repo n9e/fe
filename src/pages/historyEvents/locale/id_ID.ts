@@ -23,10 +23,10 @@ const id_ID = {
   "export_failed": "Gagal mengekspor",
   "prod": "Jenis pemantauan",
   "claimant": "Diklaim oleh",
-  "shield": "Bisukan",
+  "shield": "Redam",
   "rule_prod": {
-    "firemap": "Peta pemadaman",
-    "northstar": "Polaris",
+    "firemap": "Firemap",
+    "northstar": "Northstar",
     "metric": "Metric",
     "host": "Host",
     "logging": "Log",

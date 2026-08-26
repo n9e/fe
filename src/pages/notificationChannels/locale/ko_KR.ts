@@ -1,5 +1,5 @@
 const ko_KR = {
-  "title": "알림 매체",
+  "title": "통지 매체",
   "basic_configuration": "기본 설정",
   "default_values": {
     "access_key_id": "실제 access_key_id로 바꾸세요",
@@ -16,17 +16,17 @@ const ko_KR = {
     "ali_sms_template_param": "장애 {{$tpl.incident}}입니다. 빨리 대응해 주세요"
   },
   "ident": "매체 유형",
-  "ident_tip": "알림 매체의 분류입니다. 예를 들어 DingTalk 매체가 여러 개라도 유형은 모두 dingtalk으로 둘 수 있습니다. 유형은 목록에 있는 값에 매이지 않고 직접 입력할 수 있으며, 알림 매체와 메시지 템플릿은 이 유형 필드로 이어집니다",
-  "note_tip": "이 알림 매체에 대한 보충 설명이나 쓰임새를 적어 두면 나중에 관리하거나 함께 일할 때 도움이 됩니다",
-  "enable_tip": "이 알림 매체 설정을 쓸지 정합니다. 끄면 설정이 잠시 멈춰 알림을 보내지 않습니다",
+  "ident_tip": "통지 매체의 분류입니다. 예를 들어 DingTalk 매체가 여러 개라도 유형은 모두 dingtalk으로 둘 수 있습니다. 유형은 목록에 있는 값에 매이지 않고 직접 입력할 수 있으며, 통지 매체와 메시지 템플릿은 이 유형 필드로 이어집니다",
+  "note_tip": "이 통지 매체에 대한 보충 설명이나 쓰임새를 적어 두면 나중에 관리하거나 함께 일할 때 도움이 됩니다",
+  "enable_tip": "이 통지 매체 설정을 쓸지 정합니다. 끄면 설정이 잠시 멈춰 통지를 보내지 않습니다",
   "advanced_settings": "고급 설정",
   "variable_configuration": {
     "title": "변수 설정",
     "contact_key": "연락 수단",
-    "contact_key_tip": "사용자와 조직 - 사용자 관리에 있는 연락 수단과 대응하며 알림을 보낼 방법을 고르는 데 씁니다. 예를 들어 \"Phone\"은 사용자의 전화번호를 콜백 요청이나 콜백 스크립트로 넘긴다는 뜻입니다. 새로운 연락 수단 유형은 사용자와 조직 - 연락 수단 페이지에서 추가할 수 있습니다",
+    "contact_key_tip": "사용자와 조직 - 사용자 관리에 있는 연락 수단과 대응하며 통지를 보낼 방법을 고르는 데 씁니다. 예를 들어 \"Phone\"은 사용자의 전화번호를 콜백 요청이나 콜백 스크립트로 넘긴다는 뜻입니다. 새로운 연락 수단 유형은 사용자와 조직 - 연락 수단 페이지에서 추가할 수 있습니다",
     "params": {
       "title": "매개변수 설정",
-      "title_tip": "이 알림 매체에 필요한 사용자 지정 매개변수를 정합니다. DingTalk 봇 토큰이나 API 키 같은 것들입니다. 알림 전송 규칙에서 매체를 고를 때 값도 함께 입력할 수 있습니다",
+      "title_tip": "이 통지 매체에 필요한 사용자 지정 매개변수를 정합니다. DingTalk 봇 토큰이나 API 키 같은 것들입니다. 통지 규칙에서 매체를 고를 때 값도 함께 입력할 수 있습니다",
       "key": "매개변수 식별자",
       "key_required": "매개변수 식별자는 비워 둘 수 없습니다",
       "cname": "매개변수 이름",
@@ -47,7 +47,7 @@ const ko_KR = {
   "http_request_config": {
     "title": "HTTP",
     "url": "URL",
-    "url_tip": "알림 요청을 받을 대상 주소",
+    "url_tip": "통지 요청을 받을 대상 주소",
     "method": "요청 메서드",
     "header": "요청 헤더",
     "header_tip": "요청에 함께 보낼 사용자 지정 HTTP 헤더이며 BasicAuth 자격 증명 같은 것이 여기 들어갑니다. URL, 헤더, 매개변수 값, 요청 본문 모두 {{.변수이름}} 형태로 시스템 설정 - 변수 설정의 변수를 참조할 수 있으므로 토큰 같은 자격 증명을 여기에 그대로 적지 않아도 됩니다",
@@ -176,7 +176,7 @@ const ko_KR = {
     "params_title": "매체 매개변수",
     "receivers_title": "수신자",
     "pagerduty_keys_title": "Integration Key",
-    "pagerduty_keys_tip": "PagerDuty는 integration key로 전달합니다. 저장한 뒤에는 알림 전송 규칙에서 서비스/통합으로 고를 수 있으며, 지금은 직접 입력하세요. 여러 개도 됩니다.",
+    "pagerduty_keys_tip": "PagerDuty는 integration key로 전달합니다. 저장한 뒤에는 통지 규칙에서 서비스/통합으로 고를 수 있으며, 지금은 직접 입력하세요. 여러 개도 됩니다.",
     "pagerduty_keys_placeholder": "integration key를 입력하고 Enter를 누르세요",
     "user_ids": "사용자 선택",
     "user_group_ids": "팀 선택",

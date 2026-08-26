@@ -29,7 +29,7 @@ const pt_BR = {
       "email": "E-mail",
       "userid": "ID do usuário"
     },
-    "default_roles": "Perfil padrão",
+    "default_roles": "Papéis padrão",
     "auth_url": "Endereço de autenticação",
     "proxy": "Endereço do proxy",
     "use_member_info": "Detalhes do usuário",

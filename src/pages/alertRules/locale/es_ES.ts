@@ -46,7 +46,7 @@ const es_ES = {
     "stage_pending": "Esperando la duración",
     "stage_muted": "Silenciado",
     "stage_muted_notify_only": "Silenciar solo la notificación",
-    "stage_muted_by_hook": "Bloqueado por un hook",
+    "stage_muted_by_hook": "Silenciado por un hook",
     "stage_drop_by_pipeline": "Descartado por el flujo de trabajo",
     "stage_inhibited": "Suprimido",
     "stage_recovered": "Recuperado",
@@ -129,19 +129,19 @@ const es_ES = {
   "notify_max_number": "Número máximo de envíos",
   "notify_max_number_tip": "Con el valor 0 no hay límite de envíos",
   "notify_flashduty_configured": "El envío global a Flashduty ya está configurado",
-  "callbacks": "URL de devolución de llamada",
+  "callbacks": "URL de callback",
   "callbacks_tip": "Se admiten variables; consulta la documentación de <a>referencia de variables</a> para saber cómo usarlas",
-  "override_global_webhook": "Sustituir la devolución de llamada global",
+  "override_global_webhook": "Sustituir el callback global",
   "enrich_queries": {
     "title": "Consulta complementaria",
     "tip": "En el momento del disparo se ejecuta en tiempo real la consulta configurada aquí y los datos obtenidos —por ejemplo, muestras de los logs coincidentes— se adjuntan al evento, de modo que el destinatario vea el contexto directamente en la notificación. La consulta puede referenciar variables del evento, como {{$labels.ident}}. El resultado se guarda en los campos extra_info (texto con formato) y extra_info_map (pares clave-valor) del evento, y puede referenciarse en las plantillas de notificación mediante {{$event.ExtraInfo}} o {{$event.ExtraInfoMap}}. Diferencia con «Información adicional» de arriba: aquella es un texto estático escrito de antemano, mientras que esta consulta se ejecuta contra el origen de datos en el momento de la alerta"
   },
-  "override_global_webhook_tip": "Con esta opción activada, los eventos solo se envían a la URL de devolución de llamada de esta regla y no a la global",
+  "override_global_webhook_tip": "Con esta opción activada, los eventos solo se envían a la URL de callback de esta regla y no a la global",
   "annotations": "Información adicional",
-  "annotations_tip": "Añade información complementaria en formato Clave:Valor a los eventos que genera esta regla, como el enlace del runbook (runbook_url), el enlace del panel (dashboard_url) o un resumen (summary). El valor admite variables de plantilla, como {{$labels.ident}} y {{$value}}, que se resuelven al crear el evento, aparecen en la página de detalles y pueden referenciarse en las plantillas de notificación mediante {{$event.AnnotationsJSON.xxx}}. Diferencia con «Consulta complementaria» de abajo: esta información es un texto estático escrito de antemano y no consulta el origen de datos",
+  "annotations_tip": "Añade información complementaria en formato Clave:Valor a los eventos que genera esta regla, como el enlace del runbook (runbook_url), el enlace del dashboard (dashboard_url) o un resumen (summary). El valor admite variables de plantilla, como {{$labels.ident}} y {{$value}}, que se resuelven al crear el evento, aparecen en la página de detalles y pueden referenciarse en las plantillas de notificación mediante {{$event.AnnotationsJSON.xxx}}. Diferencia con «Consulta complementaria» de abajo: esta información es un texto estático escrito de antemano y no consulta el origen de datos",
   "annotationsOptions": {
     "plan_link": "Enlace del runbook",
-    "dashboard_link": "Enlace del panel",
+    "dashboard_link": "Enlace del dashboard",
     "desc": "Descripción"
   },
   "extra_config": {
@@ -172,8 +172,8 @@ const es_ES = {
       },
       "than": "más de",
       "pct_target_miss_text": "segundos, y la proporción sin contacto supera",
-      "second": "Segundos",
-      "millisecond": "Milisegundos"
+      "second": "segundos",
+      "millisecond": "milisegundos"
     },
     "prom_eval_interval_tip": "Frecuencia de ejecución de la PromQL: la base de series temporales se consulta cada {{num}} segundos y el resultado se renombra y se vuelve a escribir en ella",
     "prom_for_duration_tip": "Normalmente la duración es mayor que la frecuencia de ejecución: dentro de la duración la consulta PromQL se ejecuta varias veces y la alerta solo se genera si todas ellas se disparan. Con la duración a 0, basta con que una consulta supere el umbral para generar la alerta"
@@ -235,7 +235,7 @@ const es_ES = {
         "notify_repeat_step": "Frecuencia de reenvío",
         "recover_duration": "Tiempo de observación",
         "notify_max_number": "Número máximo de envíos",
-        "callbacks": "URL de devolución de llamada",
+        "callbacks": "URL de callback",
         "note": "Observación",
         "runbook_url": "Enlace del runbook",
         "service_cal_ids": "Calendario de guardias",
@@ -371,11 +371,11 @@ const es_ES = {
       "join_type": {
         "original": "No combinar",
         "none": "Concatenación directa",
-        "inner_join": "Unión interna",
-        "left_join": "Unión por la izquierda",
-        "right_join": "Unión por la derecha",
-        "left_exclude": "Exclusión por la izquierda",
-        "right_exclude": "Exclusión por la derecha"
+        "inner_join": "Inner join",
+        "left_join": "Left join",
+        "right_join": "Right join",
+        "left_exclude": "Left anti join",
+        "right_exclude": "Right anti join"
       },
       "join_type_placeholder": "Selecciona la operación de conjuntos",
       "tooltip": "La operación de conjuntos solo puede configurarse cuando hay varias consultas",
@@ -402,9 +402,9 @@ const es_ES = {
     "anomaly": "Alerta inteligente"
   },
   "filter_disabled": {
-    "0": "Activar",
-    "1": "Desactivar",
-    "placeholder": "Situación"
+    "0": "Activado",
+    "1": "Desactivado",
+    "placeholder": "Estado de activación"
   },
   "var_config": {
     "enable": "Activar las variables",
@@ -491,7 +491,7 @@ const es_ES = {
     "all_day": "Todo el día",
     "queries_and_threshold": "Consulta y umbral",
     "condition_summary": "Condición de alerta",
-    "query_statements": "Estadísticas de la consulta",
+    "query_statements": "Consultas",
     "triggers": "Condición de disparo",
     "range": "Intervalo de la consulta",
     "interval": "Intervalo",

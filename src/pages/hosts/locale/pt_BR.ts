@@ -23,7 +23,7 @@ const pt_BR = {
   "explorer_selected_metrics_tip": "Ver as métricas das máquinas selecionadas",
   "auth_level_current": "Nível atual",
   "auth_level": "Nível do canal",
-  "auth_level_0": "Fechar",
+  "auth_level_0": "Desativado",
   "auth_level_1": "R0",
   "auth_level_2": "R0/W1",
   "auth_level_3": "R0/W1/W2",

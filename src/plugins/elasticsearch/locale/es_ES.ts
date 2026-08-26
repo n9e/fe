@@ -39,8 +39,8 @@ const es_ES = {
     },
     "add_to": {
       "btn": "Añadir a",
-      "recording_rule": "Reglas de grabación",
-      "add_recording_rule_title": "Añadir a una regla de grabación"
+      "recording_rule": "Reglas de registro",
+      "add_recording_rule_title": "Añadir a una regla de registro"
     }
   },
   "builder": {

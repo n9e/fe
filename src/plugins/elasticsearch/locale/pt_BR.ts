@@ -39,8 +39,8 @@ const pt_BR = {
     },
     "add_to": {
       "btn": "Adicionar a",
-      "recording_rule": "Regras de gravação",
-      "add_recording_rule_title": "Adicionar a uma regra de gravação"
+      "recording_rule": "Regras de registro",
+      "add_recording_rule_title": "Adicionar a uma regra de registro"
     }
   },
   "builder": {

@@ -55,7 +55,7 @@ const ko_KR = {
       "timeseries": "시계열 그래프 보기",
       "timeseries_tip": "테이블 구조 뷰의 시계열 그래프 모드로 복사해 데이터를 보거나, 대시보드에서 ClickHouse 데이터로 시계열 그래프를 그리는 데 쓸 수 있습니다.",
       "table": "통계 값 보기",
-      "table_tip": "ClickHouse의 알림 규칙과 레코딩 규칙을 만들고 Polaris 지표를 만드는 데 쓸 수 있습니다."
+      "table_tip": "ClickHouse의 알림 규칙과 레코딩 규칙을 만들고 Northstar 지표를 만드는 데 쓸 수 있습니다."
     },
     "warn_message_btn_1": "그대로 조회 실행",
     "warn_message_btn_2": "돌아가서 수정",

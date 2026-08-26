@@ -23,7 +23,7 @@ const es_ES = {
   "explorer_selected_metrics_tip": "Ver las métricas de las máquinas seleccionadas",
   "auth_level_current": "Nivel actual",
   "auth_level": "Nivel del canal",
-  "auth_level_0": "Cerrar",
+  "auth_level_0": "Desactivado",
   "auth_level_1": "R0",
   "auth_level_2": "R0/W1",
   "auth_level_3": "R0/W1/W2",
@@ -231,7 +231,7 @@ const es_ES = {
       }
     },
     "tips": {
-      "instance_label": "Identificador único a nivel global de la instancia, que se añade como etiqueta instance a todas sus métricas; los paneles integrados lo usan para distinguir instancias",
+      "instance_label": "Identificador único a nivel global de la instancia, que se añade como etiqueta instance a todas sus métricas; los dashboards integrados lo usan para distinguir instancias",
       "cluster_label": "Se añade a las métricas como etiqueta cluster; si se deja vacío, se usa la dirección del primer broker",
       "postgresql_address": "Admite tanto pares clave-valor del estilo host=... user=... como una cadena de conexión postgres://",
       "rabbitmq_url": "Dirección del plugin de gestión; ejecuta antes rabbitmq-plugins enable rabbitmq_management",

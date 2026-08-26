@@ -2,7 +2,7 @@ const es_ES = {
   "title": "Solicitud de autorización",
   "intro": "La aplicación siguiente solicita acceder a las API MCP / A2A de Nightingale en tu nombre:",
   "asUser": "Sesión iniciada como:",
-  "redirectTo": "Dirección de devolución de llamada:",
+  "redirectTo": "URL de callback:",
   "scope": "Permisos solicitados:",
   "allow": "Permitir",
   "deny": "Denegar",
