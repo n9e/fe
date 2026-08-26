@@ -60,6 +60,7 @@ export const i18nMap = {
   id_ID: 'Bahasa Indonesia',
   es_ES: 'Español',
   pt_BR: 'Português',
+  ko_KR: '한국어',
 };
 
 let PageLayout = PageLayoutWithTabs;

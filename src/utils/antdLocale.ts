@@ -3,6 +3,7 @@ import zhHK from 'antd/lib/locale/zh_HK';
 import enUS from 'antd/lib/locale/en_US';
 import jaJP from 'antd/lib/locale/ja_JP';
 import ruRU from 'antd/lib/locale/ru_RU';
+import koKR from 'antd/lib/locale/ko_KR';
 import idID from 'antd/lib/locale/id_ID';
 import esES from 'antd/lib/locale/es_ES';
 import ptBR from 'antd/lib/locale/pt_BR';
@@ -13,6 +14,7 @@ const antdLocaleMap = {
   en_US: enUS,
   ja_JP: jaJP,
   ru_RU: ruRU,
+  ko_KR: koKR,
   id_ID: idID,
   es_ES: esES,
   pt_BR: ptBR,

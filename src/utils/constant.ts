@@ -116,6 +116,7 @@ export const LANGUAGE_MAP = {
   id_ID: 'Bahasa Indonesia',
   es_ES: 'Español',
   pt_BR: 'Português',
+  ko_KR: '한국어',
 };
 
 // 拉丁字母语言的词比中文长，菜单需要更宽才不折行

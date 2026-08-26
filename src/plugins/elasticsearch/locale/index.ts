@@ -8,6 +8,7 @@ import ru_RU from './ru_RU';
 import pt_BR from './pt_BR';
 import es_ES from './es_ES';
 import id_ID from './id_ID';
+import ko_KR from './ko_KR';
 
 const resources = {
   [NAME_SPACE]: {
@@ -19,6 +20,7 @@ const resources = {
     pt_BR,
     es_ES,
     id_ID,
+    ko_KR,
   },
 };
 
